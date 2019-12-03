@@ -1,22 +1,21 @@
 ---
 title: MapView
+sourceCodeUrl: "https://github.com/react-native-community/react-native-maps"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-Expo includes version 0.22.0 of react-native-maps (the latest as of the time of this writing).
-
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [react-native-maps installation instructions](https://github.com/react-native-community/react-native-maps).
+To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-maps`. In bare apps, also follow the [react-native-maps linking and configuration instructions](https://github.com/react-native-community/react-native-maps).
 
 ## Usage
 
-See full documentation at [react-community/react-native-maps](https://github.com/react-community/react-native-maps).
+See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
 
-<SnackEmbed snackId="@adamjnav/mapview-example" />
+<SnackEmbed snackId="@charliecruzan/basicmapviewexample" />
 
 ## Configuration
 
@@ -26,13 +25,13 @@ If you have already integrated Google Sign In into your standalone app, this is 
 
 - **If you already have Google Sign In configured**
   1.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis).
-  2.  Select your project and enable the **Google Maps Android API**
+  2.  Select your project and enable the **Google Maps SDK for Android**
   3.  In `app.json`, copy the API key from `android.config.googleSignIn` to `android.config.googleMaps.apiKey`.
   4.  Rebuild your standalone app.
 - **If you already have not configured Google Sign In**
   1.  Build your app, take note of your Android package name (eg: `ca.brentvatne.growlerprowler`)
   2.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
-  3.  Once it's created, go to the project and enable the **Google Maps Android API**
+  3.  Once it's created, go to the project and enable the **Google Maps SDK for Android**
   4.  Go back to <https://console.developers.google.com/apis/credentials> and click **Create Credentials**, then **API Key**.
   5.  In the modal that popped up, click **RESTRICT KEY**.
   6.  Choose the **Android apps** radio button under **Key restriction**.
@@ -40,7 +39,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
   8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
   9.  Run `expo fetch:android:hashes`.
   10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
-  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2). 
+  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
   12. Press `Save` and then rebuild the app like in step 1.
 
 **Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
@@ -86,4 +85,3 @@ To use this in web, add the following script to your `web/index.html`. This scri
   <!-- <body /> -->
 </html>
 ```
-

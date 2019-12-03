@@ -45,6 +45,19 @@ FB_CLASS_EXPORT
                  rootViewController:(nullable UIViewController *)rootViewController NS_DESIGNATED_INITIALIZER;
 
 /**
+ This is a method to initialize an FBAdView matching the given placement id with a given bidding payload.
+
+ @param placementID The id of the ad placement. You can create your placement id from Facebook developers page.
+ @param bidPayload The bid payload sent from the server.
+ @param rootViewController The view controller that will be used to present the ad and the app store view.
+ @param error An out value that returns any error encountered during init.
+ */
+- (nullable instancetype)initWithPlacementID:(NSString *)placementID
+                                  bidPayload:(NSString *)bidPayload
+                          rootViewController:(nullable UIViewController *)rootViewController
+                                       error:(NSError * __autoreleasing *) error;
+
+/**
   Begins loading the FBAdView content.
 
 

@@ -20,7 +20,7 @@
 
 @implementation FBSDKDeviceLoginCodeInfo
 
-- (instancetype) initWithIdentifier:(NSString *)identifier
+- (instancetype)initWithIdentifier:(NSString *)identifier
                           loginCode:(NSString *)loginCode
                     verificationURL:(NSURL *)verificationURL
                      expirationDate:(NSDate *)expirationDate

@@ -1,6 +1,9 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -I nixpkgs=../../nix --packages direnv procps git yarn -i "direnv exec . bash"
+#!nix-shell -I nixpkgs=../../nix --packages rsync procps git nodejs yarn zsh -i zsh
+
 set -euo pipefail
+
+eval "$(direnv hook zsh)"
 
 commit_hash="$(git rev-parse HEAD)"
 
@@ -15,5 +18,5 @@ export EXPO_DEBUG=true
 export EXPO_SKIP_MANIFEST_VALIDATION_TOKEN=true
 export EXPO_NO_DOCTOR=true
 
-yarn run expo login --username "$EXPO_CI_ACCOUNT_USERNAME" --password "$EXPO_CI_ACCOUNT_PASSWORD"
+yarn run --silent expo login --username "$EXPO_CI_ACCOUNT_USERNAME" --password "$EXPO_CI_ACCOUNT_PASSWORD"
 yarn run expo publish --non-interactive --release-channel "$commit_hash"

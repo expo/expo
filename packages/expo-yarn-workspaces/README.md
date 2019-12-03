@@ -1,6 +1,6 @@
-# Expo Yarn Workspaces (private package)
+# Expo Yarn Workspaces
 
-This is a private package that provides support for Yarn workspaces within the Expo repository. It finesses Yarn workspaces, Metro, and the Expo repository to work together.
+This is a package that provides support for Yarn workspaces within monorepos like the Expo repository. It finesses Yarn workspaces, Metro, and the Expo repository to work together.
 
 ## How apps work with workspaces
 

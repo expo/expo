@@ -7,7 +7,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
@@ -15,7 +15,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '5.0.1'
+version = '8.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -52,11 +52,15 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 7
-    versionName "5.0.1"
+    versionCode 12
+    versionName "8.0.0"
   }
   lintOptions {
     abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
   }
 }
 
@@ -71,10 +75,10 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-permissions-interface"
+  unimodule 'unimodules-image-loader-interface'
 
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
-  api 'com.facebook.fresco:fresco:1.10.0'
+  api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:2.6'
 }

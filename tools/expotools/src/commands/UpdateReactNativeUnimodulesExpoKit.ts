@@ -7,7 +7,11 @@ async function action(options) {
     throw new Error('--reactNativeUnimodulesVersion and --sdkVersion are both required');
   }
 
-  await ExpoKit.updateReactNativeUnimodulesAsync(EXPO_DIR, options.reactNativeUnimodulesVersion, options.sdkVersion);
+  await ExpoKit.updateReactNativeUnimodulesAsync(
+    EXPO_DIR,
+    options.reactNativeUnimodulesVersion,
+    options.sdkVersion
+  );
 }
 
 export default (program: any) => {

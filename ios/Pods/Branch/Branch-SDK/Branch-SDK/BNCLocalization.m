@@ -1,10 +1,12 @@
-//
-//  BNCLocalization.m
-//  Branch-SDK
-//
-//  Created by Parth Kalavadia on 7/10/17.
-//  Copyright © 2017 Branch Metrics. All rights reserved.
-//
+/**
+ @file          BNCLocalization.m
+ @package       Branch-SDK
+ @brief         Branch string localizations.
+
+ @author        Parth Kalavadia
+ @date          July 2017
+ @copyright     Copyright © 2017 Branch. All rights reserved.
+*/
 
 #import "BNCLocalization.h"
 #import "BNCLog.h"
@@ -58,7 +60,7 @@ NSString* _Nonnull BNCLocalizedFormattedString(NSString* _Nonnull const format, 
     }
 }
 
-- (void) setCurrentLanguage:(NSString*_Null_unspecified)language {
+- (void) setCurrentLanguage:(NSString*)language {
     @synchronized (self) {
 
         if (!language.length) {

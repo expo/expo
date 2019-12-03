@@ -1,12 +1,15 @@
 ---
 title: LocalAuthentication
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication"
 ---
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-local-authentication`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
 
 ## API
 
@@ -38,9 +41,9 @@ Determine whether the device has saved fingerprints or facial data to use for au
 
 Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
 
-### `LocalAuthentication.authenticateAsync()`
+### `LocalAuthentication.authenticateAsync(options)`
 
-Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
+Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
 > **Note:** When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
 
@@ -48,12 +51,20 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 #### Arguments
 
-- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
+- **options (_object_)** -- An object of options.
+  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. (**iOS only**)
+  - **fallbackLabel (_string_)** -- Allows to customize the default `Use Passcode` label shown after several failed authentication attempts. Setting this option to an empty string disables fallback to device passcode. (**iOS only**)
 
 #### Returns
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
+#### Usage
+
+Since Android doesn't provide a default UI component, we've provided an example with one to help you get up and running:
+
+<SnackEmbed snackId="@charliecruzan/localauthentication35example" />
+
 ### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
-Cancels the fingerprint authentication flow.
+Cancels the fingerprint authentication flow. See usage in example snack above.

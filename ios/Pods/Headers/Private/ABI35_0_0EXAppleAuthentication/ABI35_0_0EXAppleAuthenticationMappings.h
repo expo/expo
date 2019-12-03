@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/EXAppleAuthentication/ABI35_0_0EXAppleAuthentication/ABI35_0_0EXAppleAuthenticationMappings.h

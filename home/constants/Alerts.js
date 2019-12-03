@@ -14,7 +14,7 @@ export default {
   }),
   notice: StyleSheet.create({
     container: {
-      backgroundColor: Colors.darkTintColor,
+      backgroundColor: Colors.light.darkTintColor,
     },
     text: {
       color: '#fff',

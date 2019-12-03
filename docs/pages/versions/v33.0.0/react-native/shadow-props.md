@@ -20,8 +20,8 @@ title: Shadow Props
 
 Sets the drop shadow color
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -53,4 +53,3 @@ Sets the drop shadow blur radius
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | iOS      |
-

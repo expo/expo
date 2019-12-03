@@ -8,11 +8,13 @@ Provides access to the system's web browser and supports handling redirects. On 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
+
+> **Note**: Not compatible with web.
 
 ## Usage
 
-<SnackEmbed snackId="r116LYJne" />
+<SnackEmbed snackId="@charliecruzan/webbrowserexample" />
 <br />
 
 ### Handling deep links from the WebBrowser
@@ -27,7 +29,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `WebBrowser.openBrowserAsync(url)`
 
-Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
+Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use [openAuthSessionAsync](#webbrowseropenauthsessionasync).
 
 #### Arguments
 
@@ -36,7 +38,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **collapseToolbar (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.

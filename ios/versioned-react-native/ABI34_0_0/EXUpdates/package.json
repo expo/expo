@@ -1,0 +1,27 @@
+{
+  "name": "expo-updates",
+  "version": "1.0.0",
+  "description": "ExpoUpdates standalone module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {},
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-updates"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-updates",
+  "peerDependencies": {
+    "@unimodules/core": "~1.0.0"
+  },
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+}

@@ -6,7 +6,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-Expo includes version 0.22.0 of react-native-maps (the latest as of the time of this writing).
+Expo includes version 0.24.2 of react-native-maps (the latest as of the time of this writing).
 
 ## Installation
 
@@ -16,7 +16,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 See full documentation at [react-community/react-native-maps](https://github.com/react-community/react-native-maps).
 
-<SnackEmbed snackId="@adamjnav/mapview-example" />
+<SnackEmbed snackId="@charliecruzan/basicmapviewexample" />
 
 ## Configuration
 
@@ -40,7 +40,7 @@ If you have already integrated Google Sign In into your standalone app, this is 
   8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
   9.  Run `expo fetch:android:hashes`.
   10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
-  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2). 
+  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
   12. Press `Save` and then rebuild the app like in step 1.
 
 **Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
@@ -86,4 +86,3 @@ To use this in web, add the following script to your `web/index.html`. This scri
   <!-- <body /> -->
 </html>
 ```
-

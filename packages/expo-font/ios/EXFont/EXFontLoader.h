@@ -5,4 +5,6 @@
 
 @interface EXFontLoader : UMExportedModule <UMModuleRegistryConsumer>
 
+- (instancetype)initWithFontFamilyPrefix:(NSString *)prefix;
+
 @end

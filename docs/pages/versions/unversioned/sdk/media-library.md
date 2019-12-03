@@ -1,5 +1,6 @@
 ---
 title: MediaLibrary
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library"
 ---
 
 Provides access to user's media library.
@@ -8,7 +9,9 @@ Requires `Permissions.CAMERA_ROLL` permissions.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+
+> **Note**: Not compatible with web.
 
 ## API
 
@@ -16,12 +19,28 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as MediaLibrary from 'expo-media-library';
 ```
 
+### `MediaLibrary.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing media in user's media library. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `MediaLibrary.getPermissionsAsync()`
+
+Checks user's permissions for accessing media library. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
 ### `MediaLibrary.createAssetAsync(localUri)`
 
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
 
 ```js
-const { uri } = await camera.takePictureAsync();
+const { uri } = await Camera.takePictureAsync();
 const asset = await MediaLibrary.createAssetAsync(uri);
 ```
 
@@ -32,6 +51,14 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 #### Returns
 
 An object representing an [asset](#asset).
+
+### `MediaLibrary.saveToLibraryAsync(localUri)`
+
+Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+
+#### Arguments
+
+- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
 
 ### `MediaLibrary.getAssetsAsync(options)`
 
@@ -44,10 +71,12 @@ Fetches a page of assets matching the provided criteria.
   - **first (_number_)** -- The maximum number of items on a single page.
   - **after (_string_)** -- Asset ID of the last item returned on the previous page.
   - **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-  - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter. 
+  - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
   - **mediaType (_array_)** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
+  - **createdAfter (_Date_ | _number_)** -- Date object or Unix timestamp in milliseconds limiting returned assets only to those that were created after this date.
+  - **createdBefore (_Date_ | _number_)** -- Similarly as `createdAfter`, but limits assets only to those that were created before specified date.
 
 #### Returns
 
@@ -198,39 +227,40 @@ Removes all listeners.
 
 ### `Asset`
 
-| Field name       | Type      | Platforms | Description                             | Possible values                                                                                      |
-| ---------------- | --------- | --------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| id               | _string_  | both      | Internal ID that represents an asset    |                                                                                                      |
-| filename         | _string_  | both      | Filename of the asset                   |                                                                                                      |
-| uri              | _string_  | both      | URI that points to the asset            | `assets://*` (iOS), `file://*` (Android)                                                             |
-| mediaType        | _string_  | both      | Media type                              | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
-| width            | _number_  | both      | Width of the image or video             |                                                                                                      |
-| height           | _number_  | both      | Height of the image or video            |                                                                                                      |
-| creationTime     | _number_  | both      | File creation timestamp                 |                                                                                                      |
-| modificationTime | _number_  | both      | Last modification timestamp             |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset    |                                                                                                      |
-| mediaSubtypes    | _array_   | iOS       | An array of media subtypes              | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
-| albumId          | _string_  | Android   | Album ID that the asset belongs to      |                                                                                                      |
-| localUri \*      | _string_  | both      | Local URI for the asset                 |                                                                                                      |
-| location \*      | _object_  | both      | GPS location if available               | `latitude: number, longitude: number` or `null`                                                      |
-| exif \*          | _object_  | both      | EXIF metadata associated with the image |                                                                                                      |
-| orientation \*   | _number_  | iOS       | Display orientation of the image        | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
-| isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite | `true`, `false`                                                                                      |
+| Field name       | Type      | Platforms | Description                                                                                                   | Possible values                                                                                      |
+| ---------------- | --------- | --------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| id               | _string_  | both      | Internal ID that represents an asset                                                                          |                                                                                                      |
+| filename         | _string_  | both      | Filename of the asset                                                                                         |                                                                                                      |
+| uri              | _string_  | both      | URI that points to the asset                                                                                  | `assets://*` (iOS), `file://*` (Android)                                                             |
+| mediaType        | _string_  | both      | Media type                                                                                                    | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
+| width            | _number_  | both      | Width of the image or video                                                                                   |                                                                                                      |
+| height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
+| creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
+| modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
+| albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
+| localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |
+| location \*      | _object_  | both      | GPS location if available                                                                                     | `latitude: number, longitude: number` or `null`                                                      |
+| exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
+| orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
+| isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
 
 ### `Album`
 
-| Field name             | Type     | Platforms | Description                                             | Possible values                                 |
-| ---------------------- | -------- | --------- | ------------------------------------------------------- | ----------------------------------------------- |
-| id                     | _string_ | both      |                                                         |                                                 |
-| title                  | _string_ | both      |                                                         |                                                 |
-| assetCount             | _number_ | both      | Estimated number of assets in the album                 |                                                 |
-| type                   | _string_ | iOS       | The type of the assets album                            | `album`, `moment`, `smartAlbum`                 |
-| startTime \*           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment |                                                 |
-| endTime \*             | _number_ | iOS       | Latest creation timestamp of all assets in the moment   |                                                 |
-| approximateLocation \* | _object_ | iOS       | Approximated location of all assets in the moment       | `latitude: number, longitude: number` or `null` |
-| locationNames \*       | _array_  | iOS       | Names of locations grouped in the moment                |                                                 |
+| Field name             | Type     | Platforms | Description                                                                                 | Possible values                                 |
+| ---------------------- | -------- | --------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| id                     | _string_ | both      |                                                                                             |                                                 |
+| title                  | _string_ | both      |                                                                                             |                                                 |
+| assetCount             | _number_ | both      | Estimated number of assets in the album                                                     |                                                 |
+| folderName             | _string_ | iOS       | Name of folder that the album belongs to. Can be null if the album is in the root directory |                                                 |
+| type                   | _string_ | iOS       | The type of the assets album                                                                | `album`, `moment`, `smartAlbum`                 |
+| startTime \*           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment                                     |                                                 |
+| endTime \*             | _number_ | iOS       | Latest creation timestamp of all assets in the moment                                       |                                                 |
+| approximateLocation \* | _object_ | iOS       | Approximated location of all assets in the moment                                           | `latitude: number, longitude: number` or `null` |
+| locationNames \*       | _array_  | iOS       | Names of locations grouped in the moment                                                    |                                                 |
 
 > \* These fields apply only to albums whose type is `moment`
 

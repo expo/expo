@@ -4,7 +4,7 @@ title: VideoThumbnails
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-video-thumbnails`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
 
 ## API
 
@@ -33,11 +33,11 @@ Returns `{ uri, width, height }` where `uri` is a URI to the created image (usea
 ### Basic Example
 
 ```javascript
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, Button, View, Image, Text } from 'react-native';
-import { VideoThumbnails } from 'expo';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 
-export default class App extends Component {
+export default class App extends React.Component {
   state = {
     image: null,
   };

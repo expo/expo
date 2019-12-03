@@ -1,12 +1,13 @@
 ---
 title: FileSystem
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system"
 ---
 
 Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
 
 ## API
 
@@ -113,6 +114,16 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 - **options (_object_)** -- A map of options:
 
   - **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
+
+### `FileSystem.deleteLegacyDocumentDirectoryAndroid(fileUri, options)`
+
+Delete the legacy document directory used in Android standalone apps built with SDK 32 and below.
+
+In standalone apps built with this SDK version, files in the legacy document directory are automatically copied to the current (new) document directory upon first launch. Any files already in the current (new) document directory will not be overwritten. This allows seamless transitions without your application code needing to be aware of the legacy document directory subfolder.
+
+The legacy document directory is NOT deleted on launch in case your application code depends on it, meaning any legacy files may be duplicated. If you have a large files stored in the FileSystem, you may want to call this method soon after launching your app in order to free up storage on the user's device.
+
+If the legacy document directory does not exist, this method is a noop and is therefore safe to call repeatedly.
 
 ### `FileSystem.moveAsync(options)`
 
@@ -296,6 +307,66 @@ Returns an object with the following fields:
   - **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download.
+
+### `FileSystem.getContentUriAsync(fileUri)`
+
+Take a `file://` URI and convert it into content URI (`content://`) so that it can be access by other applications outside of Expo.
+
+#### Example
+
+```javascript
+FileSystem.getContentUriAsync(uri).then(cUri => {
+  console.log(cUri);
+  IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+    data: cUri.uri,
+    flags: 1,
+  });
+});
+```
+
+#### Arguments
+
+- **fileUri (_string_)** -- The local URI of the file. If there is no file at this URI, an exception will be thrown.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+
+### `FileSystem.getFreeDiskStorageAsync()`
+
+Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to the number of bytes available on the internal disk.
+
+### `FileSystem.getTotalDiskCapacityAsync()`
+
+Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
 
 #### Example
 

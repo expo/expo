@@ -8,7 +8,7 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.Gesture
 
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
 

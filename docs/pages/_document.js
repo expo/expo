@@ -18,7 +18,8 @@ if (typeof window !== 'undefined') {
 }
 
 export default class MyDocument extends Document {
-  static getInitialProps({ renderPage }) {
+  static getInitialProps(opts) {
+    const { renderPage } = opts;
     const page = renderPage();
     const styles = extractCritical(page.html);
     return { ...page, ...styles };
@@ -49,7 +50,7 @@ export default class MyDocument extends Document {
           <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
           <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
           <style dangerouslySetInnerHTML={{ __html: globalExtras }} />
-          <link href="/static/libs/algolia/algolia.min.css" rel="stylesheet" />
+          <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
           <link
             rel="stylesheet"
             href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"

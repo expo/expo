@@ -2,7 +2,7 @@
 
 package host.exp.exponent.utils;
 
-import android.support.test.espresso.IdlingResource;
+import androidx.test.espresso.IdlingResource;
 
 public class ElapsedTimeIdlingResource implements IdlingResource {
   private long mStartTime;

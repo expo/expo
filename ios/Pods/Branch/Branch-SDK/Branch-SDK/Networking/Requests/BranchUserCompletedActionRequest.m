@@ -9,7 +9,6 @@
 #import "BranchUserCompletedActionRequest.h"
 #import "BNCPreferenceHelper.h"
 #import "BranchConstants.h"
-#import "BranchViewHandler.h"
 #import "BNCEncodingUtils.h"
 #import "BNCLog.h"
 
@@ -17,21 +16,15 @@
 
 @property (strong, nonatomic) NSString *action;
 @property (strong, nonatomic) NSDictionary *state;
-@property (strong, nonatomic) id <BranchViewControllerDelegate> branchViewcallback;
 
 @end
 
 @implementation BranchUserCompletedActionRequest
 
 - (id)initWithAction:(NSString *)action state:(NSDictionary *)state {
-    return [self initWithAction:action state:state withBranchViewCallback:nil];
-}
-
-- (id)initWithAction:(NSString *)action state:(NSDictionary *)state withBranchViewCallback:(id)callback {
     if ((self = [super init])) {
         _action = action;
         _state = state;
-        _branchViewcallback = callback;
     }
     
     return self;
@@ -54,7 +47,7 @@
     params[BRANCH_REQUEST_KEY_BRANCH_IDENTITY] = preferenceHelper.identityID;
     params[BRANCH_REQUEST_KEY_SESSION_ID] = preferenceHelper.sessionID;
     if (preferenceHelper.limitFacebookTracking)
-        params[@"limit_facebook_tracking"] = CFBridgingRelease(kCFBooleanTrue);
+        params[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
     if (self.state) {
         params[BRANCH_REQUEST_KEY_STATE] = self.state;
@@ -65,22 +58,15 @@
 }
 
 - (void)processResponse:(BNCServerResponse *)response error:(NSError *)error {
-    // Check if there is any Branch View to show
-    if (!error) {
-        NSDictionary *data = response.data;
-        NSObject *branchViewDict = data[BRANCH_RESPONSE_KEY_BRANCH_VIEW_DATA];
-        if ([branchViewDict isKindOfClass:[NSDictionary class]]) {
-           [[BranchViewHandler getInstance] showBranchView:_action withBranchViewDictionary:(NSDictionary *)branchViewDict andWithDelegate:_branchViewcallback];
-        }
-    }
+   
 }
 
 #pragma mark - NSCoding methods
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _action = [decoder decodeObjectForKey:@"action"];
-        _state = [decoder decodeObjectForKey:@"state"];
+        _action = [decoder decodeObjectOfClass:NSString.class forKey:@"action"];
+        _state = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"state"];
     }
     
     return self;
@@ -88,7 +74,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
-    
     [coder encodeObject:self.action forKey:@"action"];
     [coder encodeObject:self.state forKey:@"state"];
 }

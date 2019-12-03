@@ -20,8 +20,6 @@ const UsersAppsQuery = gql`
           packageUsername
           description
           lastPublishedTime
-          isLikedByMe
-          likeCount
         }
         snacks(limit: 15, offset: 0) {
           name

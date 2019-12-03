@@ -1,12 +1,15 @@
 ---
 title: SMS
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sms"
 ---
 
 Provides access to the system's UI/app for sending SMS messages.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sms).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sms`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sms).
+
+> **Note**: Not compatible with web.
 
 ## API
 

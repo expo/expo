@@ -1,12 +1,13 @@
 ---
 title: Asset
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-asset"
 ---
 
 This module provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-asset).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-asset`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-asset).
 
 ## API
 
@@ -75,9 +76,9 @@ The [`Asset`](#asset) instance for the asset
 #### Example
 
 ```javascript
-const imageURI = Asset.fromModule(require('./images/hello.jpg')).uri;
+const imageURI = Asset.fromModule(require('./assets/snack-icon.png')).uri;
 ```
 
-On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.
+On running this piece of code, `imageURI` gives the remote URI that the contents of `assets/snack-icon.png` can be read from. The path is resolved relative to the source file that this code is evaluated in.
 
 #

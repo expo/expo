@@ -1,0 +1,39 @@
+{
+  "name": "expo-application",
+  "version": "2.0.0",
+  "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
+  "main": "build/Application.js",
+  "types": "build/Application.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-application"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-application"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-application",
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1"
+  },
+  "peerDependencies": {
+    "@unimodules/core": "~1.0.0"
+  },
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+}

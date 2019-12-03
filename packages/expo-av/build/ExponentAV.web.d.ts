@@ -13,7 +13,7 @@ declare const _default: {
         [key: string]: any;
         uri: string;
     }, fullInitialStatus: PlaybackStatusToSet): Promise<[HTMLMediaElement, PlaybackStatus]>;
-    unloadForSound(element: HTMLMediaElement): Promise<void>;
+    unloadForSound(element: HTMLMediaElement): Promise<PlaybackStatus>;
     setStatusForSound(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     replaySound(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     getAudioRecordingStatus(): Promise<void>;

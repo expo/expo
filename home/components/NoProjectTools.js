@@ -1,26 +1,22 @@
-/* @flow */
-
 import React from 'react';
-import { Keyboard, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { StyledButton } from './Views';
+import { StyledText } from './Text';
 
 import Colors from '../constants/Colors';
 
 export default class QRCodeButton extends React.Component {
   render() {
-    let { fullWidthBorder } = this.props;
-
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={[styles.container, styles.bottomBorder]}>
         <View style={[styles.infoContainer]}>
-          <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+          <StyledText style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
             Get started with Expo
-          </Text>
+          </StyledText>
 
           <View style={styles.subtitleContainer}>
             <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
@@ -28,7 +24,7 @@ export default class QRCodeButton extends React.Component {
             </Text>
           </View>
         </View>
-      </TouchableNativeFeedbackSafe>
+      </StyledButton>
     );
   }
 
@@ -40,12 +36,10 @@ export default class QRCodeButton extends React.Component {
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     flex: 1,
   },
   infoContainer: {
@@ -56,7 +50,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   titleText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 70,
     marginBottom: 2,
@@ -73,7 +66,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     marginRight: 5,
     flex: 1,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });

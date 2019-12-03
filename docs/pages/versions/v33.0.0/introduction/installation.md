@@ -8,7 +8,7 @@ There are two tools that you need to develop apps with Expo: a local development
 
 Expo CLI is a tool for developing apps with Expo. In addition the command-line interface (CLI) it also has a graphical UI, Expo Developer Tools, that pops up in your web browser. With Expo Dev Tools you can quickly set up your test devices, view logs and more.
 
-You'll need to have Node.js (**we recommend version 10**- but 8 or a newer stable version will do) installed on your computer. [Download the recommended version of Node.js](https://nodejs.org/en/). Additionally, you'll need Git to create new projects with Expo CLI. [You can download Git from here](https://git-scm.com).
+You'll need to have Node.js (**we recommend the latest stable version**- but the maintenance and active LTS releases will also work) installed on your computer. [Download the recommended version of Node.js](https://nodejs.org/en/). Additionally, you'll need Git to create new projects with Expo CLI. [You can download Git from here](https://git-scm.com).
 
 You can install Expo CLI by running:
 

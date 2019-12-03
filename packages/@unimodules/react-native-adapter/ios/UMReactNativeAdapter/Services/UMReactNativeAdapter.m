@@ -170,13 +170,14 @@ UM_REGISTER_MODULE();
 {
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
-  } else { 
+  } else if (_bridge.runtime) {
     // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
     // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
     // WARNING: This is temporary solution that may break with new react-native releases.
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
   }
+  return nil;
 }
 
 # pragma mark - UMImageLoader
@@ -184,10 +185,10 @@ UM_REGISTER_MODULE();
 - (void)loadImageForURL:(NSURL *)imageURL
       completionHandler:(UMImageLoaderCompletionBlock)completionHandler
 {
-   [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                       callback:^(NSError *error, UIImage *loadedImage) {
-                                         completionHandler(error, loadedImage);
-                                       }];
+    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
+                                                                    callback:^(NSError *error, UIImage *loadedImage) {
+        completionHandler(error, loadedImage);
+    }];
 }
 
 # pragma mark - App state observing

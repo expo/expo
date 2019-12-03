@@ -7,7 +7,15 @@ The Vibration API is exposed at `Vibration.vibrate()`. The vibration is asynchro
 
 There will be no effect on devices that do not support Vibration, eg. the simulator.
 
-**Note for Android:** add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
+**Note for Android:** add the `VIBRATE` permission under the `"android"` field in your `app.json` file:
+
+```javascript
+{
+  "android": {
+    "permission": ["VIBRATE"]
+  }
+}
+```
 
 **The vibration duration in iOS is not configurable**, so there are some differences with Android. In Android, if `pattern` is a number, it specifies the vibration duration in ms. If `pattern` is an array, those odd indices are the vibration duration, while the even ones are the separation time.
 
@@ -17,9 +25,7 @@ Repeatable vibration is also supported, the vibration will repeat with defined p
 
 Example:
 
-
 ```javascript
-
 const DURATION = 10000;
 const PATTERN = [1000, 2000, 3000];
 
@@ -38,9 +44,7 @@ Vibration.vibrate(PATTERN, true);
 Vibration.cancel();
 // Android: vibration stopped
 // iOS: vibration stopped
-
 ```
-
 
 ### Methods
 
@@ -55,42 +59,31 @@ Vibration.cancel();
 
 ### `vibrate()`
 
-
 ```javascript
 
 Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 
 ```
 
-
 Trigger a vibration with specified `pattern`.
 
 **Parameters:**
 
-| Name    | Type                    | Required | Description                                                                  |
-| ------- | ----------------------- | -------- | ---------------------------------------------------------------------------- |
+| Name    | Type                      | Required | Description                                                                  |
+| ------- | ------------------------- | -------- | ---------------------------------------------------------------------------- |
 | pattern | number or Array\<number\> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
-| repeat  | boolean                 | No       | Repeat vibration pattern until cancel(), default to false.                   |
+| repeat  | boolean                   | No       | Repeat vibration pattern until cancel(), default to false.                   |
 
 ---
 
 ### `cancel()`
 
-
 ```javascript
-
 Vibration.cancel();
-
 ```
-
 
 Stop vibration.
 
-
 ```javascript
-
-Vibration.cancel()
-
+Vibration.cancel();
 ```
-
-

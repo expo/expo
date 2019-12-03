@@ -31,13 +31,6 @@
 ##### Expo Universal Modules #####
 
 -keepclassmembers class * {
-  @org.unimodules.core.interfaces.ExpoProp *;
-}
--keepclassmembers class * {
-  @org.unimodules.core.interfaces.ExpoMethod *;
-}
-
--keepclassmembers class * {
   @**.expo.core.interfaces.ExpoProp *;
 }
 -keepclassmembers class * {
@@ -151,7 +144,7 @@
 -keep class com.amplitude.api.** {*;}
 
 ##### DBFlow #####
--keep class com.raizlabs.android.dbflow.config.GeneratedDatabaseHolder
+-keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
 
 ##### SpongyCastle #####
 -keep class org.spongycastle.**

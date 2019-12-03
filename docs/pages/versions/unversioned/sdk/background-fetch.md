@@ -1,19 +1,32 @@
 ---
 title: BackgroundFetch
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-background-fetch"
 ---
 
 Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
-In order to use `BackgroundFetch` API in standalone and detached apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## Configuration
+
+In order to use `BackgroundFetch` API in standalone and detached apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
 
 ## API
 
 ```js
 import * as BackgroundFetch from 'expo-background-fetch';
 ```
+
+**[Methods](#methods)**
+
+- [`BackgroundFetch.getStatusAsync()`](#backgroundfetchgetstatusasync)
+- [`BackgroundFetch.registerTaskAsync(taskName, options)`](#backgroundfetchregistertaskasynctaskname-options)
+- [`BackgroundFetch.unregisterTaskAsync(taskName)`](#backgroundfetchunregistertaskasynctaskname)
+- [`BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`](#backgroundfetchsetminimumintervalasyncminimuminterval)
+
+## Methods
 
 ### `BackgroundFetch.getStatusAsync()`
 
@@ -55,7 +68,8 @@ Background fetch task receives no data, but your task should return a value that
 This return value is to let iOS know what the result of your background fetch was, so the platform can better schedule future background fetches. Also, your app has up to 30 seconds to perform the task, otherwise your app will be terminated and future background fetches may be delayed.
 
 ```javascript
-import { BackgroundFetch, TaskManager } from 'expo';
+import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
 
 TaskManager.defineTask(YOUR_TASK_NAME, () => {
   try {

@@ -1,26 +1,59 @@
 ---
 title: Crypto
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
 
-| 🍎 iOS | 💚 Android | 💻 Web |
-| ------ | ---------- | ------ |
-| ✅     | ✅         | ✅     |
-
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
 
-# Docs
+## Usage
 
-Once installed natively, the module can be accessed from the **`expo-crypto`** package.
+<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+
+```js
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import * as Crypto from 'expo-crypto'; 
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const digest = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        'Github stars are neat 🌟'
+      );
+      console.log('Digest: ', digest);
+      /* Some crypto operation... */
+    })();
+    runCrypto();
+  }, []);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text>Crypto Module Example</Text>
+    </View>
+  );
+}
+
+```
+</SnackInline>
+
+## API
 
 ```js
 import * as Crypto from 'expo-crypto';
 ```
-
-## Methods
 
 ### `digestStringAsync`
 
@@ -34,7 +67,7 @@ digestStringAsync(
 
 The `digestStringAsync()` method of `Crypto` generates a digest of the supplied `data` string with the provided digest `algorithm`.
 A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_, meaning that it's very difficult to generate multiple inputs that have equal digest values.
-You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string.
+You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string. On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
 
 | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ |
@@ -53,6 +86,11 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 | Name   | Type              | Description                                          |
 | ------ | ----------------- | ---------------------------------------------------- |
 | digest | `Promise<string>` | Resolves into a value representing the hashed input. |
+
+#### Error Codes
+
+- `ERR_CRYPTO_UNAVAILABLE` - (Web only) Access to the WebCrypto API is restricted to secure origins (https). You can run your web project from a secure origin with `expo start --https`.
+- `ERR_CRYPTO_DIGEST` - An invalid encoding type provided.
 
 **Example**
 
@@ -100,28 +138,12 @@ const digest = await Crypto.digestStringAsync(
 | -------- | ---------------- | -------------------------------- | ------ | ---------- | ------ |
 | encoding | `CryptoEncoding` | Format the digest is returned in | ✅     | ✅         | ✅     |
 
-# Usage
+## Error Codes
 
-```ts
-import React from 'react';
-import { View } from 'react-native';
-import * as Crypto from 'expo-crypto';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      'Github stars are neat 🌟'
-    );
-    console.log('Digest: ', digest);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
+| Code                   | Description                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| ERR_CRYPTO_UNAVAILABLE | (Web only) Access to the WebCrypto API is restricted to secure origins (https). |
+| ERR_CRYPTO_DIGEST      | An invalid encoding type provided.                                              |
 
 <!-- External Links -->
 

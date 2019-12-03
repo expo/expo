@@ -16,7 +16,7 @@
 @class GMSPanoramaView;
 @class UIImage;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * \defgroup MarkerAnimation GMSMarkerAnimation
@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
 @interface GMSMarker : GMSOverlay
 
 /** Marker position. Animated. */
-@property(nonatomic, assign) CLLocationCoordinate2D position;
+@property(nonatomic) CLLocationCoordinate2D position;
 
 /** Snippet text, shown beneath the title in the info window when selected. */
 @property(nonatomic, copy, nullable) NSString *snippet;
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  * anchors are specified.  For an animated image the value for the animation is used, not the
  * individual frames.
  */
-@property(nonatomic, strong, nullable) UIImage *icon;
+@property(nonatomic, nullable) UIImage *icon;
 
 /**
  * Marker view to render. If left nil, falls back to the |icon| property instead.
@@ -68,7 +68,7 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  *
  * Note that the view behaves as if |clipsToBounds| is set to YES, regardless of its actual value.
  */
-@property(nonatomic, strong, nullable) UIView *iconView;
+@property(nonatomic, nullable) UIView *iconView;
 
 /**
  * Controls whether the icon for this marker should be redrawn every frame.
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  * Defaults to YES.
  * Has no effect if |iconView| is nil.
  */
-@property(nonatomic, assign) BOOL tracksViewChanges;
+@property(nonatomic) BOOL tracksViewChanges;
 
 /**
  * Controls whether the info window for this marker should be redrawn every frame.
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  *
  * Defaults to NO.
  */
-@property(nonatomic, assign) BOOL tracksInfoWindowChanges;
+@property(nonatomic) BOOL tracksInfoWindowChanges;
 
 /**
  * The ground anchor specifies the point in the icon image that is anchored to the marker's position
@@ -98,31 +98,31 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  * If the image has non-zero alignmentRectInsets, the top-left and bottom-right mentioned above
  * refer to the inset section of the image.
  */
-@property(nonatomic, assign) CGPoint groundAnchor;
+@property(nonatomic) CGPoint groundAnchor;
 
 /**
  * The info window anchor specifies the point in the icon image at which to anchor the info window,
  * which will be displayed directly above this point. This point is specified within the same space
  * as groundAnchor.
  */
-@property(nonatomic, assign) CGPoint infoWindowAnchor;
+@property(nonatomic) CGPoint infoWindowAnchor;
 
 /**
  * Controls the animation used when this marker is placed on a GMSMapView (default
  * kGMSMarkerAnimationNone, no animation).
  */
-@property(nonatomic, assign) GMSMarkerAnimation appearAnimation;
+@property(nonatomic) GMSMarkerAnimation appearAnimation;
 
 /**
  * Controls whether this marker can be dragged interactively (default NO).
  */
-@property(nonatomic, assign, getter=isDraggable) BOOL draggable;
+@property(nonatomic, getter=isDraggable) BOOL draggable;
 
 /**
  * Controls whether this marker should be flat against the Earth's surface (YES) or a billboard
  * facing the camera (NO, default).
  */
-@property(nonatomic, assign, getter=isFlat) BOOL flat;
+@property(nonatomic, getter=isFlat) BOOL flat;
 
 /**
  * Sets the rotation of the marker in degrees clockwise about the marker's anchor point. The axis of
@@ -133,17 +133,17 @@ typedef NS_ENUM(NSUInteger, GMSMarkerAnimation) {
  * such that the marker always remains flat on the map. When the marker is a billboard, the default
  * position is pointing up and the rotation is such that the marker is always facing the camera.
  */
-@property(nonatomic, assign) CLLocationDegrees rotation;
+@property(nonatomic) CLLocationDegrees rotation;
 
 /**
  * Sets the opacity of the marker, between 0 (completely transparent) and 1 (default) inclusive.
  */
-@property(nonatomic, assign) float opacity;
+@property(nonatomic) float opacity;
 
 /**
  * Provides the Core Animation layer for this GMSMarker.
  */
-@property(nonatomic, strong, readonly) GMSMarkerLayer *layer;
+@property(nonatomic, readonly) GMSMarkerLayer *layer;
 
 /**
  * The |panoramaView| specifies which panorama view will attempt to show this marker.  Note that if
@@ -176,4 +176,4 @@ FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultGroundAnchor;
  */
 FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultInfoWindowAnchor;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

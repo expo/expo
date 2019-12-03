@@ -1,0 +1,23 @@
+{
+  "name": "EXNetwork",
+  "version": "2.0.0",
+  "summary": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
+  "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-network",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXNetwork/**/*.{h,m}",
+  "preserve_paths": "EXNetwork/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
+}

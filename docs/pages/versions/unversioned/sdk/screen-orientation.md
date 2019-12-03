@@ -1,5 +1,6 @@
 ---
 title: ScreenOrientation
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/ScreenOrientation"
 ---
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
@@ -30,6 +31,7 @@ import { ScreenOrientation } from 'expo';
 - [`ScreenOrientation.getOrientationLockAsync()`](#screenorientationgetorientationlockasync)
 - [`ScreenOrientation.getPlatformOrientationLockAsync()`](#screenorientationgetplatformorientationlockasync)
 - [`ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#screenorientationsupportsorientationlockasyncorientationlock)
+- [`ScreenOrientation.addOrientationChangeListener(listener)`](#screenorientationaddorientationchangelistenerlistener)
 - [`ScreenOrientation.removeOrientationChangeListeners()`](#screenorientationremoveorientationchangelisteners)
 - [`ScreenOrientation.removeOrientationChangeListener(subscription)`](#screenorientationremoveorientationchangelistenersubscription)
 
@@ -272,4 +274,3 @@ A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-r
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
 | ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK     | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
-

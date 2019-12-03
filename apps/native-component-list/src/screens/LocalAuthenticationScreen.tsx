@@ -32,9 +32,10 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
   authenticate = async () => {
     this.setState({ waiting: true });
     try {
-      const result = await LocalAuthentication.authenticateAsync(
-        'This message only shows up on iOS'
-      );
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'This message only shows up on iOS',
+        fallbackLabel: '',
+      });
       if (result.success) {
         alert('Authenticated!');
       } else {
@@ -43,7 +44,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
     } finally {
       this.setState({ waiting: false });
     }
-  }
+  };
 
   checkAuthenticationsTypes = async () => {
     const result = await LocalAuthentication.supportedAuthenticationTypesAsync();
@@ -55,18 +56,12 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
           case LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION:
             return 'FACIAL_RECOGNITION';
           default:
-            throw new Error(
-              `Unrecognised authentication type returned: '${type}'`
-            );
+            throw new Error(`Unrecognised authentication type returned: '${type}'`);
         }
       })
       .join(', ');
-    alert(
-      stringResult
-        ? `Available types: ${stringResult}`
-        : 'No available authentication types!'
-    );
-  }
+    alert(stringResult ? `Available types: ${stringResult}` : 'No available authentication types!');
+  };
 
   render() {
     const { hasHardware, isEnrolled } = this.state;
@@ -84,16 +79,14 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
           </Text>
         </View>
         <Button
+          style={{ margin: 5 }}
           onPress={this.authenticate}
-          title={
-            this.state.waiting
-              ? 'Waiting for authentication... '
-              : 'Authenticate'
-          }
+          title={this.state.waiting ? 'Waiting for authentication... ' : 'Authenticate'}
         />
         <Button
+          style={{ margin: 5 }}
           onPress={this.checkAuthenticationsTypes}
-          title="Check authentications types available on the device"
+          title="Check available authentications types"
         />
       </View>
     );

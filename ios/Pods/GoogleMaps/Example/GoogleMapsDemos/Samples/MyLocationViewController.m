@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/MyLocationViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -33,6 +29,7 @@
                                                                zoom:12];
 
   _mapView = [GMSMapView mapWithFrame:CGRectZero camera:camera];
+  _mapView.delegate = self;
   _mapView.settings.compassButton = YES;
   _mapView.settings.myLocationButton = YES;
 
@@ -45,9 +42,25 @@
   self.view = _mapView;
 
   // Ask for My Location data after the map has already been added to the UI.
+  GMSMapView *mapView = _mapView;
   dispatch_async(dispatch_get_main_queue(), ^{
-    _mapView.myLocationEnabled = YES;
+    mapView.myLocationEnabled = YES;
   });
+}
+
+- (void)mapView:(GMSMapView *)mapView didTapMyLocation:(CLLocationCoordinate2D)location {
+  NSString *message = [NSString stringWithFormat:@"My Location Dot Tapped at: [lat: %f, lng: %f]",
+                                                 location.latitude, location.longitude];
+  UIAlertController *alertController =
+      [UIAlertController alertControllerWithTitle:@"Location Tapped"
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction *action){
+                                                   }];
+  [alertController addAction:okAction];
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)dealloc {
@@ -63,7 +76,7 @@
                         change:(NSDictionary *)change
                        context:(void *)context {
   if (!_firstLocationUpdate) {
-    // If the first location update has not yet been recieved, then jump to that
+    // If the first location update has not yet been received, then jump to that
     // location.
     _firstLocationUpdate = YES;
     CLLocation *location = [change objectForKey:NSKeyValueChangeNewKey];

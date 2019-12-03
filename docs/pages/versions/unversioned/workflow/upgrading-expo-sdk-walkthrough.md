@@ -8,6 +8,31 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
 
+## SDK 35
+
+[Blog Post](https://blog.expo.io/expo-sdk-35-is-now-available-beee0dfafbf4)
+
+#### Upgrade from SDK 34
+
+- Run `expo update 35.0.0`
+
+#### Notes
+
+- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+
+## SDK 34
+
+[Blog Post](https://blog.expo.io/expo-sdk-34-is-now-available-4f7825239319)
+
+#### Upgrade from SDK 33
+
+- Run `expo update 34.0.0`
+
+#### Notes
+
+- You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
+- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+
 ## SDK 33
 
 [Blog Post](https://blog.expo.io/expo-sdk-v33-0-0-is-now-available-52d1c99dfe4c)
@@ -46,6 +71,17 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
   "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
   "expo": "^32.0.0",
   "react": "16.5.0"
+}
+```
+
+- If using the default `.babelrc`, change it to `babel.config.js`:
+
+```javascript
+module.exports = function (api) {
+  api.cache(true)
+  return {
+    presets: ['babel-preset-expo']
+  }
 }
 ```
 
@@ -278,7 +314,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 #### Notes
 
-- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component. [See a Snack example here](https://snack.expo.io/@notbrent/imagebackground-example).
+- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component. [See a Snack example here](https://snack.expo.io/@notbrent/imagebackground-example?platform=ios).
 
 - React Native now defaults `enableBabelRCLookup` (recursive) to false in Metro bundler (the packager used by React Native / Expo). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 

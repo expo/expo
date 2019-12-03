@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "Utilities for using Processing.js on Expo",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "expo",
     "processing.js",
@@ -15,7 +12,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-processing"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

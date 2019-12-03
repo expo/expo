@@ -26,24 +26,7 @@
 
 + (NSString *)javaScriptCachePath
 {
-  NSString *cachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-  NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:@"Sources"];
-  
-  BOOL cacheDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:sourceDirectory isDirectory:nil];
-  if (!cacheDirectoryExists) {
-    NSError *error;
-    BOOL created = [[NSFileManager defaultManager] createDirectoryAtPath:sourceDirectory
-                                             withIntermediateDirectories:YES
-                                                              attributes:nil
-                                                                   error:&error];
-    if (created) {
-      cacheDirectoryExists = YES;
-    } else {
-      DDLogError(@"Could not create source cache directory: %@", error.localizedDescription);
-    }
-  }
-  
-  return (cacheDirectoryExists) ? sourceDirectory : nil;
+  return [[self class] cachePathWithName:@"Sources"];
 }
 
 + (NSURLCache *)javaScriptCache

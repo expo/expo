@@ -321,10 +321,10 @@ export function test(t) {
       });
       */
 
-      t.it('ensure that we correctly detect our supported orientationLocks', async () => {
+      t.it('supports accepted orientation locks', async () => {
         // orientation locks that we should be able to apply
         const acceptedLocks = [
-          ScreenOrientation.OrientationLock.ALL,
+          ScreenOrientation.OrientationLock.DEFAULT,
           ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
         ];
 
@@ -332,12 +332,16 @@ export function test(t) {
           const supported = await ScreenOrientation.supportsOrientationLockAsync(lock);
           t.expect(supported).toBe(true);
         }
+      });
 
+      t.it("doesn't support unsupported orientation locks", async () => {
         // This is not a lock policy that we can apply
         const unsupportedLock = ScreenOrientation.OrientationLock.OTHER;
         const supported = await ScreenOrientation.supportsOrientationLockAsync(unsupportedLock);
         t.expect(supported).toBe(false);
+      });
 
+      t.it('throws an error when asked for non-lock values', async () => {
         // Expect non-lock values to throw an error
         const notLocks = ['FOO', 3];
         for (const notLock of notLocks) {

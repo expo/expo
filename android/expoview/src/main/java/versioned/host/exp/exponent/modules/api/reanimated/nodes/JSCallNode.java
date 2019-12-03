@@ -24,7 +24,12 @@ public class JSCallNode extends Node {
       if (node.value() == null) {
         args.pushNull();
       } else {
-        args.pushDouble(node.doubleValue());
+        Object value = node.value();
+        if (value instanceof String) {
+          args.pushString((String) value);
+        } else {
+          args.pushDouble(node.doubleValue());
+        }
       }
     }
     WritableMap eventData = Arguments.createMap();

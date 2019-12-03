@@ -2,7 +2,7 @@
 
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
 

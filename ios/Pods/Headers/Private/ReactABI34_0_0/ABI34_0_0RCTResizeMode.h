@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI34_0_0/Libraries/Image/ABI34_0_0RCTResizeMode.h

@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
 }
@@ -14,7 +14,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '5.0.0'
+version = '8.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -108,26 +108,34 @@ task prepareJSC(dependsOn: downloadJSC) {
   }
 }
 
-task buildNdkLib(dependsOn: prepareJSC, type: Exec) {
+task buildNdkLib(dependsOn: prepareJSC) {
   inputs.dir('src/main/jni')
   inputs.dir('../cpp')
   outputs.dir("$buildDir/expo-gl-ndk/all")
 
-  commandLine getNdkBuildFullPath(),
-      'NDK_PROJECT_PATH=null',
-      "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-      "NDK_OUT=$temporaryDir",
-      "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
-      "JSC_DIR=$buildDir/jsc",
-      '-C', file('src/main/jni').absolutePath,
-      '--jobs', Runtime.runtime.availableProcessors()
+  doLast {
+    exec {
+      commandLine getNdkBuildFullPath(),
+          'NDK_PROJECT_PATH=null',
+          "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+          "NDK_OUT=$temporaryDir",
+          "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
+          "JSC_DIR=$buildDir/jsc",
+          '-C', file('src/main/jni').absolutePath,
+          '--jobs', Runtime.runtime.availableProcessors()
+    }
+  }
 }
 
-task cleanNdkLib(type: Exec) {
-  commandLine getNdkBuildFullPath(),
-      "JSC_DIR=$buildDir/jsc",
-      '-C', file('src/main/jni').absolutePath,
-      'clean'
+task cleanNdkLib {
+  doLast {
+    exec {
+      commandLine getNdkBuildFullPath(),
+          "JSC_DIR=$buildDir/jsc",
+          '-C', file('src/main/jni').absolutePath,
+          'clean'
+    }
+  }
 }
 
 task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
@@ -170,11 +178,11 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 15
-    versionName "5.0.0"
+    versionCode 20
+    versionName "8.0.0"
 
     ndk {
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86-64'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
       moduleName 'expo-gl'
     }
 

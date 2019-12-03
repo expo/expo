@@ -20,7 +20,6 @@ static NSString *const EXAdsAdMobRewardedWillLeaveApplication = @"rewardedVideoW
 
 @implementation EXAdsAdMobRewarded {
   NSString *_adUnitID;
-  NSString *_testDeviceID;
   BOOL _hasListeners;
   UMPromiseResolveBlock _requestAdResolver;
   UMPromiseRejectBlock _requestAdRejecter;
@@ -71,17 +70,9 @@ UM_EXPORT_METHOD_AS(setAdUnitID,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTestDeviceID,
-                    setTestDeviceID:(NSString *)testDeviceID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  _testDeviceID = testDeviceID;
-  resolve(nil);
-}
-
 UM_EXPORT_METHOD_AS(requestAd,
-                    requestAd:(UMPromiseResolveBlock)resolve
+                    requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+                    resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_requestAdRejecter == nil) {
@@ -89,12 +80,10 @@ UM_EXPORT_METHOD_AS(requestAd,
     _requestAdRejecter = reject;
     [GADRewardBasedVideoAd sharedInstance].delegate = self;
     GADRequest *request = [GADRequest request];
-    if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
+    if (additionalRequestParams) {
+      GADExtras *extras = [[GADExtras alloc] init];
+      extras.additionalParameters = additionalRequestParams;
+      [request registerAdNetworkExtras:extras];
     }
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{

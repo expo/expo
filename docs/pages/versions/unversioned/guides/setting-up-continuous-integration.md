@@ -404,11 +404,11 @@ publish: &publish
 
     - run:
         name: Login into Expo
-        command: npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+        command: npx expo-cli login -u $EXPO_USERNAME -p $EXPO_PASSWORD
 
     - run:
         name: Publish to Expo
-        command: npx expo publish --non-interactive --max-workers 1 --release-channel $EXPO_RELEASE_CHANNEL
+        command: npx expo-cli publish --non-interactive --max-workers 1 --release-channel $EXPO_RELEASE_CHANNEL
 
 jobs:
   publish_to_expo_dev:

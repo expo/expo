@@ -1,12 +1,13 @@
 ---
 title: FaceDetector
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-face-detector"
 ---
 
 `FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-face-detector).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-face-detector`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-face-detector).
 
 ## Usage
 
@@ -16,7 +17,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ### Comprehensive Example
 
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@community/camerja](https://expo.io/@community/camerja).
+Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.io/@documentation/camerja).
 
 `FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
 
@@ -37,6 +38,8 @@ In order to configure detector's behavior modules pass a settings object which i
 - **mode? (_FaceDetector.Constants.Mode_)** -- Whether to detect faces in fast or accurate mode. Use `FaceDetector.Constants.Mode.{fast, accurate}`.
 - **detectLandmarks? (_FaceDetector.Constants.Landmarks_)** -- Whether to detect and return landmarks positions on the face (ears, eyes, mouth, cheeks, nose). Use `FaceDetector.Constants.Landmarks.{all, none}`.
 - **runClassifications? (_FaceDetector.Constants.Classifications_)** -- Whether to run additional classifications on detected faces (smiling probability, open eye probabilities). Use `FaceDetector.Constants.Classifications.{all, none}`.
+- **minDetectionInterval? (_long_)** -- Minimal interval in milliseconds between two face detection events being submitted to JS. Defaults to 0. Use, when you expect lots of faces for long time and are afraid of JS Bridge being overloaded.
+- **tracking? (_boolean_)** - Flag to enable tracking of faces between frames. If true, each face will be returned with `faceID` attribute which should be consistent across frames. Defaults to `false`;
 
 Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
 
@@ -50,6 +53,8 @@ import * as FaceDetector from 'expo-face-detector';
     mode: FaceDetector.Constants.Mode.fast,
     detectLandmarks: FaceDetector.Constants.Landmarks.none,
     runClassifications: FaceDetector.Constants.Classifications.none,
+    minDetectionInterval: 100,
+    tracking: true,
   }}
 />;
 ```
@@ -114,7 +119,7 @@ Detect faces on a picture.
 
 Returns a Promise that resolves to an object: `{ faces, image }` where `faces` is an array of the detected faces and `image` is an object containing `uri: string` of the image, `width: number` of the image in pixels, `height: number` of the image in pixels and `orientation: number` of the image (value conforms to the EXIF orientation tag standard).
 
-##### Detected face schema
+#### Detected face schema
 
 A detected face is an object containing at most following fields:
 

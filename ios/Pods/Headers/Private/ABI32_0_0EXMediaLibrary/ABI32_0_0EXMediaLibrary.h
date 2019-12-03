@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/EXMediaLibrary/ABI32_0_0EXMediaLibrary/ABI32_0_0EXMediaLibrary.h

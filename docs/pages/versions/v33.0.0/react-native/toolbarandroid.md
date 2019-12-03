@@ -11,7 +11,6 @@ Although the Toolbar supports remote images for the logo, navigation and action 
 
 Example:
 
-
 ```javascript
 
 render: function() {
@@ -30,7 +29,6 @@ onActionSelected: function(position) {
 }
 
 ```
-
 
 [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
 
@@ -178,8 +176,8 @@ Sets the toolbar subtitle.
 
 Sets the toolbar subtitle color.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -208,7 +206,6 @@ Sets the toolbar title.
 
 Sets the toolbar title color.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
-

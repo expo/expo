@@ -16,17 +16,20 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 
+import javax.annotation.Nonnull;
+
 class SvgViewModule extends ReactContextBaseJavaModule {
     SvgViewModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return "RNSVGSvgViewManager";
     }
 
-    static public void toDataURL(final int tag, final ReadableMap options, final Callback successCallback, final int attempt) {
+    private static void toDataURL(final int tag, final ReadableMap options, final Callback successCallback, final int attempt) {
         UiThreadUtil.runOnUiThread(
                 new Runnable() {
                     @Override
@@ -49,7 +52,7 @@ class SvgViewModule extends ReactContextBaseJavaModule {
                                     });
                                 }
                             });
-                        } else if (!svg.isRendered()) {
+                        } else if (svg.notRendered()) {
                             svg.setToDataUrlTask(new Runnable() {
                                 @Override
                                 public void run() {
@@ -73,6 +76,7 @@ class SvgViewModule extends ReactContextBaseJavaModule {
         );
     }
 
+    @SuppressWarnings("unused")
     @ReactMethod
     public void toDataURL(int tag, ReadableMap options, Callback successCallback) {
         toDataURL(tag, options, successCallback, 0);

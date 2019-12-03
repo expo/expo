@@ -36,7 +36,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...); \
  */
 #define EX_DECLARE_SCOPED_MODULE_GETTER(className, getter) \
 @interface EXScopedModuleRegistry (className) \
-@property (nonatomic, readonly) className *getter; \
+@property (nonatomic, readonly) className *__nonnull getter; \
 @end\
 
 /**

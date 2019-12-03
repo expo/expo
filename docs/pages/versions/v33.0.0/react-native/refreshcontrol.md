@@ -7,7 +7,6 @@ This component is used inside a ScrollView or ListView to add pull to refresh fu
 
 ### Usage example
 
-
 ```javascript
 
 import { ScrollView, RefreshControl } from 'react-native';
@@ -44,7 +43,6 @@ class RefreshableList extends Component {
 }
 
 ```
-
 
 **Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.
 
@@ -93,8 +91,8 @@ Called when the view starts refreshing.
 
 The colors (at least one) that will be used to draw the refresh indicator.
 
-| Type                        | Required | Platform |
-| --------------------------- | -------- | -------- |
+| Type                         | Required | Platform |
+| ---------------------------- | -------- | -------- |
 | array of [color](../colors/) | No       | Android  |
 
 ---
@@ -113,8 +111,8 @@ Whether the pull to refresh functionality is enabled.
 
 The background color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -143,8 +141,8 @@ Size of the refresh indicator, see RefreshControl.SIZE.
 
 The color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -163,7 +161,6 @@ The title displayed under the refresh indicator.
 
 Title color.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
-

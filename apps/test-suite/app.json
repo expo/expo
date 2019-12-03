@@ -5,9 +5,15 @@
     "slug": "test-suite",
     "version": "1.0.0",
     "sdkVersion": "UNVERSIONED",
-    "platforms": ["android", "ios"],
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "packagerOpts": {
-      "assetExts": ["db"],
+      "assetExts": [
+        "db"
+      ],
       "config": "metro.config.js"
     },
     "ios": {

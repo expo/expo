@@ -40,9 +40,9 @@ UM_VIEW_PROPERTY(adUnitID, NSString *, EXAdsDFPBannerView)
   [view setAdUnitID:value];
 }
 
-UM_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsDFPBannerView)
+UM_VIEW_PROPERTY(additionalRequestParams, NSDictionary *, EXAdsDFPBannerView)
 {
-  [view setTestDeviceID:value];
+  [view setAdditionalRequestParams:value];
 }
 
 @end

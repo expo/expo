@@ -1,104 +1,79 @@
-module.exports = function(api, options) {
+const lazyImportsBlacklist = require('./lazy-imports-blacklist');
+
+module.exports = function(api, options = {}) {
+  const { web = {}, native = {} } = options;
   const isWeb = api.caller(isTargetWeb);
+  const platformOptions = isWeb
+    ? { disableImportExportTransform: true, ...web }
+    : { disableImportExportTransform: false, ...native };
 
-  if (isWeb) {
-    return getWebConfig(options.web);
-  }
-
-  return getNativeConfig();
-};
-
-function getNativeConfig() {
-  return {
-    presets: ['module:metro-react-native-babel-preset'],
-    plugins: [
-      [
-        'babel-plugin-module-resolver',
-        {
-          alias: {
-            'react-native-vector-icons': '@expo/vector-icons',
-          },
-        },
-      ],
-      ['@babel/plugin-proposal-decorators', { legacy: true }],
-    ],
-  };
-}
-
-function getWebConfig(options = {}) {
-  const defaultPlugins = [
-    ['@babel/plugin-transform-flow-strip-types'],
-    [
-      'babel-plugin-module-resolver',
-      {
-        alias: {
-          'react-native-vector-icons': '@expo/vector-icons',
-        },
-      },
-    ],
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
-    [
-      '@babel/plugin-proposal-class-properties',
-      // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-      { loose: true },
-    ],
-    ['@babel/plugin-syntax-dynamic-import'],
-    ['@babel/plugin-transform-react-jsx'],
-    ['babel-plugin-react-native-web'],
-  ];
-
-  const otherPlugins = [
-    ['@babel/plugin-proposal-export-default-from'],
-    ['@babel/plugin-transform-object-assign'],
-    ['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-react-display-name'],
-    ['@babel/plugin-transform-react-jsx-source'],
-    options.transformImportExport && ['@babel/plugin-transform-modules-commonjs'],
-  ].filter(Boolean);
+  // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
+  // `metro-react-native-babel-preset` will handle it.
+  const lazyImportsOption = options && options.lazyImports;
 
   return {
-    comments: false,
-    compact: true,
-
     presets: [
       [
-        '@babel/preset-env',
+        // We use `require` here instead of directly using the package name because we want to
+        // specifically use the `metro-react-native-babel-preset` installed by this package (ex:
+        // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
+        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
+        require('metro-react-native-babel-preset'),
         {
-          modules: false,
-          targets: {
-            esmodules: true,
-          },
+          disableImportExportTransform: platformOptions.disableImportExportTransform,
+          lazyImportExportTransform:
+            lazyImportsOption === true
+              ? importModuleSpecifier => {
+                  // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
+                  // behavior) or are in the blacklist.
+                  return !(
+                    importModuleSpecifier.includes('./') ||
+                    lazyImportsBlacklist.has(importModuleSpecifier)
+                  );
+                }
+              : // Pass the option directly to `metro-react-native-babel-preset`, which in turn
+                // passes it to `babel-plugin-transform-modules-commonjs`
+                lazyImportsOption,
         },
       ],
     ],
-    overrides: [
-      {
-        plugins: defaultPlugins,
-      },
-      {
-        test: isTypeScriptSource,
-        plugins: [['@babel/plugin-transform-typescript', { isTSX: false }]],
-      },
-      {
-        test: isTSXSource,
-        plugins: [['@babel/plugin-transform-typescript', { isTSX: true }]],
-      },
-      {
-        plugins: otherPlugins,
-      },
-    ],
+    plugins: [
+      getAliasPlugin(),
+      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
+      isWeb && [require.resolve('babel-plugin-react-native-web')],
+    ].filter(Boolean),
   };
+};
+
+function getAliasPlugin() {
+  let aliases = {};
+
+  if (hasModule('@expo/vector-icons')) {
+    aliases['react-native-vector-icons'] = '@expo/vector-icons';
+  }
+
+  if (Object.keys(aliases).length) {
+    return [
+      require.resolve('babel-plugin-module-resolver'),
+      {
+        alias: aliases,
+      },
+    ];
+  }
+  return null;
+}
+
+function hasModule(name) {
+  try {
+    return !!require.resolve(name);
+  } catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 function isTargetWeb(caller) {
   return caller && caller.name === 'babel-loader';
-}
-
-function isTypeScriptSource(fileName) {
-  return !!fileName && fileName.endsWith('.ts');
-}
-
-function isTSXSource(fileName) {
-  return !!fileName && fileName.endsWith('.tsx');
 }

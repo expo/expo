@@ -1,9 +1,12 @@
 /* @flow */
 
 import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
+import React, { useEffect } from 'react';
 import { graphql } from 'react-apollo';
 
 import Profile from '../components/Profile';
+import SessionActions from '../redux/SessionActions';
 
 const MyProfileQuery = gql`
   query Home_MyProfile {
@@ -22,7 +25,6 @@ const MyProfileQuery = gql`
         fullName
         iconUrl
         lastPublishedTime
-        likeCount
         name
         packageName
         privacy
@@ -33,30 +35,39 @@ const MyProfileQuery = gql`
         fullName
         slug
       }
-      likes(limit: 15, offset: 0) {
-        id
-      }
     }
   }
 `;
 
-export default graphql(MyProfileQuery, {
-  props: props => {
-    let { data } = props;
-    let user;
-    if (data.me) {
-      user = data.me;
-    }
+function withAuthSessionVerification(Component) {
+  return function AuthSessionVerification(props) {
+    const { loading, error, user } = props.data;
 
-    return {
-      ...props,
-      data: {
-        ...data,
-        user,
-      },
-    };
-  },
-  options: {
-    fetchPolicy: 'cache-and-network',
-  },
-})(Profile);
+    // We verify that the viewer is logged in when we receive data from the server; if the viewer
+    // isn't logged in, we clear our locally stored credentials
+    useEffect(() => {
+      if (!loading && !error && !user) {
+        props.dispatch(SessionActions.signOut());
+      }
+    }, [loading, error, user]);
+    return <Component {...props} />;
+  };
+}
+
+export default flowRight(
+  graphql(MyProfileQuery, {
+    props(props) {
+      return {
+        ...props,
+        data: {
+          ...props.data,
+          user: props.data.me,
+        },
+      };
+    },
+    options: {
+      fetchPolicy: 'cache-and-network',
+    },
+  }),
+  withAuthSessionVerification
+)(Profile);

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/EXReactNativeAdapter/ABI32_0_0EXReactNativeAdapter/EXModuleRegistryAdapter/ABI32_0_0EXViewManagerAdapterClassesRegistry.h

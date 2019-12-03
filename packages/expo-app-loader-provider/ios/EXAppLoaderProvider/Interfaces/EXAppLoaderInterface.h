@@ -6,6 +6,6 @@
 
 - (nonnull id<EXAppRecordInterface>)loadAppWithUrl:(nonnull NSString *)url
                                            options:(nullable NSDictionary *)options
-                                          callback:(void(^)(BOOL success, NSError *error))callback;
+                                          callback:(nullable void(^)(BOOL success, NSError * _Nullable error))callback;
 
 @end

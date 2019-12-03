@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
 import android.location.Address;
 import android.location.Geocoder;
@@ -18,7 +17,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
+
 import android.util.Log;
 
 import com.google.android.gms.common.api.ApiException;
@@ -52,7 +53,10 @@ import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsResponse;
+import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationRequestTimeoutException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -102,7 +106,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   // modules
   private EventEmitter mEventEmitter;
   private UIManager mUIManager;
-  private Permissions mPermissions;
+  private Permissions mPermissionsManager;
   private TaskManagerInterface mTaskManager;
   private ActivityProvider mActivityProvider;
 
@@ -135,7 +139,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
-    mPermissions = moduleRegistry.getModule(Permissions.class);
+    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
 
@@ -145,6 +149,45 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   //region Expo methods
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.askForPermissions(result -> {
+      promise.resolve(handleLocationPermissions(result));
+    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.getPermissions(result -> {
+      promise.resolve(handleLocationPermissions(result));
+    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
+
+  @ExpoMethod
+  public void getLastKnownPositionAsync(final Promise promise) {
+    // Check for permissions
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    getLastKnownLocation(null, location -> {
+      if (location == null) {
+        promise.reject("E_LAST_KNOWN_LOCATION_NOT_FOUND", "Last known location not found.", null);
+        return;
+      }
+      promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
+    });
+  }
 
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
@@ -347,33 +390,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissions == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-
-    mPermissions.askForPermissions(
-        new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        },
-        new Permissions.PermissionsRequestListener() {
-          @Override
-          public void onPermissionsResult(int[] results) {
-            for (int result : results) {
-              // we need at least one of asked permissions to be granted
-              if (result == PackageManager.PERMISSION_GRANTED) {
-                promise.resolve(null);
-                return;
-              }
-            }
-            promise.reject(new LocationUnauthorizedException());
-          }
-        });
-  }
-
-  @ExpoMethod
   public void enableNetworkProviderAsync(final Promise promise) {
     if (LocationHelpers.hasNetworkProviderEnabled(mContext)) {
       promise.resolve(null);
@@ -497,11 +513,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region private methods
 
   private boolean isMissingPermissions() {
-    return mPermissions == null
-        || (
-        mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-    );
+    return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
@@ -748,6 +760,36 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
+  private Bundle handleLocationPermissions(Map<String, PermissionsResponse> result) {
+    PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+    PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+    PermissionsStatus status = PermissionsStatus.UNDETERMINED;
+    String scope = "none";
+    Boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
+
+    if (accessFineLocation.getStatus() == PermissionsStatus.GRANTED) {
+      scope = "fine";
+      status = PermissionsStatus.GRANTED;
+    } else if (accessCoarseLocation.getStatus() == PermissionsStatus.GRANTED) {
+      scope = "coarse";
+      status = PermissionsStatus.GRANTED;
+    } else if (accessFineLocation.getStatus() == PermissionsStatus.DENIED && accessCoarseLocation.getStatus() == PermissionsStatus.DENIED) {
+      status = PermissionsStatus.DENIED;
+    }
+
+    Bundle resultBundle = new Bundle();
+    Bundle scopeBundle = new Bundle();
+
+    scopeBundle.putString("scope", scope);
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
+    resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+    resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
+    resultBundle.putBundle("android", scopeBundle);
+
+    return resultBundle;
+  }
+
   //endregion
   //region SensorEventListener
 
@@ -781,7 +823,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   @Override
-  public void onNewIntent(Intent intent) {}
+  public void onNewIntent(Intent intent) {
+  }
 
   //endregion
   //region LifecycleEventListener

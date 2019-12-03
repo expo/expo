@@ -1,12 +1,96 @@
 ---
 title: Accelerometer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
 ---
 
-Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
+import SnackInline from '~/components/plugins/SnackInline';
+
+Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space. Note that the accelerometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## Example Usage
+
+<SnackInline label="Basic Accelerometer usage" templateId="accelerometer" dependencies={["expo-sensors"]}>
+
+```js
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Accelerometer } from 'expo-sensors';
+
+export default function App() {
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    _toggle();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      _unsubscribe();
+    };
+  }, []);
+
+  const _toggle = () => {
+    if (this._subscription) {
+      _unsubscribe();
+    } else {
+      _subscribe();
+    }
+  };
+
+  const _slow = () => {
+    Accelerometer.setUpdateInterval(1000);
+  };
+
+  const _fast = () => {
+    Accelerometer.setUpdateInterval(16);
+  };
+
+  const _subscribe = () => {
+    this._subscription = Accelerometer.addListener(accelerometerData => {
+      setData(accelerometerData);
+    });
+  };
+
+  const _unsubscribe = () => {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  };
+
+  let { x, y, z } = data;
+  return (
+    <View style={styles.sensor}>
+      <Text style={styles.text}>Accelerometer: (in Gs where 1 G = 9.81 m s^-2)</Text>
+      <Text style={styles.text}>
+        x: {round(x)} y: {round(y)} z: {round(z)}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={_toggle} style={styles.button}>
+          <Text>Toggle</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
+          <Text>Slow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_fast} style={styles.button}>
+          <Text>Fast</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function round(n) {
+  if (!n) {
+    return 0;
+  }
+
+  return Math.floor(n * 100) / 100;
+}
+```
+</SnackInline>
 
 ## API
 
@@ -14,9 +98,22 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Accelerometer } from 'expo-sensors';
 ```
 
+**[Methods](#methods)**
+
+- [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
+- [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
+- [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
+- [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+
+## Methods
+
 ### `Accelerometer.isAvailableAsync()`
 
+> You should always check the sensor availability before attempting to use it.
+
 Returns whether the accelerometer is enabled on the device.
+
+On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
 
 #### Returns
 
@@ -31,7 +128,7 @@ Subscribe for updates to the accelerometer.
 - **listener (_function_)** -- A callback that is invoked when an
   accelerometer update is available. When invoked, the listener is
   provided a single argument that is an object containing keys x, y,
-  z.
+  z. Each of these keys represents the acceleration along that particular axis in Gs (A G is a unit of gravitational force equal to that exerted by the earth’s gravitational field (9.81 m s<sup>-2</sup>).
 
 #### Returns
 
@@ -56,7 +153,7 @@ Subscribe for updates to the accelerometer.
 ```javascript
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Accelerometer } from 'expo';
+import { Accelerometer } from 'expo-sensors';
 
 export default class AccelerometerSensor extends React.Component {
   state = {
@@ -80,44 +177,32 @@ export default class AccelerometerSensor extends React.Component {
   };
 
   _slow = () => {
-    /* @info Request updates every 1000ms */ Accelerometer.setUpdateInterval(1000); /* @end */
+    Accelerometer.setUpdateInterval(1000);
   };
 
   _fast = () => {
-    /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */ Accelerometer.setUpdateInterval(
-      16
-    ); /* @end */
+    Accelerometer.setUpdateInterval(16);
   };
 
   _subscribe = () => {
-    /* @info Subscribe to events and update the component state with the new data from the Accelerometer. We save the subscription object away so that we can remove it when the component is unmounted*/ this._subscription = Accelerometer.addListener(
-      accelerometerData => {
-        this.setState({ accelerometerData });
-      }
-    ); /* @end */
+    this._subscription = Accelerometer.addListener(accelerometerData => {
+      this.setState({ accelerometerData });
+    });
   };
 
   _unsubscribe = () => {
-    /* @info Be sure to unsubscribe from events when the component is unmounted */ this
-      ._subscription && this._subscription.remove(); /* @end */
-
+    this._subscription && this._subscription.remove();
     this._subscription = null;
   };
 
   render() {
-    /* @info A data point is provided for each of the x, y, and z axes */ let {
-      x,
-      y,
-      z,
-    } = this.state.accelerometerData; /* @end */
-
+    let { x, y, z } = this.state.accelerometerData;
     return (
       <View style={styles.sensor}>
-        <Text>Accelerometer:</Text>
-        <Text>
+        <Text style={styles.text}>Accelerometer: (in Gs where 1 G = 9.81 m s^-2)</Text>
+        <Text style={styles.text}>
           x: {round(x)} y: {round(y)} z: {round(z)}
         </Text>
-
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
             <Text>Toggle</Text>
@@ -143,9 +228,6 @@ function round(n) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'stretch',
@@ -164,9 +246,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
   sensor: {
-    marginTop: 15,
+    marginTop: 45,
     paddingHorizontal: 10,
   },
+  text:{
+    textAlign: 'center'
+  }
 });
 ```
 

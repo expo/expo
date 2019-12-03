@@ -1,5 +1,6 @@
 ---
 title: AV
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
 ---
 
 The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
@@ -10,7 +11,7 @@ Try the [playlist example app](http://expo.io/@community/playlist) (source code 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-av`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
 
 ## API
 
@@ -277,7 +278,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
   - `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
   - `positionMillis` : the desired position of playback in milliseconds.
-  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)_
+  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `seekMillisToleranceAfter` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
   - `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
@@ -315,7 +316,7 @@ This default initial status can be overwritten by setting the optional `initialS
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 
-If you matter about the precision more than about the delay, you can specify the tolerance with which the player will seek according to your needs.
+If precision is important, you can specify the tolerance with which the player will seek. However, this will result in an increased delay.
 
 ## Example usage
 

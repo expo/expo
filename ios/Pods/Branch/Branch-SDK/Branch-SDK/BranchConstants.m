@@ -60,6 +60,8 @@ NSString * const BRANCH_REQUEST_KEY_SCREEN_HEIGHT = @"screen_height";
 NSString * const BRANCH_REQUEST_KEY_IS_SIMULATOR = @"is_simulator";
 NSString * const BRANCH_REQUEST_KEY_LOG = @"log";
 NSString * const BRANCH_REQUEST_KEY_INSTRUMENTATION = @"instrumentation";
+NSString * const BRANCH_REQUEST_KEY_APPLE_RECEIPT = @"apple_receipt";
+NSString * const BRANCH_REQUEST_KEY_APPLE_TESTFLIGHT = @"apple_testflight";
 
 NSString * const BRANCH_REQUEST_ENDPOINT_SET_IDENTITY = @"profile";
 NSString * const BRANCH_REQUEST_ENDPOINT_APP_LINK_SETTINGS = @"app-link-settings";
@@ -73,6 +75,8 @@ NSString * const BRANCH_REQUEST_ENDPOINT_CLOSE = @"close";
 NSString * const BRANCH_REQUEST_ENDPOINT_OPEN = @"open";
 NSString * const BRANCH_REQUEST_ENDPOINT_INSTALL = @"install";
 NSString * const BRANCH_REQUEST_ENDPOINT_REGISTER_VIEW = @"register-view";
+NSString * const BRANCH_REQUEST_ENDPOINT_CPID = @"cpid";
+NSString * const BRANCH_REQUEST_ENDPOINT_LATD = @"cpid/latd";
 
 NSString * const BRANCH_RESPONSE_KEY_BRANCH_IDENTITY = @"identity_id";
 NSString * const BRANCH_RESPONSE_KEY_SESSION_ID = @"session_id";

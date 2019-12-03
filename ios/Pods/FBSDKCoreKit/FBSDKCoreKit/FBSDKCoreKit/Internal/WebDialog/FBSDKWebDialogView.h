@@ -20,6 +20,7 @@
 
 @protocol FBSDKWebDialogViewDelegate;
 
+NS_SWIFT_NAME(FBWebDialogView)
 @interface FBSDKWebDialogView : UIView
 
 @property (nonatomic, weak) id<FBSDKWebDialogViewDelegate> delegate;
@@ -29,6 +30,7 @@
 
 @end
 
+NS_SWIFT_NAME(WebDialogViewDelegate)
 @protocol FBSDKWebDialogViewDelegate <NSObject>
 
 - (void)webDialogView:(FBSDKWebDialogView *)webDialogView didCompleteWithResults:(NSDictionary *)results;

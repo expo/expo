@@ -3,14 +3,14 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { withNavigation } from 'react-navigation';
+import { useTheme, withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
 import SmallProjectCard from './SmallProjectCard';
 
 @withNavigation
-export default class ProjectList extends React.PureComponent {
+class ProjectList extends React.PureComponent {
   state = {
     isReady: false,
     isRefetching: false,
@@ -46,19 +46,25 @@ export default class ProjectList extends React.PureComponent {
     if (!this.state.isReady) {
       return (
         <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-          <ActivityIndicator />
+          <ActivityIndicator color={Colors.light.tintColor} />
         </View>
       );
     }
   };
 
   _renderContent = () => {
+    let { theme } = this.props;
+
     return (
       <FlatList
         data={this.props.data.apps}
         keyExtractor={this._extractKey}
         renderItem={this._renderItem}
-        style={[{ flex: 1 }, !this.props.belongsToCurrentUser && styles.largeProjectCardList]}
+        style={[
+          { flex: 1 },
+          !this.props.belongsToCurrentUser && styles.largeProjectCardList,
+          { backgroundColor: theme === 'dark' ? '#000' : Colors.light.greyBackground },
+        ]}
         renderScrollComponent={props => {
           // note(brent): renderScrollComponent is passed on to
           // InfiniteScrollView so it renders itself again and the result is two
@@ -71,7 +77,7 @@ export default class ProjectList extends React.PureComponent {
           if (props.renderLoadingIndicator) {
             return <ScrollView {...props} />;
           } else {
-            return <InfiniteScrollView {...props} />
+            return <InfiniteScrollView {...props} />;
           }
         }}
         canLoadMore={this._canLoadMore()}
@@ -110,7 +116,6 @@ export default class ProjectList extends React.PureComponent {
           key={index.toString()}
           hideUsername
           iconUrl={app.iconUrl}
-          likeCount={app.likeCount}
           projectName={app.name}
           slug={app.packageName}
           projectUrl={app.fullName}
@@ -122,8 +127,6 @@ export default class ProjectList extends React.PureComponent {
         <ProjectCard
           key={index}
           style={styles.largeProjectCard}
-          isLikedByMe={app.isLikedByMe}
-          likeCount={app.likeCount}
           id={app.id}
           iconUrl={app.iconUrl}
           projectName={app.name}
@@ -141,11 +144,17 @@ export default class ProjectList extends React.PureComponent {
   };
 }
 
+export default props => {
+  let theme = useTheme();
+
+  return <ProjectList {...props} theme={theme} />;
+};
+
 const styles = StyleSheet.create({
   largeProjectCardList: {
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   largeProjectCard: {
     marginBottom: 10,

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Pedometer } from 'expo-sensors';
 import { Alert, ScrollView, Text } from 'react-native';
-import { Pedometer } from 'expo';
+
 import ListButton from '../components/ListButton';
 
 interface State {

@@ -13,7 +13,7 @@
 
 #import "GMSCALayer.h"
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /*
  * The following layer properties and constants describe the camera properties that may be animated
@@ -100,11 +100,11 @@ extern NSString *const kGMSLayerCameraViewingAngleKey;
  * during an animation, the animation will stop 'in-place' (at the current presentation value).
  */
 @interface GMSMapLayer : GMSCALayer
-@property(nonatomic, assign) CLLocationDegrees cameraLatitude;
-@property(nonatomic, assign) CLLocationDegrees cameraLongitude;
-@property(nonatomic, assign) CLLocationDirection cameraBearing;
-@property(nonatomic, assign) float cameraZoomLevel;
-@property(nonatomic, assign) double cameraViewingAngle;
+@property(nonatomic) CLLocationDegrees cameraLatitude;
+@property(nonatomic) CLLocationDegrees cameraLongitude;
+@property(nonatomic) CLLocationDirection cameraBearing;
+@property(nonatomic) float cameraZoomLevel;
+@property(nonatomic) double cameraViewingAngle;
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

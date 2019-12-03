@@ -89,6 +89,12 @@ public class OperatorNode extends Node {
       return Math.sqrt(x);
     }
   };
+  private static final Operator LOG = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.log(x);
+    }
+  };
   private static final Operator SIN = new SingleOperator() {
     @Override
     public double eval(Double x) {
@@ -235,6 +241,8 @@ public class OperatorNode extends Node {
       mOperator = MODULO;
     } else if ("sqrt".equals(op)) {
       mOperator = SQRT;
+    } else if ("log".equals(op)) {
+      mOperator = LOG;
     } else if ("sin".equals(op)) {
       mOperator = SIN;
     } else if ("cos".equals(op)) {

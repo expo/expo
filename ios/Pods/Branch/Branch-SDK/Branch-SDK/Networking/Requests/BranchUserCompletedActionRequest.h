@@ -10,8 +10,5 @@
 #import "BNCServerRequest.h"
 
 @interface BranchUserCompletedActionRequest : BNCServerRequest
-
 - (id)initWithAction:(NSString *)action state:(NSDictionary *)state;
-- (id)initWithAction:(NSString *)action state:(NSDictionary *)state withBranchViewCallback:(id)callback ;
-
 @end

@@ -43,8 +43,6 @@
                   @"socialContext": nativeAd.socialContext,
                   @"callToActionText": nativeAd.callToAction,
                   @"bodyText": nativeAd.bodyText,
-                  // TODO: Remove this deprecated field (in lieu of adTranslation) in SDK 32+
-                  @"translation": nativeAd.adTranslation,
                   @"adTranslation": nativeAd.adTranslation,
                   @"promotedTranslation": nativeAd.promotedTranslation,
                   @"sponsoredTranslation": nativeAd.sponsoredTranslation,

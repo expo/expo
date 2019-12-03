@@ -6,7 +6,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-calendar`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
 
 ## Configuration
 
@@ -67,7 +67,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **allowedReminders (_array_)** -- (Android only)
   - **allowedAttendeeTypes (_array_)** -- (Android only)
   - **isVisible (_boolean_)** -- (Android only)
-  - **isSynced (_boolean_)** -- (Android only)
+  - **isSynced (_boolean_)** -- (Android only) Whether or not the calendar is synced from a remote source. Unexpected behavior may occur if this is not set to `true`.
   - **accessLevel (_string_)** -- (Android only)
 
 #### Returns

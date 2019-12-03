@@ -41,7 +41,11 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"owner"`
+
+The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
@@ -54,7 +58,7 @@ Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the f
 
 ### `"version"`
 
-Your app version; use whatever versioning scheme that you like.
+Your app version. On iOS, this corresponds to `CFBundleShortVersionString`, and the required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
 
 > **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
 
@@ -280,7 +284,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
 
@@ -304,10 +308,11 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Must be a string
-      that matches Apple's format for CFBundleVersion.
-
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
+      
+      Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.
     */
@@ -355,7 +360,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      Entries must be prefixed with "www."
+      Entries must follow the format "applinks:<fully qualified domain>[:port number]". See Apple's docs for details -> https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains
 
       ExpoKit: use Xcode to set this.
     */
@@ -672,8 +677,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       /*
         Determines how the "image" will be displayed in the splash loading screen.
-        Must be one of "cover" or "contain", defaults to "contain".
-        Valid values: "cover", "contain"
+        Must be one of "cover", "contain" or "native", defaults to "contain".
+        Valid values: "cover", "contain", "native"
       */
       "resizeMode": STRING,
 

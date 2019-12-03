@@ -7,47 +7,40 @@ A React component for displaying different types of images, including network im
 
 This example shows fetching and displaying an image from local storage as well as one from network and even from data provided in the `'data:'` uri scheme.
 
- Note that for network and data images, you will need to manually specify the dimensions of your image!
-
+Note that for network and data images, you will need to manually specify the dimensions of your image!
 
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, View, Image } from 'react-native';
+import { View, Image } from 'react-native';
 
 export default class DisplayAnImage extends Component {
   render() {
     return (
       <View>
+        <Image source={require('/react-native/img/favicon.png')} />
         <Image
-          source={require('/react-native/img/favicon.png')}
+          style={{ width: 50, height: 50 }}
+          source={{ uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png' }}
         />
         <Image
-          style={{width: 50, height: 50}}
-          source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
-        />
-        <Image
-          style={{width: 66, height: 58}}
-          source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}
+          style={{ width: 66, height: 58 }}
+          source={{
+            uri:
+              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+          }}
         />
       </View>
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
-
 ```
 
-
 You can also add `style` to an image:
-
 
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   stretch: {
@@ -68,22 +61,13 @@ export default class DisplayAnImageWithStyle extends Component {
     );
   }
 }
-
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
-  'DisplayAnImageWithStyle',
-  () => DisplayAnImageWithStyle
-);
-
 ```
-
 
 ### GIF and WebP support on Android
 
 When building your own native code, GIF and WebP are not supported by default on Android.
 
 You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
-
 
 ```gradle
 
@@ -103,7 +87,6 @@ dependencies {
 }
 
 ```
-
 
 ### Props
 
@@ -292,7 +275,7 @@ Similarly to `source`, this property represents the resource used to render the 
 | ------------------------------------- | -------- |
 | array of ImageSourcePropTypes, number | No       |
 
- Can accept a number as returned by `require('./image.jpg')`
+Can accept a number as returned by `require('./image.jpg')`
 
 ---
 
@@ -383,7 +366,7 @@ If passing a number:
 
 - `number` - Opaque type returned by something like `require('./image.jpg')`.
 
- **Note:** On Android, the default source prop is ignored on debug builds.
+  **Note:** On Android, the default source prop is ignored on debug builds.
 
 ---
 
@@ -429,13 +412,9 @@ Android only. When true, enables progressive jpeg streaming. https://frescolib.o
 
 ### `getSize()`
 
-
 ```javascript
-
 Image.getSize(uri, success, [failure]);
-
 ```
-
 
 Retrieve the width and height (in pixels) of an image prior to displaying it. This method can fail if the image cannot be found, or fails to download.
 
@@ -455,13 +434,9 @@ Does not work for static image resources.
 
 ### `getSizeWithHeaders()`
 
-
 ```javascript
-
 Image.getSizeWithHeaders(uri, headers, success, [failure]);
-
 ```
-
 
 Retrieve the width and height (in pixels) of an image prior to displaying it with the ability to provide the headers for the request. This method can fail if the image cannot be found, or fails to download.
 
@@ -482,13 +457,9 @@ Does not work for static image resources.
 
 ### `prefetch()`
 
-
 ```javascript
-
 Image.prefetch(url);
-
 ```
-
 
 Prefetches a remote image for later use by downloading it to the disk cache
 
@@ -502,13 +473,9 @@ Prefetches a remote image for later use by downloading it to the disk cache
 
 ### `abortPrefetch()`
 
-
 ```javascript
-
 Image.abortPrefetch(requestId);
-
 ```
-
 
 Abort prefetch request. Android-only.
 
@@ -522,13 +489,9 @@ Abort prefetch request. Android-only.
 
 ### `queryCache()`
 
-
 ```javascript
-
 Image.queryCache(urls);
-
 ```
-
 
 Perform cache interrogation. Returns a mapping from URL to cache status, such as "disk" or "memory". If a requested URL is not in the mapping, it means it's not in the cache.
 
@@ -542,13 +505,9 @@ Perform cache interrogation. Returns a mapping from URL to cache status, such as
 
 ### `resolveAssetSource()`
 
-
 ```javascript
-
 Image.resolveAssetSource(source);
-
 ```
-
 
 Resolves an asset reference into an object which has the properties `uri`, `width`, and `height`.
 
@@ -558,5 +517,4 @@ Resolves an asset reference into an object which has the properties `uri`, `widt
 | ------ | -------------- | -------- | ---------------------------------------------------------------------------- |
 | source | number, object | Yes      | A number (opaque type returned by require('./foo.png')) or an `ImageSource`. |
 
- `ImageSource` is an object like `{ uri: '<http location || file path>' }`
-
+`ImageSource` is an object like `{ uri: '<http location || file path>' }`

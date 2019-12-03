@@ -19,6 +19,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
+import com.raizlabs.android.dbflow.config.DatabaseConfig;
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.apache.commons.io.IOUtils;
@@ -38,6 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.Provider;
 import java.security.Security;
@@ -45,11 +48,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
+
+import host.exp.exponent.notifications.ActionDatabase;
+import host.exp.exponent.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.storage.ExponentDB;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -79,6 +88,7 @@ public class Exponent {
 
   private static final String TAG = Exponent.class.getSimpleName();
   private static final String PACKAGER_RUNNING = "running";
+  private static final Pattern ABIVERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+|UNVERSIONED");
 
   private static Exponent sInstance;
 
@@ -172,7 +182,18 @@ public class Exponent {
     Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
-    FlowManager.init(context);
+    FlowManager.init(FlowConfig.builder(context)
+        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
+            .databaseName(SchedulersDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
+            .databaseName(ActionDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
+            .databaseName(ExponentDB.NAME)
+            .build())
+        .build()
+    );
 
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
@@ -214,13 +235,14 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-
+  // TODO: remove once SDK 35 is deprecated
   public interface PermissionsListener {
     void permissionsGranted();
 
     void permissionsDenied();
   }
 
+  // TODO: Remove everything connected with permissions once SDK35 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
   private PermissionsHelper mPermissionsHelper;
 
@@ -232,11 +254,6 @@ public class Exponent {
                                     ExperienceId experienceId, String experienceName) {
     mPermissionsHelper = new PermissionsHelper(experienceId);
     return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
-  }
-
-  public void requestExperiencePermissions(PermissionsListener listener, String[] permissions,
-                                           ExperienceId experienceId, String experienceName) {
-    new PermissionsHelper(experienceId).requestExperiencePermissions(listener, permissions, experienceName);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -480,6 +497,24 @@ public class Exponent {
     return sourceFile.exists();
   }
 
+  // As OTAs piles up, the JS bundles will consume quite an amount of storage space
+  // App developers, if find needed, can purge all the existing cache
+  public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
+    final File filesDir = mContext.getFilesDir();
+    final File directory = new File(filesDir, abiVersion);
+    if (!ABIVERSION_PATTERN.matcher(abiVersion).matches()) {
+      return false;
+    }
+    if (!directory.getCanonicalPath().startsWith(filesDir.getCanonicalPath())) {
+      return false;
+    }
+    if (directory.exists()) {
+      return directory.delete();
+    } else {
+      return false;
+    }
+  }
+
   private void printSourceFile(String path) {
     EXL.d(KernelConstants.BUNDLE_TAG, "Printing bundle:");
     InputStream inputStream = null;
@@ -554,13 +589,19 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-        debugServerHostPortField.setAccessible(true);
-        debugServerHostPortField.set(null, debuggerHostPort);
+        // TODO: remove when SDK 35 is phased out
+        if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
+          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+          debugServerHostPortField.setAccessible(true);
+          debugServerHostPortField.set(null, debuggerHostPort);
 
-        Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-        inspectorProxyPortField.setAccessible(true);
-        inspectorProxyPortField.set(null, debuggerHostPort);
+          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+          inspectorProxyPortField.setAccessible(true);
+          inspectorProxyPortField.set(null, debuggerHostPort);
+        } else {
+          fieldObject.callStatic("setDevServerPort", debuggerHostPort);
+          fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
+        }
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);
@@ -624,9 +665,23 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
-  public boolean shouldRequestDrawOverOtherAppsPermission() {
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldRequestDrawOverOtherAppsPermission(String sdkVersion) {
+    if (sdkVersion != null && ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return false;
+    }
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
+
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldAlwaysReloadFromManifest(String sdkVersion) {
+    if (sdkVersion == null || ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return true;
+    }
+
+    return false;
+  }
+
 
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {

@@ -1,10 +1,11 @@
 ---
 title: AppLoading
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/launch"
 ---
 
 A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false` the loading screen will disappear and your app will be visible when the component is removed.
 
-This is incredibly useful to let you download and cache fonts, logo and icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering they start using the app.
+This is incredibly useful to let you download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering and they start using the app.
 
 ## Installation
 
@@ -15,7 +16,8 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';
-import { Asset, AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
+import { AppLoading } from 'expo';
 
 export default class App extends React.Component {
   state = {
@@ -31,31 +33,25 @@ export default class App extends React.Component {
           onFinish={() => this.setState({ isReady: true })}
           onError={console.warn}
         />
-      );/* @end */
-
+      ); /* @end */
     }
 
     return (
       <View style={{ flex: 1 }}>
-        <Image source={require('./assets/images/expo-icon.png')} />
-        <Image source={require('./assets/images/slack-icon.png')} />
+        <Image source={require('./assets/snack-icon.png')} />
       </View>
     );
   }
 
   async _cacheResourcesAsync() {
-    const images = [
-      require('./assets/images/expo-icon.png'),
-      require('./assets/images/slack-icon.png'),
-    ];
+    const images = [require('./assets/snack-icon.png')];
 
     /* @info Read more about <a href='../guides/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
-    const cacheImages = images.map((image) => {
+    const cacheImages = images.map(image => {
       return Asset.fromModule(image).downloadAsync();
-    });/* @end */
+    }); /* @end */
 
-    return Promise.all(cacheImages)
-
+    return Promise.all(cacheImages);
   }
 }
 ```
@@ -74,4 +70,3 @@ The following props are recommended, but optional for the sake of backwards comp
 - **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
 - **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
 - **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](../splash-screen/) for an example.
-

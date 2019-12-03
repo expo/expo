@@ -9,7 +9,7 @@
 #include <functional>
 #include <string>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 /**
@@ -20,7 +20,7 @@ namespace ReactABI33_0_0 {
 struct RecoverableError : public std::exception {
 
   explicit RecoverableError(const std::string &what_)
-    : m_what { "facebook::ReactABI33_0_0::Recoverable: " + what_ }
+    : m_what { "ABI33_0_0facebook::ReactABI33_0_0::Recoverable: " + what_ }
   {}
 
   virtual const char* what() const noexcept override { return m_what.c_str(); }
@@ -45,4 +45,4 @@ private:
 };
 
 } // namespace ReactABI33_0_0
-} // namespace facebook
+} // namespace ABI33_0_0facebook

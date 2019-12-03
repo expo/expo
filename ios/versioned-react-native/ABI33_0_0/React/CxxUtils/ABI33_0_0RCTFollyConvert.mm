@@ -9,7 +9,7 @@
 
 #import <objc/runtime.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 id convertFollyDynamicToId(const folly::dynamic &dyn) {

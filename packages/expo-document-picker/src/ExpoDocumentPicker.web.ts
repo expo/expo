@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 
-import { DocumentResult, GetDocumentOptions } from './types';
+import { DocumentResult, DocumentPickerOptions } from './types';
 
 export default {
   get name(): string {
@@ -10,7 +10,7 @@ export default {
   async getDocumentAsync({
     type = '*/*',
     multiple = false,
-  }: GetDocumentOptions): Promise<DocumentResult> {
+  }: DocumentPickerOptions): Promise<DocumentResult> {
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');
@@ -28,7 +28,7 @@ export default {
           const targetFile = input.files[0];
           const reader = new FileReader();
           reader.onerror = () => {
-            reject('Failed to read the selected media because the operation failed.');
+            reject(new Error(`Failed to read the selected media because the operation failed.`));
           };
           reader.onload = ({ target }) => {
             const uri = (target as any).result;

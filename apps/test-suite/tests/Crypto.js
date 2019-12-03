@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'react-native';
 import * as Crypto from 'expo-crypto';
 
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;
@@ -28,11 +28,12 @@ const valueMapping = {
 
 export const name = 'Crypto';
 
+const UNSUPPORTED = Platform.select({
+  web: ['MD2', 'MD4', 'MD5'],
+  default: [],
+});
 function supportedAlgorithm(algorithm) {
-  if (Platform.OS === 'web' && ['MD2', 'MD4', 'MD5'].includes(algorithm)) {
-    return false;
-  }
-  return true;
+  return !UNSUPPORTED.includes(algorithm);
 }
 
 export async function test({ describe, it, expect }) {

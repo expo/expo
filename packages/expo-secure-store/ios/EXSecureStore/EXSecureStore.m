@@ -117,7 +117,7 @@
 
 - (CFStringRef)_accessibilityAttributeWithOptions:(NSDictionary *)options
 {
-  NSInteger accessibility = [[self constantsToExport][options[@"keychainAccessible"]] integerValue];
+  NSInteger accessibility = [options[@"keychainAccessible"] integerValue];
   switch (accessibility) {
     case EXSecureStoreAccessibleAfterFirstUnlock:
       return kSecAttrAccessibleAfterFirstUnlock;

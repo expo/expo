@@ -1,33 +1,25 @@
 import './BeforePIXI';
 
-import * as GL from 'expo-gl';
 import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
 import * as PIXI from 'pixi.js';
-import { Dimensions } from 'react-native';
+import { Dimensions, PixelRatio } from 'react-native';
 
-import ExpoTHREE from './ExpoTHREE';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
+
+import { Renderer, TextureLoader, THREE } from 'expo-three';
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
+import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
 
-const THREE = require('three');
-// @ts-ignore
-global.THREE = THREE;
-require('three/examples/js/shaders/CopyShader');
-require('three/examples/js/shaders/DigitalGlitch');
-require('three/examples/js/shaders/FilmShader');
-require('three/examples/js/postprocessing/EffectComposer');
-require('three/examples/js/postprocessing/RenderPass');
-require('three/examples/js/postprocessing/ShaderPass');
-require('three/examples/js/postprocessing/GlitchPass');
-require('three/examples/js/postprocessing/FilmPass');
-
 interface Screens {
   [key: string]: {
-    screen: React.ComponentType & { title: string }
+    screen: React.ComponentType & { title: string };
   };
 }
 
@@ -96,7 +88,9 @@ const GLScreens: Screens = {
       (async () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const imageAsset = Asset.fromModule(require('../../../assets/images/nikki-small-purple.png'));
+        const imageAsset = Asset.fromModule(
+          require('../../../assets/images/nikki-small-purple.png')
+        );
         await imageAsset.downloadAsync();
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, imageAsset as any);
         // Use below to test using a `TypedArray` parameter
@@ -122,6 +116,10 @@ const GLScreens: Screens = {
     }),
   },
 
+  Mask: {
+    screen: GLMaskScreen,
+  },
+
   Snapshots: {
     screen: GLSnapshotsScreen,
   },
@@ -136,16 +134,14 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
       });
       const cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
@@ -153,6 +149,12 @@ const GLScreens: Screens = {
       camera.position.z = 3;
 
       return {
+        onLayout({ nativeEvent: { layout } }) {
+          const scale = PixelRatio.get();
+          camera.aspect = layout.width / layout.height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(layout.width * scale, layout.height * scale);
+        },
         onTick() {
           cube.rotation.x += 0.04;
           cube.rotation.y += 0.07;
@@ -175,23 +177,19 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
-      const composer = new THREE.EffectComposer(renderer);
-      composer.addPass(new THREE.RenderPass(scene, camera));
-      composer.addPass(new THREE.FilmPass(0.8, 0.325, 256, false));
-      const finalPass = new THREE.GlitchPass();
-      finalPass.renderToScreen = true;
-      composer.addPass(finalPass);
+      const composer = new EffectComposer( renderer );
+      composer.addPass( new RenderPass( scene, camera ) );
+      const glitchPass = new GlitchPass();
+      composer.addPass( glitchPass );
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
       });
 
       const cubes = Array(24)
@@ -212,6 +210,13 @@ const GLScreens: Screens = {
       camera.position.z = 3;
 
       return {
+        onLayout({ nativeEvent: { layout } }) {
+          const scale = PixelRatio.get();
+          camera.aspect = layout.width / layout.height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(layout.width * scale, layout.height * scale);
+          composer.setSize(layout.width, layout.height);
+        },
         onTick() {
           cubes.forEach(({ mesh, angularVelocity }) => {
             mesh.rotation.x += angularVelocity.x;
@@ -236,14 +241,12 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const spriteMaterial = new THREE.SpriteMaterial({
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
         color: 0xffffff,
       });
       const sprite = new THREE.Sprite(spriteMaterial);
@@ -252,6 +255,12 @@ const GLScreens: Screens = {
       camera.position.z = 3;
 
       return {
+        onLayout({ nativeEvent: { layout } }) {
+          const scale = PixelRatio.get();
+          camera.aspect = layout.width / layout.height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(layout.width * scale, layout.height * scale);
+        },
         onTick() {
           renderer.render(scene, camera);
           gl.endFrameEXP();

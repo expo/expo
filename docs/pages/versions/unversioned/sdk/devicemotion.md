@@ -1,23 +1,40 @@
 ---
 title: DeviceMotion
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
 ---
 
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
 ## API
 
 ```js
-// in managed apps:
-import { DangerZone } from 'expo';
-const { DeviceMotion } = DangerZone;
-
-// in bare apps:
 import { DeviceMotion } from 'expo-sensors';
 ```
+
+**[Methods](#methods)**
+
+- [`DeviceMotion.isAvailableAsync()`](#devicemotionisavailableasync)
+- [`DeviceMotion.addListener(listener)`](#devicemotionaddlistenerlistener)
+- [`DeviceMotion.removeAllListeners()`](#devicemotionremovealllisteners)
+- [`DeviceMotion.setUpdateInterval(intervalMs)`](#devicemotionsetupdateintervalintervalms)
+
+## Methods
+
+### `DeviceMotion.isAvailableAsync()`
+
+> You should always check the sensor availability before attempting to use it.
+
+Returns whether the `DeviceMotion` API is enabled on the device.
+
+On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
+
+#### Returns
+
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `DeviceMotion.addListener(listener)`
 
@@ -56,4 +73,3 @@ Subscribe for updates to DeviceMotion.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   DeviceMotion updates.
-

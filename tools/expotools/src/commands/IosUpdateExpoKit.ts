@@ -32,7 +32,9 @@ function getAppVersion() {
 }
 
 async function getSdkVersionAsync() {
-  const expoSdkVersion = (await JsonFile.readAsync(path.join(EXPO_DIR, 'packages/expo/package.json'))).version;
+  const expoSdkVersion = (await JsonFile.readAsync(
+    path.join(EXPO_DIR, 'packages/expo/package.json')
+  )).version;
   return `${semver.major(expoSdkVersion)}.0.0`;
 }
 
@@ -45,11 +47,17 @@ async function checkGitTagExistsAsync(tagName) {
 
 async function action(options) {
   const appVersion = options.appVersion || getAppVersion();
-  const sdkVersion = options.sdkVersion || await getSdkVersionAsync();
+  const sdkVersion = options.sdkVersion || (await getSdkVersionAsync());
   const currentBranch = await getCurrentBranchNameAsync();
 
   if (!/^sdk-\d+$/.test(currentBranch)) {
-    console.error(chalk.red(`ExpoKit must be released from the release branch. ${chalk.cyan(currentBranch)} doesn't match ${chalk.grey('sdk-XX')} format for release branches.`));
+    console.error(
+      chalk.red(
+        `ExpoKit must be released from the release branch. ${chalk.cyan(
+          currentBranch
+        )} doesn't match ${chalk.grey('sdk-XX')} format for release branches.`
+      )
+    );
     process.exit(0);
     return;
   }
@@ -60,7 +68,9 @@ async function action(options) {
     {
       type: 'confirm',
       name: 'shouldTag',
-      message: `Do you want to tag latest commit from branch ${chalk.cyan(currentBranch)} as ${chalk.blue(tagName)}?`,
+      message: `Do you want to tag latest commit from branch ${chalk.cyan(
+        currentBranch
+      )} as ${chalk.blue(tagName)}?`,
       default: true,
     },
   ]);
@@ -73,7 +83,9 @@ async function action(options) {
         {
           type: 'confirm',
           name: 'overrideTag',
-          message: chalk.yellow(`Tag ${chalk.blue(tagName)} already exists. Do you want to override it?`),
+          message: chalk.yellow(
+            `Tag ${chalk.blue(tagName)} already exists. Do you want to override it?`
+          ),
           default: true,
         },
       ]);
@@ -83,32 +95,62 @@ async function action(options) {
       }
     }
 
-    console.log(`Tagging last commit from branch "${chalk.cyan(currentBranch)}" as "${chalk.blue(tagName)}"...`);
+    console.log(
+      `Tagging last commit from branch "${chalk.cyan(currentBranch)}" as "${chalk.blue(
+        tagName
+      )}"...`
+    );
 
-    options.dry || await spawnAsync('git', ['tag', '-f', '-a', tagName, '-m', `ExpoKit v${appVersion} for SDK${semver.major(sdkVersion)}`], {
-      stdio: 'inherit',
-      cwd: EXPO_DIR,
-    });
+    options.dry ||
+      (await spawnAsync(
+        'git',
+        [
+          'tag',
+          '-f',
+          '-a',
+          tagName,
+          '-m',
+          `ExpoKit v${appVersion} for SDK${semver.major(sdkVersion)}`,
+        ],
+        {
+          stdio: 'inherit',
+          cwd: EXPO_DIR,
+        }
+      ));
 
     console.log('Pushing tags to remote repo...');
 
-    options.dry || await spawnAsync('git', ['push', '-f', 'origin', 'tag', tagName], {
-      stdio: 'inherit',
-      cwd: EXPO_DIR,
-    });
+    options.dry ||
+      (await spawnAsync('git', ['push', '-f', 'origin', 'tag', tagName], {
+        stdio: 'inherit',
+        cwd: EXPO_DIR,
+      }));
   }
 
-  console.log(`Updating ${chalk.green('ExpoKit')}@${chalk.magenta(appVersion)} for SDK ${chalk.magenta(sdkVersion)} on staging...`);
+  console.log(
+    `Updating ${chalk.green('ExpoKit')}@${chalk.magenta(appVersion)} for SDK ${chalk.magenta(
+      sdkVersion
+    )} on staging...`
+  );
 
-  options.dry || await ExpoKit.updateExpoKitIosAsync(EXPO_DIR, appVersion, sdkVersion);
+  options.dry || (await ExpoKit.updateExpoKitIosAsync(EXPO_DIR, appVersion, sdkVersion));
 }
 
 export default (program: any) => {
   program
     .command('ios-update-expokit')
     .description('Tags ExpoKit version and updates staging ExpoKit files.')
-    .option('--appVersion [string]', 'iOS ExpoKit version. Uses CFBundleShortVersionString from the Info.plist by default. (optional)')
-    .option('--sdkVersion [string]', 'SDK version included in the ExpoKit version. Defaults to major version of `expo` package in the repo. (optional)')
-    .option('--dry', 'Run the script in the dry mode, that is without tagging and updating ExpoKit.')
+    .option(
+      '--appVersion [string]',
+      'iOS ExpoKit version. Uses CFBundleShortVersionString from the Info.plist by default. (optional)'
+    )
+    .option(
+      '--sdkVersion [string]',
+      'SDK version included in the ExpoKit version. Defaults to major version of `expo` package in the repo. (optional)'
+    )
+    .option(
+      '--dry',
+      'Run the script in the dry mode, that is without tagging and updating ExpoKit.'
+    )
     .asyncAction(action);
 };

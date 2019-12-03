@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 function getBasePath({ httpServerLocation }) {

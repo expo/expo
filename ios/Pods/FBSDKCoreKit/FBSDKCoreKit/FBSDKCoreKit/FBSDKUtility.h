@@ -18,9 +18,12 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
   Class to contain common utility methods.
  */
+NS_SWIFT_NAME(Utility)
 @interface FBSDKUtility : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -31,7 +34,8 @@
  @param queryString The query string value.
  @return A dictionary with the key/value pairs.
  */
-+ (NSDictionary *)dictionaryWithQueryString:(NSString *)queryString;
++ (NSDictionary<NSString *, NSString *> *)dictionaryWithQueryString:(NSString *)queryString
+NS_SWIFT_NAME(dictionary(withQuery:));
 
 /**
   Constructs a query string from a dictionary.
@@ -39,21 +43,26 @@
  @param errorRef If an error occurs, upon return contains an NSError object that describes the problem.
  @return Query string representation of the parameters.
  */
-+ (NSString *)queryStringWithDictionary:(NSDictionary *)dictionary error:(NSError *__autoreleasing *)errorRef;
++ (NSString *)queryStringWithDictionary:(NSDictionary<NSString *, id> *)dictionary
+                                  error:(NSError **)errorRef
+NS_SWIFT_NAME(query(from:))
+__attribute__((swift_error(nonnull_error)));
 
 /**
   Decodes a value from an URL.
  @param value The value to decode.
  @return The decoded value.
  */
-+ (NSString *)URLDecode:(NSString *)value;
++ (NSString *)URLDecode:(NSString *)value
+NS_SWIFT_NAME(decode(urlString:));
 
 /**
   Encodes a value for an URL.
  @param value The value to encode.
  @return The encoded value.
  */
-+ (NSString *)URLEncode:(NSString *)value;
++ (NSString *)URLEncode:(NSString *)value
+NS_SWIFT_NAME(encode(urlString:));
 
 /**
   Creates a timer using Grand Central Dispatch.
@@ -74,6 +83,9 @@
 
  @param input The data that needs to be hashed, it could be NSString or NSData.
  */
-+ (NSString *)SHA256Hash:(NSObject *)input;
++ (nullable NSString *)SHA256Hash:(nullable NSObject *)input
+NS_SWIFT_NAME(sha256Hash(_:));
 
 @end
+
+NS_ASSUME_NONNULL_END

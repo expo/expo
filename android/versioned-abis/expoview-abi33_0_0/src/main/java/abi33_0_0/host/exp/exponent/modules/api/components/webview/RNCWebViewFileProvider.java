@@ -1,6 +1,6 @@
 package abi33_0_0.host.exp.exponent.modules.api.components.webview;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 /**
  * Providing a custom {@code FileProvider} prevents manifest {@code <provider>} name collisions.

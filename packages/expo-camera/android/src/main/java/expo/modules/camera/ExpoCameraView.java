@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
-import expo.modules.camera.tasks.FaceDetectorAsyncTask;
 import expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
+import expo.modules.camera.tasks.FaceDetectorTask;
 import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
@@ -138,7 +138,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
           double scaleY = (double) cameraView.getHeight() / (dimensions.getHeight() * density);
 
           FaceDetectorAsyncTaskDelegate delegate = (FaceDetectorAsyncTaskDelegate) cameraView;
-          new FaceDetectorAsyncTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing(), scaleX, scaleY).execute();
+          FaceDetectorTask task = new FaceDetectorTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing() == CameraView.FACING_FRONT, scaleX, scaleY);
+          task.execute();
         }
       }
     });
@@ -328,8 +329,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   private boolean hasCameraPermissions() {
-    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{Manifest.permission.CAMERA});
-    return permissions.length == 1 && permissions[0] == PackageManager.PERMISSION_GRANTED;
+    return mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.CAMERA);
   }
 
   public void setShouldDetectFaces(boolean shouldDetectFaces) {
@@ -357,6 +357,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onFaceDetectionError(FaceDetector faceDetector) {
+    faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;
     }

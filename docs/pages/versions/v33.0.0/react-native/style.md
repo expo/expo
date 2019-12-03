@@ -9,11 +9,9 @@ The `style` prop can be a plain old JavaScript object. That's the simplest and w
 
 As a component grows in complexity, it is often cleaner to use `StyleSheet.create` to define several styles in one place. Here's an example:
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   bigBlue: {
@@ -38,16 +36,10 @@ export default class LotsOfStyles extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => LotsOfStyles);
-
 ```
-
 
 One common pattern is to make your component accept a `style` prop which in turn is used to style subcomponents. You can use this to make styles "cascade" the way they do in CSS.
 
 There are a lot more ways to customize text style. Check out the [Text component reference](../text/) for a complete list.
 
 Now you can make your text beautiful. The next step in becoming a style master is to [learn how to control component size](../height-and-width/).
-

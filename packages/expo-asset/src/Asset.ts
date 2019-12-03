@@ -1,14 +1,12 @@
 import { Platform } from '@unimodules/core';
-import * as FileSystem from 'expo-file-system';
-import Constants from 'expo-constants';
-import computeMd5 from 'blueimp-md5';
-import { getAssetByID } from './AssetRegistry';
-import resolveAssetSource, { setCustomSourceTransformer } from './resolveAssetSource';
 
+import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import * as EmbeddedAssets from './EmbeddedAssets';
+import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+import { downloadAsync, IS_MANAGED_ENV } from './PlatformUtils';
+import resolveAssetSource from './resolveAssetSource';
 
 type AssetDescriptor = {
   name: string;
@@ -25,8 +23,6 @@ type DownloadPromiseCallbacks = {
 };
 
 export type AssetMetadata = AssetSources.AssetMetadata;
-
-const IS_MANAGED_ENV = !!Constants.appOwnership;
 
 export class Asset {
   static byHash = {};
@@ -58,9 +54,17 @@ export class Asset {
 
     // This only applies to assets that are bundled in Expo standalone apps
     if (IS_MANAGED_ENV && hash) {
-      this.localUri = EmbeddedAssets.getEmbeddedAssetUri(hash, type);
+      this.localUri = getEmbeddedAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
+      }
+    }
+    if (Platform.OS === 'web') {
+      if (!name) {
+        this.name = AssetUris.getFilename(uri);
+      }
+      if (!type) {
+        this.type = AssetUris.getFileExtension(uri);
       }
     }
   }
@@ -158,55 +162,6 @@ export class Asset {
     return asset;
   }
 
-  async _downloadAsyncWeb(): Promise<void> {
-    if (ImageAssets.isImageType(this.type)) {
-      const { width, height, name } = await ImageAssets.getImageInfoAsync(this.uri);
-      this.width = width;
-      this.height = height;
-      this.name = name;
-    } else {
-      this.name = AssetUris.getFilename(this.uri);
-    }
-    this.localUri = this.uri;
-  }
-
-  async _downloadAsyncManagedEnv(): Promise<void> {
-    const cacheFileId = this.hash || computeMd5(this.uri);
-    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${this.type}`;
-    let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
-      md5: true,
-    });
-    if (!exists || (this.hash !== null && md5 !== this.hash)) {
-      ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
-        md5: true,
-      }));
-      if (this.hash !== null && md5 !== this.hash) {
-        throw new Error(
-          `Downloaded file for asset '${this.name}.${this.type}' ` +
-            `Located at ${this.uri} ` +
-            `failed MD5 integrity check`
-        );
-      }
-    }
-
-    this.localUri = localUri;
-  }
-
-  async _downloadAsyncUnmanagedEnv(): Promise<void> {
-    // Bail out if it's already at a file URL because it's already available locally
-    if (this.uri.startsWith('file://')) {
-      this.localUri = this.uri;
-      return;
-    }
-
-    const cacheFileId = this.hash || computeMd5(this.uri);
-    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${this.type}`;
-    // We don't check the FileSystem for an existing version of the asset and we
-    // also don't perform an integrity check!
-    await FileSystem.downloadAsync(this.uri, localUri);
-    this.localUri = localUri;
-  }
-
   async downloadAsync(): Promise<void> {
     if (this.downloaded) {
       return;
@@ -221,12 +176,16 @@ export class Asset {
 
     try {
       if (Platform.OS === 'web') {
-        await this._downloadAsyncWeb();
-      } else if (IS_MANAGED_ENV) {
-        await this._downloadAsyncManagedEnv();
-      } else {
-        await this._downloadAsyncUnmanagedEnv();
+        if (ImageAssets.isImageType(this.type)) {
+          const { width, height, name } = await ImageAssets.getImageInfoAsync(this.uri);
+          this.width = width;
+          this.height = height;
+          this.name = name;
+        } else {
+          this.name = AssetUris.getFilename(this.uri);
+        }
       }
+      this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
 
       this.downloaded = true;
       this._downloadCallbacks.forEach(({ resolve }) => resolve());
@@ -239,13 +198,3 @@ export class Asset {
     }
   }
 }
-
-// Override React Native's asset resolution for `Image` components
-setCustomSourceTransformer(resolver => {
-  try {
-    const asset = Asset.fromMetadata(resolver.asset);
-    return resolver.fromSource(asset.downloaded ? asset.localUri! : asset.uri);
-  } catch (e) {
-    return resolver.defaultAsset();
-  }
-});

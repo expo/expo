@@ -8,11 +8,15 @@
 #import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
+#import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedAmplitude.h"
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
+#import "EXScopedBranch.h"
+#import "EXScopedErrorRecoveryModule.h"
+#import "EXScopedFacebook.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -33,10 +37,23 @@
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
+#if __has_include(<EXFacebook/EXFacebook.h>)
+  // only override in Expo client
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
+    [moduleRegistry registerExportedModule:scopedFacebook];
+  }
+#endif
+
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
   EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:fileSystemModule];
   [moduleRegistry registerInternalModule:fileSystemModule];
+#endif
+
+#if __has_include(<EXFont/EXFontLoader.h>)
+  EXScopedFontLoader *fontModule = [[EXScopedFontLoader alloc] init];
+  [moduleRegistry registerExportedModule:fontModule];
 #endif
 
 #if __has_include(<EXSensors/EXSensorsManager.h>)
@@ -66,7 +83,7 @@
 #endif
 
 #if __has_include(<EXPermissions/EXPermissions.h>)
-  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif
@@ -74,6 +91,11 @@
 #if __has_include(<EXSegment/EXSegment.h>)
   EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
+#endif
+
+#if __has_include(<EXBranch/RNBranch.h>)
+  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:branchModule];
 #endif
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)
@@ -88,6 +110,11 @@
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
 
+#if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
+  EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:errorRecovery];
+#endif
+  
   return moduleRegistry;
 }
 

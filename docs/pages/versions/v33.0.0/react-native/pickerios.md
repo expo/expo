@@ -19,8 +19,8 @@ title: PickerIOS
 
 ### `itemStyle`
 
-| Type                               | Required |
-| ---------------------------------- | -------- |
+| Type                                | Required |
+| ----------------------------------- | -------- |
 | [text styles](../text-style-props/) | No       |
 
 ---
@@ -38,4 +38,3 @@ title: PickerIOS
 | Type | Required |
 | ---- | -------- |
 | any  | No       |
-

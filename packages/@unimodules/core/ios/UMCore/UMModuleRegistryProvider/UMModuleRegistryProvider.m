@@ -24,6 +24,28 @@ extern void UMRegisterSingletonModule(Class);
 extern void UMRegisterSingletonModule(Class singletonModuleClass)
 {
   dispatch_once(&onceToken, UMinitializeGlobalModulesRegistry);
+
+  // A heuristic solution to "multiple singletons registering
+  // to the same name" problem. Usually it happens when we want to
+  // override unimodule singleton with an ExpoKit one. This solution
+  // gives preference to subclasses.
+
+  // If a superclass of a registering singleton is already registered
+  // we want to remove it in favor of the registering singleton.
+  Class superClass = [singletonModuleClass superclass];
+  while (superClass != [NSObject class]) {
+    [UMSingletonModuleClasses removeObject:superClass];
+    superClass = [superClass superclass];
+  }
+
+  // If a registering singleton is a superclass of an already registered
+  // singleton, we don't register it.
+  for (Class registeredClass in UMSingletonModuleClasses) {
+    if ([singletonModuleClass isSubclassOfClass:registeredClass]) {
+      return;
+    }
+  }
+
   [UMSingletonModuleClasses addObject:singletonModuleClass];
 }
 
