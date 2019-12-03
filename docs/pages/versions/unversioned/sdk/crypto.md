@@ -7,6 +7,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
@@ -55,7 +61,7 @@ export default function App() {
 import * as Crypto from 'expo-crypto';
 ```
 
-### `digestStringAsync`
+### `Crypto.digestStringAsync(algorithm, data, options)`
 
 ```ts
 digestStringAsync(

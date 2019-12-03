@@ -4,8 +4,15 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import HorizontalList from '~/components/plugins/HorizontalList';
 
 Provides access to the phone's system contacts.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 
@@ -61,61 +68,22 @@ export default function App() {
 ```js
 import * as Contacts from 'expo-contacts';
 ```
-
+ 
 **[Methods](#methods)**
 
-- [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync)
-- [`Contacts.getPermissionsAsync()`](#contactsgetpermissionsasync)
-- [`Contacts.getContactsAsync(contactQuery)`](#contactsgetcontactsasynccontactquery)
-- [`Contacts.getContactByIdAsync(contactId, fields)`](#contactsgetcontactbyidasynccontactid-fields)
-- [`Contacts.addContactAsync(contact, containerId)`](#contactsaddcontactasynccontact-containerid)
-- [`Contacts.updateContactAsync(contact)`](#contactsupdatecontactasynccontact)
-- [`Contacts.presentFormAsync(contactId, contact, formOptions)`](#contactspresentformasynccontactid-contact-formoptions)
-- [`Contacts.removeContactAsync(contactId)`](#contactsremovecontactasynccontactid)
-- [`Contacts.writeContactToFileAsync(contactQuery)`](#contactswritecontacttofileasynccontactquery)
+<HorizontalList useCodeBlock contents={['Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
 
 **[iOS-only Methods](#ios-only-methods)**
 
-- [`Contacts.addExistingGroupToContainerAsync(groupId, containerId)`](#contactsaddexistinggrouptocontainerasyncgroupid-containerid)
-- [`Contacts.createGroupAsync(groupName, containerId?)`](#contactscreategroupasyncgroupname-containerid)
-- [`Contacts.updateGroupNameAsync(groupName, groupId)`](#contactsupdategroupnameasyncgroupname-groupid)
-- [`Contacts.removeGroupAsync(groupId)`](#contactsremovegroupasyncgroupid)
-- [`Contacts.addExistingContactToGroupAsync(contactId, groupId)`](#contactsaddexistingcontacttogroupasynccontactid-groupid)
-- [`Contacts.removeContactFromGroupAsync(contactId, groupId)`](#contactsremovecontactfromgroupasynccontactid-groupid)
-- [`Contacts.getGroupsAsync(query)`](#contactsgetgroupsasyncquery)
-- [`Contacts.getDefaultContainerIdAsync()`](#contactsgetdefaultcontaineridasync)
-- [`Contacts.getContainersAsync(containerQuery)`](#contactsgetcontainersasynccontainerquery)
+<HorizontalList useCodeBlock contents={['Contacts.addExistingGroupToContainerAsync(groupId, containerId)', 'Contacts.createGroupAsync(groupName, containerId?)', 'Contacts.updateGroupNameAsync(groupName, groupId)', 'Contacts.removeGroupAsync(groupId)', 'Contacts.addExistingContactToGroupAsync(contactId, groupId)', 'Contacts.removeContactFromGroupAsync(contactId, groupId)', 'Contacts.getGroupsAsync(query)', 'Contacts.getDefaultContainerIdAsync()', 'Contacts.getContainersAsync(containerQuery)']} />
 
 **[Types](#types)**
 
-- [`Contact`](#contact)
-- [`Group`](#group)
-- [`Container`](#container)
-- [`Date`](#date)
-- [`Relationship`](#relationship)
-- [`Email`](#email)
-- [`PhoneNumber`](#phonenumber)
-- [`Address`](#address)
-- [`SocialProfile`](#socialprofile)
-- [`InstantMessageAddress`](#instantmessageaddress)
-- [`UrlAddress`](#urladdress)
-- [`Image`](#image)
-- [`FormOptions`](#formoptions)
-- [`ContactQuery`](#contactquery)
-- [`GroupQuery`](#groupquery)
-- [`ContainerQuery`](#containerquery)
-- [`ContactResponse`](#contactresponse)
+<HorizontalList useCodeBlock contents={['Contact', 'Group', 'Container', 'Date', 'Relationship', 'Email', 'PhoneNumber', 'Address', 'SocialProfile', 'InstantMessageAddress', 'UrlAddress', 'Image', 'FormOptions', 'ContactQuery', 'GroupQuery', 'ContainerQuery', 'ContactResponse']} />
 
 **[Constants](#constants)**
 
-- [`Field`](#field)
-- [`FormType`](#formtype)
-- [`ContactType`](#contacttype)
-- [`SortType`](#sorttype)
-- [`ContainerType`](#containertype)
-- [`CalendarFormat`](#calendarformat)
-
-**[Breaking Changes](#breaking-changes)**
+<HorizontalList useCodeBlock contents={['Field', 'FormType', 'ContactType', 'SortType', 'ContainerType', 'CalendarFormat']} />
 
 ## Methods
 
