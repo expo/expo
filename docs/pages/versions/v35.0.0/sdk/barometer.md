@@ -5,8 +5,13 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 
 import SnackInline from '~/components/plugins/SnackInline';
 
+Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
-Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_. Note that the barometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 

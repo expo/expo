@@ -5,7 +5,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-cellular"
 
 Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
-Note: On the iOS simulator, cellular network information cannot be retrieved. 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 

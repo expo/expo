@@ -9,6 +9,12 @@ Some features of this module are used by other modules under the hood. Here is a
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.

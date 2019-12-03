@@ -7,6 +7,12 @@ Native primitives to represent screens instead of plain `<View>` components in o
 
 > Note: this library is still in alpha. Please refer to [the issue tracker](https://github.com/kmagiera/react-native-screens/issues) if you encounter any problems.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-screens`. In bare apps, make sure you also follow the [react-native-screens linking and configuration instructions](https://github.com/kmagiera/react-native-screens).

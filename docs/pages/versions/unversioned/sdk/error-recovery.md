@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Error
 
 Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available to [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.

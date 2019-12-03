@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/react-native-community/react-native-svg"
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-svg`. In bare apps, also follow the [react-native-svg installation instructions](https://github.com/react-native-community/react-native-svg).

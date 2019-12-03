@@ -9,6 +9,12 @@ This module is an extension of the React Native [Linking module](https://faceboo
 
 For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## API
 
 ### `Linking.makeUrl(path, queryParams)`

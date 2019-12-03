@@ -5,7 +5,13 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-Access the device gyroscope sensor to respond to changes in rotation in 3d space. Note that the gyroscope hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 
