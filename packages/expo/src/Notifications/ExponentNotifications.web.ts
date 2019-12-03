@@ -119,7 +119,7 @@ export default {
   },
 
   async setBadgeNumberAsync(badgeNumber: number): Promise<void> {
-    currentBadgeNumber = badgeNumber
+    currentBadgeNumber = badgeNumber;
     badgin.set(badgeNumber);
   },
 };
