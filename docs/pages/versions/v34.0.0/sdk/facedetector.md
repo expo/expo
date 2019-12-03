@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-face-dete
 
 `FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ❌     | ✅     | ❌     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-face-detector`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-face-detector).
@@ -103,7 +109,7 @@ detectFaces = async imageUri => {
 // ...
 ```
 
-### `detectFacesAsync`
+### `FaceDetector.detectFacesAsync(uri, options)`
 
 Detect faces on a picture.
 

@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-file-syst
 
 Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).

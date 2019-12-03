@@ -9,6 +9,12 @@ A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on An
 
 Expo includes version 0.24.2 of react-native-maps (the latest as of the time of this writing).
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 ## Installation
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-maps`. In bare apps, also follow the [react-native-maps linking and configuration instructions](https://github.com/react-native-community/react-native-maps).

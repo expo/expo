@@ -8,6 +8,12 @@ Provides access to [Amplitude](https://amplitude.com/) mobile analytics which ba
 **Please note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app. For example, the version logged when running experiences in the Expo app will be the [Expo app version](../constants/#constantsexpoversion). Whereas in standalone apps, the version set in `app.json` is used. For more information see [this issue on GitHub](https://github.com/expo/expo/issues/4720).
 
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-analytics-amplitude`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).

@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-battery"
 
 Provides battery information for the physical device, as well as corresponding event listeners.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-battery`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
@@ -14,8 +20,6 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as Battery from 'expo-battery';
 ```
-
-Note: On iOS simulators, battery monitoring is not possible.
 
 ### Methods
 

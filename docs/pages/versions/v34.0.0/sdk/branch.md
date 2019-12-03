@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-branch"
 
 > **Android Support Update:**  You now have the option to include Branch in your Android builds built with SDK34+. Please follow the configuration steps below to do so. We previously had removed Branch support for Android builds which you can more about in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-branch`. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking](https://github.com/BranchMetrics/react-native-branch-deep-linking) instead.
