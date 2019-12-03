@@ -37,7 +37,11 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Requiring << parameters.requireOneOf >>"
@@ -93,7 +97,11 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.requireOneOf >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -122,6 +130,66 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
+  checkout-shallow:
+    steps:
+      - run:
+          name: Checkout code (shallow)
+          command: |
+            # Workaround old docker images with incorrect $HOME
+            # check https://github.com/docker/docker/issues/2968 for details
+            if [ "${HOME}" = "/" ]
+            then
+              export HOME=$(getent passwd $(id -un) | cut -d: -f6)
+            fi
+
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+
+            (umask 077; touch ~/.ssh/id_rsa)
+            chmod 0600 ~/.ssh/id_rsa
+            (cat \<<EOF > ~/.ssh/id_rsa
+            $CHECKOUT_KEY
+            EOF
+            )
+
+            # use git+ssh instead of https
+            git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+            git config --global gc.auto 0 || true
+
+            if [ -e $PROJECT_DIRECTORY/.git ]
+            then
+                cd $PROJECT_DIRECTORY
+                git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
+            else
+                mkdir -p $PROJECT_DIRECTORY
+                cd $PROJECT_DIRECTORY
+                git clone --depth=1 "$CIRCLE_REPOSITORY_URL" .
+            fi
+
+            if [ -n "$CIRCLE_TAG" ]
+            then
+              git fetch --depth=1 --force origin "refs/tags/${CIRCLE_TAG}"
+            elif [[ "$CIRCLE_BRANCH" =~ ^pull\/* ]]
+            then
+            # For PR from Fork
+              git fetch --depth=1 --force origin "$CIRCLE_BRANCH/head:remotes/origin/$CIRCLE_BRANCH"
+            else
+              git fetch --depth=1 --force origin "$CIRCLE_BRANCH:remotes/origin/$CIRCLE_BRANCH"
+            fi
+
+            if [ -n "$CIRCLE_TAG" ]
+            then
+                git reset --hard "$CIRCLE_SHA1"
+                git checkout -q "$CIRCLE_TAG"
+            elif [ -n "$CIRCLE_BRANCH" ]
+            then
+                git reset --hard "$CIRCLE_SHA1"
+                git checkout -q -B "$CIRCLE_BRANCH"
+            fi
+
+            git reset --hard "$CIRCLE_SHA1"
+
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -158,7 +226,7 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - checkout
+      - checkout-shallow
       - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
@@ -272,6 +340,8 @@ executors:
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
     environment:
+      # Set project directory as environment variable
+      PROJECT_DIRECTORY: /root/expo
       # fastlane complains if these are not set
       LANG: en_US.UTF-8
       FASTLANE_SKIP_UPDATE_CHECK: 1
@@ -290,6 +360,8 @@ executors:
     working_directory: ~/expo
     resource_class: small
     environment:
+      # Set project directory as environment variable
+      PROJECT_DIRECTORY: /home/circleci/expo
       USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
@@ -297,6 +369,9 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
+      # Set project directory as environment variable
+      PROJECT_DIRECTORY: /Users/distiller/project
+      # Homebrew settings
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       # fastlane complains if these are not set
