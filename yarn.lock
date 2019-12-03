@@ -4035,6 +4035,11 @@ backo2@^1.0.2:
   resolved "https://registry.yarnpkg.com/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
   integrity sha1-MasayLEpNjRj41s+u2n038+6eUc=
 
+badgin@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/badgin/-/badgin-1.1.2.tgz#efd62c378338c85c208742d9e5b9d89c5fe658ae"
+  integrity sha512-6B/t0+R9jJGA3dYHKC1kMlYH0sIuJoR+rzCBqmGYO2VziNWYgVYRGr2n3oAmoiIdHxbYWDOGLYUl61+x1ownOA==
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
