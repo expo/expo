@@ -9,7 +9,7 @@ This library provides Apple authentication for iOS standalone apps in the manage
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| ❌     |  ❌     | ✅     | ✅     | ❌    |
 
 ## Installation
 

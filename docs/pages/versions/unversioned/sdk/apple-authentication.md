@@ -11,7 +11,7 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| ❌     |  ❌     | ✅     | ✅     | ❌    |
 
 ## Installation
 
