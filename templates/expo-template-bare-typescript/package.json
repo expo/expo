@@ -11,24 +11,24 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo": "^35.0.0",
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
-    "react-native": "0.59.10",
+    "expo": "~36.0.0-rc.0",
+    "react": "~16.9.0",
+    "react-dom": "~16.9.0",
+    "react-native": "~0.61.4",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-reanimated": "~1.4.0",
     "react-native-screens": "2.0.0-alpha.12",
-    "react-native-unimodules": "0.6.0",
-    "react-native-web": "^0.11.7"
+    "react-native-unimodules": "~0.7.0",
+    "react-native-web": "~0.11.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.0",
-    "@types/react": "^16.8.23",
-    "@types/react-native": "^0.57.65",
-    "babel-preset-expo": "^7.1.0",
-    "jest-expo": "^35.0.0",
-    "jetifier": "^1.6.4",
-    "typescript": "^3.6.3"
+    "@babel/core": "~7.6.0",
+    "@types/react": "~16.9.0",
+    "@types/react-native": "~0.60.23",
+    "babel-preset-expo": "~8.0.0",
+    "jest-expo": "~36.0.0-rc.0",
+    "jetifier": "~1.6.4",
+    "typescript": "~3.6.3"
   },
   "jest": {
     "preset": "react-native"
