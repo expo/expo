@@ -40,6 +40,7 @@ commands:
             BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
             while [ -z $BASE_COMMIT ]; do
               git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
             done
 
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
@@ -100,6 +101,7 @@ commands:
             BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
             while [ -z $BASE_COMMIT ]; do
               git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
             done
 
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
@@ -135,6 +137,8 @@ commands:
       - run:
           name: Checkout code (shallow)
           command: |
+            # This command has been mostly copied from the `checkout` command available in CircleCI.
+
             # Workaround old docker images with incorrect $HOME
             # check https://github.com/docker/docker/issues/2968 for details
             if [ "${HOME}" = "/" ]
