@@ -37,10 +37,13 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
             while [ -z $BASE_COMMIT ]; do
-              git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
             done
 
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
@@ -98,10 +101,13 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
             while [ -z $BASE_COMMIT ]; do
-              git fetch -q --deepen=1 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH)
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
             done
 
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
@@ -139,13 +145,6 @@ commands:
           command: |
             # This command has been mostly copied from the `checkout` command available in CircleCI.
 
-            # Workaround old docker images with incorrect $HOME
-            # check https://github.com/docker/docker/issues/2968 for details
-            if [ "${HOME}" = "/" ]
-            then
-              export HOME=$(getent passwd $(id -un) | cut -d: -f6)
-            fi
-
             mkdir -p ~/.ssh
 
             echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
@@ -168,18 +167,18 @@ commands:
             else
                 mkdir -p $CIRCLE_WORKING_DIRECTORY
                 cd $CIRCLE_WORKING_DIRECTORY
-                git clone --depth=1 "$CIRCLE_REPOSITORY_URL" .
+                git clone --depth=10 "$CIRCLE_REPOSITORY_URL" .
             fi
 
             if [ -n "$CIRCLE_TAG" ]
             then
-              git fetch --depth=1 --force origin "refs/tags/${CIRCLE_TAG}"
+              git fetch --depth=10 --force origin "refs/tags/${CIRCLE_TAG}"
             elif [[ "$CIRCLE_BRANCH" =~ ^pull\/* ]]
             then
-            # For PR from Fork
-              git fetch --depth=1 --force origin "$CIRCLE_BRANCH/head:remotes/origin/$CIRCLE_BRANCH"
+              # For PR from Fork
+              git fetch --depth=10 --force origin "$CIRCLE_BRANCH/head:remotes/origin/$CIRCLE_BRANCH"
             else
-              git fetch --depth=1 --force origin "$CIRCLE_BRANCH:remotes/origin/$CIRCLE_BRANCH"
+              git fetch --depth=10 --force origin "$CIRCLE_BRANCH:remotes/origin/$CIRCLE_BRANCH"
             fi
 
             if [ -n "$CIRCLE_TAG" ]
@@ -188,8 +187,7 @@ commands:
                 git checkout -q "$CIRCLE_TAG"
             elif [ -n "$CIRCLE_BRANCH" ]
             then
-                git reset --hard "$CIRCLE_SHA1"
-                git checkout -q -B "$CIRCLE_BRANCH"
+                git checkout -b "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
             fi
 
             git reset --hard "$CIRCLE_SHA1"
@@ -342,7 +340,7 @@ executors:
       - image: lnl7/nix:2.1.2
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /root/expo
     environment:
       # fastlane complains if these are not set
       LANG: en_US.UTF-8
@@ -359,7 +357,7 @@ executors:
     docker:
       - image: circleci/node:latest-browsers
     shell: /bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /home/circleci/expo
     resource_class: small
     environment:
       USER: circleci
