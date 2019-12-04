@@ -6,6 +6,18 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
+
+### 🐛 Bug fixes
+
+## 36.0.0
+
+### 📚 3rd party library updates
+
 - `@react-native-community/netinfo` updated from `3.2.1` to `4.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 - `react-native-branch` updated from `3.1.1` to `4.2.1`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 - `react-native-gesture-handler` updated from `1.4.0` to `1.5.1`. ([#6127](https://github.com/expo/expo/pull/6127) by [@tsapeta](https://github.com/tsapeta) and [8b0e1b6](https://github.com/expo/expo/commit/8b0e1b6852bf631558d7b6b47d1db782c1c3d528) by [@esamelson](https://github.com/esamelson))
@@ -45,7 +57,6 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added `exif` and `base64` properties into the TypeScript definitions for `ImagePickerResult` in `expo-image-picker`. ([#6311](https://github.com/expo/expo/pull/6311) by [@kyletsang](https://github.com/kyletsang))
 - Added a `videoExportPreset` field to `ImagePickerOptions`, which sets dimensions and compression algorithm for exported video on iOS. ([#6046](https://github.com/expo/expo/pull/6046) by [@lukmccall](https://github.com/lukmccall))
 - Added `nonce` option to `expo-apple-authentication`. ([#6404](https://github.com/expo/expo/pull/6404) by [@brentvatne](https://github.com/brentvatne))
-- Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
 - Added support for more permissions on web. ([#6115](https://github.com/expo/expo/pull/6115) by [@EvanBacon](https://github.com/EvanBacon))
 - Added better `Camera` support across web browsers. ([#6207](https://github.com/expo/expo/pull/6207) by [@EvanBacon](https://github.com/EvanBacon))
 
