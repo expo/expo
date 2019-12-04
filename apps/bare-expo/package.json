@@ -104,7 +104,7 @@
     "detox": "^14.4.1",
     "expo-module-scripts": "^1.1.1",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "^35.0.0",
+    "jest-expo": "~36.0.0-rc.0",
     "jest-expo-puppeteer": "^0.0.0"
   }
 }
