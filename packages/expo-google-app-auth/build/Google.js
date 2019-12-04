@@ -17,6 +17,9 @@ function getPlatformGUID(config) {
         iosClientId === androidClientId) {
         throw new CodedError('ERR_GOOGLE_CONFIG', 'Keys for Android and iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials');
     }
+    if (!platformClientId) {
+        throw new CodedError('ERR_GOOGLE_CONFIG', 'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.io/versions/latest/sdk/google/#loginasync');
+    }
     const guid = guidFromClientId(platformClientId);
     return guid;
 }
