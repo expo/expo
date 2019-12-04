@@ -161,13 +161,13 @@ commands:
             git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
             git config --global gc.auto 0 || true
 
-            if [ -e $PROJECT_DIRECTORY/.git ]
+            if [ -e $CIRCLE_WORKING_DIRECTORY/.git ]
             then
-                cd $PROJECT_DIRECTORY
+                cd $CIRCLE_WORKING_DIRECTORY
                 git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
             else
-                mkdir -p $PROJECT_DIRECTORY
-                cd $PROJECT_DIRECTORY
+                mkdir -p $CIRCLE_WORKING_DIRECTORY
+                cd $CIRCLE_WORKING_DIRECTORY
                 git clone --depth=1 "$CIRCLE_REPOSITORY_URL" .
             fi
 
@@ -344,8 +344,6 @@ executors:
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
     environment:
-      # Set project directory as environment variable
-      PROJECT_DIRECTORY: /root/expo
       # fastlane complains if these are not set
       LANG: en_US.UTF-8
       FASTLANE_SKIP_UPDATE_CHECK: 1
@@ -364,8 +362,6 @@ executors:
     working_directory: ~/expo
     resource_class: small
     environment:
-      # Set project directory as environment variable
-      PROJECT_DIRECTORY: /home/circleci/expo
       USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
@@ -373,8 +369,6 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
-      # Set project directory as environment variable
-      PROJECT_DIRECTORY: /Users/distiller/project
       # Homebrew settings
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
