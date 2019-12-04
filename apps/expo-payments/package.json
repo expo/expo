@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "expo": "~36.0.0-rc.0",
-    "expokit": "^34.0.1",
+    "expokit": "^36.0.0",
     "expo-in-app-purchases": "~8.0.0",
     "react": "16.9.0",
     "react-dom": "16.9.0",
