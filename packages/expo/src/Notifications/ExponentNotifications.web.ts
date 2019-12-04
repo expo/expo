@@ -1,8 +1,5 @@
 import badgin from 'badgin';
 import UUID from 'uuid-js';
-
-let currentBadgeNumber = 0;
-
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
 import {
   guardPermission,
@@ -12,6 +9,8 @@ import {
 
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
+
+let currentBadgeNumber = 0;
 
 function transformLocalNotification(
   notification: LocalNotification,
@@ -113,7 +112,7 @@ export default {
   async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
     return await getDevicePushTokenAsync();
   },
-  
+
   async getBadgeNumberAsync(): Promise<number> {
     return currentBadgeNumber;
   },
