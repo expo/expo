@@ -984,10 +984,10 @@
     resolve-from "^5.0.0"
     slugify "^1.3.4"
 
-"@expo/dev-tools@^0.8.1":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@expo/dev-tools/-/dev-tools-0.8.2.tgz#61af440d51239bd7c3627c22a241c1a42530da19"
-  integrity sha512-VWFqAxM2dUxVtSCQzuUGK7FsbbhvLDaqt7fmwDjL7bbowFW/GqQB3jVyL0lcR7t30X5MM/OrF/Oszoga11wMcg==
+"@expo/dev-tools@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@expo/dev-tools/-/dev-tools-0.9.1.tgz#dde6f12d74882a4b9d8c9da6fbbc8d0d10f4f607"
+  integrity sha512-roOibElRKSKXLGOG6NNMPkCqv2EdNOK67HYSkOybq7irlykJHdkJdAaWVjGG1KIMZMraD8eF3kQmHYU4iyu4HA==
   dependencies:
     "@expo/config" "^2.5.1"
     base64url "3.0.1"
@@ -1235,10 +1235,10 @@
     node-fetch "^2.6.0"
     tempy "^0.3.0"
 
-"@expo/xdl@^57.0.1", "@expo/xdl@^57.1.0":
-  version "57.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-57.1.0.tgz#f7f10e68f7f1692401fca12af1271d6003c405e3"
-  integrity sha512-aenD7k25zRsJYdNIQ93EreT6nY1u1uLPbBhaQu7GrDZAw5AhBlbh8xIi0/8oYpwH2A+YHpcHMgbzjC0lMDg9/A==
+"@expo/xdl@57.1.1", "@expo/xdl@^57.1.1":
+  version "57.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-57.1.1.tgz#56639002589617653f9b492aab49095fe76907cd"
+  integrity sha512-7XuVg3sX+EtR3nQbTHkQgyGBIFodPbtnBXeG2FJOMfp9JSprWI9/uxZbjkz6oC+0VxqgTrjtaRXBmKUDRNDW9Q==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.5.1"
@@ -4419,20 +4419,20 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
-expo-cli@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-3.9.1.tgz#82501d4778d70074d6d51903c5b56bc3464a3ae9"
-  integrity sha512-e4yd2F7EsQ7gSklB3vnlhMWK5SMQdwNM0sJE3E86jouO6hfH7J1c3uvsns0gF0qbUyOiKsG+eKYdpuoGnLAdRQ==
+expo-cli@3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-3.10.1.tgz#c996a2243aa0cce31be4b8be465612c0de83e723"
+  integrity sha512-MW/TDXYmuwwP9GQ+pHxjedR6qqEHAq5Lp6uE6/n4QWoD/RN7+U0e9gS7dmeb8Us9F9YAXgOREcaRNGb4MtpzvQ==
   dependencies:
     "@expo/build-tools" "0.1.0-alpha.7"
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.5.1"
-    "@expo/dev-tools" "^0.8.1"
+    "@expo/dev-tools" "^0.9.1"
     "@expo/json-file" "^8.2.1"
     "@expo/package-manager" "^0.0.0"
     "@expo/simple-spinner" "1.0.2"
     "@expo/spawn-async" "1.5.0"
-    "@expo/xdl" "^57.0.1"
+    "@expo/xdl" "^57.1.1"
     "@types/cli-table" "^0.3.0"
     "@types/untildify" "^3.0.0"
     ansi-regex "^4.1.0"
@@ -4450,7 +4450,7 @@ expo-cli@^3.9.1:
     enquirer "^2.3.2"
     envinfo "5.10.0"
     es6-error "3.2.0"
-    expo-optimize "^0.0.1"
+    expo-optimize "^0.0.2"
     fs-extra "6.0.1"
     getenv "0.7.0"
     glob "7.1.2"
@@ -4481,14 +4481,12 @@ expo-cli@^3.9.1:
     "@expo/traveling-fastlane-darwin" "1.11.0"
     "@expo/traveling-fastlane-linux" "1.11.0"
 
-expo-optimize@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/expo-optimize/-/expo-optimize-0.0.1.tgz#2ab920d22b52bdd4f319300c199345ac600a608c"
-  integrity sha512-EiQ6WnEkFE/mnDMLTbYnQXWw6fN74lJC6qEBrhU/E4+9gsuTWMd8AM0nzx3/KvUkwLAks51D2uKTDKn9llFKqg==
+expo-optimize@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/expo-optimize/-/expo-optimize-0.0.2.tgz#0db5131ac58004bba5965541d4cd8743a76cf3b9"
+  integrity sha512-xg+8cKrIwk9KLeNXbs6ngvwZgkkRylYVBrCz5Ca4Sm0NmotTAWoDHhjh73P8ox6AwlLGonUqBMoqmg4VvnEUgg==
   dependencies:
-    "@expo/config" "^2.5.1"
     "@expo/image-utils" "^0.2.7"
-    "@expo/json-file" "^8.2.1"
 
 express@4.16.4:
   version "4.16.4"
