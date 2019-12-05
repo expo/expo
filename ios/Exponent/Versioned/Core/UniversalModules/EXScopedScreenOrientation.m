@@ -22,12 +22,12 @@
 
 - (UIInterfaceOrientationMask)orientationMask
 {
-  return [[EXScreenOrientationModule sharedRegistry] orientationMaskForAppId:_experienceId];
+  return [[self sharedRegistry] orientationMaskForAppId:_experienceId];
 }
 
 - (void)setOrientationMask:(UIInterfaceOrientationMask)mask
 {
-  return [[EXScreenOrientationModule sharedRegistry] setOrientationMask:mask forAppId:_experienceId];
+  return [[self sharedRegistry] setOrientationMask:mask forAppId:_experienceId];
 }
 
 @end

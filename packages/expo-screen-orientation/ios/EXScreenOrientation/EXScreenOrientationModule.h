@@ -32,6 +32,6 @@ typedef NS_ENUM(NSInteger, EXOrientationLock) {
 
 - (UIInterfaceOrientationMask)orientationMask;
 - (void)setOrientationMask:(UIInterfaceOrientationMask)mask;
-+ (EXScreenOrientationRegistry *)sharedRegistry;
+- (EXScreenOrientationRegistry *)sharedRegistry;
 
 @end

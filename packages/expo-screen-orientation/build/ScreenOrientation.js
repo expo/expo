@@ -57,10 +57,7 @@ export async function lockPlatformAsync(options) {
     _lastOrientationLock = OrientationLock.OTHER;
 }
 export async function unlockAsync() {
-    if (!ExpoScreenOrientation.unlockAsync) {
-        throw new UnavailabilityError('ScreenOrientation', 'unlockAsync');
-    }
-    await ExpoScreenOrientation.unlockAsync();
+    await ExpoScreenOrientation.lockAsync(OrientationLock.DEFAULT);
 }
 export async function getOrientationAsync() {
     if (!ExpoScreenOrientation.getOrientationAsync) {

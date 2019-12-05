@@ -1,26 +1,24 @@
 export var Orientation;
 (function (Orientation) {
-    Orientation["UNKNOWN"] = "UNKNOWN";
-    Orientation["PORTRAIT"] = "PORTRAIT";
-    Orientation["PORTRAIT_UP"] = "PORTRAIT_UP";
-    Orientation["PORTRAIT_DOWN"] = "PORTRAIT_DOWN";
-    Orientation["LANDSCAPE"] = "LANDSCAPE";
-    Orientation["LANDSCAPE_LEFT"] = "LANDSCAPE_LEFT";
-    Orientation["LANDSCAPE_RIGHT"] = "LANDSCAPE_RIGHT";
+    Orientation[Orientation["UNKNOWN"] = 0] = "UNKNOWN";
+    Orientation[Orientation["PORTRAIT_UP"] = 1] = "PORTRAIT_UP";
+    Orientation[Orientation["PORTRAIT_DOWN"] = 2] = "PORTRAIT_DOWN";
+    Orientation[Orientation["LANDSCAPE_LEFT"] = 3] = "LANDSCAPE_LEFT";
+    Orientation[Orientation["LANDSCAPE_RIGHT"] = 4] = "LANDSCAPE_RIGHT";
 })(Orientation || (Orientation = {}));
 export var OrientationLock;
 (function (OrientationLock) {
-    OrientationLock["DEFAULT"] = "DEFAULT";
-    OrientationLock["ALL"] = "ALL";
-    OrientationLock["PORTRAIT"] = "PORTRAIT";
-    OrientationLock["PORTRAIT_UP"] = "PORTRAIT_UP";
-    OrientationLock["PORTRAIT_DOWN"] = "PORTRAIT_DOWN";
-    OrientationLock["LANDSCAPE"] = "LANDSCAPE";
-    OrientationLock["LANDSCAPE_LEFT"] = "LANDSCAPE_LEFT";
-    OrientationLock["LANDSCAPE_RIGHT"] = "LANDSCAPE_RIGHT";
-    OrientationLock["OTHER"] = "OTHER";
-    OrientationLock["UNKNOWN"] = "UNKNOWN";
-    OrientationLock["ALL_BUT_UPSIDE_DOWN"] = "ALL_BUT_UPSIDE_DOWN";
+    OrientationLock[OrientationLock["DEFAULT"] = 0] = "DEFAULT";
+    OrientationLock[OrientationLock["ALL"] = 1] = "ALL";
+    OrientationLock[OrientationLock["PORTRAIT"] = 2] = "PORTRAIT";
+    OrientationLock[OrientationLock["PORTRAIT_UP"] = 3] = "PORTRAIT_UP";
+    OrientationLock[OrientationLock["PORTRAIT_DOWN"] = 4] = "PORTRAIT_DOWN";
+    OrientationLock[OrientationLock["LANDSCAPE"] = 5] = "LANDSCAPE";
+    OrientationLock[OrientationLock["LANDSCAPE_LEFT"] = 6] = "LANDSCAPE_LEFT";
+    OrientationLock[OrientationLock["LANDSCAPE_RIGHT"] = 7] = "LANDSCAPE_RIGHT";
+    OrientationLock[OrientationLock["OTHER"] = 8] = "OTHER";
+    OrientationLock[OrientationLock["UNKNOWN"] = 9] = "UNKNOWN";
+    OrientationLock[OrientationLock["ALL_BUT_UPSIDE_DOWN"] = 10] = "ALL_BUT_UPSIDE_DOWN";
 })(OrientationLock || (OrientationLock = {}));
 export var SizeClassIOS;
 (function (SizeClassIOS) {
