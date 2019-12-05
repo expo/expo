@@ -1,15 +1,15 @@
 ---
 title: Notifications
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notifications"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notifications'
 ---
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
 **Platform Compatibility**
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ❌     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ❌               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -187,7 +187,7 @@ An object used to describe the local notification that you would like to present
 - **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 - **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
   - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
-  - **_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
+  - **\_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
 - **android (_optional_) (_object_)** -- notification configuration specific to Android.
   - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
   - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
@@ -205,6 +205,7 @@ An object used to describe an Android notification channel that you would like t
 - **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
 - **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
 - **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
+- **lockscreenVisibility (_optional_) (_public | private | secret_)** -- If `public`, notifications posted to this channel will show on all lockscreens. If `private`, it will conceal sensitive or private information on secure lockscreens. if `secret`, it will not reveal any part of this notification on a secure lockscreen.
 
 ## App Icon Badge Number (iOS)
 
@@ -245,8 +246,8 @@ A Promise that resolves to an object with the following fields:
 
 ## Error Codes
 
-| Code                                               | Description                                                                                      |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED          | The device was unable to register for remote notifications with Expo.                            |
+| Code                                               | Description                                                                                                                                                                               |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED          | The device was unable to register for remote notifications with Expo.                                                                                                                     |
 | E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG            | (Web only) You did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/)) |
-| E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED | (Web only) The device was unable to register for remote notifications with the browser endpoint. |
+| E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED | (Web only) The device was unable to register for remote notifications with the browser endpoint.                                                                                          |
