@@ -266,7 +266,7 @@ public class NotificationHelper {
       }
       int lockscreenVisibility;
       if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY)) {
-        description = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY);
+        lockscreenVisibility = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY);
       }
 
       createChannel(
