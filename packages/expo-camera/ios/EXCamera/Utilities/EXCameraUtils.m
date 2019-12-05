@@ -135,7 +135,7 @@
   return [fileURL absoluteString];
 }
 
-+ (NSData *)dataFromImage:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality
++ (NSData *)dataFromImage:(UIImage *)image withMetadata:(NSDictionary *)metadata imageQuality:(float)quality
 {
   // Get metadata (includes the EXIF data)
   CGImageSourceRef sourceCGIImageRef = CGImageSourceCreateWithData((CFDataRef) UIImageJPEGRepresentation(image, 1.0f), NULL);
@@ -143,9 +143,10 @@
   
   NSMutableDictionary *updatedMetadata = [sourceMetadata mutableCopy];
   
-  // Add camera exif data
-  [updatedMetadata setObject:exif forKey:(__bridge NSString *)kCGImagePropertyExifDictionary];
-
+  for (id key in metadata) {
+    updatedMetadata[key] = metadata[key];
+  }
+  
   // Set compression quality
   [updatedMetadata setObject:@(quality) forKey:(__bridge NSString *)kCGImageDestinationLossyCompressionQuality];
 
@@ -154,7 +155,7 @@
   CGImageDestinationRef destinationCGImageRef = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)processedImageData, CGImageSourceGetType(sourceCGIImageRef), 1, NULL);
 
   // Add image to the destination
-  // Note: it'll save only these value which are under the kCGImagePropertyExif* key.
+  // Note: it'll save only these value which are under the kCGImageProperty* key.
   CGImageDestinationAddImage(destinationCGImageRef, image.CGImage, (__bridge CFDictionaryRef) updatedMetadata);
 
   // Finalize the destination

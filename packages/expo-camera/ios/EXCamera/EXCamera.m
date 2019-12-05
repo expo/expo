@@ -388,9 +388,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   NSData *imageData = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
-  CFDictionaryRef exifAttachments = CMGetAttachment(photoSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-  NSDictionary *metadata = (__bridge NSDictionary *)exifAttachments;
-  [self handleCapturedImageData:imageData exifMetadata:metadata options:options resolver:resolve reject:reject];
+  
+  CGImageSourceRef sourceCGIImageRef = CGImageSourceCreateWithData((CFDataRef) imageData, NULL);
+  NSDictionary *sourceMetadata = (__bridge NSDictionary *) CGImageSourceCopyPropertiesAtIndex(sourceCGIImageRef, 0, NULL);
+  [self handleCapturedImageData:imageData metadata:sourceMetadata options:options resolver:resolve reject:reject];
+  CFRelease(sourceCGIImageRef);
 }
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output didFinishProcessingPhoto:(AVCapturePhoto *)photo error:(NSError *)error API_AVAILABLE(ios(11.0))
@@ -413,10 +415,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   NSData *imageData = [photo fileDataRepresentation];
-  [self handleCapturedImageData:imageData exifMetadata:photo.metadata[(NSString *)kCGImagePropertyExifDictionary] options:options resolver:resolve reject:reject];
+  [self handleCapturedImageData:imageData metadata:photo.metadata options:options resolver:resolve reject:reject];
 }
 
-- (void)handleCapturedImageData:(NSData *)imageData exifMetadata:(NSDictionary *)exifMetadata options:(NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (void)handleCapturedImageData:(NSData *)imageData metadata:(NSDictionary *)metadata options:(NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
   UIImage *takenImage = [UIImage imageWithData:imageData];
   BOOL useFastMode = [options[@"fastMode"] boolValue];
@@ -444,13 +446,16 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
   NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
   if ([options[@"exif"] boolValue]) {
-    NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:exifMetadata withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }];
+    NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:metadata[(NSString *)kCGImagePropertyExifDictionary] withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }];
     updatedExif[(NSString *)kCGImagePropertyExifPixelYDimension] = @(width);
     updatedExif[(NSString *)kCGImagePropertyExifPixelXDimension] = @(height);
     response[@"exif"] = updatedExif;
     
+    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
+    updatedMetadata[(NSString *)kCGImagePropertyExifDictionary] = updatedExif;
+    
     // UIImage does not contain metadata information. We need to add them to CGImage manually.
-    processedImageData = [EXCameraUtils dataFromImage:takenImage withExifData:updatedExif imageQuality:quality];
+    processedImageData = [EXCameraUtils dataFromImage:takenImage withMetadata:updatedMetadata imageQuality:quality];
   } else {
     processedImageData = UIImageJPEGRepresentation(takenImage, quality);
   }
