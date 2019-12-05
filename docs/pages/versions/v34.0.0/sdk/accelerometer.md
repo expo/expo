@@ -4,7 +4,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
-import HorizontalList from '~/components/plugins/HorizontalList';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 
 Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
@@ -108,9 +108,7 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-**[Methods](#methods)**
-
-<HorizontalList useCodeBlock contents={['Accelerometer.isAvailableAsync()', 'Accelerometer.addListener(listener)', 'Accelerometer.removeAllListeners()', 'Accelerometer.setUpdateInterval(intervalMs)']} />
+<TableOfContentSection title='Methods' contents={['Accelerometer.isAvailableAsync()', 'Accelerometer.addListener(listener)', 'Accelerometer.removeAllListeners()', 'Accelerometer.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 

@@ -3,6 +3,9 @@ title: Battery
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-battery"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides battery information for the physical device, as well as corresponding event listeners.
 
 **Platform Compatibility**
@@ -15,33 +18,65 @@ Provides battery information for the physical device, as well as corresponding e
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-battery`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
 
+## Example Usage
+
+<SnackInline label='Basic Battery Usage' templateId='battery' dependencies={['expo-battery']}>
+
+```js
+import React from 'react';
+import * as Battery from 'expo-battery';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default class App extends React.Component {
+  state = {
+    batteryLevel: null,
+  };
+
+  componentDidMount() {
+    let batteryLevel = await Battery.getBatteryLevelAsync();
+    this.setState({ batteryLevel });
+    this._subscribe();
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  _subscribe = () => {
+    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
+      this.setState({ batteryLevel });
+      console.log('batteryLevel changed!', batteryLevel);
+    });
+  };
+
+  _unsubscribe = () => {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
+
 ## API
 
 ```js
 import * as Battery from 'expo-battery';
 ```
 
-### Methods
+<TableOfContentSection title='Methods' contents={['Battery.getBatteryLevelAsync()', 'Battery.getBatteryStateAsync()', 'Battery.isLowPowerModeEnabledAsync()', 'Battery.getPowerStateAsync()']}/>
 
-- [`Battery.isAvailableAsync()`](#batteryisavailableasync)
-- [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
-- [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
-- [`Battery.isLowPowerModeEnabledAsync()`](#batteryislowpowermodeenabledasync)
-- [`Battery.getPowerStateAsync()`](#batterygetpowerstateasync)
 
-### Event Subscriptions
+<TableOfContentSection title='Event Subscriptions' contents={['Battery.addBatteryLevelListener(callback)', 'Battery.addBatteryStateListener(callback)', 'Battery.addLowPowerModeListener(callback)']} />
 
-- [`Battery.addBatteryLevelListener(callback)`](#batteryaddbatterylevellistenercallback)
-- [`Battery.addBatteryStateListener(callback)`](#batteryaddbatterystatelistenercallback)
-- [`Battery.addLowPowerModeListener(callback)`](#batteryaddlowpowermodelistenercallback)
-
-### Enum Types
-
-- [`Battery.BatteryState`](#batterybatterystate)
-
-### Errors
-
-- [Error Codes](#error-codes)
+<TableOfContentSection title='Enum Types' contents={['Battery.BatteryState']} />
 
 ## Methods
 
@@ -173,56 +208,3 @@ Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The eve
 - **`BatteryState.UNPLUGGED`** - if battery is not charging or discharging
 - **`BatteryState.CHARGING`** - if battery is charging
 - **`BatteryState.FULL`** - if the battery level is full
-
-**Examples**
-
-```js
-import React from 'react';
-import * as Battery from 'expo-battery';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default class App extends React.Component {
-  state = {
-    batteryLevel: null,
-  };
-
-  componentDidMount() {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
-    this._subscribe();
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-  _subscribe = () => {
-    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
-      this.setState({ batteryLevel });
-      console.log('batteryLevel changed!', batteryLevel);
-    });
-  };
-
-  _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
