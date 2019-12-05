@@ -625,6 +625,10 @@ jobs:
 
   shell_app_ios_build:
     executor: mac
+    parameters:
+      upload:
+        type: boolean
+        default: true
     steps:
       - install_nix
       - setup
