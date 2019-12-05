@@ -88,7 +88,7 @@ export default class TableOfContentSection extends React.Component {
     return (
       <div>
         <a
-          href={`${createAnchorLink(title)}`}
+          href={`#${createAnchorLink(title)}`}
           className={STYLES_EXTERNAL_LINK}
           rel="noopener noreferrer">
           <p className={STYLES_TITLE}>{title}</p>
