@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
+  shallow-checkout: expo/shallow-checkout@1.0.1
 
 commands:
   conditionally_halt:
@@ -138,59 +139,6 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
-  checkout-shallow:
-    steps:
-      - run:
-          name: Checkout code (shallow)
-          command: |
-            # This command has been mostly copied from the `checkout` command available in CircleCI.
-
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-
-            (umask 077; touch ~/.ssh/id_rsa)
-            chmod 0600 ~/.ssh/id_rsa
-            (cat \<<EOF > ~/.ssh/id_rsa
-            $CHECKOUT_KEY
-            EOF
-            )
-
-            # use git+ssh instead of https
-            git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
-            git config --global gc.auto 0 || true
-
-            if [ -e $CIRCLE_WORKING_DIRECTORY/.git ]
-            then
-                cd $CIRCLE_WORKING_DIRECTORY
-                git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
-            else
-                mkdir -p $CIRCLE_WORKING_DIRECTORY
-                cd $CIRCLE_WORKING_DIRECTORY
-                git clone --depth=10 "$CIRCLE_REPOSITORY_URL" .
-            fi
-
-            if [ -n "$CIRCLE_TAG" ]
-            then
-              git fetch --depth=10 --force origin "refs/tags/${CIRCLE_TAG}"
-            elif [[ "$CIRCLE_BRANCH" =~ ^pull\/* ]]
-            then
-              # For PR from Fork
-              git fetch --depth=10 --force origin "$CIRCLE_BRANCH/head:remotes/origin/$CIRCLE_BRANCH"
-            else
-              git fetch --depth=10 --force origin "$CIRCLE_BRANCH:remotes/origin/$CIRCLE_BRANCH"
-            fi
-
-            if [ -n "$CIRCLE_TAG" ]
-            then
-                git reset --hard "$CIRCLE_SHA1"
-                git checkout -q "$CIRCLE_TAG"
-            elif [ -n "$CIRCLE_BRANCH" ]
-            then
-                git checkout -b "$CIRCLE_BRANCH" "$CIRCLE_SHA1"
-            fi
-
-            git reset --hard "$CIRCLE_SHA1"
 
   install_nix:
     steps:
@@ -228,7 +176,7 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - checkout-shallow
+      - shallow-checkout/checkout
       - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
