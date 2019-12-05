@@ -11,6 +11,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🎉 New features
 
 - Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
+- Added support for lockscreenVisibility for NotificationChannel in Android by [@ranatchai](https://github.com/ranatchai) ([#6440](https://github.com/expo/expo/pull/6440))
 
 ### 🐛 Bug fixes
 
