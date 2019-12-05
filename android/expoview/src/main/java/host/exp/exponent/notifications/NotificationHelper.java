@@ -264,7 +264,7 @@ public class NotificationHelper {
       } else {
         vibrate = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE, false);
       }
-      int lockscreenVisibility;
+      String lockscreenVisibility;
       if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY)) {
         lockscreenVisibility = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY);
       }
