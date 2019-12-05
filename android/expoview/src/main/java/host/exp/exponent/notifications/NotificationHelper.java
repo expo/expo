@@ -295,7 +295,9 @@ public class NotificationHelper {
       String importanceString,
       Boolean sound,
       Object vibrate,
-      Boolean badge) {
+      Boolean badge,
+      String lockscreenVisibilityString  
+    ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
