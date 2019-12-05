@@ -135,7 +135,7 @@
   return [fileURL absoluteString];
 }
 
-+ (NSData *)writeImageToData:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality
++ (NSData *)dataFromImage:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality
 {
   // Get metadata (includes the EXIF data)
   CGImageSourceRef sourceCGIImageRef = CGImageSourceCreateWithData((CFDataRef) UIImageJPEGRepresentation(image, 1.0f), NULL);

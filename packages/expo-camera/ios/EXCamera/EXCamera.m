@@ -444,13 +444,13 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
   NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
   if ([options[@"exif"] boolValue]) {
-    NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:exifMetadata withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }]; // TODO
+    NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:exifMetadata withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }];
     updatedExif[(NSString *)kCGImagePropertyExifPixelYDimension] = @(width);
     updatedExif[(NSString *)kCGImagePropertyExifPixelXDimension] = @(height);
     response[@"exif"] = updatedExif;
     
     // UIImage does not contain metadata information. We need to add them to CGImage manually.
-    processedImageData = [EXCameraUtils writeImageToData:takenImage withExifData:updatedExif imageQuality:quality];
+    processedImageData = [EXCameraUtils dataFromImage:takenImage withExifData:updatedExif imageQuality:quality];
   } else {
     processedImageData = UIImageJPEGRepresentation(takenImage, quality);
   }

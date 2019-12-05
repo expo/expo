@@ -26,7 +26,7 @@
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
 + (NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
 + (NSMutableDictionary *)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData;
-+ (NSData *)writeImageToData:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality;
++ (NSData *)dataFromImage:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality;
 
 @end
 
