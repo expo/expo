@@ -390,6 +390,7 @@ workflows:
                 - /sdk-\d+/
                 - /.*all-ci.*/
       - shell_app_ios_build:
+          upload: true
           requires:
             - shell_app_ios_approve_build
       - shell_app_android_approve_build:
@@ -414,6 +415,18 @@ workflows:
       - expo_client_build:
           requires:
             - expo_client_approve_build
+
+  shell_app_nightly:
+    triggers:
+      - schedule:
+          cron: "20 5 * * 2,4,6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - shell_app_ios_build:
+          upload: false
 
 jobs:
   expo_sdk:
@@ -612,6 +625,10 @@ jobs:
 
   shell_app_ios_build:
     executor: mac
+    parameters:
+      upload:
+        type: boolean
+        default: true
     steps:
       - install_nix
       - setup
@@ -635,23 +652,26 @@ jobs:
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - run:
-          name: Package and upload release tarball
-          working_directory: ~/project
-          no_output_timeout: 40m
-          command: |
-            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-            tar \
-              -zcf "/tmp/$TARBALL" \
-              package.json \
-              exponent-view-template \
-              shellAppBase-builds \
-              shellAppWorkspaces \
-              ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-            echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
-            echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
+      - when:
+          condition: << parameters.upload >>
+          steps:
+            - run:
+                name: Package and upload release tarball
+                working_directory: ~/project
+                no_output_timeout: 40m
+                command: |
+                  export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+                  tar \
+                    -zcf "/tmp/$TARBALL" \
+                    package.json \
+                    exponent-view-template \
+                    shellAppBase-builds \
+                    shellAppWorkspaces \
+                    ios
+                  ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+                  echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+                  echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
+                  echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
   shell_app_android_build:
     executor: android
