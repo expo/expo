@@ -16,7 +16,6 @@ import org.unimodules.core.interfaces.services.UIManager
 
 private const val ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK"
 private const val ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK"
-private const val ERR_SCREEN_ORIENTATION_GET_ORIENTATION = "ERR_SCREEN_ORIENTATION_GET_ORIENTATION"
 private const val ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK"
 private const val ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK"
 private const val ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY = "ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY"
@@ -57,19 +56,15 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
   }
 
   @ExpoMethod
-  fun lockAsync(orientationLockStr: String, promise: Promise) {
+  fun lockAsync(orientationLock: Int, promise: Promise) {
     mActivityProvider.currentActivity?.let {
       return try {
-        val orientationLock = OrientationLock.valueOf(orientationLockStr)
-        val orientationAttr = orientationLockJSToNative(orientationLock)
-        it.requestedOrientation = orientationAttr
+        it.requestedOrientation = importOrientationLock(orientationLock)
         promise.resolve(null)
-      } catch (e: IllegalArgumentException) {
-        promise.reject(ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK, "An invalid OrientationLock was passed in: $orientationLockStr", e)
       } catch (e: InvalidArgumentException) {
-        promise.reject(e)
+        promise.reject(ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK, "An invalid OrientationLock was passed in: $orientationLock", e)
       } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK, "Could not apply the ScreenOrientation lock: $orientationLockStr", e)
+        promise.reject(ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK, "Could not apply the ScreenOrientation lock: $orientationLock", e)
       }
     }
 
@@ -91,19 +86,9 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
   }
 
   @ExpoMethod
-  fun unlockAsync(promise: Promise) {
-    lockAsync(OrientationLock.DEFAULT.toString(), promise)
-  }
-
-  @ExpoMethod
   fun getOrientationAsync(promise: Promise) {
     mActivityProvider.currentActivity?.let {
-      return try {
-        val orientation = getScreenOrientation(it)
-        promise.resolve(orientation.toString()) // may not work
-      } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_GET_ORIENTATION, "Could not get the current screen orientation", e)
-      }
+      return promise.resolve(getScreenOrientation(it).value)
     }
 
     promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
@@ -113,9 +98,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
   fun getOrientationLockAsync(promise: Promise) {
     mActivityProvider.currentActivity?.let {
       return try {
-        val orientationAttr = it.requestedOrientation
-        val orientationLock = orientationLockNativeToJS(orientationAttr)
-        promise.resolve(orientationLock.toString())
+        promise.resolve(exportOrientationLock(it.requestedOrientation))
       } catch (e: Exception) {
         promise.reject(ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK, "Could not get the current screen orientation lock", e)
       }
@@ -138,33 +121,26 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
   }
 
   @ExpoMethod
-  fun supportsOrientationLockAsync(orientationLockStr: String, promise: Promise) {
+  fun supportsOrientationLockAsync(orientationLock: Int, promise: Promise) {
     try {
-      // If we can get the native orientation value from the given string without throwing, we resolve with true
-      val lockJS = OrientationLock.valueOf(orientationLockStr)
-      orientationLockJSToNative(lockJS)
+      importOrientationLock(orientationLock)
       promise.resolve(true)
     } catch (e: Exception) {
       promise.resolve(false)
     }
-
   }
 
   // https://stackoverflow.com/questions/10380989/how-do-i-get-the-current-orientation-activityinfo-screen-orientation-of-an-a
   // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort
   private fun getScreenOrientation(activity: Activity): Orientation {
-    val windowManager = activity.windowManager
+    val windowManager = activity.windowManager ?: return Orientation.UNKNOWN
     val rotation = windowManager.defaultDisplay.rotation
     val dm = DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
-    val width = dm.widthPixels
-    val height = dm.heightPixels
-    val orientation: Orientation
 
-    // if the device's natural orientation is portrait:
-    if ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
-        && height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
-        && width > height) {
-      orientation = when (rotation) {
+    val currentOrientation: Orientation
+
+    if (isPortraitNaturalOrientation(rotation, dm.heightPixels, dm.widthPixels)) {
+      currentOrientation = when (rotation) {
         Surface.ROTATION_0 -> Orientation.PORTRAIT_UP
         Surface.ROTATION_90 -> Orientation.LANDSCAPE_LEFT
         Surface.ROTATION_180 -> Orientation.PORTRAIT_DOWN
@@ -172,7 +148,9 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
         else -> Orientation.UNKNOWN
       }
     } else {
-      orientation = when (rotation) {
+      // if the device's natural orientation is landscape or if the device
+      // is square:
+      currentOrientation = when (rotation) {
         Surface.ROTATION_0 -> Orientation.LANDSCAPE_LEFT
         Surface.ROTATION_90 -> Orientation.PORTRAIT_DOWN
         Surface.ROTATION_180 -> Orientation.LANDSCAPE_RIGHT
@@ -181,38 +159,44 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
       }
     }
 
-    // if the device's natural orientation is landscape or if the device
-    // is square:
-    return orientation
+    return currentOrientation
   }
 
-  private fun orientationLockNativeToJS(orientationAttr: Int): OrientationLock {
-    return when (orientationAttr) {
-      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> OrientationLock.DEFAULT
-      ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR -> OrientationLock.ALL
-      ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> OrientationLock.PORTRAIT
-      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> OrientationLock.PORTRAIT_UP
-      ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT -> OrientationLock.PORTRAIT_DOWN
-      ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> OrientationLock.LANDSCAPE
-      ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> OrientationLock.LANDSCAPE_LEFT
-      ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> OrientationLock.LANDSCAPE_RIGHT
-      else -> OrientationLock.OTHER
+  /*
+   * Check if the device's natural orientation is portrait.
+   */
+  private fun isPortraitNaturalOrientation(rotation: Int, height: Int, width: Int): Boolean {
+    return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
+        && height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
+        && width > height
+  }
+
+  private fun exportOrientationLock(nativeOrientationLock: Int): Int {
+    return when (nativeOrientationLock) {
+      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> 0
+      ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR -> 1
+      ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> 2
+      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> 3
+      ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT -> 4
+      ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> 5
+      ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 6
+      ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 7
+      else -> 8
     }
   }
 
   @Throws(InvalidArgumentException::class)
-  private fun orientationLockJSToNative(orientationLock: OrientationLock): Int {
+  private fun importOrientationLock(orientationLock: Int): Int {
     return when (orientationLock) {
-      OrientationLock.DEFAULT -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-      OrientationLock.ALL -> ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
-      OrientationLock.ALL_BUT_UPSIDE_DOWN -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
-      OrientationLock.PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-      OrientationLock.PORTRAIT_UP -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-      OrientationLock.PORTRAIT_DOWN -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-      OrientationLock.LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-      OrientationLock.LANDSCAPE_LEFT -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-      OrientationLock.LANDSCAPE_RIGHT -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-      else -> throw InvalidArgumentException("OrientationLock $orientationLock is not mapped to a native Android orientation attr")
+      0 -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+      1 -> ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+      2 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+      3 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+      4 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+      5 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+      6 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+      7 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+      else -> throw InvalidArgumentException("OrientationLock $orientationLock is not mappable to a native Android orientation attr")
     }
   }
 }

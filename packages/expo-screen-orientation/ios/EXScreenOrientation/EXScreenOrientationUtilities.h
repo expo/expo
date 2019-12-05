@@ -5,21 +5,20 @@
 @interface EXScreenOrientationUtilities : NSObject
 
 + (BOOL)doesSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask;
-+ (NSDictionary *)getStringToOrientationJSDict;
-+ (NSDictionary *)getOrientationJSToStringDict;
-+ (NSDictionary *)getStringToOrientationLockJSDict;
-+ (NSDictionary *)getOrientationLockJSToStringDict;
-+ (EXOrientation)orientationNativeToJS:(UIInterfaceOrientationMask)orientationMask;
-+ (EXOrientationLock)orientationLockNativeToJS:(UIInterfaceOrientationMask)orientationMask;
-+ (UIInterfaceOrientationMask)orientationJSToNative:(EXOrientation)orientation;
-+ (UIInterfaceOrientationMask)orientationLockJSToNative:(EXOrientationLock)orientationLock;
-+ (EXOrientation)stringToOrientation:(NSString *)orientationString;
-+ (NSString *)orientationToString:(EXOrientation)orientation;
-+ (EXOrientationLock)stringToOrientationLock:(NSString *)orientationLockString;
-+ (NSString *)orientationLockToString:(EXOrientationLock)orientationLock;
-+ (NSString *)UIInterfaceOrientationToEXOrientation:(UIInterfaceOrientation)screenOrientation;
-+ (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation;
 + (BOOL)doesOrientationMask:(UIInterfaceOrientationMask)orientationMask containOrientation:(UIInterfaceOrientation)orientation;
 + (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask;
++ (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation;
++ (UIInterfaceOrientationMask)maskFromOrientation:(UIInterfaceOrientation)orientation;
+
+// import/export
+
+// orientationLock
++ (UIInterfaceOrientationMask)importOrientationLock:(NSNumber *)orientationLock;
++ (NSNumber *)exportOrientationLock:(UIInterfaceOrientationMask)orientationMask;
+
+// orientation
++ (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation;
++ (UIInterfaceOrientation)importOrientation:(NSNumber *)orientation;
+
 
 @end

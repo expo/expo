@@ -322,28 +322,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  NSString *validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_appRecord.appLoader.manifest];
-  NSString *majorSDKVersion = [validatedVersion componentsSeparatedByString:@"."][0];
-  if ([validatedVersion length] != 0 && [majorSDKVersion integerValue] <= 35) {
-    return [self legacySupportedInterfaceOrientations];
-  }
-  
-  if (!_appRecord.experienceId) {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
-  }
   EXScreenOrientationRegistry *registry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if ([registry doesKeyExistForAppId:_appRecord.experienceId]) {
     return [registry orientationMaskForAppId:_appRecord.experienceId];
   }
-  UIInterfaceOrientationMask mask = [self orientationMaskFromManifestOrDefault];
-  [registry setOrientationMask:mask forAppId:_appRecord.experienceId];
-  return mask;
-}
-
-- (UIInterfaceOrientationMask)legacySupportedInterfaceOrientations {
+  
+  // TODO: Remove once sdk 36 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
+  
   return [self orientationMaskFromManifestOrDefault];
 }
 
