@@ -1,5 +1,5 @@
 package host.exp.exponent.notifications;
-
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -264,6 +264,10 @@ public class NotificationHelper {
       } else {
         vibrate = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE, false);
       }
+      int lockscreenVisibility;
+      if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY)) {
+        description = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY);
+      }
 
       createChannel(
           context,
@@ -274,7 +278,8 @@ public class NotificationHelper {
           priority,
           sound,
           vibrate,
-          badge
+          badge,
+          lockscreenVisibility
       );
     } catch (Exception e) {
       EXL.e(TAG, "Could not create channel from stored JSON Object: " + e.getMessage());
@@ -314,7 +319,24 @@ public class NotificationHelper {
       }
 
       NotificationChannel channel = new NotificationChannel(ExponentNotificationManager.getScopedChannelId(experienceId, channelId), channelName, importance);
-
+      if (lockscreenVisibilityString !== null) {      
+        int lockscreenVisibility;
+        switch (lockscreenVisibilityString) {          
+          case NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY_PUBLIC:
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC;
+            break;
+          case NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY_PRIVATE:
+            lockscreenVisibility = Notification.VISIBILITY_PRIVATE;
+            break;
+          case NotificationConstants.NOTIFICATION_CHANNEL_LOCKSCREEN_VISIBILITY_SECRET:
+            lockscreenVisibility = Notification.VISIBILITY_SECRET;
+            break;
+          default:
+            lockscreenVisibility = Notification.VISIBILITY_SECRET;
+            break;
+        }
+        channel.setLockscreenVisibility(lockscreenVisibility)
+      }
       // sound is now on by default for channels
       if (sound == null || !sound) {
         channel.setSound(null, null);

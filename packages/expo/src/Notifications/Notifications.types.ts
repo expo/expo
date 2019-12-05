@@ -32,6 +32,7 @@ export type Channel = {
   sound?: boolean;
   vibrate?: boolean | number[];
   badge?: boolean;
+  lockscreenVisibility?: 'public' | 'private' | 'secret';
 };
 
 export type ActionType = {
