@@ -337,7 +337,7 @@ public class NotificationHelper {
             lockscreenVisibility = Notification.VISIBILITY_SECRET;
             break;
         }
-        channel.setLockscreenVisibility(lockscreenVisibility)
+        channel.setLockscreenVisibility(lockscreenVisibility);
       }
       // sound is now on by default for channels
       if (sound == null || !sound) {
