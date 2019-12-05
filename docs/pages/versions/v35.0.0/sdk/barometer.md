@@ -4,6 +4,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
@@ -83,17 +84,10 @@ export default class BarometerSensor extends React.Component {
 ```js
 import { Barometer } from 'expo-sensors';
 ```
-**[Methods](#methods)**
 
-- [`Barometer.isAvailableAsync()`](#barometerisavailableasync)
-- [`Barometer.addListener((data: BarometerMeasurement) => void)`](#barometeraddlistenerdata-barometermeasurement--void)
-- [`Barometer.removeAllListeners`](#barometerremovealllisteners)
+<TableOfContentSection title='Methods' contents={['Barometer.isAvailableAsync()', 'Barometer.addListener((data: BarometerMeasurement) => void)', 'Barometer.removeAllListeners()']}/>
 
-**[Types](#types)**
-
-- [`BarometerMeasurement`](#barometermeasurement)
-
-**[Units and Providers](#units-and-providers)**
+<TableOfContentSection title='Types' contents={['BarometerMeasurement']} />
 
 ## Methods
 

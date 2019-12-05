@@ -11,7 +11,7 @@ Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate th
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 

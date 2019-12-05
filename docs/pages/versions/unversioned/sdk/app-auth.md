@@ -3,6 +3,8 @@ title: AppAuth
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 **Platform Compatibility**
@@ -131,33 +133,11 @@ async function signOutAsync({ accessToken }) {
 import * as AppAuth from 'expo-app-auth';
 ```
 
-**[Methods](#methods)**
+<TableOfContentSection title='Methods' contents={['AppAuth.authAsync()', 'AppAuth.refreshAsync()', 'AppAuth.revokeAsync()']} />
 
-- [`AppAuth.authAsync()`](#appauthauthasync)
-- [`AppAuth.refreshAsync()`](#appauthrefreshasync)
-- [`AppAuth.revokeAsync()`](#appauthrevokeasync)
+<TableOfContentSection title='Constants' contents={['AppAuth.OAuthRedirect', 'AppAuth.URLSchemes']} />
 
-**[Constants](#constants)**
-
-- [`AppAuth.OAuthRedirect`](#appauthoauthredirect)
-- [`AppAuth.URLSchemes`](#appauthurlschemes)
-
-**[Types](#types)**
-
-- [`TokenResponse`](#tokenresponse)
-- [`OAuthBaseProps`](#oauthbaseprops)
-- [`OAuthProps`](#oauthprops)
-- [`OAuthRevokeOptions`](#oauthrevokeoptions)
-- [`OAuthServiceConfiguration`](#oauthserviceconfiguration)
-- [`OAuthParameters`](#oauthparameters)
-- [`OAuthDisplayParameter`](#oauthdisplayparameter)
-- [`OAuthPromptParameter`](#oauthpromptparameter)
-- [`OAuthNonceParameter`](#oauthnonceparameter)
-- [`OAuthUILocalesParameter`](#oauthuilocalesparameter)
-- [`OAuthIDTokenHintParamater`](#oauthidtokenhintparameter)
-- [`OAuthMaxAgeParameter`](#oauthmaxageparameter)
-- [`OAuthLoginHintParameter`](#oauthloginhintparameter)
-- [`OAuthACRValuesParameter`](#oauthacrvaluesparameter)
+<TableOfContentSection title='Types' contents={['TokenResponse', 'OAuthBaseProps', 'OAuthProps', 'OAuthRevokeOptions', 'OAuthServiceConfiguration', 'OAuthParameters', 'OAuthDisplayParameter', 'OAuthPromptParameter', 'OAuthNonceParameter', 'OAuthUILocalesParameter', 'OAuthIDTokenHintParamater', 'OAuthMaxAgeParameter', 'OAuthLoginHintParameter', 'OAuthACRValuesParameter']} />
 
 ## Methods
 
