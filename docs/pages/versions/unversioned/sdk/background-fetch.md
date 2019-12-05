@@ -3,6 +3,8 @@ title: BackgroundFetch
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-background-fetch"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
 
 **Platform Compatibility**
@@ -25,12 +27,7 @@ In order to use `BackgroundFetch` API in standalone and detached apps on iOS, yo
 import * as BackgroundFetch from 'expo-background-fetch';
 ```
 
-**[Methods](#methods)**
-
-- [`BackgroundFetch.getStatusAsync()`](#backgroundfetchgetstatusasync)
-- [`BackgroundFetch.registerTaskAsync(taskName, options)`](#backgroundfetchregistertaskasynctaskname-options)
-- [`BackgroundFetch.unregisterTaskAsync(taskName)`](#backgroundfetchunregistertaskasynctaskname)
-- [`BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`](#backgroundfetchsetminimumintervalasyncminimuminterval)
+<TableOfContentSection title='Methods' contents={['BackgroundFetch.getStatusAsync()', 'BackgroundFetch.registerTaskAsync(taskName, options)', 'BackgroundFetch.unregisterTaskAsync(taskName)', 'BackgroundFetch.setMinimumIntervalAsync(minimumInterval)']} />
 
 ## Methods
 
