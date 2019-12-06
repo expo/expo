@@ -7,6 +7,7 @@ orbs:
 commands:
   install_yarn:
     steps:
+    - curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
     - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
     - run: sudo apt update && sudo apt install yarn
