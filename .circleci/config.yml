@@ -28,6 +28,8 @@ commands:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
 
+            shopt -s dotglob
+
             ROOT_BRANCH="master"
             SEARCH_DEPTH=<< parameters.search_depth >>
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
@@ -83,6 +85,8 @@ commands:
       - run:
           name: Require the << parameters.requireOneOf >> directory to have changes
           command: |
+
+            shopt -s dotglob
 
             ROOT_BRANCH="master"
 
