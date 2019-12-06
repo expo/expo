@@ -5,6 +5,11 @@ orbs:
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
 
 commands:
+  install_yarn:
+    steps:
+    - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    - run: sudo apt update && sudo apt install yarn
   conditionally_halt:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
     parameters:
@@ -694,6 +699,7 @@ jobs:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - decrypt_secrets_if_possible
+      - install_yarn
       - yarn_install:
           working_directory: ~/expo/tools-public
       - yarn_install:
@@ -713,6 +719,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
+      - install_yarn
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -729,6 +736,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
+      - install_yarn
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
