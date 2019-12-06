@@ -335,6 +335,17 @@ public class ContactsModule extends ExportedModule {
     if (data.containsKey("note"))
       contact.note = (String) data.get("note");
 
+    if (data.containsKey("image")) {
+      Map<String, Object> photo = (Map<String, Object>)data.get("image");
+
+      contact.photoUri = (String) photo.get("uri");
+      contact.hasPhoto = true;
+    }
+
+    if(contact.firstName != null || contact.lastName != null){
+      contact.displayName = (contact.firstName + " " + contact.lastName).trim();
+    }
+
     ArrayList results;
 
     try {

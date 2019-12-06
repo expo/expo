@@ -449,7 +449,7 @@ public class Contact {
         contactData.add(notes);
 
         if (photoUri != null && !photoUri.isEmpty()) {
-            Bitmap photo = BitmapFactory.decodeFile(photoUri);
+            Bitmap photo = BitmapFactory.decodeFile(photoUri.replace("file:/", "/"));
 
             if (photo != null) {
                 ContentValues image = new ContentValues();

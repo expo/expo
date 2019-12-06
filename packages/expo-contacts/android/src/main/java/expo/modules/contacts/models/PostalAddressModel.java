@@ -81,6 +81,8 @@ public class PostalAddressModel extends BaseModel {
     values.put(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"));
     values.put(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"));
     values.put(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"));
+    values.put(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, getFormattedAddress());
+    values.put(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, mapStringToType(getString("label")));
     return values;
   }
 
@@ -100,4 +102,22 @@ public class PostalAddressModel extends BaseModel {
     }
   }
 
+
+  protected String getFormattedAddress() {
+    final String[] addressInfos = new String[]{"street", "region", "postalCode", "city", "country"};
+    String formattedAddress = "";
+
+    for (int i = 0; i < addressInfos.length; i++) {
+      final String info = getString(addressInfos[i]);
+
+      if(info == null || info.isEmpty()){
+        continue;
+      }
+
+      formattedAddress += formattedAddress == "" ? "" : ", ";
+      formattedAddress += info;
+    }
+
+    return formattedAddress;
+  }
 }
