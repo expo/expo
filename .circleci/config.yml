@@ -278,7 +278,8 @@ executors:
       FASTLANE_DISABLE_COLORS: 1
       CI: 1
   android:
-    <<: *nix
+    docker:
+    - image: circleci/android:api-28-ndk-r17b
     resource_class: xlarge
   js:
     <<: *nix
@@ -705,15 +706,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Build APK, upload to Device Farm, follow device logs
-          command: |
-            nix-shell android/shell.nix --pure \
-              --keep AWS_ACCESS_KEY_ID \
-              --keep AWS_SECRET_ACCESS_KEY \
-              --keep SSL_CERT_FILE \
-              --keep FASTLANE_SKIP_UPDATE_CHECK \
-              --keep FASTLANE_DISABLE_COLORS \
-              --keep CI \
-              --run "fastlane android devicefarm"
+          command: fastlane android devicefarm
       - save_gradle_cache
 
   client_android:
@@ -734,14 +727,7 @@ jobs:
       - run:
           name: Build APK
           command: |
-            nix-shell android/shell.nix --pure \
-              --keep ANDROID_KEYSTORE_PASSWORD \
-              --keep ANDROID_KEY_ALIAS \
-              --keep ANDROID_KEY_PASSWORD \
-              --keep FASTLANE_SKIP_UPDATE_CHECK \
-              --keep FASTLANE_DISABLE_COLORS \
-              --keep CI \
-              --run "fastlane android build build_type:Release"
+              fastlane android build build_type:Release
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
