@@ -134,6 +134,7 @@ By default, Expo creates a `pages/_document.js` file for you (which `import` the
 - In the production mode (`--no-dev`), reload is not supported. You have to restart (i.e., run `expo start --no-dev --web` again) to rebuild the page.
 - You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
 - Only the Next.js default page-based routing is supported.
+- The Next.js integration for Expo for Web [does not currently work for projects using TypeScript](https://github.com/expo/expo-cli/issues/1068)
 
 ## Learn more about Next.js
 
