@@ -126,7 +126,7 @@ commands:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
       - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
-  setup:
+  nix_install_common_packages:
     steps:
       - run:
           name: Install common packages
@@ -154,6 +154,8 @@ commands:
               nixpkgs.openssh \
               nixpkgs.rsync \
               nixpkgs.xz
+  setup:
+    steps:
       - run: mkdir -p ~/.config/direnv
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
@@ -433,6 +435,7 @@ jobs:
   expo_sdk:
     executor: js
     steps:
+      - nix_install_common_packages
       - setup
       - conditionally_halt:
           # Exclude (include anything except) .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
@@ -472,6 +475,7 @@ jobs:
   home:
     executor: js
     steps:
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - update_submodules
@@ -493,6 +497,7 @@ jobs:
   expotools:
     executor: js
     steps:
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - yarn_restore_and_install:
@@ -508,6 +513,7 @@ jobs:
     #parallelism: 8
     steps:
       - install_nix
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - update_submodules
@@ -560,6 +566,7 @@ jobs:
     executor: mac
     steps:
       - install_nix
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - update_submodules
@@ -585,6 +592,7 @@ jobs:
     executor: mac
     steps:
       - install_nix
+      - nix_install_common_packages
       - setup
       - update_submodules
       - git_lfs_pull
@@ -599,6 +607,7 @@ jobs:
     executor: mac
     steps:
       - install_nix
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - update_submodules
@@ -632,6 +641,7 @@ jobs:
         default: true
     steps:
       - install_nix
+      - nix_install_common_packages
       - setup
       - guard_sdk_tests
       - update_submodules
@@ -745,6 +755,7 @@ jobs:
   client_android_apk_release:
     executor: js
     steps:
+      - nix_install_common_packages
       - setup
       - update_submodules
       - decrypt_secrets_if_possible
@@ -757,6 +768,7 @@ jobs:
   client_android_release_google_play:
     executor: js
     steps:
+      - nix_install_common_packages
       - setup
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
@@ -772,6 +784,7 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
+      - nix_install_common_packages
       - setup
       - halt_if_unchanged:
           requireOneOf: 'docs'
@@ -802,6 +815,7 @@ jobs:
   docs_deploy:
     executor: nix
     steps:
+      - nix_install_common_packages
       - setup
       - restore_cache:
           keys:
@@ -813,6 +827,7 @@ jobs:
   test_suite_publish:
     executor: nix
     steps:
+      - nix_install_common_packages
       - setup
       - conditionally_halt:
           # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
