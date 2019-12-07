@@ -702,9 +702,9 @@ jobs:
       - decrypt_secrets_if_possible
       - install_yarn
       - yarn_install:
-          working_directory: ~/expo/tools-public
+          working_directory: ~/project/tools-public
       - yarn_install:
-          working_directory: ~/expo/tools
+          working_directory: ~/project/tools
       - run: |
           aws s3 ls $S3_URI || {
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
@@ -722,9 +722,9 @@ jobs:
       - update_submodules
       - install_yarn
       - yarn_install:
-          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+          working_directory: ~/project # need jsc-android dependency in expokit-npm-package
       - yarn_install:
-          working_directory: ~/expo/tools-public
+          working_directory: ~/project/tools-public
       - restore_gradle_cache
       - run:
           name: Build APK, upload to Device Farm, follow device logs
@@ -739,9 +739,9 @@ jobs:
       - update_submodules
       - install_yarn
       - yarn_install:
-          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+          working_directory: ~/project # need jsc-android dependency in expokit-npm-package
       - yarn_install:
-          working_directory: ~/expo/tools-public
+          working_directory: ~/project/tools-public
       - restore_gradle_cache
       - decrypt_secrets_if_possible
       - run:
