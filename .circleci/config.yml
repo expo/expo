@@ -727,9 +727,8 @@ jobs:
       - yarn_install:
           working_directory: ~/project/tools-public
       - restore_gradle_cache
-      - run:
-          name: Build APK, upload to Device Farm, follow device logs
-          command: fastlane android devicefarm
+      - run: sudo apt install ruby-bundler
+      - run: fastlane android devicefarm
       - save_gradle_cache
 
   client_android:
@@ -749,10 +748,8 @@ jobs:
       - run:
           name: Decode release keystore
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-      - run:
-          name: Build APK
-          command: |
-              fastlane android build build_type:Release
+      - run: sudo apt install ruby-bundler
+      - run: fastlane android build build_type:Release
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
