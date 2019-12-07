@@ -699,6 +699,7 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
+      - run: sudo apt install git-crypt
       - decrypt_secrets_if_possible
       - install_yarn
       - yarn_install:
@@ -743,6 +744,7 @@ jobs:
       - yarn_install:
           working_directory: ~/project/tools-public
       - restore_gradle_cache
+      - run: sudo apt install git-crypt
       - decrypt_secrets_if_possible
       - run:
           name: Decode release keystore
