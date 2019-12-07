@@ -291,7 +291,7 @@ executors:
       CI: 1
   android:
     docker:
-    - image: circleci/android:api-26-ndk-r17b
+    - image: circleci/android:api-28-ndk-r17b
     resource_class: xlarge
   js:
     <<: *nix
