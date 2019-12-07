@@ -728,6 +728,7 @@ jobs:
           working_directory: ~/project/tools-public
       - restore_gradle_cache
       - run: sudo apt install ruby-bundler
+      - run: bundle install
       - run: bundle exec fastlane android devicefarm
       - save_gradle_cache
 
@@ -749,6 +750,7 @@ jobs:
           name: Decode release keystore
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: sudo apt install ruby-bundler
+      - run: bundle install
       - run: bundle exec fastlane android build build_type:Release
       - save_gradle_cache
       - save_cache:
