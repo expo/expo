@@ -25,7 +25,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 - **The Expo client app**
 
-  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
+  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_ and `host.exp.exponent.MainActivity` as Class Name. Your app's settings should end up including the following under "Settings > Basic":
 
 ![](/static/images/facebook-app-settings.png)
 
