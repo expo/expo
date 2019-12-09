@@ -23,7 +23,7 @@
     "apollo-cache-inmemory": "^1.6.3",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "~36.0.0-rc.0",
+    "expo": "~36.0.0",
     "expo-analytics-amplitude": "~8.0.0",
     "expo-asset": "~8.0.0",
     "expo-barcode-scanner": "~8.0.0",
@@ -62,7 +62,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jest-expo": "~36.0.0-rc.0",
+    "jest-expo": "~36.0.0",
     "uuid": "^3.3.2"
   }
 }
