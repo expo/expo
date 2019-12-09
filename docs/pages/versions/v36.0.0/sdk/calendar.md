@@ -97,7 +97,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -105,7 +105,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -113,7 +113,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -121,7 +121,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.createCalendarAsync(details)`
 

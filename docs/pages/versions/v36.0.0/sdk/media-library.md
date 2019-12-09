@@ -32,7 +32,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -40,7 +40,7 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
