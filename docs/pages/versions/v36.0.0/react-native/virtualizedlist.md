@@ -288,7 +288,7 @@ Set this true while waiting for new data from a refresh.
 
 ### `refreshControl`
 
-A custom refresh control element. When set, it overrides the default <RefreshControl> component built internally. The onRefresh and refreshing props are also ignored. Only works for vertical VirtualizedList.
+A custom refresh control element. When set, it overrides the default `RefreshControl` component built internally. The onRefresh and refreshing props are also ignored. Only works for vertical VirtualizedList.
 
 | Type    | Required |
 | ------- | -------- |
