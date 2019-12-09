@@ -2682,10 +2682,10 @@ expo-web-browser@~8.0.0:
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-8.0.0.tgz#8a4451c744c115569a4c810dac8851f219a21c72"
   integrity sha512-7/rXUajycSjEF4Zd4tWm8+zP9/zJg8UWj575w2AeGI7RbOwUjqzQd1CFRzQBJkHflrEaTOXJbFHXxjJXdJaL1g==
 
-expo@~36.0.0-rc.0:
-  version "36.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-36.0.0-rc.0.tgz#195f3fde2f51cd77509952827d1db8cdc816f72f"
-  integrity sha512-u6Ro7Rx9lU447fVYBsG5lAEkG0I9vy32kpNP82TyNR6r4YB26St1mE9HDEseePmBY01hr0JqrrwJNZEIiUYYpA==
+expo@~36.0.0:
+  version "36.0.0"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-36.0.0.tgz#a73060027d230dd53a893bbd7b1ebf0fb2dc0f64"
+  integrity sha512-LR2VFERKWJ7KGpjJRDrwXNb0B+2bUiRUkOOx+buReSgIbvz1QKDdMKKtQbiifEVSLdBohBtGAfCObw72SSzPGg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "^10.0.2"
@@ -3685,10 +3685,10 @@ jest-environment-node@^24.9.0:
     jest-mock "^24.9.0"
     jest-util "^24.9.0"
 
-jest-expo@~36.0.0-rc.0:
-  version "36.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-36.0.0-rc.0.tgz#3e7ba55c72ff75601d51e8b2ecf845f0db187b99"
-  integrity sha512-03/dK9sjvZ2OtqYjdBqNCf8NdriD1PkNCHeAxEdvPolGWwjV1iw1sKkHQThTsIGN3TqQuSSCaiGujUVDs+yU7A==
+jest-expo@~36.0.0:
+  version "36.0.0"
+  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-36.0.0.tgz#e07519c6bb8b8491f4ca0607d0d72157478b4c4c"
+  integrity sha512-hni7XIAZ0QA/CwHLemB++G+XY+3MBPhQpKPeKJiqMJlvD6sd+D5Wp4gRoMly2Vjc4Z5qq7i9uhip5rovQHUwYQ==
   dependencies:
     babel-jest "^24.7.1"
     jest "^24.7.1"
@@ -5450,10 +5450,10 @@ react-native-reanimated@~1.4.0:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.4.0.tgz#7f1acbf9be08492d834f512700570978052be2f9"
   integrity sha512-tO7nSNNP+iRLVbkcSS5GXyDBb7tSI02+XuRL3/S39EAr35rnvUy2JfeLUQG+fWSObJjnMVhasUDEUwlENk8IXw==
 
-react-native-screens@2.0.0-alpha.12:
-  version "2.0.0-alpha.12"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.0.0-alpha.12.tgz#35a6ef3b472958e9d35f0ca9e582d0d158f8e379"
-  integrity sha512-x9M7FEdcm97bVDp3pi//nhduJHLFMrmDQs0fq299yx3kHdgHbrmhsa8jgW4HvDQhjyPE0FWADY/GrXFuPRj80w==
+react-native-screens@~2.0.0-alpha.12:
+  version "2.0.0-alpha.17"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.0.0-alpha.17.tgz#6141234119c844d160cf8b13ea1b81ba005856bd"
+  integrity sha512-iofz5owfGT5K6V9gI3JISrL/dh5yVc5ScLAKqWQgKcbf3yG98ondr4zuwcX6t7G6IfhnDWG7qgkmWBG4u7g3Ww==
   dependencies:
     debounce "^1.2.0"
 
