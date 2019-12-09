@@ -1,7 +1,7 @@
 {
   "name": "expo-template-bare-minimum",
   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
-  "version": "35.0.1",
+  "version": "36.0.0",
   "scripts": {
     "postinstall": "jetify",
     "android": "react-native run-android",
@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo": "~36.0.0-rc.0",
+    "expo": "~36.0.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "~0.61.4",
