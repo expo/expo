@@ -5,62 +5,67 @@ title: RefreshControl
 
 This component is used inside a ScrollView or ListView to add pull to refresh functionality. When the ScrollView is at `scrollY: 0`, swiping down triggers an `onRefresh` event.
 
-### Example
+### Usage example
 
 ```javascript
-import React from 'react';
-import { ScrollView, RefreshControl, StyleSheet, Text, SafeAreaView } from 'react-native';
-import Constants from 'expo-constants';
 
-function wait(timeout) {
-  return new Promise(resolve => {
-    setTimeout(resolve, timeout);
-  });
-}
+import { ScrollView, RefreshControl } from 'react-native';
 
-export default function App() {
-  const [refreshing, setRefreshing] = React.useState(false);
+class RefreshableList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshing: false,
+    };
+  }
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    fetchData().then(() => {
+      this.setState({refreshing: false});
+    });
+  }
 
-    wait(2000).then(() => setRefreshing(false));
-  }, [refreshing]);
-
-  return (
-    <SafeAreaView style={styles.container}>
+  render() {
+    return (
       <ScrollView
-        contentContainerStyle={styles.scrollView}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        <Text>Pull down to see RefreshControl indicator</Text>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        }
+        ...
+      />
+    );
+  }
+  ...
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: Constants.statusBarHeight,
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: 'pink',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 ```
 
 **Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.
+
+### Props
+
+- [View props...](../view/#props)
+
+* [`refreshing`](../refreshcontrol/#refreshing)
+* [`onRefresh`](../refreshcontrol/#onrefresh)
+* [`colors`](../refreshcontrol/#colors)
+* [`enabled`](../refreshcontrol/#enabled)
+* [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
+* [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
+* [`size`](../refreshcontrol/#size)
+* [`tintColor`](../refreshcontrol/#tintcolor)
+* [`title`](../refreshcontrol/#title)
+* [`titleColor`](../refreshcontrol/#titlecolor)
 
 ---
 
 # Reference
 
 ## Props
-
-Inherits [View Props](../view/#props).
 
 ### `refreshing`
 

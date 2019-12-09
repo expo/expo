@@ -7,7 +7,7 @@ A StyleSheet is an abstraction similar to CSS StyleSheets
 
 Create a new StyleSheet:
 
-```jsx
+```javascript
 const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 
 Use a StyleSheet:
 
-```jsx
+```javascript
 <View style={styles.container}>
   <Text style={[styles.title, this.props.isActive && styles.activeTitle]} />
 </View>
@@ -37,6 +37,17 @@ Code quality:
 - By moving styles away from the render function, you're making the code easier to understand.
 - Naming the styles is a good way to add meaning to the low level components in the render function.
 
+### Methods
+
+- [`setStyleAttributePreprocessor`](../stylesheet/#setstyleattributepreprocessor)
+- [`create`](../stylesheet/#create)
+- [`flatten`](../stylesheet/#flatten)
+
+### Properties
+
+- [`hairlineWidth`](../stylesheet/#hairlinewidth)
+- [`absoluteFill`](../stylesheet/#absolutefill)
+
 ---
 
 # Reference
@@ -45,7 +56,7 @@ Code quality:
 
 ### `setStyleAttributePreprocessor()`
 
-```jsx
+```javascript
 
 static setStyleAttributePreprocessor(property, process)
 
@@ -59,7 +70,7 @@ Sets a function to use to pre-process a style property value. This is used inter
 
 ### `create()`
 
-```jsx
+```javascript
 
 static create(obj)
 
@@ -71,7 +82,7 @@ Creates a StyleSheet style reference from the given object.
 
 ### `flatten`
 
-```jsx
+```javascript
 
 static flatten(style)
 
@@ -83,8 +94,8 @@ Flattens an array of style objects, into one aggregated style object. Alternativ
 
 Example:
 
-```jsx
-const styles = StyleSheet.create({
+```javascript
+var styles = StyleSheet.create({
   listItem: {
     flex: 1,
     fontSize: 16,
@@ -101,8 +112,8 @@ StyleSheet.flatten([styles.listItem, styles.selectedListItem]);
 
 Alternative use:
 
-```jsx
-const styles = StyleSheet.create({
+```javascript
+var styles = StyleSheet.create({
   listItem: {
     flex: 1,
     fontSize: 16,
@@ -120,26 +131,12 @@ StyleSheet.flatten(styles.listItem);
 
 This method internally uses `StyleSheetRegistry.getStyleByID(style)` to resolve style objects represented by IDs. Thus, an array of style objects (instances of `StyleSheet.create()`), are individually resolved to, their respective objects, merged as one and then returned. This also explains the alternative use.
 
----
-
-### `compose`
-
-Combines two styles such that `style2` will override any styles in `style1`. If either style is falsy, the other one is returned without allocating an array, saving allocations and maintaining reference equality for PureComponent checks.
-
-```jsx
-
-static compose(style1, style2)
-
-```
-
 ## Properties
 
 ### `hairlineWidth`
 
-This is defined as the width of a thin line on the platform. It can be used as the thickness of a border or division between two elements. Example:
-
-```jsx
-const styles = StyleSheet.create({
+```javascript
+var styles = StyleSheet.create({
   separator: {
     borderBottomColor: '#bbb',
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -157,24 +154,10 @@ A line with hairline width may not be visible if your simulator is downscaled.
 
 A very common pattern is to create overlays with position absolute and zero positioning (`position: 'absolute', left: 0, right: 0, top: 0, bottom: 0`), so `absoluteFill` can be used for convenience and to reduce duplication of these repeated styles. If you want, absoluteFill can be used to create a customized entry in a StyleSheet, e.g.:
 
-```jsx
+```javascript
 const styles = StyleSheet.create({
   wrapper: {
     ...StyleSheet.absoluteFill,
-  },
-});
-```
-
----
-
-### `absoluteFillObject`
-
-Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be used to create a customized entry in a `StyleSheet`, e.g.:
-
-```jsx
-const styles = StyleSheet.create({
-  wrapper: {
-    ...StyleSheet.absoluteFillObject,
     top: 10,
     backgroundColor: 'transparent',
   },
@@ -182,7 +165,3 @@ const styles = StyleSheet.create({
 ```
 
 ---
-
-### `absoluteFill` vs. `absoluteFillObject`
-
-Currently, there is no difference between using `absoluteFill` vs. `absoluteFillObject` as you can see in the [source code](https://github.com/facebook/react-native/blob/master/Libraries/StyleSheet/StyleSheet.js#L255)

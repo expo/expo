@@ -5,23 +5,23 @@ title: AsyncStorage
 
 > **Deprecated.** Use [react-native-community/react-native-async-storage](https://github.com/react-native-community/react-native-async-storage) instead.
 
-`AsyncStorage` is an unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.
+`AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.
 
 It is recommended that you use an abstraction on top of `AsyncStorage` instead of `AsyncStorage` directly for anything more than light usage since it operates globally.
 
 On iOS, `AsyncStorage` is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, `AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite based on what is available.
 
-The `AsyncStorage` JavaScript code is a facade that provides a clear JavaScript API, real `Error` objects, and non-multi functions. Each method in the API returns a `Promise` object.
+The `AsyncStorage` JavaScript code is a simple facade that provides a clear JavaScript API, real `Error` objects, and simple non-multi functions. Each method in the API returns a `Promise` object.
 
 Importing the `AsyncStorage` library:
 
-```jsx
+```javascript
 import { AsyncStorage } from 'react-native';
 ```
 
 Persisting data:
 
-```jsx
+```javascript
 _storeData = async () => {
   try {
     await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
@@ -33,7 +33,7 @@ _storeData = async () => {
 
 Fetching data:
 
-```jsx
+```javascript
 _retrieveData = async () => {
   try {
     const value = await AsyncStorage.getItem('TASKS');
@@ -47,6 +47,20 @@ _retrieveData = async () => {
 };
 ```
 
+### Methods
+
+- [`getItem`](../asyncstorage/#getitem)
+- [`setItem`](../asyncstorage/#setitem)
+- [`removeItem`](../asyncstorage/#removeitem)
+- [`mergeItem`](../asyncstorage/#mergeitem)
+- [`clear`](../asyncstorage/#clear)
+- [`getAllKeys`](../asyncstorage/#getallkeys)
+- [`flushGetRequests`](../asyncstorage/#flushgetrequests)
+- [`multiGet`](../asyncstorage/#multiget)
+- [`multiSet`](../asyncstorage/#multiset)
+- [`multiRemove`](../asyncstorage/#multiremove)
+- [`multiMerge`](../asyncstorage/#multimerge)
+
 ---
 
 # Reference
@@ -55,7 +69,7 @@ _retrieveData = async () => {
 
 ### `getItem()`
 
-```jsx
+```javascript
 
 static getItem(key: string, [callback]: ?(error: ?Error, result: ?string) => void)
 
@@ -74,7 +88,7 @@ Fetches an item for a `key` and invokes a callback upon completion. Returns a `P
 
 ### `setItem()`
 
-```jsx
+```javascript
 
 static setItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 
@@ -94,7 +108,7 @@ Sets the value for a `key` and invokes a callback upon completion. Returns a `Pr
 
 ### `removeItem()`
 
-```jsx
+```javascript
 
 static removeItem(key: string, [callback]: ?(error: ?Error) => void)
 
@@ -113,7 +127,7 @@ Removes an item for a `key` and invokes a callback upon completion. Returns a `P
 
 ### `mergeItem()`
 
-```jsx
+```javascript
 
 static mergeItem(key: string, value: string, [callback]: ?(error: ?Error) => void)
 
@@ -133,7 +147,7 @@ Merges an existing `key` value with an input value, assuming both values are str
 
 Example:
 
-```jsx
+```javascript
 let UID123_object = {
   name: 'Chris',
   age: 30,
@@ -162,7 +176,7 @@ AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
 
 ### `clear()`
 
-```jsx
+```javascript
 
 static clear([callback]: ?(error: ?Error) => void)
 
@@ -180,7 +194,7 @@ Erases _all_ `AsyncStorage` for all clients, libraries, etc. You probably don't 
 
 ### `getAllKeys()`
 
-```jsx
+```javascript
 
 static getAllKeys([callback]: ?(error: ?Error, keys: ?Array<string>) => void)
 
@@ -198,7 +212,7 @@ Gets _all_ keys known to your app; for all callers, libraries, etc. Returns a `P
 
 ### `flushGetRequests()`
 
-```jsx
+```javascript
 
 static flushGetRequests(): [object Object]
 
@@ -210,7 +224,7 @@ Flushes any pending requests using a single batch call to get the data.
 
 ### `multiGet()`
 
-```jsx
+```javascript
 
 static multiGet(keys: Array<string>, [callback]: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void)
 
@@ -235,7 +249,7 @@ The method returns a `Promise` object.
 
 Example:
 
-```jsx
+```javascript
 AsyncStorage.getAllKeys((err, keys) => {
   AsyncStorage.multiGet(keys, (err, stores) => {
     stores.map((result, i, store) => {
@@ -251,7 +265,7 @@ AsyncStorage.getAllKeys((err, keys) => {
 
 ### `multiSet()`
 
-```jsx
+```javascript
 
 static multiSet(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -276,7 +290,7 @@ The method returns a `Promise` object.
 
 ### `multiRemove()`
 
-```jsx
+```javascript
 
 static multiRemove(keys: Array<string>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -293,7 +307,7 @@ Call this to batch the deletion of all keys in the `keys` array. Returns a `Prom
 
 Example:
 
-```jsx
+```javascript
 let keys = ['k1', 'k2'];
 AsyncStorage.multiRemove(keys, err => {
   // keys k1 & k2 removed, if they existed
@@ -305,7 +319,7 @@ AsyncStorage.multiRemove(keys, err => {
 
 ### `multiMerge()`
 
-```jsx
+```javascript
 
 static multiMerge(keyValuePairs: Array<Array<string>>, [callback]: ?(errors: ?Array<Error>) => void)
 
@@ -324,7 +338,7 @@ Batch operation to merge in existing and new values for a given set of keys. Thi
 
 Example:
 
-```jsx
+```javascript
 // first user, initial values
 let UID234_object = {
   name: 'Chris',

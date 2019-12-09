@@ -3,15 +3,24 @@ id: progressviewios
 title: ProgressViewIOS
 ---
 
-Uses `ProgressViewIOS` to render a UIProgressView on iOS.
+Use `ProgressViewIOS` to render a UIProgressView on iOS.
+
+### Props
+
+- [View props...](../view/#props)
+
+* [`progress`](../progressviewios/#progress)
+* [`progressImage`](../progressviewios/#progressimage)
+* [`progressTintColor`](../progressviewios/#progresstintcolor)
+* [`progressViewStyle`](../progressviewios/#progressviewstyle)
+* [`trackImage`](../progressviewios/#trackimage)
+* [`trackTintColor`](../progressviewios/#tracktintcolor)
 
 ---
 
 # Reference
 
 ## Props
-
-Inherits [View Props](../view/#props).
 
 ### `progress`
 

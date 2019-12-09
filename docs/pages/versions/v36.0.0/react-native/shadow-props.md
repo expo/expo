@@ -3,6 +3,15 @@ id: shadow-props
 title: Shadow Props
 ---
 
+### Props
+
+- [`shadowColor`](../shadow-props/#shadowcolor)
+- [`shadowOffset`](../shadow-props/#shadowoffset)
+- [`shadowOpacity`](../shadow-props/#shadowopacity)
+- [`shadowRadius`](../shadow-props/#shadowradius)
+
+---
+
 # Reference
 
 ## Props

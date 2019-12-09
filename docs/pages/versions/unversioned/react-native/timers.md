@@ -16,7 +16,7 @@ Timers are an important part of an application and React Native implements the [
 
 `setImmediate` is executed at the end of the current JavaScript execution block, right before sending the batched response back to native. Note that if you call `setImmediate` within a `setImmediate` callback, it will be executed right away, it won't yield back to native in between.
 
-The `Promise` implementation uses `setImmediate` as its asynchronicity implementation.
+The `Promise` implementation uses `setImmediate` as its asynchronicity primitive.
 
 ## InteractionManager
 
@@ -24,7 +24,7 @@ One reason why well-built native apps feel so smooth is by avoiding expensive op
 
 Applications can schedule tasks to run after interactions with the following:
 
-```jsx
+```javascript
 InteractionManager.runAfterInteractions(() => {
   // ...long-running synchronous task...
 });
@@ -40,7 +40,7 @@ The touch handling system considers one or more active touches to be an 'interac
 
 InteractionManager also allows applications to register animations by creating an interaction 'handle' on animation start, and clearing it upon completion:
 
-```jsx
+```javascript
 var handle = InteractionManager.createInteractionHandle();
 // run animation... (`runAfterInteractions` tasks are queued)
 // later, on animation completion:

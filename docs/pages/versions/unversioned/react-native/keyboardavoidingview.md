@@ -3,11 +3,11 @@ id: keyboardavoidingview
 title: KeyboardAvoidingView
 ---
 
-It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard. It can automatically adjust either its height, position, or bottom padding based on the position of the keyboard.
+It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard. It can automatically adjust either its position or bottom padding based on the position of the keyboard.
 
 Example usage:
 
-```jsx
+```javascript
 import { KeyboardAvoidingView } from 'react-native';
 
 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
@@ -19,17 +19,32 @@ import { KeyboardAvoidingView } from 'react-native';
 
 ![](https://facebook.github.io/react-native/docs/assets/KeyboardAvoidingView/example.gif)
 
+### Props
+
+- [View props...](../view/#props)
+
+* [`keyboardVerticalOffset`](../keyboardavoidingview/#keyboardverticaloffset)
+* [`behavior`](../keyboardavoidingview/#behavior)
+* [`contentContainerStyle`](../keyboardavoidingview/#contentcontainerstyle)
+* [`enabled`](../keyboardavoidingview/#enabled)
+
 ---
 
 # Reference
 
 ## Props
 
-Inherits [View Props](../view/#props).
+### `keyboardVerticalOffset`
+
+This is the distance between the top of the user screen and the react native view, may be non-zero in some use cases.
+
+| Type   | Required |
+| ------ | -------- |
+| number | No       |
+
+---
 
 ### `behavior`
-
-Specify how to react to the presence of the keyboard.
 
 _Note: Android and iOS both interact with this prop differently._ _Android may behave better when given no behavior prop at all, whereas iOS is the opposite._
 
@@ -56,13 +71,3 @@ Enabled or disabled KeyboardAvoidingView. The default is `true`.
 | Type    | Required |
 | ------- | -------- |
 | boolean | No       |
-
----
-
-### `keyboardVerticalOffset`
-
-This is the distance between the top of the user screen and the react native view, may be non-zero in some use cases. Defaults to 0.
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |

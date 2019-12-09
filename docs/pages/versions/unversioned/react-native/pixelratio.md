@@ -9,7 +9,7 @@ PixelRatio class gives access to the device pixel density.
 
 You should get a higher resolution image if you are on a high pixel density device. A good rule of thumb is to multiply the size of the image you display by the pixel ratio.
 
-```jsx
+```javascript
 var image = getImage({
   width: PixelRatio.getPixelSizeForLayoutSize(200),
   height: PixelRatio.getPixelSizeForLayoutSize(100),
@@ -27,6 +27,13 @@ We have to be careful when to do this rounding. You never want to work with roun
 
 In React Native, everything in JavaScript and within the layout engine works with arbitrary precision numbers. It's only when we set the position and dimensions of the native element on the main thread that we round. Also, rounding is done relative to the root rather than the parent, again to avoid accumulating rounding errors.
 
+### Methods
+
+- [`get`](../pixelratio/#get)
+- [`getFontScale`](../pixelratio/#getfontscale)
+- [`getPixelSizeForLayoutSize`](../pixelratio/#getpixelsizeforlayoutsize)
+- [`roundToNearestPixel`](../pixelratio/#roundtonearestpixel)
+
 ---
 
 # Reference
@@ -35,7 +42,7 @@ In React Native, everything in JavaScript and within the layout engine works wit
 
 ### `get()`
 
-```jsx
+```javascript
 
 static get()
 
@@ -67,7 +74,7 @@ Returns the device pixel density. Some examples:
 
 ### `getFontScale()`
 
-```jsx
+```javascript
 
 static getFontScale()
 
@@ -83,7 +90,7 @@ Currently this is only implemented on Android and reflects the user preference s
 
 ### `getPixelSizeForLayoutSize()`
 
-```jsx
+```javascript
 
 static getPixelSizeForLayoutSize(layoutSize)
 
@@ -97,7 +104,7 @@ Guaranteed to return an integer number.
 
 ### `roundToNearestPixel()`
 
-```jsx
+```javascript
 
 static roundToNearestPixel(layoutSize)
 

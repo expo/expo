@@ -3,40 +3,36 @@ id: dimensions
 title: Dimensions
 ---
 
-```jsx
-import { Dimensions } from 'react-native';
-```
+### Methods
 
-You can get device width and height using below :
+- [`set`](../dimensions/#set)
+- [`get`](../dimensions/#get)
+- [`addEventListener`](../dimensions/#addeventlistener)
+- [`removeEventListener`](../dimensions/#removeeventlistener)
 
-Get device screen width and height :
-
-```jsx
-const screenWidth = Math.round(Dimensions.get('window').width);
-const screenHeight = Math.round(Dimensions.get('window').height);
-```
+---
 
 # Reference
 
 ## Methods
 
-### `addEventListener()`
+### `set()`
 
-```jsx
+```javascript
 
-static addEventListener(type, handler)
+static set(dims)
 
 ```
 
-Add an event handler. Supported events:
+This should only be called from native code by sending the didUpdateDimensions event.
 
-- `change`: Fires when a property within the `Dimensions` object changes. The argument to the event handler is an object with `window` and `screen` properties whose values are the same as the return values of `Dimensions.get('window')` and `Dimensions.get('screen')`, respectively.
+@param {object} dims Simple string-keyed object of dimensions to set
 
 ---
 
 ### `get()`
 
-```jsx
+```javascript
 
 static get(dim)
 
@@ -48,40 +44,32 @@ Initial dimensions are set before `runApplication` is called so they should be a
 
 Example: `var {height, width} = Dimensions.get('window');`
 
-**Parameters:**
-
-| Name | Type   | Required | Description                                                                                  |
-| ---- | ------ | -------- | -------------------------------------------------------------------------------------------- |
-| dim  | string | Yes      | Name of dimension as defined when calling `set`. @returns {Object?} Value for the dimension. |
+@param {string} dim Name of dimension as defined when calling `set`. @returns {Object?} Value for the dimension.
 
 > For Android the `window` dimension will exclude the size used by the `status bar` (if not translucent) and `bottom navigation bar`
 
 ---
 
+### `addEventListener()`
+
+```javascript
+
+static addEventListener(type, handler)
+
+```
+
+Add an event handler. Supported events:
+
+- `change`: Fires when a property within the `Dimensions` object changes. The argument to the event handler is an object with `window` and `screen` properties whose values are the same as the return values of `Dimensions.get('window')` and `Dimensions.get('screen')`, respectively.
+
+---
+
 ### `removeEventListener()`
 
-```jsx
+```javascript
 
 static removeEventListener(type, handler)
 
 ```
 
 Remove an event handler.
-
----
-
-### `set()`
-
-```jsx
-
-static set(dims)
-
-```
-
-This should only be called from native code by sending the didUpdateDimensions event.
-
-**Parameters:**
-
-| Name | Type   | Required | Description                              |
-| ---- | ------ | -------- | ---------------------------------------- |
-| dims | object | Yes      | string-keyed object of dimensions to set |

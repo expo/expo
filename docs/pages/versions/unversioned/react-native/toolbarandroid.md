@@ -11,7 +11,7 @@ Although the Toolbar supports remote images for the logo, navigation and action 
 
 Example:
 
-```jsx
+```javascript
 
 render: function() {
   return (
@@ -32,13 +32,40 @@ onActionSelected: function(position) {
 
 [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
 
+### Props
+
+- [View props...](../view/#props)
+
+* [`overflowIcon`](../toolbarandroid/#overflowicon)
+* [`actions`](../toolbarandroid/#actions)
+* [`contentInsetStart`](../toolbarandroid/#contentinsetstart)
+* [`logo`](../toolbarandroid/#logo)
+* [`navIcon`](../toolbarandroid/#navicon)
+* [`onActionSelected`](../toolbarandroid/#onactionselected)
+* [`onIconClicked`](../toolbarandroid/#oniconclicked)
+* [`contentInsetEnd`](../toolbarandroid/#contentinsetend)
+* [`rtl`](../toolbarandroid/#rtl)
+* [`subtitle`](../toolbarandroid/#subtitle)
+* [`subtitleColor`](../toolbarandroid/#subtitlecolor)
+* [`testID`](../toolbarandroid/#testid)
+* [`title`](../toolbarandroid/#title)
+* [`titleColor`](../toolbarandroid/#titlecolor)
+
 ---
 
 # Reference
 
 ## Props
 
-Inherits [View Props](../view/#props).
+### `overflowIcon`
+
+Sets the overflow icon.
+
+| Type                | Required |
+| ------------------- | -------- |
+| optionalImageSource | No       |
+
+---
 
 ### `actions`
 
@@ -60,18 +87,6 @@ This property takes an array of objects, where each object has the following key
 ### `contentInsetStart`
 
 Sets the content inset for the toolbar starting edge.
-
-The content inset affects the valid area for Toolbar content other than the navigation button and menu. Insets define the minimum margin for these components and can be used to effectively align Toolbar content along well-known gridlines.
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
-### `contentInsetEnd`
-
-Sets the content inset for the toolbar ending edge.
 
 The content inset affects the valid area for Toolbar content other than the navigation button and menu. Insets define the minimum margin for these components and can be used to effectively align Toolbar content along well-known gridlines.
 
@@ -121,13 +136,15 @@ Callback called when the icon is selected.
 
 ---
 
-### `overflowIcon`
+### `contentInsetEnd`
 
-Sets the overflow icon.
+Sets the content inset for the toolbar ending edge.
 
-| Type                | Required |
-| ------------------- | -------- |
-| optionalImageSource | No       |
+The content inset affects the valid area for Toolbar content other than the navigation button and menu. Insets define the minimum margin for these components and can be used to effectively align Toolbar content along well-known gridlines.
+
+| Type   | Required |
+| ------ | -------- |
+| number | No       |
 
 ---
 

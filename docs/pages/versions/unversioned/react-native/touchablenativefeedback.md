@@ -11,7 +11,7 @@ Background drawable of native feedback touchable can be customized with `backgro
 
 Example:
 
-```jsx
+```javascript
 
 renderButton: function() {
   return (
@@ -27,13 +27,25 @@ renderButton: function() {
 
 ```
 
+### Props
+
+- [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
+
+* [`background`](../touchablenativefeedback/#background)
+* [`useForeground`](../touchablenativefeedback/#useforeground)
+
+### Methods
+
+- [`SelectableBackground`](../touchablenativefeedback/#selectablebackground)
+- [`SelectableBackgroundBorderless`](../touchablenativefeedback/#selectablebackgroundborderless)
+- [`Ripple`](../touchablenativefeedback/#ripple)
+- [`canUseNativeForeground`](../touchablenativefeedback/#canusenativeforeground)
+
 ---
 
 # Reference
 
 ## Props
-
-Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
 
 ### `background`
 
@@ -55,71 +67,11 @@ Check TouchableNativeFeedback.canUseNativeForeground() first, as this is only av
 | ---- | -------- |
 | bool | No       |
 
----
-
-### `hasTVPreferredFocus`
-
-TV preferred focus (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusDown`
-
-TV next focus down (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusForward`
-
-TV next focus forward (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusLeft`
-
-TV next focus left (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusRight`
-
-TV next focus right (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusUp`
-
-TV next focus up (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
 ## Methods
 
 ### `SelectableBackground()`
 
-```jsx
+```javascript
 
 static SelectableBackground()
 
@@ -131,7 +83,7 @@ Creates an object that represents android theme's default background for selecta
 
 ### `SelectableBackgroundBorderless()`
 
-```jsx
+```javascript
 
 static SelectableBackgroundBorderless()
 
@@ -143,7 +95,7 @@ Creates an object that represent android theme's default background for borderle
 
 ### `Ripple()`
 
-```jsx
+```javascript
 
 static Ripple(color: string, borderless: boolean)
 
@@ -153,16 +105,16 @@ Creates an object that represents ripple drawable with specified color (as a str
 
 **Parameters:**
 
-| Name       | Type    | Required | Description                                 |
-| ---------- | ------- | -------- | ------------------------------------------- |
-| color      | string  | Yes      | The ripple color                            |
-| borderless | boolean | Yes      | If the ripple can render outside its bounds |
+| Name       | Type    | Required | Description                                  |
+| ---------- | ------- | -------- | -------------------------------------------- |
+| color      | string  | Yes      | The ripple color                             |
+| borderless | boolean | Yes      | If the ripple can render outside it's bounds |
 
 ---
 
 ### `canUseNativeForeground()`
 
-```jsx
+```javascript
 
 static canUseNativeForeground()
 

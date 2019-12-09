@@ -9,68 +9,23 @@ A common way to use this API is to call it before calling `setState`.
 
 Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
-````js
-
-if (Platform.OS === 'android') {
-
 ```java
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-````
-
-```java
-    UIManager.setLayoutAnimationEnabledExperimental(true);
+    UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 ```
 
-}
-}
+### Methods
 
-````
+- [`configureNext`](../layoutanimation/#configurenext)
+- [`create`](../layoutanimation/#create)
 
+### Properties
 
-Example usage:
-
-
-```jsx
-
-import React, {Component} from 'react';
-import {View, Text, TouchableOpacity, Platform, UIManager, LayoutAnimation} from 'react-native';
-
-if (
-  Platform.OS === 'android' &&
-
-```java
-  UIManager.setLayoutAnimationEnabledExperimental
-````
-
-) {
-
-```java
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-```
-
-}
-class AnimatedCollapsible extends React.Component {
-state = {expanded: false};
-render() {
-return (
-<View style={{overflow: 'hidden'}}>
-<TouchableOpacity
-onPress={() => {
-LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-this.setState({expanded: !this.state.expanded});
-}}>
-<Text>
-Press me to {this.state.expanded ? 'collapse' : 'expand'}!
-</Text>
-</TouchableOpacity>
-{this.state.expanded && <Text>I disappear sometimes!</Text>}
-</View>
-);
-}
-}
-
-````
-
+- [`Types`](../layoutanimation/#types)
+- [`Properties`](../layoutanimation/#properties)
+- [`Presets`](../layoutanimation/#presets)
+- [`easeInEaseOut`](../layoutanimation/#easeineaseout)
+- [`linear`](../layoutanimation/#linear)
+- [`spring`](../layoutanimation/#spring)
 
 ---
 
@@ -80,12 +35,11 @@ Press me to {this.state.expanded ? 'collapse' : 'expand'}!
 
 ### `configureNext()`
 
-
-```jsx
+```javascript
 
 static configureNext(config, onAnimationDidEnd?)
 
-````
+```
 
 Schedules an animation to happen on the next layout.
 
@@ -93,50 +47,32 @@ Schedules an animation to happen on the next layout.
 
 | Name              | Type     | Required | Description                                                |
 | ----------------- | -------- | -------- | ---------------------------------------------------------- |
-| config            | object   | Yes      | See config description below.                              |
+| config            | object   | Yes      | See config parameters below.                               |
 | onAnimationDidEnd | function | No       | Called when the animation finished. Only supported on iOS. |
 
-The `config` parameter is an object with the keys below. [`create`](../layoutanimation/#create) returns a valid object for `config`, and the [`Presets`](../layoutanimation/#presets) objects can also all be passed as the `config`.
+##### config
 
 - `duration` in milliseconds
-- `create`, optional config for animating in new views
-- `update`, optional config for animating views that have been updated
-- `delete`, optional config for animating views as they are removed
-
-The config that's passed to `create`, `update`, or `delete` has the following keys:
-
-- `type`, the [animation type](../layoutanimation/#types) to use
-- `property`, the [layout property](../layoutanimation/#properties) to animate (optional, but recommended for `create` and `delete`)
-- `springDamping` (number, optional and only for use with `type: Type.spring`)
-- `initialVelocity` (number, optional)
-- `delay` (number, optional)
-- `duration` (number, optional)
+- `create`, config for animating in new views (see `Anim` type)
+- `update`, config for animating views that have been updated (see `Anim` type)
 
 ---
 
 ### `create()`
 
-```jsx
+```javascript
 
 static create(duration, type, creationProp)
 
 ```
 
-Helper that creates an object (with `create`, `update`, and `delete` fields) to pass into [`configureNext`](../layoutanimation/#configurenext). The `type` parameter is an [animation type](../layoutanimation/#types), and the `creationProp` parameter is a [layout property](../layoutanimation/#properties).
-
-Example usage:
-
-```js
-LayoutAnimation.configureNext(
-  LayoutAnimation.create(500, LayoutAnimation.Types.spring, LayoutAnimation.Properties.scaleXY)
-);
-```
+Helper for creating a config for `configureNext`.
 
 ## Properties
 
 ### Types
 
-An enumeration of animation types to be used in the [`create`](../layoutanimation/#create) method, or in the `create`/`update`/`delete` configs for [`configureNext`](../layoutanimation/#configurenext). (example usage: `LayoutAnimation.Types.easeIn`)
+An enumerate of animation types to be used in [`create`](../layoutanimation/#create) method.
 
 | Types         |
 | ------------- |
@@ -151,7 +87,7 @@ An enumeration of animation types to be used in the [`create`](../layoutanimatio
 
 ### Properties
 
-An enumeration of layout properties to be animated to be used in the [`create`](../layoutanimation/#create) method, or in the `create`/`update`/`delete` configs for [`configureNext`](../layoutanimation/#configurenext). (example usage: `LayoutAnimation.Properties.opacity`)
+An enumerate of object property to be animated, used in [`create`](../layoutanimation/#create) method.
 
 | Properties |
 | ---------- |
@@ -164,7 +100,7 @@ An enumeration of layout properties to be animated to be used in the [`create`](
 
 ### Presets
 
-A set of predefined animation configs to pass into [`configureNext`](../layoutanimation/#configurenext).
+A set of predefined animation config.
 
 | Presets       | Value                                                                                                                                                                 |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -174,18 +110,18 @@ A set of predefined animation configs to pass into [`configureNext`](../layoutan
 
 ---
 
-### `easeInEaseOut()`
+### easeInEaseOut
 
-Calls `configureNext()` with `Presets.easeInEaseOut`.
-
----
-
-### `linear()`
-
-Calls `configureNext()` with `Presets.linear`.
+Shortcut to bind `configureNext()` methods with `Presets.easeInEaseOut`.
 
 ---
 
-### `spring()`
+### linear
 
-Calls `configureNext()` with `Presets.spring`.
+Shortcut to bind `configureNext()` methods with `Presets.linear`.
+
+---
+
+### spring
+
+Shortcut to bind `configureNext()` methods with `Presets.spring`.

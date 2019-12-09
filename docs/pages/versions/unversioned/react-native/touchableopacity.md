@@ -9,7 +9,7 @@ Opacity is controlled by wrapping the children in an Animated.View, which is add
 
 Example:
 
-```jsx
+```javascript
 
 renderButton: function() {
   return (
@@ -30,7 +30,7 @@ renderButton: function() {
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = { count: 0 };
@@ -77,13 +77,24 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Props
+
+- [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
+
+* [`style`](../touchableopacity/#style)
+* [`activeOpacity`](../touchableopacity/#activeopacity)
+* [`tvParallaxProperties`](../touchableopacity/#tvparallaxproperties)
+* [`hasTVPreferredFocus`](../touchableopacity/#hastvpreferredfocus)
+
+### Methods
+
+- [`setOpacityTo`](../touchableopacity/#setopacityto)
+
 ---
 
 # Reference
 
 ## Props
-
-Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
 
 ### `style`
 
@@ -123,61 +134,11 @@ _(Apple TV only)_ TV preferred focus (see documentation for the View component).
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
 
----
-
-### `nextFocusDown`
-
-TV next focus down (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusForward`
-
-TV next focus forward (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusLeft`
-
-TV next focus left (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusRight`
-
-TV next focus right (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `nextFocusUp`
-
-TV next focus up (see documentation for the View component).
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
-
 ## Methods
 
 ### `setOpacityTo()`
 
-```jsx
+```javascript
 setOpacityTo((value: number), (duration: number));
 ```
 

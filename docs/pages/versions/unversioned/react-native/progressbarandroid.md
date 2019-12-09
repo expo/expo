@@ -7,7 +7,7 @@ Android-only React component used to indicate that the app is loading or there i
 
 Example:
 
-```jsx
+```javascript
 import React, { Component } from 'react';
 import { ProgressBarAndroid, StyleSheet, View } from 'react-native';
 
@@ -33,13 +33,22 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Props
+
+- [View props...](../view/#props)
+
+* [`animating`](../progressbarandroid/#animating)
+* [`color`](../progressbarandroid/#color)
+* [`indeterminate`](../progressbarandroid/#indeterminate)
+* [`progress`](../progressbarandroid/#progress)
+* [`styleAttr`](../progressbarandroid/#styleattr)
+* [`testID`](../progressbarandroid/#testid)
+
 ---
 
 # Reference
 
 ## Props
-
-Inherits [View Props](../view/#props).
 
 ### `animating`
 
@@ -63,7 +72,7 @@ Color of the progress bar.
 
 ### `indeterminate`
 
-If the progress bar will show indeterminate progress. Note that this can only be false if styleAttr is Horizontal, and requires a `progress` value.
+If the progress bar will show indeterminate progress. Note that this can only be false if styleAttr is Horizontal.
 
 | Type              | Required |
 | ----------------- | -------- |

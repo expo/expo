@@ -9,7 +9,7 @@ title: Keyboard
 
 The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.
 
-```jsx
+```javascript
 import React, { Component } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 
@@ -38,6 +38,13 @@ class Example extends Component {
 }
 ```
 
+### Methods
+
+- [`addListener`](../keyboard/#addlistener)
+- [`removeListener`](../keyboard/#removelistener)
+- [`removeAllListeners`](../keyboard/#removealllisteners)
+- [`dismiss`](../keyboard/#dismiss)
+
 ---
 
 # Reference
@@ -46,7 +53,7 @@ class Example extends Component {
 
 ### `addListener()`
 
-```jsx
+```javascript
 
 static addListener(eventName, callback)
 
@@ -56,16 +63,7 @@ The `addListener` function connects a JavaScript function to an identified nativ
 
 This function then returns the reference to the listener.
 
-**Parameters:**
-
-| Name      | Type     | Required | Description                                                                               |
-| --------- | -------- | -------- | ----------------------------------------------------------------------------------------- |
-| eventName | string   | Yes      | The `nativeEvent` is the string that identifies the event you're listening for. See below |
-| callback  | function | Yes      | The function to be called when the event fires                                            |
-
-**nativeEvent**
-
-This can be any of the following
+@param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for. This can be any of the following:
 
 - `keyboardWillShow`
 - `keyboardDidShow`
@@ -76,11 +74,13 @@ This can be any of the following
 
 Note that if you set `android:windowSoftInputMode` to `adjustResize`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
 
+@param {function} callback function to be called when the event fires.
+
 ---
 
 ### `removeListener()`
 
-```jsx
+```javascript
 
 static removeListener(eventName, callback)
 
@@ -88,18 +88,13 @@ static removeListener(eventName, callback)
 
 Removes a specific listener.
 
-**Parameters:**
-
-| Name      | Type     | Required | Description                                                                    |
-| --------- | -------- | -------- | ------------------------------------------------------------------------------ |
-| eventName | string   | Yes      | The `nativeEvent` is the string that identifies the event you're listening for |
-| callback  | function | Yes      | The function to be called when the event fires                                 |
+@param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for. @param {function} callback function to be called when the event fires.
 
 ---
 
 ### `removeAllListeners()`
 
-```jsx
+```javascript
 
 static removeAllListeners(eventName)
 
@@ -107,17 +102,13 @@ static removeAllListeners(eventName)
 
 Removes all listeners for a specific event type.
 
-**Parameters:**
-
-| Name      | Type   | Required | Description                                                          |
-| --------- | ------ | -------- | -------------------------------------------------------------------- |
-| eventType | string | Yes      | The native event string listeners are watching which will be removed |
+@param {string} eventType The native event string listeners are watching which will be removed.
 
 ---
 
 ### `dismiss()`
 
-```jsx
+```javascript
 
 static dismiss()
 

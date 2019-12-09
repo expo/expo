@@ -7,7 +7,7 @@ Sometimes it's useful to know whether or not the device has a screen reader that
 
 Here's a small example illustrating how to use `AccessibilityInfo`:
 
-```jsx
+```javascript
 class AccessibilityStatusExample extends React.Component {
   state = {
     reduceMotionEnabled: false,
@@ -51,6 +51,19 @@ class AccessibilityStatusExample extends React.Component {
 }
 ```
 
+### Methods
+
+- [`isBoldTextEnabled`](../accessibilityinfo/#isBoldTextEnabled)
+- [`isGrayscaleEnabled`](../accessibilityinfo/#isGrayscaleEnabled)
+- [`isInvertColorsEnabled`](../accessibilityinfo/#isInvertColorsEnabled)
+- [`isReduceMotionEnabled`](../accessibilityinfo/#isReduceMotionEnabled)
+- [`isReduceTransparencyEnabled`](../accessibilityinfo/#isReduceTransparencyEnabled)
+- [`isScreenReaderEnabled`](../accessibilityinfo/#isScreenReaderEnabled)
+- [`addEventListener`](../accessibilityinfo/#addeventlistener)
+- [`setAccessibilityFocus`](../accessibilityinfo/#setaccessibilityfocus)
+- [`announceForAccessibility`](../accessibilityinfo/#announceforaccessibility)
+- [`removeEventListener`](../accessibilityinfo/#removeeventlistener)
+
 ---
 
 # Reference
@@ -59,37 +72,37 @@ class AccessibilityStatusExample extends React.Component {
 
 ### `isBoldTextEnabled()`
 
-```jsx
+```javascript
 
 static isBoldTextEnabled()
 
 ```
 
-**iOS-Only.** Query whether a bold text is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when bold text is enabled and `false` otherwise.
+iOS-Only. Query whether a bold text is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when bold text is enabled and `false` otherwise.
 
 ### `isGrayscaleEnabled()`
 
-```jsx
+```javascript
 
 static isGrayscaleEnabled()
 
 ```
 
-**iOS-Only.** Query whether grayscale is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when grayscale is enabled and `false` otherwise.
+Query whether grayscale is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when grayscale is enabled and `false` otherwise.
 
 ### `isInvertColorsEnabled()`
 
-```jsx
+```javascript
 
 static isInvertColorsEnabled()
 
 ```
 
-**iOS-Only.** Query whether invert colors is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when invert colors is enabled and `false` otherwise.
+Query whether invert colors is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when invert colors is enabled and `false` otherwise.
 
 ### `isReduceMotionEnabled()`
 
-```jsx
+```javascript
 
 static isReduceMotionEnabled()
 
@@ -99,17 +112,17 @@ Query whether reduce motion is currently enabled. Returns a promise which resolv
 
 ### `isReduceTransparencyEnabled()`
 
-```jsx
+```javascript
 
 static isReduceTransparencyEnabled()
 
 ```
 
-**iOS-Only.** Query whether reduce transparency is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a reduce transparency is enabled and `false` otherwise.
+Query whether reduce transparency is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a reduce transparency is enabled and `false` otherwise.
 
 ### `isScreenReaderEnabled()`
 
-```jsx
+```javascript
 
 static isScreenReaderEnabled()
 
@@ -121,7 +134,7 @@ Query whether a screen reader is currently enabled. Returns a promise which reso
 
 ### `addEventListener()`
 
-```jsx
+```javascript
 
 static addEventListener(eventName, handler)
 
@@ -143,7 +156,7 @@ Add an event handler. Supported events:
 
 ### `setAccessibilityFocus()`
 
-```jsx
+```javascript
 
 static setAccessibilityFocus(reactTag)
 
@@ -155,7 +168,7 @@ Set accessibility focus to a React component. On Android, this is equivalent to 
 
 ### `announceForAccessibility()`
 
-```jsx
+```javascript
 
 static announceForAccessibility(announcement)
 
@@ -167,7 +180,7 @@ Post a string to be announced by the screen reader.
 
 ### `removeEventListener()`
 
-```jsx
+```javascript
 
 static removeEventListener(eventName, handler)
 
