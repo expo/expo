@@ -6002,10 +6002,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-detox@^14.4.1:
-  version "14.7.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-14.7.0.tgz#a5ac6de0d6b8f2c7916d9fe71bf81c692d083fbe"
-  integrity sha512-rkXzFztieXo1z5VzYCKWhc2PKI/S+RXDVtnup6fdFBh+2aAwpWVyIkW570VKwk9i6LeNiotZlujwQZURHfFFLA==
+detox@^14.8.4:
+  version "14.8.5"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-14.8.5.tgz#02671e9bcb055074b2784a96e1010afca0623b9b"
+  integrity sha512-qjRvDE1EObtDSDsePxaa6IehwrVhFRGnx3H/gn62kt4giN57HnnUqgwqzR5+G4QMdG42wnsb79UQJSQ06j3LvQ==
   dependencies:
     "@babel/core" "^7.4.5"
     bunyan "^1.8.12"
