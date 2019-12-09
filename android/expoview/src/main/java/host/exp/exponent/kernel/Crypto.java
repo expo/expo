@@ -113,7 +113,7 @@ public class Crypto {
     Signature signature = Signature.getInstance("SHA256withRSA");
     byte[] decodedPublicKey = Base64.decode(publicKeyNoComments, Base64.DEFAULT);
     X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedPublicKey);
-    KeyFactory keyFactory = KeyFactory.getInstance(publicKeySpec.getFormat());
+    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
     PublicKey key = keyFactory.generatePublic(publicKeySpec);
 
     signature.initVerify(key);
