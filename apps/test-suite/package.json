@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "~36.0.0-rc.0",
+    "expo": "~36.0.0",
     "expo-ads-admob": "~8.0.0",
     "expo-ads-facebook": "~8.0.0",
     "expo-analytics-segment": "~8.0.0",
