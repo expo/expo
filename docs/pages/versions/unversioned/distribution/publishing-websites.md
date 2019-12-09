@@ -4,19 +4,45 @@ title: Publishing Websites
 
 ## Table of contents
 
+- [Building](#creating-a-build)
+  - [Serving](#serving-locally)
 - [AWS Amplify Console](#aws-amplify-console)
-- [Now](#now)
-- [Surge](#surge)
 - [Netlify](#netlify)
   - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
   - [Continuous delivery](#continuous-delivery)
 - [GitHub Pages](#github-pages)
+- [Now](#now)
+- [Firebase Hosting](#firebase-hosting)
+- [Surge](#surge)
+
+## Creating a Build
+
+- Optimize the assets for speed - `npx expo-optimize` (formerly `expo optimize`)
+- Bundle the project for production - `expo build:web`
+  - Creates a production ready static bundle in the `web-build/` directory. Don't edit this folder directly.
+  - Uses Webpack to [optimize the project.][webpack-optimize]
+  - If you make any changes to your project, you'll need to re-build for production.
+  - For more help use `expo build:web --help`
+  - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa`
+- You can now deploy or host this anywhere you like.
+
+[webpack-optimize]: https://webpack.js.org/configuration/optimization/
+
+### Serving Locally
+
+- [Serve CLI][serve-cli]: Quickly test how it works in production - `npx serve web-build`
+- Open [`http://localhost:5000`](http://localhost:5000)
+- **This is `http` only, so permissions, camera, location, and many other things won't work.**
+
+[serve-cli]: https://www.npmjs.com/package/serve
+
+---
 
 ## [AWS Amplify Console](https://console.amplify.aws)
 
 The AWS Amplify Console provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
 
-1. Add the [amplify.yml](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
+1. Add the [amplify-explicit.yml](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
 
 2. Push your local Expo project to your GitHub repository. If you haven't pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line).
 
@@ -146,7 +172,6 @@ Here are the formal instructions for deploying to GitHub Pages:
    ```js
    /* ... */
    "homepage": "http://evanbacon.github.io/expo-gh-pages"
-   // only add this for Github Pages deployment builds, NOT for other methods of deplyoment
    ```
 
    - In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
@@ -170,3 +195,63 @@ Here are the formal instructions for deploying to GitHub Pages:
    - !! Your app is now available at the URL you set as `homepage` in your `package.json` (call your parents and show them! 😜)
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
+
+## [Firebase Hosting](https://console.firebase.google.com/)
+
+### Setup Firebase
+
+- Create a firebase project with the [Firebase Console](https://console.firebase.google.com).
+
+- Install the Firebase CLI if you haven’t already by following these [instructions](https://firebase.google.com/docs/hosting).
+- Run the `firebase login` command, then promptly log in.
+- Run the `firebase init` command, select your project and hosting.
+
+- When asked about the public path, make sure to specify the `web-build` folder.
+
+- Answer 'Configure as a single-page app (rewrite all urls to /index.html)' with 'Yes'.
+
+### Update package.json
+
+In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
+
+```js
+"scripts": {
+  /* ... */
+  "predeploy": "expo build:web",
+  "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
+}
+```
+
+Run the `npm run deploy-hosting` command to deploy.
+
+Open the url from the console output to check your deployment, e.g. https://PROJECTNAME.firebaseapp.com
+
+In case you want to change the header for hosting add the following config in `hosting` section in firebase.json:
+
+```js
+  "hosting": [
+    {
+      /* ... */
+ "headers": [
+        {
+          "source": "/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|js|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=604800"
+            }
+          ]
+        }
+      ],
+    }
+  ]
+```
