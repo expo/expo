@@ -87,5 +87,6 @@
   "@react-native-community/datetimepicker": "2.1.0",
   "@react-native-community/masked-view": "0.1.5",
   "@react-native-community/viewpager": "2.0.2",
-  "expo-error-recovery": "~1.0.0"
+  "expo-error-recovery": "~1.0.0",
+  "expo-module-template": "~8.1.0"
 }
