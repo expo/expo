@@ -5,11 +5,13 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
@@ -62,6 +64,11 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
+repositories {
+  mavenCentral()
+}
+
 dependencies {
   unimodule 'unimodules-core'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 }
