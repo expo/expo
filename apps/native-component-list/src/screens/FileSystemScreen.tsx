@@ -165,6 +165,11 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     }
   }
 
+  _alertFreeSpace = async () => {
+    const freeBytes = await FileSystem.getFreeDiskStorageAsync();
+    alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
+  }
+
   render() {
     let progress = null;
     if (Platform.OS === 'ios') {
@@ -190,6 +195,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
+        <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
       </ScrollView>
     );
   }
