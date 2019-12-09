@@ -1,7 +1,7 @@
 {
   "name": "expo-template-bare-typescript",
   "description": "This bare project template includes TypeScript",
-  "version": "36.0.0",
+  "version": "36.0.1",
   "scripts": {
     "postinstall": "jetify",
     "android": "react-native run-android",
