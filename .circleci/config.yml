@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
-  shallow-checkout: expo/shallow-checkout@1.0.1
+  shallow-checkout: expo/shallow-checkout@1.0.2
 
 commands:
   conditionally_halt:
