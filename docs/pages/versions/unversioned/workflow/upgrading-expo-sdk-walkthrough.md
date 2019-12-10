@@ -8,6 +8,10 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
 
+## SDK 36
+
+[Blog Post](https://blog.expo.io/expo-sdk-36-is-now-available-b91897b437fe)
+
 ## SDK 35
 
 [Blog Post](https://blog.expo.io/expo-sdk-35-is-now-available-beee0dfafbf4)
