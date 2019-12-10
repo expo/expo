@@ -181,7 +181,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
       ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> 5
       ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 6
       ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 7
-      else -> 8
+      else -> 8 // unknown orientation
     }
   }
 
