@@ -10,7 +10,7 @@
 /packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta
-/packages/expo-av                               @mczernek
+/packages/expo-av                               @mczernek @bbarthec
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec
 /packages/expo-battery                          -
@@ -21,21 +21,21 @@
 /packages/expo-calendar                         @tsapeta @lukmccall
 /packages/expo-camera                           @bbarthec
 /packages/expo-cellular                         @ide
-/packages/expo-constants                        @tsapeta
+/packages/expo-constants                        @tsapeta @bbarthec 
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
 /packages/expo-device                           @ide
 /packages/expo-document-picker                  @bbarthec
-/packages/expo-error-recovery                   @lukmccall
+/packages/expo-error-recovery                   @lukmccall @bbarthec 
 /packages/expo-face-detector                    @sjchmiela @mczernek
 /packages/expo-facebook                         @sjchmiela
-/packages/expo-file-system                      @sjchmiela
+/packages/expo-file-system                      @sjchmiela @bbarthec 
 /packages/expo-font                             @sjchmiela
-/packages/expo-gl-cpp                           @tsapeta
-/packages/expo-gl                               @tsapeta
+/packages/expo-gl-cpp                           @tsapeta @bbarthec 
+/packages/expo-gl                               @tsapeta @bbarthec 
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
-/packages/expo-haptics                          @tsapeta
+/packages/expo-haptics                          @tsapeta @bbarthec 
 /packages/expo-image-manipulator                @bbarthec
 /packages/expo-image-picker                     @bbarthec
 /packages/expo-in-app-purchases                 @ide
@@ -47,7 +47,7 @@
 /packages/expo-location                         @tsapeta @lukmccall
 /packages/expo-mail-composer                    @sjchmiela
 /packages/expo-media-library                    @tsapeta @lukmccall
-/packages/expo-module-scripts                   @ide
+/packages/expo-module-scripts                   @ide @bbarthec 
 /packages/expo-module-template                  @bbarthec
 /packages/expo-network                          @ide
 /packages/expo-payments-stripe                  @sjchmiela
@@ -57,7 +57,7 @@
 /packages/expo-random                           @EvanBacon
 /packages/expo-secure-store                     @sjchmiela
 /packages/expo-sensors                          @sjchmiela
-/packages/expo-sharing                          @sjchmiela
+/packages/expo-sharing                          @sjchmiela @bbarthec 
 /packages/expo-sms                              @bbarthec
 /packages/expo-speech                           @sjchmiela
 /packages/expo-sqlite                           @sjchmiela 
@@ -71,12 +71,12 @@
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
-/packages/react-native-unimodules               @tsapeta
+/packages/react-native-unimodules               @tsapeta @bbarthec 
 /packages/unimodules-barcode-scanner-interface  @bbarthec
 /packages/unimodules-camera-interface           @bbarthec
-/packages/unimodules-constants-interface        @tsapeta
+/packages/unimodules-constants-interface        @tsapeta @bbarthec 
 /packages/unimodules-face-detector-interface    @sjchmiela
-/packages/unimodules-file-system-interface      @sjchmiela
+/packages/unimodules-file-system-interface      @sjchmiela @bbarthec 
 /packages/unimodules-font-interface             @sjchmiela
 /packages/unimodules-image-loader-interface     @bbarthec
 /packages/unimodules-permissions-interface      @bbarthec @lukmccall
