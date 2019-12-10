@@ -489,8 +489,6 @@ jobs:
 
   ios_test_suite:
     executor: mac
-    macos: # Detox simulators require 10.1.0
-      xcode: '10.1.0'
     #parallelism: 8
     steps:
       - install_nix
