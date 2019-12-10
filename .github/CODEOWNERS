@@ -50,11 +50,13 @@
 /packages/expo-module-scripts                   @ide @bbarthec 
 /packages/expo-module-template                  @bbarthec
 /packages/expo-network                          @ide
+/packages/expo-notifications                    @mczernek
 /packages/expo-payments-stripe                  @sjchmiela
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @tsapeta
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
+/packages/expo-screen-orientation               @lukmccall
 /packages/expo-secure-store                     @sjchmiela
 /packages/expo-sensors                          @sjchmiela
 /packages/expo-sharing                          @sjchmiela @bbarthec 
@@ -62,7 +64,7 @@
 /packages/expo-speech                           @sjchmiela
 /packages/expo-sqlite                           @sjchmiela 
 /packages/expo-store-review                     @EvanBacon
-/packages/expo-task-manager                     @tsapeta
+/packages/expo-task-manager                     @tsapeta @mczernek
 /packages/expo-updates                          @esamelson @mczernek
 /packages/expo-video-thumbnails                 @sjchmiela
 /packages/expo-web-browser                      @sjchmiela @mczernek
