@@ -56,13 +56,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone 11"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone 11"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
@@ -101,7 +101,7 @@
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
     "babel-preset-expo": "~8.0.0",
-    "detox": "^14.4.1",
+    "detox": "^14.8.4",
     "expo-module-scripts": "^1.1.1",
     "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~36.0.0",
