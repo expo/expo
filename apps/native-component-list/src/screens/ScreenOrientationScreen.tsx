@@ -9,10 +9,7 @@ interface State {
   orientationLock?: ScreenOrientation.OrientationLock;
 }
 
-export default class ScreenOrientationScreen extends React.Component<
-  {},
-  State
-> {
+export default class ScreenOrientationScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ScreenOrientation',
   };
@@ -46,7 +43,7 @@ export default class ScreenOrientationScreen extends React.Component<
     this.setState({
       orientation: await ScreenOrientation.getOrientationAsync(),
     });
-  }
+  };
 
   componentWillUnmount() {
     if (this.listener) {
@@ -60,13 +57,12 @@ export default class ScreenOrientationScreen extends React.Component<
       await document.documentElement.requestFullscreen();
     }
 
-    await ScreenOrientation.lockAsync(orientation)
-      .catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
+    await ScreenOrientation.lockAsync(orientation).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
 
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
-  }
+  };
 
   lockPlatformExample = async () => {
     if (Platform.OS === 'web') {
@@ -86,34 +82,54 @@ export default class ScreenOrientationScreen extends React.Component<
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
-  }
+  };
 
   doesSupport = async () => {
     const result = await ScreenOrientation.supportsOrientationLockAsync(
       ScreenOrientation.OrientationLock.PORTRAIT_DOWN
-    )
-      .catch(console.warn);
+    ).catch(console.warn);
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
-  }
+  };
 
   unlock = async () => {
-    await ScreenOrientation.unlockAsync()
-      .catch(console.warn);
+    await ScreenOrientation.unlockAsync().catch(console.warn);
+  };
+
+  getScreenOrienationLockOptions(): Array<{
+    key: string;
+    value: ScreenOrientation.OrientationLock;
+  }> {
+    const orientationOptions = [
+      ScreenOrientation.OrientationLock.DEFAULT,
+      ScreenOrientation.OrientationLock.ALL,
+      ScreenOrientation.OrientationLock.PORTRAIT,
+      ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      ScreenOrientation.OrientationLock.PORTRAIT_DOWN,
+      ScreenOrientation.OrientationLock.LANDSCAPE,
+      ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+      ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
+    ];
+
+    if (Platform.OS === 'ios') {
+      orientationOptions.push(ScreenOrientation.OrientationLock.ALL_BUT_UPSIDE_DOWN);
+    }
+
+    return orientationOptions.map(orientation => ({
+      key: ScreenOrientation.OrientationLock[orientation],
+      value: orientation,
+    }));
   }
 
   render() {
     const { orientation, orientationLock } = this.state;
     return (
       <ScrollView style={{ padding: 10 }}>
-        {orientation && <Text>Orientation: {orientation}</Text>}
-        {orientationLock && <Text>OrientationLock: {orientationLock}</Text>}
-        {}
-        {Object.keys(ScreenOrientation.Orientation).map(o => (
-          <ListButton
-            key={o}
-            onPress={() => this.lock(o as ScreenOrientation.OrientationLock)}
-            title={o}
-          />
+        {orientation && <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>}
+        {orientationLock !== undefined && (
+          <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
+        )}
+        {this.getScreenOrienationLockOptions().map(o => (
+          <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />
         ))}
         <ListButton
           key="lockPlatformAsync Example"

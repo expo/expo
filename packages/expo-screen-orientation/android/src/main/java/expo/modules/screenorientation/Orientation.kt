@@ -5,10 +5,8 @@ package expo.modules.screenorientation
  */
 enum class Orientation(val value: Int) {
   UNKNOWN(0),
-  PORTRAIT(1),
-  PORTRAIT_UP(2),
-  PORTRAIT_DOWN(3),
-  LANDSCAPE(4),
-  LANDSCAPE_LEFT(5),
-  LANDSCAPE_RIGHT(6),
+  PORTRAIT_UP(1),
+  PORTRAIT_DOWN(2),
+  LANDSCAPE_LEFT(3),
+  LANDSCAPE_RIGHT(4),
 }
