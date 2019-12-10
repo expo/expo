@@ -2,7 +2,7 @@
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
 /packages/expo-ads-admob                        @sjchmiela
-/packages/expo-ads-facebook                     -
+/packages/expo-ads-facebook                     @sjchmiela
 /packages/expo-analytics-amplitude              @sjchmiela
 /packages/expo-analytics-segment                @sjchmiela
 /packages/expo-app-auth                         @EvanBacon
@@ -10,7 +10,7 @@
 /packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta
-/packages/expo-av                               @sjchmiela @mczernek
+/packages/expo-av                               @mczernek
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec
 /packages/expo-battery                          -
@@ -50,7 +50,7 @@
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @bbarthec
 /packages/expo-network                          @ide
-/packages/expo-payments-stripe                  -
+/packages/expo-payments-stripe                  @sjchmiela
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @tsapeta
 /packages/expo-processing                       @EvanBacon
@@ -59,8 +59,8 @@
 /packages/expo-sensors                          @sjchmiela
 /packages/expo-sharing                          @sjchmiela
 /packages/expo-sms                              @bbarthec
-/packages/expo-speech                           -
-/packages/expo-sqlite                           -
+/packages/expo-speech                           @sjchmiela
+/packages/expo-sqlite                           @sjchmiela 
 /packages/expo-store-review                     @EvanBacon
 /packages/expo-task-manager                     @tsapeta
 /packages/expo-updates                          @esamelson @mczernek
