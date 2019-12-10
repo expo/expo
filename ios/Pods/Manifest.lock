@@ -1311,7 +1311,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (8.0.0):
+  - EXImagePicker (8.0.1):
     - UMCore
     - UMFileSystemInterface
   - EXKeepAwake (8.0.0):
@@ -3524,7 +3524,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
   EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
   EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
-  EXImagePicker: e6bd62b64a84c7ae29fbdb6207fee26e2dd2ccda
+  EXImagePicker: e02d5a9e45e3575391083fefaa0dc95f5ed45d03
   EXKeepAwake: 66e9f80b6d129633725a0e42f8d285c229876811
   EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
   EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd

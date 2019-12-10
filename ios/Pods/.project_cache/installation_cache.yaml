@@ -6591,7 +6591,7 @@ CACHE_KEYS:
   EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
       EXImagePicker: e843389507faa36489611fc96d1282f8
-    CHECKSUM: e6bd62b64a84c7ae29fbdb6207fee26e2dd2ccda
+    CHECKSUM: e02d5a9e45e3575391083fefaa0dc95f5ed45d03
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -6601,7 +6601,7 @@ CACHE_KEYS:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
-      - EXImagePicker (8.0.0)
+      - EXImagePicker (8.0.1)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake: a24035f82eb272b6695268c3a6d8e57d
