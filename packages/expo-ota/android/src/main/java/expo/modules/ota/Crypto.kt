@@ -1,9 +1,8 @@
 package expo.modules.ota
 
+import android.util.Base64
 import okhttp3.*
 import org.json.JSONObject
-import org.spongycastle.jce.provider.BouncyCastleProvider
-import org.spongycastle.util.encoders.Base64
 import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
@@ -85,21 +84,14 @@ class ExpoValidator(private val publicKeyUrl: String, private val httpClient: Ok
             }
         }
 
-        val signature = Signature.getInstance("SHA256withRSA", getBouncyCastleProvider())
-        val decodedPublicKey = Base64.decode(publicKeyNoComments)
+        val signature = Signature.getInstance("SHA256withRSA")
+        val decodedPublicKey = Base64.decode(publicKeyNoComments, Base64.DEFAULT)
         val publicKeySpec = X509EncodedKeySpec(decodedPublicKey)
-        val keyFactory = KeyFactory.getInstance(publicKeySpec.format)
+        val keyFactory = KeyFactory.getInstance("RSA")
         val key = keyFactory.generatePublic(publicKeySpec)
 
         signature.initVerify(key)
         signature.update(plainText.toByteArray())
-        return signature.verify(Base64.decode(cipherText))
-    }
-
-    @Synchronized
-    fun getBouncyCastleProvider(): Provider {
-        val sBouncyCastleProvider = BouncyCastleProvider()
-        Security.insertProviderAt(sBouncyCastleProvider, 1)
-        return sBouncyCastleProvider
+        return signature.verify(Base64.decode(cipherText, Base64.DEFAULT))
     }
 }
