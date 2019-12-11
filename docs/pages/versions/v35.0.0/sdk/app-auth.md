@@ -7,7 +7,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

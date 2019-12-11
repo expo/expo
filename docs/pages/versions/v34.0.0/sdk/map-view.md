@@ -9,7 +9,7 @@ A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on An
 
 Expo includes version 0.24.2 of react-native-maps (the latest as of the time of this writing).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
