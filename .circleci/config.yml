@@ -580,6 +580,7 @@ jobs:
       - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
+      - decrypt_secrets_if_possible
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
