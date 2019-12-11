@@ -124,7 +124,9 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
     const { orientation, orientationLock } = this.state;
     return (
       <ScrollView style={{ padding: 10 }}>
-        {orientation && <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>}
+        {orientation !== undefined && (
+          <Text>Orientation: {ScreenOrientation.Orientation[orientation]}</Text>
+        )}
         {orientationLock !== undefined && (
           <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
         )}
