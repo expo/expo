@@ -7,7 +7,7 @@ A component's height and width determine its size on the screen.
 
 ## Fixed Dimensions
 
-The simplest way to set the dimensions of a component is by adding a fixed `width` and `height` to style. All dimensions in React Native are unitless, and represent density-independent pixels.
+The general way to set the dimensions of a component is by adding a fixed `width` and `height` to style. All dimensions in React Native are unitless, and represent density-independent pixels.
 
 ```javascript
 import React, { Component } from 'react';

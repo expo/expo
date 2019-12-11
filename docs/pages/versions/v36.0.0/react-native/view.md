@@ -7,10 +7,10 @@ The most fundamental component for building a UI, `View` is a container that sup
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
-This example creates a `View` that wraps two colored boxes and a text component in a row with padding.
+This example creates a `View` that wraps two boxes with color and a text component in a row with padding.
 
-```javascript
-class ViewColoredBoxesWithText extends Component {
+```jsx
+class ViewBoxesWithColorAndText extends Component {
   render() {
     return (
       <View
@@ -45,49 +45,6 @@ For `View` responder props (e.g., `onResponderMove`), the synthetic touch event 
   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
   - `touches` - Array of all current touches on the screen.
 
-### Props
-
-- [`accessible`](../view/#accessible)
-- [`accessibilityElementsHidden`](../view/#accessibilityElementsHidden)
-- [`accessibilityHint`](../view/#accessibilityhint)
-- [`accessibilityIgnoresInvertColors`](../view/#accessibilityIgnoresInvertColors)
-- [`accessibilityLabel`](../view/#accessibilitylabel)
-- [`accessibilityLiveRegion`](../view/#accessibilityliveregion)
-- [`accessibilityRole`](../view/#accessibilityrole)
-- [`accessibilityStates`](../view/#accessibilitystates)
-- [`accessibilityViewIsModal`](../view/#accessibilityviewismodal)
-- [`clickable`](../view/#clickable)
-- [`collapsable`](../view/#collapsable)
-- [`hitSlop`](../view/#hitslop)
-- [`importantForAccessibility`](../view/#importantforaccessibility)
-- [`nativeID`](../view/#nativeid)
-- [`nextFocusDown`](../view/#nextfocusdown)
-- [`nextFocusForward`](../view/#nextfocusForward)
-- [`nextFocusLeft`](../view/#nextfocusleft)
-- [`nextFocusRight`](../view/#nextfocusright)
-- [`nextFocusUp`](../view/#nextfocusleft)
-- [`needsOffscreenAlphaCompositing`](../view/#needsoffscreenalphacompositing)
-- [`onAccessibilityEscape`](../view/#onaccessibilityescape)
-- [`onAccessibilityTap`](../view/#onaccessibilitytap)
-- [`onLayout`](../view/#onlayout)
-- [`onMagicTap`](../view/#onmagictap)
-- [`onMoveShouldSetResponder`](../view/#onmoveshouldsetresponder)
-- [`onMoveShouldSetResponderCapture`](../view/#onmoveshouldsetrespondercapture)
-- [`onResponderGrant`](../view/#onrespondergrant)
-- [`onResponderMove`](../view/#onrespondermove)
-- [`onResponderReject`](../view/#onresponderreject)
-- [`onResponderRelease`](../view/#onresponderrelease)
-- [`onResponderTerminate`](../view/#onresponderterminate)
-- [`onResponderTerminationRequest`](../view/#onresponderterminationrequest)
-- [`onStartShouldSetResponder`](../view/#onstartshouldsetresponder)
-- [`onStartShouldSetResponderCapture`](../view/#onstartshouldsetrespondercapture)
-- [`pointerEvents`](../view/#pointerevents)
-- [`renderToHardwareTextureAndroid`](../view/#rendertohardwaretextureandroid)
-- [`removeClippedSubviews`](../view/#removeclippedsubviews)
-- [`shouldRasterizeIOS`](../view/#shouldrasterizeios)
-- [`style`](../view/#style)
-- [`testID`](../view/#testid)
-
 ---
 
 # Reference
@@ -106,13 +63,13 @@ Does this view want to become responder on the start of a touch?
 
 ---
 
-### `accessibilityHint`
+### `accessible`
 
-An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
+When `true`, indicates that the view is an accessibility element. By default, all the touchable elements are accessible.
 
-| Type   | Required |
-| ------ | -------- |
-| string | No       |
+| Type | Required |
+| ---- | -------- |
+| bool | No       |
 
 ---
 
@@ -123,6 +80,205 @@ Overrides the text that's read by the screen reader when the user interacts with
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
+
+---
+
+### `accessibilityHint`
+
+An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not clear from the accessibility label.
+
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
+
+### `accessibilityRole`
+
+`accessibilityRole` communicates the purpose of a component to the user of an assistive technology.
+
+`accessibilityRole` can be one of the following:
+
+- `'none'` - Used when the element has no role.
+- `'button'` - Used when the element should be treated as a button.
+- `'link'` - Used when the element should be treated as a link.
+- `'search'` - Used when the text field element should also be treated as a search field.
+- `'image'` - Used when the element should be treated as an image. Can be combined with button or link, for example.
+- `'keyboardkey'` - Used when the element acts as a keyboard key.
+- `'text'` - Used when the element should be treated as static text that cannot change.
+- `'adjustable'` - Used when an element can be "adjusted" (e.g. a slider).
+- `'imagebutton'` - Used when the element should be treated as a button and is also an image.
+- `'header'` - Used when an element acts as a header for a content section (e.g. the title of a navigation bar).
+- `'summary'` - Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches.
+- `'alert'` - Used when an element contains important text to be presented to the user.
+- `'checkbox'` - Used when an element represents a checkbox which can be checked, unchecked, or have mixed checked state.
+- `'combobox'` - Used when an element represents a combo box, which allows the user to select among several choices.
+- `'menu'` - Used when the component is a menu of choices.
+- `'menubar'` - Used when a component is a container of multiple menus.
+- `'menuitem'` - Used to represent an item within a menu.
+- `'progressbar'` - Used to represent a component which indicates progress of a task.
+- `'radio'` - Used to represent a radio button.
+- `'radiogroup'` - Used to represent a group of radio buttons.
+- `'scrollbar'` - Used to represent a scroll bar.
+- `'spinbutton'` - Used to represent a button which opens a list of choices.
+- `'switch'` - Used to represent a switch which can be turned on and off.
+- `'tab'` - Used to represent a tab.
+- `'tablist'` - Used to represent a list of tabs.
+- `'timer'` - Used to represent a timer.
+- `'toolbar'` - Used to represent a tool bar (a container of action buttons or components).
+
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
+
+### `accessibilityState`
+
+Describes the current state of a component to the user of an assistive technology.
+
+See the [Accessibility guide](../accessibility/#accessibilitystate-ios-android) for more information.
+
+| Type                                                                                           | Required |
+| ---------------------------------------------------------------------------------------------- | -------- |
+| object: {disabled: bool, selected: bool, checked: bool or 'mixed', busy: bool, expanded: bool} | No       |
+
+---
+
+### `accessibilityValue`
+
+Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).
+
+See the [Accessibility guide](../accessibility/#accessibilityvalue-ios-android) for more information.
+
+| Type                                                          | Required |
+| ------------------------------------------------------------- | -------- |
+| object: {min: number, max: number, now: number, text: string} | No       |
+
+---
+
+### `accessibilityActions`
+
+Accessibility actions allow an assistive technology to programmatically invoke the actions of a component. The `accessibilityActions` property should contain a list of action objects. Each action object should contain the field name and label.
+
+See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+
+| Type  | Required |
+| ----- | -------- |
+| array | No       |
+
+---
+
+### `onAccessibilityAction`
+
+Invoked when the user performs the accessibility actions. The only argument to this function is an event containing the name of the action to perform.
+
+See the [Accessibility guide](../accessibility/#accessibility-actions) for more information.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onAccessibilityTap`
+
+When `accessible` is true, the system will try to invoke this function when the user performs accessibility tap gesture.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onMagicTap`
+
+When `accessible` is `true`, the system will invoke this function when the user performs the magic tap gesture.
+
+| Type     | Required | Platform |
+| -------- | -------- | -------- |
+| function | No       | iOS      |
+
+---
+
+### `onAccessibilityEscape`
+
+When `accessible` is `true`, the system will invoke this function when the user performs the escape gesture.
+
+| Type     | Required | Platform |
+| -------- | -------- | -------- |
+| function | No       | iOS      |
+
+---
+
+### `accessibilityViewIsModal`
+
+A value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver. Default is `false`.
+
+See the [Accessibility guide](../accessibility/#accessibilityviewismodal-ios) for more information.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | iOS      |
+
+---
+
+### `accessibilityElementsHidden`
+
+A value indicating whether the accessibility elements contained within this accessibility element are hidden. Default is `false`.
+
+See the [Accessibility guide](../accessibility/#accessibilityelementshidden-ios) for more information.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | iOS      |
+
+---
+
+### `accessibilityIgnoresInvertColors`
+
+A value indicating this view should or should not be inverted when color inversion is turned on. A value of `true` will tell the view to not be inverted even if color inversion is turned on.
+
+See the [Accessibility guide](../accessibility/#accessibilityignoresinvertcolors) for more information.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | iOS      |
+
+---
+
+### `accessibilityLiveRegion`
+
+Indicates to accessibility services whether the user should be notified when this view changes. Works for Android API >= 19 only. Possible values:
+
+- `'none'` - Accessibility services should not announce changes to this view.
+- `'polite'`- Accessibility services should announce changes to this view.
+- `'assertive'` - Accessibility services should interrupt ongoing speech to immediately announce changes to this view.
+
+See the [Android `View` docs](http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion) for reference.
+
+| Type                                | Required | Platform |
+| ----------------------------------- | -------- | -------- |
+| enum('none', 'polite', 'assertive') | No       | Android  |
+
+---
+
+### `importantForAccessibility`
+
+Controls how view is important for accessibility which is if it fires accessibility events and if it is reported to accessibility services that query the screen. Works for Android only.
+
+Possible values:
+
+- `'auto'` - The system determines whether the view is important for accessibility - default (recommended).
+- `'yes'` - The view is important for accessibility.
+- `'no'` - The view is not important for accessibility.
+- `'no-hide-descendants'` - The view is not important for accessibility, nor are any of its descendant views.
+
+See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility) for reference.
+
+| Type                                             | Required | Platform |
+| ------------------------------------------------ | -------- | -------- |
+| enum('auto', 'yes', 'no', 'no-hide-descendants') | No       | Android  |
 
 ---
 
@@ -152,16 +308,6 @@ Used to locate this view from native classes.
 
 ---
 
-### `onAccessibilityTap`
-
-When `accessible` is true, the system will try to invoke this function when the user performs accessibility tap gesture.
-
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
-
----
-
 ### `onLayout`
 
 Invoked on mount and layout changes with:
@@ -169,26 +315,6 @@ Invoked on mount and layout changes with:
 `{nativeEvent: { layout: {x, y, width, height}}}`
 
 This event is fired immediately once the layout has been calculated, but the new layout may not yet be reflected on the screen at the time the event is received, especially if a layout animation is in progress.
-
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
-
----
-
-### `onMagicTap`
-
-When `accessible` is `true`, the system will invoke this function when the user performs the magic tap gesture.
-
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
-
----
-
-### `onAccessibilityEscape`
-
-When `accessible` is `true`, the system will invoke this function when the user performs the escape gesture.
 
 | Type     | Required |
 | -------- | -------- |
@@ -292,16 +418,6 @@ Some other `View` wants to become responder and is asking this `View` to release
 
 ---
 
-### `accessible`
-
-When `true`, indicates that the view is an accessibility element. By default, all the touchable elements are accessible.
-
-| Type | Required |
-| ---- | -------- |
-| bool | No       |
-
----
-
 ### `onStartShouldSetResponderCapture`
 
 If a parent `View` wants to prevent a child `View` from becoming responder on a touch start, it should have this handler which returns `true`.
@@ -320,7 +436,7 @@ Controls whether the `View` can be the target of touch events.
 
 - `'auto'`: The View can be the target of touch events.
 - `'none'`: The View is never the target of touch events.
-- `'box-none'`: The View is never the target of touch events but it's subviews can be. It behaves like if the view had the following classes in CSS:
+- `'box-none'`: The View is never the target of touch events but its subviews can be. It behaves like if the view had the following classes in CSS:
 
 ```javascript
 
@@ -328,17 +444,17 @@ Controls whether the `View` can be the target of touch events.
      pointer-events: none;
 }
 .box-none * {
-     pointer-events: all;
+     pointer-events: auto;
 }
 
 ```
 
-- `'box-only'`: The view can be the target of touch events but it's subviews cannot be. It behaves like if the view had the following classes in CSS:
+- `'box-only'`: The view can be the target of touch events but its subviews cannot be. It behaves like if the view had the following classes in CSS:
 
 ```javascript
 
 .box-only {
-     pointer-events: all;
+     pointer-events: auto;
 }
 .box-only * {
      pointer-events: none;
@@ -356,7 +472,7 @@ Controls whether the `View` can be the target of touch events.
 
 ### `removeClippedSubviews`
 
-This is a special performance property exposed by `RCTView` and is useful for scrolling content when there are many subviews, most of which are offscreen. For this property to be effective, it must be applied to a view that contains many subviews that extend outside its bound. The subviews must also have `overflow: hidden`, as should the containing view (or one of its superviews).
+This is a reserved performance property exposed by `RCTView` and is useful for scrolling content when there are many subviews, most of which are offscreen. For this property to be effective, it must be applied to a view that contains many subviews that extend outside its bound. The subviews must also have `overflow: hidden`, as should the containing view (or one of its superviews).
 
 | Type | Required |
 | ---- | -------- |
@@ -384,22 +500,6 @@ Used to locate this view in end-to-end tests.
 
 ---
 
-### `accessibilityLiveRegion`
-
-Indicates to accessibility services whether the user should be notified when this view changes. Works for Android API >= 19 only. Possible values:
-
-- `'none'` - Accessibility services should not announce changes to this view.
-- `'polite'`- Accessibility services should announce changes to this view.
-- `'assertive'` - Accessibility services should interrupt ongoing speech to immediately announce changes to this view.
-
-See the [Android `View` docs](http://developer.android.com/reference/android/view/View.html#attr_android:accessibilityLiveRegion) for reference.
-
-| Type                                | Required | Platform |
-| ----------------------------------- | -------- | -------- |
-| enum('none', 'polite', 'assertive') | No       | Android  |
-
----
-
 ### `collapsable`
 
 Views that are only used to layout their children or otherwise don't draw anything may be automatically removed from the native hierarchy as an optimization. Set this property to `false` to disable this optimization and ensure that this `View` exists in the native view hierarchy.
@@ -407,25 +507,6 @@ Views that are only used to layout their children or otherwise don't draw anythi
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | Android  |
-
----
-
-### `importantForAccessibility`
-
-Controls how view is important for accessibility which is if it fires accessibility events and if it is reported to accessibility services that query the screen. Works for Android only.
-
-Possible values:
-
-- `'auto'` - The system determines whether the view is important for accessibility - default (recommended).
-- `'yes'` - The view is important for accessibility.
-- `'no'` - The view is not important for accessibility.
-- `'no-hide-descendants'` - The view is not important for accessibility, nor are any of its descendant views.
-
-See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility) for reference.
-
-| Type                                             | Required | Platform |
-| ------------------------------------------------ | -------- | -------- |
-| enum('auto', 'yes', 'no', 'no-hide-descendants') | No       | Android  |
 
 ---
 
@@ -445,111 +526,11 @@ Rendering offscreen to preserve correct alpha behavior is extremely expensive an
 
 Whether this `View` should render itself (and all of its children) into a single hardware texture on the GPU.
 
-On Android, this is useful for animations and interactions that only modify opacity, rotation, translation, and/or scale: in those cases, the view doesn't have to be redrawn and display lists don't need to be re-executed. The texture can just be re-used and re-composited with different parameters. The downside is that this can use up limited video memory, so this prop should be set back to false at the end of the interaction/animation.
+On Android, this is useful for animations and interactions that only modify opacity, rotation, translation, and/or scale: in those cases, the view doesn't have to be redrawn and display lists don't need to be re-executed. The texture can be re-used and re-composited with different parameters. The downside is that this can use up limited video memory, so this prop should be set back to false at the end of the interaction/animation.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | Android  |
-
----
-
-### `accessibilityRole`
-
-`accessibilityRole` communicates the purpose of a component to the user of an assistive technology.
-
-`accessibilityRole` can be one of the following:
-
-- `'none'` - Used when the element has no role.
-- `'button'` - Used when the element should be treated as a button.
-- `'link'` - Used when the element should be treated as a link.
-- `'search'` - Used when the text field element should also be treated as a search field.
-- `'image'` - Used when the element should be treated as an image. Can be combined with button or link, for example.
-- `'keyboardkey'` - Used when the element acts as a keyboard key.
-- `'text'` - Used when the element should be treated as static text that cannot change.
-- `'adjustable'` - Used when an element can be "adjusted" (e.g. a slider).
-- `'imagebutton'` - Used when the element should be treated as a button and is also an image.
-- `'header'` - Used when an element acts as a header for a content section (e.g. the title of a navigation bar).
-- `'summary'` - Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches.
-- `'alert'` - Used when an element contains important text to be presented to the user.
-- `'checkbox'` - Used when an element represents a checkbox which can be checked, unchecked, or have mixed checked state.
-- `'combobox'` - Used when an element represents a combo box, which allows the user to select among several choices.
-- `'menu'` - Used when the component is a menu of choices.
-- `'menubar'` - Used when a component is a container of multiple menus.
-- `'menuitem'` - Used to represent an item within a menu.
-- `'progressbar'` - Used to represent a component which indicates progress of a task.
-- `'radio'` - Used to represent a radio button.
-- `'radiogroup'` - Used to represent a group of radio buttons.
-- `'scrollbar'` - Used to represent a scroll bar.
-- `'spinbutton'` - Used to represent a button which opens a list of choices.
-- `'switch'` - Used to represent a switch which can be turned on and off.
-- `'tab'` - Used to represent a tab.
-- `'tablist'` - Used to represent a list of tabs.
-- `'timer'` - Used to represent a timer.
-- `'toolbar'` - Used to represent a tool bar (a container of action buttons or components).
-
-On iOS, these roles map to corresponding Accessibility Traits. Image button has the same functionality as if the trait was set to both 'image' and 'button'. See the [Accessibility guide](../accessibility/#accessibilitytraits-ios) for more information.
-
-On Android, these roles have similar functionality on TalkBack as adding Accessibility Traits does on Voiceover in iOS
-
-| Type              | Required |
-| ----------------- | -------- |
-| AccessibilityRole | No       |
-
----
-
-### `accessibilityStates`
-
-Describes the current state of a component to the user of an assistive technology.
-
-`accessibilityStates` is an array of values, and may include any of the following:
-
-- `'selected'` - Used when the element is in a selected state. For example, a button is selected.
-- `'disabled'` - Used when the element is disabled and cannot be manipulated.
-- `'checked'` - Used to indicate that a checkable element is currently checked.
-- `'unchecked'` - Used to indicate that a checkable element is not currently checked.
-- `'busy'` - Used to indicate that an element is currently busy.
-- `'expanded'` - Used to indicate that an expandable element is currently expanded.
-- `'collapsed'` - Used to indicate that an expandable element is currently collapsed.
-
-| Type                        | Required |
-| --------------------------- | -------- |
-| array of AccessibilitStates | No       |
-
----
-
-### `accessibilityViewIsModal`
-
-A value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver. Default is `false`.
-
-See the [Accessibility guide](../accessibility/#accessibilityviewismodal-ios) for more information.
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
-
----
-
-### `accessibilityElementsHidden`
-
-A value indicating whether the accessibility elements contained within this accessibility element are hidden. Default is `false`.
-
-See the [Accessibility guide](../accessibility/#accessibilityelementshidden-ios) for more information.
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
-
----
-
-### `accessibilityIgnoresInvertColors`
-
-A value indicating this view should or should not be inverted when color inversion is turned on. A value of `true` will tell the view to not be inverted even if color inversion is turned on.
-
-See the [Accessibility guide](../accessibility/#accessibilityignoresinvertcolors) for more information.
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
 
 ---
 
@@ -619,7 +600,7 @@ Designates the next view to receive focus when the user navigates up. See the [A
 
 ### `clickable`
 
-Determines whether this `View` is clickable or tappable for for accessibility hints.
+Determines whether this `View` is clickable or tappable for accessibility hints.
 
 | Type    | Required | Platform |
 | ------- | -------- | -------- |

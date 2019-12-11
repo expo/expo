@@ -3,25 +3,6 @@ id: image-style-props
 title: Image Style Props
 ---
 
-### Props
-
-- [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)
-- [`backfaceVisibility`](../image-style-props/#backfacevisibility)
-- [`borderBottomLeftRadius`](../image-style-props/#borderbottomleftradius)
-- [`borderBottomRightRadius`](../image-style-props/#borderbottomrightradius)
-- [`borderColor`](../image-style-props/#bordercolor)
-- [`borderRadius`](../image-style-props/#borderradius)
-- [`borderTopLeftRadius`](../image-style-props/#bordertopleftradius)
-- [`backgroundColor`](../image-style-props/#backgroundcolor)
-- [`borderWidth`](../image-style-props/#borderwidth)
-- [`opacity`](../image-style-props/#opacity)
-- [`overflow`](../image-style-props/#overflow)
-- [`resizeMode`](../image-style-props/#resizemode)
-- [`tintColor`](../image-style-props/#tintcolor)
-- [`overlayColor`](../image-style-props/#overlaycolor)
-
----
-
 # Reference
 
 ## Props

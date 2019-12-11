@@ -5,41 +5,82 @@ title: Button
 
 A basic button component that should render nicely on any platform. Supports a minimal level of customization.
 
-<center><img src="https://facebook.github.io/react-native/docs/assets/buttonExample.png" /></center>
-
 If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](../touchableopacity/) or [TouchableNativeFeedback](../touchablenativefeedback/). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
 
-Example usage:
+### Example
 
 ```javascript
+import React from 'react';
+import { StyleSheet, Button, View, SafeAreaView, Text, Alert } from 'react-native';
+import Constants from 'expo-constants';
 
-import { Button } from 'react-native';
-...
+function Separator() {
+  return <View style={styles.separator} />;
+}
 
-<Button
-  onPress={onPressLearnMore}
-  title="Learn More"
-  color="#841584"
-  accessibilityLabel="Learn more about this purple button"
-/>
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Text style={styles.title}>
+          The title and onPress handler are required. It is recommended to set accessibilityLabel to
+          help make your app usable by everyone.
+        </Text>
+        <Button title="Press me" onPress={() => Alert.alert('Simple Button pressed')} />
+      </View>
+      <Separator />
+      <View>
+        <Text style={styles.title}>
+          Adjust the color in a way that looks standard on each platform. On iOS, the color prop
+          controls the color of the text. On Android, the color adjusts the background color of the
+          button.
+        </Text>
+        <Button
+          title="Press me"
+          color="#f194ff"
+          onPress={() => Alert.alert('Button with adjusted color pressed')}
+        />
+      </View>
+      <Separator />
+      <View>
+        <Text style={styles.title}>All interaction for the component are disabled.</Text>
+        <Button title="Press me" disabled onPress={() => Alert.alert('Cannot press this one')} />
+      </View>
+      <Separator />
+      <View>
+        <Text style={styles.title}>
+          This layout strategy lets the title define the width of the button.
+        </Text>
+        <View style={styles.fixToText}>
+          <Button title="Left button" onPress={() => Alert.alert('Left button pressed')} />
+          <Button title="Right button" onPress={() => Alert.alert('Right button pressed')} />
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+    marginHorizontal: 16,
+  },
+  title: {
+    textAlign: 'center',
+    marginVertical: 8,
+  },
+  fixToText: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  separator: {
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+});
 ```
-
-### Props
-
-- [`accessibilityLabel`](../button/#accessibilitylabel)
-- [`color`](../button/#color)
-- [`disabled`](../button/#disabled)
-- [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
-- [`nextFocusDown`](../view/#nextfocusdown)
-- [`nextFocusForward`](../view/#nextfocusForward)
-- [`nextFocusLeft`](../view/#nextfocusleft)
-- [`nextFocusRight`](../view/#nextfocusright)
-- [`nextFocusUp`](../view/#nextfocusleft)
-- [`onPress`](../button/#onpress)
-- [`testID`](../button/#testid)
-- [`title`](../button/#title)
-- [`touchSoundDisabled`](../button/#touchSoundDisabled)
 
 ---
 

@@ -5,92 +5,66 @@ title: ScrollView
 
 Component that wraps platform ScrollView while providing integration with touch locking "responder" system.
 
-Keep in mind that ScrollViews must have a bounded height in order to work, since they contain unbounded-height children into a bounded container (via a scroll interaction). In order to bound the height of a ScrollView, either set the height of the view directly (discouraged) or make sure all parent views have bounded height. Forgetting to transfer `{flex: 1}` down the view stack can lead to errors here, which the element inspector makes easy to debug.
+Keep in mind that ScrollViews must have a bounded height in order to work, since they contain unbounded-height children into a bounded container (via a scroll interaction). In order to bound the height of a ScrollView, either set the height of the view directly (discouraged) or make sure all parent views have bounded height. Forgetting to transfer `{flex: 1}` down the view stack can lead to errors here, which the element inspector makes quick to debug.
 
 Doesn't yet support other contained responders from blocking this scroll view from becoming the responder.
 
 `<ScrollView>` vs [`<FlatList>`](../flatlist/) - which one to use?
 
-`ScrollView` simply renders all its react child components at once. That makes it very easy to understand and use.
+`ScrollView` renders all its react child components at once, but this has a performance downside.
 
-On the other hand, this has a performance downside. Imagine you have a very long list of items you want to display, maybe several screens worth of content. Creating JS components and native views for everything all at once, much of which may not even be shown, will contribute to slow rendering and increased memory usage.
+Imagine you have a very long list of items you want to display, maybe several screens worth of content. Creating JS components and native views for everything all at once, much of which may not even be shown, will contribute to slow rendering and increased memory usage.
 
-This is where `FlatList` comes into play. `FlatList` renders items lazily, just when they are about to appear, and removes items that scroll way off screen to save memory and processing time.
+This is where `FlatList` comes into play. `FlatList` renders items lazily, when they are about to appear, and removes items that scroll way off screen to save memory and processing time.
 
 `FlatList` is also handy if you want to render separators between your items, multiple columns, infinite scroll loading, or any number of other features it supports out of the box.
 
-### Props
+### Example
 
-- [View props...](../view/#props)
+```javascript
+import React from 'react';
+import { StyleSheet, Text, SafeAreaView, ScrollView } from 'react-native';
+import Constants from 'expo-constants';
 
-* [`alwaysBounceHorizontal`](../scrollview/#alwaysbouncehorizontal)
-* [`alwaysBounceVertical`](../scrollview/#alwaysbouncevertical)
-* [`automaticallyAdjustContentInsets`](../scrollview/#automaticallyadjustcontentinsets)
-* [`bounces`](../scrollview/#bounces)
-* [`bouncesZoom`](../scrollview/#bounceszoom)
-* [`canCancelContentTouches`](../scrollview/#cancancelcontenttouches)
-* [`centerContent`](../scrollview/#centercontent)
-* [`contentContainerStyle`](../scrollview/#contentcontainerstyle)
-* [`contentInset`](../scrollview/#contentinset)
-* [`contentInsetAdjustmentBehavior`](../scrollview/#contentinsetadjustmentbehavior)
-* [`contentOffset`](../scrollview/#contentoffset)
-* [`decelerationRate`](../scrollview/#decelerationrate)
-* [`directionalLockEnabled`](../scrollview/#directionallockenabled)
-* [`disableIntervalMomentum`](../scrollview/#disableintervalmomentum)
-* [`disableScrollViewPanResponder`](../scrollview/#disablescrollviewpanresponder)
-* [`endFillColor`](../scrollview/#endfillcolor)
-* [`horizontal`](../scrollview/#horizontal)
-* [`indicatorStyle`](../scrollview/#indicatorstyle)
-* [`invertStickyHeaders`](../scrollview/#invertstickyheaders)
-* [`keyboardDismissMode`](../scrollview/#keyboarddismissmode)
-* [`keyboardShouldPersistTaps`](../scrollview/#keyboardshouldpersisttaps)
-* [`maintainVisibleContentPosition`](../scrollview/#maintainvisiblecontentposition)
-* [`maximumZoomScale`](../scrollview/#maximumzoomscale)
-* [`minimumZoomScale`](../scrollview/#minimumzoomscale)
-* [`nestedScrollEnabled`](../scrollview/#nestedscrollenabled)
-* [`onContentSizeChange`](../scrollview/#oncontentsizechange)
-* [`onMomentumScrollBegin`](../scrollview/#onmomentumscrollbegin)
-* [`onMomentumScrollEnd`](../scrollview/#onmomentumscrollend)
-* [`onScroll`](../scrollview/#onscroll)
-* [`onScrollBeginDrag`](../scrollview/#onscrollbegindrag)
-* [`onScrollEndDrag`](../scrollview/#onscrollenddrag)
-* [`onScrollToTop`](../scrollview/#onscrolltotop)
-* [`overScrollMode`](../scrollview/#overscrollmode)
-* [`pagingEnabled`](../scrollview/#pagingenabled)
-* [`persistentScrollbar`](../scrollview/#persistentscrollbar)
-* [`pinchGestureEnabled`](../scrollview/#pinchgestureenabled)
-* [`refreshControl`](../scrollview/#refreshcontrol)
-* [`removeClippedSubviews`](../scrollview/#removeclippedsubviews)
-* [`scrollBarThumbImage`](../scrollview/#scrollbarthumbimage)
-* [`scrollEnabled`](../scrollview/#scrollenabled)
-* [`scrollEventThrottle`](../scrollview/#scrolleventthrottle)
-* [`scrollIndicatorInsets`](../scrollview/#scrollindicatorinsets)
-* [`scrollPerfTag`](../scrollview/#scrollperftag)
-* [`scrollToOverflowEnabled`](../scrollview/#scrolltooverflowenabled)
-* [`scrollsToTop`](../scrollview/#scrollstotop)
-* [`DEPRECATED_sendUpdatedChildFrames`](../scrollview/#deprecatedsendupdatedchildframes)
-* [`showsHorizontalScrollIndicator`](../scrollview/#showshorizontalscrollindicator)
-* [`showsVerticalScrollIndicator`](../scrollview/#showsverticalscrollindicator)
-* [`snapToAlignment`](../scrollview/#snaptoalignment)
-* [`snapToEnd`](../scrollview/#snaptoend)
-* [`snapToInterval`](../scrollview/#snaptointerval)
-* [`snapToOffsets`](../scrollview/#snaptooffsets)
-* [`snapToStart`](../scrollview/#snaptostart)
-* [`stickyHeaderIndices`](../scrollview/#stickyheaderindices)
-* [`zoomScale`](../scrollview/#zoomscale)
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <Text style={styles.text}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
+          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+          est laborum.
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
-### Methods
-
-- [`flashScrollIndicators`](../scrollview/#flashscrollindicators)
-- [`scrollTo`](../scrollview/#scrollto)
-- [`scrollToEnd`](../scrollview/#scrolltoend)
-- [`scrollWithoutAnimationTo`](../scrollview/#scrollwithoutanimationto)
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  scrollView: {
+    backgroundColor: 'pink',
+    marginHorizontal: 20,
+  },
+  text: {
+    fontSize: 42,
+  },
+});
+```
 
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `alwaysBounceHorizontal`
 
@@ -285,8 +259,8 @@ When true, the scroll view's children are arranged horizontally in a row instead
 The style of the scroll indicators.
 
 - `'default'` (the default), same as `black`.
-- `'black'`, scroll indicator is black. This style is good against a light background.
-- `'white'`, scroll indicator is white. This style is good against a dark background.
+- `'black'`, scroll indicator is `black`. This style is good against a light background.
+- `'white'`, scroll indicator is `white`. This style is good against a dark background.
 
 | Type                              | Required | Platform |
 | --------------------------------- | -------- | -------- |
@@ -347,7 +321,7 @@ The optional `autoscrollToTopThreshold` can be used to make the content automati
 
 Caveat 1: Reordering elements in the scrollview with this enabled will probably cause jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now, don't re-order the content of any ScrollViews or Lists that use this feature.
 
-Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute visibility. Occlusion, transforms, and other complexity won't be taken into account as to whether content is "visible" or not.
+Caveat 2: This uses `contentOffset` and `frame.origin` in native code to compute visibility. Occlusion, transforms, and other complexity won't be taken into account as to whether content is "visible" or not.
 
 | Type                                                                     | Required | Platform |
 | ------------------------------------------------------------------------ | -------- | -------- |
@@ -399,7 +373,7 @@ It's implemented using onLayout handler attached to the content container which 
 
 ### `onMomentumScrollBegin`
 
-Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
+Called when the momentum scroll starts (scroll which occurs as the ScrollView starts gliding).
 
 | Type     | Required |
 | -------- | -------- |
@@ -419,7 +393,7 @@ Called when the momentum scroll ends (scroll which occurs as the ScrollView glid
 
 ### `onScroll`
 
-Fires at most once per frame during scrolling. The frequency of the events can be controlled using the `scrollEventThrottle` prop.
+Fires at most once per frame during scrolling. The frequency of the events can be controlled using the `scrollEventThrottle` prop. The event has the shape `{ nativeEvent: { contentInset: { bottom, left, right, top }, contentOffset: { x, y }, contentSize: { height, width }, layoutMeasurement: { height, width }, zoomScale } }`. All values are numbers.
 
 | Type     | Required |
 | -------- | -------- |
@@ -554,7 +528,7 @@ Note that the view can always be scrolled by calling `scrollTo`.
 
 ### `scrollEventThrottle`
 
-This controls how often the scroll event will be fired while scrolling (as a time interval in ms). A lower number yields better accuracy for code that is tracking the scroll position, but can lead to scroll performance problems due to the volume of information being send over the bridge. You will not notice a difference between values set between 1-16 as the JS run loop is synced to the screen refresh rate. If you do not need precise scroll position tracking, set this value higher to limit the information being sent across the bridge. The default value is zero, which results in the scroll event being sent only once each time the view is scrolled.
+This controls how often the scroll event will be fired while scrolling (as a time interval in ms). A lower number yields better accuracy for code that is tracking the scroll position, but can lead to scroll performance problems due to the volume of information being sent over the bridge. You will not notice a difference between values set between 1-16 as the JS run loop is synced to the screen refresh rate. If you do not need precise scroll position tracking, set this value higher to limit the information being sent across the bridge. The default value is zero, which results in the scroll event being sent only once each time the view is scrolled.
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
@@ -648,7 +622,7 @@ When `snapToInterval` is set, `snapToAlignment` will define the relationship of 
 
 ### `snapToEnd`
 
-Use in conjuction with `snapToOffsets`. By default, the end of the list counts as a snap offset. Set `snapToEnd` to false to disable this behavior and allow the list to scroll freely between its end and the last `snapToOffsets` offset. The default value is true.
+Use in conjunction with `snapToOffsets`. By default, the end of the list counts as a snap offset. Set `snapToEnd` to false to disable this behavior and allow the list to scroll freely between its end and the last `snapToOffsets` offset. The default value is true.
 
 | Type    | Required |
 | ------- | -------- |
@@ -678,7 +652,7 @@ When set, causes the scroll view to stop at the defined offsets. This can be use
 
 ### `snapToStart`
 
-Use in conjuction with `snapToOffsets`. By default, the beginning of the list counts as a snap offset. Set `snapToStart` to false to disable this behavior and allow the list to scroll freely between its start and the first `snapToOffsets` offset. The default value is true.
+Use in conjunction with `snapToOffsets`. By default, the beginning of the list counts as a snap offset. Set `snapToStart` to false to disable this behavior and allow the list to scroll freely between its start and the first `snapToOffsets` offset. The default value is true.
 
 | Type    | Required |
 | ------- | -------- |
@@ -708,7 +682,7 @@ The current scale of the scroll view content. The default value is 1.0.
 
 ### `flashScrollIndicators()`
 
-```javascript
+```jsx
 flashScrollIndicators();
 ```
 
@@ -718,19 +692,21 @@ Displays the scroll indicators momentarily.
 
 ### `scrollTo()`
 
-```javascript
-scrollTo(([y]: number), object, ([x]: number), ([animated]: boolean), ([duration]: number));
+```jsx
+
+scrollTo(
+  options?: {x?: number, y?: number, animated?: boolean} | number,
+  deprecatedX?: number,
+	deprecatedAnimated?: boolean,
+);
+
 ```
 
-Scrolls to a given x, y offset, either immediately, with a smooth animation, or, for Android only, a custom animation duration time.
+Scrolls to a given x, y offset, either immediately, with a smooth animation.
 
 Example:
 
 `scrollTo({x: 0, y: 0, animated: true})`
-
-Example with duration (Android only):
-
-`scrollTo({x: 0, y: 0, duration: 500})`
 
 Note: The weird function signature is due to the fact that, for historical reasons, the function also accepts separate arguments as an alternative to the options object. This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
 
@@ -738,7 +714,7 @@ Note: The weird function signature is due to the fact that, for historical reaso
 
 ### `scrollToEnd()`
 
-```javascript
+```jsx
 scrollToEnd(([options]: { animated: boolean, duration: number }));
 ```
 
@@ -750,7 +726,7 @@ Use `scrollToEnd({animated: true})` for smooth animated scrolling, `scrollToEnd(
 
 ### `scrollWithoutAnimationTo()`
 
-```javascript
+```jsx
 scrollWithoutAnimationTo(y, x);
 ```
 

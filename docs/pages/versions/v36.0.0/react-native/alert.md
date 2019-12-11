@@ -7,20 +7,20 @@ Launches an alert dialog with the specified title and message.
 
 Optionally provide a list of buttons. Tapping any button will fire the respective onPress callback and dismiss the alert. By default, the only button will be an 'OK' button.
 
-This is an API that works both on iOS and Android and can show static alerts. To show an alert that prompts the user to enter some information, see `AlertIOS`; entering text in an alert is common on iOS only.
+This is an API that works both on Android and iOS and can show static alerts. To show an alert that prompts the user to enter some information, see `AlertIOS`; entering text in an alert is common on iOS only.
 
 ## Example
 
 <table>
   <tr>
-    <th style={{width: "50%"}}>iOS</th>
-    <th style={{width: "50%"}}>Android</th>
+    <th style="width: 50%;">iOS</th>
+    <th style="width: 50%;">Android</th>
   </tr>
   <tr>
-    <td style={{width: "50%"}}>
+    <td style="width: 50%;">
       <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif" /></center>
     </td>
-    <td style={{width: "50%"}}>
+    <td style="width: 50%;">
       <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif" /></center>
     </td>
   </tr>
@@ -44,8 +44,8 @@ Alternatively, the dismissing behavior can be disabled altogether by providing a
 
 Example usage:
 
-```javascript
-// Works on both iOS and Android
+```jsx
+// Works on both Android and iOS
 Alert.alert(
   'Alert Title',
   'My Alert Msg',
@@ -62,10 +62,6 @@ Alert.alert(
 );
 ```
 
-### Methods
-
-- [`alert`](../alert/#alert)
-
 ---
 
 # Reference
@@ -74,8 +70,8 @@ Alert.alert(
 
 ### `alert()`
 
-```javascript
+```jsx
 
-static alert(title, message?, buttons?, options? type?)
+static alert(title, message?, buttons?, options?)
 
 ```
