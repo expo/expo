@@ -20,12 +20,6 @@ export var OrientationLock;
     OrientationLock[OrientationLock["UNKNOWN"] = 9] = "UNKNOWN";
     OrientationLock[OrientationLock["ALL_BUT_UPSIDE_DOWN"] = 10] = "ALL_BUT_UPSIDE_DOWN";
 })(OrientationLock || (OrientationLock = {}));
-export var SizeClassIOS;
-(function (SizeClassIOS) {
-    SizeClassIOS["REGULAR"] = "REGULAR";
-    SizeClassIOS["COMPACT"] = "COMPACT";
-    SizeClassIOS["UNKNOWN"] = "UNKNOWN";
-})(SizeClassIOS || (SizeClassIOS = {}));
 export var WebOrientationLock;
 (function (WebOrientationLock) {
     WebOrientationLock["PORTRAIT_PRIMARY"] = "portrait-primary";

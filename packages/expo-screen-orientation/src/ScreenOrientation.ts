@@ -7,14 +7,12 @@ import {
   OrientationChangeListener,
   OrientationLock,
   PlatformOrientationInfo,
-  SizeClassIOS,
   WebOrientationLock,
 } from './ScreenOrientation.types';
 
 export {
   Orientation,
   OrientationLock,
-  SizeClassIOS,
   PlatformOrientationInfo,
   OrientationChangeListener,
   OrientationChangeEvent,
