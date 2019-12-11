@@ -12,7 +12,7 @@
 + (BOOL)doesSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask
 {
   if ((UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) // UIInterfaceOrientationMaskPortraitUpsideDown is part of orientationMask
-      && ![self doesDeviceHaveNotch])
+      && [self doesDeviceHaveNotch])
   {
     // device does not support UIInterfaceOrientationMaskPortraitUpsideDown and it was requested via orientationMask
     return false;
@@ -23,7 +23,14 @@
 
 + (BOOL)doesDeviceHaveNotch {
   if (@available(iOS 11.0, *)) {
-    return ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.top ?: 0.0) > 20.0;
+    __block BOOL result = false;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      result = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.top ?: 0.0) > 20.0;
+      dispatch_semaphore_signal(sem);
+    });
+    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+    return result;
   }
   
   return false;
