@@ -9,7 +9,7 @@ Component to control the app status bar.
 
 It is possible to have multiple `StatusBar` components mounted at the same time. The props will be merged in the order the `StatusBar` components were mounted.
 
-```javascript
+```jsx
 <View>
   <StatusBar backgroundColor="blue" barStyle="light-content" />
   <View>
@@ -21,38 +21,15 @@ It is possible to have multiple `StatusBar` components mounted at the same time.
 
 ### Imperative API
 
-For cases where using a component is not ideal, there is also an imperative API exposed as static functions on the component. It is however not recommended to use the static API and the component for the same prop because any value set by the static API will get overriden by the one set by the component in the next render.
-
-### Constants
-
-`currentHeight` (Android only) The height of the status bar.
-
-### Props
-
-- [`animated`](../statusbar/#animated)
-- [`barStyle`](../statusbar/#barstyle)
-- [`hidden`](../statusbar/#hidden)
-- [`backgroundColor`](../statusbar/#backgroundcolor)
-- [`translucent`](../statusbar/#translucent)
-- [`networkActivityIndicatorVisible`](../statusbar/#networkactivityindicatorvisible)
-- [`showHideTransition`](../statusbar/#showhidetransition)
-
-### Methods
-
-- [`setHidden`](../statusbar/#sethidden)
-- [`setBarStyle`](../statusbar/#setbarstyle)
-- [`setNetworkActivityIndicatorVisible`](../statusbar/#setnetworkactivityindicatorvisible)
-- [`setBackgroundColor`](../statusbar/#setbackgroundcolor)
-- [`setTranslucent`](../statusbar/#settranslucent)
-
-### Type Definitions
-
-- [`StatusBarStyle`](../statusbar/#statusbarstyle)
-- [`StatusBarAnimation`](../statusbar/#statusbaranimation)
+For cases where using a component is not ideal, there is also an imperative API exposed as static functions on the component. It is however not recommended to use the static API and the component for the same prop because any value set by the static API will get overridden by the one set by the component in the next render.
 
 ---
 
 # Reference
+
+## Constants
+
+`currentHeight` (Android only) The height of the status bar.
 
 ## Props
 
@@ -63,6 +40,16 @@ If the transition between status bar property changes should be animated. Suppor
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
+
+---
+
+### `backgroundColor`
+
+The background color of the status bar.
+
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
+| [color](../colors/) | No       | Android  |
 
 ---
 
@@ -86,26 +73,6 @@ If the status bar is hidden.
 
 ---
 
-### `backgroundColor`
-
-The background color of the status bar.
-
-| Type                | Required | Platform |
-| ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
-
----
-
-### `translucent`
-
-If the status bar is translucent. When translucent is set to true, the app will draw under the status bar. This is useful when using a semi transparent status bar color.
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
 ### `networkActivityIndicatorVisible`
 
 If the network activity indicator should be visible.
@@ -124,67 +91,76 @@ The transition effect when showing and hiding the status bar using the `hidden` 
 | --------------------- | -------- | -------- |
 | enum('fade', 'slide') | No       | iOS      |
 
+---
+
+### `translucent`
+
+If the status bar is translucent. When translucent is set to true, the app will draw under the status bar. This is useful when using a semi transparent status bar color.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
 ## Methods
 
-### `setHidden()`
+### `popStackEntry()`
 
-```javascript
+```jsx
 
-static setHidden(hidden: boolean, [animation]: StatusBarAnimation)
+static popStackEntry(entry: any)
 
 ```
 
-Show or hide the status bar
+Get and remove the last StatusBar entry from the stack.
 
 **Parameters:**
 
-| Name      | Type                                                   | Required | Description                                                      |
-| --------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------- |
-| hidden    | boolean                                                | Yes      | Hide the status bar.                                             |
-| animation | [StatusBarAnimation](../statusbar/#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
+| Name  | Type | Required | Description                           |
+| ----- | ---- | -------- | ------------------------------------- |
+| entry | any  | Yes      | Entry returned from `pushStackEntry`. |
 
 ---
 
-### `setBarStyle()`
+### `pushStackEntry()`
 
-```javascript
+```jsx
 
-static setBarStyle(style: StatusBarStyle, [animated]: boolean)
+static pushStackEntry(props: any)
 
 ```
 
-Set the status bar style
+Push a StatusBar entry onto the stack. The return value should be passed to `popStackEntry` when complete.
 
 **Parameters:**
 
-| Name     | Type                                           | Required | Description               |
-| -------- | ---------------------------------------------- | -------- | ------------------------- |
-| style    | [StatusBarStyle](../statusbar/#statusbarstyle) | Yes      | Status bar style to set   |
-| animated | boolean                                        | No       | Animate the style change. |
+| Name  | Type | Required | Description                                                      |
+| ----- | ---- | -------- | ---------------------------------------------------------------- |
+| props | any  | Yes      | Object containing the StatusBar props to use in the stack entry. |
 
 ---
 
-### `setNetworkActivityIndicatorVisible()`
+### `replaceStackEntry()`
 
-```javascript
+```jsx
 
-static setNetworkActivityIndicatorVisible(visible: boolean)
+static replaceStackEntry(entry: any, props: any)
 
 ```
 
-Control the visibility of the network activity indicator. iOS-only.
+Replace an existing StatusBar stack entry with new props.
 
 **Parameters:**
 
-| Name    | Type    | Required | Description         |
-| ------- | ------- | -------- | ------------------- |
-| visible | boolean | Yes      | Show the indicator. |
+| Name  | Type | Required | Description                                                                  |
+| ----- | ---- | -------- | ---------------------------------------------------------------------------- |
+| entry | any  | Yes      | Entry returned from `pushStackEntry` to replace.                             |
+| props | any  | Yes      | Object containing the StatusBar props to use in the replacement stack entry. |
 
 ---
 
 ### `setBackgroundColor()`
 
-```javascript
+```jsx
 
 static setBackgroundColor(color: string, [animated]: boolean)
 
@@ -201,9 +177,65 @@ Set the background color for the status bar. Android-only
 
 ---
 
+### `setBarStyle()`
+
+```jsx
+
+static setBarStyle(style: StatusBarStyle, [animated]: boolean)
+
+```
+
+Set the status bar style
+
+**Parameters:**
+
+| Name     | Type                                           | Required | Description               |
+| -------- | ---------------------------------------------- | -------- | ------------------------- |
+| style    | [StatusBarStyle](../statusbar/#statusbarstyle) | Yes      | Status bar style to set   |
+| animated | boolean                                        | No       | Animate the style change. |
+
+---
+
+### `setHidden()`
+
+```jsx
+
+static setHidden(hidden: boolean, [animation]: StatusBarAnimation)
+
+```
+
+Show or hide the status bar
+
+**Parameters:**
+
+| Name      | Type                                                   | Required | Description                                                      |
+| --------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------- |
+| hidden    | boolean                                                | Yes      | Hide the status bar.                                             |
+| animation | [StatusBarAnimation](../statusbar/#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
+
+---
+
+### `setNetworkActivityIndicatorVisible()`
+
+```jsx
+
+static setNetworkActivityIndicatorVisible(visible: boolean)
+
+```
+
+Control the visibility of the network activity indicator. iOS-only.
+
+**Parameters:**
+
+| Name    | Type    | Required | Description         |
+| ------- | ------- | -------- | ------------------- |
+| visible | boolean | Yes      | Show the indicator. |
+
+---
+
 ### `setTranslucent()`
 
-```javascript
+```jsx
 
 static setTranslucent(translucent: boolean)
 
@@ -218,24 +250,6 @@ Control the translucency of the status bar. Android-only.
 | translucent | boolean | Yes      | Set as translucent. |
 
 ## Type Definitions
-
-### StatusBarStyle
-
-Status bar style
-
-| Type   |
-| ------ |
-| \$Enum |
-
-**Constants:**
-
-| Value         | Description                                                           |
-| ------------- | --------------------------------------------------------------------- |
-| default       | Default status bar style (dark for iOS, light for Android)            |
-| light-content | Dark background, white texts and icons                                |
-| dark-content  | Light background, dark texts and icons (requires API\>=23 on Android) |
-
----
 
 ### StatusBarAnimation
 
@@ -252,3 +266,21 @@ Status bar animation
 | none  | No animation    |
 | fade  | Fade animation  |
 | slide | Slide animation |
+
+---
+
+### StatusBarStyle
+
+Status bar style
+
+| Type   |
+| ------ |
+| \$Enum |
+
+**Constants:**
+
+| Value         | Description                                                           |
+| ------------- | --------------------------------------------------------------------- |
+| default       | Default status bar style (dark for iOS, light for Android)            |
+| light-content | Dark background, white texts and icons                                |
+| dark-content  | Light background, dark texts and icons (requires API\>=23 on Android) |

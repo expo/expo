@@ -5,9 +5,11 @@ title: TimePickerAndroid
 
 Opens the standard Android time picker dialog.
 
+> `TimePickerAndroid` has been merged with `DatePickerIOS` and `DatePickerAndroid` into a single component called [DateTimePicker](https://github.com/react-native-community/react-native-datetimepicker#react-native-datetimepicker) and will be removed in a future release.
+
 ### Example
 
-```javascript
+```jsx
 try {
   const { action, hour, minute } = await TimePickerAndroid.open({
     hour: 14,
@@ -22,12 +24,6 @@ try {
 }
 ```
 
-### Methods
-
-- [`open`](../timepickerandroid/#open)
-- [`timeSetAction`](../timepickerandroid/#timesetaction)
-- [`dismissedAction`](../timepickerandroid/#dismissedaction)
-
 ---
 
 # Reference
@@ -36,7 +32,7 @@ try {
 
 ### `open()`
 
-```javascript
+```jsx
 
 static open(options)
 
@@ -60,7 +56,7 @@ Returns a Promise which will be invoked an object containing `action`, `hour` (0
 
 ### `timeSetAction()`
 
-```javascript
+```jsx
 
 static timeSetAction()
 
@@ -72,7 +68,7 @@ A time has been selected.
 
 ### `dismissedAction()`
 
-```javascript
+```jsx
 
 static dismissedAction()
 
