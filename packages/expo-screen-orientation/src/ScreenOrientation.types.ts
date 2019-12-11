@@ -20,12 +20,6 @@ export enum OrientationLock {
   ALL_BUT_UPSIDE_DOWN = 10, // iOS only -  deprecated
 }
 
-export enum SizeClassIOS {
-  REGULAR = 'REGULAR',
-  COMPACT = 'COMPACT',
-  UNKNOWN = 'UNKNOWN',
-}
-
 export enum WebOrientationLock {
   PORTRAIT_PRIMARY = 'portrait-primary',
   PORTRAIT_SECONDARY = 'portrait-secondary',

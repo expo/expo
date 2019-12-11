@@ -1,7 +1,7 @@
 import { EventEmitter, Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
-import { Orientation, OrientationLock, SizeClassIOS, WebOrientationLock, } from './ScreenOrientation.types';
-export { Orientation, OrientationLock, SizeClassIOS, WebOrientationLock, };
+import { Orientation, OrientationLock, WebOrientationLock, } from './ScreenOrientation.types';
+export { Orientation, OrientationLock, WebOrientationLock, };
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
 let _orientationChangeSubscribers = [];
 let _lastOrientationLock = OrientationLock.UNKNOWN;

@@ -18,11 +18,6 @@ export declare enum OrientationLock {
     UNKNOWN = 9,
     ALL_BUT_UPSIDE_DOWN = 10
 }
-export declare enum SizeClassIOS {
-    REGULAR = "REGULAR",
-    COMPACT = "COMPACT",
-    UNKNOWN = "UNKNOWN"
-}
 export declare enum WebOrientationLock {
     PORTRAIT_PRIMARY = "portrait-primary",
     PORTRAIT_SECONDARY = "portrait-secondary",
