@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Linking } from 'react-native';
+import { Linking } from 'expo';
 
 export default function useLinking() {
   const [link, setLink] = React.useState(null);

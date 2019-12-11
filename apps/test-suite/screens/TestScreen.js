@@ -122,39 +122,18 @@ TestRunner.defaultProps = {
   modules: [],
 };
 
-function parseSelectedQueryString(modules, url = '') {
-  const afterSelect = url
-    .toLowerCase()
-    .split('run/')
-    .pop();
-  if (!afterSelect) return [];
-
-  const testNames = afterSelect.split('%2c').map(v => v.trim());
-  const selected = testNames.includes('all')
-    ? modules
-    : modules.filter(m => testNames.includes(m.name.toLowerCase()));
-  if (!selected.length) {
-    console.log('[TEST_SUITE]', 'No selected modules', testNames);
-  }
-
-  return selected;
-}
 export default function ContextTestScreen(props) {
-  const { modules, onTestsComplete } = React.useContext(ModulesContext);
+  const { modules, setNavigation, onTestsComplete } = React.useContext(ModulesContext);
+  const [selectedModules, setSelected] = React.useState(null);
 
-  const link = props.navigation.getParam('tests');
-  // const link = useLinking();
+  React.useEffect(() => {
+    setNavigation(props.navigation);
+    const selectedModules = modules.filter(({ isActive }) => isActive);
+    // const selectedModules = props.navigation.getParam('tests');
+    if (Array.isArray(selectedModules)) setSelected(selectedModules);
+  }, []);
 
-  console.log('LINK: ', link);
-  if (link === null) {
-    return null;
-  }
+  if (!selectedModules) return null;
 
-  const queryModules = parseSelectedQueryString(modules, link);
-
-  const selectedModules = queryModules.length
-    ? queryModules
-    : modules.filter(({ isActive }) => isActive);
-  console.log('active: ', link, selectedModules);
   return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={selectedModules} />;
 }

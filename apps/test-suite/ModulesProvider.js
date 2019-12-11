@@ -51,34 +51,68 @@ function getCanReset(modules) {
   return false;
 }
 
+let lastLink = null;
+let needsNavigate = false;
+
 export default function ModulesProvider({ children }) {
+  const [navigation, setNavigation] = React.useState(null);
+  const [needsNavigate, setNeedsNavigate] = React.useState(null);
   const [modules, setModules] = React.useState({});
   const [isTesting, setTesting] = React.useState(false);
   const [isLoaded, setLoaded] = React.useState(false);
 
-  const link = useLinking();
-
-  React.useEffect(() => {
+  function processLink(link) {
     if (!link) return;
+    if (!Object.keys(modules).length) {
+      lastLink = link;
+      return;
+    } else if (!lastLink) {
+      return;
+    }
+    link = lastLink;
+    lastLink = null;
+
     const last = link.split('/').pop();
+    console.log('new link -> ', link, last);
     const _modules = { ...modules };
+    let hasNewModules = false;
     if (last === 'all') {
       for (const key in _modules) {
         _modules[key].isActive = true;
       }
+      hasNewModules = true;
     } else {
       const testNames = last.split(',').map(v => v.trim());
       const validTestNames = testNames.filter(name => !!_modules[name]);
       for (const key in _modules) {
-        _modules[key].isActive = validTestNames.includes(key);
+        const nextValid = validTestNames.includes(key);
+        if (nextValid !== _modules[key].isActive) hasNewModules = true;
+        _modules[key].isActive = nextValid;
       }
+      console.log('new linked tests -> ', testNames, validTestNames, _modules);
     }
 
     if (Object.keys(_modules).length) {
       setModules(_modules);
       cacheModules(_modules);
     }
-  }, [link]);
+
+    if (hasNewModules) setNeedsNavigate(true);
+  }
+
+  // const link = useLinking();
+
+  React.useEffect(() => {
+    if (navigation && needsNavigate) {
+      setNeedsNavigate(false);
+      navigation.navigate('run');
+    }
+    // processLink(link);
+  }, [navigation, needsNavigate]);
+
+  // React.useEffect(() => {
+  //   processLink(link);
+  // }, [link, modules]);
 
   React.useEffect(() => {
     const modulesMap = {};
@@ -147,6 +181,7 @@ export default function ModulesProvider({ children }) {
         onTestsComplete: isComplete => setTesting(!isComplete),
         setIsTestActive,
         onToggleAll,
+        setNavigation,
       }}>
       {children}
     </ModulesContext.Provider>

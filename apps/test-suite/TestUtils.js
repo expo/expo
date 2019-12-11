@@ -65,7 +65,7 @@ function getTestsForPlatform() {
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
     optionalRequire(() => require('./tests/SecureStore')),
-    optionalRequire(() => require('./tests/Segment')),
+    // optionalRequire(() => require('./tests/Segment')),
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/SQLite')),
     optionalRequire(() => require('./tests/SVG')),

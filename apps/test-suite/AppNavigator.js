@@ -7,47 +7,46 @@ import SelectScreen from './screens/SelectScreen';
 import TestScreen from './screens/TestScreen';
 
 const AppNavigator = createStackNavigator(
-    {
-        select: {
-            screen: SelectScreen,
-            path: 'select',
-            navigationOptions: {
-                title: 'Test Suite',
-            },
-        },
-        run: {
-            screen: TestScreen,
-            path: 'run/:tests',
-            navigationOptions: {
-                title: 'Test Runner',
-            },
-        },
+  {
+    Select: {
+      screen: SelectScreen,
+      path: '',
+      navigationOptions: {
+        title: 'Test Suite',
+      },
     },
-    {
-        headerMode: 'screen',
-        transitionConfig: global.DETOX ? () => ({
-            transitionSpec: {
-                duration: 0,
-            },
-        }) : undefined,
-        defaultNavigationOptions: {
-            headerStyle: {
-                borderBottomWidth: 0.5,
-                borderBottomColor: 'rgba(0,0,0,0.1)',
-                boxShadow: undefined,
-            },
-        },
-    }
+    TestScreen: {
+      screen: TestScreen,
+      path: 'TestScreen/:tests',
+    },
+  },
+  {
+    headerMode: 'screen',
+    transitionConfig: global.DETOX
+      ? () => ({
+          transitionSpec: {
+            duration: 0,
+          },
+        })
+      : undefined,
+    defaultNavigationOptions: {
+      headerStyle: {
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'rgba(0,0,0,0.1)',
+        boxShadow: undefined,
+      },
+    },
+  }
 );
 
 function CustomNavigator(props) {
-    return (
-        <SafeAreaProvider>
-            <ModulesProvider>
-                <AppNavigator {...props} />
-            </ModulesProvider>
-        </SafeAreaProvider>
-    );
+  return (
+    <SafeAreaProvider>
+      <ModulesProvider>
+        <AppNavigator {...props} />
+      </ModulesProvider>
+    </SafeAreaProvider>
+  );
 }
 CustomNavigator.router = AppNavigator.router;
 
