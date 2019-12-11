@@ -3,57 +3,206 @@ id: using-a-scrollview
 title: Using a ScrollView
 ---
 
-The [ScrollView](../scrollview/) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogeneous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
+The [ScrollView](../scrollview/) is a generic scrolling container that can contain multiple components and views. The scrollable items need not be homogeneous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
 
 This example creates a vertical `ScrollView` with both images and text mixed together.
 
 ```javascript
-
 import React, { Component } from 'react';
 import { ScrollView, Image, Text } from 'react-native';
 
 export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {
-      return (
-        <ScrollView>
-          <Text style={{fontSize:96}}>Scroll me plz</Text>
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Text style={{fontSize:96}}>If you like</Text>
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Text style={{fontSize:96}}>Scrolling down</Text>
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Text style={{fontSize:96}}>What's the best</Text>
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Text style={{fontSize:96}}>Framework around?</Text>
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Image source={{uri: "https://facebook.github.io/react-native/img/favicon.png", width: 64, height: 64}} />
-          <Text style={{fontSize:80}}>React Native</Text>
-        </ScrollView>
+    return (
+      <ScrollView>
+        <Text style={{ fontSize: 96 }}>Scroll me plz</Text>
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Text style={{ fontSize: 96 }}>If you like</Text>
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Text style={{ fontSize: 96 }}>Scrolling down</Text>
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Text style={{ fontSize: 96 }}>What's the best</Text>
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Text style={{ fontSize: 96 }}>Framework around?</Text>
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            width: 64,
+            height: 64,
+          }}
+        />
+        <Text style={{ fontSize: 80 }}>React Native</Text>
+      </ScrollView>
     );
   }
 }
 ```
 
-ScrollViews can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](../viewpagerandroid/) component.
+ScrollViews can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPager](https://github.com/react-native-community/react-native-viewpager) component.
 
 On iOS a ScrollView with a single item can be used to allow the user to zoom content. Set up the `maximumZoomScale` and `minimumZoomScale` props and your user will be able to use pinch and expand gestures to zoom in and out.
 

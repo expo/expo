@@ -18,7 +18,7 @@ These features make users more comfortable while using an app, because it allows
 
 ### TouchableHighlight and Touchable\*
 
-The responder system can be complicated to use. So we have provided an abstract `Touchable` implementation for things that should be "tappable". This uses the responder system and allows you to easily configure tap interactions declaratively. Use `TouchableHighlight` anywhere where you would use a button or link on web.
+The responder system can be complicated to use. So we have provided an abstract `Touchable` implementation for things that should be "tappable". This uses the responder system and allows you to configure tap interactions declaratively. Use `TouchableHighlight` anywhere where you would use a button or link on web.
 
 ## Responder Lifecycle
 

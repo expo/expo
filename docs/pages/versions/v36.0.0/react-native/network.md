@@ -3,7 +3,7 @@ id: network
 title: Networking
 ---
 
-Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
+Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may need to fetch a chunk of static content from another server.
 
 ## Using Fetch
 
@@ -11,15 +11,15 @@ React Native provides the [Fetch API](https://developer.mozilla.org/en-US/docs/W
 
 #### Making requests
 
-In order to fetch content from an arbitrary URL, just pass the URL to fetch:
+In order to fetch content from an arbitrary URL, you can pass the URL to fetch:
 
-```javascript
+```jsx
 fetch('https://mywebsite.com/mydata.json');
 ```
 
 Fetch also takes an optional second argument that allows you to customize the HTTP request. You may want to specify additional headers, or make a POST request:
 
-```javascript
+```jsx
 fetch('https://mywebsite.com/endpoint/', {
   method: 'POST',
   headers: {
@@ -41,7 +41,7 @@ The above examples show how you can make a request. In many cases, you will want
 
 Networking is an inherently asynchronous operation. Fetch methods will return a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that makes it straightforward to write code that works in an asynchronous manner:
 
-```javascript
+```jsx
 function getMoviesFromApiAsync() {
   return fetch('https://facebook.github.io/react-native/movies.json')
     .then(response => response.json())
@@ -56,7 +56,7 @@ function getMoviesFromApiAsync() {
 
 You can also use the proposed ES2017 `async`/`await` syntax in a React Native app:
 
-```javascript
+```jsx
 async function getMoviesFromApi() {
   try {
     let response = await fetch('https://facebook.github.io/react-native/movies.json');
@@ -123,13 +123,13 @@ export default class FetchExample extends React.Component {
 }
 ```
 
-> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can disable ATS completely. Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
+> By default, iOS will block any request that's not encrypted using [SSL](https://hosting.review/web-hosting-glossary/#12). If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to [add an App Transport Security exception](../integration-with-existing-apps/#test-your-integration). If you know ahead of time what domains you will need access to, it is more secure to add exceptions only for those domains; if the domains are not known until runtime you can [disable ATS completely](../integration-with-existing-apps/#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
 
 ### Using Other Networking Libraries
 
-The [XMLHttpRequest API](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) is built in to React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) that depend on it, or you can use the XMLHttpRequest API directly if you prefer.
+The [XMLHttpRequest API](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) is built into React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) that depend on it, or you can use the XMLHttpRequest API directly if you prefer.
 
-```javascript
+```jsx
 var request = new XMLHttpRequest();
 request.onreadystatechange = e => {
   if (request.readyState !== 4) {
@@ -153,7 +153,7 @@ request.send();
 
 React Native also supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
 
-```javascript
+```jsx
 var ws = new WebSocket('ws://host.com/path');
 
 ws.onopen = () => {

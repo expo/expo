@@ -7,24 +7,32 @@ Renders a boolean input.
 
 This is a controlled component that requires an `onValueChange` callback that updates the `value` prop in order for the component to reflect user actions. If the `value` prop is not updated, the component will continue to render the supplied `value` prop instead of the expected result of any user actions.
 
-### Props
+```javascript
+import React, { useState } from 'react';
+import { Text, View, Switch } from 'react-native';
 
-- [View props...](../view/#props)
-
-* [`disabled`](../switch/#disabled)
-* [`trackColor`](../switch/#trackcolor)
-* [`ios_backgroundColor`](../switch/#ios-backgroundcolor)
-* [`onValueChange`](../switch/#onvaluechange)
-* [`testID`](../switch/#testid)
-* [`thumbColor`](../switch/#thumbcolor)
-* [`tintColor`](../switch/#tintcolor)
-* [`value`](../switch/#value)
+export default function App() {
+  const [value, setValue] = useState(false);
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Switch
+        value={value}
+        onValueChange={v => {
+          setValue(v);
+        }}
+      />
+    </View>
+  );
+}
+```
 
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `disabled`
 
@@ -33,18 +41,6 @@ If true the user won't be able to toggle the switch. Default value is false.
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
-
----
-
-### `trackColor`
-
-Custom colors for the switch track.
-
-_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
-
-| Type                                                            | Required |
-| --------------------------------------------------------------- | -------- |
-| object: {false: [color](../colors/), true: [color](../colors/)} | No       |
 
 ---
 
@@ -58,9 +54,9 @@ On iOS, custom color for the background. This background color can be seen eithe
 
 ---
 
-### `onValueChange`
+### `onChange`
 
-Invoked with the new value when the value changes.
+Invoked when the user tries to change the value of the switch. Receives the change event as an argument. If you want to only receive the new value, use `onValueChange` instead.
 
 | Type     | Required |
 | -------- | -------- |
@@ -68,13 +64,13 @@ Invoked with the new value when the value changes.
 
 ---
 
-### `testID`
+### `onValueChange`
 
-Used to locate this view in end-to-end tests.
+Invoked when the user tries to change the value of the switch. Receives the new value as an argument. If you want to instead receive an event, use `onChange`.
 
-| Type   | Required |
-| ------ | -------- |
-| string | No       |
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
 
 ---
 
@@ -88,15 +84,15 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 ---
 
-### `tintColor`
+### `trackColor`
 
-> `tintColor` is deprecated, use `trackColor` instead.
+Custom colors for the switch track.
 
-Border color on iOS and background color on Android when the switch is turned off.
+_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
 
-| Type                | Required |
-| ------------------- | -------- |
-| [color](../colors/) | No       |
+| Type                                                            | Required |
+| --------------------------------------------------------------- | -------- |
+| object: {false: [color](../colors/), true: [color](../colors/)} | No       |
 
 ---
 

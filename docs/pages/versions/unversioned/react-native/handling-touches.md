@@ -9,16 +9,16 @@ Users interact with mobile apps mainly through touch. They can use a combination
 
 [Button](../button/) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
 
-```javascript
+```jsx
 <Button
   onPress={() => {
-    Alert.alert('You tapped the button!');
+    alert('You tapped the button!');
   }}
   title="Press Me"
 />
 ```
 
-This will render a blue label on iOS, and a blue rounded rectangle with white text on Android. Pressing the button will call the "onPress" function, which in this case displays an alert popup. If you like, you can specify a "color" prop to change the color of your button.
+This will render a blue label on iOS, and a blue rounded rectangle with light text on Android. Pressing the button will call the "onPress" function, which in this case displays an alert popup. If you like, you can specify a "color" prop to change the color of your button.
 
 ![](https://facebook.github.io/react-native/docs/assets/Button.png)
 
@@ -26,11 +26,11 @@ Go ahead and play around with the `Button` component using the example below. Yo
 
 ```javascript
 import React, { Component } from 'react';
-import { Alert, Button, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 
 export default class ButtonBasics extends Component {
   _onPressButton() {
-    Alert.alert('You tapped the button!');
+    alert('You tapped the button!');
   }
 
   render() {
@@ -88,7 +88,6 @@ Let's see all of these in action:
 ```javascript
 import React, { Component } from 'react';
 import {
-  Alert,
   Platform,
   StyleSheet,
   Text,
@@ -101,11 +100,11 @@ import {
 
 export default class Touchables extends Component {
   _onPressButton() {
-    Alert.alert('You tapped the button!');
+    alert('You tapped the button!');
   }
 
   _onLongPressButton() {
-    Alert.alert('You long-pressed the button!');
+    alert('You long-pressed the button!');
   }
 
   render() {
@@ -127,7 +126,9 @@ export default class Touchables extends Component {
             Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''
           }>
           <View style={styles.button}>
-            <Text style={styles.buttonText}>TouchableNativeFeedback</Text>
+            <Text style={styles.buttonText}>
+              TouchableNativeFeedback {Platform.OS !== 'android' ? '(Android only)' : ''}
+            </Text>
           </View>
         </TouchableNativeFeedback>
         <TouchableWithoutFeedback onPress={this._onPressButton}>
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2196F3',
   },
   buttonText: {
+    textAlign: 'center',
     padding: 20,
     color: 'white',
   },
