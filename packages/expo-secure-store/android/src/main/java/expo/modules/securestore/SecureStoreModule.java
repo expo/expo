@@ -396,18 +396,18 @@ public class SecureStoreModule extends ExportedModule {
       SecretKey secretKey = secretKeyEntry.getSecretKey();
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-      return createEncryptedItem(plaintextValue, cipher);
+      GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
+      
+      return createEncryptedItem(plaintextValue, cipher, gcmSpec);
     }
 
-    /* package */ JSONObject createEncryptedItem(String plaintextValue, Cipher cipher) throws
+    /* package */ JSONObject createEncryptedItem(String plaintextValue, Cipher cipher, GCMParameterSpec gcmSpec) throws
         GeneralSecurityException, JSONException {
 
       byte[] plaintextBytes = plaintextValue.getBytes(StandardCharsets.UTF_8);
       byte[] ciphertextBytes = cipher.doFinal(plaintextBytes);
       String ciphertext = Base64.encodeToString(ciphertextBytes, Base64.DEFAULT);
 
-      GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
       String ivString = Base64.encodeToString(gcmSpec.getIV(), Base64.DEFAULT);
       int authenticationTagLength = gcmSpec.getTLen();
 
@@ -521,10 +521,10 @@ public class SecureStoreModule extends ExportedModule {
       // Encrypt the value with the symmetric key. We need to specify the GCM parameters since the
       // our secret key isn't tied to the keystore and the cipher can't use the secret key to
       // generate the parameters.
-      AlgorithmParameterSpec gcmSpec = new GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes);
+      GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes);
       Cipher aesCipher = Cipher.getInstance(AESEncrypter.AES_CIPHER);
       aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
-      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher);
+      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher, gcmSpec);
 
       // Ensure the IV in the encrypted item matches our generated IV
       String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
