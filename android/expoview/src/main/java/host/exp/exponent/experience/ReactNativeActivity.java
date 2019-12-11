@@ -60,6 +60,7 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.SplashScreenKernelService;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
@@ -264,6 +265,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       layoutParams.height = mLayout.getHeight();
       mContainer.setLayoutParams(layoutParams);
     }
+
+    ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
 
     if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);
