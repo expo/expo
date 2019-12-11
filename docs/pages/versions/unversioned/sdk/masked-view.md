@@ -7,7 +7,7 @@ A masked view only displays the pixels that overlap with the view rendered in it
 
 > ⚠️ Android support for this library is currently experimental and you may encounter inconsistencies in behavior across platforms. Please report issues you encounter to [react-native-community/react-native-masked-view/issues](https://github.com/react-native-community/react-native-masked-view).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

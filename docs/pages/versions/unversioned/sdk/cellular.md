@@ -3,9 +3,11 @@ title: Cellular
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-cellular"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -21,23 +23,13 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Cellular from 'expo-cellular';
 ```
 
-**[Constants](#constants)**
+<TableOfContentSection title='Constants' contents={['Cellular.allowsVoip', 'Cellular.carrier', 'Cellular.isoCountryCode', 'Cellular.mobileCountryCode', 'Cellular.mobileNetworkCode']} />
 
-- [`Cellular.allowsVoip`](#cellularallowsvoip)
-- [`Cellular.carrier`](#cellularcarrier)
-- [`Cellular.isoCountryCode`](#cellularisocountrycode)
-- [`Cellular.mobileCountryCode`](#cellularmobilecountrycode)
-- [`Cellular.mobileNetworkCode`](#cellularmobilenetworkcode)
+<TableOfContentSection title='Methods' contents={['Cellular.getCellularGenerationAsync()']} />
 
-**[Methods](#methods)**
+<TableOfContentSection title='Enum Types' contents={['Cellular.CellularGeneration']} />
 
-- [`Cellular.getCellularGenerationAsync()`](#cellulargetcellulargenerationasync)
-
-**[Enum Types](#enum-types)**
-
-- [`Cellular.CellularGeneration`](#cellularcellulargeneration)
-
-**[Error Codes](#error-codes)**
+<TableOfContentSection title='Error Codes' contents={[]} />
 
 ## Constants
 
