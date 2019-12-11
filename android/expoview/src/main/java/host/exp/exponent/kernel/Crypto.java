@@ -2,6 +2,8 @@
 
 package host.exp.exponent.kernel;
 
+import android.annotation.SuppressLint;
+import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
 import java.io.IOException;
@@ -113,7 +115,7 @@ public class Crypto {
     Signature signature = Signature.getInstance("SHA256withRSA");
     byte[] decodedPublicKey = Base64.decode(publicKeyNoComments, Base64.DEFAULT);
     X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedPublicKey);
-    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+    @SuppressLint("InlinedApi") KeyFactory keyFactory = KeyFactory.getInstance(KeyProperties.KEY_ALGORITHM_RSA);
     PublicKey key = keyFactory.generatePublic(publicKeySpec);
 
     signature.initVerify(key);
