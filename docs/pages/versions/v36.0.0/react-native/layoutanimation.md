@@ -9,22 +9,15 @@ A common way to use this API is to call it before calling `setState`.
 
 Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
-````js
+```js
 
 if (Platform.OS === 'android') {
-
-```java
   if (UIManager.setLayoutAnimationEnabledExperimental) {
-````
-
-```java
     UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
 ```
-
-}
-}
-
-````
 
 
 Example usage:
@@ -37,39 +30,32 @@ import {View, Text, TouchableOpacity, Platform, UIManager, LayoutAnimation} from
 
 if (
   Platform.OS === 'android' &&
-
-```java
   UIManager.setLayoutAnimationEnabledExperimental
-````
-
 ) {
-
-```java
   UIManager.setLayoutAnimationEnabledExperimental(true);
-```
-
 }
+
 class AnimatedCollapsible extends React.Component {
-state = {expanded: false};
-render() {
-return (
-<View style={{overflow: 'hidden'}}>
-<TouchableOpacity
-onPress={() => {
-LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-this.setState({expanded: !this.state.expanded});
-}}>
-<Text>
-Press me to {this.state.expanded ? 'collapse' : 'expand'}!
-</Text>
-</TouchableOpacity>
-{this.state.expanded && <Text>I disappear sometimes!</Text>}
-</View>
-);
-}
+  state = {expanded: false};
+  render() {
+    return (
+      <View style={{overflow: 'hidden'}}>
+        <TouchableOpacity
+          onPress={() => {
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+          this.setState({expanded: !this.state.expanded});
+        }}>
+          <Text>
+            Press me to {this.state.expanded ? 'collapse' : 'expand'}!
+          </Text>
+        </TouchableOpacity>
+        {this.state.expanded && <Text>I disappear sometimes!</Text>}
+      </View>
+    );
+  }
 }
 
-````
+```
 
 
 ---
@@ -85,7 +71,7 @@ Press me to {this.state.expanded ? 'collapse' : 'expand'}!
 
 static configureNext(config, onAnimationDidEnd?)
 
-````
+```
 
 Schedules an animation to happen on the next layout.
 
