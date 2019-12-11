@@ -164,7 +164,7 @@ export function test(t) {
           ];
           const validOrientations = [
             ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
-            ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
             ScreenOrientation.Orientation.PORTRAIT_UP,
           ];
           await applyAsync({ desiredOrientations, validOrientations });
@@ -299,7 +299,7 @@ export function test(t) {
 
       t.it('throws an error when asked for non-lock values', async () => {
         // Expect non-lock values to throw an error
-        const notLocks = ['FOO', 3];
+        const notLocks = ['FOO', 99, -1];
         for (const notLock of notLocks) {
           let hasError = false;
           try {
