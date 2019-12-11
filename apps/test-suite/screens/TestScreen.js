@@ -5,6 +5,20 @@ import { StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 import ExponentTest from '../ExponentTest';
+import Portal from '../components/Portal';
+import RunnerError from '../components/RunnerError';
+import Suites from '../components/Suites';
+
+const initialState = {
+  portalChildShouldBeVisible: false,
+  state: Immutable.fromJS({
+    suites: [],
+    path: ['suites'], // Path to current 'children' List in state
+  }),
+  testPortal: null,
+  numFailed: 0,
+  done: false,
+};
 
 export default class TestScreen extends React.Component {
   state = TestScreen.initialState;
@@ -368,19 +382,44 @@ export default class TestScreen extends React.Component {
   };
 
   render() {
+    const {
+      testRunnerError,
+      results,
+      done,
+      numFailed,
+      state,
+      portalChildShouldBeVisible,
+      testPortal,
+    } = this.state;
+    if (testRunnerError) {
+      return <RunnerError>{testRunnerError}</RunnerError>;
+    }
     return (
-      <View style={styles.scrollViewContainer} testID="test_suite_container">
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-          ref={ref => (this._scrollViewRef = ref)}
-          onContentSizeChange={this._onScrollViewContentSizeChange}>
-          {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
-          {this._renderDoneText()}
-        </ScrollView>
-        {this._renderPortal()}
+      <View
+        testID="test_suite_container"
+        style={{
+          flex: 1,
+          alignItems: 'stretch',
+          justifyContent: 'center',
+        }}>
+        <Suites numFailed={numFailed} results={results} done={done} suites={state.get('suites')} />
+        <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );
+
+    // return (
+    //   <View style={styles.scrollViewContainer} testID="test_suite_container">
+    //     <ScrollView
+    //       style={styles.scrollView}
+    //       contentContainerStyle={styles.scrollViewContent}
+    //       ref={ref => (this._scrollViewRef = ref)}
+    //       onContentSizeChange={this._onScrollViewContentSizeChange}>
+    //       {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
+    //       {this._renderDoneText()}
+    //     </ScrollView>
+    //     {this._renderPortal()}
+    //   </View>
+    // );
   }
 }
 
