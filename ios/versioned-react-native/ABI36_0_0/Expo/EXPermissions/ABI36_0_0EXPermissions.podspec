@@ -12,13 +12,10 @@ Pod::Spec.new do |s|
   s.homepage        = package['homepage']
   s.platform        = :ios, '10.0'
   s.source          = { git: 'https://github.com/expo/expo.git' }
-  s.source_files    = "EXPermissions/*.{h,m}",
-                      "EXPermissions/Requesters/UserNotification/*.{h,m}",
-                      "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
-                      
+  s.source_files    = 'ABI36_0_0EXPermissions/**/*.{h,m}'
+  s.preserve_paths  = 'ABI36_0_0EXPermissions/**/*.{h,m}'
   s.requires_arc    = true
 
   s.dependency 'ABI36_0_0UMCore'
   s.dependency 'ABI36_0_0UMPermissionsInterface'
-
 end

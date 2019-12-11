@@ -17,11 +17,16 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 - iOS version is less than 10 (iPhone 7 is the first phone to support this)
   - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-haptics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
 
-> **Note**: Not compatible with web.
 
 ## API
 

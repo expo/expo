@@ -41,6 +41,9 @@
   if (_options[@"state"]) {
     request.state = _options[@"state"];
   }
+  if (_options[@"nonce"]) {
+    request.nonce = _options[@"nonce"];
+  }
 
   _authController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
   _authController.presentationContextProvider = self;

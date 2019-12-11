@@ -99,15 +99,47 @@ export declare type Alarm = {
     };
     method?: string;
 };
+export declare enum DayOfTheWeek {
+    Sunday = 1,
+    Monday = 2,
+    Tuesday = 3,
+    Wednesday = 4,
+    Thursday = 5,
+    Friday = 6,
+    Saturday = 7
+}
+export declare enum MonthOfTheYear {
+    January = 1,
+    February = 2,
+    March = 3,
+    April = 4,
+    May = 5,
+    June = 6,
+    July = 7,
+    August = 8,
+    September = 9,
+    October = 10,
+    November = 11,
+    December = 12
+}
 export declare type RecurrenceRule = {
     frequency: string;
     interval?: number;
     endDate?: string;
     occurrence?: number;
+    daysOfTheWeek?: Array<{
+        dayOfTheWeek: DayOfTheWeek;
+        weekNumber?: number;
+    }>;
+    daysOfTheMonth?: number[];
+    monthsOfTheYear?: MonthOfTheYear[];
+    weeksOfTheYear?: number[];
+    daysOfTheYear?: number[];
+    setPositions?: number[];
 };
 export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
-    [P in keyof T]?: T[P];
+    [P in keyof T]?: T[P] | null;
 };
 export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;

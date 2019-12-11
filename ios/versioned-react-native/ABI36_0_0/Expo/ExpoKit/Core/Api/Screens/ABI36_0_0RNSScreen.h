@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, ABI36_0_0RNSScreenStackAnimation) {
   ABI36_0_0RNSScreenStackAnimationDefault,
   ABI36_0_0RNSScreenStackAnimationNone,
   ABI36_0_0RNSScreenStackAnimationFade,
+  ABI36_0_0RNSScreenStackAnimationFlip,
 };
 
 @interface ABI36_0_0RCTConvert (ABI36_0_0RNSScreen)

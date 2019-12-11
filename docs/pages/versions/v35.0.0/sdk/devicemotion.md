@@ -5,6 +5,12 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
@@ -14,6 +20,15 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import { DeviceMotion } from 'expo-sensors';
 ```
+
+**[Methods](#methods)**
+
+- [`DeviceMotion.isAvailableAsync()`](#devicemotionisavailableasync)
+- [`DeviceMotion.addListener(listener)`](#devicemotionaddlistenerlistener)
+- [`DeviceMotion.removeAllListeners()`](#devicemotionremovealllisteners)
+- [`DeviceMotion.setUpdateInterval(intervalMs)`](#devicemotionsetupdateintervalintervalms)
+
+## Methods
 
 ### `DeviceMotion.isAvailableAsync()`
 

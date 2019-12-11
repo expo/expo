@@ -12,11 +12,8 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": [
-    "EXPermissions/*.{h,m}",
-    "EXPermissions/Requesters/UserNotification/*.{h,m}",
-    "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
-  ],
+  "source_files": "ABI36_0_0EXPermissions/**/*.{h,m}",
+  "preserve_paths": "ABI36_0_0EXPermissions/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
     "ABI36_0_0UMCore": [

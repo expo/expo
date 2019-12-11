@@ -1,27 +1,41 @@
+import { CodedError } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
+import { FontDisplay } from './Font';
+function uriFromFontSource(asset) {
+    if (typeof asset === 'string') {
+        return asset || null;
+    }
+    else if (typeof asset === 'object') {
+        return asset.uri || asset.localUri || null;
+    }
+    return null;
+}
+function displayFromFontSource(asset) {
+    return asset.display || FontDisplay.AUTO;
+}
 export function fontFamilyNeedsScoping(name) {
     return false;
 }
-function isAsset(asset) {
-    return typeof asset === 'object' && 'uri' in asset && 'name' in asset;
-}
 export function getAssetForSource(source) {
-    if (isAsset(source)) {
-        return {
-            uri: source.uri || source.localUri,
-        };
-    }
-    if (typeof source !== 'string') {
-        throw new Error(`Unexpected type ${typeof source} expected a URI string or Asset from expo-asset.`);
+    const uri = uriFromFontSource(source);
+    const display = displayFromFontSource(source);
+    if (!uri || typeof uri !== 'string') {
+        throwInvalidSourceError(uri);
     }
     return {
-        uri: source,
+        uri: uri,
+        display,
     };
 }
+function throwInvalidSourceError(source) {
+    let type = typeof source;
+    if (type === 'object')
+        type = JSON.stringify(source, null, 2);
+    throw new CodedError(`ERR_FONT_SOURCE`, `Expected font asset of type \`string | FontResource | Asset\` (number is not supported on web) instead got: ${type}`);
+}
 export async function loadSingleFontAsync(name, input) {
-    const asset = input;
-    if (asset.downloadAsync) {
-        throw new Error('expo-font: loadSingleFontAsync expected an asset of type FontResource on web');
+    if (typeof input !== 'object' || typeof input.uri !== 'string' || input.downloadAsync) {
+        throwInvalidSourceError(input);
     }
     await ExpoFontLoader.loadAsync(name, input);
 }

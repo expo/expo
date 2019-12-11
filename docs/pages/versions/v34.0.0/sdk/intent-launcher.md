@@ -5,11 +5,16 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-intent-la
 
 Provides a way to launch android intents. e.g. - opening a specific settings screen.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-intent-launcher`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-intent-launcher).
 
-> **Note**: Not compatible with web.
 
 ## API
 

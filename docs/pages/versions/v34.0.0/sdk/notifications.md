@@ -1,9 +1,15 @@
 ---
 title: Notifications
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/Notifications"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-34/packages/expo/src/Notifications'
 ---
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ❌               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -175,7 +181,7 @@ An object used to describe the local notification that you would like to present
 - **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 - **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
   - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
-  - **_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
+  - **\_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
 - **android (_optional_) (_object_)** -- notification configuration specific to Android.
   - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
   - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
@@ -204,7 +210,7 @@ Returns a promise that resolves to the number that is displayed in a badge on th
 
 ### `Notifications.setBadgeNumberAsync(number)`
 
-Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. On Android this method does nothing.
+Sets the number displayed in the app icon's badge to the given number. Setting the number to zero will both clear the badge and the list of notifications in the device's notification center on iOS. This method will reject on Android.
 
 ## Standalone App Only
 

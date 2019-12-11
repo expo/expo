@@ -95,6 +95,9 @@
     case ABI36_0_0RNSScreenStackAnimationFade:
       _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
       break;
+    case ABI36_0_0RNSScreenStackAnimationFlip:
+      _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+      break;
     case ABI36_0_0RNSScreenStackAnimationNone:
     case ABI36_0_0RNSScreenStackAnimationDefault:
       // Default
@@ -111,6 +114,8 @@
 {
   if (![view isKindOfClass:[ABI36_0_0RNSScreenStackHeaderConfig class]]) {
     [super addSubview:view];
+  } else {
+    ((ABI36_0_0RNSScreenStackHeaderConfig*) view).screenView = self;
   }
 }
 
@@ -275,8 +280,10 @@ ABI36_0_0RCT_ENUM_CONVERTER(ABI36_0_0RNSScreenStackPresentation, (@{
 ABI36_0_0RCT_ENUM_CONVERTER(ABI36_0_0RNSScreenStackAnimation, (@{
                                                   @"default": @(ABI36_0_0RNSScreenStackAnimationDefault),
                                                   @"none": @(ABI36_0_0RNSScreenStackAnimationNone),
-                                                  @"fade": @(ABI36_0_0RNSScreenStackAnimationFade)
+                                                  @"fade": @(ABI36_0_0RNSScreenStackAnimationFade),
+                                                  @"flip": @(ABI36_0_0RNSScreenStackAnimationFlip),
                                                   }), ABI36_0_0RNSScreenStackAnimationDefault, integerValue)
 
 
 @end
+

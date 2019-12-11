@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
+  shallow-checkout: expo/shallow-checkout@1.0.2
 
 commands:
   conditionally_halt:
@@ -37,7 +38,15 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Requiring << parameters.requireOneOf >>"
@@ -93,7 +102,15 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.requireOneOf >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -122,6 +139,7 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
+
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -158,7 +176,7 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - checkout
+      - shallow-checkout/checkout
       - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
@@ -270,7 +288,7 @@ executors:
       - image: lnl7/nix:2.1.2
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /root/expo
     environment:
       # fastlane complains if these are not set
       LANG: en_US.UTF-8
@@ -287,7 +305,7 @@ executors:
     docker:
       - image: circleci/node:latest-browsers
     shell: /bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /home/circleci/expo
     resource_class: small
     environment:
       USER: circleci
@@ -297,6 +315,7 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
+      # Homebrew settings
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       # fastlane complains if these are not set
@@ -390,6 +409,7 @@ workflows:
                 - /sdk-\d+/
                 - /.*all-ci.*/
       - shell_app_ios_build:
+          upload: true
           requires:
             - shell_app_ios_approve_build
       - shell_app_android_approve_build:
@@ -414,6 +434,18 @@ workflows:
       - expo_client_build:
           requires:
             - expo_client_approve_build
+
+  shell_app_nightly:
+    triggers:
+      - schedule:
+          cron: "20 5 * * 2,4,6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - shell_app_ios_build:
+          upload: false
 
 jobs:
   expo_sdk:
@@ -489,8 +521,6 @@ jobs:
 
   ios_test_suite:
     executor: mac
-    macos: # Detox simulators require 10.1.0
-      xcode: '10.1.0'
     #parallelism: 8
     steps:
       - install_nix
@@ -550,6 +580,7 @@ jobs:
       - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
+      - decrypt_secrets_if_possible
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
@@ -612,6 +643,10 @@ jobs:
 
   shell_app_ios_build:
     executor: mac
+    parameters:
+      upload:
+        type: boolean
+        default: true
     steps:
       - install_nix
       - setup
@@ -635,22 +670,26 @@ jobs:
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - run:
-          name: Package and upload release tarball
-          working_directory: ~/project
-          no_output_timeout: 40m
-          command: |
-            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-            tar \
-              -zcf "/tmp/$TARBALL" \
-              package.json \
-              exponent-view-template \
-              shellAppBase-builds \
-              shellAppWorkspaces \
-              ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+      - when:
+          condition: << parameters.upload >>
+          steps:
+            - run:
+                name: Package and upload release tarball
+                working_directory: ~/project
+                no_output_timeout: 40m
+                command: |
+                  export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+                  tar \
+                    -zcf "/tmp/$TARBALL" \
+                    package.json \
+                    exponent-view-template \
+                    shellAppBase-builds \
+                    shellAppWorkspaces \
+                    ios
+                  ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+                  echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+                  echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
+                  echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
   shell_app_android_build:
     executor: android
@@ -667,6 +706,9 @@ jobs:
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
             aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
           }
+          echo "Release tarball uploaded to $S3_URI"
+          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
+          echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
   android_test_suite:
     executor: android

@@ -14,10 +14,10 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
@@ -193,6 +193,30 @@ public class ExperienceActivityUtils {
         flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
         decorView.setSystemUiVisibility(flags);
       }
+    }
+  }
+
+  public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
+    String colorString;
+
+    try {
+      colorString = manifest.
+          getJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).
+          getString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
+    } catch(JSONException e) {
+      colorString = manifest.optString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
+    }
+
+    if (colorString == null) {
+      colorString = "#ffffff";
+    }
+
+    try {
+      int color = Color.parseColor(colorString);
+      rootView.setBackgroundColor(color);
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
+      rootView.setBackgroundColor(Color.WHITE);
     }
   }
 }

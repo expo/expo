@@ -122,10 +122,12 @@ public class BarCodeScannerModule extends ExportedModule {
 
         List<Bundle> resultList = new ArrayList<>();
         for (BarCodeScannerResult result : results) {
-          Bundle bundle = new Bundle();
-          bundle.putString("data", result.getValue());
-          bundle.putInt("type", result.getType());
-          resultList.add(bundle);
+          if (types.contains(result.getType())) {
+            Bundle bundle = new Bundle();
+            bundle.putString("data", result.getValue());
+            bundle.putInt("type", result.getType());
+            resultList.add(bundle);
+          }
         }
         promise.resolve(resultList);
       }

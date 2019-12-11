@@ -330,10 +330,15 @@ ABI36_0_0UM_EXPORT_METHOD_AS(saveEventAsync,
     calendarEvent.notes = nil;
   }
 
-  if (timeZone) {
-    calendarEvent.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     calendarEvent.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      calendarEvent.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
@@ -343,16 +348,7 @@ ABI36_0_0UM_EXPORT_METHOD_AS(saveEventAsync,
   }
 
   if (recurrenceRule) {
-    NSString *frequency = recurrenceRule[@"frequency"];
-    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
-    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
-    NSDate *endDate = nil;
-
-    if (recurrenceRule[@"endDate"]) {
-      endDate = [ABI36_0_0UMUtilities NSDate:recurrenceRule[@"endDate"]];
-    }
-
-    EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
+    EKRecurrenceRule *rule = [self _createRecurrenceRule:recurrenceRule];
     if (rule) {
       calendarEvent.recurrenceRules = @[ rule ];
     }
@@ -604,10 +600,15 @@ ABI36_0_0UM_EXPORT_METHOD_AS(saveReminderAsync,
     reminder.notes = nil;
   }
 
-  if (timeZone) {
-    reminder.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     reminder.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      reminder.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
@@ -617,16 +618,7 @@ ABI36_0_0UM_EXPORT_METHOD_AS(saveReminderAsync,
   }
 
   if (recurrenceRule) {
-    NSString *frequency = recurrenceRule[@"frequency"];
-    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
-    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
-    NSDate *endDate = nil;
-
-    if (recurrenceRule[@"endDate"]) {
-      endDate = [ABI36_0_0UMUtilities NSDate:recurrenceRule[@"endDate"]];
-    }
-
-    EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
+    EKRecurrenceRule *rule = [self _createRecurrenceRule:recurrenceRule];
     if (rule) {
       reminder.recurrenceRules = @[ rule ];
     }
@@ -862,29 +854,74 @@ ABI36_0_0UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return [calendarEventAlarms copy];
 }
 
-- (EKRecurrenceRule *)_createRecurrenceRule:(NSString *)frequency interval:(NSInteger)interval occurrence:(NSInteger)occurrence endDate:(NSDate *)endDate
+- (NSArray *)_stringArrayToIntArray:(NSArray *)array
 {
-  EKRecurrenceRule *rule = nil;
+  if (!array) {
+    return array;
+  }
+
+  NSMutableArray *ret = [[NSMutableArray alloc] init];
+
+  for (NSString *item in array) {
+    [ret addObject:[NSNumber numberWithInteger: [item integerValue]]];
+  }
+
+  return ret;
+}
+
+- (EKRecurrenceRule *)_createRecurrenceRule:(NSDictionary *)recurrenceRule
+{
+  NSString *frequency = recurrenceRule[@"frequency"];
+  NSArray *validFrequencyTypes = @[@"daily", @"weekly", @"monthly", @"yearly"];
+  NSInteger interval = [recurrenceRule[@"interval"] integerValue];
+  NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
+  NSDate *endDate = nil;
+
+  if (!frequency || ![validFrequencyTypes containsObject:frequency]) {
+    return nil;
+  }
+
+  if (recurrenceRule[@"endDate"]) {
+      endDate = [ABI36_0_0UMUtilities NSDate:recurrenceRule[@"endDate"]];
+  }
+
+  NSMutableArray *daysOfTheWeek = nil;
+  NSArray *daysOfTheMonth = [self _stringArrayToIntArray: recurrenceRule[@"daysOfTheMonth"]];
+  NSArray *monthsOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"monthsOfTheYear"]];
+  NSArray *weeksOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"weeksOfTheYear"]];
+  NSArray *daysOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"daysOfTheYear"]];
+  NSArray *setPositions = [self _stringArrayToIntArray: recurrenceRule[@"setPositions"]];
+
+  if (recurrenceRule[@"daysOfTheWeek"]) {
+    daysOfTheWeek = [[NSMutableArray alloc] init];
+
+    for (NSDictionary *item in recurrenceRule[@"daysOfTheWeek"]) {
+      [daysOfTheWeek addObject:[[EKRecurrenceDayOfWeek alloc] initWithDayOfTheWeek:[item[@"dayOfTheWeek"] integerValue]
+                    weekNumber:[item[@"weekNumber"] integerValue]]];
+    }
+  }
+
   EKRecurrenceEnd *recurrenceEnd = nil;
   NSInteger recurrenceInterval = 1;
-  NSArray *validFrequencyTypes = @[@"daily", @"weekly", @"monthly", @"yearly"];
-
-  if (frequency && [validFrequencyTypes containsObject:frequency]) {
-
-    if (endDate) {
-      recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate:endDate];
-    } else if (occurrence && occurrence > 0) {
-      recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:occurrence];
-    }
-
-    if (interval > 1) {
-      recurrenceInterval = interval;
-    }
-
-    rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:[self _recurrenceFrequency:frequency]
-                              interval:recurrenceInterval
-                                 end:recurrenceEnd];
+  if (endDate) {
+    recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate:endDate];
+  } else if (occurrence && occurrence > 0) {
+    recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:occurrence];
   }
+
+  if (interval > 1) {
+    recurrenceInterval = interval;
+  }
+
+  EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:[self _recurrenceFrequency:frequency]
+                            interval:recurrenceInterval
+                       daysOfTheWeek:daysOfTheWeek
+                      daysOfTheMonth:daysOfTheMonth
+                     monthsOfTheYear:monthsOfTheYear
+                      weeksOfTheYear:weeksOfTheYear
+                       daysOfTheYear:daysOfTheYear
+                        setPositions:setPositions
+                                 end:recurrenceEnd];
   return rule;
 }
 

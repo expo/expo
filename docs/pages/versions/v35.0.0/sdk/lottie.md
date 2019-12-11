@@ -7,6 +7,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 ## Installation
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install lottie-react-native`. In bare apps, also follow the [lottie-react-native linking and configuration instructions](https://github.com/react-native-community/lottie-react-native).

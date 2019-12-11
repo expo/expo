@@ -87,7 +87,7 @@ NSString *ABI36_0_0RCTBridgeModuleNameForClass(Class cls)
     name = NSStringFromClass(cls);
   }
 
-  return ABI36_0_0RCTDropABI36_0_0ReactPrefixes(name);
+  return ABI36_0_0RCTDropABI36_0_0ReactPrefixes(ABI36_0_0EX_REMOVE_VERSION(name));
 }
 
 static BOOL turboModuleEnabled = NO;

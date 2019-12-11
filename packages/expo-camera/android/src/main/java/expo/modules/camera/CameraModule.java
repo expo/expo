@@ -8,7 +8,6 @@ import android.os.Build;
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.cameraview.Size;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -39,25 +38,6 @@ public class CameraModule extends ExportedModule {
   static final int VIDEO_480P = 3;
   static final int VIDEO_4x3 = 4;
 
-  static final Map<String, Object> VALID_BARCODE_TYPES =
-      Collections.unmodifiableMap(new HashMap<String, Object>() {
-        {
-          put("aztec", Barcode.AZTEC);
-          put("ean13", Barcode.EAN_13);
-          put("ean8", Barcode.EAN_8);
-          put("qr", Barcode.QR_CODE);
-          put("pdf417", Barcode.PDF417);
-          put("upc_e", Barcode.UPC_E);
-          put("datamatrix", Barcode.DATA_MATRIX);
-          put("code39", Barcode.CODE_39);
-          put("code93", Barcode.CODE_93);
-          put("itf14", Barcode.ITF);
-          put("codabar", Barcode.CODABAR);
-          put("code128", Barcode.CODE_128);
-          put("upc_a", Barcode.UPC_A);
-        }
-      });
-
   public CameraModule(Context context) {
     super(context);
   }
@@ -81,7 +61,6 @@ public class CameraModule extends ExportedModule {
         put("AutoFocus", getAutoFocusConstants());
         put("WhiteBalance", getWhiteBalanceConstants());
         put("VideoQuality", getVideoQualityConstants());
-        put("BarCodeType", getBarCodeConstants());
         put("FaceDetection", Collections.unmodifiableMap(new HashMap<>()));
       }
 
@@ -137,10 +116,6 @@ public class CameraModule extends ExportedModule {
             put("4:3", VIDEO_4x3);
           }
         });
-      }
-
-      private Map<String, Object> getBarCodeConstants() {
-        return VALID_BARCODE_TYPES;
       }
     });
   }

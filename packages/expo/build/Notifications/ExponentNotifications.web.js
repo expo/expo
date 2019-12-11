@@ -1,7 +1,9 @@
+import badgin from 'badgin';
 import UUID from 'uuid-js';
 import { guardPermission, getExponentPushTokenAsync, getDevicePushTokenAsync, } from './ExponentNotificationsHelper.web';
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
+let currentBadgeNumber = 0;
 function transformLocalNotification(notification, tag) {
     const { web = {}, ...abstractNotification } = notification;
     tag = web.tag || tag;
@@ -77,6 +79,13 @@ export default {
     },
     async getDevicePushTokenAsync() {
         return await getDevicePushTokenAsync();
+    },
+    async getBadgeNumberAsync() {
+        return currentBadgeNumber;
+    },
+    async setBadgeNumberAsync(badgeNumber) {
+        currentBadgeNumber = badgeNumber;
+        badgin.set(badgeNumber);
     },
 };
 //# sourceMappingURL=ExponentNotifications.web.js.map

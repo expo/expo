@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL-CPP/UEXGL.h>
+#import <EXGL_CPP/UEXGL.h>
 
 @interface ABI35_0_0EXGLObject : NSObject
 

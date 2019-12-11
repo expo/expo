@@ -97,6 +97,17 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 }
 ```
 
+- If using the default `.babelrc`, change it to `babel.config.js`:
+
+```javascript
+module.exports = function (api) {
+  api.cache(true)
+  return {
+    presets: ['babel-preset-expo']
+  }
+}
+```
+
 - Delete your project’s node_modules directory and run npm install again
 
 #### Notes

@@ -18,7 +18,7 @@ export function injectMacros(versionName: string): TransformPipeline {
         // use the macro on the return value of `RCTBridgeModuleNameForClass`
         // to pass unversioned native module names to JS
         paths: 'RCTBridge.m',
-        replace: /(return ABI\d+_\d+_\d+RCTDropReactABI\d+_\d+_\d+Prefixes)\(name\)/g,
+        replace: /(return ABI\d+_\d+_\d+RCTDropABI\d+_\d+_\d+ReactPrefixes)\(name\)/g,
         with: `$1(${versionName}EX_REMOVE_VERSION(name))`,
       },
       {

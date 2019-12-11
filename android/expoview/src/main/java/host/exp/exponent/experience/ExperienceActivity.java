@@ -470,7 +470,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
         ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
         ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-
         showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);

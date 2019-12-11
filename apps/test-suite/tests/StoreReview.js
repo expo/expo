@@ -1,16 +1,16 @@
 import * as StoreReview from 'expo-store-review';
-import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 export const name = 'StoreReview';
 
 export function test({ describe, it, expect }) {
   describe(`isAvailableAsync()`, () => {
-    if (Constants.platform.ios && Constants.platform.ios.systemVersion >= 10.3) {
-      it(`has access to iOS StoreReview API`, async () => {
+    if (Platform.OS === 'android') {
+      it(`is is available`, async () => {
         expect(await StoreReview.isAvailableAsync()).toBe(true);
       });
     } else {
-      it(`is not available on previous than 10.3 iOS versions'`, async () => {
+      it(`is not available`, async () => {
         expect(await StoreReview.isAvailableAsync()).toBe(false);
       });
     }
