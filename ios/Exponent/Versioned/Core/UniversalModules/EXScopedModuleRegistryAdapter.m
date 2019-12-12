@@ -19,7 +19,6 @@
 #import "EXScopedFacebook.h"
 
 #import "EXScopedReactNativeAdapter.h"
-#import "EXModuleRegistryBinding.h"
 #import "EXExpoUserNotificationCenterProxy.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
@@ -116,11 +115,6 @@
 #endif
   
   return moduleRegistry;
-}
-
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  return [[super extraModulesForModuleRegistry:moduleRegistry] arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
 }
 
 @end
