@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -33,6 +34,7 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.Date;
 
 import javax.crypto.Cipher;
@@ -531,7 +533,21 @@ public class SecureStoreModule extends ExportedModule {
       GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes);
       Cipher aesCipher = Cipher.getInstance(AESEncrypter.AES_CIPHER);
       aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
-      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher, gcmSpec);
+      GCMParameterSpec chosenSpec;
+      try {
+        chosenSpec = aesCipher.getParameters().getParameterSpec(GCMParameterSpec.class);
+      } catch (InvalidParameterSpecException e) {
+        // BouncyCastle tried to instantiate GCMParameterSpec using invalid constructor
+        // https://github.com/bcgit/bc-java/commit/507c3917c0c469d10b9f033ad641c1da195e2039#diff-c90a59e823805b6c0dcfeaf7bae65f53
+
+        // Let's do some sanity checks and use the spec we've initialized the cipher with.
+        if (!"GCM".equals(aesCipher.getParameters().getAlgorithm())) {
+          throw new InvalidAlgorithmParameterException("Algorithm chosen by the cipher (" + aesCipher.getParameters().getAlgorithm() + ") doesn't match requested (GCM).");
+        }
+        chosenSpec = gcmSpec;
+      }
+
+      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher, chosenSpec);
 
       // Ensure the IV in the encrypted item matches our generated IV
       String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
