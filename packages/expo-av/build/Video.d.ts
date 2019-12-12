@@ -69,9 +69,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").NativeSyntheticEvent<Readonly<{
-            actionName: string;
-        }>>) => void) | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
@@ -124,6 +122,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         rotation: PropTypes.Requireable<number>;
     };
     _nativeRef: React.RefObject<React.Component<NativeProps, any, any> & import("react-native").NativeMethodsMixinStatic>;
+    _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
     constructor(props: VideoProps);
     setNativeProps(nativeProps: NativeProps): void;
     _handleNewStatus: (status: PlaybackStatus) => void;
@@ -139,6 +138,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     unloadAsync: () => Promise<PlaybackStatus>;
     setStatusAsync: (status: PlaybackStatusToSet) => Promise<PlaybackStatus>;
     replayAsync: (status?: PlaybackStatusToSet) => Promise<PlaybackStatus>;
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null): void;
     playAsync: () => Promise<PlaybackStatus>;
     playFromPositionAsync: (positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;

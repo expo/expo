@@ -1,5 +1,6 @@
 ---
 title: AV
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
 ---
 
 The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
@@ -7,6 +8,12 @@ The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share
 Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -64,7 +71,7 @@ render() {
 
 ## Playback API
 
-On the `playbackObject` reference, the following API is provided for both `Audio` and `Video`:
+On the `playbackObject` reference, the following API is provided:
 
 - `playbackObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -108,6 +115,16 @@ On the `playbackObject` reference, the following API is provided for both `Audio
   #### Returns
 
   A `Promise` that is fulfilled with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus`.
+
+- `playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
+
+  Sets a function to be called regularly with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus` and an example use case of this function.
+
+  `onPlaybackStatusUpdate` will be called whenever a call to the API for this `playbackObject` completes (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), and will also be called at regular intervals while the media is in the loaded state. Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify the interval with which `onPlaybackStatusUpdate` is called while loaded.
+
+  #### Parameters
+
+  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
 
 - `playbackObject.replayAsync(statusToSet)`
 
@@ -229,20 +246,6 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
   - **millis (_number_)** -- The new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
 
-  ### Sound
-
-  Additionally, sound object defines method for listening to status updates.
-
-- `playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
-
-  Sets a function to be called regularly with the `PlaybackStatus` of the `playbackObject`. See below for details on `PlaybackStatus` and an example use case of this function.
-
-  `onPlaybackStatusUpdate` will be called whenever a call to the API for this `playbackObject` completes (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), and will also be called at regular intervals while the media is in the loaded state. Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify the interval with which `onPlaybackStatusUpdate` is called while loaded.
-
-  #### Parameters
-
-  - **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
-
 ## Playback Status
 
 Most of the preceding API calls revolve around passing or returning the _status_ of the `playbackObject`.
@@ -319,11 +322,11 @@ This default initial status can be overwritten by setting the optional `initialS
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 
-If you matter about the precision more than about the delay, you can specify the tolerance with which the player will seek according to your needs.
+If precision is important, you can specify the tolerance with which the player will seek. However, this will result in an increased delay.
 
 ## Example usage
 
-#### Example: `setOnPlaybackStatusUpdate()` for Sound
+#### Example: `setOnPlaybackStatusUpdate()`
 
 ```javascript
 _onPlaybackStatusUpdate = playbackStatus => {
@@ -354,12 +357,12 @@ _onPlaybackStatusUpdate = playbackStatus => {
   }
 };
 
-... // Load the sound and obtain the reference.
-sound.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
+... // Load the playbackObject and obtain the reference.
+playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 ...
 ```
 
-#### Example: Loop sound exactly 20 times
+#### Example: Loop media exactly 20 times
 
 ```javascript
 const N = 20;
@@ -377,8 +380,8 @@ _onPlaybackStatusUpdate = (playbackStatus) => {
 ...
 this.setState({ numberOfLoops: 0 });
 ... // Load the playbackObject and obtain the reference.
-sound.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
-sound.setIsLooping(true);
+playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
+playbackObject.setIsLooping(true);
 ...
 ```
 
