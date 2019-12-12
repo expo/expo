@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'EXScreenOrientation'
+  s.name           = 'UMScreenOrientationInterface'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -12,10 +12,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'EXScreenOrientation/**/*.{h,m}'
-  s.preserve_paths = 'EXScreenOrientation/**/*.{h,m}'
+  s.source_files   = 'UMScreenOrientationInterface/**/*.{h,m}'
+  s.preserve_paths = 'UMScreenOrientationInterface/**/*.{h,m}'
   s.requires_arc   = true
-
-  s.dependency 'UMCore'
-  s.dependency 'UMScreenOrientationInterface'
 end

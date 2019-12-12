@@ -1,0 +1,1 @@
+../../../../../packages/unimodules-screen-orientation-interface/ios/UMScreenOrientationInterface/UMScreenOrientationInterface.h
