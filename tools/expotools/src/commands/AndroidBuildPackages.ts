@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 import readline from 'readline';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Directories from '../Directories';
+import * as Packages from '../Packages';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -33,28 +33,17 @@ const EXPOVIEW_PKG = {
   buildDirRelative: path.join('host', 'exp', 'exponent', 'expoview'),
 };
 
-// TODO(eric): use Packages for this instead
 async function _findUnimodules(pkgDir: string): Promise<Package[]> {
   const unimodules: Package[] = [];
 
-  const unimoduleJsonPaths = await glob(`${pkgDir}/**/unimodule.json`);
-  for (const unimoduleJsonPath of unimoduleJsonPaths) {
-    const unimodulePath = path.dirname(unimoduleJsonPath);
-    const pkgJsonPath = path.join(unimodulePath, 'package.json');
-    const buildGradlePath = path.join(unimodulePath, 'android', 'build.gradle');
-    if ((await fs.pathExists(pkgJsonPath)) && (await fs.pathExists(buildGradlePath))) {
-      const unimoduleJson = await fs.readJson(unimoduleJsonPath);
-      const buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
-
-      const name = unimoduleJson.name;
-      const group = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m)[1];
-
-      unimodules.push({
-        name,
-        sourceDir: path.join(unimodulePath, 'android'),
-        buildDirRelative: `${group.replace(/\./g, '/')}/${name}`,
-      });
-    }
+  const packages = await Packages.getListOfPackagesAsync();
+  for (const pkg of packages) {
+    if (!pkg.isSupportedOnPlatform('android') || !pkg.androidPackageName) continue;
+    unimodules.push({
+      name: pkg.packageSlug,
+      sourceDir: path.join(pkg.path, pkg.androidSubdirectory),
+      buildDirRelative: `${pkg.androidPackageName.replace(/\./g, '/')}/${pkg.packageSlug}`,
+    });
   }
 
   return unimodules;
