@@ -18,6 +18,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Updated underlying Facebook SDK on Android to v5.12.1 ([#6462](https://github.com/expo/expo/pull/6462) by [@sjchmiela](https://github.com/sjchmiela))
 - Removed SpongyCastle (BouncyCastle repackaging) from among Android dependencies. ([#6464](https://github.com/expo/expo/pull/6464) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed fullscreen events on iOS for native controls. ([#6504](https://github.com/expo/expo/pull/6504) by [@mczernek](https://github.com/mczernek))
+- Fixed `Camera.takePictureAsync()` not saving metadata on iOS. ([#6428](https://github.com/expo/expo/pull/6428) by [@lukmccall](https://github.com/lukmccall))
 
 ## 36.0.0
 
