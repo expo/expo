@@ -23,7 +23,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, strong) EXVideoPlayerViewController *playerViewController;
 
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
-@property (nonatomic, weak) UIViewController *nativeFullscreenPlayerViewController;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
 @property (nonatomic, strong) UMPromiseResolveBlock requestedFullscreenChangeResolver;
 @property (nonatomic, strong) UMPromiseRejectBlock requestedFullscreenChangeRejecter;
@@ -59,7 +58,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _fullscreenPlayerViewController = nil;
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
-    _nativeFullscreenPlayerViewController = nil;
     _fullscreenPlayerIsDismissing = NO;
     _requestedFullscreenChange = NO;
     _statusToSet = [NSMutableDictionary new];
