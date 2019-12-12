@@ -1,8 +1,18 @@
 {
   "name": "unimodules-permissions-interface",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "An interface for permissions modules",
-  "main": "index.js",
+  "main": "build/PermissionsInterface.js",
+  "types": "build/PermissionsInterface.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "unimodules",
     "permissions"
@@ -18,5 +28,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-permissions-interface",
-  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1"
+  },
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }

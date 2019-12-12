@@ -1,7 +1,9 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
+export { PermissionStatus };
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
@@ -59,6 +61,9 @@ export async function enableNetworkProviderAsync() {
 }
 export async function getCurrentPositionAsync(options = {}) {
     return ExpoLocation.getCurrentPositionAsync(options);
+}
+export async function getLastKnownPositionAsync() {
+    return ExpoLocation.getLastKnownPositionAsync();
 }
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
@@ -303,8 +308,11 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
         error(e);
     }
 }
+export async function getPermissionsAsync() {
+    return await ExpoLocation.getPermissionsAsync();
+}
 export async function requestPermissionsAsync() {
-    await ExpoLocation.requestPermissionsAsync();
+    return await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
 export async function hasServicesEnabledAsync() {

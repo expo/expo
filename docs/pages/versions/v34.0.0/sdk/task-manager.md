@@ -1,5 +1,6 @@
 ---
 title: TaskManager
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-task-manager"
 ---
 
 An API that allows to manage tasks, especially these running while your app is in the background.
@@ -7,6 +8,12 @@ Some features of this module are used by other modules under the hood. Here is a
 
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

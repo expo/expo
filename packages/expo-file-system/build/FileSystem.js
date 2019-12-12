@@ -55,6 +55,13 @@ export async function deleteAsync(fileUri, options = {}) {
     }
     return await ExponentFileSystem.deleteAsync(fileUri, options);
 }
+export async function deleteLegacyDocumentDirectoryAndroid() {
+    if (Platform.OS !== 'android' || documentDirectory == null) {
+        return;
+    }
+    const legacyDocumentDirectory = `${documentDirectory}ExperienceData/`;
+    return await deleteAsync(legacyDocumentDirectory, { idempotent: true });
+}
 export async function moveAsync(options) {
     if (!ExponentFileSystem.moveAsync) {
         throw new UnavailabilityError('expo-file-system', 'moveAsync');

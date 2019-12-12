@@ -7,8 +7,11 @@
 
 #import <EXCalendar/EXCalendar.h>
 #import <EXCalendar/EXCalendarConverter.h>
+#import <EXCalendar/EXCalendarPermissionRequester.h>
+#import <EXCalendar/EXRemindersPermissionRequester.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @interface EXCalendar ()
 
@@ -25,6 +28,11 @@ UM_EXPORT_MODULE(ExpoCalendar);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[
+                                                    [EXCalendarPermissionRequester new],
+                                                    [EXRemindersPermissionRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
 }
 
 #pragma mark -
@@ -322,10 +330,15 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
     calendarEvent.notes = nil;
   }
 
-  if (timeZone) {
-    calendarEvent.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     calendarEvent.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      calendarEvent.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
@@ -335,16 +348,7 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
   }
 
   if (recurrenceRule) {
-    NSString *frequency = recurrenceRule[@"frequency"];
-    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
-    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
-    NSDate *endDate = nil;
-
-    if (recurrenceRule[@"endDate"]) {
-      endDate = [UMUtilities NSDate:recurrenceRule[@"endDate"]];
-    }
-
-    EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
+    EKRecurrenceRule *rule = [self _createRecurrenceRule:recurrenceRule];
     if (rule) {
       calendarEvent.recurrenceRules = @[ rule ];
     }
@@ -386,7 +390,7 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
     resolve(calendarEvent.calendarItemIdentifier);
   } else {
     reject(@"E_EVENT_NOT_SAVED",
-         [NSString stringWithFormat:@"Event with id %@ was not saved", calendarEvent.calendarItemIdentifier],
+         [NSString stringWithFormat:@"Event with id %@ was not saved. %@", calendarEvent.calendarItemIdentifier, error.description],
          error);
   }
 }
@@ -596,10 +600,15 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
     reminder.notes = nil;
   }
 
-  if (timeZone) {
-    reminder.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     reminder.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      reminder.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
@@ -609,16 +618,7 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
   }
 
   if (recurrenceRule) {
-    NSString *frequency = recurrenceRule[@"frequency"];
-    NSInteger interval = [recurrenceRule[@"interval"] integerValue];
-    NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
-    NSDate *endDate = nil;
-
-    if (recurrenceRule[@"endDate"]) {
-      endDate = [UMUtilities NSDate:recurrenceRule[@"endDate"]];
-    }
-
-    EKRecurrenceRule *rule = [self _createRecurrenceRule:frequency interval:interval occurrence:occurrence endDate:endDate];
+    EKRecurrenceRule *rule = [self _createRecurrenceRule:recurrenceRule];
     if (rule) {
       reminder.recurrenceRules = @[ rule ];
     }
@@ -663,7 +663,7 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
     resolve(reminder.calendarItemIdentifier);
   } else {
     reject(@"E_REMINDER_NOT_SAVED",
-         [NSString stringWithFormat:@"Reminder with id %@ was not saved", reminder.calendarItemIdentifier],
+         [NSString stringWithFormat:@"Reminder with id %@ was not saved. %@", reminder.calendarItemIdentifier, error.description],
          error);
   }
 }
@@ -690,7 +690,7 @@ UM_EXPORT_METHOD_AS(deleteReminderAsync,
     resolve(nil);
   } else {
     reject(@"E_REMINDER_NOT_DELETED",
-         [NSString stringWithFormat:@"Reminder with id %@ could not be removed", reminderId],
+         [NSString stringWithFormat:@"Reminder with id %@ could not be removed. %@", reminderId, error.description],
          error);
   }
 }
@@ -731,24 +731,44 @@ UM_EXPORT_METHOD_AS(getSourceByIdAsync,
   resolve([EXCalendarConverter serializeSource:source]);
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
+                    getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermission:@"calendar" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCalendarPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
+                    requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCalendarPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
+                    getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXRemindersPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermission:@"reminders" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXRemindersPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 #pragma mark - helpers
@@ -834,29 +854,74 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return [calendarEventAlarms copy];
 }
 
-- (EKRecurrenceRule *)_createRecurrenceRule:(NSString *)frequency interval:(NSInteger)interval occurrence:(NSInteger)occurrence endDate:(NSDate *)endDate
+- (NSArray *)_stringArrayToIntArray:(NSArray *)array
 {
-  EKRecurrenceRule *rule = nil;
+  if (!array) {
+    return array;
+  }
+
+  NSMutableArray *ret = [[NSMutableArray alloc] init];
+
+  for (NSString *item in array) {
+    [ret addObject:[NSNumber numberWithInteger: [item integerValue]]];
+  }
+
+  return ret;
+}
+
+- (EKRecurrenceRule *)_createRecurrenceRule:(NSDictionary *)recurrenceRule
+{
+  NSString *frequency = recurrenceRule[@"frequency"];
+  NSArray *validFrequencyTypes = @[@"daily", @"weekly", @"monthly", @"yearly"];
+  NSInteger interval = [recurrenceRule[@"interval"] integerValue];
+  NSInteger occurrence = [recurrenceRule[@"occurrence"] integerValue];
+  NSDate *endDate = nil;
+
+  if (!frequency || ![validFrequencyTypes containsObject:frequency]) {
+    return nil;
+  }
+
+  if (recurrenceRule[@"endDate"]) {
+      endDate = [UMUtilities NSDate:recurrenceRule[@"endDate"]];
+  }
+
+  NSMutableArray *daysOfTheWeek = nil;
+  NSArray *daysOfTheMonth = [self _stringArrayToIntArray: recurrenceRule[@"daysOfTheMonth"]];
+  NSArray *monthsOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"monthsOfTheYear"]];
+  NSArray *weeksOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"weeksOfTheYear"]];
+  NSArray *daysOfTheYear = [self _stringArrayToIntArray: recurrenceRule[@"daysOfTheYear"]];
+  NSArray *setPositions = [self _stringArrayToIntArray: recurrenceRule[@"setPositions"]];
+
+  if (recurrenceRule[@"daysOfTheWeek"]) {
+    daysOfTheWeek = [[NSMutableArray alloc] init];
+
+    for (NSDictionary *item in recurrenceRule[@"daysOfTheWeek"]) {
+      [daysOfTheWeek addObject:[[EKRecurrenceDayOfWeek alloc] initWithDayOfTheWeek:[item[@"dayOfTheWeek"] integerValue]
+                    weekNumber:[item[@"weekNumber"] integerValue]]];
+    }
+  }
+
   EKRecurrenceEnd *recurrenceEnd = nil;
   NSInteger recurrenceInterval = 1;
-  NSArray *validFrequencyTypes = @[@"daily", @"weekly", @"monthly", @"yearly"];
-
-  if (frequency && [validFrequencyTypes containsObject:frequency]) {
-
-    if (endDate) {
-      recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate:endDate];
-    } else if (occurrence && occurrence > 0) {
-      recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:occurrence];
-    }
-
-    if (interval > 1) {
-      recurrenceInterval = interval;
-    }
-
-    rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:[self _recurrenceFrequency:frequency]
-                              interval:recurrenceInterval
-                                 end:recurrenceEnd];
+  if (endDate) {
+    recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate:endDate];
+  } else if (occurrence && occurrence > 0) {
+    recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:occurrence];
   }
+
+  if (interval > 1) {
+    recurrenceInterval = interval;
+  }
+
+  EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:[self _recurrenceFrequency:frequency]
+                            interval:recurrenceInterval
+                       daysOfTheWeek:daysOfTheWeek
+                      daysOfTheMonth:daysOfTheMonth
+                     monthsOfTheYear:monthsOfTheYear
+                      weeksOfTheYear:weeksOfTheYear
+                       daysOfTheYear:daysOfTheYear
+                        setPositions:setPositions
+                                 end:recurrenceEnd];
   return rule;
 }
 
@@ -891,10 +956,10 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return EKEventAvailabilityNotSupported;
 }
 
-- (BOOL)_checkPermissions:(NSString *)permissionType reject:(UMPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(Class)permissionsRequester reject:(UMPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermission:permissionType]) {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [permissionType uppercaseString]];
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCalendarPermissionRequester class]]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [[permissionsRequester permissionType] uppercaseString]];
     reject(@"E_MISSING_PERMISSION", errorMessage, nil);
     return NO;
   }
@@ -903,12 +968,12 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
 
 - (BOOL)_checkCalendarPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"calendar" reject:reject];
+  return [self _checkPermissions:[EXCalendarPermissionRequester class] reject:reject];
 }
 
 - (BOOL)_checkRemindersPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"reminders" reject:reject];
+  return [self _checkPermissions:[EXRemindersPermissionRequester class] reject:reject];
 }
 
 @end

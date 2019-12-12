@@ -151,11 +151,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
   }
 
   @ReactMethod
-  public void addDevMenu() {
-    mKernel.addDevMenu();
-  }
-
-  @ReactMethod
   public void goToHomeFromErrorScreen() {
     ErrorActivity visibleActivity = ErrorActivity.getVisibleActivity();
     if (visibleActivity == null) {

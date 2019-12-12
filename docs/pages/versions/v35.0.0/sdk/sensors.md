@@ -1,8 +1,15 @@
 ---
 title: Sensors
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 ---
 
 Various APIs for accessing device sensors are included under this umbrella package called `expo-sensors`.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

@@ -226,6 +226,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 546B1B1124FA2B692720EC0B4FBACAE0;
 			productRefGroup = 46CA10BC5087D22B99D8BA678EF3882C /* Products */;
@@ -355,6 +356,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/React-RCTAnimation/React-RCTAnimation-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -379,6 +386,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				GCC_PREFIX_HEADER = "Target Support Files/React-RCTAnimation/React-RCTAnimation-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";

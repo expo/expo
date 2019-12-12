@@ -15,23 +15,23 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.utils.AsyncCondition;
-import host.exp.expoview.Exponent;
-import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.utils.AsyncCondition;
+import host.exp.expoview.Exponent;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
-
   private static String TAG = BaseExperienceActivity.class.getSimpleName();
 
   private static abstract class ExperienceEvent {
     private ExperienceId mExperienceId;
+
     ExperienceEvent(ExperienceId experienceId) {
       this.mExperienceId = experienceId;
     }
@@ -40,14 +40,23 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       return mExperienceId;
     }
   }
+
   public static class ExperienceForegroundedEvent extends ExperienceEvent {
-    ExperienceForegroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceForegroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
-    ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceBackgroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) { super(experienceId); }
+    public ExperienceContentLoaded(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
 
   private static BaseExperienceActivity sVisibleActivity;
@@ -274,10 +283,5 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       // implementation to ensure we only try to register in the foreground (like we do with FCM).
       Log.e(TAG, "Failed to register for GCM notifications", e);
     }
-  }
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 }

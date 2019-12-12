@@ -56,6 +56,7 @@ export default class DocumentationFooter extends React.PureComponent {
           Ask a question on the forums
         </a>
         {this.maybeRenderIssuesLink()}
+        {this.maybeRenderSourceCodeLink()}
         <a
           className={STYLES_FOOTER_LINK}
           target="_blank"
@@ -81,4 +82,19 @@ export default class DocumentationFooter extends React.PureComponent {
       </a>
     );
   };
+
+  maybeRenderSourceCodeLink = () => {
+    if (!this.props.asPath.includes('/sdk/') || !this.props.sourceCodeUrl) {
+      return;
+    }
+
+    return (
+      <a
+        className={STYLES_FOOTER_LINK}
+        target="_blank"
+        href={`${this.props.sourceCodeUrl}`}>
+        View source code for {this.props.title}
+      </a>
+    );
+  }
 }

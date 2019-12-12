@@ -16,7 +16,6 @@ import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import SearchScreen from '../screens/SearchScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
@@ -43,30 +42,9 @@ const ProjectsStack = createStackNavigator(
   }
 );
 
-const ExploreSearchSwitch = createBottomTabNavigator(
-  {
-    Explore: ExploreScreen,
-    Search: SearchScreen,
-  },
-  {
-    tabBarComponent: null,
-    navigationOptions: ({ navigation }) => {
-      let { routeName } = navigation.state.routes[navigation.state.index];
-
-      return {
-        header: null,
-        title: routeName,
-      };
-    },
-    defaultNavigationOptions: {
-      tabBarVisible: false,
-    },
-  }
-);
-
 const ExploreStack = createStackNavigator(
   {
-    ExploreAndSearch: ExploreSearchSwitch,
+    ExploreAndSearch: ExploreScreen,
     Profile: ProfileScreen,
     ProjectsForUser: ProjectsForUserScreen,
     SnacksForUser: SnacksForUserScreen,

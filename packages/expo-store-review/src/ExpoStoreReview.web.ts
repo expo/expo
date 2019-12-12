@@ -2,7 +2,7 @@ export default {
   get name(): string {
     return 'ExpoStoreReview';
   },
-  get isSupported(): boolean {
+  async isAvailableAsync(): Promise<boolean> {
     return false;
   },
 };

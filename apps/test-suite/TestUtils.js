@@ -57,7 +57,8 @@ export function getTestModules() {
       require('./tests/Haptics'),
       require('./tests/Localization'),
       require('./tests/SecureStore'),
-      require('./tests/SMS')
+      require('./tests/SMS'),
+      require('./tests/StoreReview')
     );
     return modules;
   }
@@ -120,8 +121,8 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 
+    modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {
-      modules.push(optionalRequire(() => require('./tests/Battery')));
       modules.push(optionalRequire(() => require('./tests/Brightness')));
     }
     // Crashes app when mounting component

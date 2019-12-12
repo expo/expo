@@ -2,24 +2,21 @@ package expo.modules.barcodescanner.scanners;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.Point;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.barcodescanner.utils.FrameFactory;
 
 public class GMVBarCodeScanner extends ExpoBarCodeScanner {
@@ -57,7 +54,6 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
   }
 
   private List<BarCodeScannerResult> scan(expo.modules.barcodescanner.utils.Frame frame) {
-
     try {
       SparseArray<Barcode> result = mBarcodeDetector.detect(frame.getFrame());
       List<BarCodeScannerResult> results = new ArrayList<>();
@@ -70,9 +66,9 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
         Barcode barcode = result.get(result.keyAt(i));
         List<Integer> cornerPoints = new ArrayList<>();
         for (Point point : barcode.cornerPoints) {
-          Integer x =  Integer.valueOf(point.x);
+          Integer x = Integer.valueOf(point.x);
           Integer y = Integer.valueOf(point.y);
-          cornerPoints.addAll(Arrays.asList(x,y));
+          cornerPoints.addAll(Arrays.asList(x, y));
         }
         results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width));
       }
@@ -101,6 +97,9 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
     }
 
     mBarCodeTypes = newBarCodeTypes;
+    if (mBarcodeDetector != null) {
+      mBarcodeDetector.release();
+    }
     mBarcodeDetector = new BarcodeDetector.Builder(mContext)
         .setBarcodeFormats(barcodeFormats)
         .build();

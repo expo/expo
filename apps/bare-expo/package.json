@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "android": "export NODE_ENV=\"development\" && ./scripts/start-emulator.sh",
-    "android:clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
+    "android:clean": "pushd android; rm -rf ./.gradle && ./gradlew --configure-on-demand; popd",
     "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
@@ -56,13 +56,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
-        "name": "iPhone Xs"
+        "name": "iPhone 11"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
-        "name": "iPhone Xs"
+        "name": "iPhone 11"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
@@ -83,12 +83,12 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~35.0.0",
+    "expo": "~36.0.0",
     "expo-yarn-workspaces": "^1.2.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",
-    "react-native": "0.61.2",
-    "react-native-gesture-handler": "~1.5.0",
+    "react-native": "0.61.4",
+    "react-native-gesture-handler": "~1.5.1",
     "react-native-reanimated": "~1.4.0",
     "react-native-safe-area-context": "0.6.0",
     "react-native-unimodules": "~0.7.0-rc.3",
@@ -100,11 +100,11 @@
     "@babel/core": "^7.0.0",
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
-    "babel-preset-expo": "^7.1.0",
-    "detox": "^14.4.1",
+    "babel-preset-expo": "~8.0.0",
+    "detox": "^14.8.4",
+    "expo-module-scripts": "^1.1.1",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "^35.0.0",
-    "jest-expo-puppeteer": "^0.0.0",
-    "typescript": "^3.6.3"
+    "jest-expo": "~36.0.0",
+    "jest-expo-puppeteer": "^0.0.0"
   }
 }

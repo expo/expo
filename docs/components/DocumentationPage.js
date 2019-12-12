@@ -13,6 +13,7 @@ import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
+import DocumentationPageContext from '~/components/DocumentationPageContext';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 import Banner from './Banner';
@@ -150,8 +151,10 @@ export default class DocumentationPage extends React.Component {
           <div className={STYLES_DOCUMENT}>
             <Banner />
             <H1>{this.props.title}</H1>
+            <DocumentationPageContext.Provider value={{version: this._version}}>
             {this.props.children}
-            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />
+            </DocumentationPageContext.Provider>
+            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} sourceCodeUrl={this.props.sourceCodeUrl} />
           </div>
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />

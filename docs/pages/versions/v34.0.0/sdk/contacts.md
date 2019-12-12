@@ -1,12 +1,68 @@
 ---
 title: Contacts
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-contacts"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides access to the phone's system contacts.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
+
+## Configuration
+
+In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
+
+## Example Usage
+
+<SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts', 'expo-permissions']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Contacts from 'expo-contacts';
+import * as Permissions from 'expo-permissions';
+
+export default class App extends React.Component {
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Emails],
+      });
+
+      if (data.length > 0) {
+        const contact = data[0];
+        console.log(contact);
+      }
+    }
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Contacts Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ## API
 
@@ -14,10 +70,23 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Contacts from 'expo-contacts';
 ```
 
-### getContactsAsync
+<TableOfContentSection title='Methods' contents={['Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
+
+
+<TableOfContentSection title='iOS-only Methods' contents={['Contacts.addExistingGroupToContainerAsync(groupId, containerId)', 'Contacts.createGroupAsync(groupName, containerId?)', 'Contacts.updateGroupNameAsync(groupName, groupId)', 'Contacts.removeGroupAsync(groupId)', 'Contacts.addExistingContactToGroupAsync(contactId, groupId)', 'Contacts.removeContactFromGroupAsync(contactId, groupId)', 'Contacts.getGroupsAsync(query)', 'Contacts.getDefaultContainerIdAsync()', 'Contacts.getContainersAsync(containerQuery)']} />
+
+
+<TableOfContentSection title='Types' contents={['Contact', 'Group', 'Container', 'Date', 'Relationship', 'Email', 'PhoneNumber', 'Address', 'SocialProfile', 'InstantMessageAddress', 'UrlAddress', 'Image', 'FormOptions', 'ContactQuery', 'GroupQuery', 'ContainerQuery', 'ContactResponse']} />
+
+
+<TableOfContentSection title='Constants' contents={['Field', 'FormType', 'ContactType', 'SortType', 'ContainerType', 'CalendarFormat']} />
+
+## Methods
+
+### `Contacts.getContactsAsync(contactQuery)`
 
 ```js
-getContactsAsync(contactQuery: ContactQuery): Promise<ContactResponse>
+Contacts.getContactsAsync(contactQuery: ContactQuery): Promise<ContactResponse>
 ```
 
 Return a list of contacts that fit a given criteria.
@@ -48,10 +117,10 @@ if (data.length > 0) {
 }
 ```
 
-### getContactByIdAsync
+### `Contacts.getContactByIdAsync(contactId, fields)`
 
 ```js
-getContactByIdAsync(contactId: string, fields: FieldType[]): Promise<Contact>
+Contacts.getContactByIdAsync(contactId: string, fields: FieldType[]): Promise<Contact>
 ```
 
 Returns a contact matching the input id. Used for gathering precise data about a contact.
@@ -78,10 +147,10 @@ if (contact) {
 }
 ```
 
-### addContactAsync
+### `Contacts.addContactAsync(contact, containerId)`
 
 ```js
-addContactAsync(contact: Contact, containerId: string): Promise<string>
+Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 ```
 
 Creates a new contact and adds it to the system.
@@ -112,12 +181,12 @@ const contact = {
 const contactId = await Contacts.addContactAsync(contact);
 ```
 
-### updateContactAsync
+### `Contacts.updateContactAsync(contact)`
 
 > iOS Only - temporary
 
 ```js
-updateContactAsync(contact: Contact): Promise<string>
+Contacts.updateContactAsync(contact: Contact): Promise<string>
 ```
 
 Mutate the information of an existing contact.
@@ -125,10 +194,10 @@ Mutate the information of an existing contact.
 > On Android, you can use `presentFormAsync` to make edits to contacts.
 > Due to an iOS bug, `nonGregorianBirthday` cannot be modified.
 
-### presentFormAsync
+### `Contacts.presentFormAsync(contactId, contact, formOptions)`
 
 ```js
-presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
+Contacts.presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
 ```
 
 Present a native form for manipulating contacts
@@ -171,12 +240,12 @@ const contact = {
 await Contacts.updateContactAsync(contact);
 ```
 
-### removeContactAsync
+### `Contacts.removeContactAsync(contactId)`
 
 > iOS Only - temporary
 
 ```js
-removeContactAsync(contactId: string): Promise<any>
+Contacts.removeContactAsync(contactId: string): Promise<any>
 ```
 
 Delete a contact from the system.
@@ -193,10 +262,10 @@ Delete a contact from the system.
 await Contacts.removeContactAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### writeContactToFileAsync
+### `Contacts.writeContactToFileAsync(contactQuery)`
 
 ```js
-writeContactToFileAsync(contactQuery: ContactQuery): Promise<string>
+Contacts.writeContactToFileAsync(contactQuery: ContactQuery): Promise<string>
 ```
 
 Query a set of contacts and write them to a local uri that can be used for sharing with `ReactNative.Share`.
@@ -224,14 +293,14 @@ Share.share({ url: localUri, message: 'Call me!' });
 
 ---
 
-## IOS Only Functions
+## IOS-Only Methods
 
 iOS contacts have a multi-layered grouping system that you can access through this API.
 
-### addExistingGroupToContainerAsync
+### `Contacts.addExistingGroupToContainerAsync(groupId, containerId)`
 
 ```js
-addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>
+Contacts.addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>
 ```
 
 Add a group to a container.
@@ -252,10 +321,10 @@ await Contacts.addExistingGroupToContainerAsync(
 );
 ```
 
-### createGroupAsync
+### `Contacts.createGroupAsync(groupName, containerId?)`
 
 ```js
-createGroupAsync(groupName: string, containerId?: string): Promise<string>
+Contacts.createGroupAsync(groupName: string, containerId?: string): Promise<string>
 ```
 
 Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
@@ -279,10 +348,10 @@ Create a group with a name, and add it to a container. If the container is undef
 const groupId = await Contacts.createGroupAsync('Sailor Moon');
 ```
 
-### updateGroupNameAsync
+### `Contacts.updateGroupNameAsync(groupName, groupId)`
 
 ```js
-updateGroupNameAsync(groupName: string, groupId: string): Promise<any>
+Contacts.updateGroupNameAsync(groupName: string, groupId: string): Promise<any>
 ```
 
 Change the name of an existing group.
@@ -300,10 +369,10 @@ Change the name of an existing group.
 await Contacts.updateGroupName('Sailor Moon', '161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### removeGroupAsync
+### `Contacts.removeGroupAsync(groupId)`
 
 ```js
-removeGroupAsync(groupId: string): Promise<any>
+Contacts.removeGroupAsync(groupId: string): Promise<any>
 ```
 
 Delete a group from the device.
@@ -320,10 +389,10 @@ Delete a group from the device.
 await Contacts.removeGroupAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### addExistingContactToGroupAsync
+### `Contacts.addExistingContactToGroupAsync(contactId, groupId)`
 
 ```js
-addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any>
+Contacts.addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any>
 ```
 
 Add a contact as a member to a group. A contact can be a member of multiple groups.
@@ -344,10 +413,10 @@ await Contacts.addExistingContactToGroupAsync(
 );
 ```
 
-### removeContactFromGroupAsync
+### `Contacts.removeContactFromGroupAsync(contactId, groupId)`
 
 ```js
-removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any>
+Contacts.removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any>
 ```
 
 Remove a contact's membership from a given group. This will not delete the contact.
@@ -368,10 +437,10 @@ await Contacts.removeContactFromGroupAsync(
 );
 ```
 
-### getGroupsAsync
+### `Contacts.getGroupsAsync(query)`
 
 ```js
-getGroupsAsync(query: GroupQuery): Promise<Group[]>
+Contacts.getGroupsAsync(query: GroupQuery): Promise<Group[]>
 ```
 
 Query and return a list of system groups.
@@ -395,10 +464,10 @@ const groups = await Contacts.getGroupsAsync({ groupName: 'sailor moon' });
 const allGroups = await Contacts.getGroupsAsync({});
 ```
 
-### getDefaultContainerIdAsync
+### `Contacts.getDefaultContainerIdAsync()`
 
 ```js
-getDefaultContainerIdAsync(): Promise<string>
+Contacts.getDefaultContainerIdAsync(): Promise<string>
 ```
 
 Get the default container's ID.
@@ -415,10 +484,10 @@ Get the default container's ID.
 const containerId = await Contacts.getDefaultContainerIdAsync();
 ```
 
-### getContainersAsync
+### `Contacts.getContainersAsync(containerQuery)`
 
 ```js
-getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>
+Contacts.getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>
 ```
 
 Query a list of system containers.
@@ -438,7 +507,7 @@ Query a list of system containers.
 **Example**
 
 ```js
-const allContainers = await getContainersAsync({
+const allContainers = await Contacts.getContainersAsync({
   contactId: '665FDBCFAE55-D614-4A15-8DC6-161A368D',
 });
 ```

@@ -1,5 +1,6 @@
 ---
 title: SecureStore
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-secure-store"
 ---
 
 Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
@@ -10,11 +11,18 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 **Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but we will throw an error starting from SDK 35.**
 
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅*     |  ✅*     | ✅     | ✅     | ❌    |
+
+* This API is not compatible on devices running Android 5 or older.
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
 
-> **Note**: This API is not compatible on web or on devices running Android 5 or older.
 
 ## API
 

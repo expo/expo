@@ -555,11 +555,8 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
       //cast down to avoid overflow
-      if (storage.longValue() > Math.pow(2, 53) - 1) {
-        storageDouble = Math.pow(2, 53) - 1;
-      }
+      Double storageDouble = Math.min(storage.doubleValue(), Math.pow(2, 53) - 1);
       promise.resolve(storageDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());

@@ -39,6 +39,8 @@ import versioned.host.exp.exponent.modules.api.ShakeModule;
 import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
+import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearanceModule;
+import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage;
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage;
@@ -184,6 +186,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
+        nativeModules.add(new ExpoAppearanceModule(reactContext));
 
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
@@ -221,7 +224,8 @@ public class ExponentPackage implements ReactPackage {
         new RNSharedElementPackage(),
         new RNDateTimePickerPackage(),
         new RNCMaskedViewPackage(),
-        new RNCViewPagerPackage()
+        new RNCViewPagerPackage(),
+        new ExpoAppearancePackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

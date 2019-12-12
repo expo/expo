@@ -8,7 +8,7 @@
   "dependencies": {
     "native-component-list": "*",
     "react": "16.9.0",
-    "react-native": "0.61.2"
+    "react-native": "0.61.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.0",

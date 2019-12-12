@@ -23,11 +23,23 @@ expo install expo-contacts
 
 ### Configure for iOS
 
+Add `NSContactsUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSContactsUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your contacts</string>
+```
+
 Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+Add `android.permission.READ_CONTACTS` and optionally `android.permission.WRITE_CONTACTS` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+```
 
 # Contributing
 

@@ -3,21 +3,34 @@ version: 2.1
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
+  shallow-checkout: expo/shallow-checkout@1.0.2
 
 commands:
-  halt_if_unchanged_except:
+  conditionally_halt:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
     parameters:
       exclude:
-        description: 'Prevent the job from stopping if changes are found in this directory'
+        description: 'The job will halt if no files other than those matching the given regex have been modified'
         type: string
+        # Exclude nothing
+        default: '$^'
+      requireOneOf:
+        description: 'The job will halt if no file matching the given regex has been modified'
+        type: string
+        # Require anything
+        default: '.*'
+      search_depth:
+        description: 'The maximum directory depth to search'
+        type: integer
+        # Just top-level directories and files
+        default: 0
     steps:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
 
             ROOT_BRANCH="master"
-
+            SEARCH_DEPTH=<< parameters.search_depth >>
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               # Required for circleci/node:latest-browsers
@@ -25,26 +38,42 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
+            echo " - Requiring << parameters.requireOneOf >>"
+            echo " - Depth $SEARCH_DEPTH"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-            # Test all top-level directories
-            for file in $PWD/*/
-            do
-              FILE_NAME=$(basename $file)
-              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
-                echo " -- Checking ${FILE_NAME}"
-                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  set +e
-                  exit 0
+
+            # Test all top-level files and directories
+            if ! find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
+              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
+              if ! [[ $file =~ << parameters.exclude >> ]]; then
+                if [[ $file =~ << parameters.requireOneOf >> ]]; then
+                  echo " ++ [required] ${file}"
+                  if [ ! $baseFileHash = $currentFileHash ]; then
+                    echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
+                    set +e
+                    exit 1
+                  fi
                 fi
+              else
+                echo " -- [excluded] ${file}"
               fi
-            done
+            done; then
+              set +e
+              exit 0
+            fi
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
 
@@ -56,12 +85,12 @@ commands:
             fi
   halt_if_unchanged:
     parameters:
-      require:
+      requireOneOf:
         description: 'The job will stop if there are no changes in this directory'
         type: string
     steps:
       - run:
-          name: Require the << parameters.require >> directory to have changes
+          name: Require the << parameters.requireOneOf >> directory to have changes
           command: |
 
             ROOT_BRANCH="master"
@@ -73,20 +102,28 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
+
+            # merge-base can exit with code 1, so we ignore when it fails.
+            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            while [ -z $BASE_COMMIT ]; do
+              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
+              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
+            done
+
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Required << parameters.require >>"
+            echo " - Required << parameters.requireOneOf >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
             # Test all top-level directories
             for file in $PWD/*/
             do
               FILE_NAME=$(basename $file)
-              if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
+              if [[ " << parameters.requireOneOf >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $baseFileHash = $currentFileHash ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
                   set +e
                   exit 0
@@ -102,6 +139,7 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
+
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -138,7 +176,7 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - checkout
+      - shallow-checkout/checkout
       - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
@@ -152,8 +190,9 @@ commands:
   # Prevent native tests from running when docs is the only directory that was edited
   guard_sdk_tests:
     steps:
-      - halt_if_unchanged_except:
-          exclude: 'docs'
+      - conditionally_halt:
+          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
   update_submodules:
     steps:
       - run:
@@ -249,7 +288,7 @@ executors:
       - image: lnl7/nix:2.1.2
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /root/expo
     environment:
       # fastlane complains if these are not set
       LANG: en_US.UTF-8
@@ -266,7 +305,7 @@ executors:
     docker:
       - image: circleci/node:latest-browsers
     shell: /bin/bash -leo pipefail
-    working_directory: ~/expo
+    working_directory: /home/circleci/expo
     resource_class: small
     environment:
       USER: circleci
@@ -276,6 +315,7 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
+      # Homebrew settings
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       # fastlane complains if these are not set
@@ -309,7 +349,7 @@ workflows:
       - expo_sdk
       # E2E SDK testing
       - web_test_suite
-      # - ios_test_suite
+      - ios_test_suite
 
   # Android and iOS clients
   client:
@@ -369,6 +409,7 @@ workflows:
                 - /sdk-\d+/
                 - /.*all-ci.*/
       - shell_app_ios_build:
+          upload: true
           requires:
             - shell_app_ios_approve_build
       - shell_app_android_approve_build:
@@ -394,12 +435,26 @@ workflows:
           requires:
             - expo_client_approve_build
 
+  shell_app_nightly:
+    triggers:
+      - schedule:
+          cron: "20 5 * * 2,4,6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - shell_app_ios_build:
+          upload: false
+
 jobs:
   expo_sdk:
     executor: js
     steps:
       - setup
-      - guard_sdk_tests
+      - conditionally_halt:
+          # Exclude (include anything except) .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -466,8 +521,6 @@ jobs:
 
   ios_test_suite:
     executor: mac
-    macos: # Detox simulators require 10.1.0
-      xcode: '10.1.0'
     #parallelism: 8
     steps:
       - install_nix
@@ -589,6 +642,10 @@ jobs:
 
   shell_app_ios_build:
     executor: mac
+    parameters:
+      upload:
+        type: boolean
+        default: true
     steps:
       - install_nix
       - setup
@@ -612,22 +669,26 @@ jobs:
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - run:
-          name: Package and upload release tarball
-          working_directory: ~/project
-          no_output_timeout: 40m
-          command: |
-            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-            tar \
-              -zcf "/tmp/$TARBALL" \
-              package.json \
-              exponent-view-template \
-              shellAppBase-builds \
-              shellAppWorkspaces \
-              ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+      - when:
+          condition: << parameters.upload >>
+          steps:
+            - run:
+                name: Package and upload release tarball
+                working_directory: ~/project
+                no_output_timeout: 40m
+                command: |
+                  export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+                  tar \
+                    -zcf "/tmp/$TARBALL" \
+                    package.json \
+                    exponent-view-template \
+                    shellAppBase-builds \
+                    shellAppWorkspaces \
+                    ios
+                  ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+                  echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+                  echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
+                  echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
   shell_app_android_build:
     executor: android
@@ -644,6 +705,9 @@ jobs:
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
             aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
           }
+          echo "Release tarball uploaded to $S3_URI"
+          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
+          echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
   android_test_suite:
     executor: android
@@ -741,7 +805,7 @@ jobs:
     steps:
       - setup
       - halt_if_unchanged:
-          require: 'docs'
+          requireOneOf: 'docs'
       - update_submodules
       - yarn_install:
           working_directory: docs
@@ -781,7 +845,10 @@ jobs:
     executor: nix
     steps:
       - setup
-      - guard_sdk_tests
+      - conditionally_halt:
+          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates|native-component-list|bare-expo).*|\.md$)'
+          search_depth: 1
       - update_submodules
       - decrypt_secrets_if_possible
       - run:

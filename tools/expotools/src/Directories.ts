@@ -33,3 +33,11 @@ export function getAndroidDir(): string {
 export function getReactNativeSubmoduleDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'react-native-lab', 'react-native');
 }
+
+export function getVersionedReactNativeIosDir(): string {
+  return path.join(getIosDir(), 'versioned-react-native');
+}
+
+export function getAppsDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'apps');
+}

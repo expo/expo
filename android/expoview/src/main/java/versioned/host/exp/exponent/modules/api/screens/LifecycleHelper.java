@@ -1,16 +1,12 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.fragment.app.Fragment;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 
-import com.facebook.react.modules.core.ChoreographerCompat;
-import com.facebook.react.modules.core.ReactChoreographer;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

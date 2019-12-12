@@ -1,3 +1,7 @@
+# 2019-11-7 -- v5.0.2
+- Fixes the wrong error code being sent to `signIn:didSignInForUser:withError:` when the user
+  cancels iOS's consent dialog during the sign-in flow.
+
 # 2019-10-9 -- v5.0.1
 - Fixes an issue that the sign in flow cannot be correctly started on iOS 13.
 - The zip distribution requires Xcode 11 or above.

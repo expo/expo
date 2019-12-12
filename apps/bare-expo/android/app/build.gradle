@@ -219,3 +219,15 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+class ExecuteSetupAndroidProject implements Plugin<Project> {
+    @Override
+    void apply(Project target) {
+        target.exec {
+            workingDir '../..'
+            commandLine "./scripts/setup-android-project.sh"
+        }
+    }
+}
+
+apply plugin: ExecuteSetupAndroidProject

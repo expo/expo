@@ -647,8 +647,9 @@ async function _updateWorkspaceDependenciesAsync({
 
   for (const projectName in workspaceProjects) {
     const project = workspaceProjects[projectName];
+    const workspaceDependencies = [...project.workspaceDependencies, ...project.mismatchedWorkspaceDependencies];
 
-    if (!project.workspaceDependencies.includes(pkg.packageName)) {
+    if (!workspaceDependencies.includes(pkg.packageName)) {
       continue;
     }
 
@@ -946,12 +947,10 @@ async function publishPackagesAsync(argv: any): Promise<void> {
   options.npmProfile = npmProfile;
 
   const publishConfigs = new Map<string, PipelineConfig>();
-  const packages = await getListOfPackagesAsync();
+  const packages = (await getListOfPackagesAsync()).filter(pkg => !pkg.packageJson.private);
 
   packages.forEach(pkg => {
-    if (pkg.packageName !== 'test_suite_flutter') {
-      publishConfigs.set(pkg.packageName, { pkg });
-    }
+    publishConfigs.set(pkg.packageName, { pkg });
   });
 
   // --list-packages option is just to debug the config with packages used by the script

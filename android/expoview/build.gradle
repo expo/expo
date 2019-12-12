@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '35.0.0'
+version = '36.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -149,12 +149,12 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:35.0.0'
+  api 'com.facebook.react:react-native:36.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
+      exclude      : ['expo-module-template', 'expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -168,6 +168,7 @@ dependencies {
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
+          'expo-module-template',
           'expo-bluetooth',
           'expo-in-app-purchases',
           'expo-updates',
@@ -177,6 +178,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_36
+  api 'host.exp:reactandroid-abi36_0_0:1.0.0'
+  // END_SDK_36
   // BEGIN_SDK_35
   api 'host.exp:reactandroid-abi35_0_0:1.0.0'
   // END_SDK_35
@@ -191,23 +195,23 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
-  api 'com.facebook.fresco:fresco:1.10.0'
-  api 'com.facebook.fresco:animated-gif:1.10.0'
-  api 'com.facebook.fresco:animated-webp:1.10.0'
-  api 'com.facebook.fresco:webpsupport:1.10.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
+  api 'com.facebook.fresco:fresco:2.0.0'
+  api 'com.facebook.fresco:animated-gif:2.0.0'
+  api 'com.facebook.fresco:animated-webp:2.0.0'
+  api 'com.facebook.fresco:webpsupport:2.0.0'
+  api 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
   api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
   api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
   compileOnly 'com.facebook.soloader:soloader:0.6.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp:3.6.0'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  api 'com.squareup.okio:okio:1.13.0'
+  api 'com.squareup.okhttp3:okhttp:3.12.1'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.1'
+  api 'com.squareup.okio:okio:1.15.0'
   api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.0.0"
+  api "androidx.appcompat:appcompat:1.1.0"
   api('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
     transitive = true;
   }
@@ -237,7 +241,11 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
+  
+  // react-native-screens
   api "com.google.android.material:material:1.0.0"
+  api'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+
   api 'com.google.firebase:firebase-core:16.0.9'
   api 'com.google.firebase:firebase-messaging:18.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'

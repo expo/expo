@@ -327,7 +327,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
 
     t.describe('Video fullscreen player', () => {
       t.it('presents the player and calls callback func', async () => {
-        const onFullscreenUpdate = t.jasmine.createSpy('onFullscreenUpdate');
+        const fullscreenUpdates = [];
+        const onFullscreenUpdate = event => fullscreenUpdates.push(event.fullscreenUpdate);
+
         await mountAndWaitFor(
           <Video
             style={style}
@@ -337,18 +339,24 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           />,
           'onReadyForDisplay'
         );
-        const expectUpdate = fullscreenUpdate =>
-          t.expect(onFullscreenUpdate).toHaveBeenCalledWith(
-            t.jasmine.objectContaining({
-              fullscreenUpdate,
-            })
-          );
+
         await instance.presentFullscreenPlayer();
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT);
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT);
+        await waitFor(1000);
+
+        t.expect(fullscreenUpdates).toEqual([
+          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
+          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
+        ]);
+
         await instance.dismissFullscreenPlayer();
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS);
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS);
+        await waitFor(1000);
+
+        t.expect(fullscreenUpdates).toEqual([
+          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
+          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
+          Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS,
+          Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS,
+        ]);
       });
 
       if (Platform.OS === 'android') {

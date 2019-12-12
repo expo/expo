@@ -73,7 +73,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js"
+    entryFile: "index.js",
+    enableHermes: false
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
@@ -138,6 +139,10 @@ android {
     }
 }
 
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+def enableHermes = project.ext.react.get("enableHermes", false);
+
 dependencies {
     implementation project(':react-native-screens')
     implementation project(':react-native-reanimated')
@@ -146,6 +151,14 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     addUnimodulesDependencies()
+
+    if (enableHermes) {
+        def hermesPath = "../../node_modules/hermes-engine/android/";
+        debugImplementation files(hermesPath + "hermes-debug.aar")
+        releaseImplementation files(hermesPath + "hermes-release.aar")
+    } else {
+        implementation jscFlavor
+    }
 }
 
 // Run this once to be able to run the application with BUCK

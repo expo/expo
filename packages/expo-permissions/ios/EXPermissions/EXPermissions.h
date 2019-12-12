@@ -6,38 +6,16 @@
 
 FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
-typedef enum EXPermissionStatus {
-  EXPermissionStatusDenied,
-  EXPermissionStatusGranted,
-  EXPermissionStatusUndetermined,
-} EXPermissionStatus;
+@interface EXPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
-@protocol EXPermissionRequester <NSObject>
++ (UMPermissionStatus)statusForPermission:(NSDictionary *)permission;
 
-- (void)setDelegate:(id)permissionRequesterDelegate;
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve
-                              rejecter:(UMPromiseRejectBlock)reject;
++ (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
 
-@end
+- (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
+                                    withResolver:(UMPromiseResolveBlock)resolver
+                                    withRejecter:(UMPromiseRejectBlock)reject;
 
-@protocol EXPermissionRequesterDelegate <NSObject>
-
-- (void)permissionRequesterDidFinish: (NSObject<EXPermissionRequester> *)requester;
-
-@end
-
-@protocol EXPermissionsModule
-
-- (dispatch_queue_t)methodQueue;
-
-@end
-
-@interface EXPermissions : UMExportedModule <EXPermissionRequesterDelegate, UMPermissionsInterface, UMModuleRegistryConsumer, EXPermissionsModule>
-
-- (NSDictionary *)getPermissionsForResource:(NSString *)resource;
-
-+ (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
-
-+ (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
+- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass;
 
 @end

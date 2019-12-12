@@ -1,21 +1,54 @@
 ---
 title: WebBrowser
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-web-browser"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
 Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
 
-> **Note**: Not compatible with web.
-
 ## Usage
 
-<SnackEmbed snackId="@charliecruzan/webbrowserexample" />
-<br />
+<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser"]}>
+
+```js
+import React, { Component } from 'react';
+import { Button, Text, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+
+export default class App extends Component {
+  state = {
+    result: null,
+  };
+
+  render() {
+    return (
+      <View>
+        <Button title="Open WebBrowser" onPress={this._handlePressButtonAsync} />
+        <Text>{this.state.result && JSON.stringify(this.state.result)}</Text>
+      </View>
+    );
+  }
+
+  _handlePressButtonAsync = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    this.setState({ result });
+  };
+}
+```
+
+</SnackInline>
 
 ### Handling deep links from the WebBrowser
 
@@ -38,7 +71,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **collapseToolbar (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar

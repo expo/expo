@@ -1,8 +1,18 @@
 ---
 title: Calendar
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-calendar"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+
+**Platform Compatibility**
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -12,13 +22,56 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
+## Example Usage
+
+<SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar', 'expo-permissions']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
+
+export default class App extends React.Component {
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+    if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync();
+        console.log({calendars})
+    }
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Calendar Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
+
 ## API
 
 ```js
 import * as Calendar from 'expo-calendar';
 ```
 
-> See the bottom of this page for a complete list of all possible fields for the objects used in this API.
+<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
+
+
+<TableOfContentSection title='Object Types' contents={['Calendar', 'Event', 'Reminder', 'Attendee', 'RecurrenceRule', 'Alarm', 'Source']} />
+
+<TableOfContentSection title='Enum Types' contents={['Calendar.DayOfTheWeek', 'Calendar.MonthOfTheYear']} />
+
+## Methods
 
 ### `Calendar.getCalendarsAsync(entityType)`
 
@@ -399,7 +452,7 @@ A [source object](#source 'Source') matching the provided ID, if one exists.
 
 - **id (_string_)** -- ID of the event to open. Required.
 
-## List of object properties
+## Object Types
 
 ### Calendar
 
@@ -459,7 +512,7 @@ An event record, or a single instance of a recurring event. On iOS, used in the 
 | originalId            | _string_         | Android   | For detached (modified) instances of recurring events, the ID of the original recurring event                                  |                                                                                                                                                                                                 |
 | instanceId            | _string_         | Android   | For instances of recurring events, volatile ID representing this instance; not guaranteed to always refer to the same instance |                                                                                                                                                                                                 |
 
-### Reminder (iOS only)
+### Reminder
 
 A reminder record, used in the iOS Reminders app. No direct analog on Android.
 
@@ -528,4 +581,34 @@ A source account that owns a particular calendar. Expo apps will typically not n
 | type           | _string_  | both      | Type of account that owns this calendar               | on iOS, one of `Calendar.SourceType.LOCAL`, `Calendar.SourceType.EXCHANGE`, `Calendar.SourceType.CALDAV`, `Calendar.SourceType.MOBILEME`, `Calendar.SourceType.SUBSCRIBED`, or `Calendar.SourceType.BIRTHDAYS` |
 | isLocalAccount | _boolean_ | Android   | Whether this source is the local phone account        |                                                                                                                                                                                                                |
 
+## Enum Types
+
+### `Calendar.DayOfTheWeek`
+
+| DayOfTheWeek                 | Value |
+| ---------------------------- | ----- |
+| `DayOfTheWeek.Sunday`        | 1     |
+| `DayOfTheWeek.Monday`        | 2     |
+| `DayOfTheWeek.Tuesday`       | 3     |
+| `DayOfTheWeek.Wednesday`     | 4     |
+| `DayOfTheWeek.Thursday`      | 5     |
+| `DayOfTheWeek.Friday`        | 6     |
+| `DayOfTheWeek.Saturday`      | 7     |
+
+### `Calendar.MonthOfTheYear`
+
+| MonthOfTheYear                      | Value |
+| ----------------------------------- | ----- |
+| `MonthOfTheYear.January`            |   1   |
+| `MonthOfTheYear.February`           |   2   |
+| `MonthOfTheYear.March`              |   3   |
+| `MonthOfTheYear.April`              |   4   |
+| `MonthOfTheYear.May`                |   5   |
+| `MonthOfTheYear.June`               |   6   |
+| `MonthOfTheYear.July`               |   7   |
+| `MonthOfTheYear.August`             |   8   |
+| `MonthOfTheYear.September`          |   9   |
+| `MonthOfTheYear.October`            |   10  |
+| `MonthOfTheYear.November`           |   11  |
+| `MonthOfTheYear.December`           |   12  |
 #

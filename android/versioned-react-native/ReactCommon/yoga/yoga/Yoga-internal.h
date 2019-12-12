@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -16,11 +16,12 @@ using YGVector = std::vector<YGNodeRef>;
 
 YG_EXTERN_C_BEGIN
 
-WIN_EXPORT float YGRoundValueToPixelGrid(
-    const float value,
-    const float pointScaleFactor,
-    const bool forceCeil,
-    const bool forceFloor);
+void YGNodeCalculateLayoutWithContext(
+    YGNodeRef node,
+    float availableWidth,
+    float availableHeight,
+    YGDirection ownerDirection,
+    void* layoutContext);
 
 YG_EXTERN_C_END
 
@@ -38,7 +39,6 @@ using namespace facebook;
 
 extern const std::array<YGEdge, 4> trailing;
 extern const std::array<YGEdge, 4> leading;
-extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 extern const YGValue YGValueZero;
@@ -85,9 +85,9 @@ struct YGCachedMeasurement {
   }
 };
 
-// This value was chosen based on empiracle data. Even the most complicated
-// layouts should not require more than 16 entries to fit within the cache.
-#define YG_MAX_CACHED_RESULT_COUNT 16
+// This value was chosen based on empirical data:
+// 98% of analyzed layouts require less than 8 entries.
+#define YG_MAX_CACHED_RESULT_COUNT 8
 
 namespace facebook {
 namespace yoga {
@@ -104,12 +104,8 @@ public:
     values_.fill(defaultValue);
   }
 
-  const CompactValue& operator[](size_t i) const noexcept {
-    return values_[i];
-  }
-  CompactValue& operator[](size_t i) noexcept {
-    return values_[i];
-  }
+  const CompactValue& operator[](size_t i) const noexcept { return values_[i]; }
+  CompactValue& operator[](size_t i) noexcept { return values_[i]; }
 
   template <size_t I>
   YGValue get() const noexcept {
@@ -147,7 +143,6 @@ static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
-extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern facebook::yoga::detail::CompactValue YGComputedEdgeValue(
     const facebook::yoga::detail::Values<
         facebook::yoga::enums::count<YGEdge>()>& edges,
