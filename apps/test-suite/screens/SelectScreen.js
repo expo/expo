@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   Alert,
@@ -16,6 +16,7 @@ import {
 import SafeAreaView from 'react-native-safe-area-view';
 
 import { getTestModules } from '../TestUtils';
+import Colors from '../constants/Colors';
 
 class ListItem extends React.Component {
   onPress = () => {
@@ -23,11 +24,17 @@ class ListItem extends React.Component {
   };
 
   renderView = () => {
-    const checkBox = this.props.selected ? 'check-box' : 'check-box-outline-blank';
+    const { title, selected } = this.props;
+    const prefix = Platform.select({ default: 'md', ios: 'ios' });
+    const checkBox = selected ? 'checkbox' : 'checkbox-outline';
     return (
       <View style={styles.listItem}>
-        <MaterialIcons name={checkBox} size={26} />
-        <Text style={styles.label}>{this.props.title}</Text>
+        <Text style={styles.label}>{title}</Text>
+        <Ionicons
+          color={selected ? Colors.tintColor : 'black'}
+          name={`${prefix}-${checkBox}`}
+          size={24}
+        />
       </View>
     );
   };
@@ -122,9 +129,7 @@ export default class SelectScreen extends React.PureComponent {
     title: 'Test Suite',
   };
 
-  _keyExtractor = (item, index) => {
-    return `${index}-${item.name}`;
-  };
+  _keyExtractor = (item, index) => item.name;
 
   _onPressItem = id => {
     this.setState(state => {
@@ -198,11 +203,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listItem: {
-    paddingHorizontal: 10,
+    paddingLeft: 16,
+    paddingRight: 20,
     paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   label: {
