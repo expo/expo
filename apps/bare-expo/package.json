@@ -26,8 +26,8 @@
     "android:detox:test:release": "watchman watch-del-all; detox test -c android.emu.release -l verbose --cleanup",
     "ios:detox:build:debug": "detox build -c ios.sim.debug",
     "ios:detox:build:release": "detox build -c ios.sim.release",
-    "ios:detox:test:debug": "detox test -c ios.sim.debug --loglevel warn",
-    "ios:detox:test:release": "watchman watch-del-all; detox test -c ios.sim.release -l verbose --cleanup",
+    "ios:detox:test:debug": "detox test -c ios.sim.debug --loglevel warn --take-screenshots failing",
+    "ios:detox:test:release": "watchman watch-del-all; detox test -c ios.sim.release -l verbose --cleanup --take-screenshots failing",
     "open": "./scripts/deep-link.sh test-suite",
     "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
