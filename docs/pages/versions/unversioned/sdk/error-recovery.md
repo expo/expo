@@ -1,6 +1,6 @@
 ---
 title: ErrorRecovery
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/ErrorRecovery"
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-error-recovery"
 ---
 
 Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
@@ -13,7 +13,7 @@ Utilities for helping you gracefully handle crashes due to fatal JavaScript erro
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available to [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available to [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-error-recovery).
 
 ## API
 
