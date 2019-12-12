@@ -11,7 +11,7 @@ This module provides access to the native OAuth library AppAuth by [OpenID](http
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 

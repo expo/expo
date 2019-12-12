@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

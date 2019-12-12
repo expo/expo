@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-media-lib
 
 Provides access to user's media library.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

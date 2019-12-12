@@ -9,7 +9,7 @@ Provides Google authentication integration for Expo apps using a secure system w
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ### How it works
 
