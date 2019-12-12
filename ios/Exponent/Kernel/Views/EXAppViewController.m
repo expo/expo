@@ -13,12 +13,12 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
-#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import "EXScreenOrientationManager.h"
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <UMScreenOrientationInterface/UMScreenOrientationInterface.h>
 
 #import <React/RCTUtils.h>
 
@@ -322,9 +322,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  EXScreenOrientationRegistry *registry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if ([registry doesKeyExistForAppId:_appRecord.experienceId]) {
-    return [registry orientationMaskForAppId:_appRecord.experienceId];
+  id<UMScreenOrientationInterface> screenOrientation = [[[_appRecord.appManager.reactBridge moduleForName:@"UMReactModuleRegistry"] moduleRegistry] getModuleImplementingProtocol:@protocol(UMScreenOrientationInterface)];
+  if (screenOrientation && [screenOrientation getSupportedInterfaceOrientations] > 0) {
+    return [screenOrientation getSupportedInterfaceOrientations];
   }
   
   // TODO: Remove once sdk 36 is phased out

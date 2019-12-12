@@ -28,16 +28,21 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       }
     );
 
+    await this.updateCurrentOrienationAndLock();
+  }
+
+  updateCurrentOrienationAndLock = async () => {
     const [orientation, orientationLock] = await Promise.all([
       ScreenOrientation.getOrientationAsync(),
       ScreenOrientation.getOrientationLockAsync(),
     ]);
+
     // update state
     this.setState({
       orientation,
       orientationLock,
     });
-  }
+  };
 
   updateOrientationAsync = async () => {
     this.setState({
@@ -62,6 +67,8 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
+
+    await this.updateCurrentOrienationAndLock();
   };
 
   lockPlatformExample = async () => {
@@ -82,6 +89,8 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
+
+    await this.updateCurrentOrienationAndLock();
   };
 
   doesSupport = async () => {
@@ -93,6 +102,8 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
 
   unlock = async () => {
     await ScreenOrientation.unlockAsync().catch(console.warn);
+
+    await this.updateCurrentOrienationAndLock();
   };
 
   getScreenOrienationLockOptions(): Array<{

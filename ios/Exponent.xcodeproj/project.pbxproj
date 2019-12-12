@@ -18,7 +18,6 @@
 		0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
-		238E6A372317C7B800EFD54C /* EXScopedScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 238E6A362317C7B800EFD54C /* EXScopedScreenOrientation.m */; };
 		2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */; };
 		2520E83A21ABEEF100D900A4 /* EXScopedFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */; };
 		255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 255A63092154FB88009FDFC6 /* EXPendingNotification.m */; };
@@ -381,8 +380,6 @@
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
 		1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionManager.m; sourceTree = "<group>"; };
 		23181375B61140378B02E53B /* RNSharedElementStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementStyle.h; sourceTree = "<group>"; };
-		238E6A352317C7B800EFD54C /* EXScopedScreenOrientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedScreenOrientation.h; sourceTree = "<group>"; };
-		238E6A362317C7B800EFD54C /* EXScopedScreenOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedScreenOrientation.m; sourceTree = "<group>"; };
 		2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationCenter.h; sourceTree = "<group>"; };
 		2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationCenter.m; sourceTree = "<group>"; };
 		2520E83821ABEEF100D900A4 /* EXScopedFilePermissionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFilePermissionModule.h; sourceTree = "<group>"; };
@@ -1152,8 +1149,6 @@
 				313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */,
 				31E6D48120B845920082B09F /* EXSensorsManagerBinding.h */,
 				31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */,
-				238E6A352317C7B800EFD54C /* EXScopedScreenOrientation.h */,
-				238E6A362317C7B800EFD54C /* EXScopedScreenOrientation.m */,
 				3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */,
 				3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */,
 				31E44FBD20C975AD008AA62F /* EXScopedModuleRegistryDelegate.h */,
@@ -1624,7 +1619,6 @@
 				D48607EC4F61D3E513BBF4EF /* Pods-Tests.debug.xcconfig */,
 				B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -2825,7 +2819,6 @@
 				B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */,
 				31AD99E22285B51100F19090 /* AIRGoogleMapCallout.m in Sources */,
 				7043DF7A2283303800272D74 /* RNSVGUseManager.m in Sources */,
-				238E6A372317C7B800EFD54C /* EXScopedScreenOrientation.m in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				7043DF8B2283303800272D74 /* RNSVGCircleManager.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,

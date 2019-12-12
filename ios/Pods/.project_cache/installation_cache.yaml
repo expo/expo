@@ -6742,13 +6742,11 @@ CACHE_KEYS:
       - EXRandom (8.0.0)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
-      EXScreenOrientation: 53674c669dc5fa28f35b7ca144922ce1
-    CHECKSUM: 64d2a99623fc4bfa6cb3163eb63a2d2d75ee98ab
+      EXScreenOrientation: 883b38e7eedc0334062f98f044e600d3
+    CHECKSUM: 17eec04fd358e2424d4f1aac7a6dfc6da82c92ec
     FILES:
       - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
       - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
-      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
-      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
       - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
       - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
     PROJECT_NAME: EXScreenOrientation
@@ -7155,16 +7153,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 5a1f73cdd56234a7ac9d3a1a6d865c5f
-      Release: 5a1f73cdd56234a7ac9d3a1a6d865c5f
+      Debug: fd5e6d02e785ae0b72190cf8fe57395f
+      Release: fd5e6d02e785ae0b72190cf8fe57395f
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7229609659af28343e4cd1dc99b94eae
-      Release: 7229609659af28343e4cd1dc99b94eae
+      Debug: 520646ad20c0c51d4c99894c68f6d18c
+      Release: 520646ad20c0c51d4c99894c68f6d18c
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7229609659af28343e4cd1dc99b94eae
-      Release: 7229609659af28343e4cd1dc99b94eae
+      Debug: 520646ad20c0c51d4c99894c68f6d18c
+      Release: 520646ad20c0c51d4c99894c68f6d18c
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -9713,6 +9711,8 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMReactModuleRegistry.h"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMReactModuleRegistry.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"
@@ -9722,6 +9722,15 @@ CACHE_KEYS:
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
       - UMReactNativeAdapter (5.0.0)
+  UMScreenOrientationInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMScreenOrientationInterface: 3a82237f8a7915446c38c230a44b3af6
+    CHECKSUM: 2cfa2944a831e87d4c8dfd0fd6dfc2d91cb5d109
+    FILES:
+      - "../../packages/unimodules-screen-orientation-interface/ios/UMScreenOrientationInterface/UMScreenOrientationInterface.h"
+    PROJECT_NAME: UMScreenOrientationInterface
+    SPECS:
+      - UMScreenOrientationInterface (1.0.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: 2a69c5e2ded5336edb3dbfcb358ca18f

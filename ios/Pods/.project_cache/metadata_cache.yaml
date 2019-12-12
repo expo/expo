@@ -1622,6 +1622,10 @@ UMReactNativeAdapter:
   LABEL: UMReactNativeAdapter
   PROJECT_PATH: UMReactNativeAdapter.xcodeproj
   UUID: E0F5743D6C158230DA447A63190DF2E9
+UMScreenOrientationInterface:
+  LABEL: UMScreenOrientationInterface
+  PROJECT_PATH: UMScreenOrientationInterface.xcodeproj
+  UUID: 91FB6292CB563494F14BEE1052C014AD
 UMSensorsInterface:
   LABEL: UMSensorsInterface
   PROJECT_PATH: UMSensorsInterface.xcodeproj

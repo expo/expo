@@ -17,7 +17,6 @@
 #import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
-#import "EXScopedScreenOrientation.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -111,11 +110,6 @@
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
   
-#if __has_include(<EXScreenOrientation/EXScreenOrientationModule.h>)
-  EXScopedScreenOrientation *screenOrientation = [[EXScopedScreenOrientation alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:screenOrientation];
-#endif
-
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
   EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:errorRecovery];
