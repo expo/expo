@@ -561,6 +561,9 @@ jobs:
           name: Run tests
           working_directory: ~/project/apps/bare-expo
           command: yarn ios:detox:test:release
+          # Store images of build failures
+      - store_artifacts:
+          path: ~/project/apps/bare-expo/artifacts
           # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
           # environment:
           #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
