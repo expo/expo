@@ -26,15 +26,15 @@ function ListItem({ title, onPressItem, selected, id }) {
   const checkBox = selected ? 'checkbox' : 'checkbox-outline';
 
   return (
-    <PlatformTouchable onPress={onPress} style={styles.listItem}>
-      <React.Fragment>
+    <PlatformTouchable onPress={onPress}>
+      <View style={styles.listItem}>
         <Text style={styles.label}>{title}</Text>
         <Ionicons
           color={selected ? Colors.tintColor : 'black'}
           name={`${prefix}-${checkBox}`}
           size={24}
         />
-      </React.Fragment>
+      </View>
     </PlatformTouchable>
   );
 }
