@@ -15,6 +15,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🐛 Bug fixes
 
 - Fixed value reported by `FileSystem.getFreeDiskStorageAsync` (was `2^53 - 1`, now is bytes available) ([#6465](https://github.com/expo/expo/pull/6465) by [@sjchmiela](https://github.com/sjchmiela))
+- Fixed fullscreen events on iOS for native controls. ([#6504](https://github.com/expo/expo/pull/6504) by [@mczernek](https://github.com/mczernek))
 
 ## 36.0.0
 
