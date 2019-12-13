@@ -102,14 +102,14 @@ export default class Banner extends React.Component {
     } else {
       return (
         <div className={STYLES_ALERT}>
-          <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a conference
-          with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
+          <strong className={STYLES_ALERT_BOLD}>Hey, friend!</strong> We are co-hosting a conference
+          with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>.{' '}
           <a
             className={STYLES_ALERT_BOLD}
             style={{ color: Constants.colors.lila }}
             href="https://appjs.co/?utm_source=organic%20traffic&utm_medium=expo%20website&utm_campaign=docs.expo.io"
             target="blank">
-            learn more
+            Learn more here
           </a>
           .
           <button type="button" className={STYLES_CLOSE_BUTTON} onClick={this._handleHideBanner} />

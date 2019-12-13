@@ -3,9 +3,11 @@ title: GoogleSignIn
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-google-sign-in"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 This library provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [Google](../google) or [AppAuth](../app-auth).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -15,14 +17,7 @@ This library provides native Google authentication for **standalone** Expo apps 
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in). For a more in-depth guide, check out this [blog post](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)!
 
-
-## API
-
-```js
-import * as GoogleSignIn from 'expo-google-sign-in';
-```
-
-## Setup
+## Configuration
 
 For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)
 
@@ -68,7 +63,64 @@ import { AppAuth } from 'expo-app-auth';
 const { URLSchemes } = AppAuth;
 ```
 
-## Initialize the API
+## Usage
+
+```js
+import React from 'react';
+import { Text } from 'react-native';
+import { GoogleSignIn } from 'expo-google-sign-in';
+
+export default class AuthScreen extends React.Component {
+  state = { user: null };
+
+  componentDidMount() {
+    this.initAsync();
+  }
+
+  initAsync = async () => {
+    await GoogleSignIn.initAsync({
+      clientId: '<YOUR_IOS_CLIENT_ID>',
+    });
+    this._syncUserWithStateAsync();
+  };
+
+  _syncUserWithStateAsync = async () => {
+    const user = await GoogleSignIn.signInSilentlyAsync();
+    this.setState({ user });
+  };
+
+  signOutAsync = async () => {
+    await GoogleSignIn.signOutAsync();
+    this.setState({ user: null });
+  };
+
+  signInAsync = async () => {
+    try {
+      await GoogleSignIn.askForPlayServicesAsync();
+      const { type, user } = await GoogleSignIn.signInAsync();
+      if (type === 'success') {
+        this._syncUserWithStateAsync();
+      }
+    } catch ({ message }) {
+      alert('login: Error:' + message);
+    }
+  };
+
+  onPress = () => {
+    if (this.state.user) {
+      this.signOutAsync();
+    } else {
+      this.signInAsync();
+    }
+  };
+
+  render() {
+    return <Text onPress={this.onPress}>Toggle Auth</Text>;
+  }
+}
+```
+
+### Initialization
 
 Before using the API we first need to call `GoogleSignIn.initAsync({ ... })` which configures how sign in functionality will work.
 
@@ -80,92 +132,81 @@ try {
 }
 ```
 
-## Signing in/out
+## API
 
 ```js
-signInAsync = async () => {
-  try {
-    await GoogleSignIn.askForPlayServicesAsync();
-    const { type, user } = await GoogleSignIn.signInAsync();
-    if (type === 'success') {
-      // ...
-    }
-  } catch ({ message }) {
-    alert('login: Error:' + message);
-  }
-};
-
-signOutAsync = async () => {
-  try {
-    await GoogleSignIn.signOutAsync();
-    this.setState({ user: null });
-  } catch ({ message }) {
-    alert('signOutAsync: ' + message);
-  }
-};
+import * as GoogleSignIn from 'expo-google-sign-in';
 ```
+
+<TableOfContentSection title='Methods' contents={['GoogleSignIn.getPlayServiceAvailability(shouldAsk)', 'GoogleSignIn.askForPlayServicesAsync()', 'GoogleSignIn.initAsync(options)', 'GoogleSignIn.isSignedInAsync()', 'GoogleSignIn.signInSilentlyAsync()', 'GoogleSignIn.signInAsync()', 'GoogleSignIn.signOutAsync()', 'GoogleSignIn.isConnectedAsync()', 'GoogleSignIn.disconnectAsync()', 'GoogleSignIn.getCurrentUserAsync()', 'GoogleSignIn.getCurrentUser()', 'GoogleSignIn.getPhotoAsync(size)']} />
+
+<TableOfContentSection title='Types' contents={[]} />
+
+<TableOfContentSection title='Classes' contents={['GoogleAuthData', 'GoogleIdentity', 'GoogleUser', 'GoogleAuthentication']} />
+
+<TableOfContentSection title='Constants' contents={['GoogleSignIn.ERRORS', 'GoogleSignIn.SCOPES', 'GoogleSignIn.TYPES']} />
 
 ## Methods
 
-### `getPlayServiceAvailability(shouldAsk: boolean = false): Promise<boolean>`
+### `GoogleSignIn.getPlayServiceAvailability(shouldAsk)`
 
 > Android Only, this method always returns true on iOS
 
 Use this method to determine if a user's device can utilize Google Sign-In functionality.
 By default this method will assume the option is `false` and silently check for Play Services, whereas passing `true` will present a modal if the Play Services aren't available, prompting the user to update Play Services.
 
-### `askForPlayServicesAsync(): Promise<boolean>`
+### `GoogleSignIn.askForPlayServicesAsync()`
 
 > Android Only, this method always returns true on iOS
 
-A convenience wrapper for `getPlayServiceAvailability(true)`, this method will present a modal for the user to update Play Services if they aren't already up-to-date.
+A convenience wrapper for `GoogleSignIn.getPlayServiceAvailability(true)`, this method will present a modal for the user to update Play Services if they aren't already up-to-date.
 
 Returns true after the user successfully updates.
 
-### `initAsync(options: ?GoogleSignInOptions): Promise<void>`
+### `GoogleSignIn.initAsync(options)`
 
 Configures how the `GoogleSignIn` module will attempt to sign in. You can call this method multiple times.
 
-See all the available options under the `GoogleSignInOptions` type.
+See all the available options under the [`GoogleSignInOptions`](#googlesigninoptions) type.
 
-### `isSignedInAsync(): Promise<boolean>`
+### `GoogleSignIn.isSignedInAsync()`
 
 Asynchronously returns a boolean representing the user's authentication status.
 
-### `signInSilentlyAsync(): Promise<?GoogleUser>`
+### `GoogleSignIn.signInSilentlyAsync()`
 
 This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleUser` will be returned, otherwise the method will return `null`.
 
 On Android, the returned `GoogleUser` object may have a nonnull `serverAuthCode` rather than a `refreshToken`. If you need a refresh token, you can call Google's API directly to exchange the authorization code for a token. Instructions for how to perform this request can be found [in Google's documentation](https://developers.google.com/identity/protocols/OAuth2InstalledApp#exchange-authorization-code) ("Step 5: Exchange authorization code for refresh and access tokens"). The `clientId` in these requests is the **Web Client ID** from the Google API Console.
 
-### `signInAsync(): Promise<?GoogleSignInAuthResult>`
+### `GoogleSignIn.signInAsync()`
 
-Starts the native authentication flow with the information provided in `initAsync()`.
+Starts the native authentication flow with the information provided in `GoogleSignIn.initAsync()`.
 If a user cancels, the method will return `{ type: 'cancel', user: null }`. However if a user successfully finishes the authentication flow, the returned value will be: `{ type: 'success', user: GoogleUser }`.
 
-There are some errors that can be thrown while authenticating, check `GoogleSignIn.ERRORS` for available error codes.
+There are some errors that can be thrown while authenticating, check [`GoogleSignIn.ERRORS`](#googlesigninerrors) for available error codes.
 
-### `signOutAsync(): Promise<void>`
+### `GoogleSignIn.signOutAsync()`
 
-Signs out the currently authenticated user. Unlike `disconnectAsync()`, this method will not revoke the access token. This means you can specify the `accountName` and reauthenticate without extra user approval.
+Signs out the currently authenticated user. Unlike `GoogleSignIn.disconnectAsync()`, this method will not revoke the access token. This means you can specify the `accountName` and reauthenticate without extra user approval.
 
-### `isConnectedAsync(): Promise<boolean>`
+### `GoogleSignIn.isConnectedAsync()`
 
 Returns true if a user is authenticated and the access token has not been invalidated.
 
-### `disconnectAsync(): Promise<void>`
+### `GoogleSignIn.disconnectAsync()`
 
-Signs out the current user and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `signOutAsync()` will not.
+Signs out the current user and revokes the access tokens associated with the account. This will prevent reauthentication, whereas `GoogleSignIn.signOutAsync()` will not.
 
-### `getCurrentUserAsync(): Promise<GoogleUser | null>`
+### `GoogleSignIn.getCurrentUserAsync()`
 
-If a user is authenticated, this method will return all the basic profile information in the form of a `GoogleUser`.
+If a user is authenticated, this method will return all the basic profile information in the form of a [`GoogleUser`](#googleuser).
 
-### `getCurrentUser(): GoogleUser | null`
+### `GoogleSignIn.getCurrentUser()`
 
-Get the most recent instance of the authenticated `GoogleUser`.
+Get the most recent instance of the authenticated [`GoogleUser`](#googleuser).
 
-### `getPhotoAsync(size: number = 128): Promise<?string>`
+### `GoogleSignIn.getPhotoAsync(size)`
 
 Returns an image URI for the currently authenticated user. This method will return `null` if no user is signed in, or if the current user doesn't have a profile image on Google.
 The default size is `128px`, if the requested image size is larger than the original image size, the full sized image will be returned.
@@ -278,16 +319,16 @@ type GoogleSignInAuthResult = {
 
 The base class for `GoogleSignIn` authentication data. This method enables you to compare and serialize objects.
 
-**Methods:**
+#### Methods
 
 - `equals(other: ?any): boolean`
 - `toJSON(): object`
 
 ### `GoogleIdentity`
 
-Extends `GoogleAuthData`, core management of user data.
+Extends [`GoogleAuthData`](#googleauthdata), core management of user data.
 
-**Variables:**
+#### Variables
 
 - `uid: string;`
 - `email: string;`
@@ -298,16 +339,16 @@ Extends `GoogleAuthData`, core management of user data.
 
 ### `GoogleUser`
 
-Extends `GoogleIdentity`, manaages all data regarding an authenticated user.
+Extends [`GoogleIdentity`](#googleidentity), manaages all data regarding an authenticated user.
 
-**Variables:**
+#### Variables
 
 - `auth: ?Authentication;`
 - `scopes: Array<string>;`
 - `hostedDomain: ?string;`
 - `serverAuthCode: ?string;`
 
-**Methods:**
+#### Methods
 
 - `clearCache(): void`
 - `getHeaders(): Promise<{ [string]: string }>`
@@ -315,9 +356,9 @@ Extends `GoogleIdentity`, manaages all data regarding an authenticated user.
 
 ### `GoogleAuthentication`
 
-Extends `GoogleAuthData`, manages the user tokens.
+Extends [`GoogleAuthData`](#googleauthdata), manages the user tokens.
 
-**Variables:**
+#### Variables
 
 - `clientId: ?string;`
 - `accessToken: ?string;`
@@ -379,60 +420,3 @@ All of the available sign in types.
 
 - `GoogleSignIn.TYPES.DEFAULT` The standard login method.
 - `GoogleSignIn.TYPES.GAMES` Sign in to Google Play Games (Android only)
-
-## Usage
-
-```js
-import React from 'react';
-import { Text } from 'react-native';
-import { GoogleSignIn } from 'expo-google-sign-in';
-
-export default class AuthScreen extends React.Component {
-  state = { user: null };
-
-  componentDidMount() {
-    this.initAsync();
-  }
-
-  initAsync = async () => {
-    await GoogleSignIn.initAsync({
-      clientId: '<YOUR_IOS_CLIENT_ID>',
-    });
-    this._syncUserWithStateAsync();
-  };
-
-  _syncUserWithStateAsync = async () => {
-    const user = await GoogleSignIn.signInSilentlyAsync();
-    this.setState({ user });
-  };
-
-  signOutAsync = async () => {
-    await GoogleSignIn.signOutAsync();
-    this.setState({ user: null });
-  };
-
-  signInAsync = async () => {
-    try {
-      await GoogleSignIn.askForPlayServicesAsync();
-      const { type, user } = await GoogleSignIn.signInAsync();
-      if (type === 'success') {
-        this._syncUserWithStateAsync();
-      }
-    } catch ({ message }) {
-      alert('login: Error:' + message);
-    }
-  };
-
-  onPress = () => {
-    if (this.state.user) {
-      this.signOutAsync();
-    } else {
-      this.signInAsync();
-    }
-  };
-
-  render() {
-    return <Text onPress={this.onPress}>Toggle Auth</Text>;
-  }
-}
-```

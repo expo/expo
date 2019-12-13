@@ -3,7 +3,7 @@ title: VideoThumbnails
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-video-thumbnails"
 ---
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

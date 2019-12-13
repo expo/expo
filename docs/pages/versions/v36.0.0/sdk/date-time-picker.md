@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/react-native-community/react-native-datetimep
 
 A component that provides access to the system UI for date and time selection.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

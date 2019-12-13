@@ -3,9 +3,11 @@ title: Magnetometer
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -20,6 +22,10 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import { Magnetometer } from 'expo-sensors';
 ```
+
+<TableOfContentSection title='Methods' contents={['Magnetometer.isAvailableAsync()', 'Magnetometer.addListener(listener)', 'Magnetometer.removeAllListeners()', 'Magnetometer.setUpdateInterval(intervalMs)']} />
+
+## Methods
 
 ### `Magnetometer.isAvailableAsync()`
 
@@ -66,7 +72,7 @@ Subscribe for updates to the Magnetometer.
 - **intervalMs (_number_)** Desired interval in milliseconds between
   Magnetometer updates.
 
-## Example: basic subscription
+#### Example: basic subscription
 
 ```javascript
 import React from 'react';

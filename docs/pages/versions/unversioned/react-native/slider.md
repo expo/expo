@@ -3,36 +3,17 @@ id: slider
 title: Slider
 ---
 
-> **Deprecated.** Use [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider) instead if you use the bare workflow. The `react-native-community/react-native-slider` library is not yet supported in the managed workflow.
+> **Deprecated.** Use [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider) instead.
 
 A component used to select a single value from a range of values.
-
-### Props
-
-- [View props...](../view/#props)
-
-* [`style`](../slider/#style)
-* [`disabled`](../slider/#disabled)
-* [`maximumValue`](../slider/#maximumvalue)
-* [`minimumTrackTintColor`](../slider/#minimumtracktintcolor)
-* [`minimumValue`](../slider/#minimumvalue)
-* [`onSlidingComplete`](../slider/#onslidingcomplete)
-* [`onValueChange`](../slider/#onvaluechange)
-* [`step`](../slider/#step)
-* [`maximumTrackTintColor`](../slider/#maximumtracktintcolor)
-* [`testID`](../slider/#testid)
-* [`value`](../slider/#value)
-* [`thumbTintColor`](../slider/#thumbtintcolor)
-* [`maximumTrackImage`](../slider/#maximumtrackimage)
-* [`minimumTrackImage`](../slider/#minimumtrackimage)
-* [`thumbImage`](../slider/#thumbimage)
-* [`trackImage`](../slider/#trackimage)
 
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `style`
 
@@ -148,11 +129,11 @@ _This is not a controlled component_, you don't need to update the value during 
 
 ### `thumbTintColor`
 
-Color of the foreground switch grip.
+The color used to tint the default thumb images on iOS, or the color of the foreground switch grip on Android.
 
-| Type                | Required | Platform |
-| ------------------- | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| Type                | Required |
+| ------------------- | -------- |
+| [color](../colors/) | No       |
 
 ---
 

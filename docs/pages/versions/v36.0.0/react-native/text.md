@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 
 ## Nested text
 
-Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
+Both Android and iOS allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
 ```javascript
 import React, { Component } from 'react';
@@ -69,7 +69,7 @@ export default class BoldAndBeautiful extends Component {
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
 
-```javascript
+```jsx
 
 "I am bold and red"
 0-9: bold
@@ -79,9 +79,9 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 
 ## Containers
 
-The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
+The `<Text>` element is unique relative to layout: everything inside is no longer using the Flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
 
-```javascript
+```jsx
 
 <Text>
   <Text>First part and </Text>
@@ -126,7 +126,7 @@ All elements in the document will inherit this font unless they or one of their 
 
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**. You cannot have a text node directly under a `<View>`.
 
-```javascript
+```jsx
 
 // BAD: will raise exception, can't have a text node as child of a <View>
 <View>
@@ -144,16 +144,16 @@ In React Native, we are more strict about it: **you must wrap all the text nodes
 
 You also lose the ability to set up a default font for an entire subtree. Meanwhile, `fontFamily` only accepts a single font name, which is different from `font-family` in CSS. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that includes them and use this component across your app. You can also use this component to make more specific components like `MyAppHeaderText` for other kinds of text.
 
-```javascript
+```jsx
 <View>
   <MyAppText>Text styled with the default font for the entire application</MyAppText>
   <MyAppHeaderText>Text styled as a header</MyAppHeaderText>
 </View>
 ```
 
-Assuming that `MyAppText` is a component that simply renders out its children into a `Text` component with styling, then `MyAppHeaderText` can be defined as follows:
+Assuming that `MyAppText` is a component that only renders out its children into a `Text` component with styling, then `MyAppHeaderText` can be defined as follows:
 
-```javascript
+```jsx
 class MyAppHeaderText extends Component {
   render() {
     return (
@@ -169,7 +169,7 @@ Composing `MyAppText` in this way ensures that we get the styles from a top-leve
 
 React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.
 
-```javascript
+```jsx
 <Text style={{ fontWeight: 'bold' }}>
   I am bold
   <Text style={{ color: 'red' }}>and red</Text>
@@ -182,41 +182,6 @@ We believe that this more constrained way to style text will yield better apps:
 
 - (Implementor) The implementation of React Native is also simplified. We do not need to have a `fontFamily` field on every single element, and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.
 
-### Props
-
-- [`accessibilityHint`](../text/#accessibilityhint)
-- [`accessibilityLabel`](../text/#accessibilitylabel)
-- [`accessibilityRole`](../text/#accessibilityrole)
-- [`accessibilityState`](../text/#accessibilitystate)
-- [`accessible`](../text/#accessible)
-- [`adjustsFontSizeToFit`](../text/#adjustsfontsizetofit)
-- [`allowFontScaling`](../text/#allowfontscaling)
-- [`dataDetectorType`](../text/#datadetectortype)
-- [`disabled`](../text/#disabled)
-- [`ellipsizeMode`](../text/#ellipsizemode)
-- [`maxFontSizeMultiplier`](../text/#maxfontsizemultiplier)
-- [`minimumFontScale`](../text/#minimumfontscale)
-- [`nativeID`](../text/#nativeid)
-- [`numberOfLines`](../text/#numberoflines)
-- [`onLayout`](../text/#onlayout)
-- [`onLongPress`](../text/#onlongpress)
-- [`onMoveShouldSetResponder`](../text/#onmoveshouldsetresponder)
-- [`onPress`](../text/#onpress)
-- [`onResponderGrant`](../text/#onrespondergrant)
-- [`onResponderMove`](../text/#onrespondermove)
-- [`onResponderRelease`](../text/#onresponderrelease)
-- [`onResponderTerminate`](../text/#onresponderterminate)
-- [`onResponderTerminationRequest`](../text/#onresponderterminationrequest)
-- [`onStartShouldSetResponder`](../text/#onstartshouldsetresponder)
-- [`onTextLayout`](../text/#ontextlayout)
-- [`pressRetentionOffset`](../text/#pressretentionoffset)
-- [`selectable`](../text/#selectable)
-- [`selectionColor`](../text/#selectioncolor)
-- [`style`](../text/#style)
-- [`suppressHighlighting`](../text/#suppresshighlighting)
-- [`testID`](../text/#testid)
-- [`textBreakStrategy`](../text/#textbreakstrategy)
-
 ---
 
 # Reference
@@ -225,7 +190,7 @@ We believe that this more constrained way to style text will yield better apps:
 
 ### `accessibilityHint`
 
-An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.
+An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not clear from the accessibility label.
 
 | Type   | Required |
 | ------ | -------- |
@@ -593,7 +558,7 @@ The highlight color of the text.
 
 - **`textAlign`**: enum('auto', 'left', 'right', 'center', 'justify')
 
-  Specifies text alignment. The value 'justify' is only supported on iOS and Android Oreo (8.0) or above (API level >= 26). For lower android version it will fallback to `left`.
+  Specifies text alignment. On Android, the value 'justify' is only supported on Oreo (8.0) or above (API level >= 26). The value will fallback to `left` on lower Android versions.
 
 - **`textDecorationLine`**: enum('none', 'underline', 'line-through', 'underline line-through')
 

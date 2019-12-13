@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 An API to modify images stored on the local file system.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -78,6 +78,8 @@ export default function App() {
 ```js
 import * as ImageManipulator from 'expo-image-manipulator';
 ```
+
+## Methods
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 

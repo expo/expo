@@ -3,64 +3,6 @@ id: layout-props
 title: Layout Props
 ---
 
-### Props
-
-- [`alignContent`](../layout-props/#aligncontent)
-- [`alignItems`](../layout-props/#alignitems)
-- [`alignSelf`](../layout-props/#alignself)
-- [`aspectRatio`](../layout-props/#aspectratio)
-- [`borderBottomWidth`](../layout-props/#borderbottomwidth)
-- [`borderEndWidth`](../layout-props/#borderendwidth)
-- [`borderLeftWidth`](../layout-props/#borderleftwidth)
-- [`borderRightWidth`](../layout-props/#borderrightwidth)
-- [`borderStartWidth`](../layout-props/#borderstartwidth)
-- [`borderTopWidth`](../layout-props/#bordertopwidth)
-- [`borderWidth`](../layout-props/#borderwidth)
-- [`bottom`](../layout-props/#bottom)
-- [`direction`](../layout-props/#direction)
-- [`display`](../layout-props/#display)
-- [`end`](../layout-props/#end)
-- [`flex`](../layout-props/#flex)
-- [`flexBasis`](../layout-props/#flexbasis)
-- [`flexDirection`](../layout-props/#flexdirection)
-- [`flexGrow`](../layout-props/#flexgrow)
-- [`flexShrink`](../layout-props/#flexshrink)
-- [`flexWrap`](../layout-props/#flexwrap)
-- [`height`](../layout-props/#height)
-- [`justifyContent`](../layout-props/#justifycontent)
-- [`left`](../layout-props/#left)
-- [`margin`](../layout-props/#margin)
-- [`marginBottom`](../layout-props/#marginbottom)
-- [`marginEnd`](../layout-props/#marginend)
-- [`marginHorizontal`](../layout-props/#marginhorizontal)
-- [`marginLeft`](../layout-props/#marginleft)
-- [`marginRight`](../layout-props/#marginright)
-- [`marginStart`](../layout-props/#marginstart)
-- [`marginTop`](../layout-props/#margintop)
-- [`marginVertical`](../layout-props/#marginvertical)
-- [`maxHeight`](../layout-props/#maxheight)
-- [`maxWidth`](../layout-props/#maxwidth)
-- [`minHeight`](../layout-props/#minheight)
-- [`minWidth`](../layout-props/#minwidth)
-- [`overflow`](../layout-props/#overflow)
-- [`padding`](../layout-props/#padding)
-- [`paddingBottom`](../layout-props/#paddingbottom)
-- [`paddingEnd`](../layout-props/#paddingend)
-- [`paddingHorizontal`](../layout-props/#paddinghorizontal)
-- [`paddingLeft`](../layout-props/#paddingleft)
-- [`paddingRight`](../layout-props/#paddingright)
-- [`paddingStart`](../layout-props/#paddingstart)
-- [`paddingTop`](../layout-props/#paddingtop)
-- [`paddingVertical`](../layout-props/#paddingvertical)
-- [`position`](../layout-props/#position)
-- [`right`](../layout-props/#right)
-- [`start`](../layout-props/#start)
-- [`top`](../layout-props/#top)
-- [`width`](../layout-props/#width)
-- [`zIndex`](../layout-props/#zindex)
-
----
-
 # Reference
 
 ## Props
@@ -575,11 +517,11 @@ Setting `paddingVertical` is like setting both of `paddingTop` and `paddingBotto
 
 ### `position`
 
-`position` in React Native is similar to regular CSS, but everything is set to `relative` by default, so `absolute` positioning is always just relative to the parent.
+`position` in React Native is similar to regular CSS, but everything is set to `relative` by default, so `absolute` positioning is always relative to the parent.
 
 If you want to position a child using specific numbers of logical pixels relative to its parent, set the child to have `absolute` position.
 
-If you want to position a child relative to something that is not its parent, just don't use styles for that. Use the component tree.
+If you want to position a child relative to something that is not its parent, don't use styles for that. Use the component tree.
 
 See https://github.com/facebook/yoga for more details on how `position` differs between React Native and CSS.
 

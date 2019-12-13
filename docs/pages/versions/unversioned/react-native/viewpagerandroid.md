@@ -11,7 +11,7 @@ It is important all children are `<View>`s and not composite components. You can
 
 Example:
 
-```javascript
+```jsx
 
 render() {
   return (
@@ -43,30 +43,13 @@ const styles = {
 
 ```
 
-### Props
-
-- [View props...](../view/#props)
-
-- [`initialPage`](../viewpagerandroid/#initialpage)
-- [`keyboardDismissMode`](../viewpagerandroid/#keyboarddismissmode)
-- [`onPageScroll`](../viewpagerandroid/#onpagescroll)
-- [`onPageScrollStateChanged`](../viewpagerandroid/#onpagescrollstatechanged)
-- [`onPageSelected`](../viewpagerandroid/#onpageselected)
-- [`pageMargin`](../viewpagerandroid/#pagemargin)
-- [`peekEnabled`](../viewpagerandroid/#peekenabled)
-- [`scrollEnabled`](../viewpagerandroid/#scrollenabled)
-- [`setPage`](../viewpagerandroid/#setpage)
-- [`setPageWithoutAnimation`](../viewpagerandroid/#setpagewithoutanimation)
-
-### Type Definitions
-
-- [`ViewPagerScrollState`](../viewpagerandroid/#viewpagerscrollstate)
-
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `initialPage`
 
