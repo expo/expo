@@ -54,6 +54,7 @@ You must request permission to access the user's camera before attempting to get
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import * as Permissions from 'expo-permissions';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -61,8 +62,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      BarCodeScanner.req
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      const { status } = await Permissions.askAsync(Permissions.CAMERA);
       setHasPermission(status === 'granted');
     })();
   }, []);
