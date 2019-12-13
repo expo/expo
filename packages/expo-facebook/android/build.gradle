@@ -68,5 +68,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  api 'com.facebook.android:facebook-android-sdk:5.0.1'
+  api 'com.facebook.android:facebook-core:5.12.1'
+  api 'com.facebook.android:facebook-login:5.12.1'
 }
