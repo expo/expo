@@ -8,7 +8,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides battery information for the physical device, as well as corresponding event listeners.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-document-
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

@@ -9,7 +9,7 @@ The `FlatList` component displays a scrolling list of changing, but similarly st
 
 The `FlatList` component requires two props: `data` and `renderItem`. `data` is the source of information for the list. `renderItem` takes one item from the source and returns a formatted component to render.
 
-This example creates a simple `FlatList` of hardcoded data. Each item in the `data` props is rendered as a `Text` component. The `FlatListBasics` component then renders the `FlatList` and all `Text` components.
+This example creates a basic `FlatList` of hardcoded data. Each item in the `data` props is rendered as a `Text` component. The `FlatListBasics` component then renders the `FlatList` and all `Text` components.
 
 ```javascript
 import React, { Component } from 'react';
@@ -22,6 +22,8 @@ export default class FlatListBasics extends Component {
         <FlatList
           data={[
             { key: 'Devin' },
+            { key: 'Dan' },
+            { key: 'Dominic' },
             { key: 'Jackson' },
             { key: 'James' },
             { key: 'Joel' },
@@ -62,7 +64,7 @@ export default class SectionListBasics extends Component {
       <View style={styles.container}>
         <SectionList
           sections={[
-            { title: 'D', data: ['Devin'] },
+            { title: 'D', data: ['Devin', 'Dan', 'Dominic'] },
             { title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie'] },
           ]}
           renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}

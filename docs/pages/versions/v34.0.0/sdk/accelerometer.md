@@ -9,7 +9,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

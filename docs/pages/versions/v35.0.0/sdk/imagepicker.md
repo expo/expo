@@ -4,10 +4,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-image-pic
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -98,6 +99,10 @@ When you run this example and pick an image, you will see the image that you pic
 ```js
 import * as ImagePicker from 'expo-image-picker';
 ```
+
+<TableOfContentSection title='Methods' contents={['ImagePicker.launchImageLibraryAsync(options)', 'ImagePicker.launchCameraAsync(options)']} />
+
+## Methods
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 

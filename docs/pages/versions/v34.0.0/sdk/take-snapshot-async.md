@@ -7,7 +7,7 @@ Given a view, `takeSnapshotAsync` will essentially screenshot that view and retu
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](../gl-view/#takesnapshotasync) instead.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

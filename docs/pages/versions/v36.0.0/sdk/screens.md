@@ -7,7 +7,7 @@ Native primitives to represent screens instead of plain `<View>` components in o
 
 > Note: this library is still in alpha. Please refer to [the issue tracker](https://github.com/kmagiera/react-native-screens/issues) if you encounter any problems.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

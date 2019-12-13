@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
 
 Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

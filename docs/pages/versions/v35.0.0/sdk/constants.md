@@ -7,7 +7,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 System information that remains constant throughout the lifetime of your app.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

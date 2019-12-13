@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 An API to modify images stored on the local file system.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/react-native-appearance"
 
 Detect preferred color scheme (light, dark, or no preference) on iOS 13+.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

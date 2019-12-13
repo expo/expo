@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

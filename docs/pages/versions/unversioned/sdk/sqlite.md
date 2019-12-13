@@ -7,7 +7,7 @@ This module gives access to a database that can be queried through a [WebSQL](ht
 
 An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Uses Core Motion on iOS and the system `hardware.Sensor` on Android to get the user's step count.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

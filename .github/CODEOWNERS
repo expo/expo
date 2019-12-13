@@ -1,77 +1,87 @@
-/packages/@unimodules                           @sjchmiela
+/packages/@unimodules/core                      @sjchmiela @tsapeta
+/packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
-/packages/expo                                  @ide @tsapeta
 /packages/expo-ads-admob                        @sjchmiela
-/packages/expo-ads-facebook                     @Szymon20000
+/packages/expo-ads-facebook                     @sjchmiela
 /packages/expo-analytics-amplitude              @sjchmiela
 /packages/expo-analytics-segment                @sjchmiela
 /packages/expo-app-auth                         @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
+/packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta
-/packages/expo-av                               @sjchmiela @mczernek
+/packages/expo-av                               @mczernek @bbarthec
 /packages/expo-background-fetch                 @tsapeta
-/packages/expo-barcode-scanner                  @bbarthec
+/packages/expo-barcode-scanner                  @bbarthec @lukmccall
+/packages/expo-battery                          @tsapeta
+/packages/expo-bluetooth                        @EvanBacon
 /packages/expo-blur                             @sjchmiela
 /packages/expo-branch                           @sjchmiela
 /packages/expo-brightness                       @sjchmiela
-/packages/expo-calendar                         @tsapeta
-/packages/expo-camera                           @bbarthec
+/packages/expo-calendar                         @tsapeta @lukmccall
+/packages/expo-camera                           @bbarthec @lukmccall
 /packages/expo-cellular                         @ide
-/packages/expo-constants                        @tsapeta
+/packages/expo-constants                        @tsapeta @bbarthec
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
 /packages/expo-device                           @ide
-/packages/expo-document-picker                  @bbarthec
+/packages/expo-document-picker                  @bbarthec @tsapeta
+/packages/expo-error-recovery                   @lukmccall @bbarthec
 /packages/expo-face-detector                    @sjchmiela @mczernek
-/packages/expo-facebook                         @sjchmiela
-/packages/expo-file-system                      @sjchmiela
+/packages/expo-facebook                         @sjchmiela @mczernek
+/packages/expo-file-system                      @sjchmiela @bbarthec
 /packages/expo-font                             @sjchmiela
-/packages/expo-font-interface                   @sjchmiela
-/packages/expo-gl                               @tsapeta
-/packages/expo-gl-cpp                           @tsapeta
+/packages/expo-gl-cpp                           @tsapeta @bbarthec
+/packages/expo-gl                               @tsapeta @bbarthec
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
-/packages/expo-haptics                          @tsapeta
-/packages/expo-image-manipulator                @bbarthec
-/packages/expo-image-picker                     @bbarthec
+/packages/expo-haptics                          @tsapeta @bbarthec
+/packages/expo-image-manipulator                @bbarthec @tsapeta
+/packages/expo-image-picker                     @bbarthec @tsapeta
 /packages/expo-in-app-purchases                 @ide
-/packages/expo-intent-launcher                  @tsapeta
+/packages/expo-intent-launcher                  @tsapeta @mczernek
 /packages/expo-keep-awake                       @brentvatne
 /packages/expo-linear-gradient                  @brentvatne
-/packages/expo-local-authentication             @tsapeta
-/packages/expo-localization                     @EvanBacon
-/packages/expo-location                         @tsapeta
+/packages/expo-local-authentication             @tsapeta @lukmccall
+/packages/expo-localization                     @EvanBacon @mczernek
+/packages/expo-location                         @tsapeta @lukmccall
 /packages/expo-mail-composer                    @sjchmiela
-/packages/expo-media-library                    @tsapeta
-/packages/expo-module-scripts                   @ide
-/packages/expo-module-template                  @bbarthec
+/packages/expo-media-library                    @tsapeta @lukmccall
+/packages/expo-module-scripts                   @ide @bbarthec
+/packages/expo-module-template                  @bbarthec @tsapeta
 /packages/expo-network                          @ide
-/packages/expo-payments-stripe                  @Szymon20000
-/packages/expo-permissions                      @bbarthec
-/packages/expo-print                            @tsapeta
+/packages/expo-notifications                    @mczernek @sjchmiela
+/packages/expo-payments-stripe                  @sjchmiela
+/packages/expo-permissions                      @bbarthec @lukmccall
+/packages/expo-print                            @tsapeta @lukmccall
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
-/packages/expo-secure-store                     @sjchmiela
-/packages/expo-sensors                          @sjchmiela
-/packages/expo-sharing                          @sjchmiela
+/packages/expo-screen-orientation               @lukmccall
+/packages/expo-secure-store                     @sjchmiela @mczernek
+/packages/expo-sensors                          @sjchmiela @mczernek
+/packages/expo-sharing                          @sjchmiela @bbarthec
 /packages/expo-sms                              @bbarthec
-/packages/expo-speech                           @Szymon20000
-/packages/expo-sqlite                           @Szymon20000
-/packages/expo-task-manager                     @tsapeta
-/packages/expo-updates                          @mczernek
+/packages/expo-speech                           @sjchmiela @mczernek
+/packages/expo-sqlite                           @sjchmiela @mczernek
+/packages/expo-store-review                     @EvanBacon @tsapeta
+/packages/expo-task-manager                     @tsapeta @mczernek
+/packages/expo-updates                          @esamelson @mczernek
 /packages/expo-video-thumbnails                 @sjchmiela
 /packages/expo-web-browser                      @sjchmiela @mczernek
 /packages/expo-yarn-workspaces                  @ide
+/packages/expo                                  @ide @tsapeta
+/packages/jest-expo-enzyme                      @ide @EvanBacon
+/packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
-/packages/unimodules-barcode-scanner-interface  @bbarthec
-/packages/unimodules-camera-interface           @bbarthec
-/packages/unimodules-constants-interface        @tsapeta
+/packages/react-native-unimodules               @tsapeta @bbarthec
+/packages/unimodules-barcode-scanner-interface  @bbarthec @lukmccall
+/packages/unimodules-camera-interface           @bbarthec @lukmccall
+/packages/unimodules-constants-interface        @tsapeta @bbarthec
 /packages/unimodules-face-detector-interface    @sjchmiela
-/packages/unimodules-file-system-interface      @sjchmiela
+/packages/unimodules-file-system-interface      @sjchmiela @bbarthec
 /packages/unimodules-font-interface             @sjchmiela
-/packages/unimodules-image-loader-interface     @bbarthec
-/packages/unimodules-permissions-interface      @bbarthec
-/packages/unimodules-sensors-interface          @sjchmiela
-/packages/unimodules-task-manager-interface     @tsapeta
+/packages/unimodules-image-loader-interface     @bbarthec @tsapeta
+/packages/unimodules-permissions-interface      @bbarthec @lukmccall
+/packages/unimodules-sensors-interface          @sjchmiela @mczernek
+/packages/unimodules-task-manager-interface     @tsapeta @mczernek
 /tools                                          @tsapeta

@@ -3,21 +3,13 @@ id: share
 title: Share
 ---
 
-### Methods
-
-- [`share`](../share/#share)
-- [`sharedAction`](../share/#sharedaction)
-- [`dismissedAction`](../share/#dismissedaction)
-
----
-
 # Reference
 
 ## Methods
 
 ### `share()`
 
-```javascript
+```jsx
 
 static share(content, options)
 
@@ -25,20 +17,23 @@ static share(content, options)
 
 Open a dialog to share text content.
 
-In iOS, Returns a Promise which will be invoked an object containing `action`, `activityType`. If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction` and all the other keys being undefined.
+In iOS, Returns a Promise which will be invoked with an object containing `action` and `activityType`. If the user dismissed the dialog, the Promise will still be resolved with action being `Share.dismissedAction` and all the other keys being undefined. Note that some share options will not appear or work on the iOS simulator.
 
 In Android, Returns a Promise which always be resolved with action being `Share.sharedAction`.
 
 ### Content
 
 - `message` - a message to share
-- `title` - title of the message
 
 #### iOS
 
 - `url` - an URL to share
 
 At least one of URL and message is required.
+
+#### Android
+
+- `title` - title of the message
 
 ### Options
 
@@ -56,7 +51,7 @@ At least one of URL and message is required.
 
 ### `sharedAction()`
 
-```javascript
+```jsx
 
 static sharedAction()
 
@@ -68,7 +63,7 @@ The content was successfully shared.
 
 ### `dismissedAction()`
 
-```javascript
+```jsx
 
 static dismissedAction()
 
@@ -78,7 +73,7 @@ _iOS Only_. The dialog has been dismissed.
 
 ## Basic Example
 
-```javascript
+```jsx
 import React, { Component } from 'react';
 import { Share, Button } from 'react-native';
 

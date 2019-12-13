@@ -3,29 +3,21 @@ id: vibration
 title: Vibration
 ---
 
-The Vibration API is exposed at `Vibration.vibrate()`. The vibration is asynchronous so this method will return immediately.
+The Vibration API is exposed at `Vibration.vibrate()`. The vibration is synchronous so this method will return immediately.
 
 There will be no effect on devices that do not support Vibration, eg. the simulator.
 
-**Note for Android:** add the `VIBRATE` permission under the `"android"` field in your `app.json` file:
-
-```javascript
-{
-  "android": {
-    "permission": ["VIBRATE"]
-  }
-}
-```
+**Note for Android:** add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
 
 **The vibration duration in iOS is not configurable**, so there are some differences with Android. In Android, if `pattern` is a number, it specifies the vibration duration in ms. If `pattern` is an array, those odd indices are the vibration duration, while the even ones are the separation time.
 
-In iOS, invoking `vibrate(duration)` will just ignore the duration and vibrate for a fixed time. While the `pattern` array is used to define the duration between each vibration. See below example for more.
+In iOS, invoking `vibrate(duration)` will ignore the duration and vibrate for a fixed time. While the `pattern` array is used to define the duration between each vibration. See below example for more.
 
 Repeatable vibration is also supported, the vibration will repeat with defined pattern until `cancel()` is called.
 
 Example:
 
-```javascript
+```jsx
 const DURATION = 10000;
 const PATTERN = [1000, 2000, 3000];
 
@@ -46,11 +38,6 @@ Vibration.cancel();
 // iOS: vibration stopped
 ```
 
-### Methods
-
-- [`vibrate`](../vibration/#vibrate)
-- [`cancel`](../vibration/#cancel)
-
 ---
 
 # Reference
@@ -59,7 +46,7 @@ Vibration.cancel();
 
 ### `vibrate()`
 
-```javascript
+```jsx
 
 Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 
@@ -78,7 +65,7 @@ Trigger a vibration with specified `pattern`.
 
 ### `cancel()`
 
-```javascript
+```jsx
 Vibration.cancel();
 ```
 

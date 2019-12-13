@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-keep-awak
 
 A React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

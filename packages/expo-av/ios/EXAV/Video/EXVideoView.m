@@ -23,7 +23,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, strong) EXVideoPlayerViewController *playerViewController;
 
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
-@property (nonatomic, weak) UIViewController *nativeFullscreenPlayerViewController;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
 @property (nonatomic, strong) UMPromiseResolveBlock requestedFullscreenChangeResolver;
 @property (nonatomic, strong) UMPromiseRejectBlock requestedFullscreenChangeRejecter;
@@ -59,7 +58,6 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     _fullscreenPlayerViewController = nil;
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
-    _nativeFullscreenPlayerViewController = nil;
     _fullscreenPlayerIsDismissing = NO;
     _requestedFullscreenChange = NO;
     _statusToSet = [NSMutableDictionary new];
@@ -241,35 +239,18 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
     }
   } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
-    UIViewController *presentedViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
-    if (presentedViewController == nil) {
-      return;
-    }
-
-    // For a short explanation on why we're detecting fullscreen changes in such an extraordinary way
-    // see https://stackoverflow.com/questions/36323259/detect-video-playing-full-screen-in-portrait-or-landscape/36388184#36388184
-
-    // We may be presenting a fullscreen player for this video item
-    UIViewController *fullscreenViewController;
-
-    if ([[presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
-      // RCTPresentedViewController() is fullscreen
-       fullscreenViewController = presentedViewController;
-    } else if (presentedViewController.presentedViewController != nil && [[presentedViewController.presentedViewController.class description] isEqualToString:EXAVFullScreenViewControllerClassName]) {
-      // RCTPresentedViewController().presentedViewController is fullscreen
-      fullscreenViewController = presentedViewController.presentedViewController;
-    }
-
-    if (fullscreenViewController.isBeingDismissed && _fullscreenPlayerPresented && _nativeFullscreenPlayerViewController == fullscreenViewController) {
+    
+    CGRect viewBounds = [change[@"new"] CGRectValue];
+    CGRect screen = [[UIScreen mainScreen] bounds];
+    
+    if (viewBounds.size.height != screen.size.height && viewBounds.size.width != screen.size.width && _fullscreenPlayerPresented) {
       // Fullscreen player is being dismissed
       _fullscreenPlayerPresented = false;
-      _nativeFullscreenPlayerViewController = nil;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
-    } else if (fullscreenViewController.isBeingPresented && !_fullscreenPlayerPresented && _nativeFullscreenPlayerViewController == nil) {
+    } else if (viewBounds.size.height == screen.size.height && viewBounds.size.width == screen.size.width && !_fullscreenPlayerPresented) {
       // Fullscreen player is being presented
       _fullscreenPlayerPresented = true;
-      _nativeFullscreenPlayerViewController = fullscreenViewController;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
     } else {

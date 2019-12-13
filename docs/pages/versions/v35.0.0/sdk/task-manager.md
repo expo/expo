@@ -9,7 +9,7 @@ Some features of this module are used by other modules under the hood. Here is a
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
