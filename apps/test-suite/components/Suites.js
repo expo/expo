@@ -8,9 +8,17 @@ import SuiteResult from './SuiteResult';
 export default function Suites({ suites, ...props }) {
   const ref = React.useRef(null);
 
-  function scrollToEnd() {
+  const renderItem = ({ item }) => <SuiteResult r={item} depth={0} />;
+
+  const keyExtractor = item => item.get('result').get('id');
+
+  const scrollToEnd = React.useMemo(() => {
     if (ref.current) ref.current.scrollToEnd({ animated: false });
-  }
+  }, [ref]);
+
+  const ListFooterComponent = () => (
+    <DoneText done={props.done} numFailed={props.numFailed} results={props.results} />
+  );
 
   return (
     <FlatList
@@ -18,9 +26,9 @@ export default function Suites({ suites, ...props }) {
       style={styles.list}
       contentContainerStyle={styles.contentContainerStyle}
       data={[...suites]}
-      keyExtractor={item => item.get('result').get('id')}
-      renderItem={({ item }) => <SuiteResult r={item} depth={0} />}
-      ListFooterComponent={() => <DoneText {...props} />}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      ListFooterComponent={ListFooterComponent}
       onContentSizeChange={scrollToEnd}
       onLayout={scrollToEnd}
     />
