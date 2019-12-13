@@ -186,12 +186,17 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
+  const paddingVertical = (bottom || 12) + 8;
+
   return (
-    <View
-      style={[styles.buttonRow, { paddingBottom: bottom, paddingLeft: left, paddingRight: right }]}>
-      <FooterButton style={{ alignItems: 'flex-start' }} title={buttonTitle} onPress={onToggle} />
+    <View style={[styles.buttonRow, { paddingLeft: left, paddingRight: right }]}>
       <FooterButton
-        style={{ alignItems: 'flex-end' }}
+        style={{ paddingVertical, alignItems: 'flex-start' }}
+        title={buttonTitle}
+        onPress={onToggle}
+      />
+      <FooterButton
+        style={{ paddingVertical, alignItems: 'flex-end' }}
         title="Run Tests"
         disabled={!canRunTests}
         onPress={onRun}
@@ -223,7 +228,6 @@ const styles = StyleSheet.create({
   footerButton: {
     flex: 1,
     justifyContent: 'center',
-    paddingVertical: 8,
     marginHorizontal: HORIZONTAL_MARGIN,
   },
   listItem: {
@@ -243,8 +247,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 12,
-    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#dddddd',
     backgroundColor: 'white',
