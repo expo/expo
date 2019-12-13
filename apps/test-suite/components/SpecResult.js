@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 import StatusEmojis from '../constants/StatusEmojis';
@@ -12,8 +12,15 @@ function getStatusEmoji(status) {
   return getStatusEmoji(Statuses.Disabled);
 }
 
-export default function SpecResult(props) {
-  const { status = Statuses.Running, description, failedExpectations } = props;
+export default function SpecResult({ status = Statuses.Running, description, failedExpectations }) {
+  const renderExpectations = React.useMemo(
+    () => (e, i) => (
+      <Text testID="test_suite_text_spec_exception" key={i}>
+        {e.get('message')}
+      </Text>
+    ),
+    []
+  );
 
   const borderColor = Colors[status];
 
@@ -21,20 +28,27 @@ export default function SpecResult(props) {
   return (
     <View
       testID="test_suite_view_spec_container"
-      style={{
-        borderColor,
-        paddingLeft: 10,
-        marginVertical: 3,
-        borderLeftWidth: 3,
-      }}>
-      <Text testID="test_suite_text_spec_description" style={{ fontSize: 16 }}>
+      style={[
+        styles.container,
+        {
+          borderColor,
+        },
+      ]}>
+      <Text testID="test_suite_text_spec_description" style={styles.text}>
         {message}
       </Text>
-      {failedExpectations.map((e, i) => (
-        <Text testID="test_suite_text_spec_exception" key={i}>
-          {e.get('message')}
-        </Text>
-      ))}
+      {failedExpectations.map(renderExpectations)}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingLeft: 10,
+    marginVertical: 3,
+    borderLeftWidth: 3,
+  },
+  text: {
+    fontSize: 16,
+  },
+});
