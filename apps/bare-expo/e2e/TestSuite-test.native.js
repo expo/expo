@@ -10,7 +10,7 @@ let TESTS = [
   // 'Font',
   'Permissions',
   'Constants',
-  'Contacts',
+  // 'Contacts',
   'Crypto',
   // 'GLView',
   'Haptics',

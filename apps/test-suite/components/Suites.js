@@ -47,7 +47,7 @@ export default function Suites({ suites, done, numFailed, results }) {
 const styles = StyleSheet.create({
   contentContainerStyle: {
     padding: 5,
-    paddingBottom: Constants.statusBarHeight || 24,
+    paddingBottom: (Constants.statusBarHeight || 24) + 128,
   },
   list: {
     flex: 1,
