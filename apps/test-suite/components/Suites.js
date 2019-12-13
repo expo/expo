@@ -5,19 +5,28 @@ import { FlatList, StyleSheet } from 'react-native';
 import DoneText from './DoneText';
 import SuiteResult from './SuiteResult';
 
-export default function Suites({ suites, ...props }) {
+export default function Suites({ suites, done, numFailed, results }) {
   const ref = React.useRef(null);
 
   const renderItem = ({ item }) => <SuiteResult r={item} depth={0} />;
 
   const keyExtractor = item => item.get('result').get('id');
 
-  const scrollToEnd = React.useMemo(() => {
-    if (ref.current) ref.current.scrollToEnd({ animated: false });
-  }, [ref]);
+  const scrollToEnd = React.useMemo(
+    () => () => {
+      if (ref.current) ref.current.scrollToEnd({ animated: false });
+    },
+    [ref]
+  );
+
+  React.useEffect(() => {
+    if (done && ref.current) {
+      scrollToEnd();
+    }
+  }, [ref, done]);
 
   const ListFooterComponent = () => (
-    <DoneText done={props.done} numFailed={props.numFailed} results={props.results} />
+    <DoneText done={done} numFailed={numFailed} results={results} />
   );
 
   return (

@@ -2,18 +2,24 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function DoneText({ done, numFailed, results }) {
-  if (!done) {
-    return null;
-  }
   return (
     <View testID="test_suite_results" style={styles.container}>
-      <Text testID="test_suite_text_results" style={styles.doneMessage}>
-        Complete: {numFailed}
-        {numFailed === 1 ? ' test' : ' tests'} failed.
-      </Text>
-      <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
-        {results}
-      </Text>
+      {!done && (
+        <Text testID="test_suite_loading_results" style={styles.doneMessage}>
+          Running Tests...
+        </Text>
+      )}
+      {done && (
+        <React.Fragment>
+          <Text testID="test_suite_text_results" style={styles.doneMessage}>
+            Complete: {numFailed}
+            {numFailed === 1 ? ' test' : ' tests'} failed.
+          </Text>
+          <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
+            {results}
+          </Text>
+        </React.Fragment>
+      )}
     </View>
   );
 }
