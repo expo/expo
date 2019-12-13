@@ -29,7 +29,6 @@ import org.apache.commons.io.output.TeeOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -136,10 +135,6 @@ public class Exponent {
 
     mContext = context;
     mApplication = application;
-
-    // Ensure Spongy Castle installed so the security providers don't change
-    // non-deterministically during the process's lifetime
-    Exponent.getBouncyCastleProvider();
 
     NativeModuleDepsProvider.initialize(application);
     NativeModuleDepsProvider.getInstance().inject(Exponent.class, this);
@@ -303,18 +298,6 @@ public class Exponent {
       }
     }
   }
-
-  private static Provider sBouncyCastleProvider;
-
-  public static synchronized Provider getBouncyCastleProvider() {
-    if (sBouncyCastleProvider == null) {
-      sBouncyCastleProvider = new BouncyCastleProvider();
-      Security.insertProviderAt(sBouncyCastleProvider, 1);
-    }
-
-    return sBouncyCastleProvider;
-  }
-
 
   public String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException {
     return URLEncoder.encode("experience-" + manifestId, "UTF-8");
