@@ -1,54 +1,49 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {
   Alert,
-  Button,
   FlatList,
   Linking,
-  PixelRatio,
   Platform,
   StyleSheet,
   Text,
-  TouchableHighlight,
-  TouchableNativeFeedback,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
+import { useSafeArea } from 'react-native-safe-area-context';
 
+import PlatformTouchable from '../components/PlatformTouchable';
+import Colors from '../constants/Colors';
 import { getTestModules } from '../TestUtils';
 
-class ListItem extends React.Component {
-  onPress = () => {
-    this.props.onPressItem(this.props.id);
-  };
+const prefix = Platform.select({ default: 'md', ios: 'ios' });
 
-  renderView = () => {
-    const checkBox = this.props.selected ? 'check-box' : 'check-box-outline-blank';
-    return (
-      <View style={styles.listItem}>
-        <MaterialIcons name={checkBox} size={26} />
-        <Text style={styles.label}>{this.props.title}</Text>
-      </View>
-    );
-  };
-
-  render() {
-    return Platform.select({
-      android: (
-        <TouchableNativeFeedback onPress={this.onPress}>
-          {this.renderView()}
-        </TouchableNativeFeedback>
-      ),
-      default: (
-        <TouchableHighlight onPress={this.onPress} underlayColor="lightgray">
-          {this.renderView()}
-        </TouchableHighlight>
-      ),
-    });
+function ListItem({ title, onPressItem, selected, id }) {
+  function onPress() {
+    onPressItem(id);
   }
+
+  const checkBox = selected ? 'checkbox' : 'checkbox-outline';
+
+  return (
+    <PlatformTouchable onPress={onPress}>
+      <View style={styles.listItem}>
+        <Text style={styles.label}>{title}</Text>
+        <Ionicons
+          color={selected ? Colors.tintColor : 'black'}
+          name={`${prefix}-${checkBox}`}
+          size={24}
+        />
+      </View>
+    </PlatformTouchable>
+  );
 }
 
 export default class SelectScreen extends React.PureComponent {
+  state = {
+    selected: new Set(),
+  };
+
   constructor(props) {
     super(props);
 
@@ -71,9 +66,6 @@ export default class SelectScreen extends React.PureComponent {
       });
     }
     this.modules = getTestModules();
-    this.state = {
-      selected: new Set(),
-    };
   }
 
   componentWillUnmount() {
@@ -119,12 +111,10 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   static navigationOptions = {
-    title: 'Test Suite',
+    title: 'Expo Test Suite',
   };
 
-  _keyExtractor = (item, index) => {
-    return `${index}-${item.name}`;
-  };
+  _keyExtractor = ({ name }) => name;
 
   _onPressItem = id => {
     this.setState(state => {
@@ -135,12 +125,12 @@ export default class SelectScreen extends React.PureComponent {
     });
   };
 
-  _renderItem = ({ item }) => (
+  _renderItem = ({ item: { name } }) => (
     <ListItem
-      id={item.name}
+      id={name}
       onPressItem={this._onPressItem}
-      selected={this.state.selected.has(item.name)}
-      title={item.name}
+      selected={this.state.selected.has(name)}
+      title={name}
     />
   );
 
@@ -154,7 +144,7 @@ export default class SelectScreen extends React.PureComponent {
   };
 
   _getSelected = () => {
-    const selected = this.state.selected;
+    const { selected } = this.state;
     const selectedModules = this.modules.filter(m => selected.has(m.name));
     return selectedModules;
   };
@@ -170,57 +160,98 @@ export default class SelectScreen extends React.PureComponent {
   };
 
   render() {
-    const allSelected = this.state.selected.size === this.modules.length;
+    const { selected } = this.state;
+    const allSelected = selected.size === this.modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
     return (
-      <View style={styles.mainContainer}>
+      <React.Fragment>
         <FlatList
           data={this.modules}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
+          initialNumToRender={15}
         />
-        <SafeAreaView style={styles.buttonRow}>
-          <View style={styles.buttonContainer}>
-            <Button title={buttonTitle} onPress={this._selectAll} />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button title="Run Tests" onPress={this._navigateToTests} />
-          </View>
-        </SafeAreaView>
-      </View>
+        <Footer
+          buttonTitle={buttonTitle}
+          canRunTests={selected.size}
+          onRun={this._navigateToTests}
+          onToggle={this._selectAll}
+        />
+      </React.Fragment>
     );
   }
 }
+
+function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
+  const { bottom, left, right } = useSafeArea();
+
+  const paddingVertical = (bottom || 12) + 8;
+
+  return (
+    <View style={[styles.buttonRow, { paddingLeft: left, paddingRight: right }]}>
+      <FooterButton
+        style={{ paddingVertical, alignItems: 'flex-start' }}
+        title={buttonTitle}
+        onPress={onToggle}
+      />
+      <FooterButton
+        style={{ paddingVertical, alignItems: 'flex-end' }}
+        title="Run Tests"
+        disabled={!canRunTests}
+        onPress={onRun}
+      />
+    </View>
+  );
+}
+
+function FooterButton({ title, style, ...props }) {
+  return (
+    <TouchableOpacity
+      style={[styles.footerButton, { opacity: props.disabled ? 0.4 : 1 }, style]}
+      {...props}>
+      <Text style={styles.footerButtonTitle}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const HORIZONTAL_MARGIN = 24;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
+  footerButtonTitle: {
+    fontSize: 18,
+    color: Colors.tintColor,
+  },
+  footerButton: {
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: HORIZONTAL_MARGIN,
+  },
   listItem: {
-    paddingHorizontal: 10,
-    paddingVertical: 14,
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#dddddd',
-    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingVertical: 14,
+    paddingHorizontal: HORIZONTAL_MARGIN,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#dddddd',
   },
   label: {
     color: 'black',
     fontSize: 18,
-    marginLeft: 5,
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 12,
-    paddingTop: 12,
-    backgroundColor: '#ECEFF1',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#dddddd',
+    backgroundColor: 'white',
   },
-  buttonContainer: {
-    flex: 1,
-    marginLeft: Platform.OS === 'android' ? 10 : 0,
-    marginRight: Platform.OS === 'android' ? 10 : 0,
+  contentContainerStyle: {
+    paddingBottom: 128,
   },
 });
