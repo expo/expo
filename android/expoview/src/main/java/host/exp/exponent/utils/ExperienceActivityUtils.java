@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
@@ -94,31 +95,34 @@ public class ExperienceActivityUtils {
    * React Native is not using flag {@link WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS} nor view/manifest attribute 'android:windowTranslucentStatus'
    * (https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_TRANSLUCENT_STATUS)
    * (https://developer.android.com/reference/android/R.attr.html#windowTranslucentStatus)
-   *
    * Instead it's using {@link WindowInsets} to limit available space on the screen ({@link com.facebook.react.modules.statusbar.StatusBarModule#setTranslucent(boolean)}).
    *
-   * We're using android:windowTranslucentStatus in our theme to enforce translucency during native SplashScreen period (because it's iOS default behaviour).
-   * Therefore we need to adjust our approach to align with RN to ensure {@link com.facebook.react.modules.statusbar.StatusBarModule} works.
+   * We are using 'android:
+   * Out approach to achieve translucency of StatusBar has to be aligned with RN's approach to ensure {@link com.facebook.react.modules.statusbar.StatusBarModule} works.
+   *
+   * Links to follow in case of need of more detailed understating.
+   * https://chris.banes.dev/talks/2017/becoming-a-master-window-fitter-lon/
+   * https://www.youtube.com/watch?v=_mGDMVRO3iE
    */
-  public static void configureStatusBar(final JSONObject manifest, final Activity activity) {
+  public static void configureStatusBar(@NonNull JSONObject manifest, final Activity activity) {
     @Nullable JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
-
     @Nullable String statusBarStyle = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE) : null;
-    @Nullable String statusBarBackgroundColor = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR) : null;
-
-    // if statusBarColor isn't set -> statusBar has to be transparent
-    boolean statusBarTranslucent = statusBarBackgroundColor == null;
+    @Nullable String statusBarBackgroundColor = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR, null) : null;
+    boolean statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN, false);
+    boolean statusBarTranslucent = statusBarOptions == null || statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_TRANSLUCENT, true);
 
     activity.runOnUiThread(() -> {
-      // clear android:windowTranslucentStatus flag
+      // clear android:windowTranslucentStatus flag from Window as RN achieves translucency using WindowInsets
       activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+      setHidden(statusBarHidden, activity);
 
       setTranslucent(statusBarTranslucent, activity);
 
-      // if statusBar is translucent it has to have transparent color as well
-      if (statusBarTranslucent) {
+      if (statusBarBackgroundColor == null || !ColorParser.isValid(statusBarBackgroundColor)){
+        // if backgroundColor is invalid or not set then it has to be transparent
         setColor(Color.TRANSPARENT, activity);
-      } else if (ColorParser.isValid(statusBarBackgroundColor)) {
+      } else {
         setColor(Color.parseColor(statusBarBackgroundColor), activity);
       }
 
@@ -171,6 +175,17 @@ public class ExperienceActivityUtils {
         systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
       }
       decorView.setSystemUiVisibility(systemUiVisibilityFlags);
+    }
+  }
+
+  @UiThread
+  private static void setHidden(final boolean hidden, final Activity activity) {
+    if (hidden) {
+      activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+    } else {
+      activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+      activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
   }
 

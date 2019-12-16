@@ -120,30 +120,24 @@ export default class App extends React.Component {
       theme = 'light';
     }
 
+    const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
+
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor }]}>
         <ActionSheetProvider>
           <Navigation theme={theme} />
         </ActionSheetProvider>
 
-        <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
-        {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+        <StatusBar
+          translucent
+          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundColor}
+        />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: Constants.statusBarHeight,
-    backgroundColor: 'rgba(0,0,0,0.0)',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
+  container: { flex: 1 },
 });
