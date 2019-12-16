@@ -1226,6 +1226,7 @@ PODS:
   - EXAppLoaderProvider (8.0.0)
   - EXAV (8.0.0):
     - UMCore
+    - UMFileSystemInterface
     - UMPermissionsInterface
   - EXBackgroundFetch (8.0.0):
     - UMCore
@@ -1314,6 +1315,7 @@ PODS:
   - EXImagePicker (8.0.0):
     - UMCore
     - UMFileSystemInterface
+    - UMPermissionsInterface
   - EXKeepAwake (8.0.0):
     - UMCore
   - EXLinearGradient (8.0.0):
@@ -1914,7 +1916,8 @@ PODS:
   - UMFileSystemInterface (5.0.0)
   - UMFontInterface (5.0.0)
   - UMImageLoaderInterface (5.0.0)
-  - UMPermissionsInterface (5.0.0)
+  - UMPermissionsInterface (5.0.0):
+    - UMCore
   - UMReactNativeAdapter (5.0.0):
     - React-Core
     - UMCore
@@ -3499,7 +3502,7 @@ SPEC CHECKSUMS:
   EXAppleAuthentication: 7d20ab4397f595d22c2fe61ca6abfca16a346a72
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
   EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
-  EXAV: 39a3b794d690e91404774cabfc563182d4f84ac3
+  EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
   EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
   EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
@@ -3524,7 +3527,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
   EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
   EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
-  EXImagePicker: e6bd62b64a84c7ae29fbdb6207fee26e2dd2ccda
+  EXImagePicker: aecd617c31562f41e85a0770bfce51a8b9d58bd1
   EXKeepAwake: 66e9f80b6d129633725a0e42f8d285c229876811
   EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
   EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd
@@ -3611,7 +3614,7 @@ SPEC CHECKSUMS:
   UMFileSystemInterface: 2ed004c9620f43f0b36b33c42ce668500850d6a4
   UMFontInterface: 24fbc0a02ade6c60ad3ee3e2b5d597c8dcfc3208
   UMImageLoaderInterface: 3976a14c588341228881ff75970fbabf122efca4
-  UMPermissionsInterface: 2abf9f7f4aa7110e27beaf634a7deda2d50ff3d7
+  UMPermissionsInterface: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
   UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
   UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d

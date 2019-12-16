@@ -6208,8 +6208,8 @@ CACHE_KEYS:
       - EXAppLoaderProvider (8.0.0)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
-      EXAV: 427dcf81d85a448fa6dd2b84e127ecd8
-    CHECKSUM: 39a3b794d690e91404774cabfc563182d4f84ac3
+      EXAV: ce127c23292472b7f4826cd92eb35fbb
+    CHECKSUM: cef471e07cfb7f303a1352af7293bf07e5c2b183
     FILES:
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
@@ -6590,8 +6590,8 @@ CACHE_KEYS:
       - EXImageManipulator (8.0.0)
   EXImagePicker:
     BUILD_SETTINGS_CHECKSUM:
-      EXImagePicker: e843389507faa36489611fc96d1282f8
-    CHECKSUM: e6bd62b64a84c7ae29fbdb6207fee26e2dd2ccda
+      EXImagePicker: 3db5d5996c5eebe6da942be37e175d8a
+    CHECKSUM: aecd617c31562f41e85a0770bfce51a8b9d58bd1
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
@@ -9673,8 +9673,8 @@ CACHE_KEYS:
       - UMImageLoaderInterface (5.0.0)
   UMPermissionsInterface:
     BUILD_SETTINGS_CHECKSUM:
-      UMPermissionsInterface: 5fddb1f63d5ca7556a9c0da16a03c319
-    CHECKSUM: 2abf9f7f4aa7110e27beaf634a7deda2d50ff3d7
+      UMPermissionsInterface: a6af9b242b8dccd0db4fcac481ec75b6
+    CHECKSUM: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
     FILES:
       - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
       - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.h"
