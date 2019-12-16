@@ -21,6 +21,7 @@ if (__DEV__) {
     // @ts-ignore
     AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
 
+    // @ts-ignore
     const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
     // @ts-ignore
