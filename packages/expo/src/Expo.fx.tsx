@@ -23,6 +23,7 @@ if (__DEV__) {
 
     const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
+    // @ts-ignore
     AppRegistry.setWrapperComponentProvider = provider => {
       const ProviderComponent = provider();
 
