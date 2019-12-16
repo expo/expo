@@ -67,9 +67,15 @@ export function test(t) {
           desiredOrientations: [desiredOrientation],
         });
       });
+
       t.afterEach(async () => {
-        ScreenOrientation.removeOrientationChangeListeners();
+        await ScreenOrientation.removeOrientationChangeListeners();
       });
+
+      t.afterAll(async () => {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+      });
+
       t.it(
         'Sets screen to landscape orientation and gets the correct orientationLock',
         async () => {
