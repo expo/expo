@@ -8,8 +8,8 @@ import 'expo-asset';
 import { AppRegistry, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { installWebGeolocationPolyfill } from 'expo-location';
-import DevAppContainer from './environment/DevAppContainer';
 import * as React from 'react';
+import DevAppContainer from './environment/DevAppContainer';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
