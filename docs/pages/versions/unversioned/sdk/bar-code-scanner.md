@@ -48,7 +48,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
-<SnackInline lable="Basic BarcodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
+<SnackInline label="Basic BarCodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
