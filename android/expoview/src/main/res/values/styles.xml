@@ -7,7 +7,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
   <style name="Theme.Exponent.Light" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
+    <!-- "android:windowTranslucentStatus = true" is only active as long as native SplashScreen is visible -->
+    <item name="android:windowTranslucentStatus">true</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentLight</item>
@@ -15,7 +16,8 @@
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
+    <!-- "android:windowTranslucentStatus = true" is only active as long as native SplashScreen is visible -->
+    <item name="android:windowTranslucentStatus">true</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentDark</item>

@@ -92,8 +92,6 @@ public class ExponentManifest {
   public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";
   public static final String MANIFEST_STATUS_BAR_APPEARANCE = "barStyle";
   public static final String MANIFEST_STATUS_BAR_BACKGROUND_COLOR = "backgroundColor";
-  @Deprecated
-  public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
 
   // NavigationBar
   public static final String MANIFEST_NAVIGATION_BAR_KEY = "androidNavigationBar";
