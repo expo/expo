@@ -221,6 +221,7 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'setUserProperties' },
           { key: 5, argumentsCount: 2, name: 'setGroup' },
           { key: 6, argumentsCount: 0, name: 'clearUserProperties' },
+          { key: 7, argumentsCount: 1, name: 'setTrackingOptions' },
         ],
         ExpoAppAuth: [{ key: 0, argumentsCount: 1, name: 'executeAsync' }],
         ExpoAppleAuthentication: [

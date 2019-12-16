@@ -42,4 +42,10 @@ export function setGroup(groupType, groupNames) {
     }
     return ExpoAmplitude.setGroup(groupType, groupNames);
 }
+export function setTrackingOptions(options) {
+    if (!ExpoAmplitude.setTrackingOptions) {
+        throw new UnavailabilityError('Amplitude', 'setTrackingOptions');
+    }
+    return ExpoAmplitude.setTrackingOptions(options);
+}
 //# sourceMappingURL=Amplitude.js.map

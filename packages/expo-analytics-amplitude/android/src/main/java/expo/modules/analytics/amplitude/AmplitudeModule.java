@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.amplitude.api.Amplitude;
 import com.amplitude.api.AmplitudeClient;
+import com.amplitude.api.TrackingOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class AmplitudeModule extends ExportedModule {
   private AmplitudeClient mClient;
+  private TrackingOptions mPendingTrackingOptions;
 
   public AmplitudeModule(Context context) {
     super(context);
@@ -33,6 +35,9 @@ public class AmplitudeModule extends ExportedModule {
   @ExpoMethod
   public void initialize(final String apiKey, Promise promise) {
     mClient = getClient(apiKey);
+    if (mPendingTrackingOptions != null) {
+      mClient.setTrackingOptions(mPendingTrackingOptions);
+    }
     mClient.initialize(getContext(), apiKey);
     promise.resolve(null);
   }
@@ -53,6 +58,7 @@ public class AmplitudeModule extends ExportedModule {
       return;
     }
     mClient.setUserProperties(new JSONObject(properties));
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -62,6 +68,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.clearUserProperties();
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -71,6 +78,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.logEvent(eventName);
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -80,6 +88,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.logEvent(eventName, new JSONObject(properties));
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -89,6 +98,66 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.setGroup(groupType, new JSONArray(groupNames));
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setTrackingOptions(final ReadableArguments options, Promise promise) {
+    TrackingOptions trackingOptions = new TrackingOptions();
+
+    if (options.getBoolean("disableAdid")) {
+      trackingOptions.disableAdid();
+    }
+    if (options.getBoolean("disableCarrier")) {
+      trackingOptions.disableCarrier();
+    }
+    if (options.getBoolean("disableCity")) {
+      trackingOptions.disableCity();
+    }
+    if (options.getBoolean("disableCountry")) {
+      trackingOptions.disableCountry();
+    }
+    if (options.getBoolean("disableDeviceBrand")) {
+      trackingOptions.disableDeviceBrand();
+    }
+    if (options.getBoolean("disableDeviceModel")) {
+      trackingOptions.disableDeviceModel();
+    }
+    if (options.getBoolean("disableDMA")) {
+      trackingOptions.disableDma();
+    }
+    if (options.getBoolean("disableIPAddress")) {
+      trackingOptions.disableIpAddress();
+    }
+    if (options.getBoolean("disableLanguage")) {
+      trackingOptions.disableLanguage();
+    }
+    if (options.getBoolean("disableLatLng")) {
+      trackingOptions.disableLatLng();
+    }
+    if (options.getBoolean("disableOSName")) {
+      trackingOptions.disableOsName();
+    }
+    if (options.getBoolean("disableOSVersion")) {
+      trackingOptions.disableOsVersion();
+    }
+    if (options.getBoolean("disablePlatform")) {
+      trackingOptions.disablePlatform();
+    }
+    if (options.getBoolean("disableRegion")) {
+      trackingOptions.disableRegion();
+    }
+    if (options.getBoolean("disableVersionName")) {
+      trackingOptions.disableVersionName();
+    }
+
+    if (mClient != null) {
+      mClient.setTrackingOptions(trackingOptions);
+    } else {
+      mPendingTrackingOptions = trackingOptions;
+    }
+
+    promise.resolve(null);
   }
 
   private boolean rejectUnlessInitialized(Promise promise) {
