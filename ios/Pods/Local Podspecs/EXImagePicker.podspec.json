@@ -21,6 +21,9 @@
     ],
     "UMFileSystemInterface": [
 
+    ],
+    "UMPermissionsInterface": [
+
     ]
   }
 }
