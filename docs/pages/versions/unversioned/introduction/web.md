@@ -1,5 +1,6 @@
 ---
 title: Expo for Web
+sidebar_title: Web Support
 ---
 
 If you build your native mobile app with Expo then you can also run it directly in the browser with the CLI and universal Expo SDK. The web part of your app runs with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
