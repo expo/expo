@@ -154,6 +154,10 @@ EXNetwork:
   LABEL: EXNetwork
   PROJECT_PATH: EXNetwork.xcodeproj
   UUID: 71F2A4AC24C8FBC0E24B6A613BB4F7BC
+EXNotifications:
+  LABEL: EXNotifications
+  PROJECT_PATH: EXNotifications.xcodeproj
+  UUID: 6C660F81CE4F0EC96D208B20C3E8B154
 EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj

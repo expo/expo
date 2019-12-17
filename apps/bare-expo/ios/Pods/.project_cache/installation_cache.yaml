@@ -482,6 +482,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (2.0.0)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 42083d7be3b81dc87f399732a97ebffe
+    CHECKSUM: d654494e84df90927cca410ebac178c61553647b
+    FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.m"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (1.0.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -700,12 +710,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9fa395d50ce617a2a71ed32b1caae8ef
-      Release: 9fa395d50ce617a2a71ed32b1caae8ef
+      Debug: 56436cf11abb9cf3f33b76749e92e0af
+      Release: 56436cf11abb9cf3f33b76749e92e0af
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b61a68dc0ecf8315379a8243485d7899
-      Release: b61a68dc0ecf8315379a8243485d7899
+      Debug: 9af093871462b0148da322b01f112ded
+      Release: 9af093871462b0148da322b01f112ded
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
