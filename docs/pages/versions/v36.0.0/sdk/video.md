@@ -1,6 +1,6 @@
 ---
 title: Video
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
@@ -9,9 +9,9 @@ Much of Video and Audio have common APIs that are documented in [AV documentatio
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -191,15 +191,13 @@ This dismisses the fullscreen video view.
 
 A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
-The rest of the API on the `Video` component ref is the same as the API for `Audio.Sound`-- see the [AV documentation](../av/) for further information:
+The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. The only exception is the `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](../av/) for further information:
 
 - `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
 - `videoRef.unloadAsync()`
 
 - `videoRef.getStatusAsync()`
-
-- `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
 - `videoRef.setStatusAsync(statusToSet)`
 
