@@ -38,11 +38,11 @@ function isBlurSupported(): boolean {
 function getBlurStyle({ intensity, tint }): { [key: string]: string } {
   const style: any = {
     backgroundColor: getBackgroundColor(intensity, tint),
-  }
+  };
 
   if (isBlurSupported()) {
     style.backdropFilter = `blur(${intensity * 0.8}px)`;
   }
-  
+
   return style;
 }
