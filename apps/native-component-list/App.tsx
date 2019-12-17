@@ -9,8 +9,7 @@ import { enableScreens } from 'react-native-screens';
 import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
 
 import Icons from './src/constants/Icons';
-const RootNavigation = View;
-// import RootNavigation from './src/navigation/RootNavigation';
+import RootNavigation from './src/navigation/RootNavigation';
 
 if (Platform.OS === 'android') {
   enableScreens(true);
