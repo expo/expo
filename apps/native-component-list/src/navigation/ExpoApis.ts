@@ -40,7 +40,6 @@ import SecureStore from '../screens/SecureStoreScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
 import TextToSpeech from '../screens/TextToSpeechScreen';
-import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
 
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
@@ -49,6 +48,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   } catch (e) {}
 }
 
+const ViewShot = optionalRequire(() => require('../screens/ViewShotScreen'));
 const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
