@@ -1,14 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMReactNativeAdapter/UMReactModuleRegistry.h>
+#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
 
-@interface UMReactModuleRegistry ()
+@interface UMModuleRegistryHolderReactModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
-@implementation UMReactModuleRegistry
+@implementation UMModuleRegistryHolderReactModule
 
 - (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
@@ -24,7 +24,7 @@
 }
 
 + (NSString *)moduleName {
-  return @"UMReactModuleRegistry";
+  return nil;
 }
 
 @end

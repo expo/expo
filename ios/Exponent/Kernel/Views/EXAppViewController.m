@@ -18,7 +18,10 @@
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 #import <UMCore/UMModuleRegistryProvider.h>
-#import <UMScreenOrientationInterface/UMScreenOrientationInterface.h>
+
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
+#endif
 
 #import <React/RCTUtils.h>
 
@@ -322,10 +325,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-  id<UMScreenOrientationInterface> screenOrientation = [[[_appRecord.appManager.reactBridge moduleForName:@"UMReactModuleRegistry"] moduleRegistry] getModuleImplementingProtocol:@protocol(UMScreenOrientationInterface)];
-  if (screenOrientation && [screenOrientation getSupportedInterfaceOrientations] > 0) {
-    return [screenOrientation getSupportedInterfaceOrientations];
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  if (screenOrientationRegistry && [screenOrientationRegistry currentOrientationMask] > 0) {
+    return [screenOrientationRegistry currentOrientationMask];
   }
+#endif
   
   // TODO: Remove once sdk 36 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
@@ -350,12 +355,14 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+// TODO: Remove once sdk 36 is phased out
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   _supportedInterfaceOrientations = supportedInterfaceOrientations;
   [self _enforceDesiredDeviceOrientation];
 }
 
+// TODO: Remove once sdk 36 is phased out
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
@@ -364,6 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+// TODO: Remove once sdk 36 is phased out
 - (void)_enforceDesiredDeviceOrientation
 {
   RCTAssertMainQueue();
