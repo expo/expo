@@ -67,15 +67,19 @@ export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: 
 export declare function getUnloadedStatus(error?: string | null): PlaybackStatus;
 export interface AV {
     setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    getStatusAsync(): Promise<PlaybackStatus>;
 }
 export interface Playback extends AV {
     playAsync(): Promise<PlaybackStatus>;
+    loadAsync(source: PlaybackSource, initialStatus: PlaybackStatusToSet, downloadAsync: boolean): any;
+    unloadAsync(): Promise<PlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
     }): Promise<PlaybackStatus>;
     pauseAsync(): Promise<PlaybackStatus>;
     stopAsync(): Promise<PlaybackStatus>;
+    replayAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;

@@ -159,6 +159,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   };
 
   _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeComponent>();
+  _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null;
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
@@ -187,6 +188,9 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
     if (this.props.onPlaybackStatusUpdate) {
       this.props.onPlaybackStatusUpdate(status);
+    }
+    if (this._onPlaybackStatusUpdate) {
+      this._onPlaybackStatusUpdate(status);
     }
   };
 
@@ -294,6 +298,11 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
       })
     );
   };
+
+  setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null) {
+    this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
+    this.getStatusAsync();
+  }
 
   // Methods of the Playback interface that are set via PlaybackMixin
   playAsync!: () => Promise<PlaybackStatus>;
