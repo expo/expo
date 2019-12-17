@@ -3,6 +3,7 @@ package host.exp.exponent.headless;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import android.util.SparseArray;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.common.MapBuilder;
@@ -11,14 +12,12 @@ import com.facebook.soloader.SoLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
+
+import java.util.List;
+import java.util.Map;
 
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
@@ -51,7 +50,7 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate, ExponentPackageDelegate {
   private static String READY_FOR_BUNDLE = "headlessAppReadyForBundle";
 
-  private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
+  private static final SparseArray<String> sActivityIdToBundleUrl = new SparseArray<>();
 
   private JSONObject mManifest;
   private String mManifestUrl;
@@ -71,7 +70,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   }
 
   public static boolean hasBundleUrlForActivityId(int activityId) {
-    return activityId < -1 && sActivityIdToBundleUrl.containsKey(activityId);
+    return activityId < -1 && sActivityIdToBundleUrl.get(activityId) != null;
   }
 
   public static String getBundleUrlForActivityId(int activityId) {
@@ -92,17 +91,14 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
       @Override
       public void onManifestCompleted(final JSONObject manifest) {
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+        Exponent.getInstance().runOnUiThread(() -> {
+          try {
+            String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
 
-              sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
-              setManifest(mManifestUrl, manifest, bundleUrl);
-            } catch (JSONException e) {
-              mCallback.onComplete(false, new Exception(e.getMessage()));
-            }
+            sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
+            setManifest(mManifestUrl, manifest, bundleUrl);
+          } catch (JSONException e) {
+            mCallback.onComplete(false, new Exception(e.getMessage()));
           }
         });
       }
@@ -172,21 +168,18 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       }
     }
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mReactInstanceManager.isNotNull()) {
-          mReactInstanceManager.onHostDestroy();
-          mReactInstanceManager.assign(null);
-        }
+    runOnUiThread(() -> {
+      if (mReactInstanceManager.isNotNull()) {
+        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.assign(null);
+      }
 
-        if (isDebugModeEnabled()) {
-          mJSBundlePath = "";
-          startReactInstance();
-        } else {
-          mIsReadyForBundle = true;
-          AsyncCondition.notify(READY_FOR_BUNDLE);
-        }
+      if (isDebugModeEnabled()) {
+        mJSBundlePath = "";
+        startReactInstance();
+      } else {
+        mIsReadyForBundle = true;
+        AsyncCondition.notify(READY_FOR_BUNDLE);
       }
     });
   }
@@ -213,7 +206,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
-  public void soloaderInit() {
+  private void soloaderInit() {
     if (mDetachSdkVersion != null) {
       SoLoader.init(mContext, false);
     }
