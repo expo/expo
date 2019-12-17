@@ -15,7 +15,7 @@ import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 public class TaskManagerModule extends ExportedModule {
   static String EVENT_NAME = "TaskManager.executeTask";
-  static String E_TASK_SERVICE_NOT_FOUND = "E_TASK_SERVICE_NOT_FOUND";
+  private static String E_TASK_SERVICE_NOT_FOUND = "E_TASK_SERVICE_NOT_FOUND";
 
   private TaskServiceInterface mTaskService;
   private TaskManagerInterface mTaskManagerInternal;
