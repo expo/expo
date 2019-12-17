@@ -484,6 +484,8 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsTokenAppDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsTokenAppDelegate.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)

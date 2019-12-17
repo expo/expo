@@ -1,6 +1,10 @@
+
+
 apply plugin: "com.android.application"
-import groovy.json.JsonSlurper
+apply plugin: 'com.google.gms.google-services'
+
 import com.android.build.OutputFile
+import groovy.json.JsonSlurper
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets

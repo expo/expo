@@ -1,1 +1,1 @@
-export default null;
+export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';

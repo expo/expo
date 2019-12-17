@@ -9,6 +9,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import dev.expo.payments.generated.BasePackageList;
+import expo.modules.notifications.PushTokenManager;
+
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 
@@ -22,7 +24,7 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList(),
-    Arrays.<SingletonModule>asList()
+    Arrays.<SingletonModule>asList(new PushTokenManager())
   );
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {

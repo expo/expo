@@ -31,7 +31,8 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
   "peerDependencies": {
-    "@unimodules/core": "~5.0.0"
+    "@unimodules/core": "~5.0.0",
+    "expo-constants": "~8.0.0"
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }
