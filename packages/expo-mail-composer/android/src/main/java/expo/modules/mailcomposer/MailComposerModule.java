@@ -51,6 +51,11 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
   }
 
   @ExpoMethod
+  public void isAvailableAsync(final Promise promise) {
+    promise.resolve(true);
+  }
+
+  @ExpoMethod
   public void composeAsync(ReadableArguments options, Promise promise) {
 
     Intent intent = new Intent(Intent.ACTION_SENDTO);
