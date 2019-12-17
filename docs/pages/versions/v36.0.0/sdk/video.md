@@ -10,8 +10,8 @@ Much of Video and Audio have common APIs that are documented in [AV documentatio
 #### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+| -------------- | ---------------- | ---------- | ------------- | --- |q
+| ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Installation
 
