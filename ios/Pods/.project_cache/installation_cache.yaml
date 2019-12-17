@@ -7235,6 +7235,7 @@ CACHE_KEYS:
       - "../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationUtils.h"
       - "../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.h"
       - "../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.h"
+      - "../../react-native-lab/react-native/Libraries/Network/RCTAssetsLibraryRequestHandler.h"
       - "../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.h"
       - "../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.h"
       - "../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.h"
@@ -7765,6 +7766,7 @@ CACHE_KEYS:
       React-RCTNetwork: 543484ec8761a993be5ad6732a8b883e
     CHECKSUM: 41fe54bacc67dd00e6e4c4d30dd98a13e4beabc8
     FILES:
+      - "../../react-native-lab/react-native/Libraries/Network/RCTAssetsLibraryRequestHandler.m"
       - "../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.m"
       - "../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.m"
       - "../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.mm"
