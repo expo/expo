@@ -3,22 +3,9 @@ id: transforms
 title: Transforms
 ---
 
-### Props
-
-- [`decomposedMatrix`](../transforms/#decomposedmatrix)
-- [`rotation`](../transforms/#rotation)
-- [`scaleX`](../transforms/#scalex)
-- [`scaleY`](../transforms/#scaley)
-- [`transform`](../transforms/#transform)
-- [`transformMatrix`](../transforms/#transformmatrix)
-- [`translateX`](../transforms/#translatex)
-- [`translateY`](../transforms/#translatey)
-
----
-
 # Reference
 
-## Props
+## Methods
 
 ### `decomposedMatrix`
 

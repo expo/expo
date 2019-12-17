@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-mail-comp
 
 An API to compose mails using OS specific UI.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -20,6 +20,8 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as MailComposer from 'expo-mail-composer';
 ```
+
+## Methods
 
 ### `MailComposer.composeAsync(options)`
 

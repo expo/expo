@@ -4,10 +4,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-local-aut
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -131,33 +132,6 @@ export default class App extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-    padding: 8,
-  },
-  modal: {
-    flex: 1,
-    marginTop: '90%',
-    backgroundColor: '#E5E5E5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  innerContainer: {
-    marginTop: '30%',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    alignSelf: 'center',
-    fontSize: 22,
-    paddingTop: 20,
-  },
-});
 ```
 
 </SnackInline>
@@ -167,6 +141,10 @@ const styles = StyleSheet.create({
 ```js
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
+
+<TableOfContentSection title='Methods' contents={['LocalAuthentication.hasHardwareAsync()', 'LocalAuthentication.supportedAuthenticationTypesAsync()', 'LocalAuthentication.isEnrolledAsync()', 'LocalAuthentication.authenticateAsync(options)', 'LocalAuthentication.cancelAuthenticate()']} />
+
+## Methods
 
 ### `LocalAuthentication.hasHardwareAsync()`
 
@@ -210,6 +188,6 @@ Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the 
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
-### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
+### `LocalAuthentication.cancelAuthenticate()`
 
-Cancels the fingerprint authentication flow. See usage in example snack above.
+**(Android Only)** Cancels the fingerprint authentication flow. See usage in example snack above.

@@ -37,20 +37,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Props
-
-- [View props...](../view/#props)
-
-* [`animating`](../activityindicator/#animating)
-* [`color`](../activityindicator/#color)
-* [`hidesWhenStopped`](../activityindicator/#hideswhenstopped)
-* [`size`](../activityindicator/#size)
-
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `animating`
 
@@ -86,6 +79,6 @@ Whether the indicator should hide when not animating (true by default).
 
 Size of the indicator (default is 'small'). Passing a number to the size prop is only supported on Android.
 
-| Type                            | Required |
-| ------------------------------- | -------- |
-| enum('small', 'large'), ,number | No       |
+| Type                           | Required |
+| ------------------------------ | -------- |
+| enum('small', 'large'), number | No       |

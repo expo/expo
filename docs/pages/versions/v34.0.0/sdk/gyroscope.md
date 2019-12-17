@@ -4,10 +4,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -99,33 +100,6 @@ function round(n) {
 
   return Math.floor(n * 100) / 100;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  middleButton: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
-  },
-  sensor: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-  },
-});
 ```
 </SnackInline>
 
@@ -134,6 +108,10 @@ const styles = StyleSheet.create({
 ```js
 import { Gyroscope } from 'expo-sensors';
 ```
+
+<TableOfContentSection title='Methods' contents={['Gyroscope.isAvailableAsync()', 'Gyroscope.addListener(listener)', 'Gyroscope.removeAllListeners()', 'Gyroscope.setUpdateInterval(intervalMs)']} />
+
+## Methods
 
 ### `Gyroscope.isAvailableAsync()`
 

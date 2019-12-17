@@ -2,7 +2,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBrowserApp } from '@react-navigation/web';
 import { Platform } from 'react-native';
 
-import TestSuite from 'test-suite/App.bare';
+import TestSuite from 'test-suite/AppNavigator';
 
 // import NativeComponentList from '../native-component-list/App';
 

@@ -8,7 +8,7 @@ title: JavaScript Environment
 When using React Native, you're going to be running your JavaScript code in two environments:
 
 - In most cases, React Native will use [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore), the JavaScript engine that powers Safari. Note that on iOS, JavaScriptCore does not use JIT due to the absence of writable executable memory in iOS apps.
-- When using Chrome debugging, all JavaScript code runs within Chrome itself, communicating with native code via WebSockets. Chrome uses [V8](https://code.google.com/p/v8/) as its JavaScript engine.
+- When using Chrome debugging, all JavaScript code runs within Chrome itself, communicating with native code via WebSockets. Chrome uses [V8](https://v8.dev/) as its JavaScript engine.
 
 While both environments are very similar, you may end up hitting some inconsistencies. We're likely going to experiment with other JavaScript engines in the future, so it's best to avoid relying on specifics of any runtime.
 
@@ -47,16 +47,16 @@ ES8
 
 Stage 3
 
-- [Object Spread](https://github.com/sebmarkbage/ecmascript-rest-spread): `var extended = { ...obj, a: 10 };`
-
-Stage 1
-
+- [Object Spread](https://github.com/tc39/proposal-object-rest-spread): `var extended = { ...obj, a: 10 };`
+- [Static class fields](https://github.com/tc39/proposal-static-class-features): `class CustomDate { static epoch = new CustomDate(0); }`
 - [Optional Chaining](https://github.com/tc39/proposal-optional-chaining): `var name = obj.user?.name;`
 
 Specific
 
 - [JSX](https://reactjs.org/docs/jsx-in-depth.html): `<View style={{color: 'red'}} />`
-- [Flow](http://flowtype.org/): `function foo(x: ?number): string {};`
+- [Flow](https://flowtype.org/): `function foo(x: ?number): string {};`
+- [TypeScript](https://flowtype.org/): `function foo(x: number | undefined): string {};`
+- [Babel Template](https://babeljs.io/docs/en/babel-template): allows AST templating
 
 ## Polyfills
 
@@ -68,7 +68,6 @@ Browser
 - [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
 - [XMLHttpRequest, fetch](../network/#content)
 - [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](../timers/#content)
-- navigator.geolocation
 
 ES6
 

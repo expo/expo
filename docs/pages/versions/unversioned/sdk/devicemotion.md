@@ -3,9 +3,11 @@ title: DeviceMotion
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -21,12 +23,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import { DeviceMotion } from 'expo-sensors';
 ```
 
-**[Methods](#methods)**
-
-- [`DeviceMotion.isAvailableAsync()`](#devicemotionisavailableasync)
-- [`DeviceMotion.addListener(listener)`](#devicemotionaddlistenerlistener)
-- [`DeviceMotion.removeAllListeners()`](#devicemotionremovealllisteners)
-- [`DeviceMotion.setUpdateInterval(intervalMs)`](#devicemotionsetupdateintervalintervalms)
+<TableOfContentSection title='Methods' contents={['DeviceMotion.isAvailableAsync()', 'DeviceMotion.addListener(listener)', 'DeviceMotion.removeAllListeners()', 'DeviceMotion.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 

@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -48,7 +48,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
-<SnackInline lable="Basic BarcodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
+<SnackInline label="Basic BarCodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
@@ -61,7 +61,6 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      BarCodeScanner.req
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
@@ -87,7 +86,7 @@ export default function App() {
         justifyContent: 'flex-end',
       }}>
       <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned()}
+        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
 

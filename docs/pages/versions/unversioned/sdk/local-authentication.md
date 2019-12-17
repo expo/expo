@@ -4,10 +4,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-local-aut
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -22,6 +23,10 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
+
+<TableOfContentSection title='Methods' contents={['LocalAuthentication.hasHardwareAsync()', 'LocalAuthentication.supportedAuthenticationTypesAsync()', 'LocalAuthentication.isEnrolledAsync()', 'LocalAuthentication.authenticateAsync(options)', 'LocalAuthentication.cancelAuthenticate()']} />
+
+## Methods
 
 ### `LocalAuthentication.hasHardwareAsync()`
 
@@ -71,6 +76,6 @@ Since Android doesn't provide a default UI component, we've provided an example 
 
 <SnackEmbed snackId="@charliecruzan/localauthentication35example" />
 
-### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
+### `LocalAuthentication.cancelAuthenticate()`
 
-Cancels the fingerprint authentication flow. See usage in example snack above.
+**(Android Only)** Cancels the fingerprint authentication flow. See usage in example snack above.

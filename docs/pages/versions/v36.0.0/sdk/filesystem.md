@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-file-syst
 
 Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -61,7 +61,7 @@ Get metadata information about a file or directory.
 
 #### Returns
 
-If no item exists at this URI, returns a Promise that resolves to `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
+If no item exists at this URI, returns a Promise that resolves to `{ exists: false, isDirectory: false }`. Else returns a Promise that resolves to an object with the following fields:
 
 - **exists (_boolean_)** -- `true`.
 

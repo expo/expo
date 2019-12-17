@@ -3,146 +3,189 @@ id: flatlist
 title: FlatList
 ---
 
-A performant interface for rendering simple, flat lists, supporting the most handy features:
+A performant interface for rendering basic, flat lists, supporting the most handy features:
 
-  - Fully cross-platform.
-  - Optional horizontal mode.
-  - Configurable viewability callbacks.
-  - Header support.
-  - Footer support.
-  - Separator support.
-  - Pull to Refresh.
-  - Scroll loading.
-  - ScrollToIndex support.
-  - Multiple column support.
+- Fully cross-platform.
+- Optional horizontal mode.
+- Configurable viewability callbacks.
+- Header support.
+- Footer support.
+- Separator support.
+- Pull to Refresh.
+- Scroll loading.
+- ScrollToIndex support.
+- Multiple column support.
 
 If you need section support, use [`<SectionList>`](../sectionlist/).
 
-Minimal Example:
+### Basic Example:
 
 ```javascript
-<FlatList
-  data={[{key: 'a'}, {key: 'b'}]}
-  renderItem={({item}) => <Text>{item.key}</Text>}
-/>
+import React from 'react';
+import { SafeAreaView, View, FlatList, StyleSheet, Text } from 'react-native';
+import Constants from 'expo-constants';
+
+const DATA = [
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
+  },
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
+  },
+];
+
+function Item({ title }) {
+  return (
+    <View style={styles.item}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={DATA}
+        renderItem={({ item }) => <Item title={item.title} />}
+        keyExtractor={item => item.id}
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
 ```
 
 To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
 
-More complex, multi-select example demonstrating `PureComponent` usage for perf optimization and avoiding bugs.
+````
 
-  - By binding the `onPressItem` handler, the props will remain `===` and `PureComponent` will prevent wasteful re-renders unless the actual `id`, `selected`, or `title` props change, even if the components rendered in `MyListItem` did not have such optimizations.
-  - By passing `extraData={this.state}` to `FlatList` we make sure `FlatList` itself will re-render when the `state.selected` changes. Without setting this prop, `FlatList` would not know it needs to re-render any items because it is also a `PureComponent` and the prop comparison will not show any changes.
-  - `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
+More complex, multi-select example demonstrating `` usage for perf optimization and avoiding bugs.
+
+- By passing `extraData={selected}` to `FlatList` we make sure `FlatList` itself will re-render when the state changes. Without setting this prop, `FlatList` would not know it needs to re-render any items because it is a `PureComponent` and the prop comparison will not show any changes.
+- `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
 
 
 ```javascript
-class MyListItem extends React.PureComponent {
-  _onPress = () => {
-    this.props.onPressItem(this.props.id);
-  };
 
-  render() {
-    const textColor = this.props.selected ? 'red' : 'black';
-    return (
-      <TouchableOpacity onPress={this._onPress}>
-        <View>
-          <Text style={{color: textColor}}>{this.props.title}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
+import React from 'react';
+import {
+  SafeAreaView,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Text,
+} from 'react-native';
+import Constants from 'expo-constants';
+
+const DATA = [
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
+  },
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
+  },
+];
+
+function Item({ id, title, selected, onSelect }) {
+  return (
+    <TouchableOpacity
+      onPress={() => onSelect(id)}
+      style={[
+        styles.item,
+        { backgroundColor: selected ? '#6e3b6e' : '#f9c2ff' },
+      ]}
+    >
+      <Text style={styles.title}>{title}</Text>
+    </TouchableOpacity>
+  );
 }
 
-class MultiSelectList extends React.PureComponent {
-  state = {selected: (new Map(): Map<string, boolean>)};
+export default function App() {
+  const [selected, setSelected] = React.useState(new Map());
 
-  _keyExtractor = (item, index) => item.id;
+  const onSelect = React.useCallback(
+    id => {
+      const newSelected = new Map(selected);
+      newSelected.set(id, !selected.get(id));
 
-  _onPressItem = (id: string) => {
-    // updater functions are preferred for transactional updates
-    this.setState((state) => {
-      // copy the map rather than modifying state.
-      const selected = new Map(state.selected);
-      selected.set(id, !selected.get(id)); // toggle
-      return {selected};
-    });
-  };
-
-  _renderItem = ({item}) => (
-    <MyListItem
-      id={item.id}
-      onPressItem={this._onPressItem}
-      selected={!!this.state.selected.get(item.id)}
-      title={item.title}
-    />
+      setSelected(newSelected);
+    },
+    [selected],
   );
 
-  render() {
-    return (
+  return (
+    <SafeAreaView style={styles.container}>
       <FlatList
-        data={this.props.data}
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
+        data={DATA}
+        renderItem={({ item }) => (
+          <Item
+            id={item.id}
+            title={item.title}
+            selected={!!selected.get(item.id)}
+            onSelect={onSelect}
+          />
+        )}
+        keyExtractor={item => item.id}
+        extraData={selected}
       />
-    );
-  }
+    </SafeAreaView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
+
 ````
 
+````
 
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/)) that aren't explicitly listed here, along with the following caveats:
 
-  - Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
-  - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
-  - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
-  - By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
-
-Also inherits [ScrollView Props](../scrollview/#props), unless it is nested in another FlatList of same orientation.
-
-### Props
-
-  - [`columnWrapperStyle`](../flatlist/#columnwrapperstyle)
-  - [`data`](../flatlist/#data)
-  - [`extraData`](../flatlist/#extradata)
-  - [`getItemLayout`](../flatlist/#getitemlayout)
-  - [`horizontal`](../flatlist/#horizontal)
-  - [`initialNumToRender`](../flatlist/#initialnumtorender)
-  - [`initialScrollIndex`](../flatlist/#initialscrollindex)
-  - [`inverted`](../flatlist/#inverted)
-  - [`ItemSeparatorComponent`](../flatlist/#itemseparatorcomponent)
-  - [`keyExtractor`](../flatlist/#keyextractor)
-  - [`legacyImplementation`](../flatlist/#legacyimplementation)
-  - [`ListEmptyComponent`](../flatlist/#listemptycomponent)
-  - [`ListFooterComponent`](../flatlist/#listfootercomponent)
-  - [`ListFooterComponentStyle`](../flatlist/#listfootercomponentstyle)
-  - [`ListHeaderComponent`](../flatlist/#listheadercomponent)
-  - [`ListHeaderComponentStyle`](../flatlist/#listheadercomponentstyle)
-  - [`numColumns`](../flatlist/#numcolumns)
-  - [`onEndReached`](../flatlist/#onendreached)
-  - [`onEndReachedThreshold`](../flatlist/#onendreachedthreshold)
-  - [`onRefresh`](../flatlist/#onrefresh)
-  - [`onViewableItemsChanged`](../flatlist/#onviewableitemschanged)
-  - [`progressViewOffset`](../flatlist/#progressviewoffset)
-  - [`refreshing`](../flatlist/#refreshing)
-  - [`renderItem`](../flatlist/#renderitem)
-  - [`removeClippedSubviews`](../flatlist/#removeclippedsubviews)
-  - [`ScrollView` props...](../scrollview/#props)
-  - [`viewabilityConfig`](../flatlist/#viewabilityconfig)
-  - [`viewabilityConfigCallbackPairs`](../flatlist/#viewabilityconfigcallbackpairs)
-  - [`VirtualizedList` props...](../virtualizedlist/#props)
-
-### Methods
-
-  - [`flashScrollIndicators`](../flatlist/#flashscrollindicators)
-  - [`getScrollResponder`](../flatlist/#getScrollResponder)
-  - [`getScrollableNode`](../flatlist/#getScrollableNode)
-  - [`scrollToEnd`](../flatlist/#scrolltoend)
-  - [`scrollToIndex`](../flatlist/#scrolltoindex)
-  - [`scrollToItem`](../flatlist/#scrolltoitem)
-  - [`scrollToOffset`](../flatlist/#scrolltooffset)
-  - [`recordInteraction`](../flatlist/#recordinteraction)
+- Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
+- This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
+- In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
+- By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
 
 ---
 
@@ -150,11 +193,15 @@ Also inherits [ScrollView Props](../scrollview/#props), unless it is nested in a
 
 ## Props
 
+Inherits [ScrollView Props](../scrollview/#props), unless it is nested in another FlatList of same orientation.
+
 ### `renderItem`
 
 
-```javascript
+```jsx
+
 renderItem({item, index, separators});
+
 ````
 
 Takes an item from `data` and renders it into the list.
@@ -165,18 +212,19 @@ Provides additional metadata like `index` if you need it, as well as a more gene
 | -------- | -------- |
 | function | Yes      |
 
-  - `item` (Object): The item from `data` being rendered.
-  - `index` (number): The index corresponding to this item in the `data` array.
-  - `separators` (Object)
-    - `highlight` (Function)
-    - `unhighlight` (Function)
-    - `updateProps` (Function)
-        - `select` (enum('leading', 'trailing'))
-        - `newProps` (Object)
+- `item` (Object): The item from `data` being rendered.
+- `index` (number): The index corresponding to this item in the `data` array.
+- `separators` (Object)
+  - `highlight` (Function)
+  - `unhighlight` (Function)
+  - `updateProps` (Function)
+    - `select` (enum('leading', 'trailing'))
+    - `newProps` (Object)
 
 Example usage:
 
-```javascript
+```jsx
+
 <FlatList
   ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
     <View style={[style.separator, highlighted && {marginLeft: 0}]} />
@@ -184,6 +232,7 @@ Example usage:
   data={[{title: 'Title Text', key: 'item1'}]}
   renderItem={({item, index, separators}) => (
     <TouchableHighlight
+      key={item.key}
       onPress={() => this._onPress(item)}
       onShowUnderlay={separators.highlight}
       onHideUnderlay={separators.unhighlight}>
@@ -193,13 +242,14 @@ Example usage:
     </TouchableHighlight>
   )}
 />
+
 ```
 
 ---
 
 ### `data`
 
-For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](../virtualizedlist/) directly.
+For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](../virtualizedlist/) directly.
 
 | Type  | Required |
 | ----- | -------- |
@@ -289,16 +339,20 @@ A marker property for telling the list to re-render (since it implements `PureCo
 
 ### `getItemLayout`
 
-```javascript
+```jsx
+
 (data, index) => {length: number, offset: number, index: number}
+
 ```
 
-`getItemLayout` is an optional optimization that allows skipping the measurement of dynamic content if you know the size (height or width) of items ahead of time. `getItemLayout` is both efficient and easy to use if you have fixed size items, for example:
+`getItemLayout` is an optional optimization that allows skipping the measurement of dynamic content if you know the size (height or width) of items ahead of time. `getItemLayout` is efficient if you have fixed size items, for example:
 
-```javascript
+```jsx
+
   getItemLayout={(data, index) => (
     {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
   )}
+
 ```
 
 Adding `getItemLayout` can be a great performance boost for lists of several hundred items. Remember to include separator length (height or width) in your offset calculation if you specify `ItemSeparatorComponent`.
@@ -351,7 +405,7 @@ Reverses the direction of scroll. Uses scale transforms of `-1`.
 
 ### `keyExtractor`
 
-```javascript
+```jsx
 (item: object, index: number) => string;
 ```
 
@@ -375,8 +429,10 @@ Multiple columns can only be rendered with `horizontal={false}` and will zig-zag
 
 ### `onEndReached`
 
-```javascript
+```jsx
+
 (info: {distanceFromEnd: number}) => void
+
 ```
 
 Called once when the scroll position gets within `onEndReachedThreshold` of the rendered content.
@@ -399,8 +455,10 @@ How far from the end (in units of visible length of the list) the bottom edge of
 
 ### `onRefresh`
 
-```javascript
+```jsx
+
 () => void
+
 ```
 
 If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the `refreshing` prop correctly.
@@ -413,11 +471,13 @@ If provided, a standard RefreshControl will be added for "Pull to Refresh" funct
 
 ### `onViewableItemsChanged`
 
-```javascript
+```jsx
+
 (info: {
     viewableItems: array,
     changed: array,
   }) => void
+
 ```
 
 Called when the viewability of rows changes, as defined by the `viewabilityConfig` prop.
@@ -490,10 +550,13 @@ See `ViewabilityHelper.js` for flow type and further documentation.
 At least one of the `viewAreaCoveragePercentThreshold` or `itemVisiblePercentThreshold` is required. This needs to be done in the `constructor` to avoid following error ([ref](https://github.com/facebook/react-native/issues/17408)):
 
 ```javascript
+
   Error: Changing viewabilityConfig on the fly is not supported`
+
 ```
 
-```javascript
+```jsx
+
 constructor (props) {
   super(props)
 
@@ -502,12 +565,15 @@ constructor (props) {
       viewAreaCoveragePercentThreshold: 95
   }
 }
+
 ```
 
-```javascript
+```jsx
+
 <FlatList
     viewabilityConfig={this.viewabilityConfig}
   ...
+
 ```
 
 #### minimumViewTime
@@ -520,7 +586,7 @@ Percent of viewport that must be covered for a partially occluded item to count 
 
 #### itemVisiblePercentThreshold
 
-Similar to `viewAreaPercentThreshold`, but considers the percent of the item that is visible, rather than the fraction of the viewable area it covers.
+Similar to `viewAreaCoveragePercentThreshold`, but considers the percent of the item that is visible, rather than the fraction of the viewable area it covers.
 
 #### waitForInteraction
 
@@ -540,7 +606,7 @@ List of `ViewabilityConfig`/`onViewableItemsChanged` pairs. A specific `onViewab
 
 ### `scrollToEnd()`
 
-```javascript
+```jsx
 scrollToEnd([params]);
 ```
 
@@ -560,7 +626,7 @@ Valid `params` keys are:
 
 ### `scrollToIndex()`
 
-```javascript
+```jsx
 scrollToIndex(params);
 ```
 
@@ -575,16 +641,17 @@ Scrolls to the item at the specified index such that it is positioned in the vie
 | params | object | Yes      | See below.  |
 
 Valid `params` keys are:
-  - 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-  - 'index' (number) - The index to scroll to. Required.
-  - 'viewOffset' (number) - A fixed number of pixels to offset the final target position. Required.
-  - 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
+
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'index' (number) - The index to scroll to. Required.
+- 'viewOffset' (number) - A fixed number of pixels to offset the final target position. Required.
+- 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
 
 ---
 
 ### `scrollToItem()`
 
-```javascript
+```jsx
 scrollToItem(params);
 ```
 
@@ -600,15 +667,15 @@ Requires linear scan through data - use `scrollToIndex` instead if possible.
 
 Valid `params` keys are:
 
-  - 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-  - 'item' (object) - The item to scroll to. Required.
-  - 'viewPosition' (number)
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'item' (object) - The item to scroll to. Required.
+- 'viewPosition' (number)
 
 ---
 
 ### `scrollToOffset()`
 
-```javascript
+```jsx
 scrollToOffset(params);
 ```
 
@@ -622,14 +689,14 @@ Scroll to a specific content pixel offset in the list.
 
 Valid `params` keys are:
 
-  - 'offset' (number) - The offset to scroll to. In case of `horizontal` being true, the offset is the x-value, in any other case the offset is the y-value. Required.
-  - 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'offset' (number) - The offset to scroll to. In case of `horizontal` being true, the offset is the x-value, in any other case the offset is the y-value. Required.
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
 
 ---
 
 ### `recordInteraction()`
 
-```javascript
+```jsx
 recordInteraction();
 ```
 
@@ -639,7 +706,7 @@ Tells the list an interaction has occurred, which should trigger viewability cal
 
 ### `flashScrollIndicators()`
 
-```javascript
+```jsx
 flashScrollIndicators();
 ```
 
@@ -649,7 +716,7 @@ Displays the scroll indicators momentarily.
 
 ### `getScrollResponder()`
 
-```javascript
+```jsx
 getScrollResponder();
 ```
 
@@ -659,7 +726,7 @@ Provides a handle to the underlying scroll responder.
 
 ### `getScrollableNode()`
 
-```javascript
+```jsx
 getScrollableNode();
 ```
 

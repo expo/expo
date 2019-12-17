@@ -8,7 +8,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides access to the phone's system contacts.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

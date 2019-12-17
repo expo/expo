@@ -11,7 +11,7 @@ TouchableHighlight must have one child (not zero or more than one). If you wish 
 
 Example:
 
-```javascript
+```jsx
 
 renderButton: function() {
   return (
@@ -32,7 +32,7 @@ renderButton: function() {
 import React, { Component } from 'react';
 import { StyleSheet, TouchableHighlight, Text, View } from 'react-native';
 
-class App extends Component {
+export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { count: 0 };
@@ -90,12 +90,20 @@ const styles = StyleSheet.create({
 * [`underlayColor`](../touchablehighlight/#underlaycolor)
 * [`hasTVPreferredFocus`](../touchablehighlight/#hastvpreferredfocus)
 * [`tvParallaxProperties`](../touchablehighlight/#tvparallaxproperties)
+* [`nextFocusDown`](../touchablehighlight/#nextFocusDown)
+* [`nextFocusForward`](../touchablehighlight/#nextFocusForward)
+* [`nextFocusLeft`](../touchablehighlight/#nextFocusLeft)
+* [`nextFocusRight`](../touchablehighlight/#nextFocusRight)
+* [`nextFocusUp`](../touchablehighlight/#nextFocusUp)
+* [`testOnly_pressed`](../touchablehighlight/#testOnly_pressed)
 
 ---
 
 # Reference
 
 ## Props
+
+Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
 
 ### `activeOpacity`
 
@@ -164,3 +172,63 @@ enabled: If true, parallax effects are enabled. Defaults to true. shiftDistanceX
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | object | No       | iOS      |
+
+---
+
+### `nextFocusDown`
+
+TV next focus down (see documentation for the View component).
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `nextFocusForward`
+
+TV next focus forward (see documentation for the View component).
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `nextFocusLeft`
+
+TV next focus left (see documentation for the View component).
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `nextFocusRight`
+
+TV next focus right (see documentation for the View component).
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `nextFocusUp`
+
+TV next focus up (see documentation for the View component).
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
+### `testOnly_pressed`
+
+Handy for snapshot tests.
+
+| Type | Required |
+| ---- | -------- |
+| bool | No       |

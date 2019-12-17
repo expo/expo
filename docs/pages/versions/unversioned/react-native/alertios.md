@@ -3,32 +3,23 @@ id: alertios
 title: AlertIOS
 ---
 
+> **Deprecated.** `AlertIOS` has been moved to [`Alert`](../alert/)
+
 `AlertIOS` provides functionality to create an iOS alert dialog with a message or create a prompt for user input.
 
 Creating an iOS alert:
 
-```javascript
+```jsx
 AlertIOS.alert('Sync Complete', 'All your data are belong to us.');
 ```
 
 Creating an iOS prompt:
 
-```javascript
+```jsx
 AlertIOS.prompt('Enter a value', null, text => console.log('You entered ' + text));
 ```
 
 We recommend using the [`Alert.alert`](../alert/) method for cross-platform support if you don't need to create iOS-only prompts.
-
-### Methods
-
-- [`alert`](../alertios/#alert)
-- [`prompt`](../alertios/#prompt)
-
-### Type Definitions
-
-- [`AlertType`](../alertios/#alerttype)
-- [`AlertButtonStyle`](../alertios/#alertbuttonstyle)
-- [`ButtonsArray`](../alertios/#buttonsarray)
 
 ---
 
@@ -38,7 +29,7 @@ We recommend using the [`Alert.alert`](../alert/) method for cross-platform supp
 
 ### `alert()`
 
-```javascript
+```jsx
 
 static alert(title: string, [message]: string, [callbackOrButtons]: ?(() => void), ButtonsArray, [type]: AlertType): [object Object]
 
@@ -57,7 +48,7 @@ Create and display a popup alert.
 
 Example with custom buttons:
 
-```javascript
+```jsx
 AlertIOS.alert('Update available', 'Keep your app up to date to enjoy the latest features', [
   {
     text: 'Cancel',
@@ -75,7 +66,7 @@ AlertIOS.alert('Update available', 'Keep your app up to date to enjoy the latest
 
 ### `prompt()`
 
-```javascript
+```jsx
 
 static prompt(title: string, [message]: string, [callbackOrButtons]: ?((text: string) => void), ButtonsArray, [type]: AlertType, [defaultValue]: string, [keyboardType]: string): [object Object]
 
@@ -96,7 +87,7 @@ Create and display a prompt to enter some text.
 
 Example with custom buttons:
 
-```javascript
+```jsx
 AlertIOS.prompt(
   'Enter password',
   'Enter your password to claim your $1.5B in lottery winnings',
@@ -119,7 +110,7 @@ AlertIOS.prompt(
 
 Example with the default button and a custom callback:
 
-```javascript
+```jsx
 AlertIOS.prompt(
   'Update username',
   null,

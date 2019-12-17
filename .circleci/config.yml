@@ -561,6 +561,9 @@ jobs:
           name: Run tests
           working_directory: ~/project/apps/bare-expo
           command: yarn ios:detox:test:release
+          # Store images of build failures
+      - store_artifacts:
+          path: ~/project/apps/bare-expo/artifacts
           # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
           # environment:
           #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
@@ -580,6 +583,7 @@ jobs:
       - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
+      - decrypt_secrets_if_possible
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
@@ -700,6 +704,11 @@ jobs:
           working_directory: ~/expo/tools-public
       - yarn_install:
           working_directory: ~/expo/tools
+      - yarn_restore_and_install:
+          working_directory: ~/expo/tools/expotools
+      - run:
+          name: Check that Android packages are up-to-date
+          command: expotools check-android-packages
       - run: |
           aws s3 ls $S3_URI || {
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
