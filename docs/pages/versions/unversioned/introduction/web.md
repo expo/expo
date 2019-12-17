@@ -9,7 +9,7 @@ If you build your native mobile app with Expo then you can also run it directly 
 
 ## 🔎 How does it work
 
-You get a highly performant React website with progressive web app features enable from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
+You get a highly performant React website with progressive web app features enabled from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
 
 ## [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
 
