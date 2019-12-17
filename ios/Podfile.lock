@@ -1344,8 +1344,8 @@ PODS:
   - EXRandom (8.0.0):
     - UMCore
   - EXScreenOrientation (1.0.0):
+    - React-Core
     - UMCore
-    - UMScreenOrientationInterface
   - EXSecureStore (8.0.0):
     - UMCore
   - EXSegment (8.0.0):
@@ -1922,7 +1922,6 @@ PODS:
     - React-Core
     - UMCore
     - UMFontInterface
-  - UMScreenOrientationInterface (1.0.0)
   - UMSensorsInterface (5.0.0)
   - UMTaskManagerInterface (5.0.0)
   - Yoga (1.14.0)
@@ -2356,7 +2355,6 @@ DEPENDENCIES:
   - UMImageLoaderInterface (from `../packages/unimodules-image-loader-interface/ios`)
   - UMPermissionsInterface (from `../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../packages/@unimodules/react-native-adapter/ios`)"
-  - UMScreenOrientationInterface (from `../packages/unimodules-screen-orientation-interface/ios`)
   - UMSensorsInterface (from `../packages/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
@@ -3204,9 +3202,6 @@ EXTERNAL SOURCES:
   UMReactNativeAdapter:
     :path: !ruby/object:Pathname
     path: "../packages/@unimodules/react-native-adapter/ios"
-  UMScreenOrientationInterface:
-    :path: !ruby/object:Pathname
-    path: "../packages/unimodules-screen-orientation-interface/ios"
   UMSensorsInterface:
     :path: !ruby/object:Pathname
     path: "../packages/unimodules-sensors-interface/ios"
@@ -3548,7 +3543,7 @@ SPEC CHECKSUMS:
   EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   EXPrint: b20aef0e774d96e0ea6688b97d9e0c1d268b95ae
   EXRandom: 3a6f6dce1997a40a7fc3bb00d18eabc380c51c2e
-  EXScreenOrientation: 17eec04fd358e2424d4f1aac7a6dfc6da82c92ec
+  EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
   EXSecureStore: 1448b90d665c9400aaaf6655fccb464da14698f6
   EXSegment: d1f9b468c14c70b8dacad0730bb9dffaf2452010
   EXSensors: 3f89e58576f6fd2d529b9f64eb98fd325e60fdb8
@@ -3626,7 +3621,6 @@ SPEC CHECKSUMS:
   UMImageLoaderInterface: 3976a14c588341228881ff75970fbabf122efca4
   UMPermissionsInterface: 2abf9f7f4aa7110e27beaf634a7deda2d50ff3d7
   UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
-  UMScreenOrientationInterface: 2cfa2944a831e87d4c8dfd0fd6dfc2d91cb5d109
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
   UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f

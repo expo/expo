@@ -3,8 +3,8 @@
 #import <UMCore/UMEventEmitter.h>
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMScreenOrientationInterface/UMScreenOrientationInterface.h>
+#import <UMCore/UMAppLifecycleListener.h>
 
-@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter, UMScreenOrientationInterface>
+@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter, UMAppLifecycleListener>
 
 @end

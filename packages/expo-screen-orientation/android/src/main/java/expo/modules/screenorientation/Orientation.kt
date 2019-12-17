@@ -1,7 +1,7 @@
 package expo.modules.screenorientation
 
 /*
- * Enum representing current a screen orientation.
+ * Enum representing a screen orientation.
  */
 enum class Orientation(val value: Int) {
   UNKNOWN(0),

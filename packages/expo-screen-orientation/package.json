@@ -35,11 +35,9 @@
     "preset": "expo-module-scripts/universal"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-screen-orientation-interface": "*"
+    "@unimodules/core": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.0.0",
     "expo-module-scripts": "~1.1.1"
   },
   "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"

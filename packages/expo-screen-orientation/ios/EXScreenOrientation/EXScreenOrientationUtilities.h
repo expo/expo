@@ -4,7 +4,7 @@
 
 @interface EXScreenOrientationUtilities : NSObject
 
-+ (BOOL)doesSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask;
++ (BOOL)doesDeviceSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask;
 + (BOOL)doesOrientationMask:(UIInterfaceOrientationMask)orientationMask containOrientation:(UIInterfaceOrientation)orientation;
 + (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask;
 + (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation;

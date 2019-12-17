@@ -4,7 +4,7 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <React/RCTBridgeModule.h>
 
-@interface UMReactModuleRegistry : NSObject <RCTBridgeModule>
+@interface UMModuleRegistryHolderReactModule : NSObject <RCTBridgeModule>
 
 - (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 - (UMModuleRegistry *)moduleRegistry;

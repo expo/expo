@@ -1,19 +1,22 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXScreenOrientation/EXScreenOrientationModule.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMDefines.h>
+#import <UMCore/UMEventEmitterService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
+
+#import <EXScreenOrientation/EXScreenOrientationModule.h>
 #import <EXScreenOrientation/EXScreenOrientationUtilities.h>
+#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 
 #import <UIKit/UIKit.h>
 
 @interface EXScreenOrientationModule ()
 
+@property (nonatomic, weak) EXScreenOrientationRegistry *screenOrienationRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, assign) bool hasListeners;
 @property (nonatomic, assign) UIInterfaceOrientation currentScreenOrientation;
-@property (nonatomic, assign) UIInterfaceOrientationMask currentScreenOrientationMask;
 
 @end
 
@@ -21,19 +24,11 @@
 
 UM_EXPORT_MODULE(ExpoScreenOrientation);
 
-- (instancetype)init {
-  if (self = [super init]) {
-    _currentScreenOrientationMask = 0;
-  }
-  
-  return self;
-}
-
 - (void)dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self stopObserving];
   
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_sync(dispatch_get_main_queue(), ^{
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
   });
 }
@@ -41,27 +36,27 @@ UM_EXPORT_MODULE(ExpoScreenOrientation);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _screenOrienationRegistry = [moduleRegistry getSingletonModuleForName:@"EXScreenOrientationRegistry"];
+  id<UMAppLifecycleService> lifercycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
+
+  if (lifercycleService) {
+    [lifercycleService registerAppLifecycleListener:self];
+  }
+  
   _hasListeners = NO;
   
   dispatch_async(dispatch_get_main_queue(), ^{
     if (![[UIDevice currentDevice] isGeneratingDeviceOrientationNotifications]){
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     }
   });
-
-  _currentScreenOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
-  _currentScreenOrientation = [UIApplication sharedApplication].statusBarOrientation;
-  [self enforceDesiredDeviceOrientationWithOrientationMask:_currentScreenOrientationMask];
-}
-
-+ (const NSArray<Protocol *> *)exportedInterfaces
-{
-  return @[@protocol(UMScreenOrientationInterface)];
-}
-
-// UMScreenOrienationInterface method
-- (UIInterfaceOrientationMask)getSupportedInterfaceOrientations {
-  return _currentScreenOrientationMask;
+  
+  UIInterfaceOrientationMask currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
+  [_screenOrienationRegistry moduleDidForeground:self];
+  [_screenOrienationRegistry setMask:currentOrientationMask forModule:self];
+  
+  // it will also set a current screen orientation
+  [self enforceDesiredDeviceOrientationWithOrientationMask:currentOrientationMask];
 }
 
 UM_EXPORT_METHOD_AS(lockAsync,
@@ -73,15 +68,14 @@ UM_EXPORT_METHOD_AS(lockAsync,
   if (!orientationMask) {
     return reject(@"ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK", [NSString stringWithFormat:@"Invalid screen orientation lock %@", orientationLock], nil);
   }
-  if (![EXScreenOrientationUtilities doesSupportOrientationMask:orientationMask]) {
+  if (![EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
     return reject(@"ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK", [NSString stringWithFormat:@"This device does not support this orientation %@", orientationLock], nil);
   }
-  _currentScreenOrientationMask = orientationMask;
+  
+  [_screenOrienationRegistry setMask:orientationMask forModule:self];
   [self enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   resolve(nil);
-
 }
-
 
 UM_EXPORT_METHOD_AS(lockPlatformAsync,
                     lockPlatformAsync:(NSArray <NSNumber *> *)allowedOrientations
@@ -95,7 +89,8 @@ UM_EXPORT_METHOD_AS(lockPlatformAsync,
     UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities maskFromOrientation:orientation];
     allowedOrientationsMask = allowedOrientationsMask | orientationMask;
   }
-  _currentScreenOrientationMask = allowedOrientationsMask;
+  
+  [_screenOrienationRegistry setMask:allowedOrientationsMask forModule:self];
   [self enforceDesiredDeviceOrientationWithOrientationMask:allowedOrientationsMask];
   resolve(nil);
 }
@@ -104,30 +99,30 @@ UM_EXPORT_METHOD_AS(getOrientationLockAsync,
                     getOrientationLockAsyncWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([EXScreenOrientationUtilities exportOrientationLock:[self getSupportedInterfaceOrientations]]);
+  resolve([EXScreenOrientationUtilities exportOrientationLock:[_screenOrienationRegistry currentOrientationMask]]);
 }
 
 UM_EXPORT_METHOD_AS(getPlatformOrientationLockAsync,
                     getPlatformOrientationLockAsyncResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    UIInterfaceOrientationMask orientationMask = [self getSupportedInterfaceOrientations];
-    NSDictionary *maskToOrienationMap = @{
-        @(UIInterfaceOrientationMaskPortrait): @(UIInterfaceOrientationPortrait),
-        @(UIInterfaceOrientationMaskPortraitUpsideDown): @(UIInterfaceOrientationPortraitUpsideDown),
-        @(UIInterfaceOrientationMaskLandscapeLeft): @(UIInterfaceOrientationLandscapeLeft),
-        @(UIInterfaceOrientationMaskLandscapeRight): @(UIInterfaceOrientationLandscapeRight)
-    };
-    // If the particular orientation is supported, we add it to the array of allowedOrientations
-    NSMutableArray *allowedOrientations = [[NSMutableArray alloc] init];
-    for (NSNumber *wrappedSingleOrientation in [maskToOrienationMap allKeys]) {
-      UIInterfaceOrientationMask supportedOrientationMask = orientationMask & [wrappedSingleOrientation intValue];
-      if (supportedOrientationMask) {
-        UIInterfaceOrientation supportedOrientation = [maskToOrienationMap[@(supportedOrientationMask)] intValue];
-        [allowedOrientations addObject:[EXScreenOrientationUtilities exportOrientation:supportedOrientation]];
-      }
+  UIInterfaceOrientationMask orientationMask = [_screenOrienationRegistry currentOrientationMask];
+  NSDictionary *maskToOrienationMap = @{
+    @(UIInterfaceOrientationMaskPortrait): @(UIInterfaceOrientationPortrait),
+    @(UIInterfaceOrientationMaskPortraitUpsideDown): @(UIInterfaceOrientationPortraitUpsideDown),
+    @(UIInterfaceOrientationMaskLandscapeLeft): @(UIInterfaceOrientationLandscapeLeft),
+    @(UIInterfaceOrientationMaskLandscapeRight): @(UIInterfaceOrientationLandscapeRight)
+  };
+  // If the particular orientation is supported, we add it to the array of allowedOrientations
+  NSMutableArray *allowedOrientations = [[NSMutableArray alloc] init];
+  for (NSNumber *wrappedSingleOrientation in [maskToOrienationMap allKeys]) {
+    UIInterfaceOrientationMask supportedOrientationMask = orientationMask & [wrappedSingleOrientation intValue];
+    if (supportedOrientationMask) {
+      UIInterfaceOrientation supportedOrientation = [maskToOrienationMap[@(supportedOrientationMask)] intValue];
+      [allowedOrientations addObject:[EXScreenOrientationUtilities exportOrientation:supportedOrientation]];
     }
-    resolve(allowedOrientations);
+  }
+  resolve(allowedOrientations);
 }
 
 UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
@@ -138,7 +133,7 @@ UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
   UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities importOrientationLock:orientationLock];
   if (!orientationMask) {
     resolve(@NO);
-  } else if ([EXScreenOrientationUtilities doesSupportOrientationMask:orientationMask]) {
+  } else if ([EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
     resolve(@YES);
   } else {
     resolve(@NO);
@@ -173,7 +168,7 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
 {
   UIDevice *device = notification.object;
   UIInterfaceOrientation currentDeviceOrientation = [EXScreenOrientationUtilities UIDeviceOrientationToUIInterfaceOrientation:[device orientation]];
-  UIInterfaceOrientationMask currentOrientationMask = [self getSupportedInterfaceOrientations];
+  UIInterfaceOrientationMask currentOrientationMask = [_screenOrienationRegistry currentOrientationMask];
   
   // checks if screen orientation should be changed when user rotates the device
   if ([EXScreenOrientationUtilities doesOrientationMask:currentOrientationMask containOrientation:currentDeviceOrientation] && _currentScreenOrientation != currentDeviceOrientation) {
@@ -190,7 +185,7 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
   if (_hasListeners) {
     [_eventEmitter sendEventWithName:@"expoDidUpdateDimensions" body:@{
       @"orientation": [EXScreenOrientationUtilities exportOrientation:_currentScreenOrientation],
-      @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[self getSupportedInterfaceOrientations]]
+      @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[_screenOrienationRegistry currentOrientationMask]]
     }];
   }
 }
@@ -217,6 +212,14 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
       });
     }
   }
+}
+
+- (void)onAppBackgrounded {
+
+}
+
+- (void)onAppForegrounded {
+  [_screenOrienationRegistry moduleDidForeground:self];
 }
 
 @end

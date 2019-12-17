@@ -9,7 +9,7 @@
 
 # pragma mark - helpers
 
-+ (BOOL)doesSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask
++ (BOOL)doesDeviceSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask
 {
   if ((UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) // UIInterfaceOrientationMaskPortraitUpsideDown is part of orientationMask
       && [self doesDeviceHaveNotch])
@@ -23,13 +23,14 @@
 
 + (BOOL)doesDeviceHaveNotch {
   if (@available(iOS 11.0, *)) {
-    __block BOOL result = false;
-    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      result = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.top ?: 0.0) > 20.0;
-      dispatch_semaphore_signal(sem);
+    static BOOL result = false;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        result = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.bottom ?: 0.0) > 0.0;
+      });
     });
-    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+    
     return result;
   }
   
@@ -90,9 +91,18 @@
   return UIInterfaceOrientationUnknown;
 }
 
++ (NSDictionary *)swapKeyesWithValues:(NSDictionary *)dictionary
+{
+  NSMutableDictionary *invertedDictionary = [NSMutableDictionary new];
+  [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+      invertedDictionary[value] = key;
+  }];
+  return invertedDictionary;
+}
+
 # pragma mark - import/export
 
-+ (UIInterfaceOrientationMask)importOrientationLock:(NSNumber *)orientationLock
++ (NSDictionary *)orientationLockMap
 {
   static NSDictionary *orientationLockMap = nil;
   static dispatch_once_t onceToken;
@@ -110,32 +120,10 @@
     };
   });
   
-  return [orientationLockMap[orientationLock] integerValue] ?: 0;
+  return orientationLockMap;
 }
 
-+ (NSNumber *)exportOrientationLock:(UIInterfaceOrientationMask)orientationMask
-{
-  static NSDictionary *orientationLockMap = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    orientationLockMap = @{
-      @(UIInterfaceOrientationMaskAllButUpsideDown)   : @0,
-      @(UIInterfaceOrientationMaskAll)                : @1,
-      @(UIInterfaceOrientationMaskPortrait
-      | UIInterfaceOrientationMaskPortraitUpsideDown) : @2,
-      @(UIInterfaceOrientationMaskPortrait)           : @3,
-      @(UIInterfaceOrientationMaskPortraitUpsideDown) : @4,
-      @(UIInterfaceOrientationMaskLandscape)          : @5,
-      @(UIInterfaceOrientationMaskLandscapeLeft)      : @6,
-      @(UIInterfaceOrientationMaskLandscapeRight)     : @7,
-      @(UIInterfaceOrientationMaskAllButUpsideDown)   : @10
-    };
-  });
-  
-  return orientationLockMap[@(orientationMask)] ?: @(8);
-}
-
-+ (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation
++ (NSDictionary *)orientationMap
 {
   static NSDictionary *orientationMap = nil;
   static dispatch_once_t onceToken;
@@ -148,23 +136,29 @@
     };
   });
   
-  return orientationMap[@(orientation)] ?: @(UIInterfaceOrientationUnknown);
+  return orientationMap;
+}
+
++ (UIInterfaceOrientationMask)importOrientationLock:(NSNumber *)orientationLock
+{
+  return [[[EXScreenOrientationUtilities class] orientationLockMap][orientationLock] integerValue] ?: 0;
+}
+
++ (NSNumber *)exportOrientationLock:(UIInterfaceOrientationMask)orientationMask
+{
+  NSDictionary *exportOrientationLockMap = [EXScreenOrientationUtilities swapKeyesWithValues:[EXScreenOrientationUtilities orientationLockMap]];
+  return exportOrientationLockMap[@(orientationMask)] ?: @(8);
+}
+
++ (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation
+{
+  return [EXScreenOrientationUtilities orientationMap][@(orientation)] ?: @(UIInterfaceOrientationUnknown);
 }
 
 + (UIInterfaceOrientation)importOrientation:(NSNumber *)orientation
 {
-  static NSDictionary *orientationMap = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    orientationMap = @{
-      @1 : @(UIInterfaceOrientationPortrait),
-      @2 : @(UIInterfaceOrientationPortraitUpsideDown),
-      @3 : @(UIInterfaceOrientationLandscapeLeft),
-      @4 : @(UIInterfaceOrientationLandscapeRight),
-    };
-  });
-  
-  return [orientationMap[orientation] intValue] ?: UIInterfaceOrientationUnknown;
+  NSDictionary *exportOrientationMap = [EXScreenOrientationUtilities swapKeyesWithValues:[EXScreenOrientationUtilities orientationMap]];
+  return [exportOrientationMap[orientation] intValue] ?: UIInterfaceOrientationUnknown;
 }
 
 @end
