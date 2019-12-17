@@ -26,6 +26,7 @@ target 'Exponent' do
       'expo-module-template',
       'expo-bluetooth',
       'expo-in-app-purchases',
+      'expo-notifications',
       'expo-payments-stripe',
       'expo-updates',
     ],
