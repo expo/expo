@@ -4,7 +4,6 @@ import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
-import Battery from '../screens/BatteryScreen';
 import Branch from '../screens/BranchScreen';
 import Brightness from '../screens/BrightnessScreen';
 import Calendars from '../screens/CalendarsScreen';
@@ -50,6 +49,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   } catch (e) {}
 }
 
+const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
