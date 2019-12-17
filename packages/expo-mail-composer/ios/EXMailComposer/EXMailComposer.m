@@ -29,6 +29,14 @@ UM_EXPORT_MODULE(ExpoMailComposer);
   return dispatch_get_main_queue();
 }
 
+UM_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailable:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@([MFMailComposeViewController canSendMail]));
+}
+
+
 UM_EXPORT_METHOD_AS(composeAsync,
                     composeAsync:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
