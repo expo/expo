@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
@@ -38,8 +37,7 @@ const ReanimatedProgress = optionalRequire(() =>
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
-const ViewPager =
-  Platform.OS === 'web' ? undefined : optionalRequire(() => require('../screens/ViewPagerScreen'));
+const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
 
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
