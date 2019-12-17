@@ -47,9 +47,7 @@ import WebBrowser from '../screens/WebBrowserScreen';
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {
-    return;
-  }
+  } catch (e) {}
 }
 
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));

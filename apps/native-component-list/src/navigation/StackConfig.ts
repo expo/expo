@@ -39,6 +39,12 @@ const platformNavigationOptions = Platform.select({
 const StackConfig: StackNavigatorConfig = {
   cardStyle: styles.card,
   headerTransitionPreset: 'uikit',
+  ...Platform.select({
+    web: {
+      headerMode: 'screen',
+    },
+    default: {},
+  }),
   defaultNavigationOptions: () => ({
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,
