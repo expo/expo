@@ -45,7 +45,7 @@ export function getTestModules() {
   );
 
   // Universally tested APIs
-  modules.push(require('./tests/Random'), require('./tests/Crypto'));
+  modules.push(require('./tests/Random'), require('./tests/Crypto'), require('./tests/KeepAwake'));
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
