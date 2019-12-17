@@ -11,14 +11,14 @@ If you build your native mobile app with Expo then you can also run it directly 
 
 You get a highly performant React website with progressive web app features enabled from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
 
-## [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
+## 📱 [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)
 
 Expo enables you to connect your mobile app to your website like nothing before by automatically generating your PWA and Desktop PWA when your website is built for production. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
 
-- 🌐 Offline support: Users can store your website offline with the built in service worker.
-- ⭐️ App Icon: Automatically reuse the App Icon and Splash Screens from your mobile app!
-- 💬 Sharing: Use secure features like the Sharing API in your PWA.
-- 🌗 Dark Mode: Make your site accessible with the appearance API.
+- 🌐 **Offline support:** Users can store your website offline with the built in service worker.
+- ⭐️ **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
+- 💬 **Native Features:** Use secure features like the Sharing API in your PWA.
+- 🌗 **Dark Mode:** Make your site accessible with the appearance API.
 <!-- - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. -->
 
 ## 🎨 Highly Customizable
