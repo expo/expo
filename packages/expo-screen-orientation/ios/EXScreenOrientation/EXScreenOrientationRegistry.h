@@ -5,9 +5,16 @@
 
 @interface EXScreenOrientationRegistry : UMSingletonModule
 
-- (void)setMask:(UIInterfaceOrientationMask)mask forModule:(id)module;
+- (UIInterfaceOrientation)currentOrientation;
 - (UIInterfaceOrientationMask)currentOrientationMask;
+- (UIInterfaceOrientationMask)foregroundedOrientationMask;
+
+- (void)setMask:(UIInterfaceOrientationMask)mask forModule:(id)module;
+- (void)registerModuleToReceiveNotification:(id)module;
+- (void)traitCollectionsDidChange:(UITraitCollection *)traitCollection;
+
 - (void)moduleDidForeground:(id)module;
+- (void)moduleDidBackground:(id)module;
 - (void)moduleWillDeallocate:(id)module;
 
 @end

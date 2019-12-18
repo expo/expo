@@ -5,6 +5,6 @@
 
 @interface EXScreenOrientationViewController : UIViewController
 
-- (instancetype)initWithRCTBrigde:(RCTBridge*)brigde andWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientation;
+- (instancetype)initWithBrigde:(RCTBridge*)brigde andDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientation;
 
 @end

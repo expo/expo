@@ -63,7 +63,6 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   EXConstantsBinding *constants = [[[self.bridge moduleForClass:[UMModuleRegistryHolderReactModule class]] moduleRegistry] getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-  
   if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }

@@ -8,14 +8,14 @@
 
 @interface EXScreenOrientationViewController ()
 
-@property (nonatomic, weak) RCTBridge* bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, assign) UIInterfaceOrientationMask defaultOrientation;
 
 @end
 
 @implementation EXScreenOrientationViewController
 
-- (instancetype)initWithRCTBrigde:(RCTBridge*)brigde andWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientation
+- (instancetype)initWithBrigde:(RCTBridge*)brigde andDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientation
 {
   if (self = [super init]) {
     _bridge = brigde;
@@ -28,11 +28,20 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry currentOrientationMask] > 0) {
-    return [screenOrientationRegistry currentOrientationMask];
+  if (screenOrientationRegistry && [screenOrientationRegistry foregroundedOrientationMask] > 0) {
+    return [screenOrientationRegistry foregroundedOrientationMask];
   }
   
   return _defaultOrientation;
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
+      || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
+    EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+    [screenOrientationRegistry traitCollectionsDidChange:self.traitCollection];
+  }
 }
 
 @end

@@ -39,18 +39,7 @@
 
 + (UIInterfaceOrientationMask)maskFromOrientation:(UIInterfaceOrientation)orientation
 {
-  switch (orientation) {
-    case UIInterfaceOrientationPortrait:
-      return UIInterfaceOrientationMaskPortrait;
-    case UIInterfaceOrientationPortraitUpsideDown:
-      return UIInterfaceOrientationMaskPortraitUpsideDown;
-    case UIInterfaceOrientationLandscapeLeft:
-        return UIInterfaceOrientationMaskLandscapeLeft;
-    case UIInterfaceOrientationLandscapeRight:
-      return UIInterfaceOrientationMaskLandscapeRight;
-    default:
-      return 0;
-  }
+  return 1 << orientation;
 }
 
 + (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation
@@ -73,7 +62,7 @@
 + (BOOL)doesOrientationMask:(UIInterfaceOrientationMask)orientationMask containOrientation:(UIInterfaceOrientation)orientation
 {
   // This is how the mask is created from the orientation
-  UIInterfaceOrientationMask maskFromOrientation = (1 << orientation);
+  UIInterfaceOrientationMask maskFromOrientation = [self maskFromOrientation:orientation];
   return (maskFromOrientation & orientationMask);
 }
 
@@ -91,7 +80,7 @@
   return UIInterfaceOrientationUnknown;
 }
 
-+ (NSDictionary *)swapKeyesWithValues:(NSDictionary *)dictionary
++ (NSMutableDictionary *)inverted:(NSDictionary *)dictionary
 {
   NSMutableDictionary *invertedDictionary = [NSMutableDictionary new];
   [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
@@ -141,24 +130,70 @@
 
 + (UIInterfaceOrientationMask)importOrientationLock:(NSNumber *)orientationLock
 {
-  return [[[EXScreenOrientationUtilities class] orientationLockMap][orientationLock] integerValue] ?: 0;
+  return [[self orientationLockMap][orientationLock] integerValue] ?: 0;
 }
 
 + (NSNumber *)exportOrientationLock:(UIInterfaceOrientationMask)orientationMask
 {
-  NSDictionary *exportOrientationLockMap = [EXScreenOrientationUtilities swapKeyesWithValues:[EXScreenOrientationUtilities orientationLockMap]];
+  static NSMutableDictionary *exportOrientationLockMap = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    exportOrientationLockMap = [self inverted:[EXScreenOrientationUtilities orientationLockMap]];
+    exportOrientationLockMap[@(UIInterfaceOrientationMaskAllButUpsideDown)] = @0; // UIInterfaceOrientationMaskAllButUpsideDown is default value
+  });
+  
   return exportOrientationLockMap[@(orientationMask)] ?: @(8);
 }
 
 + (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation
 {
-  return [EXScreenOrientationUtilities orientationMap][@(orientation)] ?: @(UIInterfaceOrientationUnknown);
+  return [self orientationMap][@(orientation)] ?: @(UIInterfaceOrientationUnknown);
 }
 
 + (UIInterfaceOrientation)importOrientation:(NSNumber *)orientation
 {
-  NSDictionary *exportOrientationMap = [EXScreenOrientationUtilities swapKeyesWithValues:[EXScreenOrientationUtilities orientationMap]];
+  static NSDictionary *exportOrientationMap = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    exportOrientationMap = [self inverted:[self orientationMap]];
+  });
   return [exportOrientationMap[orientation] intValue] ?: UIInterfaceOrientationUnknown;
+}
+
++ (BOOL)doesDeviceSizeClassesAreEqual
+{
+  static BOOL result = false;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *deviceIdentifier = [NSString stringWithCString:systemInfo.machine
+                                                    encoding:NSUTF8StringEncoding];
+    result = [self doesDeviceSizeClassesAreEqual:deviceIdentifier];
+  });
+  
+  return result;
+}
+
++ (BOOL)doesDeviceSizeClassesAreEqual:(NSString *)deviceIdentifier
+{
+  NSArray<NSString *> *devicesWithEqualSizeClassesIdentifiers = @[
+                                                       @"iPad7,3", // iPad 10.5" (model A1701)
+                                                       @"iPad7,4", // iPad 10.5" (model A1709)
+                                                       ];
+  NSArray<NSString *> *simulatorsIdentifiers = @[
+                                                 @"i386",
+                                                 @"x86_64",
+                                                 ];
+  if ([devicesWithEqualSizeClassesIdentifiers containsObject:deviceIdentifier]) {
+    return true;
+  }
+  
+  if ([simulatorsIdentifiers containsObject:deviceIdentifier]) {
+    return [self doesDeviceSizeClassesAreEqual:[[[NSProcessInfo processInfo] environment] objectForKey:@"SIMULATOR_MODEL_IDENTIFIER"]];
+  }
+  
+  return false;
 }
 
 @end
