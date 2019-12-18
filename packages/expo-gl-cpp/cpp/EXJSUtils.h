@@ -9,7 +9,7 @@
 #include <JavaScriptCore/JSStringRef.h>
 
 #ifdef __APPLE__
-#include "EXiOSUtils.h"
+#include <EXGL_CPP/EXiOSUtils.h>
 #endif
 
 #ifdef __ANDROID__
