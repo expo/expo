@@ -92,6 +92,9 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
 }
 
 export async function unlockAsync(): Promise<void> {
+  if (!ExpoScreenOrientation.lockAsync) {
+    throw new UnavailabilityError('ScreenOrientation', 'lockAsync');
+  }
   await ExpoScreenOrientation.lockAsync(OrientationLock.DEFAULT);
 }
 

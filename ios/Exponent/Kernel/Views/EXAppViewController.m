@@ -327,8 +327,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry currentOrientationMask] > 0) {
-    return [screenOrientationRegistry currentOrientationMask];
+  if (screenOrientationRegistry && [screenOrientationRegistry foregroundedOrientationMask] > 0) {
+    return [screenOrientationRegistry foregroundedOrientationMask];
   }
 #endif
   
@@ -362,11 +362,17 @@ NS_ASSUME_NONNULL_BEGIN
   [self _enforceDesiredDeviceOrientation];
 }
 
-// TODO: Remove once sdk 36 is phased out
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
+    
+    #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+      EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      [screenOrientationRegistry traitCollectionsDidChange:self.traitCollection];
+    #endif
+      
+    // TODO: Remove once sdk 36 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
 }
