@@ -1,6 +1,7 @@
 {
   "AndroidManifest.xml": "android/app/src/main/",
   "google-services.json": "android/app/",
+  "bare-expo/android/app/google-services.json": "apps/",
   "ExponentKeys.java": "android/expoview/src/main/java/host/exp/exponent/generated/",
   "fabric.properties": "android/app/"
 }
