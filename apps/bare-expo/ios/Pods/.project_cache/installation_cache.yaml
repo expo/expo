@@ -487,8 +487,11 @@ CACHE_KEYS:
       EXNotifications: 42083d7be3b81dc87f399732a97ebffe
     CHECKSUM: d654494e84df90927cca410ebac178c61553647b
     FILES:
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)
