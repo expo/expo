@@ -29,7 +29,7 @@ afterEvaluate {
     def folderName = variant.name
     def targetName = folderName.capitalize()
 
-    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"
