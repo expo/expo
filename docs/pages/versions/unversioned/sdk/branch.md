@@ -1,15 +1,17 @@
 ---
 title: Branch
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-branch"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-branch'
 ---
 
-> **Android Support Update:**  You now have the option to include Branch in your Android builds built with SDK34+. Please follow the configuration steps below to do so. We previously had removed Branch support for Android builds which you can more about in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
+> **Android Support Update:** You now have the option to include Branch in your Android builds built with SDK34+. Please follow the configuration steps below to do so. We previously had removed Branch support for Android builds which you can more about in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
+
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -34,7 +36,7 @@ Branch can track universal links from domains you associate with your app. **Not
 ## Importing Branch
 
 ```javascript
-import Branch, {BranchEvent} from 'expo-branch';
+import Branch, { BranchEvent } from 'expo-branch';
 ```
 
 ## Using the Branch API
@@ -46,9 +48,9 @@ We pull in the API from [react-native-branch](https://github.com/BranchMetrics/r
 Listen for links:
 
 ```javascript
-Branch.subscribe((bundle) => {
+Branch.subscribe(bundle => {
   if (bundle && bundle.params && !bundle.error) {
-  	// `bundle.params` contains all the info about the link.
+    // `bundle.params` contains all the info about the link.
   }
 });
 ```

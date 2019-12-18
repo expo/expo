@@ -1,15 +1,15 @@
 ---
 title: LinearGradient
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-linear-gradient"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-linear-gradient'
 ---
 
-A React component that renders a gradient view.
+**`expo-linear-gradient`** provides a React component that renders a gradient view.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

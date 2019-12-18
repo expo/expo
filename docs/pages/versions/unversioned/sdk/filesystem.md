@@ -1,17 +1,17 @@
 ---
 title: FileSystem
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -389,7 +389,7 @@ FileSystem.getContentUriAsync(uri).then(cUri => {
   console.log(cUri);
   IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
     data: cUri.uri,
-    flags: 1
+    flags: 1,
   });
 });
 ```

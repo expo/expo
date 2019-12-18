@@ -1,17 +1,17 @@
 ---
 title: Crypto
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
+**`expo-crypto`** enables you to hash (encrypt) data in an equivalent manner to the `Node.js` core `crypto` API.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -24,7 +24,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
-import * as Crypto from 'expo-crypto'; 
+import * as Crypto from 'expo-crypto';
 
 export default function App() {
   useEffect(() => {
@@ -51,8 +51,8 @@ export default function App() {
     </View>
   );
 }
-
 ```
+
 </SnackInline>
 
 ## API
