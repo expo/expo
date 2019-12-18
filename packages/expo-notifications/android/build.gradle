@@ -68,4 +68,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  api 'com.google.firebase:firebase-messaging:20.1.0'
 }
