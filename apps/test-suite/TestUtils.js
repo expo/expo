@@ -64,7 +64,8 @@ export function getTestModules() {
       require('./tests/Localization'),
       require('./tests/SecureStore'),
       require('./tests/SMS'),
-      require('./tests/StoreReview')
+      require('./tests/StoreReview'),
+      require('./tests/NewNotifications')
     );
     return modules;
   }
@@ -102,7 +103,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd'))
+    optionalRequire(() => require('./tests/FBBannerAd')),
+    optionalRequire(() => require('./tests/NewNotifications'))
   );
 
   if (!isDeviceFarm()) {
