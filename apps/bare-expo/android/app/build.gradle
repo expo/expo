@@ -254,3 +254,4 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
 }
 
 apply plugin: GenerateDynamicMacrosPlugin
+apply plugin: 'com.google.gms.google-services'
