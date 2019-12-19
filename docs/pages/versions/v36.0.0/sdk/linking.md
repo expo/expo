@@ -1,7 +1,9 @@
 ---
 title: Linking
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking'
 ---
+
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
@@ -11,15 +13,15 @@ For information and examples on how to use this API and the `react-native` Linki
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## API
 
-```js
-import { Linking } from 'expo';
-```
+<TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} />
+
+## Methods
 
 ### `Linking.makeUrl(path, queryParams)`
 

@@ -1,9 +1,10 @@
 ---
 title: Brightness
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 An API to get and set screen brightness.
 
@@ -11,9 +12,9 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -51,6 +52,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -58,22 +60,12 @@ export default function App() {
 ```js
 import * as Brightness from 'expo-brightness';
 ```
-**[Methods](#methods)**
 
-- [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
-- [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
-- [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
-- [`Brightness.isUsingSystemBrightnessAsync()`](#brightnessisusingsystembrightnessasync)
-- [`Brightness.getSystemBrightnessAsync()`](#brightnessgetsystembrightnessasync)
-- [`Brightness.setSystemBrightnessAsync(brightnessValue)`](#brightnesssetsystembrightnessasyncbrightnessvalue)
-- [`Brightness.getSystemBrightnessModeAsync()`](#brightnessgetsystembrightnessmodeasync)
-- [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
+<TableOfContentSection title='Methods' contents={['Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
 
-**[Enum Types](#enum-types)**
+<TableOfContentSection title='Enum Types' contents={['Brightness.BrightnessMode']} />
 
-- [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
-
-**[Error Codes](#error-codes-6)**
+<TableOfContentSection title='Error Codes' contents={['ERR_BRIGHTNESS', 'ERR_BRIGHTNESS_MODE', 'ERR_BRIGHTNESS_PERMISSIONS_DENIED', 'ERR_BRIGHTNESS_SYSTEM', 'ERR_INVALID_ARGUMENT']} />
 
 ## Methods
 
@@ -117,7 +109,7 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS` - An unexpected OS error occurred when trying to set the brightness. See the `nativeError` object for more information.
+- [`ERR_BRIGHTNESS`](#errbrightness)
 
 ---
 
@@ -141,7 +133,7 @@ A `Promise` that resolves with `true` when the current activity is using the sys
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS` - An unexpected OS error occurred when trying to set the brightness. See the `nativeError` object for more information.
+- [`ERR_BRIGHTNESS`](#errbrightness)
 
 ---
 
@@ -155,7 +147,7 @@ A `Promise` that is resolved with a number between 0 and 1, inclusive, represent
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS_SYSTEM` - An unexpected OS error occurred when trying to get the system brightness. See the `nativeError` object for more information.
+- [`ERR_BRIGHTNESS_SYSTEM`](#errbrightnesssystem)
 
 ---
 
@@ -175,21 +167,8 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS_PERMISSIONS_DENIED` - The user did not grant `SYSTEM_BRIGHTNESS` permissions.
-- `ERR_BRIGHTNESS_SYSTEM` - An unexpected OS error occurred when trying to set the system brightness. See the `nativeError` object for more information.
-
-#### Example
-
-```javascript
-await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
-
-const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
-if (status === 'granted') {
-  Brightness.setSystemBrightnessAsync(1);
-}
-```
-
----
+- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
+- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#errbrightnesspermissionsdenied)
 
 ### `Brightness.getSystemBrightnessModeAsync()`
 
@@ -201,7 +180,7 @@ A `Promise` that is resolved with a [`BrightnessMode`](#brightnessbrightnessmode
 
 #### Error Codes
 
-- `ERR_BRIGHTNESS_MODE` - An unexpected OS error occurred when trying to get the brightness mode. See the `nativeError` object for more information.
+- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
 
 ---
 
@@ -219,9 +198,9 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 #### Error Codes
 
-- `ERR_INVALID_ARGUMENT` - An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.
-- `ERR_BRIGHTNESS_MODE` - An unexpected OS error occurred when trying to set the brightness mode. See the `nativeError` property of the thrown error for more information.
-- `ERR_BRIGHTNESS_PERMISSIONS_DENIED` - The user did not grant `SYSTEM_BRIGHTNESS` permissions.
+- [`ERR_INVALID_ARGUMENT`](#errinvalidargument)
+- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
+- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#errbrightnesspermissionsdenied)
 
 ## Enum Types
 
@@ -233,9 +212,22 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 ## Error Codes
 
-| Code                                | Description                                                                                    |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `ERR_BRIGHTNESS`                    | An error occurred when getting or setting the app brightness.                                  |
-| `ERR_BRIGHTNESS_MODE`               | An error occurred when getting or setting the system brightness mode.                          |
-| `ERR_BRIGHTNESS_PERMISSIONS_DENIED` | An attempt to set the system brightness was made without the proper permissions from the user. |
-| `ERR_BRIGHTNESS_SYSTEM`             | An error occurred when getting or setting the system brightness.                               |
+### `ERR_BRIGHTNESS`
+
+An error occurred when getting or setting the app brightness.
+
+### `ERR_BRIGHTNESS_MODE`
+
+An error occurred when getting or setting the system brightness mode. See the `nativeError` property of the thrown error for more information.
+
+### `ERR_BRIGHTNESS_PERMISSIONS_DENIED`
+
+An attempt to set the system brightness was made without the proper permissions from the user. The user did not grant `SYSTEM_BRIGHTNESS` permissions.
+
+### `ERR_BRIGHTNESS_SYSTEM`
+
+An error occurred when getting or setting the system brightness.
+
+### `ERR_INVALID_ARGUMENT`
+
+An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.

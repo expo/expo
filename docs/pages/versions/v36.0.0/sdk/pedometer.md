@@ -1,17 +1,17 @@
 ---
 title: Pedometer
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-Uses Core Motion on iOS and the system `hardware.Sensor` on Android to get the user's step count.
+`Pedometer` from **`expo-sensors`** uses Core Motion on iOS and the system `hardware.Sensor` on Android to get the user's step count, and also allows you to subscribe to pedometer updates.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

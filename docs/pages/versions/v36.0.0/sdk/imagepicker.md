@@ -1,15 +1,19 @@
 ---
 title: ImagePicker
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker'
 ---
 
-Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+import Video from '../../../../components/plugins/Video'
+
+**`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+
+<Video file={"sdk/imagepicker.mp4"} loop={false} />
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

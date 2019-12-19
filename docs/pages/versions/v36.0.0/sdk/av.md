@@ -1,6 +1,6 @@
 ---
 title: AV
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
 The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
@@ -11,9 +11,9 @@ Try the [playlist example app](http://expo.io/@community/playlist) (source code 
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

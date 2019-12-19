@@ -1,15 +1,15 @@
 ---
 title: Admob
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-admob"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-admob'
 ---
 
-Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising. This module is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing AdMob SDK can be found [here](https://github.com/deadcoder0904/expo-google-admob).
+Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising, including components for banner ads and imperative APIs for interstitial and rewarded video ads. **`expo-ads-admob`** is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing AdMob SDK can be found [here](https://github.com/deadcoder0904/expo-google-admob).
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -40,7 +40,6 @@ For the module to attribute interactions with ads to your AdMob app properly you
     }
   }
 }
-
 ```
 
 ## Usage
@@ -121,13 +120,13 @@ _Corresponding to [Ad lifecycle event callbacks](https://developers.google.com/a
 
 #### Methods
 
-| Name                           | Description                                                                                                                                                                                                                           |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `setAdUnitID(adUnitID)`     | sets the AdUnit ID for all future ad requests.                                                                                                                                                                                       |
-| `setTestDeviceID(deviceID)` | sets the test device ID                                                                                                                                                                                                               |
+| Name                        | Description                                                                                                                                                                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setAdUnitID(adUnitID)`     | sets the AdUnit ID for all future ad requests.                                                                                                                                                                                     |
+| `setTestDeviceID(deviceID)` | sets the test device ID                                                                                                                                                                                                            |
 | `requestAdAsync(options)`   | requests an interstitial and resolves when `interstitialDidLoad` or `interstitialDidFailToLoad` event fires. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ads will be personalized. |
-| `showAdAsync()`             | shows an interstitial if it is ready and resolves when `interstitialDidOpen` event fires                                                                                                                                             |
-| `getIsReadyAsync()`         | resolves with boolean whether interstitial is ready to be shown                                                                                                                                                                       |
+| `showAdAsync()`             | shows an interstitial if it is ready and resolves when `interstitialDidOpen` event fires                                                                                                                                           |
+| `getIsReadyAsync()`         | resolves with boolean whether interstitial is ready to be shown                                                                                                                                                                    |
 
 _For simulators/emulators you can use `'EMULATOR'` for the test device ID._
 
@@ -154,7 +153,7 @@ Opens a rewarded AdMob ad.
 #### Methods
 
 | Name                                    | Description                                                                                                                                          |
-|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `setAdUnitID(adUnitID: string)`         | sets the AdUnit ID for all future ad requests.                                                                                                       |
 | `setTestDeviceID(testDeviceID: string)` | sets the test device ID                                                                                                                              |
 | `requestAdAsync(options)`               | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
@@ -172,4 +171,5 @@ Opens a rewarded AdMob ad.
 | `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
 | `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
 | `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
+
 #

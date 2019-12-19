@@ -1,9 +1,9 @@
 ---
 title: SecureStore
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store'
 ---
 
-Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
+**`expo-secure-store`** provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
 
 iOS: Values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
@@ -13,16 +13,15 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅*     |  ✅*     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅\*           | ✅\*             | ✅         | ✅            | ❌  |
 
-* This API is not compatible on devices running Android 5 or older.
+- This API is not compatible on devices running Android 5 or older.
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
-
 
 ## API
 

@@ -1,15 +1,15 @@
 ---
 title: Updates
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
 ---
 
-API for controlling and responding to over-the-air updates to your app.
+The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -37,8 +37,8 @@ Check if a new published version of your project is available. Does not actually
 
 An object with the following keys:
 
--   **isAvailable (_boolean_)** -- True if an update is available, false if you're already running the most up-to-date JS bundle.
--   **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
+- **isAvailable (_boolean_)** -- True if an update is available, false if you're already running the most up-to-date JS bundle.
+- **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
 ### `Updates.fetchUpdateAsync(params?)`
 
@@ -48,14 +48,14 @@ Downloads the most recent published version of your experience to the device's l
 
 An optional `params` object with the following keys:
 
--   **eventListener (_function_)** -- A callback to receive updates events. Will be called with the same events as a function passed into [`Updates.addListener`](#expoupdatesaddlistenereventlistener) but will be subscribed and unsubscribed from events automatically.
+- **eventListener (_function_)** -- A callback to receive updates events. Will be called with the same events as a function passed into [`Updates.addListener`](#expoupdatesaddlistenereventlistener) but will be subscribed and unsubscribed from events automatically.
 
 #### Returns
 
 An object with the following keys:
 
--   **isNew (_boolean_)** -- True if the fetched bundle is new (i.e. a different version that the what's currently running).
--   **manifest (_object_)** -- Manifest of the fetched update.
+- **isNew (_boolean_)** -- True if the fetched bundle is new (i.e. a different version that the what's currently running).
+- **manifest (_object_)** -- Manifest of the fetched update.
 
 ### `Updates.addListener(eventListener)`
 
@@ -63,7 +63,7 @@ Invokes a callback when updates-related events occur, either on the initial app 
 
 #### Arguments
 
--   **eventListener (_function_)** -- A callback that is invoked with an updates event.
+- **eventListener (_function_)** -- A callback that is invoked with an updates event.
 
 #### Returns
 
@@ -75,20 +75,19 @@ An [EventSubscription](#eventsubscription) object that you can call `remove()` o
 
 Returned from `addListener`.
 
--   **remove() (_function_)** -- Unsubscribe the listener from future updates.
+- **remove() (_function_)** -- Unsubscribe the listener from future updates.
 
 ### `Event`
 
 An object that is passed into each event listener when a new version is available.
 
--   **type (_string_)** -- Type of the event (see [EventType](#eventtype)).
--   **manifest (_object_)** -- If `type === Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downloaded update. Undefined otherwise.
--   **message (_string_)** -- If `type === Updates.EventType.ERROR`, the error message. Undefined otherwise.
+- **type (_string_)** -- Type of the event (see [EventType](#eventtype)).
+- **manifest (_object_)** -- If `type === Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downloaded update. Undefined otherwise.
+- **message (_string_)** -- If `type === Updates.EventType.ERROR`, the error message. Undefined otherwise.
 
 ### `EventType`
 
--   **`Updates.EventType.DOWNLOAD_STARTED`** -- A new update is available and has started downloading.
--   **`Updates.EventType.DOWNLOAD_FINISHED`** -- A new update has finished downloading and is now stored in the device's cache.
--   **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
--   **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.
-
+- **`Updates.EventType.DOWNLOAD_STARTED`** -- A new update is available and has started downloading.
+- **`Updates.EventType.DOWNLOAD_FINISHED`** -- A new update has finished downloading and is now stored in the device's cache.
+- **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
+- **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.

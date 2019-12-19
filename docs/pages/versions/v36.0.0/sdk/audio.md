@@ -1,9 +1,9 @@
 ---
 title: Audio
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
-Provides basic sample playback and recording.
+**`expo-av`** allows you to implement audio playback and recording in your app.
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
@@ -11,9 +11,9 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
