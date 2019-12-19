@@ -9,7 +9,7 @@ typedef struct {
   long patchVersion;
 } EXiOSOperatingSystemVersion;
 
-EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion();
+EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion(void);
 
 #endif
 

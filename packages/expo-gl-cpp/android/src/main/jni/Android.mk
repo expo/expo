@@ -10,6 +10,10 @@ LOCAL_SRC_FILES := \
   ../../../../cpp/UEXGL.cpp \
   ../../../../cpp/EXJSUtils.c \
   ../../../../cpp/EXJSConvertTypedArray.c \
+  ../../../../cpp/EXGLContext.cpp \
+  ../../../../cpp/EXGLInstallMethods.cpp \
+  ../../../../cpp/EXGLInstallConstants.cpp \
+  ../../../../cpp/EXGLNativeMethods.cpp \
   EXGL.cpp
 
 # weird hack that lets us mix C++ with -std=c++11 and C with -std=c99
