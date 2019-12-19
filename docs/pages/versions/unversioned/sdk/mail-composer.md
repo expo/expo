@@ -13,7 +13,7 @@ import Video from '../../../../components/plugins/Video'
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
