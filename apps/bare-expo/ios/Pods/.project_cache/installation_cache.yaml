@@ -334,8 +334,13 @@ CACHE_KEYS:
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP: e5c21be87c49c4ea22fb524158d76c6f
-    CHECKSUM: a737ee53425d37df03538e81e4bb285739196c50
+    CHECKSUM: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
     FILES:
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.h"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLInstallConstants.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLInstallMethods.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/EXGLNativeMethods.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.mm"
       - "../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.c"
@@ -348,7 +353,7 @@ CACHE_KEYS:
     PROJECT_NAME: EXGL_CPP
     SPECS:
       - EXGL_CPP (8.0.0)
-      - EXGL_CPP/UEXGL (8.0.0)
+      - EXGL_CPP/EXGLContext (8.0.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: f09b309f99f7a0147df78dd155d49661
