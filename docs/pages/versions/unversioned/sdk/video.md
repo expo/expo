@@ -3,7 +3,7 @@ title: Video
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
-The `Video` component from **`expo-av`** displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
+The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
 
 Much of Video and Audio have common APIs that are documented in [AV documentation](../av/). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](../av/) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](../audio/).
 
