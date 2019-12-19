@@ -74,5 +74,5 @@ dependencies {
     unimodule "unimodules-core"
     unimodule "unimodules-constants-interface"
 
-    api 'com.google.android.gms:play-services-auth:16.0.1'
+    api 'com.google.android.gms:play-services-auth:17.0.0'
 }
