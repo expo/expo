@@ -33,7 +33,6 @@ extern "C" {
 // Most of these are adapted from phoboslab/Ejecta on GitHub
 // (https://github.com/phoboslab/Ejecta).
 
-
 static inline double EXJSValueToNumberFast(JSContextRef ctx, JSValueRef v)
 {
 #if __LP64__ // arm64 version
@@ -81,9 +80,7 @@ static inline JSValueRef EXJSValueMakeStringFromUTF8CString(JSContextRef ctx, co
 
 void EXJSConsoleLog(JSContextRef ctx, const char *msg);
 
-
 char *EXJSValueToUTF8CStringMalloc(JSContextRef ctx, JSValueRef v, JSValueRef *exception);
-
 
 void EXJSObjectSetValueWithUTF8CStringName(JSContextRef ctx,
                                            JSObjectRef obj,
@@ -94,7 +91,6 @@ void EXJSObjectSetFunctionWithUTF8CStringName(JSContextRef ctx,
                                               JSObjectRef obj,
                                               const char *name,
                                               JSObjectCallAsFunctionCallback func);
-
 
 #define EXGL_DEBUG     // Whether debugging is on
 

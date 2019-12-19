@@ -526,7 +526,7 @@ private:
 
 
 // Standard method wrapper, run on JS thread, return a value
-#define _WRAP_METHOD_DECLARATIONS(name)                                                                 \
+#define _WRAP_METHOD_DECLARATION(name)                                                                  \
   static JSValueRef exglNativeStatic_##name(JSContextRef jsCtx,                                         \
                                             JSObjectRef jsFunction,                                     \
                                             JSObjectRef jsThis,                                         \
@@ -544,277 +544,277 @@ private:
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
 
   // The WebGL context
-  _WRAP_METHOD_DECLARATIONS(getContextAttributes);
-  _WRAP_METHOD_DECLARATIONS(isContextLost);
+  _WRAP_METHOD_DECLARATION(getContextAttributes);
+  _WRAP_METHOD_DECLARATION(isContextLost);
 
   // Viewing and clipping
-  _WRAP_METHOD_DECLARATIONS(scissor);
-  _WRAP_METHOD_DECLARATIONS(viewport);
+  _WRAP_METHOD_DECLARATION(scissor);
+  _WRAP_METHOD_DECLARATION(viewport);
 
   // State information
-  _WRAP_METHOD_DECLARATIONS(activeTexture);
-  _WRAP_METHOD_DECLARATIONS(blendColor);
-  _WRAP_METHOD_DECLARATIONS(blendEquation);
-  _WRAP_METHOD_DECLARATIONS(blendEquationSeparate);
-  _WRAP_METHOD_DECLARATIONS(blendFunc);
-  _WRAP_METHOD_DECLARATIONS(blendFuncSeparate);
-  _WRAP_METHOD_DECLARATIONS(clearColor);
-  _WRAP_METHOD_DECLARATIONS(clearDepth);
-  _WRAP_METHOD_DECLARATIONS(clearStencil);
-  _WRAP_METHOD_DECLARATIONS(colorMask);
-  _WRAP_METHOD_DECLARATIONS(cullFace);
-  _WRAP_METHOD_DECLARATIONS(depthFunc);
-  _WRAP_METHOD_DECLARATIONS(depthMask);
-  _WRAP_METHOD_DECLARATIONS(depthRange);
-  _WRAP_METHOD_DECLARATIONS(disable);
-  _WRAP_METHOD_DECLARATIONS(enable);
-  _WRAP_METHOD_DECLARATIONS(frontFace);
-  _WRAP_METHOD_DECLARATIONS(getParameter);
-  _WRAP_METHOD_DECLARATIONS(getError);
-  _WRAP_METHOD_DECLARATIONS(hint);
-  _WRAP_METHOD_DECLARATIONS(isEnabled);
-  _WRAP_METHOD_DECLARATIONS(lineWidth);
-  _WRAP_METHOD_DECLARATIONS(pixelStorei);
-  _WRAP_METHOD_DECLARATIONS(polygonOffset);
-  _WRAP_METHOD_DECLARATIONS(sampleCoverage);
-  _WRAP_METHOD_DECLARATIONS(stencilFunc);
-  _WRAP_METHOD_DECLARATIONS(stencilFuncSeparate);
-  _WRAP_METHOD_DECLARATIONS(stencilMask);
-  _WRAP_METHOD_DECLARATIONS(stencilMaskSeparate);
-  _WRAP_METHOD_DECLARATIONS(stencilOp);
-  _WRAP_METHOD_DECLARATIONS(stencilOpSeparate);
+  _WRAP_METHOD_DECLARATION(activeTexture);
+  _WRAP_METHOD_DECLARATION(blendColor);
+  _WRAP_METHOD_DECLARATION(blendEquation);
+  _WRAP_METHOD_DECLARATION(blendEquationSeparate);
+  _WRAP_METHOD_DECLARATION(blendFunc);
+  _WRAP_METHOD_DECLARATION(blendFuncSeparate);
+  _WRAP_METHOD_DECLARATION(clearColor);
+  _WRAP_METHOD_DECLARATION(clearDepth);
+  _WRAP_METHOD_DECLARATION(clearStencil);
+  _WRAP_METHOD_DECLARATION(colorMask);
+  _WRAP_METHOD_DECLARATION(cullFace);
+  _WRAP_METHOD_DECLARATION(depthFunc);
+  _WRAP_METHOD_DECLARATION(depthMask);
+  _WRAP_METHOD_DECLARATION(depthRange);
+  _WRAP_METHOD_DECLARATION(disable);
+  _WRAP_METHOD_DECLARATION(enable);
+  _WRAP_METHOD_DECLARATION(frontFace);
+  _WRAP_METHOD_DECLARATION(getParameter);
+  _WRAP_METHOD_DECLARATION(getError);
+  _WRAP_METHOD_DECLARATION(hint);
+  _WRAP_METHOD_DECLARATION(isEnabled);
+  _WRAP_METHOD_DECLARATION(lineWidth);
+  _WRAP_METHOD_DECLARATION(pixelStorei);
+  _WRAP_METHOD_DECLARATION(polygonOffset);
+  _WRAP_METHOD_DECLARATION(sampleCoverage);
+  _WRAP_METHOD_DECLARATION(stencilFunc);
+  _WRAP_METHOD_DECLARATION(stencilFuncSeparate);
+  _WRAP_METHOD_DECLARATION(stencilMask);
+  _WRAP_METHOD_DECLARATION(stencilMaskSeparate);
+  _WRAP_METHOD_DECLARATION(stencilOp);
+  _WRAP_METHOD_DECLARATION(stencilOpSeparate);
 
   // Buffers
-  _WRAP_METHOD_DECLARATIONS(bindBuffer);
-  _WRAP_METHOD_DECLARATIONS(bufferData);
-  _WRAP_METHOD_DECLARATIONS(bufferSubData);
-  _WRAP_METHOD_DECLARATIONS(createBuffer);
-  _WRAP_METHOD_DECLARATIONS(deleteBuffer);
-  _WRAP_METHOD_DECLARATIONS(getBufferParameter);
-  _WRAP_METHOD_DECLARATIONS(isBuffer);
+  _WRAP_METHOD_DECLARATION(bindBuffer);
+  _WRAP_METHOD_DECLARATION(bufferData);
+  _WRAP_METHOD_DECLARATION(bufferSubData);
+  _WRAP_METHOD_DECLARATION(createBuffer);
+  _WRAP_METHOD_DECLARATION(deleteBuffer);
+  _WRAP_METHOD_DECLARATION(getBufferParameter);
+  _WRAP_METHOD_DECLARATION(isBuffer);
 
   // Buffers (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(copyBufferSubData);
-  _WRAP_METHOD_DECLARATIONS(getBufferSubData);
+  _WRAP_METHOD_DECLARATION(copyBufferSubData);
+  _WRAP_METHOD_DECLARATION(getBufferSubData);
 
   // Framebuffers
-  _WRAP_METHOD_DECLARATIONS(bindFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(checkFramebufferStatus);
-  _WRAP_METHOD_DECLARATIONS(createFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(deleteFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(framebufferRenderbuffer);
-  _WRAP_METHOD_DECLARATIONS(framebufferTexture2D);
-  _WRAP_METHOD_DECLARATIONS(getFramebufferAttachmentParameter);
-  _WRAP_METHOD_DECLARATIONS(isFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(readPixels);
+  _WRAP_METHOD_DECLARATION(bindFramebuffer);
+  _WRAP_METHOD_DECLARATION(checkFramebufferStatus);
+  _WRAP_METHOD_DECLARATION(createFramebuffer);
+  _WRAP_METHOD_DECLARATION(deleteFramebuffer);
+  _WRAP_METHOD_DECLARATION(framebufferRenderbuffer);
+  _WRAP_METHOD_DECLARATION(framebufferTexture2D);
+  _WRAP_METHOD_DECLARATION(getFramebufferAttachmentParameter);
+  _WRAP_METHOD_DECLARATION(isFramebuffer);
+  _WRAP_METHOD_DECLARATION(readPixels);
 
   // Framebuffers (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(blitFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(framebufferTextureLayer);
-  _WRAP_METHOD_DECLARATIONS(invalidateFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(invalidateSubFramebuffer);
-  _WRAP_METHOD_DECLARATIONS(readBuffer);
+  _WRAP_METHOD_DECLARATION(blitFramebuffer);
+  _WRAP_METHOD_DECLARATION(framebufferTextureLayer);
+  _WRAP_METHOD_DECLARATION(invalidateFramebuffer);
+  _WRAP_METHOD_DECLARATION(invalidateSubFramebuffer);
+  _WRAP_METHOD_DECLARATION(readBuffer);
 
   // Renderbuffers
-  _WRAP_METHOD_DECLARATIONS(bindRenderbuffer);
-  _WRAP_METHOD_DECLARATIONS(createRenderbuffer);
-  _WRAP_METHOD_DECLARATIONS(deleteRenderbuffer);
-  _WRAP_METHOD_DECLARATIONS(getRenderbufferParameter);
-  _WRAP_METHOD_DECLARATIONS(isRenderbuffer);
-  _WRAP_METHOD_DECLARATIONS(renderbufferStorage);
+  _WRAP_METHOD_DECLARATION(bindRenderbuffer);
+  _WRAP_METHOD_DECLARATION(createRenderbuffer);
+  _WRAP_METHOD_DECLARATION(deleteRenderbuffer);
+  _WRAP_METHOD_DECLARATION(getRenderbufferParameter);
+  _WRAP_METHOD_DECLARATION(isRenderbuffer);
+  _WRAP_METHOD_DECLARATION(renderbufferStorage);
 
   // Renderbuffers (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(getInternalformatParameter);
-  _WRAP_METHOD_DECLARATIONS(renderbufferStorageMultisample);
+  _WRAP_METHOD_DECLARATION(getInternalformatParameter);
+  _WRAP_METHOD_DECLARATION(renderbufferStorageMultisample);
 
   // Textures
-  _WRAP_METHOD_DECLARATIONS(bindTexture);
-  _WRAP_METHOD_DECLARATIONS(compressedTexImage2D);
-  _WRAP_METHOD_DECLARATIONS(compressedTexSubImage2D);
-  _WRAP_METHOD_DECLARATIONS(copyTexImage2D);
-  _WRAP_METHOD_DECLARATIONS(copyTexSubImage2D);
-  _WRAP_METHOD_DECLARATIONS(createTexture);
-  _WRAP_METHOD_DECLARATIONS(deleteTexture);
-  _WRAP_METHOD_DECLARATIONS(generateMipmap);
-  _WRAP_METHOD_DECLARATIONS(getTexParameter);
-  _WRAP_METHOD_DECLARATIONS(isTexture);
-  _WRAP_METHOD_DECLARATIONS(texImage2D);
-  _WRAP_METHOD_DECLARATIONS(texSubImage2D);
-  _WRAP_METHOD_DECLARATIONS(texParameterf);
-  _WRAP_METHOD_DECLARATIONS(texParameteri);
+  _WRAP_METHOD_DECLARATION(bindTexture);
+  _WRAP_METHOD_DECLARATION(compressedTexImage2D);
+  _WRAP_METHOD_DECLARATION(compressedTexSubImage2D);
+  _WRAP_METHOD_DECLARATION(copyTexImage2D);
+  _WRAP_METHOD_DECLARATION(copyTexSubImage2D);
+  _WRAP_METHOD_DECLARATION(createTexture);
+  _WRAP_METHOD_DECLARATION(deleteTexture);
+  _WRAP_METHOD_DECLARATION(generateMipmap);
+  _WRAP_METHOD_DECLARATION(getTexParameter);
+  _WRAP_METHOD_DECLARATION(isTexture);
+  _WRAP_METHOD_DECLARATION(texImage2D);
+  _WRAP_METHOD_DECLARATION(texSubImage2D);
+  _WRAP_METHOD_DECLARATION(texParameterf);
+  _WRAP_METHOD_DECLARATION(texParameteri);
 
   // Textures (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(texStorage2D);
-  _WRAP_METHOD_DECLARATIONS(texStorage3D);
-  _WRAP_METHOD_DECLARATIONS(texImage3D);
-  _WRAP_METHOD_DECLARATIONS(texSubImage3D);
-  _WRAP_METHOD_DECLARATIONS(copyTexSubImage3D);
-  _WRAP_METHOD_DECLARATIONS(compressedTexImage3D);
-  _WRAP_METHOD_DECLARATIONS(compressedTexSubImage3D);
+  _WRAP_METHOD_DECLARATION(texStorage2D);
+  _WRAP_METHOD_DECLARATION(texStorage3D);
+  _WRAP_METHOD_DECLARATION(texImage3D);
+  _WRAP_METHOD_DECLARATION(texSubImage3D);
+  _WRAP_METHOD_DECLARATION(copyTexSubImage3D);
+  _WRAP_METHOD_DECLARATION(compressedTexImage3D);
+  _WRAP_METHOD_DECLARATION(compressedTexSubImage3D);
 
   // Programs and shaders
-  _WRAP_METHOD_DECLARATIONS(attachShader);
-  _WRAP_METHOD_DECLARATIONS(bindAttribLocation);
-  _WRAP_METHOD_DECLARATIONS(compileShader);
-  _WRAP_METHOD_DECLARATIONS(createProgram);
-  _WRAP_METHOD_DECLARATIONS(createShader);
-  _WRAP_METHOD_DECLARATIONS(deleteProgram);
-  _WRAP_METHOD_DECLARATIONS(deleteShader);
-  _WRAP_METHOD_DECLARATIONS(detachShader);
-  _WRAP_METHOD_DECLARATIONS(getAttachedShaders);
-  _WRAP_METHOD_DECLARATIONS(getProgramParameter);
-  _WRAP_METHOD_DECLARATIONS(getProgramInfoLog);
-  _WRAP_METHOD_DECLARATIONS(getShaderParameter);
-  _WRAP_METHOD_DECLARATIONS(getShaderPrecisionFormat);
-  _WRAP_METHOD_DECLARATIONS(getShaderInfoLog);
-  _WRAP_METHOD_DECLARATIONS(getShaderSource);
-  _WRAP_METHOD_DECLARATIONS(isProgram);
-  _WRAP_METHOD_DECLARATIONS(isShader);
-  _WRAP_METHOD_DECLARATIONS(linkProgram);
-  _WRAP_METHOD_DECLARATIONS(shaderSource);
-  _WRAP_METHOD_DECLARATIONS(useProgram);
-  _WRAP_METHOD_DECLARATIONS(validateProgram);
+  _WRAP_METHOD_DECLARATION(attachShader);
+  _WRAP_METHOD_DECLARATION(bindAttribLocation);
+  _WRAP_METHOD_DECLARATION(compileShader);
+  _WRAP_METHOD_DECLARATION(createProgram);
+  _WRAP_METHOD_DECLARATION(createShader);
+  _WRAP_METHOD_DECLARATION(deleteProgram);
+  _WRAP_METHOD_DECLARATION(deleteShader);
+  _WRAP_METHOD_DECLARATION(detachShader);
+  _WRAP_METHOD_DECLARATION(getAttachedShaders);
+  _WRAP_METHOD_DECLARATION(getProgramParameter);
+  _WRAP_METHOD_DECLARATION(getProgramInfoLog);
+  _WRAP_METHOD_DECLARATION(getShaderParameter);
+  _WRAP_METHOD_DECLARATION(getShaderPrecisionFormat);
+  _WRAP_METHOD_DECLARATION(getShaderInfoLog);
+  _WRAP_METHOD_DECLARATION(getShaderSource);
+  _WRAP_METHOD_DECLARATION(isProgram);
+  _WRAP_METHOD_DECLARATION(isShader);
+  _WRAP_METHOD_DECLARATION(linkProgram);
+  _WRAP_METHOD_DECLARATION(shaderSource);
+  _WRAP_METHOD_DECLARATION(useProgram);
+  _WRAP_METHOD_DECLARATION(validateProgram);
 
   // Programs and shaders (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(getFragDataLocation);
+  _WRAP_METHOD_DECLARATION(getFragDataLocation);
 
   // Uniforms and attributes
-  _WRAP_METHOD_DECLARATIONS(disableVertexAttribArray);
-  _WRAP_METHOD_DECLARATIONS(enableVertexAttribArray);
-  _WRAP_METHOD_DECLARATIONS(getActiveAttrib);
-  _WRAP_METHOD_DECLARATIONS(getActiveUniform);
-  _WRAP_METHOD_DECLARATIONS(getAttribLocation);
-  _WRAP_METHOD_DECLARATIONS(getUniform);
-  _WRAP_METHOD_DECLARATIONS(getUniformLocation);
-  _WRAP_METHOD_DECLARATIONS(getVertexAttrib);
-  _WRAP_METHOD_DECLARATIONS(getVertexAttribOffset);
-  _WRAP_METHOD_DECLARATIONS(uniform1f);
-  _WRAP_METHOD_DECLARATIONS(uniform1fv);
-  _WRAP_METHOD_DECLARATIONS(uniform1i);
-  _WRAP_METHOD_DECLARATIONS(uniform1iv);
-  _WRAP_METHOD_DECLARATIONS(uniform2f);
-  _WRAP_METHOD_DECLARATIONS(uniform2fv);
-  _WRAP_METHOD_DECLARATIONS(uniform2i);
-  _WRAP_METHOD_DECLARATIONS(uniform2iv);
-  _WRAP_METHOD_DECLARATIONS(uniform3f);
-  _WRAP_METHOD_DECLARATIONS(uniform3fv);
-  _WRAP_METHOD_DECLARATIONS(uniform3i);
-  _WRAP_METHOD_DECLARATIONS(uniform3iv);
-  _WRAP_METHOD_DECLARATIONS(uniform4f);
-  _WRAP_METHOD_DECLARATIONS(uniform4fv);
-  _WRAP_METHOD_DECLARATIONS(uniform4i);
-  _WRAP_METHOD_DECLARATIONS(uniform4iv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix2fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix3fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix4fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib1f);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib1fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib2f);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib2fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib3f);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib3fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib4f);
-  _WRAP_METHOD_DECLARATIONS(vertexAttrib4fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribPointer);
+  _WRAP_METHOD_DECLARATION(disableVertexAttribArray);
+  _WRAP_METHOD_DECLARATION(enableVertexAttribArray);
+  _WRAP_METHOD_DECLARATION(getActiveAttrib);
+  _WRAP_METHOD_DECLARATION(getActiveUniform);
+  _WRAP_METHOD_DECLARATION(getAttribLocation);
+  _WRAP_METHOD_DECLARATION(getUniform);
+  _WRAP_METHOD_DECLARATION(getUniformLocation);
+  _WRAP_METHOD_DECLARATION(getVertexAttrib);
+  _WRAP_METHOD_DECLARATION(getVertexAttribOffset);
+  _WRAP_METHOD_DECLARATION(uniform1f);
+  _WRAP_METHOD_DECLARATION(uniform1fv);
+  _WRAP_METHOD_DECLARATION(uniform1i);
+  _WRAP_METHOD_DECLARATION(uniform1iv);
+  _WRAP_METHOD_DECLARATION(uniform2f);
+  _WRAP_METHOD_DECLARATION(uniform2fv);
+  _WRAP_METHOD_DECLARATION(uniform2i);
+  _WRAP_METHOD_DECLARATION(uniform2iv);
+  _WRAP_METHOD_DECLARATION(uniform3f);
+  _WRAP_METHOD_DECLARATION(uniform3fv);
+  _WRAP_METHOD_DECLARATION(uniform3i);
+  _WRAP_METHOD_DECLARATION(uniform3iv);
+  _WRAP_METHOD_DECLARATION(uniform4f);
+  _WRAP_METHOD_DECLARATION(uniform4fv);
+  _WRAP_METHOD_DECLARATION(uniform4i);
+  _WRAP_METHOD_DECLARATION(uniform4iv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix2fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix3fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix4fv);
+  _WRAP_METHOD_DECLARATION(vertexAttrib1f);
+  _WRAP_METHOD_DECLARATION(vertexAttrib1fv);
+  _WRAP_METHOD_DECLARATION(vertexAttrib2f);
+  _WRAP_METHOD_DECLARATION(vertexAttrib2fv);
+  _WRAP_METHOD_DECLARATION(vertexAttrib3f);
+  _WRAP_METHOD_DECLARATION(vertexAttrib3fv);
+  _WRAP_METHOD_DECLARATION(vertexAttrib4f);
+  _WRAP_METHOD_DECLARATION(vertexAttrib4fv);
+  _WRAP_METHOD_DECLARATION(vertexAttribPointer);
 
   // Uniforms and attributes (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(uniform1ui);
-  _WRAP_METHOD_DECLARATIONS(uniform2ui);
-  _WRAP_METHOD_DECLARATIONS(uniform3ui);
-  _WRAP_METHOD_DECLARATIONS(uniform4ui);
-  _WRAP_METHOD_DECLARATIONS(uniform1uiv);
-  _WRAP_METHOD_DECLARATIONS(uniform2uiv);
-  _WRAP_METHOD_DECLARATIONS(uniform3uiv);
-  _WRAP_METHOD_DECLARATIONS(uniform4uiv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix3x2fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix4x2fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix2x3fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix4x3fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix2x4fv);
-  _WRAP_METHOD_DECLARATIONS(uniformMatrix3x4fv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribI4i);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribI4ui);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribI4iv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribI4uiv);
-  _WRAP_METHOD_DECLARATIONS(vertexAttribIPointer);
+  _WRAP_METHOD_DECLARATION(uniform1ui);
+  _WRAP_METHOD_DECLARATION(uniform2ui);
+  _WRAP_METHOD_DECLARATION(uniform3ui);
+  _WRAP_METHOD_DECLARATION(uniform4ui);
+  _WRAP_METHOD_DECLARATION(uniform1uiv);
+  _WRAP_METHOD_DECLARATION(uniform2uiv);
+  _WRAP_METHOD_DECLARATION(uniform3uiv);
+  _WRAP_METHOD_DECLARATION(uniform4uiv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix3x2fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix4x2fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix2x3fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix4x3fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix2x4fv);
+  _WRAP_METHOD_DECLARATION(uniformMatrix3x4fv);
+  _WRAP_METHOD_DECLARATION(vertexAttribI4i);
+  _WRAP_METHOD_DECLARATION(vertexAttribI4ui);
+  _WRAP_METHOD_DECLARATION(vertexAttribI4iv);
+  _WRAP_METHOD_DECLARATION(vertexAttribI4uiv);
+  _WRAP_METHOD_DECLARATION(vertexAttribIPointer);
 
   // Drawing buffers
-  _WRAP_METHOD_DECLARATIONS(clear);
-  _WRAP_METHOD_DECLARATIONS(drawArrays);
-  _WRAP_METHOD_DECLARATIONS(drawElements);
-  _WRAP_METHOD_DECLARATIONS(finish);
-  _WRAP_METHOD_DECLARATIONS(flush);
+  _WRAP_METHOD_DECLARATION(clear);
+  _WRAP_METHOD_DECLARATION(drawArrays);
+  _WRAP_METHOD_DECLARATION(drawElements);
+  _WRAP_METHOD_DECLARATION(finish);
+  _WRAP_METHOD_DECLARATION(flush);
 
   // Drawing buffers (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(vertexAttribDivisor);
-  _WRAP_METHOD_DECLARATIONS(drawArraysInstanced);
-  _WRAP_METHOD_DECLARATIONS(drawElementsInstanced);
-  _WRAP_METHOD_DECLARATIONS(drawRangeElements);
-  _WRAP_METHOD_DECLARATIONS(drawBuffers);
-  _WRAP_METHOD_DECLARATIONS(clearBufferfv);
-  _WRAP_METHOD_DECLARATIONS(clearBufferiv);
-  _WRAP_METHOD_DECLARATIONS(clearBufferuiv);
-  _WRAP_METHOD_DECLARATIONS(clearBufferfi);
+  _WRAP_METHOD_DECLARATION(vertexAttribDivisor);
+  _WRAP_METHOD_DECLARATION(drawArraysInstanced);
+  _WRAP_METHOD_DECLARATION(drawElementsInstanced);
+  _WRAP_METHOD_DECLARATION(drawRangeElements);
+  _WRAP_METHOD_DECLARATION(drawBuffers);
+  _WRAP_METHOD_DECLARATION(clearBufferfv);
+  _WRAP_METHOD_DECLARATION(clearBufferiv);
+  _WRAP_METHOD_DECLARATION(clearBufferuiv);
+  _WRAP_METHOD_DECLARATION(clearBufferfi);
 
   // Query objects (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(createQuery);
-  _WRAP_METHOD_DECLARATIONS(deleteQuery);
-  _WRAP_METHOD_DECLARATIONS(isQuery);
-  _WRAP_METHOD_DECLARATIONS(beginQuery);
-  _WRAP_METHOD_DECLARATIONS(endQuery);
-  _WRAP_METHOD_DECLARATIONS(getQuery);
-  _WRAP_METHOD_DECLARATIONS(getQueryParameter);
+  _WRAP_METHOD_DECLARATION(createQuery);
+  _WRAP_METHOD_DECLARATION(deleteQuery);
+  _WRAP_METHOD_DECLARATION(isQuery);
+  _WRAP_METHOD_DECLARATION(beginQuery);
+  _WRAP_METHOD_DECLARATION(endQuery);
+  _WRAP_METHOD_DECLARATION(getQuery);
+  _WRAP_METHOD_DECLARATION(getQueryParameter);
 
   // Samplers (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(createSampler);
-  _WRAP_METHOD_DECLARATIONS(deleteSampler);
-  _WRAP_METHOD_DECLARATIONS(bindSampler);
-  _WRAP_METHOD_DECLARATIONS(isSampler);
-  _WRAP_METHOD_DECLARATIONS(samplerParameteri);
-  _WRAP_METHOD_DECLARATIONS(samplerParameterf);
-  _WRAP_METHOD_DECLARATIONS(getSamplerParameter);
+  _WRAP_METHOD_DECLARATION(createSampler);
+  _WRAP_METHOD_DECLARATION(deleteSampler);
+  _WRAP_METHOD_DECLARATION(bindSampler);
+  _WRAP_METHOD_DECLARATION(isSampler);
+  _WRAP_METHOD_DECLARATION(samplerParameteri);
+  _WRAP_METHOD_DECLARATION(samplerParameterf);
+  _WRAP_METHOD_DECLARATION(getSamplerParameter);
 
   // Sync objects (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(fenceSync);
-  _WRAP_METHOD_DECLARATIONS(isSync);
-  _WRAP_METHOD_DECLARATIONS(deleteSync);
-  _WRAP_METHOD_DECLARATIONS(clientWaitSync);
-  _WRAP_METHOD_DECLARATIONS(waitSync);
-  _WRAP_METHOD_DECLARATIONS(getSyncParameter);
+  _WRAP_METHOD_DECLARATION(fenceSync);
+  _WRAP_METHOD_DECLARATION(isSync);
+  _WRAP_METHOD_DECLARATION(deleteSync);
+  _WRAP_METHOD_DECLARATION(clientWaitSync);
+  _WRAP_METHOD_DECLARATION(waitSync);
+  _WRAP_METHOD_DECLARATION(getSyncParameter);
 
   // Transform feedback (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(createTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(deleteTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(isTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(bindTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(beginTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(endTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(transformFeedbackVaryings);
-  _WRAP_METHOD_DECLARATIONS(getTransformFeedbackVarying);
-  _WRAP_METHOD_DECLARATIONS(pauseTransformFeedback);
-  _WRAP_METHOD_DECLARATIONS(resumeTransformFeedback);
+  _WRAP_METHOD_DECLARATION(createTransformFeedback);
+  _WRAP_METHOD_DECLARATION(deleteTransformFeedback);
+  _WRAP_METHOD_DECLARATION(isTransformFeedback);
+  _WRAP_METHOD_DECLARATION(bindTransformFeedback);
+  _WRAP_METHOD_DECLARATION(beginTransformFeedback);
+  _WRAP_METHOD_DECLARATION(endTransformFeedback);
+  _WRAP_METHOD_DECLARATION(transformFeedbackVaryings);
+  _WRAP_METHOD_DECLARATION(getTransformFeedbackVarying);
+  _WRAP_METHOD_DECLARATION(pauseTransformFeedback);
+  _WRAP_METHOD_DECLARATION(resumeTransformFeedback);
 
   // Uniform buffer objects (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(bindBufferBase);
-  _WRAP_METHOD_DECLARATIONS(bindBufferRange);
-  _WRAP_METHOD_DECLARATIONS(getUniformIndices);
-  _WRAP_METHOD_DECLARATIONS(getActiveUniforms);
-  _WRAP_METHOD_DECLARATIONS(getUniformBlockIndex);
-  _WRAP_METHOD_DECLARATIONS(getActiveUniformBlockParameter);
-  _WRAP_METHOD_DECLARATIONS(getActiveUniformBlockName);
-  _WRAP_METHOD_DECLARATIONS(uniformBlockBinding);
+  _WRAP_METHOD_DECLARATION(bindBufferBase);
+  _WRAP_METHOD_DECLARATION(bindBufferRange);
+  _WRAP_METHOD_DECLARATION(getUniformIndices);
+  _WRAP_METHOD_DECLARATION(getActiveUniforms);
+  _WRAP_METHOD_DECLARATION(getUniformBlockIndex);
+  _WRAP_METHOD_DECLARATION(getActiveUniformBlockParameter);
+  _WRAP_METHOD_DECLARATION(getActiveUniformBlockName);
+  _WRAP_METHOD_DECLARATION(uniformBlockBinding);
 
   // Vertex Array Object (WebGL2)
-  _WRAP_METHOD_DECLARATIONS(createVertexArray);
-  _WRAP_METHOD_DECLARATIONS(deleteVertexArray);
-  _WRAP_METHOD_DECLARATIONS(isVertexArray);
-  _WRAP_METHOD_DECLARATIONS(bindVertexArray);
+  _WRAP_METHOD_DECLARATION(createVertexArray);
+  _WRAP_METHOD_DECLARATION(deleteVertexArray);
+  _WRAP_METHOD_DECLARATION(isVertexArray);
+  _WRAP_METHOD_DECLARATION(bindVertexArray);
 
   // Extensions
-  _WRAP_METHOD_DECLARATIONS(getSupportedExtensions);
-  _WRAP_METHOD_DECLARATIONS(getExtension);
+  _WRAP_METHOD_DECLARATION(getSupportedExtensions);
+  _WRAP_METHOD_DECLARATION(getExtension);
 
   // Exponent extensions
-  _WRAP_METHOD_DECLARATIONS(endFrameEXP);
-  _WRAP_METHOD_DECLARATIONS(flushEXP);
+  _WRAP_METHOD_DECLARATION(endFrameEXP);
+  _WRAP_METHOD_DECLARATION(flushEXP);
 };
