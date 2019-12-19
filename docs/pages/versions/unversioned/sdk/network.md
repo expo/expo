@@ -1,15 +1,15 @@
 ---
 title: Network
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-network"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-network'
 ---
 
-This module provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
+**`expo-network`** provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -50,9 +50,9 @@ A `Promise` that resolves to an object with the following fields:
 
 - **type (_NetworkStateType_)** -- a [`NetworkStateType`](#networknetworkstatetype) enum value that represents the current network connection type.
 
-- **isConnected (_boolean_)** -- if there is an active network connection. Note that this does not mean that internet is reachable. This field is  `false` if the `type` is either `Network.NetworkStateType.NONE` or `Network.NetworkStateType.UNKNOWN`, `true` otherwise. 
+- **isConnected (_boolean_)** -- if there is an active network connection. Note that this does not mean that internet is reachable. This field is `false` if the `type` is either `Network.NetworkStateType.NONE` or `Network.NetworkStateType.UNKNOWN`, `true` otherwise.
 
-- **isInternetReachable (_boolean_)** -- if the internet is reachable with the currently active network connection. On Android, this depends on `NetInfo.isConnected()` (API level < 29) or `ConnectivityManager.getActiveNetwork()` (API level >= 29).  On iOS, this value will always be the same as `isConnected`.
+- **isInternetReachable (_boolean_)** -- if the internet is reachable with the currently active network connection. On Android, this depends on `NetInfo.isConnected()` (API level < 29) or `ConnectivityManager.getActiveNetwork()` (API level >= 29). On iOS, this value will always be the same as `isConnected`.
 
 **Examples**
 
@@ -67,7 +67,7 @@ await Network.getNetworkStateAsync();
 
 ### `Network.getIpAddressAsync()`
 
-Gets the device's current IPv4 address. 
+Gets the device's current IPv4 address.
 
 On web, this method uses [`Ipify Api`](https://www.ipify.org/) to get public ip address of current device via http request.
 
@@ -94,9 +94,9 @@ Gets the specified network interface's Mac address. On Android, it requires [`an
 
 A `Promise` that resolves to a `string` of the network adapter MAC address or `null` if there's no such address matching the interface. On web, the `Promise` resolves to `null`.
 
-[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. 
+[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`.
 
-If you need to identify the device, use the `getIosIdForVendorAsync()` method of the `expo-application` unimodule instead. 
+If you need to identify the device, use the `getIosIdForVendorAsync()` method of the `expo-application` unimodule instead.
 
 **Examples**
 
@@ -138,10 +138,10 @@ An enum of the different types of devices supported by Expo, with these values:
 
 ## Error Codes
 
-| Code                                    | Description                                                                                                                                                               |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ERR_NETWORK_IP_ADDRESS                | On Android, there may be an unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                                                                              |
-| ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                           |
-| ERR_NETWORK_SOCKET_EXCEPTION            | An error was encountered in creating or accessing the socket in `getMacAddressAsync`.                                                                                              |
+| Code                                    | Description                                                                                                                                                                                |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ERR_NETWORK_IP_ADDRESS                  | On Android, there may be an unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                |
+| ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                                            |
+| ERR_NETWORK_SOCKET_EXCEPTION            | An error was encountered in creating or accessing the socket in `getMacAddressAsync`.                                                                                                      |
 | ERR_NETWORK_INVALID_PERMISSION_INTERNET | There are invalid permissions for [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
-| ERR_NETWORK_NO_ACCESS_NETWORKINFO       | Unable to access network information                                                                                                                                      |
+| ERR_NETWORK_NO_ACCESS_NETWORKINFO       | Unable to access network information                                                                                                                                                       |

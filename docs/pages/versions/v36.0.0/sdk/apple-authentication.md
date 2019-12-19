@@ -1,17 +1,17 @@
 ---
 title: AppleAuthentication
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication'
 ---
 
-This library provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.
+**`expo-apple-authentication`** provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.
 
 Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ❌     |  ❌     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ❌             | ❌               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -243,10 +243,10 @@ The options you can supply when making a call to [`AppleAuthentication.signInAsy
 
 ## Error Codes
 
-| Code  | Description |
-| --- | --- |
-| ERR_APPLE_AUTHENTICATION_CREDENTIAL | The request to get credential state failed. See the error message for additional specific information. |
-| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in. |
-| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information. |
-| ERR_APPLE_AUTHENTICATION_UNAVAILABLE | Apple authentication is unavailable on the device. |
-| ERR_CANCELED | The user canceled the sign-in request from the system modal. |
+| Code                                    | Description                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| ERR_APPLE_AUTHENTICATION_CREDENTIAL     | The request to get credential state failed. See the error message for additional specific information. |
+| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE  | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in.   |
+| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information.          |
+| ERR_APPLE_AUTHENTICATION_UNAVAILABLE    | Apple authentication is unavailable on the device.                                                     |
+| ERR_CANCELED                            | The user canceled the sign-in request from the system modal.                                           |

@@ -1,26 +1,44 @@
 ---
 title: IntentLauncher
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher'
 ---
 
-Provides a way to launch android intents. e.g. - opening a specific settings screen.
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-intent-launcher`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-intent-launcher).
 
+#### Example
+
+```javascript
+import * as IntentLauncher from 'expo-intent-launcher';
+
+// Open location settings
+IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
+```
 
 ## API
 
 ```js
 import * as IntentLauncher from 'expo-intent-launcher';
 ```
+
+<TableOfContentSection title='Methods' contents={['IntentLauncher.startActivityAsync(activityAction, intentParams)']} />
+
+<TableOfContentSection title='Types' contents={['IntentParams', 'IntentResult']} />
+
+<TableOfContentSection title='Enums' contents={['ResultCode']} />
+
+## Methods
 
 ### `IntentLauncher.startActivityAsync(activityAction, intentParams)`
 
@@ -37,7 +55,7 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 
 ## Types
 
-### Type `IntentParams`
+### `IntentParams`
 
 | Key         |  Type  | Description                                                                                                                                                                                                                       |
 | ----------- | :----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -49,7 +67,7 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 | packageName | string | Package name used as an identifier of ComponentName. Set this only if you want to explicitly set the component to handle the intent.                                                                                              |
 | className   | string | Class name of the ComponentName.                                                                                                                                                                                                  |
 
-### Type `IntentResult`
+### `IntentResult`
 
 | Key        |  Type  | Description                                                                               |
 | ---------- | :----: | ----------------------------------------------------------------------------------------- |
@@ -59,19 +77,10 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 
 ## Enums
 
-### Enum `ResultCode`
+### `ResultCode`
 
 | Result code | Value | Description                                                               |
 | ----------- | :---: | ------------------------------------------------------------------------- |
 | Success     |  -1   | Indicates that the activity operation succeeded.                          |
 | Canceled    |   0   | Means that the activity was canceled, e.g. by tapping on the back button. |
 | FirstUser   |   1   | First custom, user-defined value that can be returned by the activity.    |
-
-#### Example
-
-```javascript
-import * as IntentLauncher from 'expo-intent-launcher';
-
-// Open location settings
-IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
-```

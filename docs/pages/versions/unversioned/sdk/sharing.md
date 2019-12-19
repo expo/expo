@@ -1,15 +1,19 @@
 ---
 title: Sharing
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
 ---
 
-This module allows sharing files.
+import Video from '../../../../components/plugins/Video'
+
+**`expo-sharing`** allows sharing files.
+
+<Video file={"sdk/sharing.mp4"} loop={false} />
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

@@ -1,15 +1,15 @@
 ---
 title: Appearance
-sourceCodeUrl: "https://github.com/expo/react-native-appearance"
+sourceCodeUrl: 'https://github.com/expo/react-native-appearance'
 ---
 
-Detect preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
+**`expo-appearance`** allows you to detect the user's preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -22,6 +22,7 @@ The available options are: `automatic` (follow system appearance settings and no
 If this key is absent, the app will default to the `light` style.
 
 Example `app.json` configuration:
+
 ```json
 {
   "expo": {
@@ -37,6 +38,7 @@ Example `app.json` configuration:
 ```
 
 In bare apps:
+
 - **iOS**: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
 - **Android**: please follow steps from the [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
 

@@ -1,18 +1,18 @@
 ---
 title: Barometer
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
+`Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -74,6 +74,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API

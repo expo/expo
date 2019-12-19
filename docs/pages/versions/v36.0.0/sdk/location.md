@@ -1,27 +1,43 @@
 ---
 title: Location
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-location"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 ---
 
-This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-location`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+
+## Configuration
+
+In Managed apps, `Location` requires `Permissions.LOCATION`.
+
+In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
+
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). **(_iOS only_)**
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+
+In order to use [Geofencing Methods](#geofencing-methods), the following requirements apply:
+
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 ## Usage
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
-
-You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 <SnackEmbed snackId="@charliecruzan/basiclocationexample" />
 
@@ -30,6 +46,18 @@ You must request permission to access the user's location before attempting to g
 ```js
 import * as Location from 'expo-location';
 ```
+
+<TableOfContentSection title='Methods' contents={['Location.hasServicesEnabledAsync()', 'Location.requestPermissionsAsync()', 'Location.getPermissionsAsync()', 'Location.getLastKnownPositionAsync()', 'Location.getCurrentPositionAsync(options)', 'Location.watchPositionAsync(options, callback)', 'Location.getProviderStatusAsync()', 'Location.enableNetworkProviderAsync()', 'Location.getHeadingAsync()', 'Location.watchHeadingAsync(callback)', 'Location.geocodeAsync(address)', 'Location.reverseGeocodeAsync(location)', 'Location.setApiKey(apiKey)', 'Location.installWebGeolocationPolyfill()']} />
+
+<TableOfContentSection title='Background Location Methods' contents={['Location.startLocationUpdatesAsync(taskName, options)', 'Location.stopLocationUpdatesAsync(taskName)', 'Location.hasStartedLocationUpdatesAsync(taskName)']} />
+
+<TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
+
+<TableOfContentSection title='Types' contents={['Location', 'Region', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
+
+<TableOfContentSection title='Enums' contents={['Location.Accuracy', 'Location.ActivityType', 'Location.GeofencingEventType', 'Location.GeofencingRegionState']} />
+
+## Methods
 
 ### `Location.hasServicesEnabledAsync()`
 
@@ -218,13 +246,9 @@ Sets a Google API Key for using Geocoding API. This method can be useful for And
 
 Polyfills `navigator.geolocation` for interop with the core React Native and Web API approach to geolocation.
 
-## Background Location
+## Background Location Methods
 
-Background Location API can notify your app about new locations, also while it's in background. There are some requirements in order to use Background Location API:
-
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). (_iOS only_)
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+The Background Location API can notify your app about new locations while your app is backgrounded. Make sure you've followed the required steps detailed [here](#configuration).
 
 ### `Location.startLocationUpdatesAsync(taskName, options)`
 
@@ -293,14 +317,10 @@ A promise resolving as soon as the task is unregistered.
 
 A promise resolving to boolean value indicating whether the location task is started or not.
 
-## Geofencing
+## Geofencing Methods
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. There are some requirements in order to use Geofencing API:
-
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
-- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
+To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
@@ -370,7 +390,7 @@ A promise resolving to boolean value indicating whether the geofencing task is s
 
 ## Types
 
-### Type `Location`
+### `Location`
 
 Object of type `Location` contains following keys:
 
@@ -384,7 +404,7 @@ Object of type `Location` contains following keys:
   - **speed (_number_)** -- The instantaneous speed of the device in meters per second.
 - **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
-### Type `Region`
+### `Region`
 
 Object of type `Region` includes following fields:
 
@@ -457,4 +477,4 @@ Open Android Studio, and launch your AVD in the emulator. Then, on the options b
 
 ![Android Simulator location](/static/images/android-emulator-location.png)
 
-If you don't receive the locations in the emulator, you may have to turn off "Improve Location Accuracy" in Settings - Location in the emulator. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator. 
+If you don't receive the locations in the emulator, you may have to turn off "Improve Location Accuracy" in Settings - Location in the emulator. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
