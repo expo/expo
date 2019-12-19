@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-gl'
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D vector graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
+**`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
 #### Platform Compatibility
 
