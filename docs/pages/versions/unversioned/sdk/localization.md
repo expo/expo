@@ -1,18 +1,18 @@
 ---
 title: Localization
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-localization"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-localization'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-You can use this module to Localize your app, and access the locale data on the native device.
+**`expo-localization`** allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

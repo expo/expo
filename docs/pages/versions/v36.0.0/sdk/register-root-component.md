@@ -1,15 +1,15 @@
 ---
 title: registerRootComponent
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo/src/launch"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-35/packages/expo/src/launch'
 ---
 
 This function tells Expo what component to use as the root component for your app.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

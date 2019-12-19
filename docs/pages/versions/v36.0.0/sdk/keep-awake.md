@@ -1,26 +1,23 @@
 ---
 title: KeepAwake
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-keep-awake"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-keep-awake'
 ---
 
-A React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-keep-awake`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-keep-awake).
 
-
 ## Usage
-
-```js
-import KeepAwake from 'expo-keep-awake';
-```
 
 ### Example: hook
 
@@ -59,24 +56,35 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ 
+    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */
+
     activateKeepAwake();
-  /* @end */
+    /* @end */
   };
 
   _deactivate = () => {
     /* @info Deactivates KeepAwake, or does nothing if it was never activated. */
     deactivateKeepAwake();
-  /* @end */
+    /* @end */
   };
 }
 ```
 
-### `useKeepAwake(tag?: string): void`
+## API
+
+```js
+import KeepAwake from 'expo-keep-awake';
+```
+
+<TableOfContentSection title='Methods' contents={['useKeepAwake(tag?)', 'activateKeepAwake(tag?)', 'deactivateKeepAwake(tag?)']} />
+
+## Methods
+
+### `useKeepAwake(tag?)`
 
 A React hook to keep the screen awake for as long as the owner component is mounted. The optionally provided `tag` argument is used when activating and deactivating the keep-awake feature. If unspecified, the default tag is used. See the documentation for `activateKeepAwake` below to learn more about the `tag` argument.
 
-### `activateKeepAwake(tag?: string): void`
+### `activateKeepAwake(tag?)`
 
 Prevents the screen from sleeping until `deactivateKeepAwake` is called with the same `tag` value.
 
@@ -86,7 +94,7 @@ If the `tag` argument is specified, the screen will not sleep until you call `de
 
 - **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, the default tag is used.
 
-### `deactivateKeepAwake(tag?: string): void`
+### `deactivateKeepAwake(tag?)`
 
 Releases the lock on screen-sleep prevention associated with the given `tag` value. If `tag` is unspecified, it defaults to the same default tag that `activateKeepAwake` uses.
 

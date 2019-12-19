@@ -1,22 +1,21 @@
 ---
 title: ImageManipulator
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-image-manipulator"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-manipulator'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-An API to modify images stored on the local file system.
+**`expo-image-manipulator`** provides an API to modify images stored on the local file system.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-manipulator`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
-
 
 ## Usage
 
@@ -28,7 +27,7 @@ This will first rotate the image 90 degrees clockwise, then flip the rotated ima
 import React, { useState, useEffect } from 'react';
 import { Button, View, Image } from 'react-native';
 import { Asset } from 'expo-asset';
-import * as ImageManipulator from 'expo-image-manipulator'; 
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -71,6 +70,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -78,6 +78,8 @@ export default function App() {
 ```js
 import * as ImageManipulator from 'expo-image-manipulator';
 ```
+
+## Methods
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 

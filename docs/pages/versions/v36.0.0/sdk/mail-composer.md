@@ -1,15 +1,19 @@
 ---
 title: MailComposer
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-mail-composer"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-mail-composer'
 ---
 
-An API to compose mails using OS specific UI.
+import Video from '../../../../components/plugins/Video'
+
+**`expo-mail-composer`** allows you to compose and send mail quickly and easily using the OS UI. This module can't be used on iOS Simulators since you can't sign into a mail account on them.
+
+<Video file={"sdk/mailcomposer.mp4"} loop={false} />
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -20,6 +24,8 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as MailComposer from 'expo-mail-composer';
 ```
+
+## Methods
 
 ### `MailComposer.composeAsync(options)`
 

@@ -1,18 +1,18 @@
 ---
 title: Contacts
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Provides access to the phone's system contacts.
+**`expo-contacts`** provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -61,6 +61,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -71,12 +72,9 @@ import * as Contacts from 'expo-contacts';
 
 <TableOfContentSection title='Methods' contents={['Contacts.getContactsAsync(contactQuery)', 'Contacts.getContactByIdAsync(contactId, fields)', 'Contacts.addContactAsync(contact, containerId)', 'Contacts.updateContactAsync(contact)', 'Contacts.presentFormAsync(contactId, contact, formOptions)', 'Contacts.removeContactAsync(contactId)', 'Contacts.writeContactToFileAsync(contactQuery)']} />
 
-
 <TableOfContentSection title='iOS-only Methods' contents={['Contacts.addExistingGroupToContainerAsync(groupId, containerId)', 'Contacts.createGroupAsync(groupName, containerId?)', 'Contacts.updateGroupNameAsync(groupName, groupId)', 'Contacts.removeGroupAsync(groupId)', 'Contacts.addExistingContactToGroupAsync(contactId, groupId)', 'Contacts.removeContactFromGroupAsync(contactId, groupId)', 'Contacts.getGroupsAsync(query)', 'Contacts.getDefaultContainerIdAsync()', 'Contacts.getContainersAsync(containerQuery)']} />
 
-
 <TableOfContentSection title='Types' contents={['Contact', 'Group', 'Container', 'Date', 'Relationship', 'Email', 'PhoneNumber', 'Address', 'SocialProfile', 'InstantMessageAddress', 'UrlAddress', 'Image', 'FormOptions', 'ContactQuery', 'GroupQuery', 'ContainerQuery', 'ContactResponse']} />
-
 
 <TableOfContentSection title='Constants' contents={['Field', 'FormType', 'ContactType', 'SortType', 'ContainerType', 'CalendarFormat']} />
 
@@ -97,7 +95,6 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 #### Returns
 
 A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
-
 
 ### `Contacts.getContactsAsync(contactQuery)`
 

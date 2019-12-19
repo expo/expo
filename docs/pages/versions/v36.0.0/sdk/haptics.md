@@ -1,9 +1,11 @@
 ---
 title: Haptics
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics'
 ---
 
-Provides haptic feedback for
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-haptics`** provides haptic (touch) feedback for
 
 - iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.
@@ -19,20 +21,23 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-haptics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
-
 
 ## API
 
 ```js
 import * as Haptics from 'expo-haptics';
 ```
+
+<TableOfContentSection title='Methods' contents={['Haptics.selectionAsync()', 'Haptics.notificationAsync(type)', 'Haptics.impactAsync(style)']} />
+
+## Methods
 
 ### `Haptics.selectionAsync()`
 
