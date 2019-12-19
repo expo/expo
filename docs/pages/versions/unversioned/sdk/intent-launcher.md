@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-la
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-intent-launcher`** provides a way to launch android intents. For example- opening a specific settings screen.
+**`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
 #### Platform Compatibility
 
