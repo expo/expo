@@ -105,10 +105,6 @@ Adds a notification to your standalone app with refresh button and debug info.
 
 > **ExpoKit**: To change your app's scheme, replace all occurrences of the old scheme in `Info.plist`, `AndroidManifest.xml`, and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`.
 
-### `"entryPoint"`
-
-The relative path to your main JavaScript file.
-
 ### `"extra"`
 
 Any extra fields you want to pass to your experience. Values are accessible via `Constants.manifest.extra` ([read more](../../sdk/constants/#expoconstantsmanifest))
