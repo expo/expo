@@ -3,7 +3,7 @@ title: VideoThumbnails
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-video-thumbnails'
 ---
 
-**`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail for a provided video.
+**`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail from a video file.
 
 #### Platform Compatibility
 
