@@ -3,7 +3,7 @@ title: SplashScreen
 sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/launch/SplashScreen.ts'
 ---
 
-The `SplashScreen` module tells Expo to keep the splash screen visible until you make it hide.
+The `SplashScreen` module tells Expo to keep the splash screen visible until you choose to hide it. This is useful to do some work behind the scenes before displaying your app and to create transitions for your splash screen, so you can have it fade out or slide away, for example.
 
 This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)
 
