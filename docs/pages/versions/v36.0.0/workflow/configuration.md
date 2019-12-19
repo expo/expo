@@ -261,7 +261,7 @@ Configuration for remote (push) notifications.
       Local path or remote url to an image to use as the icon for push notifications.
       96x96 png grayscale with transparency.
     */
-    "icon": STRING,
+    "iconUrl": STRING,
 
     /*
       Tint color for the push notification image when it appears in the notification tray.
