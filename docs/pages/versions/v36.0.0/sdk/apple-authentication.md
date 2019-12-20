@@ -121,7 +121,9 @@ A promise that resolves to `true` if the system supports Apple authentication, a
 
 Sends a request to the operating system to initiate the Apple authentication flow, which will present a modal to the user over your app and allow them to sign in.
 
-You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime. Additionally, you will only receive this information the first time users sign into your app, so **you must store it for later use**. Even if you request scopes every time a user signs into your app, and the user grants your app access, iOS will provide you with this information only upon the user's first successful sign-in.
+You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime.
+
+Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](../securestore/), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
 
 #### Arguments
 
