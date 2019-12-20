@@ -39,7 +39,16 @@ async function _subscribeUserToPushAsync(): Promise<DevicePushToken['data']> {
   }
   guardPermission();
 
-  const registration = await navigator.serviceWorker.register(Constants.manifest.notification.serviceWorkerPath);
+  let registration: ServiceWorkerRegistration | null = null;
+  try {
+    registration = await navigator.serviceWorker.register(
+      Constants.manifest.notification.serviceWorkerPath
+    );
+  } catch (error) {
+    throw new Error(
+      `Notifications might not be working because the service worker (${Constants.manifest.notification.serviceWorkerPath}) couldn't be registered: ${error}`
+    );
+  }
   await navigator.serviceWorker.ready;
 
   if (!registration.active) {
@@ -52,16 +61,17 @@ async function _subscribeUserToPushAsync(): Promise<DevicePushToken['data']> {
     userVisibleOnly: true,
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
   };
-  const pushSubscription = await registration.pushManager
-    .subscribe(subscribeOptions)
-    .catch(error => {
-      throw new CodedError(
-        'E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED',
-        'The device was unable to register for remote notifications with the browser endpoint. (' +
-          error +
-          ')'
-      );
-    });
+  let pushSubscription: PushSubscription | null = null;
+  try {
+    pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+  } catch (error) {
+    throw new CodedError(
+      'E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED',
+      'The device was unable to register for remote notifications with the browser endpoint. (' +
+        error +
+        ')'
+    );
+  }
   const pushSubscriptionJson = pushSubscription.toJSON();
 
   const subscriptionObject = {
