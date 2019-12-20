@@ -353,21 +353,6 @@ type PushMessage = {
    */
   badge?: number,
 
-  /**
-   * ID of the Notification Category through which to display this notification.
-   *
-   * To send a notification with category to the Expo client, prefix the string
-   * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
-   * applications, use plain `yourCategoryId`.
-   */
-  _category?: string,
-
-  /**
-   * Displays the notification when the app is foreground.
-   * Defaults to `false`.
-   */
-  _displayInForeground?: boolean
-
   // Android-specific fields
 
   /**
@@ -383,7 +368,7 @@ type PushMessage = {
    */
   channelId?: string,
 
-  // Web-specific fields
+  // Web-specific fields (note: currently not supported and may change)
 
   /**
    * The web path that will be opened/focused after the user clicks the
@@ -399,24 +384,6 @@ type PushMessage = {
    * Learn more here: https://docs.expo.io/versions/latest/guides/using-vapid/
    */
   vapidSubject?: string,
-
-  /**
-   * When a new notification is shown with the same tag, any old notifications
-   * with that tag are removed before the new notification is shown.
-   * Defaults to none, which means the new notification will not replace any
-   * old notifications.
-   */
-  _tag?: string,
-
-  /**
-   * Only applicable when `_tag` is set.
-   * Whether a new notification of the same tag will play a sound, vibrate and
-   * wake up the users device.
-   * Defaults to `false`, which means that the new notification replacing an
-   * existing one (i.e., with the same `_tag`) will have no sound, vibration
-   * and the screen is kept asleep.
-   */
-  _renotify?: boolean
 }
 ```
 
