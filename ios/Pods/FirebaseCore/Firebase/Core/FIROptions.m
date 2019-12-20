@@ -110,22 +110,6 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
 
 #pragma mark - Private class methods
 
-+ (void)initialize {
-  // Report FirebaseCore version for useragent string
-  [FIRApp registerLibrary:@"fire-ios"
-              withVersion:[NSString stringWithUTF8String:FIRCoreVersionString]];
-
-  NSDictionary<NSString *, id> *info = [[NSBundle mainBundle] infoDictionary];
-  NSString *xcodeVersion = info[@"DTXcodeBuild"];
-  NSString *sdkVersion = info[@"DTSDKBuild"];
-  if (xcodeVersion) {
-    [FIRApp registerLibrary:@"xcode" withVersion:xcodeVersion];
-  }
-  if (sdkVersion) {
-    [FIRApp registerLibrary:@"apple-sdk" withVersion:sdkVersion];
-  }
-}
-
 + (NSDictionary *)defaultOptionsDictionary {
   if (sDefaultOptionsDictionary != nil) {
     return sDefaultOptionsDictionary;
@@ -346,6 +330,59 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
   _appGroupID = [appGroupID copy];
 }
 
+#pragma mark - Equality
+
+- (BOOL)isEqual:(id)object {
+  if (!object || ![object isKindOfClass:[FIROptions class]]) {
+    return NO;
+  }
+
+  return [self isEqualToOptions:(FIROptions *)object];
+}
+
+- (BOOL)isEqualToOptions:(FIROptions *)options {
+  // Skip any non-FIROptions classes.
+  if (![options isKindOfClass:[FIROptions class]]) {
+    return NO;
+  }
+
+  // Check the internal dictionary and custom properties for differences.
+  if (![options.optionsDictionary isEqualToDictionary:self.optionsDictionary]) {
+    return NO;
+  }
+
+  // Validate extra properties not contained in the dictionary. Only validate it if one of the
+  // objects has the property set.
+  if ((options.deepLinkURLScheme != nil || self.deepLinkURLScheme != nil) &&
+      ![options.deepLinkURLScheme isEqualToString:self.deepLinkURLScheme]) {
+    return NO;
+  }
+
+  if ((options.appGroupID != nil || self.appGroupID != nil) &&
+      ![options.appGroupID isEqualToString:self.appGroupID]) {
+    return NO;
+  }
+
+  // Validate the Analytics options haven't changed with the Info.plist.
+  if (![options.analyticsOptionsDictionary isEqualToDictionary:self.analyticsOptionsDictionary]) {
+    return NO;
+  }
+
+  // We don't care about the `editingLocked` or `usingOptionsFromDefaultPlist` properties since
+  // those relate to lifecycle and construction, we only care if the contents of the options
+  // themselves are equal.
+  return YES;
+}
+
+- (NSUInteger)hash {
+  // This is strongly recommended for any object that implements a custom `isEqual:` method to
+  // ensure that dictionary and set behavior matches other `isEqual:` checks.
+  // Note: `self.analyticsOptionsDictionary` was left out here since it solely relies on the
+  // contents of the main bundle's `Info.plist`. We should avoid reading that file and the contents
+  // should be identical.
+  return self.optionsDictionary.hash ^ self.deepLinkURLScheme.hash ^ self.appGroupID.hash;
+}
+
 #pragma mark - Internal instance methods
 
 - (NSDictionary *)analyticsOptionsDictionaryWithInfoDictionary:(NSDictionary *)infoDictionary {
@@ -399,7 +436,7 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
   return [value boolValue];
 }
 
-- (BOOL)isAnalyticsCollectionExpicitlySet {
+- (BOOL)isAnalyticsCollectionExplicitlySet {
   // If it's de-activated, it classifies as explicity set. If not, it's not a good enough indication
   // that the developer wants FirebaseAnalytics enabled so continue checking.
   if (self.isAnalyticsCollectionDeactivated) {

@@ -7,52 +7,60 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		20D46481F92261865FA849B7689B4EF0 /* cct.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BED21DD76360AF3F633A64B240E932D /* cct.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		358AEAED6B58F7BBC69B0CD0B9FBFDEE /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A5926062B1A450D729C9EF82E98921 /* GDTCCTUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		42898990012F52BB2052B835C986A722 /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 392B03A6BBD8F4E47A0E145C14558245 /* GoogleDataTransportCCTSupport-dummy.m */; };
-		49FF7F11C6CD85E0CA56CB9451975A54 /* GDTCCTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CDC96DAE568B122D11EE9F078C4DF1 /* GDTCCTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		75DAC40CB8422B1ECD663551955AA899 /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF8B6BE211C07E222B83E10CA7A3B4D1 /* GDTCCTPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7C150073D25F451E25414F1372F39C89 /* GDTCCTNanopbHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF5A6550936A1CB39500DE01F4DCDCE /* GDTCCTNanopbHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A7D6F678752F07FD6DB5BCFF3FD878A0 /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = CEF48D452AB0592D8CF2D9EB84FE67A3 /* cct.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B2F3088C3B4BADD6B961D432FABA9AC6 /* GDTCCTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = F63B1CB3E04FB8151E24339D76DF3A58 /* GDTCCTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EDFA5822DEA122414A33B9DFA4DEF05A /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EAEAE51A155CE00C64EF6F7990647A /* GDTCCTNanopbHelpers.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0802A46F3B75061DF5D55FC22232EAFA /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = C8569F16159AB4DEC87BFCA80CF2D548 /* cct.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2FCC3D93AE53206DF64FF79A63E79531 /* GDTCCTNanopbHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E319C14215548777DA360FBFB1DC8EF3 /* GDTCCTNanopbHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3BB2FCFA581C12C756BA2133FAE25D57 /* cct.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 54A50A80BE3A9F716B7A38BA81CE6D55 /* cct.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4C69AE4626C4605637381F3DE2F90084 /* GDTFLLUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = F241D8CAFF9ABF12018413C543415584 /* GDTFLLUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7CA057E6B3EBC7774371062310C170AB /* GDTCCTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6CE3794E15B8EB2399A1AC641C9D355C /* GDTCCTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		95CAD9C678F8C56EB1D35AEC37994BD6 /* GDTFLLUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD2B5DD6664FD8D4C2886AA47E855D4 /* GDTFLLUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A4B23273A75C6D153FA972DD4F744A59 /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A89A031DB8499DD3EB58ACC931CCFE1 /* GoogleDataTransportCCTSupport-dummy.m */; };
+		ADC7C5267CB4B964267A5929383EAF59 /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = EC2CB08B1B695102B93F6BD7E35948DA /* GDTCCTNanopbHelpers.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B3D1212AF0E82A1928CCD63582521654 /* GDTFLLPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 80F30F5DCCACC5919B1EA4DCF5C101B9 /* GDTFLLPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BBE1F3ADBDDE418EADA482B6C5BE8DC3 /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = B8385B989E640DBE2153D853928D9A03 /* GDTCCTPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C3AEA0504F613895B66BC4ED8AD81818 /* GDTFLLPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4292A68E4903BE4E80FD6A8D27189539 /* GDTFLLPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E927033255DA77942059AD956AB739B0 /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = FE4A03A98E4935C64F9ECAC8F81D71EF /* GDTCCTUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F8FBE2AEB8C8FC6D9A984C92C16006EB /* GDTCCTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = B42EC1329584E4400C9CDE7DE9A2B60B /* GDTCCTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		30494162F9900E01420117B3D563D98D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 824DD5954CCEACD8EEE92626E02B93D5 /* nanopb.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
-			remoteInfo = nanopb;
-		};
-		8DFEC4E11F7C2E3DA29373128A1105BF /* PBXContainerItemProxy */ = {
+		320E4DF76969F2F64BFBB62651EF4EEF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A663367796379208D0A82DEBFE31A521 /* GoogleDataTransport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 78B41281B6D2EAC6C3C75FFE5052E985;
 			remoteInfo = GoogleDataTransport;
 		};
+		57D0608A68B2B123BDFCA354A5EB2F1B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 824DD5954CCEACD8EEE92626E02B93D5 /* nanopb.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
+			remoteInfo = nanopb;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		392B03A6BBD8F4E47A0E145C14558245 /* GoogleDataTransportCCTSupport-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleDataTransportCCTSupport-dummy.m"; sourceTree = "<group>"; };
-		3DF5A6550936A1CB39500DE01F4DCDCE /* GDTCCTNanopbHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTNanopbHelpers.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTNanopbHelpers.h; sourceTree = "<group>"; };
-		42D5CB9CED649E4669029B47D97FFACC /* GoogleDataTransportCCTSupport.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleDataTransportCCTSupport.xcconfig; sourceTree = "<group>"; };
+		1F1C27F45EB6B5230EAD703A536A899B /* GoogleDataTransportCCTSupport.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleDataTransportCCTSupport.xcconfig; sourceTree = "<group>"; };
+		2A89A031DB8499DD3EB58ACC931CCFE1 /* GoogleDataTransportCCTSupport-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleDataTransportCCTSupport-dummy.m"; sourceTree = "<group>"; };
+		4292A68E4903BE4E80FD6A8D27189539 /* GDTFLLPrioritizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTFLLPrioritizer.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTFLLPrioritizer.m; sourceTree = "<group>"; };
+		54A50A80BE3A9F716B7A38BA81CE6D55 /* cct.nanopb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = cct.nanopb.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h; sourceTree = "<group>"; };
+		6CE3794E15B8EB2399A1AC641C9D355C /* GDTCCTPrioritizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTPrioritizer.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTPrioritizer.h; sourceTree = "<group>"; };
+		80F30F5DCCACC5919B1EA4DCF5C101B9 /* GDTFLLPrioritizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTFLLPrioritizer.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTFLLPrioritizer.h; sourceTree = "<group>"; };
 		824DD5954CCEACD8EEE92626E02B93D5 /* nanopb */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nanopb; path = nanopb.xcodeproj; sourceTree = "<group>"; };
-		9BED21DD76360AF3F633A64B240E932D /* cct.nanopb.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = cct.nanopb.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h; sourceTree = "<group>"; };
 		A4B79FE65AF751477BD628A267EF1366 /* libGoogleDataTransportCCTSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libGoogleDataTransportCCTSupport.a; path = libGoogleDataTransportCCTSupport.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A663367796379208D0A82DEBFE31A521 /* GoogleDataTransport */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleDataTransport; path = GoogleDataTransport.xcodeproj; sourceTree = "<group>"; };
-		A7CDC96DAE568B122D11EE9F078C4DF1 /* GDTCCTUploader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTUploader.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTUploader.h; sourceTree = "<group>"; };
-		C6A5926062B1A450D729C9EF82E98921 /* GDTCCTUploader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTUploader.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTUploader.m; sourceTree = "<group>"; };
-		CEF48D452AB0592D8CF2D9EB84FE67A3 /* cct.nanopb.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cct.nanopb.c; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.c; sourceTree = "<group>"; };
-		DF8B6BE211C07E222B83E10CA7A3B4D1 /* GDTCCTPrioritizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTPrioritizer.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTPrioritizer.m; sourceTree = "<group>"; };
-		F63B1CB3E04FB8151E24339D76DF3A58 /* GDTCCTPrioritizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTPrioritizer.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTPrioritizer.h; sourceTree = "<group>"; };
-		F6EAEAE51A155CE00C64EF6F7990647A /* GDTCCTNanopbHelpers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTNanopbHelpers.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTNanopbHelpers.m; sourceTree = "<group>"; };
+		B42EC1329584E4400C9CDE7DE9A2B60B /* GDTCCTUploader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTUploader.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTUploader.h; sourceTree = "<group>"; };
+		B8385B989E640DBE2153D853928D9A03 /* GDTCCTPrioritizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTPrioritizer.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTPrioritizer.m; sourceTree = "<group>"; };
+		C8569F16159AB4DEC87BFCA80CF2D548 /* cct.nanopb.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cct.nanopb.c; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Protogen/nanopb/cct.nanopb.c; sourceTree = "<group>"; };
+		E319C14215548777DA360FBFB1DC8EF3 /* GDTCCTNanopbHelpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCCTNanopbHelpers.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTCCTNanopbHelpers.h; sourceTree = "<group>"; };
+		EC2CB08B1B695102B93F6BD7E35948DA /* GDTCCTNanopbHelpers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTNanopbHelpers.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTNanopbHelpers.m; sourceTree = "<group>"; };
+		F241D8CAFF9ABF12018413C543415584 /* GDTFLLUploader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTFLLUploader.h; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/Private/GDTFLLUploader.h; sourceTree = "<group>"; };
+		FCD2B5DD6664FD8D4C2886AA47E855D4 /* GDTFLLUploader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTFLLUploader.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTFLLUploader.m; sourceTree = "<group>"; };
+		FE4A03A98E4935C64F9ECAC8F81D71EF /* GDTCCTUploader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCCTUploader.m; path = GoogleDataTransportCCTSupport/GDTCCTLibrary/GDTCCTUploader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FC3F07E79E364BF7E3EA20D04B9DB4D8 /* Frameworks */ = {
+		3116D7F58BCD08EC5C32056F39FB1098 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -62,21 +70,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4D252F255F6F5230BA95AAB079F2D984 /* GoogleDataTransportCCTSupport */ = {
+		427B2D8A52F53BC8F4A05BF51C0F2CDB /* GoogleDataTransportCCTSupport */ = {
 			isa = PBXGroup;
 			children = (
-				CEF48D452AB0592D8CF2D9EB84FE67A3 /* cct.nanopb.c */,
-				9BED21DD76360AF3F633A64B240E932D /* cct.nanopb.h */,
-				3DF5A6550936A1CB39500DE01F4DCDCE /* GDTCCTNanopbHelpers.h */,
-				F6EAEAE51A155CE00C64EF6F7990647A /* GDTCCTNanopbHelpers.m */,
-				F63B1CB3E04FB8151E24339D76DF3A58 /* GDTCCTPrioritizer.h */,
-				DF8B6BE211C07E222B83E10CA7A3B4D1 /* GDTCCTPrioritizer.m */,
-				A7CDC96DAE568B122D11EE9F078C4DF1 /* GDTCCTUploader.h */,
-				C6A5926062B1A450D729C9EF82E98921 /* GDTCCTUploader.m */,
-				C0B860845AB77C2889BA0AEAEEC40D6B /* Support Files */,
+				C8569F16159AB4DEC87BFCA80CF2D548 /* cct.nanopb.c */,
+				54A50A80BE3A9F716B7A38BA81CE6D55 /* cct.nanopb.h */,
+				E319C14215548777DA360FBFB1DC8EF3 /* GDTCCTNanopbHelpers.h */,
+				EC2CB08B1B695102B93F6BD7E35948DA /* GDTCCTNanopbHelpers.m */,
+				6CE3794E15B8EB2399A1AC641C9D355C /* GDTCCTPrioritizer.h */,
+				B8385B989E640DBE2153D853928D9A03 /* GDTCCTPrioritizer.m */,
+				B42EC1329584E4400C9CDE7DE9A2B60B /* GDTCCTUploader.h */,
+				FE4A03A98E4935C64F9ECAC8F81D71EF /* GDTCCTUploader.m */,
+				80F30F5DCCACC5919B1EA4DCF5C101B9 /* GDTFLLPrioritizer.h */,
+				4292A68E4903BE4E80FD6A8D27189539 /* GDTFLLPrioritizer.m */,
+				F241D8CAFF9ABF12018413C543415584 /* GDTFLLUploader.h */,
+				FCD2B5DD6664FD8D4C2886AA47E855D4 /* GDTFLLUploader.m */,
+				4FBF7D642FBFD98218B80F66E2BA1A0E /* Support Files */,
 			);
 			name = GoogleDataTransportCCTSupport;
 			path = GoogleDataTransportCCTSupport;
+			sourceTree = "<group>";
+		};
+		4FBF7D642FBFD98218B80F66E2BA1A0E /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1F1C27F45EB6B5230EAD703A536A899B /* GoogleDataTransportCCTSupport.xcconfig */,
+				2A89A031DB8499DD3EB58ACC931CCFE1 /* GoogleDataTransportCCTSupport-dummy.m */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/GoogleDataTransportCCTSupport";
 			sourceTree = "<group>";
 		};
 		5CF88503394D87080D88A10B43BBB14F /* Dependencies */ = {
@@ -93,19 +115,9 @@
 			children = (
 				5CF88503394D87080D88A10B43BBB14F /* Dependencies */,
 				D172C010DD529E8CE4BF1324422837DE /* Frameworks */,
-				4D252F255F6F5230BA95AAB079F2D984 /* GoogleDataTransportCCTSupport */,
+				427B2D8A52F53BC8F4A05BF51C0F2CDB /* GoogleDataTransportCCTSupport */,
 				FC0B5E209CF2CF5131DBC1F04ED6DF6A /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		C0B860845AB77C2889BA0AEAEEC40D6B /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				42D5CB9CED649E4669029B47D97FFACC /* GoogleDataTransportCCTSupport.xcconfig */,
-				392B03A6BBD8F4E47A0E145C14558245 /* GoogleDataTransportCCTSupport-dummy.m */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/GoogleDataTransportCCTSupport";
 			sourceTree = "<group>";
 		};
 		D172C010DD529E8CE4BF1324422837DE /* Frameworks */ = {
@@ -126,14 +138,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		B51EE4AEF09213AF45253A428977F853 /* Headers */ = {
+		61953B8F4BD12941628534090BF1B52D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20D46481F92261865FA849B7689B4EF0 /* cct.nanopb.h in Headers */,
-				7C150073D25F451E25414F1372F39C89 /* GDTCCTNanopbHelpers.h in Headers */,
-				B2F3088C3B4BADD6B961D432FABA9AC6 /* GDTCCTPrioritizer.h in Headers */,
-				49FF7F11C6CD85E0CA56CB9451975A54 /* GDTCCTUploader.h in Headers */,
+				3BB2FCFA581C12C756BA2133FAE25D57 /* cct.nanopb.h in Headers */,
+				2FCC3D93AE53206DF64FF79A63E79531 /* GDTCCTNanopbHelpers.h in Headers */,
+				7CA057E6B3EBC7774371062310C170AB /* GDTCCTPrioritizer.h in Headers */,
+				F8FBE2AEB8C8FC6D9A984C92C16006EB /* GDTCCTUploader.h in Headers */,
+				B3D1212AF0E82A1928CCD63582521654 /* GDTFLLPrioritizer.h in Headers */,
+				4C69AE4626C4605637381F3DE2F90084 /* GDTFLLUploader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,17 +156,17 @@
 /* Begin PBXNativeTarget section */
 		11C41BD6B3D59337B4AE45F453918096 /* GoogleDataTransportCCTSupport */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B018F9BFABA0711A72B3BFCB4F18676B /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */;
+			buildConfigurationList = 7A6335768FFDEB83C9189F03E3908C23 /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */;
 			buildPhases = (
-				B51EE4AEF09213AF45253A428977F853 /* Headers */,
-				9C611729C5DF088C4B0882B71C9AECA5 /* Sources */,
-				FC3F07E79E364BF7E3EA20D04B9DB4D8 /* Frameworks */,
+				61953B8F4BD12941628534090BF1B52D /* Headers */,
+				5E385A1C5AC046745CE886E3B85CFC67 /* Sources */,
+				3116D7F58BCD08EC5C32056F39FB1098 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E1DD6254F7E88640103F1A065BFEE408 /* PBXTargetDependency */,
-				8D415D606A9C87476AA19D6CED90665F /* PBXTargetDependency */,
+				A21F38087776EF3F11EF10EBE0877ED0 /* PBXTargetDependency */,
+				6C21B44D8697D803E182B859FCC39162 /* PBXTargetDependency */,
 			);
 			name = GoogleDataTransportCCTSupport;
 			productName = GoogleDataTransportCCTSupport;
@@ -195,30 +209,32 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9C611729C5DF088C4B0882B71C9AECA5 /* Sources */ = {
+		5E385A1C5AC046745CE886E3B85CFC67 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7D6F678752F07FD6DB5BCFF3FD878A0 /* cct.nanopb.c in Sources */,
-				EDFA5822DEA122414A33B9DFA4DEF05A /* GDTCCTNanopbHelpers.m in Sources */,
-				75DAC40CB8422B1ECD663551955AA899 /* GDTCCTPrioritizer.m in Sources */,
-				358AEAED6B58F7BBC69B0CD0B9FBFDEE /* GDTCCTUploader.m in Sources */,
-				42898990012F52BB2052B835C986A722 /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
+				0802A46F3B75061DF5D55FC22232EAFA /* cct.nanopb.c in Sources */,
+				ADC7C5267CB4B964267A5929383EAF59 /* GDTCCTNanopbHelpers.m in Sources */,
+				BBE1F3ADBDDE418EADA482B6C5BE8DC3 /* GDTCCTPrioritizer.m in Sources */,
+				E927033255DA77942059AD956AB739B0 /* GDTCCTUploader.m in Sources */,
+				C3AEA0504F613895B66BC4ED8AD81818 /* GDTFLLPrioritizer.m in Sources */,
+				95CAD9C678F8C56EB1D35AEC37994BD6 /* GDTFLLUploader.m in Sources */,
+				A4B23273A75C6D153FA972DD4F744A59 /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8D415D606A9C87476AA19D6CED90665F /* PBXTargetDependency */ = {
+		6C21B44D8697D803E182B859FCC39162 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = nanopb;
-			targetProxy = 30494162F9900E01420117B3D563D98D /* PBXContainerItemProxy */;
+			targetProxy = 57D0608A68B2B123BDFCA354A5EB2F1B /* PBXContainerItemProxy */;
 		};
-		E1DD6254F7E88640103F1A065BFEE408 /* PBXTargetDependency */ = {
+		A21F38087776EF3F11EF10EBE0877ED0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleDataTransport;
-			targetProxy = 8DFEC4E11F7C2E3DA29373128A1105BF /* PBXContainerItemProxy */;
+			targetProxy = 320E4DF76969F2F64BFBB62651EF4EEF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -283,9 +299,31 @@
 			};
 			name = Release;
 		};
-		5B1620A76769E6C076D9BA94485FCFE8 /* Release */ = {
+		3FA50508134AB38972B0E7CF1BA4115A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 42D5CB9CED649E4669029B47D97FFACC /* GoogleDataTransportCCTSupport.xcconfig */;
+			baseConfigurationReference = 1F1C27F45EB6B5230EAD703A536A899B /* GoogleDataTransportCCTSupport.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleDataTransportCCTSupport;
+				PRODUCT_NAME = GoogleDataTransportCCTSupport;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6BA0741AB0F75776137CD6B67234EBEF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1F1C27F45EB6B5230EAD703A536A899B /* GoogleDataTransportCCTSupport.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -305,28 +343,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		C1B7C7CE15A5C6F0D4CCBCF8E409E143 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 42D5CB9CED649E4669029B47D97FFACC /* GoogleDataTransportCCTSupport.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = GoogleDataTransportCCTSupport;
-				PRODUCT_NAME = GoogleDataTransportCCTSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		E1C9FE49D9DA28B0480C07D1EE48D982 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -395,11 +411,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B018F9BFABA0711A72B3BFCB4F18676B /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */ = {
+		7A6335768FFDEB83C9189F03E3908C23 /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C1B7C7CE15A5C6F0D4CCBCF8E409E143 /* Debug */,
-				5B1620A76769E6C076D9BA94485FCFE8 /* Release */,
+				3FA50508134AB38972B0E7CF1BA4115A /* Debug */,
+				6BA0741AB0F75776137CD6B67234EBEF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
