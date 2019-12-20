@@ -1,29 +1,31 @@
 import React from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 
-import MainNavigator from './MainNavigator';
-import { createProxy, startAsync, addListener } from './relapse/client';
+import * as TaskManager from 'expo-task-manager';
 
 // import NativeComponentList from '../native-component-list/App';
 
+console.log('Log it globally motherfucker');
+
 export default function Main() {
   // @ts-ignore
-  if (global.DETOX) {
-    React.useEffect(() => {
-      addListener(data => {
-        if (data.globals) {
-          for (const moduleName of data.globals) {
-            // @ts-ignore
-            global[moduleName] = createProxy(moduleName);
-          }
-        }
-      });
 
-      let stop;
-      startAsync().then(_stop => (stop = _stop));
-
-      return () => stop && stop();
-    }, []);
+  async function pressedButton() {
+    console.log('Dummying');
+    TaskManager.dummy();
   }
 
-  return <MainNavigator uriPrefix="bareexpo://" />;
+  return (
+    <View style={styles.container}>
+      <Button title="hit me baby one more time" onPress={pressedButton} />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

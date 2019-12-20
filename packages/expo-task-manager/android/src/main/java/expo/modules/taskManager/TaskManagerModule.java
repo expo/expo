@@ -13,6 +13,9 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
+import expo.modules.taskManager.apploader.HeadlessAppLoader;
+import expo.modules.taskManager.apploader.HeadlessAppRecord;
+
 public class TaskManagerModule extends ExportedModule {
   static String EVENT_NAME = "TaskManager.executeTask";
   private static String E_TASK_SERVICE_NOT_FOUND = "E_TASK_SERVICE_NOT_FOUND";
@@ -43,6 +46,13 @@ public class TaskManagerModule extends ExportedModule {
   }
 
   //region Expo methods
+
+  @ExpoMethod
+  public void dummyAsync(final Promise promise) {
+    HeadlessAppLoader headlessAppLoader = new HeadlessAppLoader(getContext());
+    headlessAppLoader.loadApp();
+    promise.resolve(null);
+  }
 
   @ExpoMethod
   public void notifyTaskFinishedAsync(String taskName, Map<String, Object> response, final Promise promise) {

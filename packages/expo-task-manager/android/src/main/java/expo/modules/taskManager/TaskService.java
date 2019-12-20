@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,7 @@ import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppRecordInterface;
+import expo.modules.taskManager.apploader.ExpoHeadlessAppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
@@ -51,6 +53,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
+  private ExpoHeadlessAppLoader expoHeadlessAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -67,15 +70,13 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   // { "<appId>": List(eventBodies...) }
   private static final Map<String, List<Bundle>> sEventsQueues = new HashMap<>();
 
-  // { "<appId>": AppRecordInterface }
-  private static final Map<String, AppRecordInterface> sAppRecords = new HashMap<>();
-
   // Map of callbacks for task execution events. Schema: { "<eventId>": TaskExecutionCallback }
   private static final Map<String, TaskExecutionCallback> sTaskCallbacks = new HashMap<>();
 
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
+    expoHeadlessAppLoader = new ExpoHeadlessAppLoader(mContextRef);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
@@ -399,24 +400,34 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // The app is not fully loaded as its task manager is not there yet.
     // We need to add event's body to the queue from which events will be executed once the task manager is ready.
     if (!sEventsQueues.containsKey(appId)) {
-      sEventsQueues.put(appId, new ArrayList<Bundle>());
+      sEventsQueues.put(appId, new ArrayList<>());
     }
     sEventsQueues.get(appId).add(body);
 
-    if (!sAppRecords.containsKey(appId)) {
-      // No app record yet - let's spin it up!
+    final List<String> finalAppEvents = appEvents;
 
-      if (!loadApp(appId, task.getAppUrl())) {
-        // Loading failed because parameters are invalid - unregister the task.
+    expoHeadlessAppLoader.runApp(appId, task, new ExpoHeadlessAppLoader.AppRunCallback() {
+      @Override
+      public void appAlreadyRunning() {
+        // do nothing
+      }
+
+      @Override
+      public void appStarted() {
+        // do nothing
+      }
+
+      @Override
+      public void appStartError(@Nullable Exception e) {
         try {
           unregisterTask(task.getName(), appId, null);
-        } catch (Exception e) {
-          Log.e(TAG, "Error occurred while unregistering invalid task.", e);
+        } catch (Exception ex) {
+          Log.e(TAG, "Error occurred while unregistering invalid task.", ex);
         }
-        appEvents.remove(eventId);
+        finalAppEvents.remove(eventId);
         sEventsQueues.remove(appId);
       }
-    }
+    });
   }
 
   //endregion
@@ -624,60 +635,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return map;
   }
 
-  private AppLoaderInterface createAppLoader() {
-    // for now only react-native apps in Expo are supported
-    Context context = mContextRef.get();
-    return context != null ? AppLoaderProvider.createLoader("react-native-experience", context) : null;
-  }
-
-  private boolean loadApp(final String appId, String appUrl) {
-    AppLoaderInterface appLoader = createAppLoader();
-
-    if (appLoader == null) {
-      Log.e(TAG, "Cannot execute background task because application loader can't be found.");
-      return false;
-    }
-    if (appUrl == null) {
-      Log.e(TAG, "Cannot execute background task because application URL is invalid");
-      return false;
-    }
-
-    // TODO(@tsapeta): add timeout option;
-    Map<String, Object> options = new HashMap<>();
-
-    Log.i(TAG, "Loading headless app '" + appId + "' with url '" + appUrl + "'.");
-
-    AppRecordInterface appRecord = appLoader.loadApp(appUrl, options, new AppLoaderProvider.Callback() {
-      @Override
-      public void onComplete(boolean success, Exception exception) {
-        if (exception != null) {
-          exception.printStackTrace();
-          Log.e(TAG, exception.getMessage());
-        }
-        if (!success) {
-          sEvents.remove(appId);
-          sEventsQueues.remove(appId);
-          sAppRecords.remove(appId);
-
-          // Host unreachable? Unregister all tasks for that app.
-          unregisterAllTasksForAppId(appId);
-        }
-      }
-    });
-
-    sAppRecords.put(appId, appRecord);
-    return true;
-  }
-
   private void invalidateAppRecord(String appId) {
-    AppRecordInterface appRecord = sAppRecords.get(appId);
-
-    if (appRecord != null) {
-      appRecord.invalidate();
-      sAppRecords.remove(appId);
-      sHeadlessTaskManagers.remove(appId);
-      Log.i(TAG, "Invalidated headless app '" + appId + "'.");
-    }
+    expoHeadlessAppLoader.invalidate(appId);
+    sHeadlessTaskManagers.remove(appId);
   }
 
   private void finishJobAfterTimeout(final JobService jobService, final JobParameters params, long timeout) {

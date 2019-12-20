@@ -1,27 +1,38 @@
 package expo.modules.taskManager.apploader;
 
 import android.content.Context;
+import android.util.Log;
 
-import java.util.Map;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.common.LifecycleState;
 
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppRecordInterface;
 
-public class HeadlessAppLoader implements AppLoaderInterface {
+public class HeadlessAppLoader {
 
-  private Context mContext;
+    private Context mContext;
 
-  public HeadlessAppLoader(Context context) {
-    this.mContext = context;
-  }
+    public HeadlessAppLoader(Context context) {
+        this.mContext = context;
+    }
 
-  @Override
-  public AppRecordInterface loadApp(String appUrl, Map<String, Object> options, AppLoaderProvider.Callback callback) {
-    HeadlessAppRecord appRecord = new HeadlessAppRecord();
+    public AppRecordInterface loadApp() {
+        HeadlessAppRecord appRecord = new HeadlessAppRecord();
 
-    ReactInstanceManager reactInstanceManager = new ReactInstanceManager();
+        ReactInstanceManager reactInstanceManager = ((ReactApplication) mContext.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
+        if (!isReactInstanceRunning(reactInstanceManager)) {
+            reactInstanceManager.addReactInstanceEventListener(context -> {
+                Log.d("REACT", "Instance initialized");
+                reactInstanceManager.getPackages();
+            });
+            reactInstanceManager.createReactContextInBackground();
+        }
 
-    return appRecord;
-  }
+        return appRecord;
+    }
+
+    private boolean isReactInstanceRunning(ReactInstanceManager reactInstanceManager) {
+        return reactInstanceManager.hasStartedCreatingInitialContext();
+    }
 }
