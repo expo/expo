@@ -461,7 +461,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
       ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-      ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
       showLoadingScreen(manifest);
 
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);

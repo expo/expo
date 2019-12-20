@@ -28,6 +28,7 @@ import org.json.JSONObject;
 public class ExperienceActivityUtils {
 
   private static final String TAG = ExperienceActivityUtils.class.getSimpleName();
+  private static final String STATUS_BAR_STYLE_DARK_CONTENT = "dakr-content";
 
   public static void updateOrientation(JSONObject manifest, Activity activity) {
     if (manifest == null) {
@@ -97,7 +98,7 @@ public class ExperienceActivityUtils {
    * (https://developer.android.com/reference/android/R.attr.html#windowTranslucentStatus)
    * Instead it's using {@link WindowInsets} to limit available space on the screen ({@link com.facebook.react.modules.statusbar.StatusBarModule#setTranslucent(boolean)}).
    *
-   * We are using 'android:
+   * In case 'android:'windowTranslucentStatus' is used in activity's theme, it has to be removed in order to make RN's Status Bar API work.
    * Out approach to achieve translucency of StatusBar has to be aligned with RN's approach to ensure {@link com.facebook.react.modules.statusbar.StatusBarModule} works.
    *
    * Links to follow in case of need of more detailed understating.
@@ -169,7 +170,7 @@ public class ExperienceActivityUtils {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       View decorView = activity.getWindow().getDecorView();
       int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
-      if ("dark-content".equals(style)) {
+      if (style.equals(STATUS_BAR_STYLE_DARK_CONTENT)) {
         systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
       } else {
         systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -191,7 +192,7 @@ public class ExperienceActivityUtils {
 
   // endregion
 
-  public static void setTaskDescription ( final ExponentManifest exponentManifest,
+  public static void setTaskDescription(final ExponentManifest exponentManifest,
     final JSONObject manifest, final Activity activity){
       final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
       final int color = exponentManifest.getColorFromManifest(manifest);
@@ -213,7 +214,7 @@ public class ExperienceActivityUtils {
       });
     }
 
-    public static void setNavigationBar ( final JSONObject manifest, final Activity activity){
+    public static void setNavigationBar(final JSONObject manifest, final Activity activity){
       JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
       if (navBarOptions == null) {
         return;
@@ -263,7 +264,7 @@ public class ExperienceActivityUtils {
       }
     }
 
-    public static void setRootViewBackgroundColor ( final JSONObject manifest, final View rootView){
+    public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
       String colorString;
 
       try {

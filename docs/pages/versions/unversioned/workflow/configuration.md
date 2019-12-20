@@ -191,13 +191,13 @@ For more details please navigate to [Configuring StatusBar](../../guides/configu
     "backgroundColor": STRING,
 
     /**
-     * Instructs the system whether status bat should be visible or not.
+     * Instructs the system whether status bar should be visible or not.
      * Defaults to false.
      */
     "hidden": BOOLEAN,
 
     /**
-     * Specifies whether status bar should be translucent (whether it should be treated as block element that would take space on the device's screen and limit space available for app to be rendered or be treated as an element with "position = absolute" rendered above the app content).
+     * Specifies whether status bar should be translucent (whether it should be treated as a block element that will take up space on the device's screen and limit space available for the rest of your app to be rendered, or be treated as an element with "position = absolute" that is rendered above your app's content).
      * Defaults to true (default iOS behavior - iOS status bar cannot be set translucent by the system).
      */
     "translucent": BOOLEAN

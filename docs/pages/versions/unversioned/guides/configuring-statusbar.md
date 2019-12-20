@@ -16,33 +16,32 @@ The valid values are:
 - `light-content` - The status bar content is light colored (usually white). This is the default value.
 - `dark-content` - The status bar content is dark colored (usually dark grey). This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions.
 
-> Note: Be aware that choosing `light-content` and having `SplashScreen` image that is very light (close to `white` color) and/or having `backgroundColor` of your app set to `white` (or close to `white` color) may result in status bar's icons blending in and wouldn't be visible.
+> Note: If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
+> Same goes for `dark-content` when you have a very dark image set as the `SplashScreen` or `backgroundColor` set to a dark color.
 
 ### `backgroundColor`
 
 This option can be used to set a background color for the status bar.
-
-Keep in mind that the Android status bar can be `translucent` (default behavior for Expo apps).
-But, when you specify an opaque background color for the status bar, it'll lose it's translucency.
-
-The valid value is a 6-character long hexadecimal solid color string of shape `#RRGGBB` (e.g. `#C2185B`) or 8-character long hexadecimal color string with transparency of shape `#RRGGBBAA` (e.g. `#23C1B255`).
+The valid value is a 6-character long hexadecimal solid color string with the format `#RRGGBB` (e.g. `#C2185B`) or 8-character long hexadecimal color string with transparency with the format `#RRGGBBAA` (e.g. `#23C1B255`).
+Defaults to `#00000000` (fully transparent color).
 
 ### `translucent`
 
 Value type - `boolean`.
 Specifies whether status bar should be translucent.
-Translucent status bar is visible on the screen, but it takes no space and your application can draw beneath it (similar to element with styles `{ position: "absolute", top: 0 }` that is rendered above the app content at the top of the screen).
-Non-translucent status bar behaves as a block element and limits space available on your device's screen.
+When this is set to `true`, status bar is visible on the screen, but it takes no space and your application can draw beneath it (similar to a `View` element with styles `{ position: "absolute", top: 0 }` that is rendered above the app content at the top of the screen).
+When this is set to `false`, status bar behaves as a block element and limits space available on your device's screen.
 Defaults to `true`.
 
-> Note: Translucent status bar makes sense when it's `backgroundColor` is transparent (at least to some extend).
+> Note: A translucent status bar makes sense when the `backgroundColor` is using a transparent color (`#RRGGBBAA`).
+> When you use translucent status bar and solid `backgroundColor` (`#RRGGBB`) then the upper part of your app to be partially covered by non-transparent status bar and thus some of the app's content might not be visible to the user.
 
 ### `hidden`
 
 Value type - `boolean`.
 Tells the the system whether status bar should be visible or not.
-When status bar is not visible it can be presented via `swipe down` gesture.
-Hidden status bar would not respect `backgroundColor` or `barStyle` settings.
+When status bar is not visible it can be presented via the `swipe down` gesture.
+When set to `true`, status bar will not respect `backgroundColor` or `barStyle` settings.
 Defaults to `false`.
 
 ## Working with 3rd-party Libraries
@@ -54,7 +53,7 @@ If you need to use such a library, there are a few options:
 ### Set the `backgroundColor` of the status bar to an opaque color and disable `translucent` option
 
 Setting solely `backgroundColor` to opaque color will disable the `transparency` of the status bar, but preserve `translucency`.
-You need to explicitly set `translucent` to `false` if you want status bar in your app to take space on the device's screen.
+You need to explicitly set `translucent` to `false` if you want your app's status bar to take up space on the device's screen.
 This is a good option if your status bar color never needs to change.
 
 Example:
@@ -104,7 +103,7 @@ If you don't need to set the background color, you can just set a top padding on
 
 ## Recommended configuration
 
-Recommended way is to use configuration in `app.json` to obtain appearance you want to have during `SplashScreen` phase and later on use [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html) to dynamically adjust status bar appearance.
+It is recommended to use the configuration in `app.json` to obtain the appearance you want to have during the `SplashScreen` phase, and later on use the [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html) to dynamically adjust status bar appearance.
 
 Example:
 ```ts
