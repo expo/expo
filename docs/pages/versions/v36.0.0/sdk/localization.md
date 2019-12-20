@@ -1,81 +1,108 @@
 ---
-title: LocalAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication'
+title: Localization
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-localization"
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
-
-**`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
+You can use this module to Localize your app, and access the locale data on the native device.
+Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-local-authentication`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-localization`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+
+## Usage
+
+```javascript
+import React from 'react';
+import { Text } from 'react-native';
+import * as Localization from 'expo-localization';
+import i18n from 'i18n-js';
+const en = {
+  foo: 'Foo',
+  bar: 'Bar {{someValue}}',
+};
+const fr = {
+  foo: 'como telle fous',
+  bar: 'chatouiller {{someValue}}',
+};
+
+i18n.fallbacks = true;
+i18n.translations = { fr, en };
+i18n.locale = Localization.locale;
+export default class LitView extends React.Component {
+  render() {
+    return (
+      <Text style={{ flex: 1, paddingTop: 50, alignSelf: 'center' }}>
+        {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
+      </Text>
+    );
+  }
+}
+```
 
 ## API
 
 ```js
-import * as LocalAuthentication from 'expo-local-authentication';
+import * as Localization from 'expo-localization';
 ```
 
-<TableOfContentSection title='Methods' contents={['LocalAuthentication.hasHardwareAsync()', 'LocalAuthentication.supportedAuthenticationTypesAsync()', 'LocalAuthentication.isEnrolledAsync()', 'LocalAuthentication.authenticateAsync(options)', 'LocalAuthentication.cancelAuthenticate()']} />
+### Constants
 
-## Methods
+This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initally the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
 
-### `LocalAuthentication.hasHardwareAsync()`
+#### `Localization.locale: string`
 
-Determine whether a face or fingerprint scanner is available on the device.
+Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.
 
-#### Returns
+#### `Localization.locales: Array<string>`
 
-Returns a promise resolving to boolean value indicating whether a face or fingerprint scanner is available on this device.
+List of all the native languages provided by the user settings. These are returned in the order the user defines in their native settings.
 
-### `LocalAuthentication.supportedAuthenticationTypesAsync()`
+#### `Localization.region: ?string`
 
-Determine what kinds of authentications are available on the device.
+**Available on iOS and Web.**  Region code for your device which came from `Region` setting in `Language & Region`. Ex: `US`, `NZ`.
 
-#### Returns
+#### `Localization.isoCurrencyCodes: ?Array<string>`
 
-Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported. If neither authentication type is supported, returns an empty array.
+A list of all the supported ISO codes.
 
-### `LocalAuthentication.isEnrolledAsync()`
+#### `Localization.timezone: string`
 
-Determine whether the device has saved fingerprints or facial data to use for authentication.
+The current time zone in display format. ex: `America/Los_Angeles`
 
-#### Returns
+On Web `timezone` is calculated with `Intl.DateTimeFormat().resolvedOptions().timeZone`. For a better guess you could use the `moment-timezone` library but is a very large library and will add significant bloat to your bundle.
 
-Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
+#### `Localization.isRTL: boolean`
 
-### `LocalAuthentication.authenticateAsync(options)`
+This will return `true` if the current language is Right-to-Left.
 
-Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
+### Methods
 
-> **Note:** When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
+#### `Localization.getLocalizationAsync(): Promise<Localization>`
 
-> **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in `app.json`, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../distribution/app-stores#system-permissions-dialogs-on-ios).
+> Android only, on iOS changing the locale settings will cause all the apps to reset.
 
-#### Arguments
+```js
+type NativeEvent = {
+  locale: string,
+  locales: Array<string>,
+  timezone: string,
+  isoCurrencyCodes: ?Array<string>,
+  region: ?string, // iOS and Web
+  isRTL: boolean,
+};
+```
 
-- **options (_object_)** -- An object of options.
-  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. (**iOS only**)
-  - **fallbackLabel (_string_)** -- Allows to customize the default `Use Passcode` label shown after several failed authentication attempts. Setting this option to an empty string disables fallback to device passcode. (**iOS only**)
+**Example**
 
-#### Returns
+```js
+// When the app returns from the background on Android...
 
-Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
-
-#### Usage
-
-Since Android doesn't provide a default UI component, we've provided an example with one to help you get up and running:
-
-<SnackEmbed snackId="@charliecruzan/localauthentication35example" />
-
-### `LocalAuthentication.cancelAuthenticate()`
-
-**(Android Only)** Cancels the fingerprint authentication flow. See usage in example snack above.
+const { locale } = await Localization.getLocalizationAsync();
+```
