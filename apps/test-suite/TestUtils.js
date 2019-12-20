@@ -74,7 +74,8 @@ export function getTestModules() {
     modules.push(
       require('./tests/Contacts'),
       // require('./tests/SVG'),
-      require('./tests/Localization')
+      require('./tests/Localization'),
+      optionalRequire(() => require('./tests/NewNotifications'))
     );
 
     if (browserSupportsWebGL()) {
