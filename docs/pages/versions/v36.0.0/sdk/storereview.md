@@ -56,7 +56,7 @@ const url = StoreReview.storeUrl();
 
 ### `StoreReview.hasAction()`
 
-This returns a boolean that let's you know if the module can preform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
+This returns a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
 
 #### Example
 
