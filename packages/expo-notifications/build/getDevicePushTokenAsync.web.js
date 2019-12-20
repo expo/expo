@@ -19,8 +19,11 @@ async function _subscribeUserToPushAsync() {
     if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
         throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
+    if (!Constants.manifest.notification || !Constants.manifest.notification.serviceWorkerPath) {
+        throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.serviceWorkerPath` in `app.json` to use push notifications on web. Please provide path to the service worker that will handle notifications.');
+    }
     guardPermission();
-    const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+    const registration = await navigator.serviceWorker.register(Constants.manifest.notification.serviceWorkerPath);
     await navigator.serviceWorker.ready;
     if (!registration.active) {
         throw new Error('Notifications might not be working because the service worker API is not active.');
