@@ -363,23 +363,6 @@ type PushMessage = {
    * delete it.
    */
   channelId?: string,
-
-  // Web-specific fields (note: currently not supported and may change)
-
-  /**
-   * The web path that will be opened/focused after the user clicks the
-   * notification.
-   * Defaults to "/" (root)
-   */
-  webPath?: string,
-
-  /**
-   * URL or `mailto:` URL which provides a point of contact in case the
-   * push service needs to contact the message sender.
-   * Defaults to the value stored on Expo's server.
-   * Learn more here: https://docs.expo.io/versions/latest/guides/using-vapid/
-   */
-  vapidSubject?: string,
 }
 ```
 
