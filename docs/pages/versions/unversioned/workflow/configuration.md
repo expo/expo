@@ -287,13 +287,7 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING,
-
-    /*
-     The URL-safe base64-encoded VAPID public key used for web push notifications.
-     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
-    */
-    "vapidPublicKey": STRING
+    "androidCollapsedTitle": STRING
   }
 }
 ```
