@@ -174,4 +174,12 @@ export async function resetAnalyticsDataAsync() {
     }
     return await ExpoFirebaseAnalytics.resetAnalyticsDataAsync();
 }
+export async function setUserPropertiesAsync(properties) {
+    if (!ExpoFirebaseAnalytics.setUserPropertiesAsync) {
+        // Attempt to polyfill this command for native iOS and Android platforms.
+        await Promise.all(Object.keys(properties).map(key => setUserPropertyAsync(key, properties[key])));
+        return;
+    }
+    return await ExpoFirebaseAnalytics.setUserPropertiesAsync(properties);
+}
 //# sourceMappingURL=Analytics.js.map
