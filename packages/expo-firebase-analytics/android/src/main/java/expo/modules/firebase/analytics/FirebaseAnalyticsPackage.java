@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ViewManager;
 
 public class FirebaseAnalyticsPackage extends BasePackage {
   @Override

@@ -156,20 +156,6 @@ UM_EXPORT_METHOD_AS(setUserPropertyAsync,
     return;
   }
 }
-UM_EXPORT_METHOD_AS(setUserPropertiesAsync,
-                    setUserPropertiesAsync:(NSDictionary *)properties
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
-  @try {
-    [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-      [FIRAnalytics setUserPropertyString:value forName:key];
-    }];
-    resolve([NSNull null]);
-  } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
-    return;
-  }
-}
 UM_EXPORT_METHOD_AS(resetAnalyticsDataAsync,
                     resetAnalyticsDataAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
