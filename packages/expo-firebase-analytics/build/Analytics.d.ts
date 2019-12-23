@@ -123,3 +123,6 @@ export declare function setUserPropertyAsync(name: string, value: string): Promi
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
 export declare function resetAnalyticsDataAsync(): Promise<void>;
+export declare function setUserPropertiesAsync(properties: {
+    [key: string]: string;
+}): Promise<void>;

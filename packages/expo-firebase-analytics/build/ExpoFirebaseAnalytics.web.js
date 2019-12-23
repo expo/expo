@@ -29,32 +29,38 @@ export default {
     async deleteAppAsync(config) {
         getFirebaseModule().deleteApp(config);
     },
+    /**
+     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
+     */
     async logEventAsync(name, properties) {
         getAnalyticsModule().logEvent(name, properties);
     },
+    /**
+     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-analytics-collection-enabled
+     */
     async setAnalyticsCollectionEnabledAsync(isEnabled) {
         getAnalyticsModule().setAnalyticsCollectionEnabled(isEnabled);
     },
+    /**
+     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+     */
     async setCurrentScreenAsync(screenName, screenClassOverride) {
         getAnalyticsModule().setCurrentScreen(screenName, screenClassOverride);
     },
-    async setMinimumSessionDurationAsync(millis) {
-        getAnalyticsModule().setMinimumSessionDuration(millis);
-    },
-    async setSessionTimeoutDurationAsync(millis) {
-        getAnalyticsModule().setSessionTimeoutDuration(millis);
-    },
+    /**
+     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
+     */
     async setUserIdAsync(userId) {
         getAnalyticsModule().setUserId(userId);
     },
     async setUserPropertyAsync(name, value) {
-        getAnalyticsModule().setUserProperty(name, value);
+        getAnalyticsModule().setUserProperties({ [name]: value });
     },
+    /**
+     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
+     */
     async setUserPropertiesAsync(properties) {
         getAnalyticsModule().setUserProperties(properties);
-    },
-    async resetAnalyticsDataAsync() {
-        getAnalyticsModule().resetAnalyticsData();
     },
 };
 //# sourceMappingURL=ExpoFirebaseAnalytics.web.js.map

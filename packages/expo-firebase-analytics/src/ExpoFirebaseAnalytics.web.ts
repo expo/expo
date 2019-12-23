@@ -29,31 +29,37 @@ export default {
   async deleteAppAsync(config: { [key: string]: any }): Promise<void> {
     getFirebaseModule().deleteApp(config);
   },
+  /**
+   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
+   */
   async logEventAsync(name: string, properties?: { [key: string]: any }): Promise<void> {
     getAnalyticsModule().logEvent(name, properties);
   },
+  /**
+   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-analytics-collection-enabled
+   */
   async setAnalyticsCollectionEnabledAsync(isEnabled: boolean): Promise<void> {
     getAnalyticsModule().setAnalyticsCollectionEnabled(isEnabled);
   },
+  /**
+   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+   */
   async setCurrentScreenAsync(screenName: string, screenClassOverride?: string): Promise<void> {
     getAnalyticsModule().setCurrentScreen(screenName, screenClassOverride);
   },
-  async setMinimumSessionDurationAsync(millis: number): Promise<void> {
-    getAnalyticsModule().setMinimumSessionDuration(millis);
-  },
-  async setSessionTimeoutDurationAsync(millis: number): Promise<void> {
-    getAnalyticsModule().setSessionTimeoutDuration(millis);
-  },
+  /**
+   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
+   */
   async setUserIdAsync(userId: string): Promise<void> {
     getAnalyticsModule().setUserId(userId);
   },
   async setUserPropertyAsync(name: string, value?: { [key: string]: any }): Promise<void> {
-    getAnalyticsModule().setUserProperty(name, value);
+    getAnalyticsModule().setUserProperties({ [name]: value });
   },
+  /**
+   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
+   */
   async setUserPropertiesAsync(properties: { [key: string]: any }): Promise<void> {
     getAnalyticsModule().setUserProperties(properties);
-  },
-  async resetAnalyticsDataAsync(): Promise<void> {
-    getAnalyticsModule().resetAnalyticsData();
   },
 };
