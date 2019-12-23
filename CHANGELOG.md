@@ -113,6 +113,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed crash when calling `Amplitude.setUserProperties()` on Android. ([#6174](https://github.com/expo/expo/pull/6174) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed methods for scheduling Notifications. ([#5470](https://github.com/expo/expo/pull/5470) by [@Szymon20000](https://github.com/Szymon20000))
 - Fixed unloading sounds in the `AV` module on web. ([#6214](https://github.com/expo/expo/pull/6214) by [@rickiesmooth](https://github.com/rickiesmooth))
+- Add parital onFullscreenUpdate support to `AV` module on web. ([#6610](https://github.com/expo/expo/pull/6610) by [@awinograd](https://github.com/awinograd))
 
 ## 35.0.0
 
