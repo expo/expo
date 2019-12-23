@@ -68,5 +68,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  compileOnly "com.google.android.gms:play-services-base:15.0.1"
+  api "com.google.firebase:firebase-core:16.0.1"
   implementation 'com.google.firebase:firebase-analytics'
 }

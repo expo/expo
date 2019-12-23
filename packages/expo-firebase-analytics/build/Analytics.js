@@ -165,12 +165,6 @@ export async function setUserPropertyAsync(name, value) {
     }
     return await ExpoFirebaseAnalytics.setUserPropertyAsync(name, value);
 }
-export async function setUserPropertiesAsync(properties) {
-    if (!ExpoFirebaseAnalytics.setUserPropertiesAsync) {
-        throw new UnavailabilityError('expo-firebase-analytics', 'setUserPropertiesAsync');
-    }
-    return await ExpoFirebaseAnalytics.setUserPropertiesAsync(properties);
-}
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
