@@ -3,6 +3,6 @@
 #import <UMCore/UMExportedModule.h>
 #import <Foundation/Foundation.h>
 
-@interface FirebaseAnalytics : UMExportedModule
+@interface EXFirebaseAnalytics : UMExportedModule
 
 @end

@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'FirebaseAnalytics'
+  s.name           = 'EXFirebaseAnalytics'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '10.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'FirebaseAnalytics/**/*.{h,m}'
-  s.preserve_paths = 'FirebaseAnalytics/**/*.{h,m}'
+  s.source_files   = 'EXFirebaseAnalytics/**/*.{h,m}'
+  s.preserve_paths = 'EXFirebaseAnalytics/**/*.{h,m}'
   s.requires_arc   = true
 
   s.dependency 'UMCore'
