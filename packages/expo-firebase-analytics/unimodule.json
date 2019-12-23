@@ -1,4 +1,4 @@
 {
-  "name": "expo-application",
+  "name": "expo-firebase-analytics",
   "platforms": ["ios", "android","web"]
 }

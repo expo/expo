@@ -19,12 +19,12 @@ CACHE_KEYS:
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth: 645fdba9fe912c64b27cf67add67debb
-    CHECKSUM: bce82c76043657c99d91e7882e8a9e1a93650cd4
+    CHECKSUM: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
     PROJECT_NAME: AppAuth
     SPECS:
-      - AppAuth (1.2.0)
-      - AppAuth/Core (1.2.0)
-      - AppAuth/ExternalUserAgent (1.2.0)
+      - AppAuth (1.3.0)
+      - AppAuth/Core (1.3.0)
+      - AppAuth/ExternalUserAgent (1.3.0)
   boost-for-react-native:
     BUILD_SETTINGS_CHECKSUM:
       boost-for-react-native: e9824834bb3842483c6a4142ac76bb2d
@@ -291,6 +291,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseAnalytics: d7af306bcc1c0c50839196b3dfd1b695
+    CHECKSUM: 32109c8e72381aac22a3f1a5b52797f6bb1c92da
+    FILES:
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
+    PROJECT_NAME: EXFirebaseAnalytics
+    SPECS:
+      - EXFirebaseAnalytics (1.0.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: d8920f123f0cdc804585bfcef1a86386
@@ -655,6 +665,49 @@ CACHE_KEYS:
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.61.4)
+  Firebase:
+    BUILD_SETTINGS_CHECKSUM:
+      Firebase: 043d6ce04946d5de6f1a25bee76f328d
+    CHECKSUM: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
+    PROJECT_NAME: Firebase
+    SPECS:
+      - Firebase/Core (6.13.0)
+      - Firebase/CoreOnly (6.13.0)
+  FirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseAnalytics: d3b8372472720ab5e91b3a3adc59720a
+    CHECKSUM: 45f36d9c429fc91d206283900ab75390cd05ee8a
+    PROJECT_NAME: FirebaseAnalytics
+    SPECS:
+      - FirebaseAnalytics (6.1.6)
+  FirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCore: 854d037ce2961e59fad471ff4f2db1fb
+    CHECKSUM: 307ea2508df730c5865334e41965bd9ea344b0e5
+    PROJECT_NAME: FirebaseCore
+    SPECS:
+      - FirebaseCore (6.4.0)
+  FirebaseCoreDiagnostics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnostics: d94bfb53514b8d2ac93bd041c0ca0e12
+    CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+    PROJECT_NAME: FirebaseCoreDiagnostics
+    SPECS:
+      - FirebaseCoreDiagnostics (1.1.2)
+  FirebaseCoreDiagnosticsInterop:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnosticsInterop: 156db52ee23ec56ad2ede89ad1ee8a2b
+    CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+    PROJECT_NAME: FirebaseCoreDiagnosticsInterop
+    SPECS:
+      - FirebaseCoreDiagnosticsInterop (1.1.0)
+  FirebaseInstanceID:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseInstanceID: 489e4461425ebe0e339e4afbadaea6f8
+    CHECKSUM: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
+    PROJECT_NAME: FirebaseInstanceID
+    SPECS:
+      - FirebaseInstanceID (4.2.7)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -670,6 +723,27 @@ CACHE_KEYS:
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
+  GoogleAppMeasurement:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleAppMeasurement: 8edf625de9a660fae9e528eb6d244601
+    CHECKSUM: dfe55efa543e899d906309eaaac6ca26d249862f
+    PROJECT_NAME: GoogleAppMeasurement
+    SPECS:
+      - GoogleAppMeasurement (6.1.6)
+  GoogleDataTransport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransport: c52a5276024512707683f66e6cfe0966
+    CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+    PROJECT_NAME: GoogleDataTransport
+    SPECS:
+      - GoogleDataTransport (3.2.0)
+  GoogleDataTransportCCTSupport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransportCCTSupport: 1974efffec58f9b1b16d714da50b2d51
+    CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+    PROJECT_NAME: GoogleDataTransportCCTSupport
+    SPECS:
+      - GoogleDataTransportCCTSupport (1.2.3)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
@@ -677,6 +751,20 @@ CACHE_KEYS:
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
+  GoogleUtilities:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleUtilities: c7dbbc462e97d6f959d7b7bdd3d67f38
+    CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
+    PROJECT_NAME: GoogleUtilities
+    SPECS:
+      - GoogleUtilities/AppDelegateSwizzler (6.4.0)
+      - GoogleUtilities/Environment (6.4.0)
+      - GoogleUtilities/Logger (6.4.0)
+      - GoogleUtilities/MethodSwizzler (6.4.0)
+      - GoogleUtilities/Network (6.4.0)
+      - "GoogleUtilities/NSData+zlib (6.4.0)"
+      - GoogleUtilities/Reachability (6.4.0)
+      - GoogleUtilities/UserDefaults (6.4.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
@@ -693,14 +781,23 @@ CACHE_KEYS:
       - GTMSessionFetcher (1.3.0)
       - GTMSessionFetcher/Core (1.3.0)
       - GTMSessionFetcher/Full (1.3.0)
+  nanopb:
+    BUILD_SETTINGS_CHECKSUM:
+      nanopb: 576bb45f6f1262a9f9a409f37f3694b7
+    CHECKSUM: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+    PROJECT_NAME: nanopb
+    SPECS:
+      - nanopb (0.3.9011)
+      - nanopb/decode (0.3.9011)
+      - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9fa395d50ce617a2a71ed32b1caae8ef
-      Release: 9fa395d50ce617a2a71ed32b1caae8ef
+      Debug: a333ebad6efc4c2de7688b552b392906
+      Release: a333ebad6efc4c2de7688b552b392906
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: b61a68dc0ecf8315379a8243485d7899
-      Release: b61a68dc0ecf8315379a8243485d7899
+      Debug: 19d52321c9e39b1cae48ac2f1c3dfd3d
+      Release: 19d52321c9e39b1cae48ac2f1c3dfd3d
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -778,6 +875,7 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTAnimationUtils.h"
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedModule.h"
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.h"
+      - "../../../../react-native-lab/react-native/Libraries/Network/RCTAssetsLibraryRequestHandler.h"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.h"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.h"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.h"
@@ -1315,6 +1413,7 @@ CACHE_KEYS:
       React-RCTNetwork: 2c8926e65972db12bb2dde9f66b0f6b4
     CHECKSUM: 41fe54bacc67dd00e6e4c4d30dd98a13e4beabc8
     FILES:
+      - "../../../../react-native-lab/react-native/Libraries/Network/RCTAssetsLibraryRequestHandler.m"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.m"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.m"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTHTTPRequestHandler.mm"
