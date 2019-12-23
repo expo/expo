@@ -16,7 +16,7 @@ export default class ExponentVideo extends React.Component {
             if (!this.props.onFullscreenUpdate)
                 return;
             if (event.target === this._video) {
-                if (!!document.fullscreenElement) {
+                if (document.fullscreenElement) {
                     this.props.onFullscreenUpdate({
                         nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
                     });
