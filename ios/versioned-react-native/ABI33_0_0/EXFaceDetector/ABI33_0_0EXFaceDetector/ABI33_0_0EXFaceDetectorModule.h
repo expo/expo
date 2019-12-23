@@ -6,7 +6,6 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
-#import <GoogleMobileVision/GoogleMobileVision.h>
 #import <ABI33_0_0UMCore/ABI33_0_0UMExportedModule.h>
 #import <ABI33_0_0UMCore/ABI33_0_0UMModuleRegistryConsumer.h>
 

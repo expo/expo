@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString *const kFIRInstanceIDFirebaseUserAgentKey;
 
+FOUNDATION_EXPORT NSString *const kFIRInstanceIDFirebaseHeartbeatKey;
+
 @interface FIRInstanceIDTokenFetchOperation : FIRInstanceIDTokenOperation
 
 - (instancetype)initWithAuthorizedEntity:(NSString *)authorizedEntity

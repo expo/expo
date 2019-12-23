@@ -121,13 +121,14 @@ typedef NS_OPTIONS(NSUInteger, FIRInstanceIDInvalidTokenReason) {
 /**
  *  Invalidate any cached tokens, if the app version has changed since last launch or if the token
  *  is cached for more than 7 days.
+ *  @param IID The cached instanceID, check if token is prefixed by such IID.
  *
  *  @return Whether we should fetch default token from server.
  *
  *  @discussion This should safely be called prior to any tokens being retrieved from
  *  the cache or being fetched from the network.
  */
-- (BOOL)checkForTokenRefreshPolicy;
+- (BOOL)checkTokenRefreshPolicyWithIID:(NSString *)IID;
 
 /**
  *  Upon being provided with different APNs or sandbox, any locally cached tokens
