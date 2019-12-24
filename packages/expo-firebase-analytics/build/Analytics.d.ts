@@ -81,12 +81,6 @@ export declare function setAnalyticsCollectionEnabledAsync(analyticsCollectionEn
  */
 export declare function setCurrentScreenAsync(screenName?: string, screenClassOverride?: string): Promise<void>;
 /**
- * **Android only**
- *
- * @param millis
- */
-export declare function setMinimumSessionDurationAsync(millis: number): Promise<void>;
-/**
  * Sets the interval of inactivity in seconds that terminates the current session. The default
  * value is 1800000 milliseconds (30 minutes).
  *
