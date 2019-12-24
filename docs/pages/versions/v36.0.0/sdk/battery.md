@@ -1,6 +1,6 @@
 ---
 title: Battery
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-battery"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-battery'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
@@ -10,9 +10,9 @@ Provides battery information for the physical device, as well as corresponding e
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -63,6 +63,7 @@ export default class App extends React.Component {
   }
 }
 ```
+
 </SnackInline>
 
 ## API
@@ -72,7 +73,6 @@ import * as Battery from 'expo-battery';
 ```
 
 <TableOfContentSection title='Methods' contents={['Battery.getBatteryLevelAsync()', 'Battery.getBatteryStateAsync()', 'Battery.isLowPowerModeEnabledAsync()', 'Battery.getPowerStateAsync()']}/>
-
 
 <TableOfContentSection title='Event Subscriptions' contents={['Battery.addBatteryLevelListener(callback)', 'Battery.addBatteryStateListener(callback)', 'Battery.addLowPowerModeListener(callback)']} />
 

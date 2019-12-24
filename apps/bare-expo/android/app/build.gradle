@@ -231,3 +231,27 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 }
 
 apply plugin: ExecuteSetupAndroidProject
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+class GenerateDynamicMacrosPlugin implements Plugin<Project> {
+    @Override
+    void apply(Project target) {
+        target.exec {
+            def configuration = target.gradle.startParameter.taskNames.any {
+                it.toLowerCase().contains("release")
+            } ? "release" : "debug"
+
+            workingDir '../../../../tools/expotools/bin'
+
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+            } else {
+                commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+            }
+        }
+    }
+}
+
+apply plugin: GenerateDynamicMacrosPlugin
+apply plugin: 'com.google.gms.google-services'

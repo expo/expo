@@ -1,17 +1,17 @@
 ---
 title: Screens
-sourceCodeUrl: "https://github.com/kmagiera/react-native-screens"
+sourceCodeUrl: 'https://github.com/kmagiera/react-native-screens'
 ---
 
-Native primitives to represent screens instead of plain `<View>` components in order to better take advantage of operating system behavior and optimizations around screens. Used by library authors, unlikely to be used directly by most app developers.
+**`react-native-screens`** provides native primitives to represent screens instead of plain `<View>` components in order to better take advantage of operating system behavior and optimizations around screens. Used by library authors, unlikely to be used directly by most app developers.
 
 > Note: this library is still in alpha. Please refer to [the issue tracker](https://github.com/kmagiera/react-native-screens/issues) if you encounter any problems.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

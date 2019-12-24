@@ -1,3 +1,9 @@
+# 2019-09-03 -- v0.18.0
+- Bug fixes.
+- [INTERNAL] Removed the dependency on `GoogleMobileVision` pod.
+- [INTERNAL] Changed the minimum iOS version from 9.0 to 8.0 (except for
+  `VisionBarcodeModel`, which remains at 9.0).
+
 # 2019-07-09 -- v0.17.0
 - Bug fixes.
 

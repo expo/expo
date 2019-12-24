@@ -1,15 +1,15 @@
 ---
 title: Print
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-print"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-print'
 ---
 
-An API for iOS (AirPrint) and Android printing functionality.
+**`expo-print`** provides an API for iOS (AirPrint) and Android printing functionality.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

@@ -25,6 +25,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** The GoogleDataTransport library version. */
+FOUNDATION_EXPORT NSString *const kGDTCORVersion;
+
 /** A notification sent out if the app is backgrounding. */
 FOUNDATION_EXPORT NSString *const kGDTCORApplicationDidEnterBackgroundNotification;
 
@@ -61,6 +64,9 @@ FOUNDATION_EXPORT const GDTCORBackgroundIdentifier GDTCORBackgroundIdentifierInv
 /** A cross-platform application class. */
 @interface GDTCORApplication : NSObject <GDTCORApplicationDelegate>
 
+/** Flag to determine if the application is running in the background. */
+@property(atomic, readonly) BOOL isRunningInBackground;
+
 /** Creates and/or returns the shared application instance.
  *
  * @return The shared application instance.
@@ -69,12 +75,13 @@ FOUNDATION_EXPORT const GDTCORBackgroundIdentifier GDTCORBackgroundIdentifierInv
 
 /** Creates a background task with the returned identifier if on a suitable platform.
  *
+ * @name name The name of the task, useful for debugging which background tasks are running.
  * @param handler The handler block that is called if the background task expires.
  * @return An identifier for the background task, or GDTCORBackgroundIdentifierInvalid if one
  * couldn't be created.
  */
-- (GDTCORBackgroundIdentifier)beginBackgroundTaskWithExpirationHandler:
-    (void (^__nullable)(void))handler;
+- (GDTCORBackgroundIdentifier)beginBackgroundTaskWithName:(NSString *)name
+                                        expirationHandler:(void (^__nullable)(void))handler;
 
 /** Ends the background task if the identifier is valid.
  *

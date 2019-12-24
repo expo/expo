@@ -121,31 +121,6 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
 
 # pragma mark: - Utility methods
 
-// As the documentation (http://cocoadocs.org/docsets/GoogleMobileVision/1.0.2/Constants/GMVImageOrientation.html) suggests
-// the value of GMVImageOrientation is the same as the value defined by EXIF specifications, so we can adapt
-// https://gist.github.com/steipete/4666527 to our needs.
-+ (GMVImageOrientation)gmvImageOrientationFor:(UIImageOrientation)orientation
-{
-  switch (orientation) {
-    case UIImageOrientationUp:
-      return GMVImageOrientationTopLeft;
-    case UIImageOrientationDown:
-      return GMVImageOrientationBottomRight;
-    case UIImageOrientationLeft:
-      return GMVImageOrientationLeftBottom;
-    case UIImageOrientationRight:
-      return GMVImageOrientationRightTop;
-    case UIImageOrientationUpMirrored:
-      return GMVImageOrientationTopRight;
-    case UIImageOrientationDownMirrored:
-      return GMVImageOrientationBottomLeft;
-    case UIImageOrientationLeftMirrored:
-      return GMVImageOrientationLeftTop;
-    case UIImageOrientationRightMirrored:
-      return GMVImageOrientationRightBottom;
-  }
-}
-
 // https://gist.github.com/steipete/4666527
 + (int)exifOrientationFor:(UIImageOrientation)orientation
 {

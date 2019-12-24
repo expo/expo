@@ -14,7 +14,7 @@
   },
   "source_files": "**/*.{h,c,cpp,mm}",
   "preserve_paths": "**/*.{h,c,cpp,mm}",
-  "exclude_files": "UEXGL.*",
+  "exclude_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
   "requires_arc": true,
   "pod_target_xcconfig": {
     "CLANG_WARN_COMMA": "NO",
@@ -22,8 +22,8 @@
   },
   "subspecs": [
     {
-      "name": "UEXGL",
-      "source_files": "UEXGL.*",
+      "name": "EXGLContext",
+      "source_files": "**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*",
       "compiler_flags": "-x objective-c++"
     }
   ]

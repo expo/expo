@@ -1,15 +1,17 @@
 ---
 title: Cellular
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-cellular"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-cellular'
 ---
 
-Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-cellular`** provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -21,29 +23,19 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Cellular from 'expo-cellular';
 ```
 
-**[Constants](#constants)**
+<TableOfContentSection title='Constants' contents={['Cellular.allowsVoip', 'Cellular.carrier', 'Cellular.isoCountryCode', 'Cellular.mobileCountryCode', 'Cellular.mobileNetworkCode']} />
 
-- [`Cellular.allowsVoip`](#cellularallowsvoip)
-- [`Cellular.carrier`](#cellularcarrier)
-- [`Cellular.isoCountryCode`](#cellularisocountrycode)
-- [`Cellular.mobileCountryCode`](#cellularmobilecountrycode)
-- [`Cellular.mobileNetworkCode`](#cellularmobilenetworkcode)
+<TableOfContentSection title='Methods' contents={['Cellular.getCellularGenerationAsync()']} />
 
-**[Methods](#methods)**
+<TableOfContentSection title='Enum Types' contents={['Cellular.CellularGeneration']} />
 
-- [`Cellular.getCellularGenerationAsync()`](#cellulargetcellulargenerationasync)
-
-**[Enum Types](#enum-types)**
-
-- [`Cellular.CellularGeneration`](#cellularcellulargeneration)
-
-**[Error Codes](#error-codes)**
+<TableOfContentSection title='Error Codes' contents={[]} />
 
 ## Constants
 
 ### `Cellular.allowsVoip`
 
-Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context)) to view more information. 
+Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether the system supports SIP-based VoIP API. See [here](<https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context)>) to view more information.
 
 On iOS, if you configure a device for a carrier and then remove the SIM card, this property retains the `boolean` value indicating the carrier’s policy regarding VoIP. If you then install a new SIM card, its VoIP policy `boolean` replaces the previous value of this property.
 
@@ -57,7 +49,7 @@ Cellular.allowsVoip; // true or false
 
 ### `Cellular.carrier`
 
-The name of the user’s home cellular service provider. If the device has dual SIM cards, only the carrier for the currently active SIM card will be returned. On Android, this value is only available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`. 
+The name of the user’s home cellular service provider. If the device has dual SIM cards, only the carrier for the currently active SIM card will be returned. On Android, this value is only available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`.
 
 On iOS, if you configure a device for a carrier and then remove the SIM card, this property retains the name of the carrier. If you then install a new SIM card, its carrier name replaces the previous value of this property. The value for this property is `null` if the user never configured a carrier for the device.
 
@@ -73,9 +65,9 @@ Cellular.carrier; // "T-Mobile" or "Verizon"
 
 The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if any of the following apply:
 
-* The device is in airplane mode.
-* There is no SIM card in the device.
-* The device is outside of cellular service range.
+- The device is in airplane mode.
+- There is no SIM card in the device.
+- The device is outside of cellular service range.
 
 On web, this returns `null`.
 
@@ -89,8 +81,9 @@ Cellular.isoCountryCode; // "us" or "au"
 
 The mobile country code (MCC) for the user’s current registered cellular service provider. On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`. On iOS, the value may be `null` on hardware prior to iPhone 4S when in airplane mode.
 Furthermore, the value for this property is `null` if any of the following apply:
-* There is no SIM card in the device.
-* The device is outside of cellular service range.
+
+- There is no SIM card in the device.
+- The device is outside of cellular service range.
 
 On web, this returns `null`.
 
@@ -104,8 +97,9 @@ Cellular.mobileCountryCode; // "310"
 
 The mobile network code (MNC) for the user’s cellular service provider. On Android, this value is only available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`. On iOS, the value may be `null` on hardware prior to iPhone 4S when in airplane mode.
 Furthermore, the value of this property is `null` if any of the following apply:
-* There is no SIM card in the device.
-* The device is outside of cellular service range.
+
+- There is no SIM card in the device.
+- The device is outside of cellular service range.
 
 On web, this returns `null`.
 
