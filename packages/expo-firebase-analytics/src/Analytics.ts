@@ -123,18 +123,6 @@ export async function setCurrentScreenAsync(
 }
 
 /**
- * **Android only**
- *
- * @param millis
- */
-export async function setMinimumSessionDurationAsync(millis: number): Promise<void> {
-  if (!ExpoFirebaseAnalytics.setMinimumSessionDurationAsync) {
-    throw new UnavailabilityError('expo-firebase-analytics', 'setMinimumSessionDurationAsync');
-  }
-  return await ExpoFirebaseAnalytics.setMinimumSessionDurationAsync(millis);
-}
-
-/**
  * Sets the interval of inactivity in seconds that terminates the current session. The default
  * value is 1800000 milliseconds (30 minutes).
  *

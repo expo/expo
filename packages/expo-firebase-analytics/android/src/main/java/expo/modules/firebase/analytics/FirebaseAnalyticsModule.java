@@ -2,7 +2,6 @@ package expo.modules.firebase.analytics;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -23,8 +22,6 @@ import androidx.annotation.Nullable;
 public class FirebaseAnalyticsModule extends ExportedModule implements RegistryLifecycleListener {
     private static final String NAME = "ExpoFirebaseAnalytics";
 
-    private ModuleRegistry mModuleRegistry;
-    private ActivityProvider mActivityProvider;
     private Activity mActivity;
 
     public FirebaseAnalyticsModule(Context context) {
@@ -38,166 +35,136 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
     @Override
     public void onCreate(ModuleRegistry moduleRegistry) {
-        mModuleRegistry = moduleRegistry;
-        mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
+        ActivityProvider mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
         mActivity = mActivityProvider.getCurrentActivity();
-    }
-
-    private Activity getCurrentActivity() {
-        if (mModuleRegistry != null) {
-            ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-            return activityProvider.getCurrentActivity();
-        }
-        return null;
-    }
-
-    private final Context getApplicationContext() {
-        if (mActivity != null) {
-            return mActivity.getApplicationContext();
-        }
-        return null;
-    }
-
-    private Context getApplicationContextOrReject(Promise promise) {
-        Context context = getApplicationContext();
-        if (context == null) {
-            promise.reject("ERR_FIREBASE_ANALYTICS", "Module registry is not initialized, or ActivityProvider is not available.");
-        }
-        return context;
     }
 
     @ExpoMethod
     public void initAppAsync(final Map<String, String> options, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
-
-        builder.setApiKey(options.get("apiKey"));
-        builder.setApplicationId(options.get("appId"));
-        builder.setProjectId(options.get("projectId"));
-        builder.setDatabaseUrl(options.get("databaseURL"));
-        builder.setStorageBucket(options.get("storageBucket"));
-        builder.setGcmSenderId(options.get("messagingSenderId"));
-        builder.setGaTrackingId(options.get("trackingId"));
-
-        Bundle response = new Bundle();
-        response.putString("result", "success");
         try {
-            FirebaseApp firebaseApp = FirebaseApp.getInstance();
+            FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
+            builder.setApiKey(options.get("apiKey"));
+            builder.setApplicationId(options.get("appId"));
+            builder.setProjectId(options.get("projectId"));
+            builder.setDatabaseUrl(options.get("databaseURL"));
+            builder.setStorageBucket(options.get("storageBucket"));
+            builder.setGcmSenderId(options.get("messagingSenderId"));
+            builder.setGaTrackingId(options.get("trackingId"));
+
+            FirebaseApp firebaseApp = getDefaultApp();
             if (firebaseApp != null) {
                 FirebaseOptions currentOptions = firebaseApp.getOptions();
                 if (!currentOptions.getApiKey().equals(options.get("apiKey")) ||
                         !currentOptions.getApplicationId().equals(options.get("appId"))) {
                     firebaseApp.delete();
                 } else {
-                    promise.resolve(response);
+                    promise.resolve(null);
                     return;
                 }
             }
+            FirebaseApp.initializeApp(mActivity.getApplicationContext(), builder.build());
+            promise.resolve(null);
         } catch (Exception e) {
+            promise.reject(e);
         }
+    }
 
-        FirebaseApp.initializeApp(context, builder.build());
-
-        promise.resolve(response);
+    private @Nullable
+    FirebaseApp getDefaultApp() {
+        try {
+            return FirebaseApp.getInstance();
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     @ExpoMethod
     public void deleteAppAsync(Promise promise) {
         try {
-
-            FirebaseApp firebaseApp = FirebaseApp.getInstance();
-
+            FirebaseApp firebaseApp = getDefaultApp();
             if (firebaseApp != null) {
                 firebaseApp.delete();
             }
+            promise.resolve(null);
         } catch (Exception e) {
+            promise.reject(e);
         }
-
-        promise.resolve(null);
     }
 
-    /*** Firebase */
     @ExpoMethod
     public void logEventAsync(final String name, @Nullable Map<String, Object> params, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).logEvent(name, new MapArguments(params).toBundle());
-        promise.resolve(null);
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).logEvent(name, new MapArguments(params).toBundle());
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ExpoMethod
     public void setAnalyticsCollectionEnabledAsync(final Boolean enabled, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(enabled);
-        promise.resolve(null);
-    }
-
-    @ExpoMethod
-    public void setCurrentScreenAsync(final String screenName, final String screenClassOverride, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        final Activity activity = getCurrentActivity();
-        if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    FirebaseAnalytics.getInstance(getApplicationContext()).setCurrentScreen(activity, screenName, screenClassOverride);
-                }
-            });
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setAnalyticsCollectionEnabled(enabled);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
         }
-        promise.resolve(null);
     }
 
     @ExpoMethod
-    public void setMinimumSessionDurationAsync(final double milliseconds, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).setMinimumSessionDuration((long) milliseconds);
-        promise.resolve(null);
+    public void setCurrentScreenAsync(final String screenName, final String screenClassOverride, final Promise promise) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setCurrentScreen(mActivity, screenName, screenClassOverride);
+                    promise.resolve(null);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        });
     }
 
     @ExpoMethod
     public void setSessionTimeoutDurationAsync(final double milliseconds, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).setSessionTimeoutDuration((long) milliseconds);
-        promise.resolve(null);
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setSessionTimeoutDuration((long) milliseconds);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ExpoMethod
     public void setUserIdAsync(final String id, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).setUserId(id);
-        promise.resolve(null);
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserId(id);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ExpoMethod
     public void setUserPropertyAsync(final String name, final String value, Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).setUserProperty(name, value);
-        promise.resolve(null);
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserProperty(name, value);
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 
     @ExpoMethod
     public void resetAnalyticsDataAsync(Promise promise) {
-        Context context = getApplicationContextOrReject(promise);
-        if (context == null) return;
-
-        FirebaseAnalytics.getInstance(context).resetAnalyticsData();
-        promise.resolve(null);
+        try {
+            FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).resetAnalyticsData();
+            promise.resolve(null);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
     }
 }
 
