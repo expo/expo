@@ -15,7 +15,6 @@ import org.unimodules.core.arguments.MapArguments;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.core.interfaces.services.UIManager;
 
 import java.util.Map;
 
@@ -23,16 +22,13 @@ import androidx.annotation.Nullable;
 
 public class FirebaseAnalyticsModule extends ExportedModule implements RegistryLifecycleListener {
     private static final String NAME = "ExpoFirebaseAnalytics";
-    private static final String TAG = FirebaseAnalyticsModule.class.getSimpleName();
 
     private ModuleRegistry mModuleRegistry;
-    private Context mContext;
     private ActivityProvider mActivityProvider;
     private Activity mActivity;
 
     public FirebaseAnalyticsModule(Context context) {
         super(context);
-        mContext = context;
     }
 
     @Override
@@ -62,14 +58,6 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
         return null;
     }
 
-    private final UIManager getUIManager() {
-        if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-            UIManager mUIManager = mModuleRegistry.getModule(UIManager.class);
-            return mUIManager;
-        }
-        return null;
-    }
-
     private Context getApplicationContextOrReject(Promise promise) {
         Context context = getApplicationContext();
         if (context == null) {
@@ -80,7 +68,8 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
     @ExpoMethod
     public void initAppAsync(final Map<String, String> options, Promise promise) {
-        if (getApplicationContextOrReject(promise) == null) return;
+        Context context = getApplicationContextOrReject(promise);
+        if (context == null) return;
 
         FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
@@ -92,34 +81,41 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
         builder.setGcmSenderId(options.get("messagingSenderId"));
         builder.setGaTrackingId(options.get("trackingId"));
 
-        FirebaseApp firebaseApp = FirebaseApp.getInstance();
-
         Bundle response = new Bundle();
         response.putString("result", "success");
+        try {
+            FirebaseApp firebaseApp = FirebaseApp.getInstance();
 
-        if (firebaseApp != null) {
-            FirebaseOptions currentOptions = firebaseApp.getOptions();
-            if (!currentOptions.getApiKey().equals(options.get("apiKey")) ||
-                    !currentOptions.getApplicationId().equals(options.get("appId"))) {
-                firebaseApp.delete();
-            } else {
-                promise.resolve(response);
-                return;
+            if (firebaseApp != null) {
+                FirebaseOptions currentOptions = firebaseApp.getOptions();
+                if (!currentOptions.getApiKey().equals(options.get("apiKey")) ||
+                        !currentOptions.getApplicationId().equals(options.get("appId"))) {
+                    firebaseApp.delete();
+                } else {
+                    promise.resolve(response);
+                    return;
+                }
             }
+        } catch (Exception e) {
         }
 
-        FirebaseApp.initializeApp(mContext, builder.build());
+        FirebaseApp.initializeApp(context, builder.build());
 
         promise.resolve(response);
     }
 
     @ExpoMethod
     public void deleteAppAsync(Promise promise) {
-        FirebaseApp firebaseApp = FirebaseApp.getInstance();
+        try {
 
-        if (firebaseApp != null) {
-            firebaseApp.delete();
+            FirebaseApp firebaseApp = FirebaseApp.getInstance();
+
+            if (firebaseApp != null) {
+                firebaseApp.delete();
+            }
+        } catch (Exception e) {
         }
+
         promise.resolve(null);
     }
 
