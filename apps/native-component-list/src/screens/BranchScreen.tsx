@@ -1,12 +1,14 @@
 import React from 'react';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View, Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 let Branch = null;
-try {
-  Branch = require('react-native-branch').default;
-} catch (e) {
-  console.log('Branch is not supported on this platform.', e);
+if (Platform.OS !== 'web') {
+  try {
+    Branch = require('react-native-branch').default;
+  } catch (e) {
+    console.log('Branch is not supported on this platform.', e);
+  }
 }
 
 export default class BranchScreen extends React.Component {
