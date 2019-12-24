@@ -4,7 +4,7 @@
 
 @interface EXScreenOrientationUtilities : NSObject
 
-+ (BOOL)doesDeviceSizeClassesAreEqual;
++ (BOOL)isIPad;
 + (BOOL)doesDeviceSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask;
 + (BOOL)doesOrientationMask:(UIInterfaceOrientationMask)orientationMask containOrientation:(UIInterfaceOrientation)orientation;
 + (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask;

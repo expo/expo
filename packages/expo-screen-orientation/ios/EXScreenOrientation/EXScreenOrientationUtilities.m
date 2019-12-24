@@ -160,40 +160,9 @@
   return [exportOrientationMap[orientation] intValue] ?: UIInterfaceOrientationUnknown;
 }
 
-+ (BOOL)doesDeviceSizeClassesAreEqual
++ (BOOL)isIPad
 {
-  static BOOL result = false;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    NSString *deviceIdentifier = [NSString stringWithCString:systemInfo.machine
-                                                    encoding:NSUTF8StringEncoding];
-    result = [self doesDeviceSizeClassesAreEqual:deviceIdentifier];
-  });
-  
-  return result;
-}
-
-+ (BOOL)doesDeviceSizeClassesAreEqual:(NSString *)deviceIdentifier
-{
-  NSArray<NSString *> *devicesWithEqualSizeClassesIdentifiers = @[
-                                                       @"iPad7,3", // iPad 10.5" (model A1701)
-                                                       @"iPad7,4", // iPad 10.5" (model A1709)
-                                                       ];
-  NSArray<NSString *> *simulatorsIdentifiers = @[
-                                                 @"i386",
-                                                 @"x86_64",
-                                                 ];
-  if ([devicesWithEqualSizeClassesIdentifiers containsObject:deviceIdentifier]) {
-    return true;
-  }
-  
-  if ([simulatorsIdentifiers containsObject:deviceIdentifier]) {
-    return [self doesDeviceSizeClassesAreEqual:[[[NSProcessInfo processInfo] environment] objectForKey:@"SIMULATOR_MODEL_IDENTIFIER"]];
-  }
-  
-  return false;
+  return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 }
 
 @end
