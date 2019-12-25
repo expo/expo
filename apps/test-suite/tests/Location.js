@@ -351,7 +351,7 @@ export async function test(t) {
           });
           t.expect(Array.isArray(result)).toBe(true);
           t.expect(typeof result[0]).toBe('object');
-          const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name'];
+          const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name', 'formatted'];
           fields.forEach(field => {
             t.expect(
               typeof result[field] === 'string' || typeof result[field] === 'undefined'

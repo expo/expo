@@ -59,6 +59,7 @@ export interface Address {
   country: string;
   postalCode: string;
   name: string;
+  formatted: string;
 }
 
 export { PermissionStatus };
@@ -393,6 +394,10 @@ async function _googleReverseGeocodeAsync(options: {
         address.name = component.long_name;
       }
     });
+
+    if (result.formatted_address) {
+        address.formatted = result.formatted_address;
+    }
     return address as Address;
   });
 }

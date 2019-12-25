@@ -233,6 +233,7 @@ Returns a promise resolving to an array (in most cases its size is 1) of address
 - **postalCode (_string_)** -- Postal code of the address.
 - **country (_string_)** -- Localized country name of the address.
 - **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
+- **formatted (_string_)** -- The formatted_address field, usually a smart concatenation of the other fields.
 
 ### `Location.setApiKey(apiKey)`
 
