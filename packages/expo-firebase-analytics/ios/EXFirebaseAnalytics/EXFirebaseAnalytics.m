@@ -25,8 +25,8 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   reject(exception.name, exception.reason, error);
 }
 
-UM_EXPORT_METHOD_AS(initAppAsync,
-                    initAppAsync:(NSDictionary *)config
+UM_EXPORT_METHOD_AS(initializeAppDangerously,
+                    initializeAppDangerously:(NSDictionary *)config
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   [UMUtilities performSynchronouslyOnMainThread:^{
@@ -70,8 +70,8 @@ UM_EXPORT_METHOD_AS(initAppAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(deleteAppAsync,
-                    deleteAppAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(deleteApp,
+                    deleteApp:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   FIRApp *existingApp = [FIRApp defaultApp];
   
@@ -91,8 +91,8 @@ UM_EXPORT_METHOD_AS(deleteAppAsync,
 
 /*** firebase */
 
-UM_EXPORT_METHOD_AS(logEventAsync,
-                    logEventAsync:(NSString *)name
+UM_EXPORT_METHOD_AS(logEvent,
+                    logEvent:(NSString *)name
                     parameters:(NSDictionary *)parameters
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -104,8 +104,8 @@ UM_EXPORT_METHOD_AS(logEventAsync,
     return;
   }
 }
-UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabledAsync,
-                    setAnalyticsCollectionEnabledAsync:(BOOL)isEnabled
+UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
+                    setAnalyticsCollectionEnabled:(BOOL)isEnabled
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   @try {
@@ -116,8 +116,8 @@ UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabledAsync,
     return;
   }
 }
-UM_EXPORT_METHOD_AS(setCurrentScreenAsync,
-                    setCurrentScreenAsync:(NSString *)screenName
+UM_EXPORT_METHOD_AS(setCurrentScreen,
+                    setCurrentScreen:(NSString *)screenName
                     screenClass:(NSString *)screenClassOverview
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -131,8 +131,8 @@ UM_EXPORT_METHOD_AS(setCurrentScreenAsync,
     }
   }];
 }
-UM_EXPORT_METHOD_AS(setUserIdAsync,
-                    setUserIdAsync:(NSString *)userId
+UM_EXPORT_METHOD_AS(setUserId,
+                    setUserId:(NSString *)userId
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   @try {
@@ -143,8 +143,8 @@ UM_EXPORT_METHOD_AS(setUserIdAsync,
     return;
   }
 }
-UM_EXPORT_METHOD_AS(setUserPropertyAsync,
-                    setUserPropertyAsync:(NSString *)name
+UM_EXPORT_METHOD_AS(setUserProperty,
+                    setUserProperty:(NSString *)name
                     value:(NSString *)value
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -156,8 +156,8 @@ UM_EXPORT_METHOD_AS(setUserPropertyAsync,
     return;
   }
 }
-UM_EXPORT_METHOD_AS(resetAnalyticsDataAsync,
-                    resetAnalyticsDataAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(resetAnalyticsData,
+                    resetAnalyticsData:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics resetAnalyticsData];
