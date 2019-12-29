@@ -11,6 +11,8 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 | -------------- | ---------------- | ---------- | ------------- | --- |
 | ✅             | ❌               | ✅         | ❌            | ✅  |
 
+:warning: LocalNotifications are not persisted throughout reboots on Android ([feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot))
+
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
