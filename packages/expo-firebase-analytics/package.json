@@ -1,6 +1,9 @@
 {
   "name": "expo-firebase-analytics",
   "version": "1.0.0",
+  "sideEffects": [
+    "build/Analytics.js"
+  ],
   "description": "A universal module that interfaces with the native firebase analytics API",
   "main": "build/Analytics.js",
   "types": "build/Analytics.d.ts",

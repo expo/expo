@@ -40,7 +40,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void initAppAsync(final Map<String, String> options, Promise promise) {
+    public void initializeAppDangerously(final Map<String, String> options, Promise promise) {
         try {
             FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
@@ -80,7 +80,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void deleteAppAsync(Promise promise) {
+    public void deleteApp(Promise promise) {
         try {
             FirebaseApp firebaseApp = getDefaultApp();
             if (firebaseApp != null) {
@@ -93,7 +93,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void logEventAsync(final String name, @Nullable Map<String, Object> params, Promise promise) {
+    public void logEvent(final String name, @Nullable Map<String, Object> params, Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).logEvent(name, new MapArguments(params).toBundle());
             promise.resolve(null);
@@ -103,7 +103,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void setAnalyticsCollectionEnabledAsync(final Boolean enabled, Promise promise) {
+    public void setAnalyticsCollectionEnabled(final Boolean enabled, Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setAnalyticsCollectionEnabled(enabled);
             promise.resolve(null);
@@ -113,7 +113,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void setCurrentScreenAsync(final String screenName, final String screenClassOverride, final Promise promise) {
+    public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -128,7 +128,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void setSessionTimeoutDurationAsync(final double milliseconds, Promise promise) {
+    public void setSessionTimeoutDuration(final double milliseconds, Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setSessionTimeoutDuration((long) milliseconds);
             promise.resolve(null);
@@ -138,7 +138,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void setUserIdAsync(final String id, Promise promise) {
+    public void setUserId(final String id, Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserId(id);
             promise.resolve(null);
@@ -148,7 +148,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void setUserPropertyAsync(final String name, final String value, Promise promise) {
+    public void setUserProperty(final String name, final String value, Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserProperty(name, value);
             promise.resolve(null);
@@ -158,7 +158,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void resetAnalyticsDataAsync(Promise promise) {
+    public void resetAnalyticsData(Promise promise) {
         try {
             FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).resetAnalyticsData();
             promise.resolve(null);
