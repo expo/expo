@@ -18,7 +18,7 @@ const BatteryEventEmitter = new EventEmitter(ExpoBattery);
  * Deprecated
  */
 export declare const isSupported: boolean;
-if (module.exports) {
+if (typeof module !== 'undefined' && module.exports) {
   Object.defineProperties(module.exports, {
     isSupported: {
       enumerable: true,

@@ -2,7 +2,7 @@ import { EventEmitter, deprecate } from '@unimodules/core';
 import { BatteryState, } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
-if (module.exports) {
+if (typeof module !== 'undefined' && module.exports) {
     Object.defineProperties(module.exports, {
         isSupported: {
             enumerable: true,
