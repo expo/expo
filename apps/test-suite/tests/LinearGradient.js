@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
