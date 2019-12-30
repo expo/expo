@@ -7,6 +7,11 @@ export async function test(
   { setPortalChild, cleanupPortal }
 ) {
   describe(name, () => {
+    afterAll(async () => {
+      await KeepAwake.deactivateKeepAwake();
+      await KeepAwake.deactivateKeepAwake('test-tag');
+    });
+
     it(`keeps the screen on`, async () => {
       await KeepAwake.activateKeepAwake();
     });
