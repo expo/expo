@@ -7,6 +7,18 @@ assignees: ''
 
 ---
 
+
+
+
+
+<!-- IMPORTANT: Due to the holidays, please expect limited to no response from the Expo Team during the weeks of Christmas and New Year's (from 12/23 to 1/3). Additionally, issue catch-up will likely extend into the week of January 6. Thanks for your patience, we hope you enjoy the holidays, and have a happy New Year! 
+
+
+
+
+
+
+
 ## 🐛 Bug Report
 
 ### Environment

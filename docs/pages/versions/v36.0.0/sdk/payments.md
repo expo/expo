@@ -1,6 +1,6 @@
 ---
 title: Payments
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe'
 ---
 
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
@@ -18,9 +18,9 @@ const { Stripe } = DangerZone;
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ❌     | ✅     | ❌     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ❌               | ✅         | ❌            | ❌  |
 
 ## Setup
 
@@ -226,9 +226,9 @@ Launch `Add Card` view to accept payment.
 **options.prefilledInformation** — An object with the following keys:
 
 |       Key       |  Type  | Description                                                                                                                                                                             |
-|:---------------:|:------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------: | :----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | shippingAddress | Object | The user’s shipping address. When set, the shipping address form will be filled with this address. The user will also have the option to fill their billing address using this address. |
-|  billingAddress | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.          |
+| billingAddress  | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.       |
 
 **options.prefilledInformation.billingAddress** — An object with the following keys:
 
@@ -380,7 +380,7 @@ Launch the  Pay view to accept payment.
 | amount | _String_ | The summary item’s amount.                                                  |
 | type   | _String_ | The summary item’s type. Must be "pending" or "final". Defaults to "final". |
 
-**NOTE**: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc $50")
+**NOTE**: The final item should represent your company; it'll be prepended with the word "Pay" (i.e. "Pay Tipsi, Inc \$50")
 
 ##### `options` — An object with the following keys:
 

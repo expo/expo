@@ -43,6 +43,10 @@ A short description of what your app is and why it is great.
 
 **Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
 
+### `"backgroundColor"`
+
+The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff`.
+
 ### `"owner"`
 
 The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
@@ -283,13 +287,7 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING,
-
-    /*
-     The URL-safe base64-encoded VAPID public key used for web push notifications.
-     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
-    */
-    "vapidPublicKey": STRING
+    "androidCollapsedTitle": STRING
   }
 }
 ```
@@ -375,6 +373,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "buildNumber": STRING,
+
+    /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
 
     /*
       Local path or remote URL to an image to use for your app's
@@ -601,6 +604,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: this is set in `android/app/build.gradle`.
     */
     "versionCode": NUMBER,
+
+    /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
 
     /*
       Local path or remote url to an image to use for your app's icon on Android.

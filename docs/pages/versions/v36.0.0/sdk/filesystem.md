@@ -1,19 +1,79 @@
 ---
 title: FileSystem
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
 ---
 
-Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+
+## Example Usage
+
+```javascript
+const callback = downloadProgress => {
+  const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+  this.setState({
+    downloadProgress: progress,
+  });
+};
+
+const downloadResumable = FileSystem.createDownloadResumable(
+  'http://techslides.com/demos/sample-videos/small.mp4',
+  FileSystem.documentDirectory + 'small.mp4',
+  {},
+  callback
+);
+
+try {
+  const { uri } = await downloadResumable.downloadAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
+
+try {
+  await downloadResumable.pauseAsync();
+  console.log('Paused download operation, saving for future retrieval');
+  AsyncStorage.setItem('pausedDownload', JSON.stringify(downloadResumable.savable()));
+} catch (e) {
+  console.error(e);
+}
+
+try {
+  const { uri } = await downloadResumable.resumeAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
+
+//To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
+const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
+const downloadSnapshot = JSON.parse(downloadSnapshotJson);
+const downloadResumable = new FileSystem.DownloadResumable(
+  downloadSnapshot.url,
+  downloadSnapshot.fileUri,
+  downloadSnapshot.options,
+  callback,
+  downloadSnapshot.resumeData
+);
+
+try {
+  const { uri } = await downloadResumable.resumeAsync();
+  console.log('Finished downloading to ', uri);
+} catch (e) {
+  console.error(e);
+}
+```
 
 ## API
 
@@ -21,15 +81,25 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as FileSystem from 'expo-file-system';
 ```
 
+<TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
+
+<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType']} />
+
+<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
+
+## Directories
+
 The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
-- **`FileSystem.documentDirectory`**
+### `FileSystem.documentDirectory`
 
 `file://` URI pointing to the directory where user documents for this app will be stored. Files stored here will remain until explicitly deleted by the app. Ends with a trailing `/`. Example uses are for files the user saves that they expect to see again.
 
-- **`FileSystem.cacheDirectory`**
+### `FileSystem.cacheDirectory`
 
 `file://` URI pointing to the directory where temporary files used by this app will be stored. Files stored here may be automatically deleted by the system when low on storage. Example uses are for downloaded or generated files that the app just needs for one-time usage.
+
+---
 
 So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `FileSystem.documentDirectory + 'myDirectory/myFile'`.
 
@@ -37,13 +107,17 @@ Expo APIs that create files generally operate within these directories. This inc
 
 Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
 
-- **`FileSystem.EncodingType`**
+## Constants
 
-These constants can be used to define how data is read / written.
+### `FileSystem.EncodingType`
+
+These values can be used to define how data is read / written.
 
 - **FileSystem.EncodingType.UTF8** -- Standard readable format.
 
 - **FileSystem.EncodingType.Base64** -- Binary, radix-64 representation.
+
+## Methods
 
 ### `FileSystem.getInfoAsync(fileUri, options)`
 
@@ -120,16 +194,6 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 - **options (_object_)** -- A map of options:
 
   - **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
-
-### `FileSystem.deleteLegacyDocumentDirectoryAndroid(fileUri, options)`
-
-Delete the legacy document directory used in Android standalone apps built with SDK 32 and below.
-
-In standalone apps built with this SDK version, files in the legacy document directory are automatically copied to the current (new) document directory upon first launch. Any files already in the current (new) document directory will not be overwritten. This allows seamless transitions without your application code needing to be aware of the legacy document directory subfolder.
-
-The legacy document directory is NOT deleted on launch in case your application code depends on it, meaning any legacy files may be duplicated. If you have a large files stored in the FileSystem, you may want to call this method soon after launching your app in order to free up storage on the user's device.
-
-If the legacy document directory does not exist, this method is a noop and is therefore safe to call repeatedly.
 
 ### `FileSystem.moveAsync(options)`
 
@@ -373,63 +437,5 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 #### Returns
 
 Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
-
-#### Example
-
-```javascript
-const callback = downloadProgress => {
-  const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-  this.setState({
-    downloadProgress: progress,
-  });
-};
-
-const downloadResumable = FileSystem.createDownloadResumable(
-  'http://techslides.com/demos/sample-videos/small.mp4',
-  FileSystem.documentDirectory + 'small.mp4',
-  {},
-  callback
-);
-
-try {
-  const { uri } = await downloadResumable.downloadAsync();
-  console.log('Finished downloading to ', uri);
-} catch (e) {
-  console.error(e);
-}
-
-try {
-  await downloadResumable.pauseAsync();
-  console.log('Paused download operation, saving for future retrieval');
-  AsyncStorage.setItem('pausedDownload', JSON.stringify(downloadResumable.savable()));
-} catch (e) {
-  console.error(e);
-}
-
-try {
-  const { uri } = await downloadResumable.resumeAsync();
-  console.log('Finished downloading to ', uri);
-} catch (e) {
-  console.error(e);
-}
-
-//To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
-const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
-const downloadSnapshot = JSON.parse(downloadSnapshotJson);
-const downloadResumable = new FileSystem.DownloadResumable(
-  downloadSnapshot.url,
-  downloadSnapshot.fileUri,
-  downloadSnapshot.options,
-  callback,
-  downloadSnapshot.resumeData
-);
-
-try {
-  const { uri } = await downloadResumable.resumeAsync();
-  console.log('Finished downloading to ', uri);
-} catch (e) {
-  console.error(e);
-}
-```
 
 #

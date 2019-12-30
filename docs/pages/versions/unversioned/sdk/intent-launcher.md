@@ -1,17 +1,17 @@
 ---
 title: IntentLauncher
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-intent-launcher'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Provides a way to launch android intents. e.g. - opening a specific settings screen.
+**`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -25,7 +25,6 @@ import * as IntentLauncher from 'expo-intent-launcher';
 // Open location settings
 IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
 ```
-
 
 ## API
 
@@ -85,4 +84,3 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 | Success     |  -1   | Indicates that the activity operation succeeded.                          |
 | Canceled    |   0   | Means that the activity was canceled, e.g. by tapping on the back button. |
 | FirstUser   |   1   | First custom, user-defined value that can be returned by the activity.    |
-

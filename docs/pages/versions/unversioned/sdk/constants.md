@@ -1,17 +1,17 @@
 ---
 title: Constants
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-constants"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-constants'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-System information that remains constant throughout the lifetime of your app.
+**`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

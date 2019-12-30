@@ -23,7 +23,7 @@
 
 @implementation GDTCOREvent
 
-- (instancetype)initWithMappingID:(NSString *)mappingID target:(NSInteger)target {
+- (nullable instancetype)initWithMappingID:(NSString *)mappingID target:(NSInteger)target {
   GDTCORAssert(mappingID.length > 0, @"Please give a valid mapping ID");
   GDTCORAssert(target > 0, @"A target cannot be negative or 0");
   if (mappingID == nil || mappingID.length == 0 || target <= 0) {

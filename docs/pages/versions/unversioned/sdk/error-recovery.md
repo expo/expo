@@ -1,15 +1,15 @@
 ---
 title: ErrorRecovery
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-error-recovery"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-error-recovery'
 ---
 
-Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
+This module provides utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -27,6 +27,6 @@ Set arbitrary error recovery props. If your project crashes in production as a r
 
 #### Arguments
 
--   **props (_object_)** -- An object which will be passed to your reloaded project's initial props if the project was reloaded as a result of a fatal JS error.
+- **props (_object_)** -- An object which will be passed to your reloaded project's initial props if the project was reloaded as a result of a fatal JS error.
 
 #

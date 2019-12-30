@@ -59,9 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 /** The registrar object the coordinator will use. Generally used for testing. */
 @property(nonatomic) GDTCORRegistrar *registrar;
 
-/** If YES, completion and other operations will result in serializing the singleton to disk. */
-@property(nonatomic, readonly) BOOL runningInBackground;
-
 /** Forces the backend specified by the target to upload the provided set of events. This should
  * only ever happen when the QoS tier of an event requires it.
  *

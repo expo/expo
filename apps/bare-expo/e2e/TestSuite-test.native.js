@@ -22,6 +22,7 @@ let TESTS = [
   // 'SQLite',
   'Random',
   'Permissions',
+  'KeepAwake',
   // 'Audio',
 ];
 

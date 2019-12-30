@@ -1,18 +1,18 @@
 ---
 title: Gyroscope
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+`Gyroscope` from **`expo-sensors`** provides access to the device's gyroscope sensor to respond to changes in rotation in 3D space.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ❌     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ❌            | ✅  |
 
 ## Installation
 
@@ -25,7 +25,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Gyroscope } from 'expo-sensors'; 
+import { Gyroscope } from 'expo-sensors';
 
 export default function App() {
   const [data, setData] = useState({});
@@ -97,6 +97,7 @@ function round(n) {
   return Math.floor(n * 100) / 100;
 }
 ```
+
 </SnackInline>
 
 ## API

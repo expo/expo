@@ -86,6 +86,24 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 - Install or upgrade `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).
 
+Additionally, if upgrading from SDK 35 or below:
+
+- Replace
+```ruby
+pod 'React',
+(...)
+  pod 'glog',
+    :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec",
+    :inhibit_warnings => true
+```
+
+with
+```ruby
+ # Install React Native and its dependencies
+ require_relative '../node_modules/react-native/scripts/autolink-ios.rb'
+ use_react_native!
+```
+
 If upgrading from SDK 32 or below:
 
 1. If you haven't already done so install `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).

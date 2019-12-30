@@ -74,8 +74,18 @@ NS_ASSUME_NONNULL_BEGIN
  * 2. Language setting is not changed.
  * 3. App version is current.
  * 4. GMP App ID is current.
+ * 5. token is consistent with the current IID.
+ * 6. APNS info has changed.
+ * @param IID  The app identifiier that is used to check if token is prefixed with.
+ * @return If token is fresh.
+ *
  */
-- (BOOL)isFresh;
+- (BOOL)isFreshWithIID:(NSString *)IID;
+
+/*
+ * Check whether the token is default token.
+ */
+- (BOOL)isDefaultToken;
 
 @end
 

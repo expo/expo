@@ -33,6 +33,11 @@
 #import "Private/FIRLibrary.h"
 #import "Private/FIRLogger.h"
 #import "Private/FIROptionsInternal.h"
+#import "Private/FIRVersion.h"
+
+#import <GoogleUtilities/GULAppEnvironmentUtil.h>
+
+#import <objc/runtime.h>
 
 // The kFIRService strings are only here while transitioning CoreDiagnostics from the Analytics
 // pod to a Core dependency. These symbols are not used and should be deleted after the transition.
@@ -111,6 +116,7 @@ static NSMutableArray<Class<FIRLibrary>> *sRegisteredAsConfigurable;
 static NSMutableDictionary *sAllApps;
 static FIRApp *sDefaultApp;
 static NSMutableDictionary *sLibraryVersions;
+static dispatch_once_t sFirebaseUserAgentOnceToken;
 
 + (void)configure {
   FIROptions *options = [FIROptions defaultOptions];
@@ -159,8 +165,9 @@ static NSMutableDictionary *sLibraryVersions;
 
   if ([name isEqualToString:kFIRDefaultAppName]) {
     if (sDefaultApp) {
-      [NSException raise:kFirebaseCoreErrorDomain
-                  format:@"Default app has already been configured."];
+      // The default app already exixts. Handle duplicate `configure` calls and return.
+      [self appWasConfiguredTwice:sDefaultApp usingOptions:options];
+      return;
     }
 
     FIRLogDebug(kFIRLoggerCore, @"I-COR000001", @"Configuring the default app.");
@@ -176,8 +183,9 @@ static NSMutableDictionary *sLibraryVersions;
 
     @synchronized(self) {
       if (sAllApps && sAllApps[name]) {
-        [NSException raise:kFirebaseCoreErrorDomain
-                    format:@"App named %@ has already been configured.", name];
+        // The app already exists. Handle a duplicate `configure` call and return.
+        [self appWasConfiguredTwice:sAllApps[name] usingOptions:options];
+        return;
       }
     }
 
@@ -191,7 +199,41 @@ static NSMutableDictionary *sLibraryVersions;
     }
 
     [FIRApp addAppToAppDictionary:app];
+
+    // The FIRApp instance is ready to go, `sDefaultApp` is assigned, other SDKs are now ready to be
+    // instantiated.
+    [app.container instantiateEagerComponents];
     [FIRApp sendNotificationsToSDKs:app];
+  }
+}
+
+/// Called when `configure` has been called multiple times for the same app. This can either throw
+/// an exception (most cases) or ignore the duplicate configuration in situations where it's allowed
+/// like an extension.
++ (void)appWasConfiguredTwice:(FIRApp *)app usingOptions:(FIROptions *)options {
+  // Only extensions should potentially be able to call `configure` more than once.
+  if (![GULAppEnvironmentUtil isAppExtension]) {
+    // Throw an exception since this is now an invalid state.
+    if (app.isDefaultApp) {
+      [NSException raise:kFirebaseCoreErrorDomain
+                  format:@"Default app has already been configured."];
+    } else {
+      [NSException raise:kFirebaseCoreErrorDomain
+                  format:@"App named %@ has already been configured.", app.name];
+    }
+  }
+
+  // In an extension, the entry point could be called multiple times. As long as the options are
+  // identical we should allow multiple `configure` calls.
+  if ([options isEqual:app.options]) {
+    // Everything is identical but the extension's lifecycle triggered `configure` twice.
+    // Ignore duplicate calls and return since everything should still be in a valid state.
+    FIRLogDebug(kFIRLoggerCore, @"I-COR000035",
+                @"Ignoring second `configure` call in an extension.");
+    return;
+  } else {
+    [NSException raise:kFirebaseCoreErrorDomain
+                format:@"App named %@ has already been configured.", app.name];
   }
 }
 
@@ -236,6 +278,7 @@ static NSMutableDictionary *sLibraryVersions;
     sAllApps = nil;
     [sLibraryVersions removeAllObjects];
     sLibraryVersions = nil;
+    sFirebaseUserAgentOnceToken = 0;
   }
 }
 
@@ -352,7 +395,7 @@ static NSMutableDictionary *sLibraryVersions;
   }
 
   // Check if the Analytics flag is explicitly set. If so, no further actions are necessary.
-  if ([self.options isAnalyticsCollectionExpicitlySet]) {
+  if ([self.options isAnalyticsCollectionExplicitlySet]) {
     return;
   }
 
@@ -517,6 +560,25 @@ static NSMutableDictionary *sLibraryVersions;
 
 + (NSString *)firebaseUserAgent {
   @synchronized(self) {
+    dispatch_once(&sFirebaseUserAgentOnceToken, ^{
+      // Report FirebaseCore version for useragent string
+      [FIRApp registerLibrary:@"fire-ios"
+                  withVersion:[NSString stringWithUTF8String:FIRCoreVersionString]];
+
+      NSDictionary<NSString *, id> *info = [[NSBundle mainBundle] infoDictionary];
+      NSString *xcodeVersion = info[@"DTXcodeBuild"];
+      NSString *sdkVersion = info[@"DTSDKBuild"];
+      if (xcodeVersion) {
+        [FIRApp registerLibrary:@"xcode" withVersion:xcodeVersion];
+      }
+      if (sdkVersion) {
+        [FIRApp registerLibrary:@"apple-sdk" withVersion:sdkVersion];
+      }
+
+      NSString *swiftFlagValue = [self hasSwiftRuntime] ? @"true" : @"false";
+      [FIRApp registerLibrary:@"swift" withVersion:swiftFlagValue];
+    });
+
     NSMutableArray<NSString *> *libraries =
         [[NSMutableArray<NSString *> alloc] initWithCapacity:sLibraryVersions.count];
     for (NSString *libraryName in sLibraryVersions) {
@@ -526,6 +588,20 @@ static NSMutableDictionary *sLibraryVersions;
     [libraries sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     return [libraries componentsJoinedByString:@" "];
   }
+}
+
++ (BOOL)hasSwiftRuntime {
+  // The class
+  // [Swift._SwiftObject](https://github.com/apple/swift/blob/5eac3e2818eb340b11232aff83edfbd1c307fa03/stdlib/public/runtime/SwiftObject.h#L35)
+  // is a part of Swift runtime, so it should be present if Swift runtime is available.
+
+  BOOL hasSwiftRuntime =
+      objc_lookUpClass("Swift._SwiftObject") != nil ||
+      // Swift object class name before
+      // https://github.com/apple/swift/commit/9637b4a6e11ddca72f5f6dbe528efc7c92f14d01
+      objc_getClass("_TtCs12_SwiftObject") != nil;
+
+  return hasSwiftRuntime;
 }
 
 - (void)checkExpectedBundleID {

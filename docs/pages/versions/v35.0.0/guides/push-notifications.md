@@ -298,13 +298,6 @@ type PushMessage = {
   ttl?: number,
 
   /**
-   * (Web only)
-   * Remote url of a custom icon that replaces the default notification icon.
-   * This value overrides `notification.icon` in `app.json`.
-   */
-  icon?: string,
-
-  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -353,25 +346,10 @@ type PushMessage = {
    */
   badge?: number,
 
-  /**
-   * ID of the Notification Category through which to display this notification.
-   *
-   * To send a notification with category to the Expo client, prefix the string
-   * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
-   * applications, use plain `yourCategoryId`.
-   */
-  _category?: string,
-
-  /**
-   * Displays the notification when the app is foreground.
-   * Defaults to `false`.
-   */
-  _displayInForeground?: boolean
-
   // Android-specific fields
 
   /**
-   * Remote url of a custom icon that replaces the default notification icon.
+   * Remote URL of a custom icon that replaces the default notification icon.
   */
   icon?: string,
 

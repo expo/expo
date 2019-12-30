@@ -50,45 +50,56 @@ When you use the `expo credentials:manager` or `expo build:ios --clear-credentia
 
 Google requires all Android apps to be digitally signed with a certificate before they are installed on a device or updated. Usually
 a private key and its public certificate are stored in a keystore. In the past, APKs uploaded to the store were required to be signed with
-the **app signing certificate** (certificate that will be attached to the app in store), and if the keystore was lost there was no way to
-recover or reset it. If you opt in to App Signing by Google Play you need to upload an APK signed with an **upload certificate**, and Google Play will
-strip that signature and replace it with one generated using the **app signing certificate**. Both the upload keystore and keystore with
-the **app signing key** are essentially the same mechanism, but if your upload keystore is lost or compromised, you can contact
-the Google Play support team to reset the key.
+the **app signing certificate** (certificate that will be attached to the app in the Play Store), and if the keystore was lost there was no way to
+recover or reset it. Now, you can opt in to App Signing by Google Play and simply upload an APK signed with an **upload certificate**, and Google Play will automatically replace it with the **app signing certificate**. Both the old method (app signing certificate) and new method (upload certificate) are essentially the same mechanism, but using the new method, if your upload keystore is lost or compromised, you can contact the Google Play support team to reset the key.
 
-From the build process's perspective, there is no difference whether an app is signed with an **upload certificate** or an **app signing certificate**. Either way, `expo build:android` will generate an APK signed with the keystore currently assigned to your application. If you want to generate an upload keystore manually, you can do
-that the same way you created your original keystore.
+From the Expo build process's perspective, there is no difference whether an app is signed with an **upload certificate** or an **app signing key**. Either way, `expo build:android` will generate an APK signed with the keystore currently associated with your application. If you want to generate an upload keystore manually, you can do that the same way you created your original keystore.
 
 See [here](https://developer.android.com/studio/publish/app-signing) to find more information about this process.
 
-### 1. Using App Signing by Google Play (recommended)
+### Option 1- Using App Signing by Google Play (recommended)
 
-Create a new application and allow Google Play to handle your **app signing key**. The certificate used to sign the first APK uploaded to the store
-will be your **upload certificate** and each new release needs to be signed with it.
+#### If you're deploying a new app...
 
-If you want to use Google Play App Signing in an existing app, run `expo opt-in-google-play-signing` and follow its instructions. After
-this process, the original keystore will be backed up to your current working directory and credentials for that keystore will be printed on the screen,
-Remove that keystore only when you are sure that everything works correctly.
+1. Go to the [Google Play Console](https://play.google.com/apps/publish/) and create a new application
 
-In case you lose your upload keystore (or it's compromised), you can ask Google Support Team to reset your upload key.
+2. After providing a name, select the `App Signing` option on the sidebar, and then select `Continue` to allow Google Play to handle your app signing key
 
-- If you want Expo to handle creating the upload certificate:
+3. The certificate used to sign the first APK uploaded to the store will be your upload certificate and each new release needs to be signed with it.
 
-  - `expo build:android --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
-  - `expo fetch:android:upload-cert` extracts public certificate from the keystore into `.pem` file
-  - Add the upload certificate to the Google Play console. Select `Export and upload a key (not using a Java keystore)` and a dropdown will appear for `(Optional) Create a new upload key for increased security (recommended)`. Steps 1 & 2 were already completed, so move to step 3
+#### If you're working on an existing app...
 
-- If you want to handle it create the upload certificate yourself:
-  - Generate a new keystore
-  - Extract the upload certificate with
-    ```bash
-    keytool -export -rfc
-      -keystore your-upload-keystore.jks
-      -alias upload-alias
-      -file output_upload_certificate.pem
-    ```
-  - Add the upload certificate to the Google Play console
+1. Run `expo opt-in-google-play-signing` from your project directory and follow the instructions. Afterwards, the keystore will be backed up to your working directory, and the credentials for that keystore will be printed in the CLI.
 
-### 2. Signing APKs with an **app signing key** (deprecated)
+2. Run `expo build:android --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
 
-The first time you run `expo build:android`, you can choose for Expo to generate a keystore or manually specify all of the required credentials. These credentials are used to sign APKs created by Expo services.
+3. Run `expo fetch:android:upload-cert` which extracts the public certificate from the keystore into a `.pem` file
+
+4. Add the upload certificate to the [Google Play console](https://play.google.com/apps/publish/) under your application's `App Signing` tab
+
+5. Open the dropdown for `(Advanced options) Provide the app signing key that Google Play uses for this app`
+
+6. Select `Export and upload a key (not using a Java keystore)`
+
+7. Select the dropdown for `(Optional) Create a new upload key for increased security (recommended)`
+
+8. You've already generated a new upload key and extracted the certificate, so move to step 3 and upload the public key certificate (the `.pem` file you received in step 2)
+
+If you want to create the upload certificate yourself, replace steps 2 and 3 from above with:
+
+2. Generate a new keystore
+
+3. Extract the upload certificate with
+
+   ```
+   bash keytool -export -rfc
+    -keystore your-upload-keystore.jks
+    -alias upload-alias
+    -file output_upload_certificate.pem
+   ```
+
+> If you lose your upload keystore (or it's compromised), you must ask the Google Support Team to reset your upload key.
+
+### Option 2- Signing APKs with an **app signing key** (deprecated)
+
+The first time you run `expo build:android`, you can choose for Expo to generate a keystore or manually specify all of the required credentials. These credentials are used to sign APKs created by Expo services. **We highly reccommend you backup your keystore to a safe location**.

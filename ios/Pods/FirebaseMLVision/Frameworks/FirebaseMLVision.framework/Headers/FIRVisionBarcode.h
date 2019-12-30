@@ -387,6 +387,9 @@ NS_SWIFT_NAME(VisionBarcode)
  */
 @property(nonatomic, readonly, nullable) NSString *rawValue;
 
+/** Raw data stored in barcode. */
+@property(nonatomic, readonly, nullable) NSData *rawData;
+
 /**
  * A barcode value in a user-friendly format. May omit some of the information encoded in the
  * barcode. For example, in the case above the display value might be 'https://www.google.com'.

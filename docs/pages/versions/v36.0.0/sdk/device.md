@@ -1,15 +1,15 @@
 ---
 title: Device
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-device"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-device'
 ---
 
-Provides access to system information about the physical device, such as its manufacturer and model.
+**`expo-device`** provides access to system information about the physical device, such as its manufacturer and model.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -364,6 +364,6 @@ An enum of the different types of devices supported by Expo, with these values:
 
 ## Error Codes
 
-| Code                           | Description                                                                                                               |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Code                      | Description                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | ERR_DEVICE_ROOT_DETECTION | Error code thrown for `isRootedExperimentalAsync`. This may be thrown if there's no read access to certain system files. |

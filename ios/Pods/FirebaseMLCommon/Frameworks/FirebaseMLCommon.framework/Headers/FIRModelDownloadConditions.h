@@ -18,7 +18,7 @@ NS_SWIFT_NAME(ModelDownloadConditions)
 @property(nonatomic, readonly) BOOL allowsBackgroundDownloading;
 
 /**
- * Creates an instance of `ModelDownloadConditions` with the given conditions.
+ * Creates a new instance with the given conditions.
  *
  * @param allowsCellularAccess Whether download requests should be made over a cellular network.
  * @param allowsBackgroundDownloading Whether the model can be downloaded while the app is in the
@@ -30,8 +30,8 @@ NS_SWIFT_NAME(ModelDownloadConditions)
     NS_DESIGNATED_INITIALIZER;
 
 /**
- * Creates an instance of `ModelDownloadConditions` with the default conditions. The default values
- * are specified in the documentation for each instance property.
+ * Creates a new instance with the default conditions. The default values are specified in the
+ * documentation for each instance property.
  *
  * @return A new `ModelDownloadConditions` instance.
  */

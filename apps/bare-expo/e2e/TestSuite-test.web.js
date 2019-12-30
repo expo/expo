@@ -18,6 +18,7 @@ const TESTS = [
   'Crypto',
   'Blur',
   'LinearGradient',
+  'KeepAwake',
   //   'Haptics',
   //   'SecureStore',
 ];
