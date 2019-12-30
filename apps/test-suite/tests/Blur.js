@@ -1,7 +1,7 @@
 import { BlurView } from 'expo-blur';
 import React from 'react';
 
-import { mountAndWaitFor } from './helpers';
+import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'Blur';
 const style = { width: 200, height: 200 };
@@ -13,6 +13,9 @@ export async function test(
   afterEach(async () => {
     await cleanupPortal();
   });
+
+  const mountAndWaitFor = (child, propName = 'onLayout') =>
+    originalMountAndWaitFor(child, propName, setPortalChild);
 
   describe(name, () => {
     describe('create', () => {
