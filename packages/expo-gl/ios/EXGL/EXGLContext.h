@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <OpenGLES/EAGL.h>
-#import <EXGL-CPP/UEXGL.h>
+#import <EXGL_CPP/UEXGL.h>
 #import <UMCore/UMModuleRegistry.h>
 
 @class EXGLContext;

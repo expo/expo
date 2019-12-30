@@ -19,36 +19,34 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /** If present, is a BOOL wrapped in an NSNumber. */
-static NSString *const kFIRCDIsDataCollectionDefaultEnabledKey =
-    @"FIRCDIsDataCollectionDefaultEnabledKey";
+#define kFIRCDIsDataCollectionDefaultEnabledKey @"FIRCDIsDataCollectionDefaultEnabledKey"
 
 /** If present, is an int32_t wrapped in an NSNumber. */
-static NSString *const kFIRCDConfigurationTypeKey = @"FIRCDConfigurationTypeKey";
+#define kFIRCDConfigurationTypeKey @"FIRCDConfigurationTypeKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDSdkNameKey = @"FIRCDSdkNameKey";
+#define kFIRCDSdkNameKey @"FIRCDSdkNameKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDSdkVersionKey = @"FIRCDSdkVersionKey";
+#define kFIRCDSdkVersionKey @"FIRCDSdkVersionKey"
 
 /** If present, is an int32_t wrapped in an NSNumber. */
-static NSString *const kFIRCDllAppsCountKey = @"FIRCDllAppsCountKey";
+#define kFIRCDllAppsCountKey @"FIRCDllAppsCountKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDGoogleAppIDKey = @"FIRCDGoogleAppIDKey";
+#define kFIRCDGoogleAppIDKey @"FIRCDGoogleAppIDKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDBundleIDKey = @"FIRCDBundleID";
+#define kFIRCDBundleIDKey @"FIRCDBundleID"
 
 /** If present, is a BOOL wrapped in an NSNumber. */
-static NSString *const kFIRCDUsingOptionsFromDefaultPlistKey =
-    @"FIRCDUsingOptionsFromDefaultPlistKey";
+#define kFIRCDUsingOptionsFromDefaultPlistKey @"FIRCDUsingOptionsFromDefaultPlistKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDLibraryVersionIDKey = @"FIRCDLibraryVersionIDKey";
+#define kFIRCDLibraryVersionIDKey @"FIRCDLibraryVersionIDKey"
 
 /** If present, is an NSString. */
-static NSString *const kFIRCDFirebaseUserAgentKey = @"FIRCDFirebaseUserAgentKey";
+#define kFIRCDFirebaseUserAgentKey @"FIRCDFirebaseUserAgentKey"
 
 /** Defines the interface of a data object needed to log diagnostics data. */
 @protocol FIRCoreDiagnosticsData <NSObject>

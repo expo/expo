@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { EventEmitter, Subscription, deprecate } from '@unimodules/core';
 
 import {
   BatteryLevelEvent,
@@ -14,7 +14,29 @@ import ExpoBattery from './ExpoBattery';
 
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
-export const isSupported = ExpoBattery.isSupported;
+/**
+ * Deprecated
+ */
+export declare const isSupported: boolean;
+if (typeof module !== 'undefined' && module.exports) {
+  Object.defineProperties(module.exports, {
+    isSupported: {
+      enumerable: true,
+      get() {
+        deprecate('expo-battery', 'Battery.isSupported', {
+          replacement: 'Battery.isAvailableAsync',
+          currentVersion: require('../package.json').version,
+          versionToRemove: '3.0.0',
+        });
+        return (ExpoBattery && ExpoBattery.isSupported) || false;
+      },
+    },
+  });
+}
+
+export async function isAvailableAsync(): Promise<boolean> {
+  return Promise.resolve((ExpoBattery && ExpoBattery.isSupported) || false);
+}
 
 export async function getBatteryLevelAsync(): Promise<number> {
   if (!ExpoBattery.getBatteryLevelAsync) {

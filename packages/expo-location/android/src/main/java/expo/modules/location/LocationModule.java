@@ -173,6 +173,23 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   @ExpoMethod
+  public void getLastKnownPositionAsync(final Promise promise) {
+    // Check for permissions
+    if (isMissingPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+
+    getLastKnownLocation(null, location -> {
+      if (location == null) {
+        promise.reject("E_LAST_KNOWN_LOCATION_NOT_FOUND", "Last known location not found.", null);
+        return;
+      }
+      promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
+    });
+  }
+
+  @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
     final Long timeout = options.containsKey("timeout") ? ((Double) options.get("timeout")).longValue() : null;

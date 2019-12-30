@@ -1,17 +1,23 @@
 ---
 title: AppleAuthentication
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-apple-authentication"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication'
 ---
 
-This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
+**`expo-apple-authentication`** provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.
+
+Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ❌             | ❌               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-apple-authentication`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-apple-authentication).
 
-> **Note**: This module is not implemented on web.
-
-## Setup
+## Configuration
 
 1. Enable the "Sign In with Apple" capability in your app. For bare projects, enable the capability in Xcode under "Signing & Capabilities" -- you'll need to be on Xcode 11 or later. For managed projects, set `ios.usesAppleSignIn` to `true` in app.json.
 2. Log into the Apple Developer Console, go to "Certificates, Identifiers, & Profiles" and then "Identifiers".
@@ -21,115 +27,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 6. Next, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
 7. Finally, when you want to make a standalone build to test with, run `expo build:ios --clear-provisioning-profile --revoke-credentials` so that your provisioning profile is regenerated with the new entitlement.
 
-## Development and Testing
-
-You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
-
-You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
-
-## Verifying the Response from Apple
-
-Apple's response includes a signed JWT with information about the user. To ensure that the response came from Apple, you can cryptographically verify the signature with Apple's public key, which is published at https://appleid.apple.com/auth/keys. This process is not specific to Expo.
-
-## API
-
-```js
-import * as AppleAuthentication from 'expo-apple-authentication';
-```
-
-### Methods
-
-- [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
-- [`AppleAuthentication.signInAsync(options)`](#appleauthenticationsigninasyncoptions)
-- [`AppleAuthentication.getCredentialStateAsync(user)`](#appleauthenticationgetcredentialstateasyncuser)
-
-### Components
-
-- [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
-
-### Prop Types
-
-- [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
-
-### Enum Types
-
-- [`AppleAuthentication.AppleAuthenticationButtonStyle`](#appleauthenticationappleauthenticationbuttonstyle)
-- [`AppleAuthentication.AppleAuthenticationButtonType`](#appleauthenticationappleauthenticationbuttontype)
-- [`AppleAuthentication.AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate)
-- [`AppleAuthentication.AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope)
-- [`AppleAuthentication.AppleAuthenticationUserDetectionStatus`](#appleauthenticationappleauthenticationuserdetectionstatus)
-
-### Object Types
-
-- [`AppleAuthentication.AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential)
-- [`AppleAuthentication.AppleAuthenticationFullName`](#appleauthenticationappleauthenticationfullname)
-- [`AppleAuthentication.AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
-## Methods
-
-### `AppleAuthentication.isAvailableAsync()`
-
-Determine if the current device's operating system supports Apple authentication.
-
-#### Returns
-
-A promise that resolves to `true` if the system supports Apple authentication, and `false` otherwise.
-
-### `AppleAuthentication.signInAsync(options)`
-
-Sends a request to the operating system to initiate the Apple authentication flow, which will present a modal to the user over your app and allow them to sign in.
-
-You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime. Additionally, you will only receive this information the first time users sign into your app, so **you must store it for later use**. Even if you request scopes every time a user signs into your app, and the user grants your app access, iOS will provide you with this information only upon the user's first successful sign-in.
-
-#### Arguments
-
-An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions) object with any of the following keys:
-
-- **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** - Array of user information scopes to which your app is requesting access. Note that the user can choose to deny your app access to any scope at the time of logging in. You will still need to handle `null` values for any scopes you request. Additionally, note that the requested scopes will only be provided to you **the first time each user signs into your app**; in subsequent requests they will be `null`.
-- **state (_string_)** - An arbitrary string that is returned unmodified in the corresponding credential after a successful authentication. This can be used to verify that the response was from the request you made and avoid replay attacks.
-
-#### Returns
-
-A promise that resolves to an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the sign-in operation.
-
-### `AppleAuthentication.getCredentialStateAsync(user)`
-
-Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
-
-> **Note**: This method must be tested on a real device. On the iOS simulator it always throws an error.
-
-#### Arguments
-
-- **user (_string_)** - The unique identifier for the user whose credential state you'd like to check. This should come from the `user` field of an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object.
-
-#### Returns
-
-A promise that resolves to an [`AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate) value depending on the state of the credential.
-
-## Components
-
-### `AppleAuthentication.AppleAuthenticationButton`
-
-This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on your screen. The App Store Guidelines require you to use this component to start the authentication process instead of a custom button. Limited customization of the button is available via the provided properties.
-
-You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync) resolves to `true`. This component will render nothing if it is not available and you will get a warning in development mode.
-
-The properties of this component extend from `View`; however, you should not attempt to set `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the predefined color styles and the `cornerRadius` property to change the border radius of the button.
-
-Make sure to attach height and width via the `style` props as without these styles, the button will not appear on the screen. 
-
-#### `AppleAuthentication.AppleAuthenticationButtonProps`
-
-- **onPress (_function_)** - The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) in here.
-- **buttonType (_[AppleAuthenticationButtonType](#appleauthenticationappleauthenticationbuttontype)_)** - The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
-- **buttonStyle (_[AppleAuthenticationButtonStyle](#appleauthenticationappleauthenticationbuttonstyle)_)** - The Apple-defined color scheme to use to display the button.
-- **cornerRadius (_number_)** - The border radius to use when rendering the button. This works similarly to `style.borderRadius` in other Views.
-
-#### Example
+## Usage
 
 ```js
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -162,6 +60,114 @@ function YourComponent() {
   );
 }
 ```
+
+## Development and Testing
+
+You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
+
+You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
+
+## Verifying the Response from Apple
+
+Apple's response includes a signed JWT with information about the user. To ensure that the response came from Apple, you can cryptographically verify the signature with Apple's public key, which is published at https://appleid.apple.com/auth/keys. This process is not specific to Expo.
+
+## API
+
+```js
+import * as AppleAuthentication from 'expo-apple-authentication';
+```
+
+**[Methods](#methods)**
+
+- [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
+- [`AppleAuthentication.signInAsync(options)`](#appleauthenticationsigninasyncoptions)
+- [`AppleAuthentication.getCredentialStateAsync(user)`](#appleauthenticationgetcredentialstateasyncuser)
+
+**[Components](#components)**
+
+- [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
+
+**[Prop Types](#prop-types)**
+
+- [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
+
+**[Enum Types](#enum-types)**
+
+- [`AppleAuthentication.AppleAuthenticationButtonStyle`](#appleauthenticationappleauthenticationbuttonstyle)
+- [`AppleAuthentication.AppleAuthenticationButtonType`](#appleauthenticationappleauthenticationbuttontype)
+- [`AppleAuthentication.AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate)
+- [`AppleAuthentication.AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope)
+- [`AppleAuthentication.AppleAuthenticationUserDetectionStatus`](#appleauthenticationappleauthenticationuserdetectionstatus)
+
+**[Object Types](#object-types)**
+
+- [`AppleAuthentication.AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential)
+- [`AppleAuthentication.AppleAuthenticationFullName`](#appleauthenticationappleauthenticationfullname)
+- [`AppleAuthentication.AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions)
+
+**[Error Codes](#error-codes)**
+
+## Methods
+
+### `AppleAuthentication.isAvailableAsync()`
+
+Determine if the current device's operating system supports Apple authentication.
+
+#### Returns
+
+A promise that resolves to `true` if the system supports Apple authentication, and `false` otherwise.
+
+### `AppleAuthentication.signInAsync(options)`
+
+Sends a request to the operating system to initiate the Apple authentication flow, which will present a modal to the user over your app and allow them to sign in.
+
+You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime.
+
+Additionally, you will only receive Apple Authentication Credentials the first time users sign into your app, so **you must store it for later use**. It's best to store this information either server-side, or using [SecureStore](../securestore/), so that the data persists across app installs. You can use [`AppleAuthenticationCredential.user`](#appleauthenticationappleauthenticationcredential) to identify the user, since this remains the same for apps released by the same developer.
+
+#### Arguments
+
+An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions) object with any of the following keys:
+
+- **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** (optional) - Array of user information scopes to which your app is requesting access. Note that the user can choose to deny your app access to any scope at the time of logging in. You will still need to handle `null` values for any scopes you request. Additionally, note that the requested scopes will only be provided to you **the first time each user signs into your app**; in subsequent requests they will be `null`.
+- **state (_string_)** (optional) - An arbitrary string that is returned unmodified in the corresponding credential after a successful authentication. This can be used to verify that the response was from the request you made and avoid replay attacks.
+
+#### Returns
+
+A promise that resolves to an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the sign-in operation.
+
+### `AppleAuthentication.getCredentialStateAsync(user)`
+
+Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
+
+> **Note**: This method must be tested on a real device. On the iOS simulator it always throws an error.
+
+#### Arguments
+
+- **user (_string_)** - The unique identifier for the user whose credential state you'd like to check. This should come from the `user` field of an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object.
+
+#### Returns
+
+A promise that resolves to an [`AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate) value depending on the state of the credential.
+
+## Components
+
+### `AppleAuthentication.AppleAuthenticationButton`
+
+This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on your screen. The App Store Guidelines require you to use this component to start the authentication process instead of a custom button. Limited customization of the button is available via the provided properties.
+
+You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync) resolves to `true`. This component will render nothing if it is not available and you will get a warning in development mode.
+
+The properties of this component extend from `View`; however, you should not attempt to set `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the predefined color styles and the `cornerRadius` property to change the border radius of the button.
+
+Make sure to attach height and width via the style props as without these styles, the button will not appear on the screen.
+
+#### `AppleAuthentication.AppleAuthenticationButtonProps`
+
+- **onPress (_function_)** - The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) in here.
+- **buttonType (_[AppleAuthenticationButtonType](#appleauthenticationappleauthenticationbuttontype)_)** - The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
+- **buttonStyle (_[AppleAuthenticationButtonStyle](#appleauthenticationappleauthenticationbuttonstyle)_)** - The Apple-defined color scheme to use to display the button.
+- **cornerRadius (_number_)** - The border radius to use when rendering the button. This works similarly to `style.borderRadius` in other Views.
 
 ## Enum Types
 
@@ -238,10 +244,10 @@ The options you can supply when making a call to [`AppleAuthentication.signInAsy
 
 ## Error Codes
 
-| Code  | Description |
-| --- | --- |
-| ERR_APPLE_AUTHENTICATION_CREDENTIAL | The request to get credential state failed. See the error message for additional specific information. |
-| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in. |
-| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information. |
-| ERR_APPLE_AUTHENTICATION_UNAVAILABLE | Apple authentication is unavailable on the device. |
-| ERR_CANCELED | The user canceled the sign-in request from the system modal. |
+| Code                                    | Description                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| ERR_APPLE_AUTHENTICATION_CREDENTIAL     | The request to get credential state failed. See the error message for additional specific information. |
+| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE  | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in.   |
+| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information.          |
+| ERR_APPLE_AUTHENTICATION_UNAVAILABLE    | Apple authentication is unavailable on the device.                                                     |
+| ERR_CANCELED                            | The user canceled the sign-in request from the system modal.                                           |

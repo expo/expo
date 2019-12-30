@@ -341,6 +341,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 9120573EF4CFE9C8EA803B11B127F3F9;
 			productRefGroup = 41193052F8FADA73B96D73B47FDDF3E5 /* Products */;
@@ -512,7 +513,7 @@
 			};
 			name = Release;
 		};
-		74F1E470C74DD00206EA4405C066B9C2 /* Debug */ = {
+		602AE5033C4BF5FDACC315310EF39D9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 058C8D47F04503882E4F2F9D39C2E8FA /* Protobuf.xcconfig */;
 			buildSettings = {
@@ -525,7 +526,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Protobuf;
+				PRODUCT_MODULE_NAME = protobuf;
 				PRODUCT_NAME = Protobuf;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
@@ -535,7 +536,7 @@
 			};
 			name = Debug;
 		};
-		C89303FBA6FA155AF280B19E275140ED /* Release */ = {
+		B6C13F67D2CE5E0E87EF1891DE151937 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 058C8D47F04503882E4F2F9D39C2E8FA /* Protobuf.xcconfig */;
 			buildSettings = {
@@ -548,7 +549,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = Protobuf;
+				PRODUCT_MODULE_NAME = protobuf;
 				PRODUCT_NAME = Protobuf;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
@@ -565,8 +566,8 @@
 		518D7D287A8DE19018B5D1B79E991860 /* Build configuration list for PBXNativeTarget "Protobuf" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				74F1E470C74DD00206EA4405C066B9C2 /* Debug */,
-				C89303FBA6FA155AF280B19E275140ED /* Release */,
+				602AE5033C4BF5FDACC315310EF39D9A /* Debug */,
+				B6C13F67D2CE5E0E87EF1891DE151937 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

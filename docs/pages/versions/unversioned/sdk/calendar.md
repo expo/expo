@@ -1,8 +1,18 @@
 ---
 title: Calendar
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar"
 ---
+ 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -12,13 +22,54 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
+## Example Usage
+
+<SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
+
+```js
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import * as Calendar from 'expo-calendar';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync();
+        console.log({ calendars });
+      }
+    })();
+  }, []);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text>Calendar Module Example</Text>
+    </View>
+  );
+}
+```
+</SnackInline>
+
 ## API
 
 ```js
 import * as Calendar from 'expo-calendar';
 ```
+<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestCalendarPermissionsAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.getCalendarPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
 
-> See the bottom of this page for a complete list of all possible fields for the objects used in this API.
+
+<TableOfContentSection title='Object Types' contents={['Calendar', 'Event', 'Reminder', 'Attendee', 'RecurrenceRule', 'Alarm', 'Source']} />
+
+<TableOfContentSection title='Enum Types' contents={['Calendar.DayOfTheWeek', 'Calendar.MonthOfTheYear']} />
+
+## Methods
 
 ### `Calendar.getCalendarsAsync(entityType)`
 
@@ -46,7 +97,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -54,7 +105,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -62,7 +113,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -70,7 +121,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -176,7 +227,7 @@ Creates a new event on the specified calendar.
 
   - **title (_string_)**
   - **startDate (_Date_)** -- Required.
-  - **endDate (_Date_)** -- Required on Android.
+  - **endDate (_Date_)** -- Required.
   - **allDay (_boolean_)**
   - **location (_string_)**
   - **notes (_string_)**
@@ -423,7 +474,7 @@ A [source object](#source 'Source') matching the provided ID, if one exists.
 
 - **id (_string_)** -- ID of the event to open. Required.
 
-## List of object properties
+## Object Types
 
 ### Calendar
 
@@ -483,7 +534,7 @@ An event record, or a single instance of a recurring event. On iOS, used in the 
 | originalId            | _string_         | Android   | For detached (modified) instances of recurring events, the ID of the original recurring event                                  |                                                                                                                                                                                                 |
 | instanceId            | _string_         | Android   | For instances of recurring events, volatile ID representing this instance; not guaranteed to always refer to the same instance |                                                                                                                                                                                                 |
 
-### Reminder (iOS only)
+### Reminder
 
 A reminder record, used in the iOS Reminders app. No direct analog on Android.
 
@@ -522,7 +573,13 @@ A person or entity that is associated with an event by being invited or fulfilli
 
 ### RecurrenceRule
 
-A recurrence rule for events or reminders, allowing the same calendar item to recur multiple times.
+A recurrence rule for events or reminders, allowing the same calendar item to recur multiple times. This interface is
+based on [the iOS interface](https://developer.apple.com/documentation/eventkit/ekrecurrencerule/1507320-initrecurrencewithfrequency) which is in turn based on
+[the iCal RFC](https://tools.ietf.org/html/rfc5545#section-3.8.5.3) so you can refer to those to learn more about this
+potentially complex interface.
+
+Not all of the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
+
 
 | Field name | Type     | Description                                                                                                                                                                | Possible values                                                                                                    |
 | ---------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
@@ -530,6 +587,12 @@ A recurrence rule for events or reminders, allowing the same calendar item to re
 | interval   | _number_ | Interval at which the calendar item should recur. For example, an `interval: 2` with `frequency: DAILY` would yield an event that recurs every other day. Defaults to `1`. |                                                                                                                    |
 | endDate    | _Date_   | Date on which the calendar item should stop recurring; overrides `occurrence` if both are specified                                                                        |                                                                                                                    |
 | occurrence | _number_ | Number of times the calendar item should recur before stopping                                                                                                             |                                                                                                                    |
+| daysOfTheWeek | _array_ | (Optional, iOS only) the days of the week the event should recur on. An array of `{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }`  | `dayOfTheWeek`: Sunday to Saturday (`enum DayOfTheWeek`), `weekNumber`: -53 to 53 (0 ignores this field, and a negative indicates a value from the end of the range).                               |
+| daysOfTheMonth | _number[]_ | (Optional, iOS only) They days of the month this event occurs on                                                                                                            | -31 to 31 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Monthly`.   |
+| monthsOfTheYear | _MonthOfTheYear[]_ | (Optional, iOS only) The months this event occurs on.                                                                                                                |  This field is only valid for `Calendar.Frequency.Yearly`.                                                                                    |
+| weeksOfTheYear | _number[]_ | (Optional, iOS only) The weeks of the year this event occurs on.                                                                                                    |  -53 to 53 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
+| daysOfTheYear | _number[]_ | (Optional, iOS only) The days of the year this event occurs on.                                                                                                    |  -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
+| setPositions | _number[]_ | (Optional, iOS only) An array of numbers that filters which recurrences to include. For example, for an event that recurs every Monday, passing 2 here will make it recur every other Monday.        |  -366 to 366 (not including 0). Negative indicates a value from the end of the range. This field is only valid for `Calendar.Frequency.Yearly`.            |
 
 ### Alarm
 
@@ -552,4 +615,33 @@ A source account that owns a particular calendar. Expo apps will typically not n
 | type           | _string_  | both      | Type of account that owns this calendar               | on iOS, one of `Calendar.SourceType.LOCAL`, `Calendar.SourceType.EXCHANGE`, `Calendar.SourceType.CALDAV`, `Calendar.SourceType.MOBILEME`, `Calendar.SourceType.SUBSCRIBED`, or `Calendar.SourceType.BIRTHDAYS` |
 | isLocalAccount | _boolean_ | Android   | Whether this source is the local phone account        |                                                                                                                                                                                                                |
 
-#
+## Enum Types
+
+### `Calendar.DayOfTheWeek`
+
+| DayOfTheWeek                 | Value |
+| ---------------------------- | ----- |
+| `DayOfTheWeek.Sunday`        | 1     |
+| `DayOfTheWeek.Monday`        | 2     |
+| `DayOfTheWeek.Tuesday`       | 3     |
+| `DayOfTheWeek.Wednesday`     | 4     |
+| `DayOfTheWeek.Thursday`      | 5     |
+| `DayOfTheWeek.Friday`        | 6     |
+| `DayOfTheWeek.Saturday`      | 7     |
+
+### `Calendar.MonthOfTheYear`
+
+| MonthOfTheYear                      | Value |
+| ----------------------------------- | ----- |
+| `MonthOfTheYear.January`            |   1   |
+| `MonthOfTheYear.February`           |   2   |
+| `MonthOfTheYear.March`              |   3   |
+| `MonthOfTheYear.April`              |   4   |
+| `MonthOfTheYear.May`                |   5   |
+| `MonthOfTheYear.June`               |   6   |
+| `MonthOfTheYear.July`               |   7   |
+| `MonthOfTheYear.August`             |   8   |
+| `MonthOfTheYear.September`          |   9   |
+| `MonthOfTheYear.October`            |   10  |
+| `MonthOfTheYear.November`           |   11  |
+| `MonthOfTheYear.December`           |   12  |

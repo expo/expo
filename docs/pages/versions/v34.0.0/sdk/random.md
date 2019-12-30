@@ -1,20 +1,40 @@
 ---
 title: Random
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-random"
 ---
 
 **`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
 
-| 🍎 iOS | 💚 Android | 💻 Web |
-| ------ | ---------- | ------ |
-| ✅     | ✅         | ✅     |
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-random`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-random).
 
-# Docs
+## Usage
 
-Once installed natively, the module can be accessed from the **`expo-random`** package.
+```javascript
+import React from 'react';
+import { View } from 'react-native';
+import * as Random from 'expo-random';
+
+export default class DemoView extends React.Component {
+  async componentDidMount() {
+    const randomBytes = await Random.getRandomBytesAsync(16);
+
+    /* Some crypto operation... */
+  }
+  render() {
+    return <View />;
+  }
+}
+```
+
+## API
 
 ```js
 import * as Random from 'expo-random';
@@ -22,7 +42,7 @@ import * as Random from 'expo-random';
 
 ## Methods
 
-### `getRandomBytesAsync`
+### `Random.getRandomBytesAsync(byteCount)`
 
 ```js
 getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
@@ -46,23 +66,4 @@ Generates completely random bytes using native implementations. The `byteCount` 
 
 ```js
 const randomBytes = await Random.getRandomBytesAsync(3);
-```
-
-# Usage
-
-```javascript
-import React from 'react';
-import { View } from 'react-native';
-import * as Random from 'expo-random';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const randomBytes = await Random.getRandomBytesAsync(16);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
 ```

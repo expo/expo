@@ -85,13 +85,13 @@ Check out the source if you would like to implement it in another language.
 
 For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
 
-The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
+The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
 ## 3. Handle receiving and/or selecting the notification
 
 For Android, this step is entirely optional -- if your notifications are purely informational and you have no desire to handle them when they are received or selected, you're already done. Notifications will appear in the system notification tray as you've come to expect, and tapping them will open/foreground the app.
 
-For iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
+For iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app is foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
 
 Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener using the `Notifications` API.
 
@@ -298,13 +298,6 @@ type PushMessage = {
   ttl?: number,
 
   /**
-   * (Web only)
-   * Remote url of a custom icon that replaces the default notification icon.
-   * This value overrides `notification.icon` in `app.json`.
-   */
-  icon?: string,
-
-  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -353,25 +346,10 @@ type PushMessage = {
    */
   badge?: number,
 
-  /**
-   * ID of the Notification Category through which to display this notification.
-   *
-   * To send a notification with category to the Expo client, prefix the string
-   * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
-   * applications, use plain `yourCategoryId`.
-   */
-  _category?: string,
-
-  /**
-   * Displays the notification when the app is foreground.
-   * Defaults to `false`.
-   */
-  _displayInForeground?: boolean
-
   // Android-specific fields
 
   /**
-   * Remote url of a custom icon that replaces the default notification icon.
+   * Remote URL of a custom icon that replaces the default notification icon.
   */
   icon?: string,
 

@@ -1,65 +1,26 @@
 ---
 title: Magnetometer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-## API
+## Usage
 
-```js
-import { Magnetometer } from 'expo-sensors';
-```
-
-### `Magnetometer.isAvailableAsync()`
-
-> You should always check the sensor availability before attempting to use it.
-
-Returns whether the magnetometer is enabled on the device.
-
-| OS      | Availability                |
-| ------- | --------------------------- |
-| iOS     | iOS 8+                      |
-| Android | Android 2.3+ (API Level 9+) |
-| Web     | `N/A`                       |
-
-#### Returns
-
-- A promise that resolves to a `boolean` denoting the availability of the sensor.
-
-### `Magnetometer.addListener(listener)`
-
-Subscribe for updates to the Magnetometer.
-
-#### Arguments
-
-- **listener (_function_)** -- A callback that is invoked when an
-  Magnetometer update is available. When invoked, the listener is
-  provided a single argumument that is an object containing keys x, y,
-  z.
-
-#### Returns
-
-- A subscription that you can call `remove()` on when you
-  would like to unsubscribe the listener.
-
-### `Magnetometer.removeAllListeners()`
-
-Remove all listeners.
-
-### `Magnetometer.setUpdateInterval(intervalMs)`
-
-Subscribe for updates to the Magnetometer.
-
-#### Arguments
-
-- **intervalMs (_number_)** Desired interval in milliseconds between
-  Magnetometer updates.
-
-## Example: basic subscription
+<SnackInline label='Basic Magnetometer usage' templateId='magnetometer' dependencies={['expo-sensors']}>
 
 ```javascript
 import React from 'react';
@@ -139,31 +100,61 @@ function round(n) {
 
   return Math.floor(n * 100) / 100;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  middleButton: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
-  },
-  sensor: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-  },
-});
 ```
+
+</SnackInline>
+
+## API
+
+```js
+import { Magnetometer } from 'expo-sensors';
+```
+
+<TableOfContentSection title='Methods' contents={['Magnetometer.isAvailableAsync()', 'Magnetometer.addListener(listener)', 'Magnetometer.removeAllListeners()', 'Magnetometer.setUpdateInterval(intervalMs)']} />
+
+## Methods
+
+### `Magnetometer.isAvailableAsync()`
+
+> You should always check the sensor availability before attempting to use it.
+
+Returns whether the magnetometer is enabled on the device.
+
+| OS      | Availability                |
+| ------- | --------------------------- |
+| iOS     | iOS 8+                      |
+| Android | Android 2.3+ (API Level 9+) |
+| Web     | `N/A`                       |
+
+#### Returns
+
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
+
+### `Magnetometer.addListener(listener)`
+
+Subscribe for updates to the Magnetometer.
+
+#### Arguments
+
+- **listener (_function_)** -- A callback that is invoked when an
+  Magnetometer update is available. When invoked, the listener is
+  provided a single argumument that is an object containing keys x, y,
+  z.
+
+#### Returns
+
+- A subscription that you can call `remove()` on when you
+  would like to unsubscribe the listener.
+
+### `Magnetometer.removeAllListeners()`
+
+Remove all listeners.
+
+### `Magnetometer.setUpdateInterval(intervalMs)`
+
+Subscribe for updates to the Magnetometer.
+
+#### Arguments
+
+- **intervalMs (_number_)** Desired interval in milliseconds between
+  Magnetometer updates.

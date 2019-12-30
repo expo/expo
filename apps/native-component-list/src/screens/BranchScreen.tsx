@@ -1,12 +1,14 @@
 import React from 'react';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View, Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 let Branch = null;
-try {
-  Branch = require('react-native-branch').default;
-} catch (e) {
-  console.log('Branch is not supported on this platform.', e);
+if (Platform.OS !== 'web') {
+  try {
+    Branch = require('react-native-branch').default;
+  } catch (e) {
+    console.log('Branch is not supported on this platform.', e);
+  }
 }
 
 export default class BranchScreen extends React.Component {
@@ -54,7 +56,7 @@ export default class BranchScreen extends React.Component {
     } else {
       Alert.alert('Share canceled');
     }
-  }
+  };
 
   render() {
     if (Constants.appOwnership !== 'standalone') {
@@ -62,8 +64,8 @@ export default class BranchScreen extends React.Component {
         <View style={styles.container}>
           <Text style={styles.oopsTitle}>Hello, developer person!</Text>
           <Text style={styles.oopsText}>
-            Branch only works for standalone apps. If you want to use this example you can build it
-            build native-component-list as a standalone app.
+            Branch only works for standalone apps. If you want to use this example you can build
+            native-component-list as a standalone app.
           </Text>
         </View>
       );

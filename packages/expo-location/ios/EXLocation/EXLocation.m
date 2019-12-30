@@ -172,6 +172,54 @@ UM_EXPORT_METHOD_AS(watchPositionImplAsync,
   resolve([NSNull null]);
 }
 
+UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
+                    getLastKnownPositionAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (![self checkPermissions:reject]) {
+    return;
+  }
+  
+  UM_WEAKIFY(self)
+  __block CLLocationManager *lockMgr = [self locationManagerWithOptions:nil];
+  __block EXLocationDelegate *delegate;
+ 
+  delegate = [[EXLocationDelegate alloc] initWithId:nil withLocMgr:lockMgr onUpdateLocations:^(NSArray<CLLocation *> * _Nonnull locations) {
+    if (lockMgr) {
+      [lockMgr stopUpdatingLocation];
+      lockMgr = nil;
+    }
+    
+    if (delegate) {
+      if (locations.lastObject) {
+        resolve([EXLocation exportLocation:locations.lastObject]);
+      } else {
+        reject(@"E_LAST_KNOWN_LOCATION_NOT_FOUND", @"Last known location not found.", nil);
+      }
+      
+      UM_ENSURE_STRONGIFY(self)
+      [self.retainedDelegates removeObject:delegate];
+      delegate = nil;
+    }
+  } onUpdateHeadings:nil onError:^(NSError *error) {
+    if (lockMgr) {
+      [lockMgr stopUpdatingLocation];
+      lockMgr = nil;
+    }
+    
+    reject(@"E_LOCATION_UNAVAILABLE", [@"Cannot obtain last known location: " stringByAppendingString:error.description], nil);
+    
+    UM_ENSURE_STRONGIFY(self)
+    if (delegate) {
+      [self.retainedDelegates removeObject:delegate];
+      delegate = nil;
+    }
+  }];
+  
+  lockMgr.delegate = delegate;
+  [lockMgr startUpdatingLocation];
+}
+
 // Watch method for getting compass updates
 UM_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
@@ -448,17 +496,20 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
 
 # pragma mark - helpers
 
-- (CLLocationManager *)locationManagerWithOptions:(NSDictionary *)options
+- (CLLocationManager *)locationManagerWithOptions:(nullable NSDictionary *)options
 {
   CLLocationManager *locMgr = [[CLLocationManager alloc] init];
-
-  locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
-  locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
   locMgr.allowsBackgroundLocationUpdates = NO;
+  
+  if (options) {
+    locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
+    locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
+    
 
-  if (options[@"accuracy"]) {
-    EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
-    locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+    if (options[@"accuracy"]) {
+      EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
+      locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+    }
   }
   return locMgr;
 }

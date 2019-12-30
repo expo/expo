@@ -6,6 +6,7 @@ import 'expo-asset';
 import { AppRegistry, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { installWebGeolocationPolyfill } from 'expo-location';
+import * as React from 'react';
 import DevAppContainer from './environment/DevAppContainer';
 if (typeof Constants.manifest.env === 'object') {
     Object.assign(process.env, Constants.manifest.env);
@@ -15,10 +16,31 @@ if (__DEV__) {
     if (Platform.OS === 'ios') {
         // @ts-ignore
         AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
+        // @ts-ignore
+        const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
+        // @ts-ignore
+        AppRegistry.setWrapperComponentProvider = provider => {
+            function PatchedProviderComponent(props) {
+                const ProviderComponent = provider();
+                return (<DevAppContainer>
+            <ProviderComponent {...props}/>
+          </DevAppContainer>);
+            }
+            originalSetWrapperComponentProvider(() => PatchedProviderComponent);
+        };
     }
-    // @ts-ignore
-    AppRegistry.setWrapperComponentProvider = () => console.warn('AppRegistry.setWrapperComponentProvider has no effect in managed Expo apps. You can instead wrap your app root component to achieve an identical result.');
 }
 // polyfill navigator.geolocation
 installWebGeolocationPolyfill();
+if (module && module.exports) {
+    if (global) {
+        const globals = require('./globals');
+        // @ts-ignore
+        global.__exponent = globals;
+        // @ts-ignore
+        global.__expo = globals;
+        // @ts-ignore
+        global.Expo = globals;
+    }
+}
 //# sourceMappingURL=Expo.fx.js.map

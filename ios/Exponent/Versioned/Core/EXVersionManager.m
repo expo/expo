@@ -12,7 +12,6 @@
 #import "EXUnversioned.h"
 #import "EXScopedFileSystemModule.h"
 #import "EXTest.h"
-#import "EXKernel.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -22,6 +21,7 @@
 #import <React/RCTExceptionsManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTPackagerConnection.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
@@ -108,8 +108,18 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   // Keep in mind that it is possible this will return a EXDisabledRedBox
   RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
   [redBox setOverrideReloadAction:^{
-    [[EXKernel sharedInstance] reloadVisibleApp];
+      [[NSNotificationCenter defaultCenter]
+     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
+
+  // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
+  // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
+#if DEBUG || RCT_DEV
+  if ([self _isDevModeEnabledForBridge:bridge]) {
+    // Set the bundle url for the packager connection manually
+    [[RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+  }
+#endif
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]

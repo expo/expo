@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -30,7 +30,7 @@
 //
 // - endOfLineIndex: Its the end index of the last flex item which was examined
 //   and it may or may not be part of the current line(as it may be absolutely
-//   positioned or inculding it may have caused to overshoot availableInnerDim)
+//   positioned or including it may have caused to overshoot availableInnerDim)
 //
 // - relativeChildren: Maintain a vector of the child nodes that can shrink
 //   and/or grow.
@@ -52,7 +52,12 @@ struct YGCollectFlexItemsRowValues {
   float crossDim;
 };
 
-bool YGValueEqual(const YGValue a, const YGValue b);
+bool YGValueEqual(const YGValue& a, const YGValue& b);
+inline bool YGValueEqual(
+    facebook::yoga::detail::CompactValue a,
+    facebook::yoga::detail::CompactValue b) {
+  return YGValueEqual((YGValue) a, (YGValue) b);
+}
 
 // This custom float equality function returns true if either absolute
 // difference between two floats is less than 0.0001f or both are undefined.
@@ -66,8 +71,8 @@ YGFloatOptional YGFloatOptionalMax(
 
 float YGFloatMin(const float a, const float b);
 
-// This custom float comparision function compares the array of float with
-// YGFloatsEqual, as the default float comparision operator will not work(Look
+// This custom float comparison function compares the array of float with
+// YGFloatsEqual, as the default float comparison operator will not work(Look
 // at the comments of YGFloatsEqual function).
 template <std::size_t size>
 bool YGFloatArrayEqual(
@@ -103,6 +108,12 @@ inline YGFloatOptional YGResolveValue(
     default:
       return YGFloatOptional{};
   }
+}
+
+inline YGFloatOptional YGResolveValue(
+    yoga::detail::CompactValue value,
+    float ownerSize) {
+  return YGResolveValue((YGValue) value, ownerSize);
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {

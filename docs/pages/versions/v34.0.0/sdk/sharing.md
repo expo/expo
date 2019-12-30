@@ -1,8 +1,15 @@
 ---
 title: Sharing
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sharing"
 ---
 
 This module allows sharing files.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

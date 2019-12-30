@@ -63,6 +63,12 @@ typedef void (^GADRewardedAdLoadCompletionHandler)(GADRequestError *_Nullable er
 /// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
 @property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
+/// Returns whether the rewarded ad can be presented from the provided root view controller. Sets
+/// the error out parameter if the rewarded ad can't be presented. Must be called on the main
+/// thread.
+- (BOOL)canPresentFromRootViewController:(nonnull UIViewController *)rootViewController
+                                   error:(NSError *_Nullable __autoreleasing *_Nullable)error;
+
 /// Presents the rewarded ad with the provided view controller and rewarded delegate to call back on
 /// various intermission events. The delegate is strongly retained by the receiver until a terminal
 /// delegate method is called. Terminal methods are -rewardedAd:didFailToPresentWithError: and

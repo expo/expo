@@ -1,22 +1,40 @@
 ---
 title: MediaLibrary
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-media-library"
 ---
+
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides access to user's media library.
 
-Requires `Permissions.CAMERA_ROLL` permissions.
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
+
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
 
-> **Note**: Not compatible with web.
+## Configuration 
+
+In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 
 ## API
 
 ```js
 import * as MediaLibrary from 'expo-media-library';
 ```
+
+<TableOfContentSection title='Methods' contents={['MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
+
+<TableOfContentSection title='Types' contents={['Asset', 'Album']} />
+
+<TableOfContentSection title='Constants' contents={['MediaLibrary.MediaType', 'MediaLibrary.SortBy']} />
+
+## Methods
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 

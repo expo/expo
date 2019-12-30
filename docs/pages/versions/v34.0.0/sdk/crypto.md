@@ -1,12 +1,58 @@
 ---
 title: Crypto
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-crypto"
 ---
 
-**`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+Crypto enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+
+## Usage
+
+<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Crypto from 'expo-crypto';
+
+export default class DemoView extends React.Component {
+  async componentDidMount() {
+    const digest = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA256,
+      'Github stars are neat 🌟'
+    );
+    console.log('Digest: ', digest);
+
+    /* Some crypto operation... */
+  }
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Crypto Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ## API
 
@@ -14,7 +60,15 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Crypto from 'expo-crypto';
 ```
 
-### `digestStringAsync`
+<TableOfContentSection title='Methods' contents={['Crypto.digestStringAsync(algorithm, data, options)']} />
+
+<TableOfContentSection title='Types' contents={['CryptoDigestAlgorithm', 'CryptoEncoding', 'CryptoDigestOptions']} />
+
+<TableOfContentSection title='Error Codes' contents={['ERR_CRYPTO_UNAVAILABLE', 'ERR_CRYPTO_DIGEST']} />
+
+## Methods
+
+### `Crypto.digestStringAsync(algorithm, data, options)`
 
 ```ts
 digestStringAsync(
@@ -28,11 +82,7 @@ The `digestStringAsync()` method of `Crypto` generates a digest of the supplied 
 A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_, meaning that it's very difficult to generate multiple inputs that have equal digest values.
 You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string. On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
 
-| 🍎 iOS | 💚 Android | 💻 Web |
-| ------ | ---------- | ------ |
-| ✅     | ✅         | ✅     |
-
-**Parameters**
+#### Arguments
 
 | Name      | Type                                      | Description                                                                         |
 | --------- | ----------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -40,7 +90,7 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 | data      | `string`                                  | The value that will be used to generate a digest.                                   |
 | options   | `CryptoDigestOptions`                     | Format of the digest string. Defaults to: `CryptoDigestOptions.HEX`                 |
 
-**Returns**
+#### Returns
 
 | Name   | Type              | Description                                          |
 | ------ | ----------------- | ---------------------------------------------------- |
@@ -48,10 +98,10 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 
 #### Error Codes
 
-- `ERR_CRYPTO_UNAVAILABLE` - (Web only) Access to the WebCrypto API is restricted to secure origins (https). You can run your web project from a secure origin with `expo start --https`.
-- `ERR_CRYPTO_DIGEST` - An invalid encoding type provided.
+- [`ERR_CRYPTO_UNAVAILABLE`](#errcryptounavailable)
+- [`ERR_CRYPTO_DIGEST`](#errcryptodigest)
 
-**Example**
+#### Example
 
 ```ts
 const digest = await Crypto.digestStringAsync(
@@ -97,35 +147,14 @@ const digest = await Crypto.digestStringAsync(
 | -------- | ---------------- | -------------------------------- | ------ | ---------- | ------ |
 | encoding | `CryptoEncoding` | Format the digest is returned in | ✅     | ✅         | ✅     |
 
-# Usage
-
-```ts
-import React from 'react';
-import { View } from 'react-native';
-import * as Crypto from 'expo-crypto';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      'Github stars are neat 🌟'
-    );
-    console.log('Digest: ', digest);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
-
 ## Error Codes
 
-| Code                   | Description                                                                     |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| ERR_CRYPTO_UNAVAILABLE | (Web only) Access to the WebCrypto API is restricted to secure origins (https). |
-| ERR_CRYPTO_DIGEST      | An invalid encoding type provided.                                              |
+### `ERR_CRYPTO_UNAVAILABLE`
+(Web only) Access to the WebCrypto API is restricted to secure origins (https). You can run your web project from a secure origin with `expo start --https`.
+
+### `ERR_CRYPTO_DIGEST`
+An invalid encoding type provided.
+
 
 <!-- External Links -->
 

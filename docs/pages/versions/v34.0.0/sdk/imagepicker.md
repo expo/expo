@@ -1,8 +1,18 @@
 ---
 title: ImagePicker
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-image-picker"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -10,13 +20,77 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+<SnackInline label='Basic ImagePicker usage' templateId='image-picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+
+```javascript
+import * as React from 'react';
+import { Button, Image, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+
+export default class ImagePickerExample extends React.Component {
+  state = {
+    image: null,
+  };
+
+  render() {
+    let { image } = this.state;
+
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Button
+          title="Pick an image from camera roll"
+          onPress={this._pickImage}
+        />
+        {image &&
+          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+      </View>
+    );
+  }
+
+  componentDidMount() {
+    this.getPermissionAsync();
+    console.log('hi');
+  }
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  }
+
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+    }
+  };
+}
+```
+
+</SnackInline>
 
 ## API
 
 ```js
 import * as ImagePicker from 'expo-image-picker';
 ```
+
+<TableOfContentSection title='Methods' contents={['ImagePicker.launchImageLibraryAsync(options)', 'ImagePicker.launchCameraAsync(options)']} />
+
+## Methods
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
@@ -30,6 +104,8 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   - **mediaTypes (_String_)** -- Choose what type of media to pick. Usage: `ImagePicker.MediaTypeOptions.<Type>`, where `<Type>` is one of: `Images`, `Videos`, `All`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image/video after it is picked. Images: On Android the user can crop and rotate the image and on iOS simply crop it. Videos: On iOS user can trim the video. Defaults to `false`.
+  - **allowsMultipleSelection (_boolean_)** -- (Web only) Whether or not to allow selecting multiple media files at once.
+
 
   A map of options for images:
 
@@ -71,16 +147,3 @@ Otherwise, this method returns information about the selected media item. When t
 The `uri` property is a URI to the local image or video file (usable as the source of an `Image` element, in the case of an image) and `width` and `height` specify the dimensions of the media.
 The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data; prepared it with `data:image/jpeg;base64,` to create a data URI, which you can use as the source of an `Image` element, for example.
 The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
-
-<SnackEmbed snackId="@charliecruzan/imagepickerfromcameraroll34" />
-
-When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
-
-```javascript
-{
-  "cancelled":false,
-  "height":1611,
-  "width":2148,
-  "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
-}
-```

@@ -25,9 +25,10 @@
 
 @implementation GDTCORTransport
 
-- (instancetype)initWithMappingID:(NSString *)mappingID
-                     transformers:(nullable NSArray<id<GDTCOREventTransformer>> *)transformers
-                           target:(NSInteger)target {
+- (nullable instancetype)initWithMappingID:(NSString *)mappingID
+                              transformers:
+                                  (nullable NSArray<id<GDTCOREventTransformer>> *)transformers
+                                    target:(NSInteger)target {
   GDTCORAssert(mappingID.length > 0, @"A mapping ID cannot be nil or empty");
   GDTCORAssert(target > 0, @"A target cannot be negative or 0");
   if (mappingID == nil || mappingID.length == 0 || target <= 0) {

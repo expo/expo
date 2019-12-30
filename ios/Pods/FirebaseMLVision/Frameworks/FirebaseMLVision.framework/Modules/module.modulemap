@@ -3,7 +3,6 @@ framework module FirebaseMLVision {
   export *
   module * { export * }
   link "c++"
-  link "sqlite3"
   link "z"
   link framework "AVFoundation"
   link framework "Accelerate"
@@ -12,7 +11,6 @@ framework module FirebaseMLVision {
   link framework "CoreMedia"
   link framework "CoreVideo"
   link framework "Foundation"
-  link framework "LocalAuthentication"
   link framework "QuartzCore"
   link framework "Security"
   link framework "SystemConfiguration"

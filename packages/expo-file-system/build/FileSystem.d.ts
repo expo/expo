@@ -14,6 +14,7 @@ export declare function writeAsStringAsync(fileUri: string, contents: string, op
 export declare function deleteAsync(fileUri: string, options?: {
     idempotent?: boolean;
 }): Promise<void>;
+export declare function deleteLegacyDocumentDirectoryAndroid(): Promise<void>;
 export declare function moveAsync(options: {
     from: string;
     to: string;

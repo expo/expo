@@ -16,5 +16,7 @@ declare const _default: {
         type: string;
         data: Object;
     }>;
+    getBadgeNumberAsync(): Promise<number>;
+    setBadgeNumberAsync(badgeNumber: number): Promise<void>;
 };
 export default _default;

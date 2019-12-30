@@ -1,7 +1,11 @@
 export declare type FacebookLoginResult = {
-    type: string;
-    token?: string;
-    expires?: number;
+    type: 'cancel';
+} | {
+    type: 'success';
+    token: string;
+    expires: number;
+    permissions: string[];
+    declinedPermissions: string[];
 };
 export declare type FacebookOptions = {
     permissions?: string[];
@@ -50,7 +54,7 @@ export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
  * @param appId An optional Facebook App ID argument
  * @param appName An optional Facebook App Name argument
  */
-export declare function initializeAsync(appId: string | undefined, appName: string | undefined): Promise<any>;
+export declare function initializeAsync(appId?: string, appName?: string): Promise<any>;
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
  * and Android Advertising ID, automatically. Advertiser IDs let you identify and target specific customers.

@@ -32,11 +32,9 @@ let formatWithPrettierAsync = async () => {
     `pages/versions/${version}/react-native/**/*.md`,
   ]);
 
-
-
   let childProcess = prettier.child;
-  childProcess.stdout.on('data', (data) => {
-    console.log(`formatted with prettier: ${data}`);
+  childProcess.stdout.on('data', data => {
+    console.log(`formatted with prettier: ${data.toString().trim()}`);
   });
 
   return prettier;
@@ -48,8 +46,8 @@ let mainAsync = async () => {
 
   let sidebarInfo = await fsExtra.readJson(sidebarsJson);
   let guides = sidebarInfo.docs.Guides;
-  let components = sidebarInfo.docs.Components;
-  let apis = sidebarInfo.docs.APIs;
+  let components = sidebarInfo.api.Components;
+  let apis = sidebarInfo.api.APIs;
   let basics = sidebarInfo.docs['The Basics'];
 
   await fsExtra.ensureDir(reactNative);

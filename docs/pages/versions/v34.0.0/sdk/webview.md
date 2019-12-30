@@ -1,8 +1,15 @@
 ---
 title: WebView
+sourceCodeUrl: "https://github.com/react-native-community/react-native-webview"
 ---
 
 `WebView` renders web content in a native view.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 

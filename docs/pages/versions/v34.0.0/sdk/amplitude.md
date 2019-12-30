@@ -1,10 +1,17 @@
 ---
 title: Amplitude
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-analytics-amplitude"
 ---
 
 Provides access to [Amplitude](https://amplitude.com/) mobile analytics which basically lets you log various events to the Cloud. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
 
 Note: Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -15,6 +22,18 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
+
+**[Methods](#methods)**
+
+- [`Amplitude.initialize(apiKey)`](#amplitudeinitializeapikey)
+- [`Amplitude.setUserId(userId)`](#amplitudesetuseriduserid)
+- [`Amplitude.setUserProperties(userProperties)`](#amplitudesetuserpropertiesuserproperties)
+- [`Amplitude.clearUserProperties()`](#amplitudeclearuserproperties)
+- [`Amplitude.logEvent(eventName)`](#amplitudelogeventeventname)
+- [`Amplitude.logEventWithProperties(eventName, properties)`](#amplitudelogeventwithpropertieseventname-properties)
+- [`Amplitude.setGroup(groupType, groupNames)`](#amplitudesetgroupgrouptype-groupnames)
+
+## Methods
 
 ### `Amplitude.initialize(apiKey)`
 

@@ -1,8 +1,15 @@
 ---
 title: Svg
+sourceCodeUrl: "https://github.com/react-native-community/react-native-svg"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

@@ -1,10 +1,17 @@
 ---
 title: StoreReview
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/StoreReview"
 ---
 
 Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.
 
 > If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead. 
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -48,7 +55,7 @@ const url = StoreReview.storeUrl()
 
 ### `StoreReview.hasAction()`
 
-This returns a boolean that let's you know if the module can preform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isSupported()` returns false.
+This returns a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isSupported()` returns false.
 
 #### Example
 

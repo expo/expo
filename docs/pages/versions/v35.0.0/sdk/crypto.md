@@ -3,11 +3,55 @@ title: Crypto
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-crypto"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 **`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+
+## Usage
+
+<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Crypto from 'expo-crypto';
+
+export default class DemoView extends React.Component {
+  async componentDidMount() {
+    const digest = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA256,
+      'Github stars are neat 🌟'
+    );
+    console.log('Digest: ', digest);
+
+    /* Some crypto operation... */
+  }
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Crypto Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ## API
 
@@ -15,7 +59,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Crypto from 'expo-crypto';
 ```
 
-### `digestStringAsync`
+### `Crypto.digestStringAsync(algorithm, data, options)`
 
 ```ts
 digestStringAsync(
@@ -97,29 +141,6 @@ const digest = await Crypto.digestStringAsync(
 | Name     | Type             | Description                      | 🍎 iOS | 💚 Android | 💻 Web |
 | -------- | ---------------- | -------------------------------- | ------ | ---------- | ------ |
 | encoding | `CryptoEncoding` | Format the digest is returned in | ✅     | ✅         | ✅     |
-
-# Usage
-
-```ts
-import React from 'react';
-import { View } from 'react-native';
-import * as Crypto from 'expo-crypto';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      'Github stars are neat 🌟'
-    );
-    console.log('Digest: ', digest);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
 
 ## Error Codes
 

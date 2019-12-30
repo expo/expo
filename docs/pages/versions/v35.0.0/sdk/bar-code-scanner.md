@@ -3,13 +3,20 @@ title: BarCodeScanner
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-barcode-scanner"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ❌    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
 
-> **Note**: Not compatible with web.
 
 ## Supported formats
 
@@ -41,12 +48,13 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
+<SnackInline lable="Basic BarcodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-permissions', 'expo-barcode-scanner']}>
+
+
 ```javascript
 import * as React from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
-import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class BarcodeScannerExample extends React.Component {
@@ -98,16 +106,15 @@ export default class BarcodeScannerExample extends React.Component {
   };
 }
 ```
-
-> Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
-
-[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example?platform=ios).
+</SnackInline>
 
 ## API
 
 ```js
 import { BarCodeScanner } from 'expo-barcode-scanner';
 ```
+
+> Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.bar
 
 ## Props
 

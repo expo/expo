@@ -1,10 +1,17 @@
 ---
 title: SQLite
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sqlite"
 ---
 
 This module gives access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 
 An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

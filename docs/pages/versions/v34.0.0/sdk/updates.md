@@ -1,8 +1,15 @@
 ---
 title: Updates
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/Updates"
 ---
 
 API for controlling and responding to over-the-air updates to your app.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 

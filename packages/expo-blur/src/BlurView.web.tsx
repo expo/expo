@@ -36,18 +36,13 @@ function isBlurSupported(): boolean {
 }
 
 function getBlurStyle({ intensity, tint }): { [key: string]: string } {
+  const style: any = {
+    backgroundColor: getBackgroundColor(intensity, tint),
+  };
+
   if (isBlurSupported()) {
-    let backdropFilter = `blur(${intensity * 0.25}px)`;
-    if (tint === 'dark') {
-      backdropFilter += ' brightness(50%)';
-    } else if (tint === 'light') {
-      backdropFilter += ' brightness(150%)';
-    }
-    return {
-      backdropFilter,
-    };
-  } else {
-    let backgroundColor = getBackgroundColor(intensity, tint);
-    return { backgroundColor };
+    style.backdropFilter = `blur(${intensity * 0.8}px)`;
   }
+
+  return style;
 }

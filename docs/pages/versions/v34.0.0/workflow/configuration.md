@@ -367,6 +367,11 @@ Configuration for how and when the app should request OTA JavaScript updates
     "associatedDomains": ARRAY,
 
     /*
+      Location of the GoogleService-Info.plist file for configuring Firebase.
+    */
+    "googleServicesFile": STRING,
+
+    /*
       A boolean indicating if the app uses iCloud Storage for DocumentPicker.
       See DocumentPicker docs for details.
 

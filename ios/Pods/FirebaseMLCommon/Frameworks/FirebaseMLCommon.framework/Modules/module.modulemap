@@ -3,14 +3,10 @@ framework module FirebaseMLCommon {
   export *
   module * { export * }
   link "c++"
-  link "sqlite3"
   link "z"
   link framework "CoreFoundation"
-  link framework "CoreGraphics"
   link framework "Foundation"
-  link framework "LocalAuthentication"
   link framework "QuartzCore"
   link framework "Security"
   link framework "SystemConfiguration"
-  link framework "UIKit"
 }

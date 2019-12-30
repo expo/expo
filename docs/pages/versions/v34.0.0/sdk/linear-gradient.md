@@ -1,8 +1,17 @@
 ---
 title: LinearGradient
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-linear-gradient"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 A React component that renders a gradient view.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -10,13 +19,36 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+<SnackInline label='Basic LinearGradient usage' templateId='linear-gradient' dependencies={['expo-linear-gradient']}>
 
-<SnackEmbed snackId="@charliecruzan/lineargradientexample" />
+```javascript
+import React from 'react';
+import { Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-<br />
+export default class FacebookButton extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <LinearGradient
+          colors={['#4c669f', '#3b5998', '#192f6a']}
+          style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
+          <Text
+            style={{
+              backgroundColor: 'transparent',
+              fontSize: 15,
+              color: '#fff',
+            }}>
+            Sign in with Facebook
+          </Text>
+        </LinearGradient>
+      </View>
+    );
+  }
+}
+```
 
-<SnackEmbed snackId="@charliecruzan/lineargradienttransparencyexample" />
+</SnackInline>
 
 ## API
 

@@ -201,13 +201,13 @@ function processLine(line: string, abiVersion: string) {
     line.startsWith('LOCAL_SHARED_LIBRARIES') ||
     line.startsWith('LOCAL_STATIC_LIBRARIES')
   ) {
-    let splitLine = line.split(':=');
+    let splitLine = line.split('=');
     let libs = splitLine[1].split(' ');
     for (let i = 0; i < libs.length; i++) {
       libs[i] = renameLib(libs[i], abiVersion);
     }
     splitLine[1] = libs.join(' ');
-    line = splitLine.join(':=');
+    line = splitLine.join('=');
   }
 
   return line;
@@ -328,21 +328,6 @@ async function addVersionedActivitesToManifests(version: string) {
   const abiVersion = version.replace(/\./g, '_');
   const abiName = `abi${abiVersion}`;
   const majorVersion = semver.major(version);
-
-  const versionedAndroidManifestPath = path.join(
-    versionedExpoviewAbiPath(abiName),
-    'src/main/AndroidManifest.xml'
-  );
-
-  await transformFileAsync(
-    versionedAndroidManifestPath,
-    new RegExp('<!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->'),
-    `<activity
-      android:name="${abiName}.expo.modules.appauth.AppAuthBrowserActivity"
-      android:exported="false"
-      android:launchMode="singleTask"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>`
-  );
 
   await transformFileAsync(
     templateManifestPath,

@@ -54,7 +54,7 @@ Get metadata information about a file or directory.
 
 #### Returns
 
-If no item exists at this URI, returns a Promise that resolves to `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
+If no item exists at this URI, returns a Promise that resolves to `{ exists: false, isDirectory: false }`. Else returns a Promise that resolves to an object with the following fields:
 
 - **exists (_boolean_)** -- `true`.
 

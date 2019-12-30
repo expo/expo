@@ -140,6 +140,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = E8ABE8752B34C7D7270417EFC4D92A89;
 			productRefGroup = 7677451580D65C621C3555C5ED0FF2C7 /* Products */;
@@ -189,34 +190,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D3905EC6DB37F3C88DEE2D4E7E1E9A6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		5B3F16C23CF7276B929D2A0F01091187 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		900C25B93ADC5DE13524759ECB084071 /* Debug */ = {
+		3068237464D6B4EAAFDB45AB0BDF54B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -267,7 +241,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -280,7 +254,34 @@
 			};
 			name = Debug;
 		};
-		B614C200BACA07A22D4BA6627CC8EDDF /* Release */ = {
+		4C2704ECCB91D1037062D717ACAFC9E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C0A72149AA5981888010B53DFFE5961C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91BCDEB003F484F4A3B33B0A0B5ABFB1 /* Firebase.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D030AE60C5D80EBC79AAFB36A35370EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -328,7 +329,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -346,8 +347,8 @@
 		198012EF7A45C9DD9AF96756AF40414F /* Build configuration list for PBXProject "Firebase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				900C25B93ADC5DE13524759ECB084071 /* Debug */,
-				B614C200BACA07A22D4BA6627CC8EDDF /* Release */,
+				3068237464D6B4EAAFDB45AB0BDF54B0 /* Debug */,
+				D030AE60C5D80EBC79AAFB36A35370EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -355,8 +356,8 @@
 		881390FAB695325F2A64B228532B9D23 /* Build configuration list for PBXAggregateTarget "Firebase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5B3F16C23CF7276B929D2A0F01091187 /* Debug */,
-				1D3905EC6DB37F3C88DEE2D4E7E1E9A6 /* Release */,
+				C0A72149AA5981888010B53DFFE5961C /* Debug */,
+				4C2704ECCB91D1037062D717ACAFC9E9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

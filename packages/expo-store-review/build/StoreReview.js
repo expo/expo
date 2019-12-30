@@ -3,9 +3,10 @@ import { Linking, Platform } from 'react-native';
 import { deprecate } from '@unimodules/core';
 import StoreReview from './ExpoStoreReview';
 /*
- * Platform must be iOS
- * iOS 10.3 or greater
- * `SKStoreReviewController` class is available
+ * Determine if the platform has the capabilities to use `requestedReview`
+ * iOS: `true` if iOS 10.3 or greater and the StoreKit framework is linked
+ * Android: Always `true` (open URL to app store)
+ * Web: Always `false`
  */
 export async function isAvailableAsync() {
     return StoreReview.isAvailableAsync();
@@ -19,7 +20,8 @@ export function isSupported() {
     });
 }
 /*
- * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app.
+ * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app,
+ * or open a web browser to the play store on Android
  */
 export async function requestReview() {
     if (StoreReview && StoreReview.requestReview) {

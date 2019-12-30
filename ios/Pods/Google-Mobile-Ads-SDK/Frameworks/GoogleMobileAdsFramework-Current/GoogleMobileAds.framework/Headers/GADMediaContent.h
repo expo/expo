@@ -22,11 +22,11 @@
 /// media content aspect ratio is unknown.
 @property(nonatomic, readonly) CGFloat aspectRatio;
 
-/// The video's duration in seconds. Returns 0 if there is no video or the duration is unknown.
+/// The video's duration in seconds or 0 if there's no video or the duration is unknown.
 @property(nonatomic, readonly) NSTimeInterval duration;
 
-/// The video's current playback time in seconds. Returns 0 if there's no video or the current
-/// playback time is unknown.
+/// The video's current playback time in seconds or 0 if there's no video or the current playback
+/// time is unknown.
 @property(nonatomic, readonly) NSTimeInterval currentTime;
 
 @end

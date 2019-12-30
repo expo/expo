@@ -40,7 +40,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 {
   if (self = [super init]) {
     self.defaultOptions = @{
-                            @"allowsEditing" : @NO,
+                            @"allowsEditing": @NO,
                             @"base64": @NO,
                             };
     self.shouldRestoreStatusBarVisibility = NO;
@@ -170,7 +170,11 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     }
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
+    
+    if (@available(iOS 11.0, *)) {
+      self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
+    }
+    
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       self.picker.allowsEditing = true;
     }
@@ -179,47 +183,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
-    [utils.currentViewController presentViewController:self.picker animated:YES completion:^{
-      [self unlockCroppingBox:self.picker];
-    }];
+    [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
-}
-
-// Due to a bug that exists since iOS 6, you can't move the cropping box.
-// You can read more about this here: https://stackoverflow.com/questions/12630155/uiimagepicker-allowsediting-stuck-in-center.
-- (void)unlockCroppingBox:(UIImagePickerController *)imagePickerController
-{
-  if (!imagePickerController ||
-      !imagePickerController.allowsEditing ||
-      imagePickerController.sourceType != UIImagePickerControllerSourceTypeCamera) {
-    return;
-  }
-  
-  // undocumented class
-  Class ScrollViewClass = NSClassFromString(@"PLImageScrollView");
-  Class CropViewClass = NSClassFromString(@"PLCropOverlayCropView");
-
-  [EXImagePicker foreachSubviewIn:imagePickerController.view call:^(UIView *subview) {
-    if ([subview isKindOfClass:CropViewClass]) {
-      // 0. crop rect position
-      subview.frame = subview.superview.bounds;
-    } else if ([subview isKindOfClass:[UIScrollView class]] && [subview isKindOfClass:ScrollViewClass]) {
-      BOOL isNewImageScrollView = !self->_imageScrollView;
-      self->_imageScrollView = (UIScrollView *)subview;
-      // 1. enable scrolling
-      CGSize size = self->_imageScrollView.frame.size;
-      CGFloat inset = ABS(size.width - size.height) / 2;
-      self->_imageScrollView.contentInset = UIEdgeInsetsMake(inset, 0, inset, 0);
-      // 2. centering image by default
-      if (isNewImageScrollView) {
-        CGSize contentSize = self->_imageScrollView.contentSize;
-        if (contentSize.height > contentSize.width) {
-          CGFloat offset = round((contentSize.height - contentSize.width) / 2 - inset);
-          self->_imageScrollView.contentOffset = CGPointMake(self->_imageScrollView.contentOffset.x, offset);
-        }
-      }
-    }
-  }];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -240,10 +205,10 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         self.resolve(response);
       }];
     } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
-      [self handleVideoWithInfo:info saveAt:directory updateResponse:response];
-      self.resolve(response);
+      [self handleVideoWithInfo:info saveAt:directory updateResponse:response completionHandler:^{
+        self.resolve(response);
+      }];
     }
-
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
@@ -389,9 +354,17 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   return false;
 }
 
-- (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
+- (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info
+                     saveAt:(NSString *)directory
+             updateResponse:(NSMutableDictionary *)response
+          completionHandler:(void (^)(void))completionHandler
 {
-  NSURL *videoURL = info[UIImagePickerControllerMediaURL];
+  NSURL *videoURL = info[UIImagePickerControllerMediaURL] ?: info[UIImagePickerControllerReferenceURL];
+  if (videoURL == nil) {
+    // not calling completionHandler here, as it's only purpose is to resolve the promise and we rejected it right here
+    self.reject(@"E_COULDNT_OPEN_FILE", @"Couldn't open video", nil);
+    return;
+  }
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
@@ -430,6 +403,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
 
   response[@"uri"] = filePath;
+  
+  completionHandler();
 }
 
 - (void)updateResponse:(NSMutableDictionary *)response withMetadata:(NSDictionary *)metadata
@@ -592,12 +567,27 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   return [_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollPermissionRequester class]];
 }
 
-+ (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 
+
+- (NSString *)importVideoExportPreset:(NSNumber *)preset API_AVAILABLE(ios(11));
 {
-  for (UIView *subview in view.subviews) {
-    function(subview);
-    [EXImagePicker foreachSubviewIn:subview call:function];
+  static NSDictionary* presetsMap = nil;
+  if (!presetsMap) {
+    presetsMap = @{
+        @0: AVAssetExportPresetPassthrough,
+        @1: AVAssetExportPresetLowQuality,
+        @2: AVAssetExportPresetMediumQuality,
+        @3: AVAssetExportPresetHighestQuality,
+        @4: AVAssetExportPreset640x480,
+        @5: AVAssetExportPreset960x540,
+        @6: AVAssetExportPreset1280x720,
+        @7: AVAssetExportPreset1920x1080,
+        @8: AVAssetExportPreset3840x2160,
+        @9: AVAssetExportPresetHEVC1920x1080,
+        @10: AVAssetExportPresetHEVC3840x2160
+    };
   }
+  
+  return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
 }
 
 @end

@@ -1,8 +1,17 @@
 ---
 title: Constants
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-constants"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 System information that remains constant throughout the lifetime of your app.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
 
 ## Installation
 
@@ -13,6 +22,10 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import Constants from 'expo-constants';
 ```
+
+<TableOfContentSection title='Properties' contents={['Constants.appOwnership', 'Constants.expoVersion', 'Constants.installationId', 'Constants.deviceName', 'Constants.deviceYearClass', 'Constants.getWebViewUserAgentAsync()', 'Constants.isDevice', 'Constants.nativeAppVersion', 'Constants.nativeBuildVersion', 'Constants.platform', 'Constants.sessionId', 'Constants.statusBarHeight', 'Constants.systemFonts', 'Constants.manifest']} />
+
+## Properties
 
 ### `Constants.appOwnership`
 

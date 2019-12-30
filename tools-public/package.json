@@ -7,8 +7,9 @@
   "dependencies": {
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
-    "@expo/xdl": "^56.2.1-rc.0",
+    "@expo/xdl": "57.1.1",
     "@exponent/spawn-async": "^1.2.4",
+    "expo-cli": "3.10.1",
     "fs-extra": "^4.0.2",
     "gulp": "^4.0.0",
     "ip": "^1.1.5",
