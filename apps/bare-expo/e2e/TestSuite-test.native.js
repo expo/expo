@@ -9,6 +9,8 @@ let TESTS = [
   // 'FileSystem',
   // 'Font',
   'Permissions',
+  'Blur',
+  'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',
