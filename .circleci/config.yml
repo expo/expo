@@ -454,7 +454,7 @@ jobs:
       - setup
       - conditionally_halt:
           # Exclude (include anything except) .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
-          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|apps|guides|scripts|template-files|templates).*|\.md$)'
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
