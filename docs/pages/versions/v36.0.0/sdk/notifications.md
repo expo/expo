@@ -5,11 +5,19 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notif
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-#### Platform Compatibility
+#### Push notifications platform compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
 | ✅             | ❌               | ✅         | ❌            | ✅  |
+
+#### Local notifications platform compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
+
+> ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
 
 ## Installation
 

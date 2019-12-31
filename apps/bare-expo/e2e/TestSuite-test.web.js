@@ -16,6 +16,9 @@ const TESTS = [
   'Contacts',
   'Random',
   'Crypto',
+  'Blur',
+  'LinearGradient',
+  'KeepAwake',
   //   'Haptics',
   //   'SecureStore',
 ];
