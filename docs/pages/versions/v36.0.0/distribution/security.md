@@ -62,7 +62,7 @@ Android uses Firebase Cloud Messaging (FCM) for push notifications. If you build
 
 Each FCM server key can send push notifications to any of the Android apps associated with the Firebase project to which the key belongs. A malicious actor would need to have access to the FCM server key and device tokens in order to send a notification.
 
-You can create an delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
+You can create and delete server keys through the Firebase console. When you delete a key, notifications using that key will stop working. When you create a new one and upload it to Expo, notifications will resume working.
 
 ### Consequences if lost
 
