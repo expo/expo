@@ -1,12 +1,19 @@
-import './dangerouslySetup';
-
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 
 import parseConfig from './parseConfig';
 
-export async function initializeAppDangerously(config: { [key: string]: any }): Promise<void> {
+/**
+ * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
+ * This can be used to test the native iOS Firebase app in the Expo client.
+ * This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
+ *
+ * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
+ */
+export async function initializeAppDangerously(googleServices: {
+  [key: string]: any;
+}): Promise<void> {
   // @ts-ignore
   if (global.__DEV__ !== true) {
     console.warn('initializeAppDangerously should only be used in dev mode');
@@ -14,14 +21,19 @@ export async function initializeAppDangerously(config: { [key: string]: any }): 
   if (!ExpoFirebaseAnalytics.initializeAppDangerously) {
     throw new UnavailabilityError('expo-firebase-analytics', 'initializeAppDangerously');
   }
-  return await ExpoFirebaseAnalytics.initializeAppDangerously(parseConfig(config));
+  return await ExpoFirebaseAnalytics.initializeAppDangerously(parseConfig(googleServices));
 }
 
-export async function deleteApp(config: { [key: string]: any }): Promise<void> {
+/**
+ * Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
+ *
+ * @param googleServices Platform specific Google Services file.
+ */
+export async function deleteApp(googleServices: { [key: string]: any }): Promise<void> {
   if (!ExpoFirebaseAnalytics.deleteApp) {
     throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
   }
-  return await ExpoFirebaseAnalytics.deleteApp(parseConfig(config));
+  return await ExpoFirebaseAnalytics.deleteApp(parseConfig(googleServices));
 }
 
 /**

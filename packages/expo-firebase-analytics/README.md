@@ -68,10 +68,60 @@ import * as Analytics from 'expo-firebase-analytics';
 
 ## Methods
 
+### initializeAppDangerously
+
+```tsx
+export async function initializeAppDangerously(googleServices: { [key: string]: any }): Promise<void>
+```
+
+Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
+This can be used to test the native iOS Firebase app in the Expo client.
+This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
+
+> You can convert your `GoogleServices-info.plist` using `npx plist-to-json ./GoogleServices-info.plist`.
+
+#### Parameters
+
+| Name       | Type   | Description                                                      |
+| ---------- | ------ | ---------------------------------------------------------------- |
+| name       | string | Platform specific Google Services file for starting a Firebase app during runtime  |
+
+#### Example
+
+```js
+if (Platform.OS === 'ios' && global.__DEV__ === true) {
+  await Analytics.initializeAppDangerously({ /* GoogleServices-info.plist contents as JSON. */ });
+}
+```
+
+### deleteApp
+
+```tsx
+export async function deleteApp(googleServices: { [key: string]: any }): Promise<void>
+```
+
+Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
+
+#### Parameters
+
+| Name       | Type   | Description                                                      |
+| ---------- | ------ | ---------------------------------------------------------------- |
+| name       | string | Platform specific Google Services file.  |
+
+#### Example
+
+```js
+await Analytics.deleteApp(Platform.select({
+  ios: { /* GoogleServices-info.plist contents as JSON */ },
+  android: { /* google-services.json */ },
+  web: { /* Google Services JSON */ }
+}));
+```
+
 ### logEvent
 
 ```tsx
-logEvent(name: string, properties?: { [key: string]: any }): Promise<void> {
+logEvent(name: string, properties?: { [key: string]: any }): Promise<void>
 ```
 
 Logs an app event. The event can have up to 25 parameters. Events with the same name must have
