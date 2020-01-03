@@ -73,7 +73,7 @@ To use web analytics, you'll also need to install the peer dependency **firebase
 ### initializeAppDangerously
 
 ```tsx
-export async function initializeAppDangerously(googleServices: { [key: string]: any }): Promise<void>
+initializeAppDangerously(googleServices: { [key: string]: any }): Promise<void>
 ```
 
 Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
@@ -99,7 +99,7 @@ if (Platform.OS === 'ios' && global.__DEV__ === true) {
 ### deleteApp
 
 ```tsx
-export async function deleteApp(googleServices: { [key: string]: any }): Promise<void>
+deleteApp(googleServices: { [key: string]: any }): Promise<void>
 ```
 
 Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
@@ -314,6 +314,16 @@ await Analytics.setUserProperties({
   loves_expo: 'a lot',
 });
 ```
+
+### getBundledGoogleServicesConfig
+
+```tsx
+getBundledGoogleServicesConfig(): null | { [key: string]: any }
+```
+
+Get the bundled Google Services config file.
+This is useful for debugging if your app was built properly.
+
 
 # Examples
 
