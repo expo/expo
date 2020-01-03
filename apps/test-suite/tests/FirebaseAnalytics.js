@@ -22,7 +22,7 @@ export async function test({ describe, it, expect }) {
         } catch (e) {
           error = e;
         }
-        expect(error).not.toBeNull();
+        expect(error).toBeNull();
       });
     });
   });
