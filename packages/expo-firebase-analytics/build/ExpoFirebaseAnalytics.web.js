@@ -23,43 +23,43 @@ export default {
     get name() {
         return 'ExpoFirebaseAnalytics';
     },
-    async initAppAsync(config) {
+    async initializeAppDangerously(config) {
         getFirebaseModule().initializeApp(config);
     },
-    async deleteAppAsync(config) {
+    async deleteApp(config) {
         getFirebaseModule().deleteApp(config);
     },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
      */
-    async logEventAsync(name, properties) {
+    async logEvent(name, properties) {
         getAnalyticsModule().logEvent(name, properties);
     },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-analytics-collection-enabled
      */
-    async setAnalyticsCollectionEnabledAsync(isEnabled) {
+    async setAnalyticsCollectionEnabled(isEnabled) {
         getAnalyticsModule().setAnalyticsCollectionEnabled(isEnabled);
     },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
      */
-    async setCurrentScreenAsync(screenName, screenClassOverride) {
+    async setCurrentScreen(screenName, screenClassOverride) {
         getAnalyticsModule().setCurrentScreen(screenName, screenClassOverride);
     },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
-    async setUserIdAsync(userId) {
+    async setUserId(userId) {
         getAnalyticsModule().setUserId(userId);
     },
-    async setUserPropertyAsync(name, value) {
+    async setUserProperty(name, value) {
         getAnalyticsModule().setUserProperties({ [name]: value });
     },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
      */
-    async setUserPropertiesAsync(properties) {
+    async setUserProperties(properties) {
         getAnalyticsModule().setUserProperties(properties);
     },
 };
