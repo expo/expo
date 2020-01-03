@@ -32,5 +32,8 @@ export default {
         window.open(mailto);
         return { status: 'undetermined' };
     },
+    async isAvailableAsync() {
+        return true;
+    },
 };
 //# sourceMappingURL=ExpoMailComposer.web.js.map

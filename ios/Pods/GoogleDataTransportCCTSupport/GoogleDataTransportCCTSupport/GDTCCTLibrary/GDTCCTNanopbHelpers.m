@@ -110,6 +110,12 @@ gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource,
   }
   logRequest.log_event_count = (pb_size_t)logSet.count;
 
+  GDTCORClock *currentTime = [GDTCORClock snapshot];
+  logRequest.request_time_ms = currentTime.timeMillis;
+  logRequest.has_request_time_ms = 1;
+  logRequest.request_uptime_ms = currentTime.uptime;
+  logRequest.has_request_uptime_ms = 1;
+
   return logRequest;
 }
 
@@ -162,7 +168,10 @@ gdt_cct_IosClientInfo GDTCCTConstructiOSClientInfo() {
   if (version) {
     iOSClientInfo.application_build = GDTCCTEncodeString(version);
   }
-  iOSClientInfo.country = GDTCCTEncodeString([locale objectForKey:NSLocaleCountryCode]);
+  NSString *countryCode = [locale objectForKey:NSLocaleCountryCode];
+  if (countryCode) {
+    iOSClientInfo.country = GDTCCTEncodeString([locale objectForKey:NSLocaleCountryCode]);
+  }
   iOSClientInfo.model = GDTCCTEncodeString(device.model);
   NSString *languageCode = bundle.preferredLocalizations.firstObject;
   iOSClientInfo.language_code =

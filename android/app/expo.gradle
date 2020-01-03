@@ -16,7 +16,7 @@ afterEvaluate {
   task exponentPrebuildStep(type: Exec) {
     workingDir expoRoot
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine "cmd", "/c", ".\\node_modules\\expokit\\detach-scripts\\run-exp.bat"
+      commandLine "cmd", "/c", ".\\node_modules\\expokit\\detach-scripts\\run-exp.bat", "prepare-detached-build", "--platform", "android", expoRoot
     } else {
       commandLine "./node_modules/expokit/detach-scripts/run-exp.sh", "prepare-detached-build", "--platform", "android", expoRoot
     }
@@ -29,7 +29,7 @@ afterEvaluate {
     def folderName = variant.name
     def targetName = folderName.capitalize()
 
-    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"

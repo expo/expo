@@ -12,6 +12,22 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER
 export default class ExponentVideo extends React.Component {
     constructor() {
         super(...arguments);
+        this.onFullscreenChange = event => {
+            if (!this.props.onFullscreenUpdate)
+                return;
+            if (event.target === this._video) {
+                if (document.fullscreenElement) {
+                    this.props.onFullscreenUpdate({
+                        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
+                    });
+                }
+                else {
+                    this.props.onFullscreenUpdate({
+                        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
+                    });
+                }
+            }
+        };
         this.onStatusUpdate = async () => {
             if (!this.props.onStatusUpdate) {
                 return;
@@ -66,6 +82,14 @@ export default class ExponentVideo extends React.Component {
             this._video = ref;
             this.onStatusUpdate();
         };
+    }
+    componentDidMount() {
+        const isIE11 = !!window['MSStream'];
+        document.addEventListener(isIE11 ? 'MSFullscreenChange' : 'fullscreenchange', this.onFullscreenChange);
+    }
+    componentWillUnmount() {
+        const isIE11 = !!window['MSStream'];
+        document.addEventListener(isIE11 ? 'MSFullscreenChange' : 'fullscreenchange', this.onFullscreenChange);
     }
     render() {
         const { source, status = {}, resizeMode: objectFit, useNativeControls, style } = this.props;

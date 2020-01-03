@@ -1,6 +1,27 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoAmplitude from './ExpoAmplitude';
 
+interface TrackingOptions {
+  disableAdid?: boolean;
+  disableCarrier?: boolean;
+  disableCity?: boolean;
+  disableCountry?: boolean;
+  disableDeviceBrand?: boolean;
+  disableDeviceManufacturer?: boolean;
+  disableDeviceModel?: boolean;
+  disableDMA?: boolean;
+  disableIDFA?: boolean;
+  disableIDFV?: boolean;
+  disableIPAddress?: boolean;
+  disableLanguage?: boolean;
+  disableLatLng?: boolean;
+  disableOSName?: boolean;
+  disableOSVersion?: boolean;
+  disablePlatform?: boolean;
+  disableRegion?: boolean;
+  disableVersionName?: boolean;
+}
+
 export function initialize(apiKey: string): Promise<void> {
   if (!ExpoAmplitude.initialize) {
     throw new UnavailabilityError('Amplitude', 'initialize');
@@ -51,4 +72,11 @@ export function setGroup(groupType: string, groupNames: string[]): Promise<void>
     throw new UnavailabilityError('Amplitude', 'setGroup');
   }
   return ExpoAmplitude.setGroup(groupType, groupNames);
+}
+
+export function setTrackingOptions(options: TrackingOptions) {
+  if (!ExpoAmplitude.setTrackingOptions) {
+    throw new UnavailabilityError('Amplitude', 'setTrackingOptions');
+  }
+  return ExpoAmplitude.setTrackingOptions(options);
 }

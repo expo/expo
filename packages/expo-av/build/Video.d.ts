@@ -122,6 +122,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         rotation: PropTypes.Requireable<number>;
     };
     _nativeRef: React.RefObject<React.Component<NativeProps, any, any> & import("react-native").NativeMethodsMixinStatic>;
+    _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
     constructor(props: VideoProps);
     setNativeProps(nativeProps: NativeProps): void;
     _handleNewStatus: (status: PlaybackStatus) => void;
@@ -137,6 +138,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     unloadAsync: () => Promise<PlaybackStatus>;
     setStatusAsync: (status: PlaybackStatusToSet) => Promise<PlaybackStatus>;
     replayAsync: (status?: PlaybackStatusToSet) => Promise<PlaybackStatus>;
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null): void;
     playAsync: () => Promise<PlaybackStatus>;
     playFromPositionAsync: (positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;

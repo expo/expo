@@ -1,5 +1,6 @@
 package expo.modules.securestore;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,11 +15,16 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -28,6 +34,7 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.Date;
 
 import javax.crypto.Cipher;
@@ -37,11 +44,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
-
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
 
 public class SecureStoreModule extends ExportedModule {
   private static final String TAG = "ExpoSecureStore";
@@ -53,8 +55,8 @@ public class SecureStoreModule extends ExportedModule {
   private static final String SCHEME_PROPERTY = "scheme";
 
   private KeyStore mKeyStore;
-  protected AESEncrypter mAESEncrypter;
-  protected HybridAESEncrypter mHybridAESEncrypter;
+  private AESEncrypter mAESEncrypter;
+  private HybridAESEncrypter mHybridAESEncrypter;
 
   public SecureStoreModule(Context context) {
     super(context);
@@ -69,6 +71,7 @@ public class SecureStoreModule extends ExportedModule {
 
   // NOTE: This currently doesn't remove the entry (if any) in the legacy shared preferences
   @ExpoMethod
+  @SuppressWarnings("unused")
   public void setValueWithKeyAsync(String value, String key, ReadableArguments options, Promise promise) {
     try {
       setItemImpl(key, value, options, promise);
@@ -78,6 +81,7 @@ public class SecureStoreModule extends ExportedModule {
     }
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void setItemImpl(String key, String value, ReadableArguments options, Promise promise) {
     if (key == null) {
       promise.reject("E_SECURESTORE_NULL_KEY", "SecureStore keys must not be null");
@@ -128,7 +132,7 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     String encryptedItemString = encryptedItem.toString();
-    if (encryptedItemString == null) {
+    if (encryptedItemString == null) { // lint warning suppressed, JSONObject#toString() may return null
       promise.reject("E_SECURESTORE_JSON_ERROR", "Could not JSON-encode the encrypted item for SecureStore");
       return;
     }
@@ -142,6 +146,7 @@ public class SecureStoreModule extends ExportedModule {
   }
 
   @ExpoMethod
+  @SuppressWarnings("unused")
   public void getValueWithKeyAsync(String key, ReadableArguments options, Promise promise) {
     try {
       getItemImpl(key, options, promise);
@@ -258,20 +263,21 @@ public class SecureStoreModule extends ExportedModule {
   }
 
   @ExpoMethod
+  @SuppressWarnings("unused")
   public void deleteValueWithKeyAsync(String key, ReadableArguments options, Promise promise) {
     try {
-      deleteItemImpl(key, options, promise);
+      deleteItemImpl(key, promise);
     } catch (Exception e) {
       Log.e(TAG, "Caught unexpected exception when deleting from SecureStore", e);
       promise.reject("E_SECURESTORE_DELETE_ERROR", "An unexpected error occurred when deleting item from SecureStore", e);
     }
   }
 
-  private void deleteItemImpl(String key, ReadableArguments options, Promise promise) {
+  private void deleteItemImpl(String key, Promise promise) {
     boolean success = true;
     SharedPreferences prefs = getSharedPreferences();
     if (prefs.contains(key)) {
-      success = prefs.edit().remove(key).commit() && success;
+      success = prefs.edit().remove(key).commit();
     }
 
     SharedPreferences legacyPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -332,9 +338,11 @@ public class SecureStoreModule extends ExportedModule {
     E initializeKeyStoreEntry(KeyStore keyStore, ReadableArguments options) throws
         GeneralSecurityException;
 
+    @SuppressWarnings("unused")
     JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, E keyStoreEntry) throws
         GeneralSecurityException, JSONException;
 
+    @SuppressWarnings("unused")
     String decryptItem(JSONObject encryptedItem, E keyStoreEntry) throws
         GeneralSecurityException, JSONException;
   }
@@ -396,18 +404,18 @@ public class SecureStoreModule extends ExportedModule {
       SecretKey secretKey = secretKeyEntry.getSecretKey();
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+      GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
 
-      return createEncryptedItem(plaintextValue, cipher);
+      return createEncryptedItem(plaintextValue, cipher, gcmSpec);
     }
 
-    /* package */ JSONObject createEncryptedItem(String plaintextValue, Cipher cipher) throws
+    /* package */ JSONObject createEncryptedItem(String plaintextValue, Cipher cipher, GCMParameterSpec gcmSpec) throws
         GeneralSecurityException, JSONException {
 
       byte[] plaintextBytes = plaintextValue.getBytes(StandardCharsets.UTF_8);
       byte[] ciphertextBytes = cipher.doFinal(plaintextBytes);
       String ciphertext = Base64.encodeToString(ciphertextBytes, Base64.DEFAULT);
 
-      GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
       String ivString = Base64.encodeToString(gcmSpec.getIV(), Base64.DEFAULT);
       int authenticationTagLength = gcmSpec.getTLen();
 
@@ -457,7 +465,7 @@ public class SecureStoreModule extends ExportedModule {
     // BouncyCastle/SpongyCastle throw an exception on older Android versions when accessing RSA key
     // pairs generated using the keystore
     private static final String RSA_CIPHER_LEGACY_PROVIDER = "AndroidOpenSSL";
-    protected static final int X509_SERIAL_NUMBER_LENGTH_BITS = 20 * 8;
+    private static final int X509_SERIAL_NUMBER_LENGTH_BITS = 20 * 8;
 
     private static final int GCM_IV_LENGTH_BYTES = 12;
     private static final int GCM_AUTHENTICATION_TAG_LENGTH_BITS = 128;
@@ -466,9 +474,9 @@ public class SecureStoreModule extends ExportedModule {
 
     protected Context mContext;
     private AESEncrypter mAESEncrypter;
-    protected SecureRandom mSecureRandom;
+    private SecureRandom mSecureRandom;
 
-    public HybridAESEncrypter(Context context, AESEncrypter aesEncrypter) {
+    /* package */ HybridAESEncrypter(Context context, AESEncrypter aesEncrypter) {
       mContext = context;
       mAESEncrypter = aesEncrypter;
       mSecureRandom = new SecureRandom();
@@ -481,7 +489,6 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public KeyStore.PrivateKeyEntry initializeKeyStoreEntry(KeyStore keyStore, ReadableArguments options) throws GeneralSecurityException {
       String keystoreAlias = getKeyStoreAlias(options);
       // See https://tools.ietf.org/html/rfc1779#section-2.3 for the DN grammar
@@ -494,7 +501,8 @@ public class SecureStoreModule extends ExportedModule {
           .setEndDate(new Date(Long.MAX_VALUE))
           .build();
 
-      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, keyStore.getProvider());
+      // constant value will be copied
+      @SuppressLint("InlinedApi") KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, keyStore.getProvider());
       keyPairGenerator.initialize(algorithmSpec);
       keyPairGenerator.generateKeyPair();
 
@@ -514,17 +522,32 @@ public class SecureStoreModule extends ExportedModule {
       byte[] ivBytes = new byte[GCM_IV_LENGTH_BYTES];
       mSecureRandom.nextBytes(ivBytes);
 
-      KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES);
+      // constant value will be copied
+      @SuppressLint("InlinedApi") KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES);
       keyGenerator.init(AESEncrypter.AES_KEY_SIZE_BITS);
       SecretKey secretKey = keyGenerator.generateKey();
 
       // Encrypt the value with the symmetric key. We need to specify the GCM parameters since the
       // our secret key isn't tied to the keystore and the cipher can't use the secret key to
       // generate the parameters.
-      AlgorithmParameterSpec gcmSpec = new GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes);
+      GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_AUTHENTICATION_TAG_LENGTH_BITS, ivBytes);
       Cipher aesCipher = Cipher.getInstance(AESEncrypter.AES_CIPHER);
       aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
-      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher);
+      GCMParameterSpec chosenSpec;
+      try {
+        chosenSpec = aesCipher.getParameters().getParameterSpec(GCMParameterSpec.class);
+      } catch (InvalidParameterSpecException e) {
+        // BouncyCastle tried to instantiate GCMParameterSpec using invalid constructor
+        // https://github.com/bcgit/bc-java/commit/507c3917c0c469d10b9f033ad641c1da195e2039#diff-c90a59e823805b6c0dcfeaf7bae65f53
+
+        // Let's do some sanity checks and use the spec we've initialized the cipher with.
+        if (!"GCM".equals(aesCipher.getParameters().getAlgorithm())) {
+          throw new InvalidAlgorithmParameterException("Algorithm chosen by the cipher (" + aesCipher.getParameters().getAlgorithm() + ") doesn't match requested (GCM).");
+        }
+        chosenSpec = gcmSpec;
+      }
+
+      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher, chosenSpec);
 
       // Ensure the IV in the encrypted item matches our generated IV
       String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
@@ -556,7 +579,8 @@ public class SecureStoreModule extends ExportedModule {
       Cipher cipher = getRSACipher();
       cipher.init(Cipher.DECRYPT_MODE, privateKeyEntry.getPrivateKey());
       byte[] secretKeyBytes = cipher.doFinal(encryptedSecretKeyBytes);
-      SecretKey secretKey = new SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES);
+      // constant value will be copied
+      @SuppressLint("InlinedApi") SecretKey secretKey = new SecretKeySpec(secretKeyBytes, KeyProperties.KEY_ALGORITHM_AES);
 
       // Decrypt the value with the symmetric key
       KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
@@ -581,11 +605,11 @@ public class SecureStoreModule extends ExportedModule {
     private static final String RSA_CIPHER = "RSA/ECB/PKCS1Padding";
     private static final String DEFAULT_ALIAS = "MY_APP";
 
-    public String getKeyStoreAlias(ReadableArguments options) {
+    /* package */ String getKeyStoreAlias(ReadableArguments options) {
       return options.containsKey(ALIAS_PROPERTY) ? options.getString(ALIAS_PROPERTY) : DEFAULT_ALIAS;
     }
 
-    public String decryptItem(String encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry) throws GeneralSecurityException {
+    /* package */ String decryptItem(String encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry) throws GeneralSecurityException {
       byte[] ciphertextBytes = Base64.decode(encryptedItem, Base64.DEFAULT);
 
       Cipher cipher = Cipher.getInstance(RSA_CIPHER);

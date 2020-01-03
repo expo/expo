@@ -61,3 +61,5 @@ ios/build
 /android/app/build
 
 /scripts/start.command
+
+/artifacts

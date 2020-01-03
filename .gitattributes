@@ -4,6 +4,6 @@ packages/*/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
 ios/Pods/FBAudienceNetwork/Static/FBAudienceNetwork.framework/FBAudienceNetwork filter=lfs diff=lfs merge=lfs -text
 ios/Pods/GoogleMobileVision/Detector/Frameworks/GoogleMobileVision.framework/GoogleMobileVision filter=lfs diff=lfs merge=lfs -text
-ios/Pods/GoogleMobileVision/FaceDetector/Frameworks/FaceDetector.framework/FaceDetector filter=lfs diff=lfs merge=lfs -text
 ios/Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework-Current/GoogleMobileAds.framework/GoogleMobileAds filter=lfs diff=lfs merge=lfs -text
 ios/Pods/GoogleMaps/Maps/Frameworks/GoogleMapsCore.framework/GoogleMapsCore filter=lfs diff=lfs merge=lfs -text
+ios/Pods/FirebaseMLVisionFaceModel/Frameworks/FirebaseMLVisionFaceModel.framework/FirebaseMLVisionFaceModel filter=lfs diff=lfs merge=lfs -text

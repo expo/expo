@@ -65,7 +65,7 @@ extern NSString *const kServiceInfoFileType;
  * Indicates whether or not Analytics collection was explicitly enabled via a plist flag or at
  * runtime.
  */
-@property(nonatomic, readonly) BOOL isAnalyticsCollectionExpicitlySet;
+@property(nonatomic, readonly) BOOL isAnalyticsCollectionExplicitlySet;
 
 /**
  * Whether or not Analytics Collection was enabled. Analytics Collection is enabled unless

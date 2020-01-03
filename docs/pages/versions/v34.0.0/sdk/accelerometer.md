@@ -4,9 +4,16 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 
-Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space. Note that the accelerometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
+
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 
@@ -101,12 +108,7 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-**[Methods](#methods)**
-
-- [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
-- [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
-- [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
-- [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+<TableOfContentSection title='Methods' contents={['Accelerometer.isAvailableAsync()', 'Accelerometer.addListener(listener)', 'Accelerometer.removeAllListeners()', 'Accelerometer.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 

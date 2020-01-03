@@ -1,6 +1,6 @@
 {
   "name": "UMPermissionsInterface",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "summary": "An interface for permissions modules",
   "description": "An interface for permissions modules",
   "license": "MIT",
@@ -14,5 +14,10 @@
   },
   "source_files": "UMPermissionsInterface/**/*.{h,m}",
   "preserve_paths": "UMPermissionsInterface/**/*.{h,m}",
-  "requires_arc": true
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
 }

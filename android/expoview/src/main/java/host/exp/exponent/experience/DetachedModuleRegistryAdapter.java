@@ -12,14 +12,12 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
-import versioned.host.exp.exponent.modules.universal.SecureStoreModuleBinding;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -46,15 +44,6 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
-
-    // Add SpongyCastle integration
-    try {
-      // If this doesn't throw an exception, we can instantiate the binding.
-      Class.forName("expo.modules.securestore.SecureStoreModule");
-      moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
-    } catch (ClassNotFoundException | NoClassDefFoundError e) { //https://stackoverflow.com/a/5756989
-      // do nothing, if there's no SecureStoreModule we don't need to override it
-    }
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.

@@ -35,8 +35,8 @@
 /// custom event must notify the Google Mobile Ads SDK of clicks using
 /// +[GADMediatedNativeAdNotificationSource mediatedNativeAdDidRecordClick:]. Return NO if the
 /// custom event doesn't handles user clicks. In this case, the Google Mobile Ads SDK tracks user
-/// clicks itself and the custom event is notified of user clicks via -[GADMediatedNativeAdDelegate
-/// mediatedNativeAd:didRecordClickOnAssetWithName:view:viewController:].
+/// clicks itself and the custom event is notified of user clicks via -[GADMediatedUnifiedNativeAd
+/// didRecordClickOnAssetWithName:view:viewController:].
 - (BOOL)handlesUserClicks;
 
 /// Indicates whether the custom event handles user impressions tracking. If this method returns
@@ -44,7 +44,7 @@
 /// the Google Mobile Ads SDK of impressions using +[GADMediatedNativeAdNotificationSource
 /// mediatedNativeAdDidRecordImpression:]. If this method returns NO, the Google Mobile Ads SDK
 /// tracks user impressions and notifies the custom event of impressions using
-/// -[GADMediatedNativeAdDelegate mediatedNativeAdDidRecordImpression:].
+/// -[GADMediatedUnifiedNativeAd didRecordImpression].
 - (BOOL)handlesUserImpressions;
 
 /// Delegate object used for receiving custom native ad load request progress.

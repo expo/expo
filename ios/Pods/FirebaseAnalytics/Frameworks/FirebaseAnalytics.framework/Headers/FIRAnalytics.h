@@ -9,6 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// The top level Firebase Analytics singleton that provides methods for logging events and setting
 /// user properties. See <a href="http://goo.gl/gz8SLz">the developer guides</a> for general
 /// information on using Firebase Analytics in your apps.
+///
+/// @note The Analytics SDK uses SQLite to persist events and other app-specific data. Calling
+///     certain thread-unsafe global SQLite methods like `sqlite3_shutdown()` can result in
+///     unexpected crashes at runtime.
 NS_SWIFT_NAME(Analytics)
 @interface FIRAnalytics : NSObject
 

@@ -24,7 +24,11 @@ type State = typeof initialState;
 
 export default function AppContainer() {
   let colorScheme = useColorScheme();
-  return <AppearanceProvider><App colorScheme={colorScheme} /></AppearanceProvider>
+  return (
+    <AppearanceProvider>
+      <App colorScheme={colorScheme} />
+    </AppearanceProvider>
+  );
 }
 
 class App extends React.Component<Props, State> {
@@ -37,7 +41,8 @@ class App extends React.Component<Props, State> {
   async _loadAssetsAsync() {
     try {
       const iconRequires = Object.keys(Icons).map(key => Icons[key]);
-      await Promise.all([
+
+      const assetPromises: Promise<any>[] = [
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
         // @ts-ignore
@@ -49,10 +54,14 @@ class App extends React.Component<Props, State> {
         Font.loadAsync({
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         }),
-        Font.loadAsync({
-          Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
-        }),
-      ]);
+      ];
+      if (Platform.OS !== 'web')
+        assetPromises.push(
+          Font.loadAsync({
+            Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
+          })
+        );
+      await Promise.all(assetPromises);
     } catch (e) {
       console.log({ e });
     } finally {

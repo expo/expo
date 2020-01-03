@@ -7,7 +7,6 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSContextRef.h>
 
-
 void EXJSConsoleLog(JSContextRef ctx, const char *msg) {
   JSObjectRef global = JSContextGetGlobalObject(ctx);
   JSObjectRef console = (JSObjectRef) EXJSObjectGetPropertyNamed(ctx, global, "console");
@@ -15,7 +14,6 @@ void EXJSConsoleLog(JSContextRef ctx, const char *msg) {
   JSValueRef msgStr = EXJSValueMakeStringFromUTF8CString(ctx, msg);
   JSObjectCallAsFunction(ctx, log, console, 1, &msgStr, NULL);
 }
-
 
 char *EXJSValueToUTF8CStringMalloc(JSContextRef ctx, JSValueRef v, JSValueRef *exception) {
   JSStringRef jsStr = JSValueToStringCopy(ctx, v, exception);

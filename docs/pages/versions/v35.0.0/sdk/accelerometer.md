@@ -4,15 +4,21 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
+Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
 
-Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space. Note that the accelerometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-## Usage
+## Example Usage
 
 <SnackInline label="Basic Accelerometer usage" templateId="accelerometer" dependencies={["expo-sensors"]}>
 
@@ -101,12 +107,7 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-**[Methods](#methods)**
-
-- [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
-- [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
-- [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
-- [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+<TableOfContentSection title='Methods' contents={['Accelerometer.isAvailableAsync()', 'Accelerometer.addListener(listener)', 'Accelerometer.removeAllListeners()', 'Accelerometer.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 

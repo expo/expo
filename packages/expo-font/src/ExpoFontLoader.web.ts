@@ -1,10 +1,72 @@
 import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { FontResource } from './Font.types';
+import { CodedError } from '@unimodules/core';
+import { FontDisplay, FontResource } from './Font.types';
+import { UnloadFontOptions } from './Font';
+
+function getFontFaceStyleSheet(): CSSStyleSheet | null {
+  if (!canUseDOM) {
+    return null;
+  }
+  const styleSheet = getStyleElement();
+  return styleSheet.sheet ? (styleSheet.sheet as CSSStyleSheet) : null;
+}
+
+type RuleItem = { rule: CSSFontFaceRule; index: number };
+
+function getFontFaceRules(): RuleItem[] {
+  const sheet = getFontFaceStyleSheet();
+  if (sheet) {
+    // @ts-ignore: rule iterator
+    const rules = [...sheet.cssRules];
+
+    const items: RuleItem[] = [];
+
+    for (let i = 0; i < rules.length; i++) {
+      const rule = rules[i];
+      if (rule instanceof CSSFontFaceRule) {
+        items.push({ rule, index: i });
+      }
+    }
+    return items;
+  }
+  return [];
+}
+
+function getFontFaceRulesMatchingResource(
+  fontFamilyName: string,
+  options?: UnloadFontOptions
+): RuleItem[] {
+  const rules = getFontFaceRules();
+  return rules.filter(({ rule }) => {
+    return (
+      rule.style.fontFamily === fontFamilyName &&
+      (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
+    );
+  });
+}
 
 export default {
   get name(): string {
     return 'ExpoFontLoader';
+  },
+
+  async unloadAllAsync(): Promise<void> {
+    if (!canUseDOM) return;
+
+    const element = document.getElementById(ID);
+    if (element && element instanceof HTMLStyleElement) {
+      document.removeChild(element);
+    }
+  },
+
+  async unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void> {
+    const sheet = getFontFaceStyleSheet();
+    if (!sheet) return;
+    const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
+    for (const item of items) {
+      sheet.deleteRule(item.index);
+    }
   },
 
   async loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
@@ -14,7 +76,10 @@ export default {
 
     const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
     if (!canInjectStyle) {
-      throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
+      throw new CodedError(
+        'ERR_WEB_ENVIRONMENT',
+        `The browser's \`document.head\` element doesn't support injecting fonts.`
+      );
     }
 
     const style = _createWebStyle(fontFamilyName, resource);
@@ -44,6 +109,7 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
   const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource.uri});
+    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
 
   const styleElement = getStyleElement();

@@ -79,8 +79,8 @@ typedef NS_ENUM(NSInteger, GDTCOREventQoS) {
  * @param target The event's target identifier.
  * @return An instance of this class.
  */
-- (instancetype)initWithMappingID:(NSString *)mappingID
-                           target:(NSInteger)target NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithMappingID:(NSString *)mappingID
+                                    target:(NSInteger)target NS_DESIGNATED_INITIALIZER;
 
 /** Returns the GDTCORStoredEvent equivalent of self.
  *

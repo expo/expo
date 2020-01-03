@@ -91,6 +91,7 @@ const MainTabNavigator = createTabNavigator(
 // @ts-ignore
 MainTabNavigator.path = '';
 MainTabNavigator.navigationOptions = {
+  // @ts-ignore
   title: 'Native Component List',
 };
 

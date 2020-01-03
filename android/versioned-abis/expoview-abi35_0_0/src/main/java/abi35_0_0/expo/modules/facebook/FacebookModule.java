@@ -44,67 +44,76 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @ExpoMethod
   public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
     FacebookSdk.setApplicationId(appId);
-    //noinspection deprecation
-    FacebookSdk.sdkInitialize(getContext());
-    AccessToken.setCurrentAccessToken(null);
-
-    List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
-
-    if (config.containsKey("behavior")) {
-      LoginBehavior behavior = LoginBehavior.NATIVE_WITH_FALLBACK;
-      switch (config.getString("behavior")) {
-        case "browser":
-          behavior = LoginBehavior.WEB_ONLY;
-          break;
-        case "web":
-          behavior = LoginBehavior.WEB_VIEW_ONLY;
-          break;
-      }
-      LoginManager.getInstance().setLoginBehavior(behavior);
-    }
-
-    LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-      @Override
-      public void onSuccess(LoginResult loginResult) {
-        LoginManager.getInstance().registerCallback(mCallbackManager, null);
-
-        // This is the only route through which we send an access token back. Make sure the
-        // application ID is correct.
-        if (!appId.equals(loginResult.getAccessToken().getApplicationId())) {
-          promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
-          return;
-        }
-        Bundle response = new Bundle();
-        response.putString("type", "success");
-        response.putString("token", loginResult.getAccessToken().getToken());
-        response.putInt("expires", (int) (loginResult.getAccessToken().getExpires().getTime() / 1000));
-
-        response.putStringArrayList("permissions", new ArrayList<>(loginResult.getAccessToken().getPermissions()));
-        response.putStringArrayList("declinedPermissions", new ArrayList<>(loginResult.getAccessToken().getDeclinedPermissions()));
-        promise.resolve(response);
-      }
-
-      @Override
-      public void onCancel() {
-        LoginManager.getInstance().registerCallback(mCallbackManager, null);
-
-        Bundle response = new Bundle();
-        response.putString("type", "cancel");
-        promise.resolve(response);
-      }
-
-      @Override
-      public void onError(FacebookException error) {
-        LoginManager.getInstance().registerCallback(mCallbackManager, null);
-
-        promise.reject(error);
-      }
-    });
-
     try {
-      LoginManager.getInstance().logInWithReadPermissions(mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity(), permissions);
-    } catch (FacebookException e) {
-      promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook", e);
+      //noinspection deprecation
+      FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
+        @Override
+        public void onInitialized() {
+          FacebookSdk.fullyInitialize();
+          AccessToken.setCurrentAccessToken(null);
+
+          List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
+
+          if (config.containsKey("behavior")) {
+            LoginBehavior behavior = LoginBehavior.NATIVE_WITH_FALLBACK;
+            switch (config.getString("behavior")) {
+              case "browser":
+                behavior = LoginBehavior.WEB_ONLY;
+                break;
+              case "web":
+                behavior = LoginBehavior.WEB_VIEW_ONLY;
+                break;
+            }
+            LoginManager.getInstance().setLoginBehavior(behavior);
+          }
+
+          LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+              LoginManager.getInstance().registerCallback(mCallbackManager, null);
+
+              // This is the only route through which we send an access token back. Make sure the
+              // application ID is correct.
+              if (!appId.equals(loginResult.getAccessToken().getApplicationId())) {
+                promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
+                return;
+              }
+              Bundle response = new Bundle();
+              response.putString("type", "success");
+              response.putString("token", loginResult.getAccessToken().getToken());
+              response.putInt("expires", (int) (loginResult.getAccessToken().getExpires().getTime() / 1000));
+
+              response.putStringArrayList("permissions", new ArrayList<>(loginResult.getAccessToken().getPermissions()));
+              response.putStringArrayList("declinedPermissions", new ArrayList<>(loginResult.getAccessToken().getDeclinedPermissions()));
+              promise.resolve(response);
+            }
+
+            @Override
+            public void onCancel() {
+              LoginManager.getInstance().registerCallback(mCallbackManager, null);
+
+              Bundle response = new Bundle();
+              response.putString("type", "cancel");
+              promise.resolve(response);
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+              LoginManager.getInstance().registerCallback(mCallbackManager, null);
+
+              promise.reject(error);
+            }
+          });
+
+          try {
+            LoginManager.getInstance().logInWithReadPermissions(mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity(), permissions);
+          } catch (FacebookException e) {
+            promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook", e);
+          }
+        }
+      });
+    } catch (Exception e) {
+      promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook: " + e.getMessage(), e);
     }
   }
 

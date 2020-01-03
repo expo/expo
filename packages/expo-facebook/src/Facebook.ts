@@ -87,7 +87,7 @@ export async function setAutoInitEnabledAsync(enabled: boolean) {
  * @param appId An optional Facebook App ID argument
  * @param appName An optional Facebook App Name argument
  */
-export async function initializeAsync(appId: string | undefined, appName: string | undefined) {
+export async function initializeAsync(appId?: string, appName?: string) {
   if (!ExponentFacebook.initializeAsync) {
     throw new UnavailabilityError('Facebook', 'initializeAsync');
   }

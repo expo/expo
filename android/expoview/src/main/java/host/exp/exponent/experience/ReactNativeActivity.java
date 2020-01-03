@@ -60,6 +60,7 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.SplashScreenKernelService;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
@@ -261,9 +262,11 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   private void hideLoadingScreen() {
     if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
-      layoutParams.height = mLayout.getHeight();
+      layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
       mContainer.setLayoutParams(layoutParams);
     }
+
+    ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
 
     if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);

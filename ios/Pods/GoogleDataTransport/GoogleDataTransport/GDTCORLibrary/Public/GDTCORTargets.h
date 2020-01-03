@@ -26,4 +26,7 @@ typedef NS_ENUM(NSInteger, GDTCORTarget) {
 
   /** The CCT target. */
   kGDTCORTargetCCT = 1000,
+
+  /** The FLL target. */
+  kGDTCORTargetFLL = 1001,
 };

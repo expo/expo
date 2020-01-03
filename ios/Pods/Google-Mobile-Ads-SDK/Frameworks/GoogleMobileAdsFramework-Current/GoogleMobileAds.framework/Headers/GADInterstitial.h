@@ -70,6 +70,12 @@
 /// the delegate's interstitialDidDismissScreen: will be called.
 - (void)presentFromRootViewController:(nonnull UIViewController *)rootViewController;
 
+/// Returns whether the interstitial can be presented from the provided root view controller. Sets
+/// the error out parameter if the interstitial can't be presented. Must be called on the main
+/// thread.
+- (BOOL)canPresentFromRootViewController:(nonnull UIViewController *)rootViewController
+                                   error:(NSError *_Nullable __autoreleasing *_Nullable)error;
+
 #pragma mark Deprecated
 
 /// Deprecated delegate. GADInAppPurchase is deprecated.
