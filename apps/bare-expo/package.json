@@ -85,7 +85,6 @@
     "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "~36.0.0",
     "expo-yarn-workspaces": "^1.2.1",
-    "firebase": "^7.6.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",
     "react-native": "0.61.4",
