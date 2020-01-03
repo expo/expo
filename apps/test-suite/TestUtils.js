@@ -50,12 +50,13 @@ export function getTestModules() {
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient'),
-    require('./tests/FirebaseAnalytics')
+    require('./tests/LinearGradient')
   );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
+  } else if (Platform.OS === 'ios') {
+    modules.push(require('./tests/FirebaseAnalytics'));
   }
 
   if (global.DETOX) {

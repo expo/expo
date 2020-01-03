@@ -103,7 +103,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     }
 
     @ExpoMethod
-    public void deleteApp(Promise promise) {
+    public void deleteApp(final Map<String, String> options, Promise promise) {
         try {
             FirebaseApp firebaseApp = getDefaultApp();
             if (firebaseApp != null) {
