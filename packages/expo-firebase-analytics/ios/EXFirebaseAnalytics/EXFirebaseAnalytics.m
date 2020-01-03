@@ -17,7 +17,7 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
 }
 
 - (void)rejectException:(UMPromiseRejectBlock)reject exception:(NSException *)exception {
-    NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:4815162342 userInfo:@{
+  NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:4815162342 userInfo:@{
         @"message": exception.reason,
         @"code": exception.name,
     }];
@@ -70,13 +70,14 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
 }
 
 UM_EXPORT_METHOD_AS(deleteApp,
-                    deleteApp:(UMPromiseResolveBlock)resolve
+                    deleteApp:(NSDictionary *)config
+                    resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   FIRApp *existingApp = [FIRApp defaultApp];
   
   if (!existingApp) {
     resolve([NSNull null]);
-      return;
+    return;
   }
   
   [existingApp deleteApp:^(BOOL success) {
@@ -90,11 +91,20 @@ UM_EXPORT_METHOD_AS(deleteApp,
 
 /*** firebase */
 
+- (nullable FIRApp *)getAppOrReject:(UMPromiseRejectBlock)reject
+{
+  FIRApp *app = [FIRApp defaultApp];
+  if (app != nil) return app;
+  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleServices-info.plist bundled and Firebase is being initialized natively in the AppDelegate with [FIRApp configure]. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
+  return nil;
+}
+
 UM_EXPORT_METHOD_AS(logEvent,
                     logEvent:(NSString *)name
                     parameters:(NSDictionary *)parameters
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics logEventWithName:name parameters:parameters];
     resolve([NSNull null]);
@@ -107,6 +117,7 @@ UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
                     setAnalyticsCollectionEnabled:(BOOL)isEnabled
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics setAnalyticsCollectionEnabled:isEnabled];
     resolve([NSNull null]);
@@ -120,12 +131,13 @@ UM_EXPORT_METHOD_AS(setCurrentScreen,
                     screenClass:(NSString *)screenClassOverview
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   [UMUtilities performSynchronouslyOnMainThread:^{
     @try {
       [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
       resolve([NSNull null]);
     } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+      [self rejectException:reject exception:exception];
       return;
     }
   }];
@@ -134,11 +146,12 @@ UM_EXPORT_METHOD_AS(setUserId,
                     setUserId:(NSString *)userId
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics setUserID:userId];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-      [self rejectException:reject exception:exception];
+    [self rejectException:reject exception:exception];
     return;
   }
 }
@@ -147,17 +160,19 @@ UM_EXPORT_METHOD_AS(setUserProperty,
                     value:(NSString *)value
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics setUserPropertyString:value forName:name];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-      [self rejectException:reject exception:exception];
+    [self rejectException:reject exception:exception];
     return;
   }
 }
 UM_EXPORT_METHOD_AS(resetAnalyticsData,
                     resetAnalyticsData:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics resetAnalyticsData];
     resolve([NSNull null]);
