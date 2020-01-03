@@ -58,6 +58,7 @@ public class HomeActivity extends BaseExperienceActivity {
     mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
 
     ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), this);
+    ExperienceActivityUtils.configureStatusBar(mExponentManifest.getKernelManifest(), this);
 
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);

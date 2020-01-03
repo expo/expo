@@ -262,7 +262,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   private void hideLoadingScreen() {
     if (Constants.isStandaloneApp() && Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
       ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
-      layoutParams.height = mLayout.getHeight();
+      layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
       mContainer.setLayoutParams(layoutParams);
     }
 
