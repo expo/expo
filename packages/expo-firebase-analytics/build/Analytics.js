@@ -2,6 +2,13 @@ import { UnavailabilityError } from '@unimodules/core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 import parseConfig from './parseConfig';
 /**
+ * Get the bundled Google Services config file.
+ * This is useful for debugging if your app was built properly.
+ */
+export function getBundledGoogleServicesConfig() {
+    return ExpoFirebaseAnalytics.app || null;
+}
+/**
  * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
  * This can be used to test the native iOS Firebase app in the Expo client.
  * This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
