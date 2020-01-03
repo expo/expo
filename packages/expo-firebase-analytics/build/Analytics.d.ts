@@ -1,4 +1,11 @@
 /**
+ * Get the bundled Google Services config file.
+ * This is useful for debugging if your app was built properly.
+ */
+export declare function getBundledGoogleServicesConfig(): null | {
+    [key: string]: any;
+};
+/**
  * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
  * This can be used to test the native iOS Firebase app in the Expo client.
  * This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
