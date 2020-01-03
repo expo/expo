@@ -51,14 +51,14 @@ export function getTestModules() {
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/LinearGradient'),
-    require('./tests/Facebook')
+    require('./tests/Facebook'),
+    require('./tests/FirebaseCore'),
+    require('./tests/FirebaseAnalytics')
   );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
   }
-
-  modules.push(require('./tests/FirebaseCore'));
 
   if (global.DETOX) {
     modules.push(
