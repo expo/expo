@@ -28,31 +28,31 @@ Defaults to `#00000000` (fully transparent color).
 ### `translucent`
 
 Value type - `boolean`.
-Specifies whether status bar should be translucent.
-When this is set to `true`, status bar is visible on the screen, but it takes no space and your application can draw beneath it (similar to a `View` element with styles `{ position: "absolute", top: 0 }` that is rendered above the app content at the top of the screen).
-When this is set to `false`, status bar behaves as a block element and limits space available on your device's screen.
+Specifies whether the status bar should be translucent.
+When this is set to `true`, the status bar is visible on the screen, but it takes no space and your application can draw beneath it (similar to a `View` element with styles `{ position: "absolute", top: 0 }` that is rendered above the app content at the top of the screen).
+When this is set to `false`, the status bar behaves as a block element and limits space available on your device's screen.
 Defaults to `true`.
 
 > Note: A translucent status bar makes sense when the `backgroundColor` is using a transparent color (`#RRGGBBAA`).
-> When you use translucent status bar and solid `backgroundColor` (`#RRGGBB`) then the upper part of your app to be partially covered by non-transparent status bar and thus some of the app's content might not be visible to the user.
+> When you use a translucent status bar and a solid `backgroundColor` (`#RRGGBB`) then the upper part of your app will be partially covered by the non-transparent status bar and thus some of your app's content might not be visible to the user.
 
 ### `hidden`
 
 Value type - `boolean`.
-Tells the the system whether status bar should be visible or not.
-When status bar is not visible it can be presented via the `swipe down` gesture.
-When set to `true`, status bar will not respect `backgroundColor` or `barStyle` settings.
+Tells the system whether the status bar should be visible or not.
+When the status bar is not visible it can be presented via the `swipe down` gesture.
+When set to `true`, the status bar will not respect `backgroundColor` or `barStyle` settings.
 Defaults to `false`.
 
 ## Working with 3rd-party Libraries
 
-Expo makes the status bar `translucent` by default on Android which is consistent with iOS, and more in line with material design. Unfortunately some libraries don't support `translucent` status bar, e.g. - navigation libraries, libraries which provide a header bar etc.
+Expo makes the status bar `translucent` by default on Android which is consistent with iOS, and more in line with material design. Unfortunately some libraries don't support `translucent` status bars, e.g. - navigation libraries, libraries which provide a header bar etc.
 
 If you need to use such a library, there are a few options:
 
 ### Set the `backgroundColor` of the status bar to an opaque color and disable `translucent` option
 
-Setting solely `backgroundColor` to opaque color will disable the `transparency` of the status bar, but preserve `translucency`.
+Setting solely `backgroundColor` to an opaque color will disable the `transparency` of the status bar, but preserve `translucency`.
 You need to explicitly set `translucent` to `false` if you want your app's status bar to take up space on the device's screen.
 This is a good option if your status bar color never needs to change.
 

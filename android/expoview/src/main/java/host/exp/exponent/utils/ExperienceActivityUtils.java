@@ -28,7 +28,7 @@ import org.json.JSONObject;
 public class ExperienceActivityUtils {
 
   private static final String TAG = ExperienceActivityUtils.class.getSimpleName();
-  private static final String STATUS_BAR_STYLE_DARK_CONTENT = "dakr-content";
+  private static final String STATUS_BAR_STYLE_DARK_CONTENT = "dark-content";
 
   public static void updateOrientation(JSONObject manifest, Activity activity) {
     if (manifest == null) {
