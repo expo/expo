@@ -20,7 +20,6 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
     NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:4815162342 userInfo:@{
         @"message": exception.reason,
         @"code": exception.name,
-        @"fatal": @YES
     }];
   reject(exception.name, exception.reason, error);
 }
@@ -166,6 +165,34 @@ UM_EXPORT_METHOD_AS(resetAnalyticsData,
     [self rejectException:reject exception:exception];
     return;
   }
+}
+
+- (NSDictionary *)convertFirOptionsToDictionary:(FIROptions *)firOptions
+{
+  return @{
+    @"androidClientID": firOptions.androidClientID,
+    @"apiKey": firOptions.APIKey,
+    @"appId": firOptions.googleAppID,
+    @"clientId": firOptions.clientID,
+    @"databaseURL": firOptions.databaseURL,
+    @"deepLinkUrlScheme": firOptions.deepLinkURLScheme,
+    @"messagingSenderId": firOptions.GCMSenderID,
+    @"projectId": firOptions.projectID,
+    @"storageBucket": firOptions.storageBucket,
+    @"trackingId": firOptions.trackingID,
+  };
+}
+
+- (NSDictionary *)constantsToExport
+{
+  NSMutableDictionary *constants = [NSMutableDictionary new];
+
+  FIROptions *defaultOptions = [FIROptions defaultOptions];
+  if (defaultOptions != nil) {
+    constants[@"app"] = [self convertFirOptionsToDictionary:defaultOptions];
+  }
+    
+  return constants;
 }
 
 @end

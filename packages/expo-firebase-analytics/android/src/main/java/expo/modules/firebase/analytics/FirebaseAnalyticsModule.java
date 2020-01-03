@@ -39,6 +39,29 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
         mActivity = mActivityProvider.getCurrentActivity();
     }
 
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+
+        FirebaseApp firebaseApp = getDefaultApp();
+        if (firebaseApp != null) {
+            FirebaseOptions appOptions = firebaseApp.getOptions();
+            Map<String, Object> options = new HashMap<>();
+
+            options.put("apiKey", appOptions.getApiKey());
+            options.put("appId", appOptions.getApplicationId());
+            options.put("databaseURL", appOptions.getDatabaseUrl());
+            options.put("messagingSenderId", appOptions.getGcmSenderId());
+            options.put("name", firebaseApp.getName());
+            options.put("projectId", appOptions.getProjectId());
+            options.put("storageBucket", appOptions.getStorageBucket());
+
+            constants.put("app", options);
+        }
+        
+        return constants;
+    }
+    
     @ExpoMethod
     public void initializeAppDangerously(final Map<String, String> options, Promise promise) {
         try {
