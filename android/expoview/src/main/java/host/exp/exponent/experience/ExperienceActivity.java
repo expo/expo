@@ -310,26 +310,21 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
 
   public void setLoadingScreenManifest(final JSONObject manifest) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!isInForeground()) {
-          return;
-        }
-
-        if (!mShouldShowLoadingScreenWithOptimisticManifest) {
-          return;
-        }
-
-        // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
-        String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-        ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
-        ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-
-        showLoadingScreen(manifest);
-
-        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+    runOnUiThread(() -> {
+      if (!isInForeground()) {
+        return;
       }
+
+      if (!mShouldShowLoadingScreenWithOptimisticManifest) {
+        return;
+      }
+
+      ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
+
+      showLoadingScreen(manifest);
+
+      ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
     });
   }
 
@@ -433,48 +428,43 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!isInForeground()) {
-          return;
-        }
-
-        if (mReactInstanceManager.isNotNull()) {
-          mReactInstanceManager.onHostDestroy();
-          mReactInstanceManager.assign(null);
-        }
-
-        mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
-        mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
-        setView((View) mReactRootView.get());
-
-        String id;
-        try {
-          id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
-        } catch (UnsupportedEncodingException e) {
-          KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
-          return;
-        }
-
-        boolean hasCachedBundle;
-        if (isDebugModeEnabled()) {
-          hasCachedBundle = false;
-          mNotification = finalNotificationObject;
-          waitForDrawOverOtherAppPermission("");
-        } else {
-          mTempNotification = finalNotificationObject;
-          mIsReadyForBundle = true;
-          AsyncCondition.notify(READY_FOR_BUNDLE);
-        }
-
-        ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
-        ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
-        showLoadingScreen(manifest);
-
-        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
-        handleExperienceOptions(kernelOptions);
+    runOnUiThread(() -> {
+      if (!isInForeground()) {
+        return;
       }
+
+      if (mReactInstanceManager.isNotNull()) {
+        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.assign(null);
+      }
+
+      mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
+      mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
+      setView((View) mReactRootView.get());
+
+      String id;
+      try {
+        id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
+      } catch (UnsupportedEncodingException e) {
+        KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
+        return;
+      }
+
+      if (isDebugModeEnabled()) {
+        mNotification = finalNotificationObject;
+        waitForDrawOverOtherAppPermission("");
+      } else {
+        mTempNotification = finalNotificationObject;
+        mIsReadyForBundle = true;
+        AsyncCondition.notify(READY_FOR_BUNDLE);
+      }
+
+      ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
+      showLoadingScreen(manifest);
+
+      ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+      handleExperienceOptions(kernelOptions);
     });
   }
 
