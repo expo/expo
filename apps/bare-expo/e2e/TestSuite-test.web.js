@@ -19,6 +19,7 @@ const TESTS = [
   'Blur',
   'LinearGradient',
   'KeepAwake',
+  'FirebaseAnalytics',
   //   'Haptics',
   //   'SecureStore',
 ];
