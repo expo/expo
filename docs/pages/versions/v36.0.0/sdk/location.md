@@ -73,7 +73,7 @@ Asks the user to grant permissions for location. Alias for `Permissions.askAsync
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getPermissionsAsync()`
 
@@ -81,7 +81,7 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getLastKnownPositionAsync()`
 

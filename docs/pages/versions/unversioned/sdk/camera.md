@@ -304,7 +304,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `getPermissionsAsync()`
 
@@ -312,7 +312,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ## Web Support
 

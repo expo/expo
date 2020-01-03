@@ -86,7 +86,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Contacts.getPermissionsAsync()`
 
@@ -94,7 +94,7 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Contacts.getContactsAsync(contactQuery)`
 

@@ -33,7 +33,7 @@ Asks the user to grant permissions for audio recording. Alias for `Permissions.a
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Audio.getPermissionsAsync()`
 
@@ -41,7 +41,7 @@ Checks user's permissions for audio recording. Alias for `Permissions.getAsync(P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ## Enabling Audio and customizing Audio Mode
 
