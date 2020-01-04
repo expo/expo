@@ -14,6 +14,7 @@ import GLWrap from './GLWrap';
 import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
+import GLViewScreen from './GLViewScreen';
 import ProcessingWrap from './ProcessingWrap';
 import GLThreeDepthStencilBuffer from './GLThreeDepthStencilBuffer';
 
@@ -123,6 +124,10 @@ const GLScreens: Screens = {
         },
       };
     }),
+  },
+
+  GLViewScreen: {
+    screen: GLViewScreen,
   },
 
   Mask: {
