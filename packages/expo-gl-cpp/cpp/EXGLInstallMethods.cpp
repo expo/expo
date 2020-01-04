@@ -1,10 +1,18 @@
 #include "EXGLContext.h"
 
 #define _INSTALL_METHOD(name)                                                       \
-  EXJSObjectSetFunctionWithUTF8CStringName(jsCtx, jsGl, #name,                      \
-                                         &EXGLContext::exglNativeStatic_##name)
+  auto name ## Fn = jsi::Function::createFromHostFunction(                          \
+    runtime,                                                                        \
+    jsi::PropNameID::forUtf8(runtime, #name),                                       \
+    0,                                                                              \
+    EXGLContext::exglNativeStatic_ ## name);                                        \
+  jsGl.setProperty(                                                                 \
+          runtime,                                                                  \
+          jsi::PropNameID::forUtf8(runtime, #name),                                 \
+          name ## Fn)
 
-void EXGLContext::installMethods(JSContextRef jsCtx) {
+
+void EXGLContext::installMethods(jsi::Runtime& runtime, jsi::Object& jsGl) {
   // This listing follows the order in
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
 

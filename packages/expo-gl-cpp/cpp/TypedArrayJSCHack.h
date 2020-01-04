@@ -7,46 +7,7 @@
 
 #include <JavaScriptCore/JSBase.h>
 
-
 #include "EXJSUtils.h"
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-/*!
-@enum JSType
-@abstract     A constant identifying the Typed Array type of a JSValue.
-@constant     kJSTypedArrayTypeNone                 Not a Typed Array.
-@constant     kJSTypedArrayTypeInt8Array            Int8Array
-@constant     kJSTypedArrayTypeInt16Array           Int16Array
-@constant     kJSTypedArrayTypeInt32Array           Int32Array
-@constant     kJSTypedArrayTypeUint8Array           Int8Array
-@constant     kJSTypedArrayTypeUint8ClampedArray    Int8ClampedArray
-@constant     kJSTypedArrayTypeUint16Array          Uint16Array
-@constant     kJSTypedArrayTypeUint32Array          Uint32Array
-@constant     kJSTypedArrayTypeFloat32Array         Float32Array
-@constant     kJSTypedArrayTypeFloat64Array         Float64Array
-@constant     kJSTypedArrayTypeArrayBuffer          ArrayBuffer
-*/
-// We're now using the constants from JavaScriptCore/JSTypedArray.h so comment this out
-/*
-typedef enum {
-	kJSTypedArrayTypeNone = 0,
-	kJSTypedArrayTypeInt8Array = 1,
-	kJSTypedArrayTypeInt16Array = 2,
-	kJSTypedArrayTypeInt32Array = 3,
-	kJSTypedArrayTypeUint8Array = 4,
-	kJSTypedArrayTypeUint8ClampedArray = 5,
-	kJSTypedArrayTypeUint16Array = 6,
-	kJSTypedArrayTypeUint32Array = 7,
-	kJSTypedArrayTypeFloat32Array = 8,
-	kJSTypedArrayTypeFloat64Array = 9,
-	kJSTypedArrayTypeArrayBuffer = 10
-} JSTypedArrayType;
-*/
 
 /*!
 @function
@@ -114,8 +75,3 @@ void JSObjectSetTypedArrayData(JSContextRef ctx, JSObjectRef object, void *data,
 @result             The byte offset of the Typed Array object or 0 if the object is not a Typed Array object.
 */
 size_t JSObjectGetTypedArrayByteOffsetHack(JSContextRef ctx, JSObjectRef object);
-
-#ifdef __cplusplus
-}
-#endif
-

@@ -1,6 +1,6 @@
 #include "UEXGL.h"
 #include "EXJSUtils.h"
-#include "EXJSConvertTypedArray.h"
+#include "TypedArrayJSI.h"
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
@@ -18,6 +18,8 @@
 #include <sstream>
 #include <vector>
 
+#include <jsi/jsi.h>
+
 // Constants in WebGL that aren't in OpenGL ES
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
 
@@ -32,6 +34,7 @@
 #define GL_DEPTH_STENCIL 0x84F9
 #define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
 
+namespace jsi = facebook::jsi;
 
 // --- EXGLContext -------------------------------------------------------------
 
@@ -122,13 +125,13 @@ private:
   // and is only needed when method calls after it ask for the value, and those
   // are queued for even later.
   template<typename F>
-  inline JSValueRef addFutureToNextBatch(JSContextRef jsCtx, F &&f) noexcept {
+  inline jsi::Value addFutureToNextBatch(jsi::Runtime& runtime, F &&f) noexcept {
     auto exglObjId = createObject();
     addToNextBatch([=] {
       assert(objects.find(exglObjId) == objects.end());
       mapObject(exglObjId, f());
     });
-    return JSValueMakeNumber(jsCtx, exglObjId);
+    return static_cast<int>(exglObjId);
   }
 
 public:
@@ -177,6 +180,7 @@ public:
   }
 
   inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
+    EXGLSysLog("lookup object %d", exglObjId);
     auto iter = objects.find(exglObjId);
     return iter == objects.end() ? 0 : iter->second;
   }
@@ -184,20 +188,28 @@ public:
 
   // --- Init/destroy and JS object binding ------------------------------------
 private:
-  JSObjectRef jsGl;
   bool supportsWebGL2 = false;
 
 public:
-  EXGLContext(JSGlobalContextRef jsCtx, UEXGLContextId exglCtxId) {
-    // Prepare for TypedArray usage
-    prepareTypedArrayAPI(jsCtx);
-
+  EXGLContext(jsi::Runtime& runtime, UEXGLContextId exglCtxId) {
     // Create JS version of us
-    auto jsClass = JSClassCreate(&kJSClassDefinitionEmpty);
-    jsGl = JSObjectMake(jsCtx, jsClass, (void *) (intptr_t) exglCtxId);
-    JSClassRelease(jsClass);
-    installMethods(jsCtx);
-    installConstants(jsCtx);
+    jsi::Object jsGl(runtime);
+    jsGl.setProperty(runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
+    installMethods(runtime, jsGl);
+    installConstants(runtime, jsGl);
+
+    // Save JavaScript object
+    jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
+    if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
+        runtime
+          .global()
+          .setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
+    }
+    runtime
+      .global()
+      .getProperty(runtime, "__EXGLContexts")
+      .asObject(runtime)
+      .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
 
     // Clear everything to initial values
     addToNextBatch([this] {
@@ -224,12 +236,8 @@ public:
     });
   }
 
-  JSObjectRef getJSObject(void) const noexcept {
-    return jsGl;
-  }
-
   static EXGLContext* ContextGet(UEXGLContextId exglCtxId);
-  static UEXGLContextId ContextCreate(JSGlobalContextRef jsCtx);
+  static UEXGLContextId ContextCreate(jsi::Runtime& runtime);
   static void ContextDestroy(UEXGLContextId exglCtxId);
 
   // --- GL state --------------------------------------------------------------
@@ -250,35 +258,42 @@ public:
 
 
 private:
-  void installMethods(JSContextRef jsCtx);
-  void installConstants(JSContextRef jsCtx);
+  void installMethods(jsi::Runtime& runtime, jsi::Object& jsGl);
+  void installConstants(jsi::Runtime& runtime, jsi::Object& jsGl);
 
-  // Utilities
-  static inline void jsThrow(JSContextRef jsCtx, const char *msg, JSValueRef *jsException) {
-    *jsException = JSValueToObject(jsCtx, EXJSValueMakeStringFromUTF8CString(jsCtx, msg), nullptr);
-  }
+  template<typename F>
+  inline jsi::Value getActiveInfo(
+          jsi::Runtime& runtime,
+          const jsi::Value* jsArgv,
+          GLenum lengthParam,
+          F &&glFunc);
 
-  static inline std::shared_ptr<char> jsValueToSharedStr(JSContextRef jsCtx, JSValueRef jsVal) noexcept {
-    return std::shared_ptr<char>(EXJSValueToUTF8CStringMalloc(jsCtx, jsVal, nullptr), free);
-  }
+  template<typename T>
+  std::vector<T> jsArrayToVector(jsi::Runtime& runtime, const jsi::Array& jsArray) {
+    int length = jsArray.length(runtime);
+    std::vector<T> values(length);
 
-  static inline int jsArrayGetCount(JSContextRef ctx, JSObjectRef arr) noexcept {
-    JSStringRef pname = JSStringCreateWithUTF8CString("length");
-    JSValueRef val = JSObjectGetProperty(ctx, arr, pname, nullptr);
-    JSStringRelease(pname);
-    return JSValueToNumber(ctx, val, nullptr);
-  }
-
-  static inline std::shared_ptr<const char*> jsValueToSharedStringArray(JSContextRef ctx, JSValueRef jsVal, int *length) {
-    JSObjectRef jsObj = JSValueToObject(ctx, jsVal, nullptr);
-    *length = jsArrayGetCount(ctx, jsObj);
-    const char **strings = (const char **) malloc(*length * sizeof(char*));
-
-    for (int i = 0; i < *length; i++) {
-      JSValueRef item = JSObjectGetPropertyAtIndex(ctx, jsObj, i, nullptr);
-      strings[i] = EXJSValueToUTF8CStringMalloc(ctx, item, nullptr);
+    for (int i = 0; i < length; i++) {
+      values[i] = static_cast<T>(jsArray.getValueAtIndex(runtime, i).asNumber());
     }
-    return std::shared_ptr<const char*>(strings, free);
+    return values;
+  }
+
+  template<>
+  std::vector<std::string> jsArrayToVector(jsi::Runtime& runtime, const jsi::Array& jsArray) {
+    int length = jsArray.length(runtime);
+    std::vector<std::string> strings(length);
+
+    for (int i = 0; i < length; i++) {
+      strings[i] = jsArray.getValueAtIndex(runtime, i).asString(runtime).utf8(runtime);
+    }
+    return strings;
+  }
+
+  bool jsValueToBool(jsi::Runtime& runtime, const jsi::Value& jsValue) {
+    return jsValue.isBool()
+      ? jsValue.getBool()
+      : throw std::runtime_error(jsValue.toString(runtime).utf8(runtime) + " is not a bool value");
   }
 
   static inline void *bufferOffset(GLint offset) noexcept {
@@ -350,195 +365,27 @@ private:
     }
   }
 
-
-  // TypedArray API wrapping
-
-  bool usingTypedArrayHack = false;
-
-  inline void prepareTypedArrayAPI(JSContextRef jsCtx) {
-#ifdef __APPLE__
-    // iOS >= 10 has built-in C TypedArray API
-    if (EXiOSGetOperatingSystemVersion().majorVersion >= 10) {
-      return;
-    }
-#endif
-
-    JSContextPrepareTypedArrayAPI(jsCtx);
-    usingTypedArrayHack = true;
-  }
-
-  inline std::shared_ptr<void> jsValueToSharedArray(JSContextRef jsCtx, JSValueRef jsVal,
-                                                    size_t *pByteLength) noexcept {
-    if (usingTypedArrayHack) {
-      return std::shared_ptr<void>(JSObjectGetTypedArrayDataMalloc(jsCtx, (JSObjectRef) jsVal,
-                                                                   pByteLength), free);
-    } else {
-      void *data = nullptr;
-      size_t byteLength = 0;
-      size_t byteOffset = 0;
-
-      JSObjectRef jsObject = (JSObjectRef) jsVal;
-      JSTypedArrayType type = JSValueGetTypedArrayType(jsCtx, jsVal, nullptr);
-      if (type == kJSTypedArrayTypeArrayBuffer) {
-        byteLength = JSObjectGetArrayBufferByteLength(jsCtx, jsObject, nullptr);
-        data = JSObjectGetArrayBufferBytesPtr(jsCtx, jsObject, nullptr);
-        byteOffset = 0; // todo: no equivalent function for array buffer?
-      } else if (type != kJSTypedArrayTypeNone) {
-        byteLength = JSObjectGetTypedArrayByteLength(jsCtx, jsObject, nullptr);
-        data = JSObjectGetTypedArrayBytesPtr(jsCtx, jsObject, nullptr);
-        byteOffset = JSObjectGetTypedArrayByteOffsetHack(jsCtx, jsObject);
-      }
-
-      if (pByteLength) {
-        *pByteLength = byteLength;
-      }
-
-      // Copy data since it's unclear how long JavaScriptCore's buffer will live
-      // TODO(nikki): See if we can just pin/unpin and not copy?
-      if (!data) {
-        return std::shared_ptr<void>(nullptr);
-      }
-      void *dataMalloc = malloc(byteLength);
-      memcpy(dataMalloc, ((char*) data) + byteOffset, byteLength);
-      return std::shared_ptr<void>(dataMalloc, free);
-    }
-  }
-
-  static void jsTypedArrayFreeDeallocator(void *data, void *ctx) {
-    free(data);
-  }
-
-  inline JSValueRef makeTypedArray(JSContextRef jsCtx, JSTypedArrayType arrayType,
-                                   void *data, size_t byteLength) {
-    if (data) {
-      if (usingTypedArrayHack) {
-        return JSObjectMakeTypedArrayWithData(jsCtx, arrayType, data, byteLength);
-      } else {
-        void *dataMalloc = malloc(byteLength);
-        memcpy(dataMalloc, data, byteLength);
-        return JSObjectMakeTypedArrayWithBytesNoCopy(jsCtx, arrayType, dataMalloc, byteLength,
-                                                     jsTypedArrayFreeDeallocator, nullptr, nullptr);
-      }
-    } else {
-      if (usingTypedArrayHack) {
-        return JSObjectMakeTypedArrayWithHack(jsCtx, arrayType, 0);
-      } else {
-        return JSObjectMakeTypedArray(jsCtx, arrayType, 0, nullptr);
-      }
-    }
-  }
-
   // Load image data from an object with a `.localUri` member
-  std::shared_ptr<void> loadImage(JSContextRef jsCtx, JSObjectRef jsPixels,
-                                  int *fileWidth, int *fileHeight, int *fileComp);
+  std::shared_ptr<uint8_t> loadImage(
+          jsi::Runtime& runtime,
+          const jsi::Value& object,
+          int *fileWidth,
+          int *fileHeight,
+          int *fileComp);
 
-  void decodeURI(char *dst, const char *src) {
-    char a, b;
-    while (*src) {
-      if ((*src == '%') &&
-          ((a = src[1]) && (b = src[2])) &&
-          (isxdigit(a) && isxdigit(b))) {
-        if (a >= 'a') {
-          a -= 'a' - 'A';
-        }
-        if (a >= 'A') {
-          a -= ('A' - 10);
-        } else {
-          a -= '0';
-        }
-        if (b >= 'a') {
-          b -= 'a' - 'A';
-        }
-        if (b >= 'A') {
-          b -= ('A' - 10);
-        } else {
-          b -= '0';
-        }
-        *dst++ = 16 * a + b;
-        src += 3;
-      } else if (*src == '+') {
-        *dst++ = ' ';
-        src++;
-      } else {
-        *dst++ = *src++;
-      }
-    }
-    *dst++ = '\0';
-  }
-
-  template<typename F, typename G>
-  inline JSValueRef getShaderOrProgramStr(JSContextRef jsCtx, const JSValueRef jsArgv[],
-                                          F &&glGetLengthParam, GLenum glLengthParam, G &&glGetStr) {
-    EXJS_UNPACK_ARGV(UEXGLObjectId fObj);
-    GLint length;
-    std::string str;
-    addBlockingToNextBatch([&] {
-      GLuint obj = lookupObject(fObj);
-      glGetLengthParam(obj, glLengthParam, &length);
-      str.resize(length);
-      glGetStr(obj, length, nullptr, &str[0]);
-    });
-    return EXJSValueMakeStringFromUTF8CString(jsCtx, str.c_str());
-  }
-
-
-  template<typename T, size_t dim, typename F>
-  inline JSValueRef getParameterArray(JSContextRef jsCtx, JSTypedArrayType arrayType,
-                                      F &&glGetFunc, GLenum pname) {
-    T glResults[dim];
-    addBlockingToNextBatch([&] { glGetFunc(pname, glResults); });
-    return makeTypedArray(jsCtx, arrayType, glResults, sizeof(glResults));
-  }
-
-  template<typename F>
-  inline JSValueRef getActiveInfo(JSContextRef jsCtx, const JSValueRef jsArgv[],
-                                  GLenum lengthParam, F &&glFunc) {
-    if (JSValueIsNull(jsCtx, jsArgv[0])) {
-      return JSValueMakeNull(jsCtx);
-    }
-
-    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint index);
-
-    GLsizei length;
-    GLint size;
-    GLenum type;
-    std::string name;
-    GLint maxNameLength;
-    addBlockingToNextBatch([&] {
-      GLuint program = lookupObject(fProgram);
-      glGetProgramiv(program, lengthParam, &maxNameLength);
-      name.resize(maxNameLength);
-      glFunc(program, index, maxNameLength, &length, &size, &type, &name[0]);
-    });
-
-    if (strlen(name.c_str()) == 0) { // name.length() may be larger
-      return JSValueMakeNull(jsCtx);
-    }
-
-    JSObjectRef jsResult = JSObjectMake(jsCtx, nullptr, nullptr);
-    EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsResult, "name",
-                                          EXJSValueMakeStringFromUTF8CString(jsCtx, name.c_str()));
-    EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsResult, "size", JSValueMakeNumber(jsCtx, size));
-    EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsResult, "type", JSValueMakeNumber(jsCtx, type));
-    return jsResult;
-  }
 
 
 
 // Standard method wrapper, run on JS thread, return a value
-#define _WRAP_METHOD_DECLARATION(name)                                                                  \
-  static JSValueRef exglNativeStatic_##name(JSContextRef jsCtx,                                         \
-                                            JSObjectRef jsFunction,                                     \
-                                            JSObjectRef jsThis,                                         \
-                                            size_t jsArgc,                                              \
-                                            const JSValueRef jsArgv[],                                  \
-                                            JSValueRef* jsException);                                   \
-  JSValueRef exglNativeInstance_##name(JSContextRef jsCtx,                                              \
-                                              JSObjectRef jsFunction,                                   \
-                                              JSObjectRef jsThis,                                       \
-                                              size_t jsArgc,                                            \
-                                              const JSValueRef jsArgv[],                                \
-                                              JSValueRef* jsException)
+#define _WRAP_METHOD_DECLARATION(name)                                                              \
+  static jsi::Value exglNativeStatic_##name(jsi::Runtime& runtime,                                  \
+                                            const jsi::Value& jsThis,                               \
+                                            const jsi::Value* jsArgv,                               \
+                                            unsigned int argc);                                     \
+  inline jsi::Value exglNativeInstance_##name(jsi::Runtime& runtime,                                \
+                                              const jsi::Value& jsThis,                             \
+                                              const jsi::Value* jsArgv,                             \
+                                              unsigned int argc)
 
   // This listing follows the order in
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext

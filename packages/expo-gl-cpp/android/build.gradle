@@ -1,15 +1,3 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
-    classpath 'de.undercouch:gradle-download-task:2.0.0'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -20,132 +8,7 @@ def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-import de.undercouch.gradle.tasks.download.Download
-import org.apache.tools.ant.taskdefs.condition.Os
-
-def JSC_REVISION = "236355"
-def JSC_VERSION = "${JSC_REVISION}.1.1"
-
-def distDir = new File("$projectDir/dist")
-
-def getNdkBuildName() {
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    return "ndk-build.cmd"
-  } else {
-    return "ndk-build"
-  }
-}
-
-def findNdkBuildFullPath() {
-  // we allow to provide full path to ndk-build tool
-  if (hasProperty('ndk.command')) {
-    return property('ndk.command')
-  }
-  // or just a path to the containing directory
-  if (hasProperty('ndk.path')) {
-    def ndkDir = property('ndk.path')
-    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-  }
-  if (System.getenv('ANDROID_NDK') != null) {
-    def ndkDir = System.getenv('ANDROID_NDK')
-    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-  }
-  def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
-      plugins.getPlugin('com.android.library').hasProperty('sdkHandler') ?
-          plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder() :
-          android.ndkDirectory.absolutePath
-  if (ndkDir) {
-    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-  }
-  return null
-}
-
-def getNdkBuildFullPath() {
-  def ndkBuildFullPath = findNdkBuildFullPath()
-  if (ndkBuildFullPath == null) {
-    throw new GradleScriptException(
-        "ndk-build binary cannot be found, check if you've set " +
-            "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
-            "setup in local.properties",
-        null)
-  }
-  if (!new File(ndkBuildFullPath).canExecute()) {
-    throw new GradleScriptException(
-        "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
-            "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
-        null)
-  }
-  return ndkBuildFullPath
-}
-
-task downloadJSC(type: Download) {
-  src("https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File("$buildDir/downloads", "jsc-${JSC_VERSION}.tar.gz"))
-}
-
-// Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: downloadJSC) {
-  doLast {
-    def jscTar = tarTree(downloadJSC.dest)
-    def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
-
-    def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
-
-    copy {
-      from(soFiles)
-      from(headerFiles)
-      from("src/main/jni/jsc/Android.mk")
-
-      filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-
-      includeEmptyDirs(false)
-      into("$buildDir/jsc")
-    }
-  }
-}
-
-task buildNdkLib(dependsOn: prepareJSC) {
-  inputs.dir('src/main/jni')
-  inputs.dir('../cpp')
-  outputs.dir("$buildDir/expo-gl-ndk/all")
-
-  doLast {
-    exec {
-      commandLine getNdkBuildFullPath(),
-          'NDK_PROJECT_PATH=null',
-          "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-          "NDK_OUT=$temporaryDir",
-          "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
-          "JSC_DIR=$buildDir/jsc",
-          '-C', file('src/main/jni').absolutePath,
-          '--jobs', Runtime.runtime.availableProcessors()
-    }
-  }
-}
-
-task cleanNdkLib {
-  doLast {
-    exec {
-      commandLine getNdkBuildFullPath(),
-          "JSC_DIR=$buildDir/jsc",
-          '-C', file('src/main/jni').absolutePath,
-          'clean'
-    }
-  }
-}
-
-task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
-  distDir.mkdirs()
-
-  from "$buildDir/expo-gl-ndk/all"
-  exclude '**/libjsc.so'
-  exclude '**/libc++_shared.so'
-  into distDir.path
-}
+apply(from: "dependencies.gradle")
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -188,7 +51,7 @@ android {
 
     sourceSets.main {
       jni.srcDirs = []
-      jniLibs.srcDir "$distDir"
+      jniLibs.srcDir "$projectDir/dist"
     }
   }
   lintOptions {

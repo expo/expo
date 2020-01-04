@@ -1,7 +1,5 @@
 #include "EXGLContext.h"
 
-#include <JavaScriptCore/JSContextRef.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -20,7 +18,7 @@ EXGLContext *EXGLContext::ContextGet(UEXGLContextId exglCtxId) {
   return nullptr;
 }
 
-UEXGLContextId EXGLContext::ContextCreate(JSGlobalContextRef jsCtx) {
+UEXGLContextId EXGLContext::ContextCreate(jsi::Runtime& runtime) {
   // Out of ids?
   if (EXGLContextNextId >= std::numeric_limits<UEXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
@@ -37,22 +35,9 @@ UEXGLContextId EXGLContext::ContextCreate(JSGlobalContextRef jsCtx) {
       EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
       return 0;
     }
-    exglCtx = new EXGLContext(jsCtx, exglCtxId);
+    exglCtx = new EXGLContext(runtime, exglCtxId);
     EXGLContextMap[exglCtxId] = exglCtx;
   }
-
-  // Save JavaScript object
-  auto jsGlobal = JSContextGetGlobalObject(jsCtx);
-  auto jsEXGLContextMap = (JSObjectRef) EXJSObjectGetPropertyNamed(jsCtx, jsGlobal, "__EXGLContexts");
-  if (!JSValueToBoolean(jsCtx, jsEXGLContextMap)) {
-    jsEXGLContextMap = JSObjectMake(jsCtx, nullptr, nullptr);
-    EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsGlobal, "__EXGLContexts", jsEXGLContextMap);
-  }
-  std::stringstream ss;
-  ss << exglCtxId;
-  auto exglCtxIdStr = ss.str();
-  EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsEXGLContextMap,
-                                        exglCtxIdStr.c_str(), exglCtx->getJSObject());
 
   return exglCtxId;
 }
@@ -68,26 +53,67 @@ void EXGLContext::ContextDestroy(UEXGLContextId exglCtxId) {
   }
 }
 
+void decodeURI(char *dst, const char *src) {
+  char a, b;
+  while (*src) {
+    if ((*src == '%') &&
+        ((a = src[1]) && (b = src[2])) &&
+        (isxdigit(a) && isxdigit(b))) {
+      if (a >= 'a') {
+        a -= 'a' - 'A';
+      }
+      if (a >= 'A') {
+        a -= ('A' - 10);
+      } else {
+        a -= '0';
+      }
+      if (b >= 'a') {
+        b -= 'a' - 'A';
+      }
+      if (b >= 'A') {
+        b -= ('A' - 10);
+      } else {
+        b -= '0';
+      }
+      *dst++ = 16 * a + b;
+      src += 3;
+    } else if (*src == '+') {
+      *dst++ = ' ';
+      src++;
+    } else {
+      *dst++ = *src++;
+    }
+  }
+  *dst++ = '\0';
+}
+
+// TODO(wkozyra95) needs to be moved (for now it's here because it requires access to EXGLContext and needs to be in cpp file
 // Load image data from an object with a `.localUri` member
-std::shared_ptr<void> EXGLContext::loadImage(
-        JSContextRef jsCtx,
-        JSObjectRef jsPixels,
+std::shared_ptr<uint8_t> EXGLContext::loadImage(
+        jsi::Runtime& runtime,
+        const jsi::Value& jsPixels,
         int *fileWidth,
         int *fileHeight,
         int *fileComp) {
-  JSValueRef jsLocalUri = EXJSObjectGetPropertyNamed(jsCtx, jsPixels, "localUri");
-  if (jsLocalUri && JSValueIsString(jsCtx, jsLocalUri)) {
-    // TODO(nikki): Check that this file is in the right scope
-    auto localUri = jsValueToSharedStr(jsCtx, jsLocalUri);
-    if (strncmp(localUri.get(), "file://", 7) != 0) {
-      return std::shared_ptr<void>(nullptr);
+  auto localUriProp = jsPixels.asObject(runtime).getProperty(runtime, "localUri");
+  if (localUriProp.isString()) {
+    auto localUri = localUriProp.asString(runtime).utf8(runtime);
+    if (strncmp(localUri.c_str(), "file://", 7) != 0) {
+      return std::shared_ptr<uint8_t>(nullptr);
     }
-    char localPath[strlen(localUri.get())];
-    decodeURI(localPath, localUri.get() + 7);
-    return std::shared_ptr<void>(stbi_load(localPath,
-                                           fileWidth, fileHeight, fileComp,
-                                           STBI_rgb_alpha),
-                                 stbi_image_free);
+    char localPath[localUri.size()];
+    decodeURI(localPath, localUri.c_str() + 7);
+
+    return std::shared_ptr<uint8_t>(
+            stbi_load(
+                localPath,
+                fileWidth,
+                fileHeight,
+                fileComp,
+                STBI_rgb_alpha),
+            [](void* data) {
+                stbi_image_free(data);;
+            });
   }
-  return std::shared_ptr<void>(nullptr);
+  return std::shared_ptr<uint8_t>(nullptr);
 }

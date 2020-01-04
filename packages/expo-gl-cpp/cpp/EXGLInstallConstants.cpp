@@ -1,10 +1,14 @@
 #include "EXGLContext.h"
 
 #define _INSTALL_CONSTANT(name)                                                     \
-  EXJSObjectSetValueWithUTF8CStringName(jsCtx, jsGl, #name,                         \
-                                        JSValueMakeNumber(jsCtx, GL_ ## name))
+  jsGl.setProperty(                                                                 \
+          runtime,                                                                  \
+          jsi::PropNameID::forUtf8(runtime, #name),                                 \
+          static_cast<int>(GL_ ## name))
 
-void EXGLContext::installConstants(JSContextRef jsCtx) {
+// TODO(wkozyra95): remove cast on value
+
+void EXGLContext::installConstants(jsi::Runtime& runtime, jsi::Object& jsGl) {
   _INSTALL_CONSTANT(ACTIVE_ATTRIBUTES); //35721
   // _INSTALL_CONSTANT(ACTIVE_ATTRIBUTE_MAX_LENGTH); //35722
   _INSTALL_CONSTANT(ACTIVE_TEXTURE); //34016

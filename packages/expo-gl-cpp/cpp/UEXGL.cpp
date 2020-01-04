@@ -1,13 +1,8 @@
 #include "UEXGL.h"
-
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSValueRef.h>
-
 #include "EXGLContext.h"
 
-UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx) {
-  return EXGLContext::ContextCreate(jsCtx);
+UEXGLContextId UEXGLContextCreate(long jsiPtr) {
+  return EXGLContext::ContextCreate(*reinterpret_cast<jsi::Runtime*>(jsiPtr));
 }
 
 void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {

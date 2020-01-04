@@ -13,9 +13,6 @@
 #include <functional>
 #endif
 
-#include <JavaScriptCore/JSBase.h>
-
-
 // NOTE: The symbols exposed by this header are named with a `UEX` prefix rather than an `EX`
 //       prefix so that they are unaffected by the automated iOS versioning script when
 //       referenced in versioned Objective-C code. The EXGL C/C++ library is not versioned
@@ -37,7 +34,7 @@ typedef unsigned int UEXGLObjectId;
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-UEXGLContextId UEXGLContextCreate(JSGlobalContextRef jsCtx);
+UEXGLContextId UEXGLContextCreate(long runtime);
 
 #ifdef __cplusplus
 // [JS thread] Pass function to cpp that will run GL operations on GL thread
