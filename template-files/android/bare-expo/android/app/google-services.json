@@ -1,0 +1,26 @@
+{
+  "project_info": {
+    "project_number": "${FIREBASE_GCM_SENDER_ID}",
+    "firebase_url": "${FIREBASE_DATABASE_URL}",
+    "project_id": "${FIREBASE_PROJECT_ID}",
+    "storage_bucket": "${FIREBASE_STORAGE_BUCKET}"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "${BARE_EXPO_FIREBASE_GOOGLE_APP_ID}",
+        "android_client_info": {
+          "package_name": "${BARE_EXPO_FIREBASE_BUNDLE_ID}"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "${BARE_EXPO_FIREBASE_ANDROID_KEY}"
+        }
+      ],
+      "services": {}
+    }
+  ],
+  "configuration_version": "1"
+}

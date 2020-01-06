@@ -7,7 +7,7 @@ A component that displays a video inline with the other React Native UI elements
 
 Much of Video and Audio have common APIs that are documented in [AV documentation](../av/). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](../av/) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](../audio/).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -191,15 +191,13 @@ This dismisses the fullscreen video view.
 
 A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
-The rest of the API on the `Video` component ref is the same as the API for `Audio.Sound`-- see the [AV documentation](../av/) for further information:
+The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. The only exception is the `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](../av/) for further information:
 
 - `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
 - `videoRef.unloadAsync()`
 
 - `videoRef.getStatusAsync()`
-
-- `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
 - `videoRef.setStatusAsync(statusToSet)`
 

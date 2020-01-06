@@ -4,10 +4,11 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar"
 ---
  
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -27,15 +28,16 @@ In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with re
 
 ```js
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
 export default function App() {
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestPermissionsAsync();
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
         const calendars = await Calendar.getCalendarsAsync();
+        console.log('Here are all your calendars:');
         console.log({ calendars });
       }
     })();
@@ -47,11 +49,38 @@ export default function App() {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
       }}>
       <Text>Calendar Module Example</Text>
+      <Button title="Create a new calendar" onPress={createCalendar} />
     </View>
   );
+}
+
+async function getDefaultCalendarSource() {
+  const calendars = await Calendar.getCalendarsAsync();
+  const defaultCalendars = calendars.filter(
+    each => each.source.name === 'Default'
+  );
+  return defaultCalendars[0].source;
+}
+
+async function createCalendar() {
+  const defaultCalendarSource =
+    Platform.OS === 'ios'
+      ? await getDefaultCalendarSource()
+      : { isLocalAccount: true, name: 'Expo Calendar' };
+  const newCalendarID = await Calendar.createCalendarAsync({
+    title: 'Expo Calendar',
+    color: 'blue',
+    entityType: Calendar.EntityTypes.EVENT,
+    sourceId: defaultCalendarSource.id,
+    source: defaultCalendarSource,
+    name: 'internalCalendarName',
+    ownerAccount: 'personal',
+    accessLevel: Calendar.CalendarAccessLevel.OWNER,
+  });
+  console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
 ```
 </SnackInline>
@@ -61,46 +90,12 @@ export default function App() {
 ```js
 import * as Calendar from 'expo-calendar';
 ```
+<TableOfContentSection title='Methods' contents={['Calendar.getCalendarsAsync(entityType)', 'Calendar.getDefaultCalendarAsync()', 'Calendar.requestCalendarPermissionsAsync()', 'Calendar.requestRemindersPermissionsAsync()', 'Calendar.getCalendarPermissionsAsync()', 'Calendar.createCalendarAsync(details)', 'Calendar.updateCalendarAsync(id, details)', 'Calendar.deleteCalendarAsync(id)', 'Calendar.getEventsAsync(calendarIds, startDate, endDate)', 'Calendar.getEventAsync(id, recurringEventOptions)', 'Calendar.createEventAsync(calendarId, details)', 'Calendar.updateEventAsync(id, details, recurringEventOptions)', 'Calendar.deleteEventAsync(id, recurringEventOptions)', 'Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)', 'Calendar.createAttendeeAsync(eventId, details)', 'Calendar.updateAttendeeAsync(id, details)', 'Calendar.deleteAttendeeAsync(id)', 'Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)', 'Calendar.getReminderAsync(id)', 'Calendar.createReminderAsync(calendarId, details)', 'Calendar.updateReminderAsync(id, details)', 'Calendar.deleteReminderAsync(id)', 'Calendar.getSourcesAsync()', 'Calendar.getSourceAsync(id)', 'Calendar.openEventInCalendar(id)']} />
 
-**[Methods](#methods)**
 
-- [`Calendar.getCalendarsAsync(entityType)`](#calendargetcalendarsasyncentitytype)
-- [`Calendar.requestRemindersPermissionsAsync()`](#calendarrequestreminderspermissionsasync)
-- [`Calendar.createCalendarAsync(details)`](#calendarcreatecalendarasyncdetails)
-- [`Calendar.updateCalendarAsync(id, details)`](#calendarupdatecalendarasyncid-details)
-- [`Calendar.deleteCalendarAsync(id)`](#calendardeletecalendarasyncid)
-- [`Calendar.getEventsAsync(calendarIds, startDate, endDate)`](#calendargeteventsasynccalendarids-startdate-enddate)
-- [`Calendar.getEventAsync(id, recurringEventOptions)`](#calendargeteventasyncid-recurringeventoptions)
-- [`Calendar.createEventAsync(calendarId, details)`](#calendarcreateeventasynccalendarid-details)
-- [`Calendar.updateEventAsync(id, details, recurringEventOptions)`](#calendarupdateeventasyncid-details-recurringeventoptions)
-- [`Calendar.deleteEventAsync(id, recurringEventOptions)`](#calendardeleteeventasyncid-recurringeventoptions)
-- [`Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)`](#calendargetattendeesforeventasynceventid-recurringeventoptions)
-- [`Calendar.createAttendeeAsync(eventId, details)`](#calendarcreateattendeeasynceventid-details)
-- [`Calendar.updateAttendeeAsync(id, details)`](#calendarupdateattendeeasyncid-details)
-- [`Calendar.deleteAttendeeAsync(id)`](#calendardeleteattendeeasyncid)
-- [`Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`](#calendargetremindersasynccalendarids-status-startdate-enddate)
-- [`Calendar.getReminderAsync(id)`](#calendargetreminderasyncid)
-- [`Calendar.createReminderAsync(calendarId, details)`](#calendarcreatereminderasynccalendarid-details)
-- [`Calendar.updateReminderAsync(id, details)`](#calendarupdatereminderasyncid-details)
-- [`Calendar.deleteReminderAsync(id)`](#calendardeletereminderasyncid)
-- [`Calendar.getSourcesAsync()`](#calendargetsourcesasync)
-- [`Calendar.getSourceAsync(id)`](#calendargetsourceasyncid)
-- [`Calendar.openEventInCalendar(id)`](#calendaropeneventincalendarid)
+<TableOfContentSection title='Object Types' contents={['Calendar', 'Event', 'Reminder', 'Attendee', 'RecurrenceRule', 'Alarm', 'Source']} />
 
-**[Object Types](#object-types)**
-
-- [`Calendar`](#calendar)
-- [`Event`](#event)
-- [`Reminder`](#reminder-ios-only)
-- [`Attendee`](#attendee)
-- [`RecurrenceRule`](#recurrencerule)
-- [`Alarm`](#alarm)
-- [`Source`](#source)
-
-**[Enum Types](#enum-types)**
-
-- [`Calendar.DayOfTheWeek`](#calendardayoftheweek)
-- [`Calendar.MonthOfTheYear`](#calendarmonthoftheyear)
+<TableOfContentSection title='Enum Types' contents={['Calendar.DayOfTheWeek', 'Calendar.MonthOfTheYear']} />
 
 ## Methods
 
@@ -130,7 +125,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -138,7 +133,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -146,7 +141,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -154,7 +149,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -567,7 +562,7 @@ An event record, or a single instance of a recurring event. On iOS, used in the 
 | originalId            | _string_         | Android   | For detached (modified) instances of recurring events, the ID of the original recurring event                                  |                                                                                                                                                                                                 |
 | instanceId            | _string_         | Android   | For instances of recurring events, volatile ID representing this instance; not guaranteed to always refer to the same instance |                                                                                                                                                                                                 |
 
-### Reminder (iOS only)
+### Reminder
 
 A reminder record, used in the iOS Reminders app. No direct analog on Android.
 

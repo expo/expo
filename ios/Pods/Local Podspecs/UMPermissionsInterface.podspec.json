@@ -14,5 +14,10 @@
   },
   "source_files": "UMPermissionsInterface/**/*.{h,m}",
   "preserve_paths": "UMPermissionsInterface/**/*.{h,m}",
-  "requires_arc": true
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
 }

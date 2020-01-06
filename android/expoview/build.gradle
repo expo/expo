@@ -154,7 +154,7 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
+      exclude      : ['expo-module-template', 'expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -168,6 +168,7 @@ dependencies {
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
+          'expo-module-template',
           'expo-bluetooth',
           'expo-in-app-purchases',
           'expo-updates',
@@ -225,8 +226,6 @@ dependencies {
   api 'com.google.android.gms:play-services-location:16.0.0'
   api 'com.google.android.gms:play-services-fitness:16.0.1'
   api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
-  api "com.madgag.spongycastle:core:1.53.0.0"
-  api "com.madgag.spongycastle:prov:1.53.0.0"
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'

@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.source_files   = '**/*.{h,c,cpp,mm}'
   s.preserve_paths = '**/*.{h,c,cpp,mm}'
-  s.exclude_files  = 'UEXGL.*'
+  s.exclude_files  = '**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*'
   s.requires_arc   = true
   
   s.pod_target_xcconfig = {
@@ -22,8 +22,8 @@ Pod::Spec.new do |s|
     'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO'
   }
   
-  s.subspec 'UEXGL' do |ss|
-    ss.source_files = 'UEXGL.*'
+  s.subspec 'EXGLContext' do |ss|
+    ss.source_files = '**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*'
     ss.compiler_flags = '-x objective-c++'
   end
 end

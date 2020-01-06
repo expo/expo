@@ -4,7 +4,10 @@ import StackConfig from './StackConfig';
 import { Screens } from './ExpoComponents';
 
 const ExpoComponentsStackNavigator = createStackNavigator(
-  { ExpoComponents, ...Screens },
+  {
+    ExpoComponents,
+    ...Screens,
+  },
   StackConfig
 );
 

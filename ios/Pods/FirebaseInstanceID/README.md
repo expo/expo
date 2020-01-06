@@ -3,7 +3,8 @@
 This repository contains a subset of the Firebase iOS SDK source. It currently
 includes FirebaseCore, FirebaseABTesting, FirebaseAuth, FirebaseDatabase,
 FirebaseFirestore, FirebaseFunctions, FirebaseInstanceID, FirebaseInAppMessaging,
-FirebaseInAppMessagingDisplay, FirebaseMessaging and FirebaseStorage.
+FirebaseInAppMessagingDisplay, FirebaseMessaging, FirebaseRemoteConfig, and
+FirebaseStorage.
 
 The repository also includes GoogleUtilities source. The
 [GoogleUtilities](GoogleUtilities/README.md) pod is
@@ -75,10 +76,14 @@ the following software:
 
   * Xcode 10.1 (or later)
   * CocoaPods 1.7.2 (or later)
+  * [CocoaPods generate](https://github.com/square/cocoapods-generate)
 
 For the pod that you want to develop:
 
 `pod gen Firebase{name here}.podspec --local-sources=./ --auto-open`
+
+Note: If the CocoaPods cache is out of date, you may need to run
+`pod repo update` before the `pod gen` command.
 
 Firestore has a self contained Xcode project. See
 [Firestore/README.md](Firestore/README.md).
@@ -98,12 +103,16 @@ Travis will verify that any code changes are done in a style compliant way. Inst
 These commands will get the right versions:
 
 ```
-brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/773cb75d360b58f32048f5964038d09825a507c8/Formula/clang-format.rb
-brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/3dfea1004e0736754bbf49673cca8aaed8a94089/Formula/swiftformat.rb
+brew upgrade https://raw.githubusercontent.com/Homebrew/homebrew-core/e3496d9/Formula/clang-format.rb
+brew upgrade https://raw.githubusercontent.com/Homebrew/homebrew-core/7963c3d/Formula/swiftformat.rb
 ```
 
 Note: if you already have a newer version of these installed you may need to
 `brew switch` to this version.
+
+To update this section, find the versions of clang-format and swiftformat.rb to
+match the versions in the CI failure logs
+[here](https://github.com/Homebrew/homebrew-core/tree/master/Formula).
 
 ### Running Unit Tests
 
@@ -179,8 +188,8 @@ participate in the Firebase community.
 
 ### macOS and tvOS
 Thanks to contributions from the community, FirebaseABTesting, FirebaseAuth, FirebaseCore,
-FirebaseDatabase, FirebaseMessaging,
-FirebaseFirestore, FirebaseFunctions and FirebaseStorage now compile, run unit tests, and work on
+FirebaseDatabase, FirebaseMessaging, FirebaseFirestore,
+FirebaseFunctions, FirebaseRemoteConfig, and FirebaseStorage now compile, run unit tests, and work on
 macOS and tvOS.
 
 For tvOS, checkout the [Sample](Example/tvOSSample).
@@ -189,8 +198,6 @@ Keep in mind that macOS and tvOS are not officially supported by Firebase, and t
 actively developed primarily for iOS. While we can catch basic unit test issues with Travis, there
 may be some changes where the SDK no longer works as expected on macOS or tvOS. If you encounter
 this, please [file an issue](https://github.com/firebase/firebase-ios-sdk/issues).
-
-Note that the Firebase pod is not available for macOS and tvOS.
 
 To install, add a subset of the following to the Podfile:
 
@@ -202,6 +209,7 @@ pod 'FirebaseDatabase'
 pod 'FirebaseFirestore'
 pod 'FirebaseFunctions'
 pod 'FirebaseMessaging'
+pod 'FirebaseRemoteConfig'
 pod 'FirebaseStorage'
 ```
 

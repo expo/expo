@@ -18,7 +18,7 @@ import { DangerZone } from 'expo';
 const { Stripe } = DangerZone;
 ```
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

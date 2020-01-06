@@ -3,13 +3,15 @@ title: Linking
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo/src/Linking"
 ---
 
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
 This module is an extension of the React Native [Linking module](https://facebook.github.io/react-native/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
 
 For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -17,9 +19,9 @@ For information and examples on how to use this API and the `react-native` Linki
 
 ## API
 
-```js
-import { Linking } from 'expo';
-```
+<TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} /> 
+
+## Methods
 
 ### `Linking.makeUrl(path, queryParams)`
 

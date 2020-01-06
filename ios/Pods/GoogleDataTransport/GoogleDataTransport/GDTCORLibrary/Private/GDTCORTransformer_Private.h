@@ -28,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 /** The storage instance used to store events. Should only be used to inject a testing fake. */
 @property(nonatomic) GDTCORStorage *storageInstance;
 
-/** If YES, every call to -transformEvent will result in a background task. */
-@property(nonatomic, readonly) BOOL runningInBackground;
-
 @end
 
 NS_ASSUME_NONNULL_END

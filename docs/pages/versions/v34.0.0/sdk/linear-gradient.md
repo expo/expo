@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a gradient view.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

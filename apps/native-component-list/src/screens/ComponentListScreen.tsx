@@ -33,8 +33,7 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
       <TouchableHighlight
         underlayColor="#dddddd"
         style={styles.rowTouchable}
-        onPress={isAvailable ? () => this.props.navigation.navigate(exampleName) : undefined}
-      >
+        onPress={isAvailable ? () => this.props.navigation.navigate(exampleName) : undefined}>
         <View style={[styles.row, !isAvailable && styles.disabledRow]}>
           <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
           <Text style={styles.rowLabel}>{exampleName}</Text>
@@ -44,7 +43,7 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
         </View>
       </TouchableHighlight>
     );
-  }
+  };
 
   _keyExtractor = (item: ListElement) => item.name;
 
@@ -55,6 +54,7 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
         ref={view => {
           this._listView = view!;
         }}
+        initialNumToRender={25}
         stickySectionHeadersEnabled
         removeClippedSubviews={false}
         keyboardShouldPersistTaps="handled"
@@ -70,7 +70,7 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
   _scrollToTop = () => {
     // @ts-ignore
     this._listView!.scrollTo({ x: 0, y: 0 });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

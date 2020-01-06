@@ -5,7 +5,7 @@ sourceCodeUrl: "https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthS
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |
@@ -128,14 +128,14 @@ Initiate an authentication session with the given options. Only one `AuthSession
 Returns a Promise that resolves to a result object of the following form:
 
 - If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.
-- If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismissed' }`.
+- If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
 - If the authentication flow is successful, the result is `{type: 'success', params: Object, event: Object }`
 - If the authentication flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: Object }`
 - If you call `AuthSession.startAsync` more than once before the first call has returned, the result is `{type: 'locked'}`, because only one `AuthSession` can be in progress at any time.
 
 ### `AuthSession.dismiss()`
 
-Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession` then the Promise returned by the `AuthSession.startAsync` that initiated it resolves to `{ type: 'dismissed' }`.
+Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession` then the Promise returned by the `AuthSession.startAsync` that initiated it resolves to `{ type: 'dismiss' }`.
 
 ### `AuthSession.getRedirectUrl()`
 

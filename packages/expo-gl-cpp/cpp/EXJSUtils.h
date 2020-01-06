@@ -8,6 +8,13 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSStringRef.h>
 
+#ifdef __APPLE__
+#include <EXGL_CPP/EXiOSUtils.h>
+#endif
+
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
 
 // Whether JavaScriptCore has JSTypedArray.h
 #ifdef __APPLE__
@@ -25,7 +32,6 @@ extern "C" {
 
 // Most of these are adapted from phoboslab/Ejecta on GitHub
 // (https://github.com/phoboslab/Ejecta).
-
 
 static inline double EXJSValueToNumberFast(JSContextRef ctx, JSValueRef v)
 {
@@ -76,7 +82,6 @@ void EXJSConsoleLog(JSContextRef ctx, const char *msg);
 
 char *EXJSValueToUTF8CStringMalloc(JSContextRef ctx, JSValueRef v, JSValueRef *exception);
 
-
 void EXJSObjectSetValueWithUTF8CStringName(JSContextRef ctx,
                                            JSObjectRef obj,
                                            const char *name,
@@ -87,6 +92,18 @@ void EXJSObjectSetFunctionWithUTF8CStringName(JSContextRef ctx,
                                               const char *name,
                                               JSObjectCallAsFunctionCallback func);
 
+#define EXGL_DEBUG     // Whether debugging is on
+
+#ifdef EXGL_DEBUG
+#ifdef __ANDROID__
+#define EXGLSysLog(fmt, ...) __android_log_print(ANDROID_LOG_DEBUG, "EXGL", fmt, ##__VA_ARGS__)
+#endif
+#ifdef __APPLE__
+#define EXGLSysLog(fmt, ...) EXiOSLog("EXGL: " fmt, ##__VA_ARGS__)
+#endif
+#else
+#define EXGLSysLog(...)
+#endif
 
 #define _EXJS_COMMA() ,
 #define _EXJS_EMPTY()

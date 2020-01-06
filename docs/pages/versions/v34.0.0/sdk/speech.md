@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 This module allows using Text-to-speech utility.
 
-**Platform Compatibility**
+#### Platform Compatibility
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
 | ------ | ---------- | ------ | ------ | ------ |

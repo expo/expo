@@ -76,10 +76,14 @@ the following software:
 
   * Xcode 10.1 (or later)
   * CocoaPods 1.7.2 (or later)
+  * [CocoaPods generate](https://github.com/square/cocoapods-generate)
 
 For the pod that you want to develop:
 
 `pod gen Firebase{name here}.podspec --local-sources=./ --auto-open`
+
+Note: If the CocoaPods cache is out of date, you may need to run
+`pod repo update` before the `pod gen` command.
 
 Firestore has a self contained Xcode project. See
 [Firestore/README.md](Firestore/README.md).
@@ -194,8 +198,6 @@ Keep in mind that macOS and tvOS are not officially supported by Firebase, and t
 actively developed primarily for iOS. While we can catch basic unit test issues with Travis, there
 may be some changes where the SDK no longer works as expected on macOS or tvOS. If you encounter
 this, please [file an issue](https://github.com/firebase/firebase-ios-sdk/issues).
-
-Note that the Firebase pod is not available for macOS and tvOS.
 
 To install, add a subset of the following to the Podfile:
 

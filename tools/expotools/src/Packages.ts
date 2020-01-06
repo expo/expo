@@ -72,6 +72,15 @@ class Package {
     ) || 'android';
   }
 
+  get androidPackageName(): string | null {
+    if (!this.isSupportedOnPlatform('android')) {
+      return null;
+    }
+    const buildGradle = fs.readFileSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'), 'utf8');
+    const match = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m);
+    return (match && match[1]) ? match[1] : null;
+  }
+
   isUnimodule() {
     return !!this.unimoduleJson;
   }
