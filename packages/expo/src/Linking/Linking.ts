@@ -129,7 +129,7 @@ function parse(url: string): ParsedURL {
     let expoPrefix: string | null = null;
     if (hostUriStripped) {
       const parts = hostUriStripped.split('/');
-      expoPrefix = `${parts.slice(1).join('/')}/--/`;
+      expoPrefix = `${parts.slice(1).join('/')}--/`;
     }
 
     if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
