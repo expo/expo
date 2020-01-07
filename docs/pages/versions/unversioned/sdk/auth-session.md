@@ -122,6 +122,8 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
     -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
 
+    -   **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
+
 
 #### Returns
 

@@ -1,6 +1,7 @@
 declare type AuthSessionOptions = {
     authUrl: string;
     returnUrl?: string;
+    showInRecents?: boolean;
 };
 declare type AuthSessionResult = {
     type: 'cancel' | 'dismiss' | 'locked';
