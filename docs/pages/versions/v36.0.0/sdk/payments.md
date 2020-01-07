@@ -8,12 +8,9 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
 _Note_: (Android only) If you are using Expo client then the setup has already been done for you.
-Also, the way you should use payments is slightly different. Instead of importing
-from `'expo-payments-stripe'` use the following code:
 
 ```js
-import { DangerZone } from 'expo';
-const { Stripe } = DangerZone;
+import { PaymentsStripe } from 'expo-payments-stripe';
 ```
 
 #### Platform Compatibility
