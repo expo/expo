@@ -1,10 +1,6 @@
-import { UnavailabilityError, Platform, NativeModulesProxy } from '@unimodules/core';
+import { UnavailabilityError, Platform } from '@unimodules/core';
 
-interface PushTokenManagerModule {
-  getDevicePushTokenAsync: () => Promise<string>;
-}
-
-const ExpoPushTokenManager = (NativeModulesProxy.ExpoPushTokenManager as any) as PushTokenManagerModule;
+import PushTokenManager from './PushTokenManager';
 
 export interface NativeDevicePushToken {
   type: 'ios' | 'android';
@@ -34,11 +30,11 @@ export type DevicePushToken =
   | ImplicitlySupportedDevicePushToken;
 
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
-  if (!ExpoPushTokenManager.getDevicePushTokenAsync) {
+  if (!PushTokenManager.getDevicePushTokenAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
   }
 
-  const devicePushToken = await ExpoPushTokenManager.getDevicePushTokenAsync();
+  const devicePushToken = await PushTokenManager.getDevicePushTokenAsync();
 
   // @ts-ignore: TS thinks Platform.OS could be anything and can't decide what type is it
   return { type: Platform.OS, data: devicePushToken };
