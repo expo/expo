@@ -384,34 +384,38 @@ public class Contact {
             SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
 
-          ArrayList<Bundle> datesArray = new ArrayList();
-            for (BaseModel item : dates) {
-                Bundle details = new Bundle();
-                String dateString = item.getData();
-                String label = item.getLabel();
+            ArrayList<Bundle> datesArray = new ArrayList();
+            try {
+                for (BaseModel item : dates) {
+                    Bundle details = new Bundle();
+                    String dateString = item.getData();
+                    String label = item.getLabel();
 
-                hasYear = !dateString.startsWith("--");
+                    hasYear = !dateString.startsWith("--");
 
-                if (hasYear) {
-                    calendar.setTime(datePattern.parse(dateString));
-                } else {
-                    calendar.setTime(noYearPattern.parse(dateString));
-                }
+                    if (hasYear) {
+                        calendar.setTime(datePattern.parse(dateString));
+                    } else {
+                        calendar.setTime(noYearPattern.parse(dateString));
+                    }
 
-                if (hasYear) {
-                    details.putInt("year", calendar.get(Calendar.YEAR));
+                    if (hasYear) {
+                        details.putInt("year", calendar.get(Calendar.YEAR));
+                    }
+                    details.putInt("month", calendar.get(Calendar.MONTH));
+                    details.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
+                    // TODO: Evan: The type is only supported in 26+
+                    details.putString("format", "gregorian");
+                    if (showBirthday && label != null && label.equals("birthday")) {
+                        contact.putBundle("birthday", details);
+                    } else {
+                        details.putString("label", label);
+                        datesArray.add(details);
+                    }
                 }
-                details.putInt("month", calendar.get(Calendar.MONTH));
-                details.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
-                // TODO: Evan: The type is only supported in 26+
-                details.putString("format", "gregorian");
-                if (showBirthday && label != null && label.equals("birthday")) {
-                    contact.putBundle("birthday", details);
-                } else {
-                    details.putString("label", label);
-                    datesArray.add(details);
-                }
+            } catch (Exception e) {
             }
+
             if (showDates && datesArray.size() > 0) {
                 contact.putParcelableArrayList("dates", datesArray);
             }
