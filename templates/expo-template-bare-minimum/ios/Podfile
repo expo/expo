@@ -1,11 +1,11 @@
 platform :ios, '10.0'
 
 require_relative '../node_modules/react-native-unimodules/cocoapods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'HelloWorld' do
-
   rnPrefix = "../node_modules/react-native"
-  
+
   # React Native and its dependencies
   pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
@@ -37,10 +37,10 @@ target 'HelloWorld' do
   pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
 
   # Other native modules
-  pod 'RNGestureHandler', :podspec => '../node_modules/react-native-gesture-handler/RNGestureHandler.podspec'
-  pod 'RNReanimated', :podspec => '../node_modules/react-native-reanimated/RNReanimated.podspec'
-  pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   # Automatically detect installed unimodules
   use_unimodules!
+
+  # react-native-cli autolinking
+  use_native_modules!
 end

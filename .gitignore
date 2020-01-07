@@ -78,6 +78,10 @@ jarjar-rules.txt
 /ios/ExponentIntegrationTests/EXTestEnvironment.plist
 /exponent-view-template/ios/Podfile
 
+# Template projects
+templates/**/android/**/generated/*
+templates/**/android/app/build
+
 # Codemod
 .codemod.bookmark
 
@@ -107,3 +111,4 @@ shellAppWorkspaces
 .env.development.local
 .env.test.local
 .env.production.local
+
