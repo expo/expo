@@ -2,9 +2,9 @@ import Linking from '../Linking/Linking';
 
 describe('parse', () => {
   test.each<string>([
-    'exp://10.0.0.86:19000/',
-    'exp://10.0.0.86:19000/--/test/path?query=param',
-    'exp://10.0.0.86:19000?query=param',
+    'exp://127.0.0.1:19000/',
+    'exp://127.0.0.1:19000/--/test/path?query=param',
+    'exp://127.0.0.1:19000?query=param',
     'exp://exp.host/@test/test/--/test/path?query=param',
     'exp://exp.host/@test/test/--/test/path',
     'https://example.com/test/path?query=param',
