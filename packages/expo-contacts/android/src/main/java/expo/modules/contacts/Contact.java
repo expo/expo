@@ -380,13 +380,14 @@ public class Contact {
 
         if (showDates || showBirthday) { // double if check with query with cursor
             boolean hasYear;
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
 
             ArrayList<Bundle> datesArray = new ArrayList();
-            try {
-                for (BaseModel item : dates) {
+            for (BaseModel item : dates) {
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
+
                     Bundle details = new Bundle();
                     String dateString = item.getData();
                     String label = item.getLabel();
@@ -412,10 +413,9 @@ public class Contact {
                         details.putString("label", label);
                         datesArray.add(details);
                     }
+                } catch (Exception e) {
                 }
-            } catch (Exception e) {
             }
-
             if (showDates && datesArray.size() > 0) {
                 contact.putParcelableArrayList("dates", datesArray);
             }
