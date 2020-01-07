@@ -88,11 +88,6 @@ import * as Localization from 'expo-localization';
 
 ### Behavior
 
-<!-- - **iOS:** Completely synchronous, changing a system language will reset the app.
-- **Android:** On some versions of the Android SDK the app may not reset. In this case you can use `i18n` with `React.useEffect` and `Localization.getLocalizationAsync()` to update the React state.
-  - You can do this by checking the `AppState` to tell when the app comes back into the foreground.
-  - If the value of `Localization.getLocalizationAsync()` doesn't match upon re-entry then you can quickly reset the project with `Updates` API from `expo-updates`. -->
-
 This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initially the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
 
 ### `Localization.locale`
