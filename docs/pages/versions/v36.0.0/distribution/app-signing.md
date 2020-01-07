@@ -38,7 +38,7 @@ Provisioning profiles expire after 12 months, but this won't affect apps in prod
 
 | Credential               | Limit Per Account | App-specific? | Can be revoked with no production side effects? | Used at... |
 | ------------------------ | ----------------- | ------------- | ----------------------------------------------- | ---------- |
-| Distribution Certificate | 1                 | ❌            | ✅                                              | Build time |
+| Distribution Certificate | 2                 | ❌            | ✅                                              | Build time |
 | Push Notification Key    | 2                 | ❌            | ❌                                              | Run time   |
 | Provisioning Profile     | Unlimited         | ✅            | ✅                                              | Build time |
 
