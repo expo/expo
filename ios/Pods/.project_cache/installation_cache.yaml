@@ -6170,7 +6170,7 @@ CACHE_KEYS:
   EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXAppleAuthentication: 231e6d3e7cdb50c8b662cdf61e99b5bc
-    CHECKSUM: 7d20ab4397f595d22c2fe61ca6abfca16a346a72
+    CHECKSUM: 97736aa2f0af3f1b83744173f2960b5be8321932
     FILES:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.h"
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.m"
@@ -6826,8 +6826,8 @@ CACHE_KEYS:
       EXSQLite: 65d89a6af97b24f728e91e75169fcc55
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
-      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
+      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
+      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
