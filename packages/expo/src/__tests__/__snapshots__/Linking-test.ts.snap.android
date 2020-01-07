@@ -73,7 +73,7 @@ Object {
 
 exports[`parse parses "exp://exp.host/@test/test/--/test/path" 1`] = `
 Object {
-  "hostname": "exp.host",
+  "hostname": null,
   "path": "test/path",
   "queryParams": Object {},
   "scheme": "exp",
@@ -82,7 +82,7 @@ Object {
 
 exports[`parse parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
 Object {
-  "hostname": "exp.host",
+  "hostname": null,
   "path": "test/path",
   "queryParams": Object {
     "query": "param",

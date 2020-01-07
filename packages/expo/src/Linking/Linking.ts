@@ -137,6 +137,7 @@ function parse(url: string): ParsedURL {
 
     if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
       path = path.substring(expoPrefix.length);
+      hostname = null;
     } else if (path.indexOf('+') > -1) {
       path = path.substring(path.indexOf('+') + 1);
     }
