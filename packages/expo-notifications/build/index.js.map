@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,uBAAuB,EAAE,MAAM,2BAA2B,CAAC","sourcesContent":["export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,uBAAuB,EAAE,MAAM,2BAA2B,CAAC;AAC/E,cAAc,gBAAgB,CAAC","sourcesContent":["export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';\nexport * from './TokenEmitter';\n"]}

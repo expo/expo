@@ -1,7 +1,8 @@
-import { CodedError, Platform } from '@unimodules/core';
+import { CodedError, Platform, SyntheticPlatformEmitter } from '@unimodules/core';
 import Constants from 'expo-constants';
 export default async function getDevicePushTokenAsync() {
     const data = await _subscribeUserToPushAsync();
+    SyntheticPlatformEmitter.emit('onDevicePushToken', { devicePushToken: data });
     return { type: Platform.OS, data };
 }
 function guardPermission() {
