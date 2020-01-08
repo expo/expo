@@ -1,5 +1,6 @@
 package expo.modules.contacts;
 
+import android.util.Log;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -37,7 +38,7 @@ public class Contact {
 
 
     protected String contactId;
-  protected String lookupKey;
+    protected String lookupKey;
 
     protected String displayName;
 
@@ -381,17 +382,23 @@ public class Contact {
         if (showDates || showBirthday) { // double if check with query with cursor
             boolean hasYear;
 
+            ArrayList<Bundle> rawDatesArray = new ArrayList();
             ArrayList<Bundle> datesArray = new ArrayList();
             for (BaseModel item : dates) {
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
+
+                Bundle details = new Bundle();
+                String dateString = item.getData();
+                String label = item.getLabel();
+                
+                Bundle rawDate = new Bundle();
+                rawDate.putString("type", label);
+                rawDate.putString("value", dateString);
+                rawDatesArray.add(rawDate);
+
                 try {
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
-
-                    Bundle details = new Bundle();
-                    String dateString = item.getData();
-                    String label = item.getLabel();
-
                     hasYear = !dateString.startsWith("--");
 
                     if (hasYear) {
@@ -414,10 +421,16 @@ public class Contact {
                         datesArray.add(details);
                     }
                 } catch (Exception e) {
+                    Log.w("Contact", e.toString());
                 }
             }
-            if (showDates && datesArray.size() > 0) {
-                contact.putParcelableArrayList("dates", datesArray);
+            if (showDates) {
+                if (datesArray.size() > 0) {
+                    contact.putParcelableArrayList("dates", datesArray);
+                }
+                if (rawDatesArray.size() > 0) {
+                    contact.putParcelableArrayList("rawDates", rawDatesArray);
+                }
             }
         }
 
