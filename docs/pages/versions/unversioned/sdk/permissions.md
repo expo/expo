@@ -17,18 +17,18 @@ If you are deploying your app to the Apple iTunes Store, you must add additional
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-permissions`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-permissions).
 
-### Important Note (**Bare workflow only**)
+### Usage in bare workflow
 
-`expo-permissions` doesn't contain code responsible for requesting the system permission. To use this API, you need to install other expo packages, which contain requesters. For example, if you want to use `CAMERA_ROLL`, you need to install `expo-image-picker` or `expo-media-library`.
+`expo-permissions` includes the shared infrastructure for handling system permissions, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
 
-You can find the location of the needed requester in the table below.
+The following table shows you which permissions correspond to which packages.
 
 | Permission type             | Packages                                  |
 | --------------------------- | ----------------------------------------- |
 | `NOTIFICATIONS`             | `expo-permissions`                        |
 | `USER_FACING_NOTIFICATIONS` | `expo-permissions`                        |
 | `LOCATION`                  | `expo-location`                           |
-| `CAMERA`                    | `expo-camera`, `expo-barecode-scanner`    |
+| `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`    |
 | `AUDIO_RECORDING`           | `expo-av`                                 |
 | `CONTACTS`                  | `expo-contacts`                           |
 | `CAMERA_ROLL`               | `expo-image-picker`, `expo-media-library` |
