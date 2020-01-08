@@ -1,5 +1,7 @@
 # Bare Workflow
 
+Learn more about this project in [CONTRIBUTING.md](https://github.com/expo/expo/blob/master/CONTRIBUTING.md).
+
 ## Usage
 
 - Run on Android Emulator: `yarn android` (runs npm install if needed, builds the React Android binaries, generate an emulator, start Metro, and open the app in the emulator)
