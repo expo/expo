@@ -105,7 +105,10 @@ function parse(url) {
         let expoPrefix = null;
         if (hostUriStripped) {
             const parts = hostUriStripped.split('/');
-            expoPrefix = `${parts.slice(1).join('/')}/--/`;
+            expoPrefix = parts
+                .slice(1)
+                .concat(['--/'])
+                .join('/');
         }
         if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);
