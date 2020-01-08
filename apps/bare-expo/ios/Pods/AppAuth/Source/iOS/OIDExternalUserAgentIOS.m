@@ -25,6 +25,8 @@
 #import "OIDExternalUserAgentSession.h"
 #import "OIDExternalUserAgentRequest.h"
 
+#if !TARGET_OS_MACCATALYST
+
 NS_ASSUME_NONNULL_BEGIN
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
@@ -90,8 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
       ASWebAuthenticationSession *authenticationVC =
           [[ASWebAuthenticationSession alloc] initWithURL:requestURL
                                         callbackURLScheme:redirectScheme
-                                         completionHandler:^(NSURL * _Nullable callbackURL,
-                                                             NSError * _Nullable error) {
+                                        completionHandler:^(NSURL * _Nullable callbackURL,
+                                                            NSError * _Nullable error) {
         __strong OIDExternalUserAgentIOS *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
@@ -209,6 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
   // them while not in an authorization flow.
   _safariVC = nil;
   _authenticationVC = nil;
+  _webAuthenticationVC = nil;
   _session = nil;
   _externalUserAgentFlowInProgress = NO;
 }
@@ -243,3 +246,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // !TARGET_OS_MACCATALYST
