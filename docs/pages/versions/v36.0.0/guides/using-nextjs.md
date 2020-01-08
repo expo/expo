@@ -13,7 +13,7 @@ Using Expo with Next.js means you can share all of your existing components and 
 ## TL;DR:
 
 - Init: `expo init` (or `npx create-next-app`)
-- Install: `yarn add @expo/next-adapter`
+- Install: `yarn add -D @expo/next-adapter`
 - Configure: `yarn next-expo`
 - Start: `yarn next dev`
 - Open: `http://localhost:3000/`
@@ -56,8 +56,8 @@ In this approach you would be using SSR for web in your universal project. This 
   - Create a project: `expo init --template blank`
   - `cd` into the project
 - Install the adapter:
-  - **yarn:** `yarn add @expo/next-adapter`
-  - npm: `npm i --save @expo/next-adapter`
+  - **yarn:** `yarn add -D @expo/next-adapter`
+  - npm: `npm i --save-dev @expo/next-adapter`
 - Add Next.js support: `yarn next-expo`
   - Always commit your changes first!
   - You can optionally choose which customizations you want to do with `--customize or -c`
@@ -72,8 +72,8 @@ This approach is useful if you only want to use Expo components in your web-only
 - Bootstrap your project with Next.js
   - Create a project: `npx create-next-app`
 - Install the adapter:
-  - **yarn:** `yarn add @expo/next-adapter`
-  - npm: `npm i --save @expo/next-adapter`
+  - **yarn:** `yarn add -D @expo/next-adapter`
+  - npm: `npm i --save-dev @expo/next-adapter`
 - Add Next.js support: `yarn next-expo`
   - Always commit your changes first!
   - You can optionally choose which customizations you want to do with `--customize or -c`
@@ -141,12 +141,12 @@ This is Zeit's preferred method for deploying Next.js projects to production.
 - Add a **build** script to your `package.json`
   ```json5
   {
-    "scripts": {
-      "build": "next build"
-    }
+    scripts: {
+      build: 'next build',
+    },
   }
   ```
-- Install the Now CLI: `npm i -g now` 
+- Install the Now CLI: `npm i -g now`
 - Deploy to Now: `now`
 
 ### Image support
