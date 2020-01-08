@@ -270,55 +270,68 @@ public class AppAuthModule extends ExportedModule {
       final Map<String, String> parameters
   ) {
 
-    AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, ResponseTypeValues.CODE, Uri.parse(redirectUrl));
-
-    if (scopes != null) {
-      String scopesString = Serialization.scopesToString(scopes);
-      if (scopesString != null) {
-        authReqBuilder.setScope(scopesString);
+    String responseType = ResponseTypeValues.CODE;
+    if (parameters.containsKey("response_type")) {
+      String responseTypeString = parameters.remove("response_type");
+      if ("token".equals(responseTypeString)) {
+        responseType = ResponseTypeValues.TOKEN;
+      } else if ("id_token".equals(responseTypeString)) {
+        responseType = ResponseTypeValues.ID_TOKEN;
       }
     }
+    try {
+      AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, responseType, Uri.parse(redirectUrl));
 
-    if (parameters != null) {
-      if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
-        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
-        parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+      if (scopes != null) {
+        String scopesString = Serialization.scopesToString(scopes);
+        if (scopesString != null) {
+          authReqBuilder.setScope(scopesString);
+        }
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
-        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
-        parameters.remove(AppAuthConstants.HTTPS.PROMPT);
+
+      if (parameters != null) {
+        if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
+          authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
+          parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
+          authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
+          parameters.remove(AppAuthConstants.HTTPS.PROMPT);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
+          authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
+          parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
+        }
+        authReqBuilder.setAdditionalParameters(parameters);
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
-        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
-        parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
+
+
+      // TODO: Bacon: Prevent double register - this is fatal
+      EventBus.getDefault().register(this);
+
+      Activity activity = getCurrentActivity();
+
+      Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+      ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
+      if (!"standalone".equals(constantsService.getAppOwnership())) {
+        if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
+          mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
+          return;
+        } else {
+          String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
+          postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
+        }
       }
-      authReqBuilder.setAdditionalParameters(parameters);
+
+      AuthorizationRequest authorizationRequest = authReqBuilder.build();
+      int hash = authorizationRequest.hashCode();
+      PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, 0);
+      AuthorizationService authorizationService = new AuthorizationService(activity, authConfig);
+      authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
+    } catch (Exception e) {
+      mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Encountered exception when trying to start auth request: " + e.getMessage());
     }
-
-
-    // TODO: Bacon: Prevent double register - this is fatal
-    EventBus.getDefault().register(this);
-
-    Activity activity = getCurrentActivity();
-
-    Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-    ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
-    if (!"standalone".equals(constantsService.getAppOwnership())) {
-      if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
-        mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
-        return;
-      } else {
-        String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
-        postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
-      }
-    }
-
-    AuthorizationRequest authorizationRequest = authReqBuilder.build();
-    int hash = authorizationRequest.hashCode();
-    PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, 0);
-    AuthorizationService authorizationService = new AuthorizationService(activity, authConfig);
-    authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
   }
 
   public void onEvent(AppAuthBrowserActivity.OAuthResultEvent event) {
