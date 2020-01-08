@@ -18,7 +18,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { AR } from 'expo';
 ```
 
-> [Examples can be found here](https://github.com/expo/expo-three-ar/tree/master/example/screens/AR)
+> [Examples can be found here](https://github.com/expo/expo-three-ar/tree/master/example)
 
 ### Getting Started
 
