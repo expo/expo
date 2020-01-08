@@ -16,7 +16,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.5.2'
 
         // Copied version from the Exponent Android project.
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
@@ -32,11 +32,13 @@ buildscript {
 def packageJsonFile = new File(rootProject.projectDir, '../package.json')
 def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
+// [Custom]
 ext {
     reactNativeVersion = packageJson.dependencies["react-native"]
 }
 
 allprojects {
+    // [Custom]
     configurations.all {
         resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
     }
