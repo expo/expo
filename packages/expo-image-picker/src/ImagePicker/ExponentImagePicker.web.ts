@@ -71,6 +71,7 @@ function openFileBrowserAsync({
           resolve({
             cancelled: false,
             uri,
+            type: targetFile.type,
             width: 0,
             height: 0,
           });
