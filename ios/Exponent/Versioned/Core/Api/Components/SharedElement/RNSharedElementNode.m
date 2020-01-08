@@ -4,7 +4,32 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <React/RCTView.h>
 #import "RNSharedElementNode.h"
+#import "RNSharedElementContent.h"
+
+@interface RNSharedElementNodeResolvedSource : NSObject
+@property (nonatomic, readonly) UIView* view;
+@property (nonatomic, readonly) BOOL hasChildImageView;
+- (instancetype)initWithView:(UIView*) view hasChildImageView:(BOOL)hasChildImageView;
+@end
+@implementation RNSharedElementNodeResolvedSource
+- (instancetype)initWithView:(UIView*) view hasChildImageView:(BOOL)hasChildImageView
+{
+    _view = view;
+    _hasChildImageView = hasChildImageView;
+    return self;
+}
++ (instancetype)sourceWithView:(UIView*) view {
+    return [[RNSharedElementNodeResolvedSource alloc]initWithView:view hasChildImageView:NO];
+}
++ (instancetype)sourceWithView:(UIView*) view hasChildImageView:(BOOL)hasChildImageView {
+    return [[RNSharedElementNodeResolvedSource alloc]initWithView:view hasChildImageView:hasChildImageView];
+}
+- (UIView*) contentView {
+    return (_hasChildImageView && _view.subviews.count) ? _view.subviews[0] : _view;
+}
+@end
 
 @implementation RNSharedElementNode
 {
@@ -12,8 +37,7 @@
     long _hideRefCount;
     
     NSMutableArray* _contentRequests;
-    NSObject* _contentCache;
-    RNSharedElementContentType _contentTypeCache;
+    RNSharedElementContent* _contentCache;
     
     NSMutableArray* _styleRequests;
     RNSharedElementStyle* _styleCache;
@@ -21,7 +45,7 @@
     CADisplayLink* _displayLink;
     
     __weak UIView* _sourceView;
-    UIView * _view;
+    RNSharedElementNodeResolvedSource* _resolvedSource;
 }
 
 @synthesize reactTag = _reactTag;
@@ -42,47 +66,81 @@ NSArray* _imageResolvers;
     _hideRefCount = 0;
     _contentRequests = nil;
     _contentCache = nil;
-    _contentTypeCache = RNSharedElementContentTypeNone;
     _styleRequests = nil;
     _styleCache = nil;
     _displayLink = nil;
-    self.view = [RNSharedElementNode resolveView:_isParent ? _sourceView.subviews.firstObject : _sourceView];
-    if (_isParent) [self addContentObservers:_sourceView];
+    _resolvedSource = [RNSharedElementNodeResolvedSource sourceWithView:nil];
+    [self updateResolvedSource:YES];
+    if (_isParent) [self addStyleObservers:_sourceView];
     return self;
 }
 
 - (UIView*) view
 {
-    return _view;
+    return _resolvedSource ? _resolvedSource.view : nil;
 }
 
-- (void) setView:(UIView*) view
+- (void) updateResolvedSource:(BOOL)noReset
 {
-    if (_view == view) return;
+    RNSharedElementNodeResolvedSource* resolvedSource = noReset
+    ? [RNSharedElementNode resolveSource:_isParent ? _sourceView.subviews.firstObject : _sourceView]
+    : [RNSharedElementNodeResolvedSource sourceWithView:nil];
     
-    if (_view != nil) {
-        if (_hideRefCount) _view.hidden = NO;
-        [self removeContentObservers: _view];
+    if ((_resolvedSource.view == resolvedSource.view) && (_resolvedSource.contentView == resolvedSource.contentView)) return;
+    
+    // Remove old observers
+    if (_resolvedSource.view != nil && _resolvedSource.view != resolvedSource.view) {
+        if (_hideRefCount) _resolvedSource.view.hidden = NO;
+        [self removeStyleObservers: _resolvedSource.view];
     }
-    _view = view;
-    if (_view != nil) {
-        if (_hideRefCount) _view.hidden = YES;
-        [self addContentObservers:_view];
+    if (_resolvedSource.contentView != nil && _resolvedSource.contentView != resolvedSource.contentView) {
+        [self removeContentObservers: _resolvedSource.contentView];
     }
+    
+    // Add new observers
+    if (resolvedSource.view != nil && _resolvedSource.view != resolvedSource.view) {
+        if (_hideRefCount) resolvedSource.view.hidden = YES;
+        [self addStyleObservers:resolvedSource.view];
+    }
+    if (resolvedSource.contentView != nil && _resolvedSource.contentView != resolvedSource.contentView) {
+        [self addContentObservers:resolvedSource.contentView];
+    }
+    
+    // Update resolved source
+    _resolvedSource = resolvedSource;
 }
 
-+ (UIView*) resolveView:(UIView*) view
++ (RNSharedElementNodeResolvedSource*) resolveSource:(UIView*) view
 {
-    if (view == nil || _imageResolvers == nil) return view;
- 
+    if (view == nil || _imageResolvers == nil) return [RNSharedElementNodeResolvedSource sourceWithView:view];
+    
+    // If the view is an ImageView, then use that.
+    if ([RNSharedElementContent isKindOfImageView:view]) {
+        return [RNSharedElementNodeResolvedSource sourceWithView:view];
+    }
+    
     // In case the view contains a single UIImageView child
     // which is also the same size as the parent, then
     // use child image-view. This fixes <ImageBackground>.
-    if (view.subviews.count == 1) {
-        UIView* subview = view.subviews.firstObject;
-        if ([subview isKindOfClass:[UIImageView class]]) {
-            if (CGRectEqualToRect(subview.frame, view.bounds)) {
-                return subview;
+    UIView* subview = view;
+    for (int i = 0; i < 2; i++) {
+        if (subview.subviews.count != 1) break;
+        subview = subview.subviews.firstObject;
+        if ([RNSharedElementContent isKindOfImageView:subview]) {
+            CGRect bounds = view.bounds;
+            if ([view isKindOfClass:[RCTView class]]) {
+                RCTView* rctView = (RCTView*) view;
+                CGFloat borderWidth = rctView.borderWidth;
+                if (borderWidth > 0.0f) {
+                    bounds.origin.x += borderWidth;
+                    bounds.origin.y += borderWidth;
+                    bounds.size.width -= (borderWidth * 2.0f);
+                    bounds.size.height -= (borderWidth * 2.0f);
+                }
+            }
+            if (CGRectEqualToRect(subview.frame, bounds)) {
+                //NSLog(@"RESOLVED IMAGE VIEW, frame: %@, bounds: %@", NSStringFromCGRect(subview.frame), NSStringFromCGRect(bounds));
+                return [RNSharedElementNodeResolvedSource sourceWithView:view hasChildImageView:YES];
             }
         }
     }
@@ -102,29 +160,37 @@ NSArray* _imageResolvers;
                 }
             }
         }
-        if (foundImageView != nil) return foundImageView;
+        if (foundImageView != nil) {
+            return [RNSharedElementNodeResolvedSource sourceWithView:foundImageView];
+        }
     }
-    return view;
+    return [RNSharedElementNodeResolvedSource sourceWithView:view];
+}
+
+- (void) addStyleObservers:(UIView*)view
+{
+    [view addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    [view addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+}
+
+- (void) removeStyleObservers:(UIView*)view
+{
+    [view removeObserver:self forKeyPath:@"bounds"];
+    [view removeObserver:self forKeyPath:@"frame"];
 }
 
 - (void) addContentObservers:(UIView*)view
 {
-    [view addObserver:self forKeyPath:@"bounds" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-    [view addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-    
-    if ([view isKindOfClass:[UIImageView class]]) {
-        UIImageView* imageView = (UIImageView*) view;
+    if ([RNSharedElementContent isKindOfImageView:view]) {
+        UIImageView* imageView = [RNSharedElementContent imageViewFromView:view];
         [imageView addObserver:self forKeyPath:@"image" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
     }
 }
 
 - (void) removeContentObservers:(UIView*)view
 {
-    [view removeObserver:self forKeyPath:@"bounds"];
-    [view removeObserver:self forKeyPath:@"frame"];
-    
-    if ([view isKindOfClass:[UIImageView class]]) {
-        UIImageView* imageView = (UIImageView*) view;
+    if ([RNSharedElementContent isKindOfImageView:view]) {
+        UIImageView* imageView = [RNSharedElementContent imageViewFromView:view];
         [imageView removeObserver:self forKeyPath:@"image"];
     }
 }
@@ -132,9 +198,11 @@ NSArray* _imageResolvers;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     //NSLog(@"observeValueForKeyPath: %@, changed: %@", keyPath, change);
-    self.view = [RNSharedElementNode resolveView:_isParent ? _sourceView.subviews.firstObject : _sourceView];
-    [self updateStyle];
-    [self updateContent];
+    if ([keyPath isEqualToString:@"image"]) {
+        [self updateContent];
+    } else {
+        [self updateStyle];
+    }
 }
 
 - (void) setRefCount:(long)refCount {
@@ -144,9 +212,9 @@ NSArray* _imageResolvers;
             [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
             _displayLink = nil;
         }
-        self.view = nil;
+        [self updateResolvedSource:NO];
         if (_isParent && (_sourceView != nil)) {
-            [self removeContentObservers:_sourceView];
+            [self removeStyleObservers:_sourceView];
         }
     }
 }
@@ -159,10 +227,10 @@ NSArray* _imageResolvers;
 {
     _hideRefCount = refCount;
     if (_hideRefCount == 1) {
-        if (_view != nil) _view.hidden = YES;
+        if (_resolvedSource.view != nil) _resolvedSource.view.hidden = YES;
     }
     else if (_hideRefCount == 0) {
-        if (_view != nil) _view.hidden = NO;
+        if (_resolvedSource.view != nil) _resolvedSource.view.hidden = NO;
     }
 }
 
@@ -174,7 +242,7 @@ NSArray* _imageResolvers;
 - (void) requestContent:(__weak id <RNSharedElementDelegate>) delegate
 {
     if (_contentCache != nil) {
-        [delegate didLoadContent:_contentCache contentType:_contentTypeCache node:self];
+        [delegate didLoadContent:_contentCache node:self];
         return;
     }
     
@@ -186,46 +254,55 @@ NSArray* _imageResolvers;
 
 - (void) updateContent
 {
-    UIView* view = self.view;
+    // Update the resolved source
+    [self updateResolvedSource:YES];
+    RNSharedElementNodeResolvedSource* resolvedSource = _resolvedSource;
+    UIView* view = resolvedSource.view;
+    UIView* contentView = resolvedSource.contentView;
     if (view == nil) return;
     if (_contentRequests == nil) return;
     
     CGRect bounds = view.bounds;
+    CGRect frame = contentView.frame;
     if (!bounds.size.width || !bounds.size.height) {
         return;
     }
     
     // Obtain snapshot content
-    NSObject* content;
-    RNSharedElementContentType contentType;
-    if ([view isKindOfClass:[UIImageView class]]) {
-        UIImageView* imageView = (UIImageView*) view;
+    RNSharedElementContent* content;
+    if ([RNSharedElementContent isKindOfImageView:contentView]) {
+        UIImageView* imageView = [RNSharedElementContent imageViewFromView:contentView];
         UIImage* image = imageView.image;
-        content = image;
-        contentType = RNSharedElementContentTypeRawImage;
+        UIEdgeInsets imageInsets = UIEdgeInsetsZero;
+        if (contentView != view) {
+            imageInsets.left = frame.origin.x;
+            imageInsets.top = frame.origin.y;
+            imageInsets.right = bounds.size.width - frame.size.width - frame.origin.x;
+            imageInsets.bottom = bounds.size.height - frame.size.height - frame.origin.y;
+        }
+        content = [[RNSharedElementContent alloc]initWithData:image type:RNSharedElementContentTypeRawImage insets:imageInsets];
     }
     else if ([NSStringFromClass(view.class) isEqualToString:@"RCTView"] && !view.subviews.count) {
-        content = [[UIView alloc]init];
-        contentType = RNSharedElementContentTypeSnapshotView;
+        UIView* dummyView = [[UIView alloc]init];
+        content = [[RNSharedElementContent alloc]initWithData:dummyView type:RNSharedElementContentTypeSnapshotView insets:UIEdgeInsetsZero];
     }
     else {
-        UIView* snapshotView = [_view snapshotViewAfterScreenUpdates:NO];
-        content = snapshotView;
-        contentType = RNSharedElementContentTypeSnapshotView;
+        UIView* snapshotView = [view snapshotViewAfterScreenUpdates:NO];
+        content = [[RNSharedElementContent alloc]initWithData:snapshotView type:RNSharedElementContentTypeSnapshotView insets:UIEdgeInsetsZero];
     }
     /*else {
-        NSLog(@"drawViewHierarchyInRect: bounds: %@", NSStringFromCGRect(bounds));
-        UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0.0f);
-        BOOL res = [view drawViewHierarchyInRect:bounds afterScreenUpdates:NO]; // NEVER USE YES, IT CREATED VISUAL ARTEFACTS ON THE CREEN
-        UIImage* image = res ? UIGraphicsGetImageFromCurrentImageContext() : nil;
-        UIGraphicsEndImageContext();
-        NSLog(@"drawViewHierarchyInRect: RESULT: %li", res);
-        content = image;
-        contentType = RNSharedElementContentTypeSnapshotImage;
-    }*/
+     NSLog(@"drawViewHierarchyInRect: bounds: %@", NSStringFromCGRect(bounds));
+     UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0.0f);
+     BOOL res = [view drawViewHierarchyInRect:bounds afterScreenUpdates:NO]; // NEVER USE YES, IT CREATED VISUAL ARTEFACTS ON THE CREEN
+     UIImage* image = res ? UIGraphicsGetImageFromCurrentImageContext() : nil;
+     UIGraphicsEndImageContext();
+     NSLog(@"drawViewHierarchyInRect: RESULT: %li", res);
+     content = image;
+     contentType = RNSharedElementContentTypeSnapshotImage;
+     }*/
     
     // If the content could not be obtained, then try again later
-    if (content == nil) {
+    if (content == nil || content.data == nil) {
         if (_displayLink == nil) {
             _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onDisplayLinkUpdate:)];
             [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
@@ -235,7 +312,6 @@ NSArray* _imageResolvers;
     //NSLog(@"Content fetched: %@, contentType: %d, size: %@", content, contentType, NSStringFromCGSize(bounds.size));
     
     _contentCache = content;
-    _contentTypeCache = contentType;
     
     NSArray* delegates = _contentRequests;
     _contentRequests = nil;
@@ -245,7 +321,7 @@ NSArray* _imageResolvers;
     }
     for (__weak id <RNSharedElementDelegate> delegate in delegates) {
         if (delegate != nil) {
-            [delegate didLoadContent:content contentType:contentType node:self];
+            [delegate didLoadContent:content node:self];
         }
     }
 }
@@ -271,7 +347,10 @@ NSArray* _imageResolvers;
 
 - (void) updateStyle
 {
-    UIView* view = self.view;
+    [self updateResolvedSource:YES];
+    RNSharedElementNodeResolvedSource* resolvedSource = _resolvedSource;
+    UIView* view = resolvedSource.view;
+    UIView* contentView = resolvedSource.contentView;
     if (_styleRequests == nil) return;
     if (view == nil) return;
     
@@ -280,24 +359,17 @@ NSArray* _imageResolvers;
     if (CGRectIsEmpty(layout)) return;
     
     // Create style
-    RNSharedElementStyle* style = [[RNSharedElementStyle alloc]init];
-    CALayer* layer = view.layer;
-    style.view = view;
+    RNSharedElementStyle* style = [[RNSharedElementStyle alloc]initWithView:view];
     style.layout = layout;
-    style.size = view.bounds.size;
-    style.transform = [RNSharedElementStyle getAbsoluteViewTransform:view];
-    style.contentMode = view.contentMode;
-    style.opacity = layer.opacity;
-    style.cornerRadius = layer.cornerRadius;
-    style.borderWidth = layer.borderWidth;
-    style.borderColor = layer.borderColor ? [UIColor colorWithCGColor:layer.borderColor] : [UIColor clearColor];
-    style.backgroundColor = layer.backgroundColor ? [UIColor colorWithCGColor:layer.backgroundColor] : [UIColor clearColor];
-    style.shadowColor = layer.shadowColor ? [UIColor colorWithCGColor:layer.shadowColor] : [UIColor clearColor];
-    style.shadowOffset = layer.shadowOffset;
-    style.shadowRadius = layer.shadowRadius;
-    style.shadowOpacity = layer.shadowOpacity;
-    
-    /*NSLog(@"Style fetched: %@, realSize: %@, opacity: %lf, transform: %@", NSStringFromCGRect(layout), NSStringFromCGSize(view.bounds.size), style.opacity, [RNSharedElementStyle stringFromTransform:style.transform]);*/
+    if ([RNSharedElementContent isKindOfImageView:contentView]) {
+        UIImageView* imageView = [RNSharedElementContent imageViewFromView:contentView];
+        style.contentMode = imageView.contentMode;
+    } else {
+        style.contentMode = view.contentMode;
+    }
+    /*if (_isParent) {
+     NSLog(@"Style fetched: %@, realSize: %@, opacity: %lf, transform: %@, borderWidth: %lf, contentMode: %ld", NSStringFromCGRect(layout), NSStringFromCGSize(style.size), style.opacity, [RNSharedElementStyle stringFromTransform:style.transform], style.borderWidth, style.contentMode);
+     }*/
     
     _styleCache = style;
     

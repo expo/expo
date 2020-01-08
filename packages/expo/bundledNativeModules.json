@@ -76,7 +76,7 @@
   "expo-branch": "~2.0.0",
   "react-native-appearance": "~0.3.1",
   "react-native-safe-area-context": "0.6.0",
-  "react-native-shared-element": "~0.5.1",
+  "react-native-shared-element": "~0.5.5",
   "expo-application": "~2.0.0",
   "expo-battery": "~2.0.0",
   "expo-cellular": "~2.0.0",

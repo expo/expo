@@ -89,7 +89,7 @@
     "react-native-safe-area-context": "0.6.0",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-screens": "2.0.0-alpha.12",
-    "react-native-shared-element": "~0.5.1",
+    "react-native-shared-element": "~0.5.5",
     "react-native-svg": "9.13.3",
     "react-native-web": "^0.11.0",
     "react-native-webview": "7.4.3",
