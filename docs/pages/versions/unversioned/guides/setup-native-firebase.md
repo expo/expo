@@ -91,14 +91,14 @@ Build your project for the App Store and Play Store and bundle the Google Servic
 - Download the config file by clicking **"Download google-services.json"** and drag the file into your Expo project folder.
 - Let the build service know where the file is by defining the relative path in your **`app.json`** with the key `android.googleServicesFile`.
 
-```json5
+```json
 {
-  expo: {
-    android: {
+  "expo": {
+    "android": {
       "package": "com.mypackage.coolapp",
       "googleServicesFile": "./google-services.json"
-    },
-  },
+    }
+  }
 }
 ```
 
@@ -110,14 +110,14 @@ Build your project for the App Store and Play Store and bundle the Google Servic
 - Download the services file by clicking **"Download GoogleService-Info.plist"** and drag this file into your Expo project folder.
 - Let the build service know where the file is by defining the relative path in your **`app.json`** with the key `ios.googleServicesFile`.
 
-```json5
+```json
 {
-  expo: {
-    ios: {
-      bundleIdentifier: "com.mypackage.coolapp",
-      googleServicesFile: "./GoogleService-Info.plist",
-    },
-  },
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.mypackage.coolapp",
+      "googleServicesFile": "./GoogleService-Info.plist"
+    }
+  }
 }
 ```
 
