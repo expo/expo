@@ -114,7 +114,8 @@ Build your project for the App Store and Play Store and bundle the Google Servic
 {
   expo: {
     ios: {
-      googleServicesFile: './GoogleService-Info.plist',
+      bundleIdentifier: "com.mypackage.coolapp",
+      googleServicesFile: "./GoogleService-Info.plist",
     },
   },
 }
