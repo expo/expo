@@ -30,6 +30,29 @@ export async function getIosIdForVendorAsync(): Promise<string> {
   return await ExpoApplication.getIosIdForVendorAsync();
 }
 
+export enum AppReleaseType {
+  Unknown = 0,
+  Simulator = 1,
+  Enterprise = 2,
+  Development = 3,
+  AdHoc = 4,
+  AppStore = 5,
+}
+
+export async function getIosAppReleaseTypeAsync(): Promise<AppReleaseType> {
+  if (!ExpoApplication.getAppReleaseTypeAsync) {
+    throw new UnavailabilityError('expo-application', 'getAppReleaseTypeAsync');
+  }
+  return await ExpoApplication.getAppReleaseTypeAsync();
+}
+
+export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<string> {
+  if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
+    throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');
+  }
+  return await ExpoApplication.getPushNotificationServiceEnvironmentAsync();
+}
+
 export async function getInstallationTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getInstallationTimeAsync) {
     throw new UnavailabilityError('expo-application', 'getInstallationTimeAsync');

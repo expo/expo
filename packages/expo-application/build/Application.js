@@ -25,6 +25,27 @@ export async function getIosIdForVendorAsync() {
     }
     return await ExpoApplication.getIosIdForVendorAsync();
 }
+export var AppReleaseType;
+(function (AppReleaseType) {
+    AppReleaseType[AppReleaseType["Unknown"] = 0] = "Unknown";
+    AppReleaseType[AppReleaseType["Simulator"] = 1] = "Simulator";
+    AppReleaseType[AppReleaseType["Enterprise"] = 2] = "Enterprise";
+    AppReleaseType[AppReleaseType["Development"] = 3] = "Development";
+    AppReleaseType[AppReleaseType["AdHoc"] = 4] = "AdHoc";
+    AppReleaseType[AppReleaseType["AppStore"] = 5] = "AppStore";
+})(AppReleaseType || (AppReleaseType = {}));
+export async function getIosAppReleaseTypeAsync() {
+    if (!ExpoApplication.getAppReleaseTypeAsync) {
+        throw new UnavailabilityError('expo-application', 'getAppReleaseTypeAsync');
+    }
+    return await ExpoApplication.getAppReleaseTypeAsync();
+}
+export async function getIosPushNotificationServiceEnvironmentAsync() {
+    if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
+        throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');
+    }
+    return await ExpoApplication.getPushNotificationServiceEnvironmentAsync();
+}
 export async function getInstallationTimeAsync() {
     if (!ExpoApplication.getInstallationTimeAsync) {
         throw new UnavailabilityError('expo-application', 'getInstallationTimeAsync');
