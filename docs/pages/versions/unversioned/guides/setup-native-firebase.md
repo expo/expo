@@ -95,7 +95,8 @@ Build your project for the App Store and Play Store and bundle the Google Servic
 {
   expo: {
     android: {
-      googleServicesFile: './google-services.json',
+      "package": "com.mypackage.coolapp",
+      "googleServicesFile": "./google-services.json"
     },
   },
 }
