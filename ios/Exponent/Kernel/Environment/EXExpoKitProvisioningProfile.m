@@ -1,15 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXProvisioningProfile.h"
+#import "EXExpoKitProvisioningProfile.h"
 #import "EXKernelUtil.h"
 
-@implementation EXProvisioningProfile {
+@implementation EXExpoKitProvisioningProfile {
   NSDictionary *_plist;
 }
 
 + (instancetype)mainProvisioningProfile
 {
-  static EXProvisioningProfile *profile;
+  static EXExpoKitProvisioningProfile *profile;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSDictionary *plist = [self _readProvisioningProfilePlist];

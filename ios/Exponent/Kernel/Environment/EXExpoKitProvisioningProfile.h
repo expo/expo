@@ -11,7 +11,7 @@ typedef NS_ENUM(NSInteger, EXClientReleaseType) {
   EXClientReleaseAppStore
 };
 
-@interface EXProvisioningProfile : NSObject
+@interface EXExpoKitProvisioningProfile : NSObject
 
 + (instancetype)mainProvisioningProfile;
 

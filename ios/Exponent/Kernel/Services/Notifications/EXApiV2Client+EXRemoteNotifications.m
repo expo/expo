@@ -2,7 +2,7 @@
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
 #import "EXKernel.h"
-#import "EXProvisioningProfile.h"
+#import "EXExpoKitProvisioningProfile.h"
 #import "NSData+EXRemoteNotifications.h"
 
 @implementation EXApiV2Client (EXRemoteNotifications)
@@ -15,7 +15,7 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXProvisioningProfile mainProvisioningProfile].development) {
+  if ([EXExpoKitProvisioningProfile mainProvisioningProfile].development) {
     arguments[@"development"] = @YES;
   }
   
@@ -39,7 +39,7 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXProvisioningProfile mainProvisioningProfile].development) {
+  if ([EXExpoKitProvisioningProfile mainProvisioningProfile].development) {
     arguments[@"development"] = @YES;
   }
   
