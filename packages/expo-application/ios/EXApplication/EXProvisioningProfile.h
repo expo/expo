@@ -1,22 +1,21 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, EXClientReleaseType) {
-  EXClientReleaseTypeUnknown,
-  EXClientReleaseSimulator,
-  EXClientReleaseEnterprise,
-  EXClientReleaseDev,
-  EXClientReleaseAdHoc,
-  EXClientReleaseAppStore
+typedef NS_ENUM(NSInteger, EXAppReleaseType) {
+  EXAppReleaseTypeUnknown,
+  EXAppReleaseSimulator,
+  EXAppReleaseEnterprise,
+  EXAppReleaseDev,
+  EXAppReleaseAdHoc,
+  EXAppReleaseAppStore
 };
 
 @interface EXProvisioningProfile : NSObject
 
 + (instancetype)mainProvisioningProfile;
 
-@property (nonatomic, readonly, getter=isDevelopment) BOOL development;
+- (EXAppReleaseType)appReleaseType;
+- (NSString *)notificationServiceEnvironment;
 
-+ (EXClientReleaseType)clientReleaseType;
-+ (NSString *)clientReleaseTypeToString:(EXClientReleaseType)releaseType;
 @end

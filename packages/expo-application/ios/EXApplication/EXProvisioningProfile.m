@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXExpoKitProvisioningProfile.h"
-#import "EXKernelUtil.h"
+#import <EXApplication/EXProvisioningProfile.h>
 
 @implementation EXProvisioningProfile {
   NSDictionary *_plist;
@@ -21,25 +20,53 @@
 - (instancetype)initWithPlist:(NSDictionary *)plist
 {
   if (self = [super init]) {
-    _plist = [plist copy];
+    _plist = plist;
   }
   return self;
 }
 
-- (BOOL)isDevelopment
+- (NSString *)notificationServiceEnvironment
 {
   if (!_plist) {
-    return NO;
+    return nil;
   }
 
   NSDictionary *entitlements = _plist[@"Entitlements"];
   NSString *apsEnvironment = entitlements[@"aps-environment"];
-  if (!apsEnvironment) {
-    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
-    return NO;
+  return apsEnvironment;
+}
+
+- (EXAppReleaseType)appReleaseType {
+  NSString *provisioningPath = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
+  if (!provisioningPath) {
+    // provisioning profile does not exist
+#if TARGET_IPHONE_SIMULATOR
+    return EXAppReleaseSimulator;
+#else
+    return EXAppReleaseAppStore;
+#endif
   }
 
-  return [apsEnvironment isEqualToString:@"development"];
+  NSDictionary *mobileProvision = _plist;
+  if (!mobileProvision) {
+    // failure to read other than it simply not existing
+    return EXAppReleaseTypeUnknown;
+  } else if ([[mobileProvision objectForKey:@"ProvisionsAllDevices"] boolValue]) {
+    // enterprise distribution contains ProvisionsAllDevices - true
+    return EXAppReleaseEnterprise;
+  } else if ([mobileProvision objectForKey:@"ProvisionedDevices"] && [[mobileProvision objectForKey:@"ProvisionedDevices"] count] > 0) {
+    // development contains UDIDs and get-task-allow is true
+    // ad hoc contains UDIDs and get-task-allow is false
+    NSDictionary *entitlements = [mobileProvision objectForKey:@"Entitlements"];
+    if ([[entitlements objectForKey:@"get-task-allow"] boolValue]) {
+      return EXAppReleaseDev;
+    } else {
+      return EXAppReleaseAdHoc;
+    }
+  } else {
+    // app store contains no UDIDs (if the file exists at all?)
+    return EXAppReleaseAppStore;
+  }
 }
 
 /** embedded.mobileprovision plist format:
@@ -74,7 +101,7 @@
   NSError *error;
   NSString *profileString = [NSString stringWithContentsOfFile:profilePath encoding:NSASCIIStringEncoding error:&error];
   if (!profileString) {
-    DDLogError(@"Error reading provisioning profile: %@", error.localizedDescription);
+    NSLog(@"Error reading provisioning profile: %@", error.localizedDescription);
     return nil;
   }
 
@@ -97,63 +124,11 @@
                                                                              format:NULL
                                                                               error:&error];
   if (!plistDictionary) {
-    DDLogError(@"Error unserializing provisioning profile plist: %@", error.localizedDescription);
+    NSLog(@"Error unserializing provisioning profile plist: %@", error.localizedDescription);
     return nil;
   }
 
   return plistDictionary;
-}
-
-+ (EXClientReleaseType)clientReleaseType {
-  NSString *provisioningPath = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
-  if (!provisioningPath) {
-    // provisioning profile does not exist
-#if TARGET_IPHONE_SIMULATOR
-    return EXClientReleaseSimulator;
-#else
-    return EXClientReleaseAppStore;
-#endif
-  }
-
-  NSDictionary *mobileProvision = [self _readProvisioningProfilePlist];
-  if (!mobileProvision) {
-    // failure to read other than it simply not existing
-    return EXClientReleaseTypeUnknown;
-  } else if ([[mobileProvision objectForKey:@"ProvisionsAllDevices"] boolValue]) {
-    // enterprise distribution contains ProvisionsAllDevices - true
-    return EXClientReleaseEnterprise;
-  } else if ([mobileProvision objectForKey:@"ProvisionedDevices"] && [[mobileProvision objectForKey:@"ProvisionedDevices"] count] > 0) {
-    // development contains UDIDs and get-task-allow is true
-    // ad hoc contains UDIDs and get-task-allow is false
-    NSDictionary *entitlements = [mobileProvision objectForKey:@"Entitlements"];
-    if ([[entitlements objectForKey:@"get-task-allow"] boolValue]) {
-      return EXClientReleaseDev;
-    } else {
-      return EXClientReleaseAdHoc;
-    }
-  } else {
-    // app store contains no UDIDs (if the file exists at all?)
-    return EXClientReleaseAppStore;
-  }
-}
-
-+ (NSString *)clientReleaseTypeToString:(EXClientReleaseType)releaseType
-{
-  switch (releaseType)
-  {
-    case EXClientReleaseTypeUnknown:
-      return @"UNKNOWN";
-    case EXClientReleaseSimulator:
-      return @"SIMULATOR";
-    case EXClientReleaseEnterprise:
-      return @"ENTERPRISE";
-    case EXClientReleaseDev:
-      return @"DEVELOPMENT";
-    case EXClientReleaseAdHoc:
-      return @"ADHOC";
-    case EXClientReleaseAppStore:
-      return @"APPLE_APP_STORE";
-  }
 }
 
 @end
