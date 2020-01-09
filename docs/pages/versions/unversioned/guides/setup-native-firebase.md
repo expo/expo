@@ -17,7 +17,7 @@ You can add any native packages you want (including the full native Firebase SDK
 
 ## Android
 
-- click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of `android.package` in your app.json.**
+- click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of the `applicationId` in your `android/app/build.gradle `.**
 - Download the config file by clicking **"Download google-services.json"** move this file to your Expo project at this location `/android/app/google-services.json`.
 - Back in the firebase console, you can skip the step **"Add Firebase SDK"**.
 
