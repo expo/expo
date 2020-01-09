@@ -39,7 +39,7 @@ You can add any native packages you want (including the full native Firebase SDK
 
 - click **Add Firebase to your iOS app** and follow the setup steps. **Make sure that the iOS bundle ID you enter is the same as the value of `ios.bundleIdentifier` in your app.json.**
 - Download the services file by clicking **"Download GoogleService-Info.plist"**
-- Open your Expo iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project
+- Open your Expo iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `pod install` in `./ios` directory to create it.
 
   - Be sure to enable **'Copy items if needed'**.
 
