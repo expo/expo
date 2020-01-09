@@ -56,9 +56,11 @@ export async function requestReview(): Promise<void> {
  */
 export function storeUrl(): string | null {
   const { manifest } = Constants;
-  if (Platform.OS === 'ios' && manifest.ios) {
+  // eslint-disable-next-line no-undef
+  if (Platform.OS === 'ios' && manifest?.ios) {
     return manifest.ios.appStoreUrl;
-  } else if (Platform.OS === 'android' && manifest.android) {
+    // eslint-disable-next-line no-undef
+  } else if (Platform.OS === 'android' && manifest?.android) {
     return manifest.android.playStoreUrl;
   } else {
     return null;

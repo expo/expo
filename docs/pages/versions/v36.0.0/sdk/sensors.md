@@ -1,15 +1,15 @@
 ---
 title: Sensors
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
-Various APIs for accessing device sensors are included under this umbrella package called `expo-sensors`.
+**`expo-sensors`** provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, and step count.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -36,4 +36,4 @@ For more information, please see the documentation for the sensor you are intere
 - [Barometer](../barometer/)
 - [Gyroscope](../gyroscope/)
 - [Magnetometer](../magnetometer/)
-- [Pedometer](../pedometer/) 
+- [Pedometer](../pedometer/)

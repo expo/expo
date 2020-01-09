@@ -1,6 +1,6 @@
 ---
 title: takeSnapshotAsync
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/takeSnapshotAsync"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/takeSnapshotAsync'
 ---
 
 Given a view, `takeSnapshotAsync` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
@@ -9,9 +9,9 @@ If you're interested in taking snapshots from the GLView, we recommend you use [
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 

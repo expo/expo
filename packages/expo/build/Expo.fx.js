@@ -20,10 +20,10 @@ if (__DEV__) {
         const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
         // @ts-ignore
         AppRegistry.setWrapperComponentProvider = provider => {
-            const ProviderComponent = provider();
             function PatchedProviderComponent(props) {
+                const ProviderComponent = provider();
                 return (<DevAppContainer>
-            <ProviderComponent>{props.children}</ProviderComponent>
+            <ProviderComponent {...props}/>
           </DevAppContainer>);
             }
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);

@@ -23,7 +23,7 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [BarCodeScanner](../../sdk/bar-code-scanner/)
 - [Barometer](../../sdk/barometer/)
 - [Battery](../../sdk/battery/)
-- [Brightness](../../sdk/barometer/)
+- [Brightness](../../sdk/brightness/)
 - [BlurView](../../sdk/blur-view/)
 - [Calendar](../../sdk/calendar/)
 - [Camera](../../sdk/camera/)

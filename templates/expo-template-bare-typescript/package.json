@@ -1,9 +1,8 @@
 {
   "name": "expo-template-bare-typescript",
   "description": "This bare project template includes TypeScript",
-  "version": "36.0.0",
+  "version": "36.0.3",
   "scripts": {
-    "postinstall": "jetify",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
@@ -17,7 +16,7 @@
     "react-native": "~0.61.4",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-reanimated": "~1.4.0",
-    "react-native-screens": "~2.0.0-alpha.12",
+    "react-native-screens": "2.0.0-alpha.12",
     "react-native-unimodules": "~0.7.0",
     "react-native-web": "~0.11.7"
   },
@@ -27,7 +26,6 @@
     "@types/react-native": "~0.60.23",
     "babel-preset-expo": "~8.0.0",
     "jest-expo": "~36.0.1",
-    "jetifier": "~1.6.4",
     "typescript": "~3.6.3"
   },
   "jest": {

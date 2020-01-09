@@ -1,6 +1,6 @@
 ---
 title: GestureHandler
-sourceCodeUrl: "https://github.com/kmagiera/react-native-gesture-handler"
+sourceCodeUrl: 'https://github.com/kmagiera/react-native-gesture-handler'
 ---
 
 An API for handling complex gestures. From the project's README:
@@ -9,9 +9,9 @@ An API for handling complex gestures. From the project's README:
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -19,19 +19,16 @@ To install this API in a [managed](../../introduction/managed-vs-bare/#managed-w
 
 ## API
 
-
 Importing gesture handlers:
 
 ```js
 import { TapGestureHandler, RotationGestureHandler } from 'react-native-gesture-handler';
 
-class ComponentName extends Component { 
-  render () {
+class ComponentName extends Component {
+  render() {
     return (
       <TapGestureHandler>
-        <RotationGestureHandler>
-        ...
-        </RotationGestureHandler>
+        <RotationGestureHandler>...</RotationGestureHandler>
       </TapGestureHandler>
     );
   }
@@ -39,4 +36,3 @@ class ComponentName extends Component {
 ```
 
 Read the [react-native-gesture-handler docs](https://kmagiera.github.io/react-native-gesture-handler) for more information on the API and usage.
-

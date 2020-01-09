@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-
   <style name="Theme.Exponent.Light" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentLight</item>
@@ -9,11 +8,15 @@
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentDark</item>
     <item name="android:windowBackground">@color/colorPrimary</item>
+  </style>
+
+  <style name="Theme.Exponent.Light.LightStatusBar" parent="Theme.Exponent.Light">
+    <!-- dummy theme here: see v23 styles -->
   </style>
 
   <style name="ExponentCheckBox">
@@ -22,9 +25,7 @@
 
   <style name="ExponentButton">
     <item name="android:theme">@style/DevAppTheme</item>
-    <item name="android:textColor">
-      @color/colorPrimaryDark
-    </item>
+    <item name="android:textColor">@color/colorPrimaryDark</item>
   </style>
 
   <style name="ExponentEditText" parent="@android:style/Widget.EditText">
@@ -34,14 +35,8 @@
   </style>
 
   <style name="DevAppTheme">
-    <item name="android:colorAccent">
-      @color/white
-    </item>
-    <item name="android:colorControlNormal">
-      @color/white
-    </item>
-    <item name="android:colorControlHighlight">
-      @color/white
-    </item>
+    <item name="android:colorAccent">@color/white</item>
+    <item name="android:colorControlNormal">@color/white</item>
+    <item name="android:colorControlHighlight">@color/white</item>
   </style>
 </resources>

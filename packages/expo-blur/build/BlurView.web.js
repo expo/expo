@@ -25,21 +25,12 @@ function isBlurSupported() {
             CSS.supports('backdrop-filter', 'blur(1px)')));
 }
 function getBlurStyle({ intensity, tint }) {
+    const style = {
+        backgroundColor: getBackgroundColor(intensity, tint),
+    };
     if (isBlurSupported()) {
-        let backdropFilter = `blur(${intensity * 0.25}px)`;
-        if (tint === 'dark') {
-            backdropFilter += ' brightness(50%)';
-        }
-        else if (tint === 'light') {
-            backdropFilter += ' brightness(150%)';
-        }
-        return {
-            backdropFilter,
-        };
+        style.backdropFilter = `blur(${intensity * 0.8}px)`;
     }
-    else {
-        let backgroundColor = getBackgroundColor(intensity, tint);
-        return { backgroundColor };
-    }
+    return style;
 }
 //# sourceMappingURL=BlurView.web.js.map

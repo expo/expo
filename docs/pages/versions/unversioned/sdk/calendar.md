@@ -28,15 +28,16 @@ In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with re
 
 ```js
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
 export default function App() {
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestPermissionsAsync();
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
         const calendars = await Calendar.getCalendarsAsync();
+        console.log('Here are all your calendars:');
         console.log({ calendars });
       }
     })();
@@ -48,11 +49,38 @@ export default function App() {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
       }}>
       <Text>Calendar Module Example</Text>
+      <Button title="Create a new calendar" onPress={createCalendar} />
     </View>
   );
+}
+
+async function getDefaultCalendarSource() {
+  const calendars = await Calendar.getCalendarsAsync();
+  const defaultCalendars = calendars.filter(
+    each => each.source.name === 'Default'
+  );
+  return defaultCalendars[0].source;
+}
+
+async function createCalendar() {
+  const defaultCalendarSource =
+    Platform.OS === 'ios'
+      ? await getDefaultCalendarSource()
+      : { isLocalAccount: true, name: 'Expo Calendar' };
+  const newCalendarID = await Calendar.createCalendarAsync({
+    title: 'Expo Calendar',
+    color: 'blue',
+    entityType: Calendar.EntityTypes.EVENT,
+    sourceId: defaultCalendarSource.id,
+    source: defaultCalendarSource,
+    name: 'internalCalendarName',
+    ownerAccount: 'personal',
+    accessLevel: Calendar.CalendarAccessLevel.OWNER,
+  });
+  console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
 ```
 </SnackInline>
@@ -97,7 +125,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -105,7 +133,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -113,7 +141,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -121,7 +149,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Calendar.createCalendarAsync(details)`
 

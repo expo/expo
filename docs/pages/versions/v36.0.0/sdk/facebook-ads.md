@@ -1,15 +1,15 @@
 ---
 title: FacebookAds
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-facebook"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-facebook'
 ---
 
-Facebook Audience SDK integration.
+**`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 

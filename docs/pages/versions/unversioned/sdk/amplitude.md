@@ -1,18 +1,17 @@
 ---
 title: Amplitude
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude'
 ---
 
-Provides access to [Amplitude](https://amplitude.com/) mobile analytics which basically lets you log various events to the Cloud. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
+**`expo-analytics-amplitude`** provides access to [Amplitude](https://amplitude.com/) mobile analytics which allows you track and log various events and data. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
 
 **Please note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app. For example, the version logged when running experiences in the Expo app will be the [Expo app version](../constants/#constantsexpoversion). Whereas in standalone apps, the version set in `app.json` is used. For more information see [this issue on GitHub](https://github.com/expo/expo/issues/4720).
 
-
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -101,7 +100,7 @@ By default the Amplitude SDK will track several user properties such as carrier 
 - **trackingOptions (_TrackingOptions_)** -- Options object for what shouldn't be tracked. The table below describes what properties may the object contain. All the properties are expected to be booleans. Passing eg. `disableCarrier: true` disables tracking the device's carrier. Passing a falsy value under a given property doesn't disable tracking of the specific feature.
 
 | Property                    | Description                                                                |
-|-----------------------------|----------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------- |
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |

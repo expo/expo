@@ -154,17 +154,17 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     return (
       <ScrollView pagingEnabled directionalLockEnabled horizontal>
         <Image
-          source={require('../../assets/images/example1.jpg')}
+          source={require('../../../assets/images/example1.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />
         <Image
-          source={require('../../assets/images/example2.jpg')}
+          source={require('../../../assets/images/example2.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />
         <Image
-          source={require('../../assets/images/example3.jpg')}
+          source={require('../../../assets/images/example3.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />

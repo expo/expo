@@ -121,11 +121,7 @@ static NSString *const kFIRInstanceIDTokenKeychainId = @"com.google.iid-tokens";
   NSString *account = FIRInstanceIDAppIdentifier();
   NSString *service = [[self class] serviceKeyForAuthorizedEntity:tokenInfo.authorizedEntity
                                                             scope:tokenInfo.scope];
-  [self.keychain setData:tokenInfoData
-              forService:service
-           accessibility:NULL
-                 account:account
-                 handler:handler];
+  [self.keychain setData:tokenInfoData forService:service account:account handler:handler];
 }
 
 #pragma mark - Delete

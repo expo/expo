@@ -2,10 +2,6 @@
 title: Using Electron with Expo for Web
 ---
 
-[![supports Windows](https://img.shields.io/badge/Windows-4630EB.svg?style=for-the-badge&logo=WINDOWS&labelColor=000&logoColor=fff)](https://github.com/expo/expo)
-[![supports Linux](https://img.shields.io/badge/Linux-4630EB.svg?style=for-the-badge&logo=LINUX&labelColor=000&logoColor=fff)](https://github.com/expo/expo)
-[![supports OSX](https://img.shields.io/badge/OSX-4630EB.svg?style=for-the-badge&logo=APPLE&labelColor=000&logoColor=fff)](https://github.com/expo/expo)
-
 > 🚨 Electron support is experimental, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
 
 [Electron][electron] is a framework for creating desktop apps that run in a Chromium wrapper. Using Expo with Electron will enable you to use your existing components to build OSX, Windows, and Linux apps.

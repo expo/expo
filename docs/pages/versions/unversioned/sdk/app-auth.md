@@ -1,17 +1,17 @@
 ---
 title: AppAuth
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
+**`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -243,7 +243,7 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`. 
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 

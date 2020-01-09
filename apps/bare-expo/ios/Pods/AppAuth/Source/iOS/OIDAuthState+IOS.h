@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (id<OIDExternalUserAgentSession>)
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
-                     callback:(OIDAuthStateAuthorizationCallback)callback API_AVAILABLE(ios(11))
+                     callback:(OIDAuthStateAuthorizationCallback)callback API_AVAILABLE(ios(11)) API_UNAVAILABLE(macCatalyst)
     __deprecated_msg("This method will not work on iOS 13. Use "
         "authStateByPresentingAuthorizationRequest:presentingViewController:callback:");
 
