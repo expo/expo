@@ -52,6 +52,32 @@ export async function test({ describe, it, expect, jasmine }) {
         expect(error).toBeNull();
       });
 
+      it('Application.getIosAppReleaseType() returns a number', async () => {
+        let appReleaseType;
+        let error = null;
+        try {
+          appReleaseType = await Application.getIosAppReleaseTypeAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(appReleaseType).toBeDefined();
+        expect(appReleaseType).toEqual(jasmine.any(Number));
+        expect(error).toBeNull();
+      });
+
+      it('Application.getIosPushNotificationServiceEnvironmentAsync() returns a string', async () => {
+        let apnsEnvironment;
+        let error = null;
+        try {
+          apnsEnvironment = await Application.getIosPushNotificationServiceEnvironmentAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(apnsEnvironment).toBeDefined();
+        expect(apnsEnvironment).toEqual(jasmine.any(String));
+        expect(error).toBeNull();
+      });
+
       describe(`doesn't get Android-only constants`, () => {
         it('Application.androidId is null', () => {
           expect(Application.androidId).toBeNull();
