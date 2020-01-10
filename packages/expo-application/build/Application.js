@@ -27,12 +27,12 @@ export async function getIosIdForVendorAsync() {
 }
 export var AppReleaseType;
 (function (AppReleaseType) {
-    AppReleaseType[AppReleaseType["Unknown"] = 0] = "Unknown";
-    AppReleaseType[AppReleaseType["Simulator"] = 1] = "Simulator";
-    AppReleaseType[AppReleaseType["Enterprise"] = 2] = "Enterprise";
-    AppReleaseType[AppReleaseType["Development"] = 3] = "Development";
-    AppReleaseType[AppReleaseType["AdHoc"] = 4] = "AdHoc";
-    AppReleaseType[AppReleaseType["AppStore"] = 5] = "AppStore";
+    AppReleaseType[AppReleaseType["UNKNOWN"] = 0] = "UNKNOWN";
+    AppReleaseType[AppReleaseType["SIMULATOR"] = 1] = "SIMULATOR";
+    AppReleaseType[AppReleaseType["ENTERPRISE"] = 2] = "ENTERPRISE";
+    AppReleaseType[AppReleaseType["DEVELOPMENT"] = 3] = "DEVELOPMENT";
+    AppReleaseType[AppReleaseType["ADHOC"] = 4] = "ADHOC";
+    AppReleaseType[AppReleaseType["APPSTORE"] = 5] = "APPSTORE";
 })(AppReleaseType || (AppReleaseType = {}));
 export async function getIosAppReleaseTypeAsync() {
     if (!ExpoApplication.getAppReleaseTypeAsync) {
