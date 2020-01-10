@@ -21,7 +21,10 @@
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
-  if ([[[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment] isEqualToString:@"development"]) {
+  NSString *environment = [[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment];
+  if (!environment) {
+    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
+  } else if ([environment isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
 #endif
@@ -51,7 +54,10 @@
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
-  if ([[[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment] isEqualToString:@"development"]) {
+  NSString *environment = [[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment];
+  if (!environment) {
+    DDLogWarn(@"aps-environment is missing from the entitlements; ensure that the provisioning profile enables push notifications");
+  } else if ([environment isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
 #endif
