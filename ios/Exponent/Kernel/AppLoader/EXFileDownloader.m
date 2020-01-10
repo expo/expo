@@ -6,7 +6,9 @@
 #import "EXSession.h"
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
-#import "EXExpoKitProvisioningProfile.h"
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+#import <EXApplication/EXProvisioningProfile.h>
+#endif
 
 #import <React/RCTUtils.h>
 
@@ -98,7 +100,6 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
     clientEnvironment = @"EXPO_SIMULATOR";
 #endif
   }
-  NSString * clientReleaseType= [EXExpoKitProvisioningProfile clientReleaseTypeToString:[EXExpoKitProvisioningProfile clientReleaseType]];
   
   [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
@@ -108,12 +109,42 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
   [request setValue:clientEnvironment forHTTPHeaderField:@"Expo-Client-Environment"];
-  [request setValue:clientReleaseType forHTTPHeaderField:@"Expo-Client-Release-Type"];
+  [request setValue:[self clientReleaseType] forHTTPHeaderField:@"Expo-Client-Release-Type"];
 
   NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
   if (sessionSecret) {
     [request setValue:sessionSecret forHTTPHeaderField:@"Expo-Session"];
   }
+}
+
+- (NSString *)clientReleaseType
+{
+  // The only scenario where we care about clientReleaseType is:
+  //   - run on a real device
+  //   - Expo client app
+  //   - downloaded from App Store
+  // to determine whether the build is restricted. The file
+  // will always be available in Expo client, so that's good.
+  // In other scenarios we can fallback to "UNKNOWN".
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  EXAppReleaseType releaseType = [[EXProvisioningProfile mainProvisioningProfile] appReleaseType];
+  switch (releaseType) {
+    case EXAppReleaseTypeUnknown:
+      return @"UNKNOWN";
+    case EXAppReleaseSimulator:
+      return @"SIMULATOR";
+    case EXAppReleaseEnterprise:
+      return @"ENTERPRISE";
+    case EXAppReleaseDev:
+      return @"DEVELOPMENT";
+    case EXAppReleaseAdHoc:
+      return @"ADHOC";
+    case EXAppReleaseAppStore:
+      return @"APPLE_APP_STORE";
+  }
+#else
+  return @"UNKNOWN";
+#endif
 }
 
 - (NSString *)_userAgentString

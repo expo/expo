@@ -4,7 +4,9 @@
 #import "EXHomeModule.h"
 #import "EXSession.h"
 #import "EXUnversioned.h"
-#import "EXExpoKitProvisioningProfile.h"
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+#import <EXApplication/EXProvisioningProfile.h>
+#endif
 
 #import <React/RCTEventDispatcher.h>
 
@@ -41,7 +43,32 @@
 - (NSDictionary *)constantsToExport
 {
   return @{ @"sdkVersions": _sdkVersions,
-            @"IOSClientReleaseType": [EXExpoKitProvisioningProfile clientReleaseTypeToString: [EXExpoKitProvisioningProfile clientReleaseType]] };
+            @"IOSClientReleaseType": [self clientReleaseType] ?: [NSNull null] };
+}
+
+- (NSString *)clientReleaseType
+{
+  // Presence of this file is assured in Expo client
+  // and in ejected projects HomeModule shouldn't ever be used.
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  EXAppReleaseType releaseType = [[EXProvisioningProfile mainProvisioningProfile] appReleaseType];
+  switch (releaseType) {
+    case EXAppReleaseTypeUnknown:
+      return @"UNKNOWN";
+    case EXAppReleaseSimulator:
+      return @"SIMULATOR";
+    case EXAppReleaseEnterprise:
+      return @"ENTERPRISE";
+    case EXAppReleaseDev:
+      return @"DEVELOPMENT";
+    case EXAppReleaseAdHoc:
+      return @"ADHOC";
+    case EXAppReleaseAppStore:
+      return @"APPLE_APP_STORE";
+  }
+#else
+  return nil;
+#endif
 }
 
 #pragma mark - RCTEventEmitter methods

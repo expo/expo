@@ -2,8 +2,10 @@
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
 #import "EXKernel.h"
-#import "EXExpoKitProvisioningProfile.h"
 #import "NSData+EXRemoteNotifications.h"
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+#import <EXApplication/EXProvisioningProfile.h>
+#endif
 
 @implementation EXApiV2Client (EXRemoteNotifications)
 
@@ -15,9 +17,15 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXExpoKitProvisioningProfile mainProvisioningProfile].development) {
+  // Presence of this file is assured in Expo client
+  // and in ejected projects Expo Push Notifications don't work anyway
+  // so this codepath shouldn't be executed at all.
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  if ([[[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment] isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
+#endif
+
   
   return [self callRemoteMethod:@"push/updateDeviceToken"
                       arguments:arguments
@@ -39,9 +47,14 @@
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
-  if ([EXExpoKitProvisioningProfile mainProvisioningProfile].development) {
+  // Presence of this file is assured in Expo client
+  // and in ejected projects Expo Push Notifications don't work anyway
+  // so this codepath shouldn't be executed at all.
+#if __has_include(<EXApplication/EXProvisioningProfile.h>)
+  if ([[[EXProvisioningProfile mainProvisioningProfile] notificationServiceEnvironment] isEqualToString:@"development"]) {
     arguments[@"development"] = @YES;
   }
+#endif
   
   return [self callRemoteMethod:@"push/getExpoPushToken"
                       arguments:arguments
