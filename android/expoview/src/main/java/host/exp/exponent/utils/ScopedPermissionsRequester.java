@@ -9,6 +9,7 @@ import android.os.Build;
 import com.facebook.react.modules.core.PermissionListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +69,15 @@ public class ScopedPermissionsRequester {
 
     if (!mPermissionsToRequestPerExperience.isEmpty()) {
       requestExperienceAndGlobalPermissions(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
-    } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
+    } else if (!mPermissionsToRequestGlobally.isEmpty()) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
           EXPONENT_PERMISSIONS_REQUEST);
+      } else {
+        int[] result = new int[mPermissionsToRequestGlobally.size()];
+        Arrays.fill(result, PackageManager.PERMISSION_DENIED);
+        onRequestPermissionsResult(mPermissionsToRequestGlobally.toArray(new String[0]), result);
+      }
     }
   }
 
