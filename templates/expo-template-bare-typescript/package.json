@@ -25,15 +25,7 @@
     "@types/react": "~16.9.0",
     "@types/react-native": "~0.60.23",
     "babel-preset-expo": "~8.0.0",
-<<<<<<< HEAD
-    "jest-expo": "~36.0.0",
-    "jetifier": "~1.6.4",
-||||||| parent of b8e06d2735... [bare][templates] Add rncli autolinking, remove jetifier, lock screens version
     "jest-expo": "~36.0.1",
-    "jetifier": "~1.6.4",
-=======
-    "jest-expo": "~36.0.1",
->>>>>>> b8e06d2735... [bare][templates] Add rncli autolinking, remove jetifier, lock screens version
     "typescript": "~3.6.3"
   },
   "jest": {
