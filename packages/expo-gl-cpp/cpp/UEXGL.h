@@ -11,6 +11,8 @@
 
 #ifdef __cplusplus
 #include <functional>
+#else
+#include <stdbool.h> 
 #endif
 
 // NOTE: The symbols exposed by this header are named with a `UEX` prefix rather than an `EX`

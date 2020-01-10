@@ -179,6 +179,16 @@ ABI34_0_0UM_REGISTER_MODULE();
   }
 }
 
+- (long)javaScriptRuntimePtr
+{
+  if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
+    return NULL;
+  } else if (_bridge.runtime) {
+      return (long)_bridge.runtime;
+  }
+  return NULL;
+}
+
 # pragma mark - ABI34_0_0UMImageLoader
 
 - (void)loadImageForURL:(NSURL *)imageURL

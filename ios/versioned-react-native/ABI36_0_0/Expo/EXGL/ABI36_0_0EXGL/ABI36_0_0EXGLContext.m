@@ -68,9 +68,9 @@
   id<ABI36_0_0UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(ABI36_0_0UMUIManager)];
   id<ABI36_0_0UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(ABI36_0_0UMJavaScriptContextProvider)];
   
-  JSGlobalContextRef jsContextRef = [jsContextProvider javaScriptContextRef];
+  long jsRuntimePtr = [jsContextProvider javaScriptRuntimePtr];
   
-  if (jsContextRef) {
+  if (jsRuntimePtr) {
     __weak __typeof__(self) weakSelf = self;
     __weak __typeof__(uiManager) weakUIManager = uiManager;
     
@@ -83,7 +83,7 @@
         return;
       }
       
-      self->_contextId = UEXGLContextCreate(jsContextRef);
+      self->_contextId = UEXGLContextCreate(jsRuntimePtr);
       [self->_objectManager saveContext:self];
       
       UEXGLContextSetFlushMethodObjc(self->_contextId, ^{

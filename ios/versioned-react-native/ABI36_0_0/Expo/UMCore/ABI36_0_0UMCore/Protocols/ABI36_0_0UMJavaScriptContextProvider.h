@@ -6,5 +6,6 @@
 @protocol ABI36_0_0UMJavaScriptContextProvider <NSObject>
 
 - (JSGlobalContextRef)javaScriptContextRef;
+- (long)javaScriptRuntimePtr;
 
 @end

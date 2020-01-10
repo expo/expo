@@ -14,16 +14,13 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.source_files   = '**/*.{h,c,cpp,mm}'
   s.preserve_paths = '**/*.{h,c,cpp,mm}'
-  s.exclude_files  = '**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*'
+  s.compiler_flags = '-x objective-c++'
   s.requires_arc   = true
   
   s.pod_target_xcconfig = {
     'CLANG_WARN_COMMA' => 'NO',
     'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO'
   }
-  
-  s.subspec 'EXGLContext' do |ss|
-    ss.source_files = '**/{UEXGL,EXGLContext,EXGLInstallConstants,EXGLInstallMethods,EXGLNativeMethods}*'
-    ss.compiler_flags = '-x objective-c++'
-  end
+
+  s.dependency 'React-jsi'
 end
