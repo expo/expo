@@ -358,10 +358,10 @@ workflows:
       - expotools
       - client_android
       - client_ios
-      - test_suite_publish
-      - android_test_suite:
-          requires:
-            - test_suite_publish
+      # - test_suite_publish
+      # - android_test_suite:
+      #     requires:
+      #       - test_suite_publish
       - client_android_approve_google_play:
           type: approval
           requires:
