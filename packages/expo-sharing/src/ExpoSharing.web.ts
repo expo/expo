@@ -13,6 +13,10 @@ export default {
     return 'ExpoSharing';
   },
   isAvailableAsync(): Promise<boolean> {
+    if (typeof navigator === 'undefined') {
+      return Promise.resolve(false);
+    }
+
     return Promise.resolve(!!(navigator as Navigator).share);
   },
   async shareAsync(url: string, options: ShareOptions = {}): Promise<{}> {

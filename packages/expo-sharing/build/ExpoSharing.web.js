@@ -4,6 +4,9 @@ export default {
         return 'ExpoSharing';
     },
     isAvailableAsync() {
+        if (typeof navigator === 'undefined') {
+            return Promise.resolve(false);
+        }
         return Promise.resolve(!!navigator.share);
     },
     async shareAsync(url, options = {}) {
