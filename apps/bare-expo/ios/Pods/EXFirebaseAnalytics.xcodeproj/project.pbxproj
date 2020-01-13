@@ -10,19 +10,28 @@
 		3DCFA9E3C2CBF70A9DD7DA7BFA705F89 /* EXFirebaseAnalytics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7248FBD229723534F1400D37C133AFD0 /* EXFirebaseAnalytics-dummy.m */; };
 		5E92262BD29DE5A389F1302104B61EBF /* EXFirebaseAnalytics.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B1DC10D367501C8D3569871725AF84F /* EXFirebaseAnalytics.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C4D614E4C1D151911DF1020C9F94F88B /* EXFirebaseAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = A053C7AB9AA3B9BE98EBEEB5C7C15E2A /* EXFirebaseAnalytics.m */; };
+		CD69489623CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */; };
+		CD69489723CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		C37EB14A42B83D1907D3D45FE835CC73 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore.xcodeproj */;
+			containerPortal = BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
+		CD69489823CD1DA800F02E57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */;
+			proxyType = 2;
+			remoteGlobalIDString = B028FE6A90DCDB619E0BA9877EB50D3B;
+			remoteInfo = UMCore;
+		};
 		EC4F89CFF0BB03C25C00C4BA36607273 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 580CF1921D9624CD8CCA50130ED5DF30 /* Firebase.xcodeproj */;
+			containerPortal = 580CF1921D9624CD8CCA50130ED5DF30 /* Firebase */;
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
 			remoteInfo = Firebase;
@@ -34,11 +43,13 @@
 		0B1DC10D367501C8D3569871725AF84F /* EXFirebaseAnalytics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFirebaseAnalytics.h; path = EXFirebaseAnalytics/EXFirebaseAnalytics.h; sourceTree = "<group>"; };
 		580CF1921D9624CD8CCA50130ED5DF30 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		7248FBD229723534F1400D37C133AFD0 /* EXFirebaseAnalytics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFirebaseAnalytics-dummy.m"; sourceTree = "<group>"; };
-		790077608EDC8824F37EEB4E46256059 /* libEXFirebaseAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFirebaseAnalytics.a; path = libEXFirebaseAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		790077608EDC8824F37EEB4E46256059 /* libEXFirebaseAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEXFirebaseAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A053C7AB9AA3B9BE98EBEEB5C7C15E2A /* EXFirebaseAnalytics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFirebaseAnalytics.m; path = EXFirebaseAnalytics/EXFirebaseAnalytics.m; sourceTree = "<group>"; };
 		BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EXFirebaseAnalyticsAppDelegate.h; path = EXFirebaseAnalytics/EXFirebaseAnalyticsAppDelegate.h; sourceTree = "<group>"; };
+		CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EXFirebaseAnalyticsAppDelegate.m; path = EXFirebaseAnalytics/EXFirebaseAnalyticsAppDelegate.m; sourceTree = "<group>"; };
 		CF32273286826CE62B3FFEB37AB15404 /* EXFirebaseAnalytics.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFirebaseAnalytics.xcconfig; sourceTree = "<group>"; };
-		F601139FBA85D294DE08EE0A90D15BF1 /* EXFirebaseAnalytics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFirebaseAnalytics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F601139FBA85D294DE08EE0A90D15BF1 /* EXFirebaseAnalytics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = EXFirebaseAnalytics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,9 +98,26 @@
 			name = Pod;
 			sourceTree = "<group>";
 		};
+		CD6947D223CD1CB800F02E57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CD69489923CD1DA800F02E57 /* libUMCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CD6947D423CD1CB800F02E57 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		DB31783DF10A0CEC36A48E801835DBBD /* EXFirebaseAnalytics */ = {
 			isa = PBXGroup;
 			children = (
+				CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */,
+				CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */,
 				0B1DC10D367501C8D3569871725AF84F /* EXFirebaseAnalytics.h */,
 				A053C7AB9AA3B9BE98EBEEB5C7C15E2A /* EXFirebaseAnalytics.m */,
 				94B10A95F879CC79D5D833F0D536D27F /* Pod */,
@@ -124,6 +152,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD69489623CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h in Headers */,
 				5E92262BD29DE5A389F1302104B61EBF /* EXFirebaseAnalytics.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,10 +201,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */;
+					ProductGroup = CD6947D423CD1CB800F02E57 /* Products */;
+					ProjectRef = 580CF1921D9624CD8CCA50130ED5DF30 /* Firebase */;
 				},
 				{
-					ProjectRef = 580CF1921D9624CD8CCA50130ED5DF30 /* Firebase */;
+					ProductGroup = CD6947D223CD1CB800F02E57 /* Products */;
+					ProjectRef = BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */;
 				},
 			);
 			projectRoot = "";
@@ -185,6 +216,16 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		CD69489923CD1DA800F02E57 /* libUMCore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUMCore.a;
+			remoteRef = CD69489823CD1DA800F02E57 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E880928CE089404FF2A950FE09EF0CDC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -192,6 +233,7 @@
 			files = (
 				3DCFA9E3C2CBF70A9DD7DA7BFA705F89 /* EXFirebaseAnalytics-dummy.m in Sources */,
 				C4D614E4C1D151911DF1020C9F94F88B /* EXFirebaseAnalytics.m in Sources */,
+				CD69489723CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,8 +306,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
