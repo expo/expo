@@ -7,6 +7,10 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.common.LifecycleState;
 
+import java.util.Map;
+
+import expo.loaders.provider.AppLoaderProvider;
+import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppRecordInterface;
 
 public class HeadlessAppLoader {

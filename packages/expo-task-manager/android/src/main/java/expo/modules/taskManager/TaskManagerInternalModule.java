@@ -114,10 +114,10 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   @Override
   public boolean isRunningInHeadlessMode() {
-    if (mConstants != null) {
-      return (boolean) mConstants.getConstants().get("isHeadless");
-    }
-    return false;
+//    if (mConstants != null) {
+//      return (boolean) mConstants.getConstants().get("isHeadless");
+//    }
+    return true;
   }
 
   //endregion

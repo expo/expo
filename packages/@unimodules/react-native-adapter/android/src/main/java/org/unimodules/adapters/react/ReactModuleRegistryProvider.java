@@ -9,6 +9,7 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ModuleRegistryProvider;
 import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.Function;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
@@ -29,17 +30,19 @@ import java.util.List;
 public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<ViewManager> mViewManagers;
   private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
+  private Collection<Function<Context, SingletonModule>> mSingletonModulesFactories;
   private Collection<SingletonModule> mSingletonModules;
 
-  public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
+  public ReactModuleRegistryProvider(List<Package> initialPackages, List<Function<Context, SingletonModule>> singletonModules) {
     super(initialPackages);
-    mSingletonModules = singletonModules;
+    mSingletonModulesFactories = singletonModules;
   }
 
   @Override
   public ModuleRegistry get(Context context) {
     Collection<InternalModule> internalModules = new ArrayList<>();
     Collection<ExportedModule> exportedModules = new ArrayList<>();
+
     ReactPackagesProvider reactPackagesProvider = new ReactPackagesProvider();
 
     for (Package pkg : getPackages()) {
@@ -57,10 +60,18 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
 
   private Collection<SingletonModule> getSingletonModules(Context context) {
     // If singleton modules were provided to registry provider, then just pass them to module registry.
+
     if (mSingletonModules != null) {
       return mSingletonModules;
     }
     Collection<SingletonModule> singletonModules = new ArrayList<>();
+
+    if (mSingletonModulesFactories != null) {
+      for(Function<Context, SingletonModule> factory: mSingletonModulesFactories) {
+        mSingletonModules.add(factory.apply(context));
+      }
+      mSingletonModulesFactories = null;
+    }
 
     for (Package pkg : getPackages()) {
       singletonModules.addAll(pkg.createSingletonModules(context));

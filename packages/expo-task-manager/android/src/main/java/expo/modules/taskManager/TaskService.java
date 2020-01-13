@@ -15,6 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -26,20 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.unimodules.core.interfaces.SingletonModule;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppRecordInterface;
 import expo.modules.taskManager.apploader.ExpoHeadlessAppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
-import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
+import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -612,6 +609,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   /**
    *  Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
    */
+  @Nullable
   private TaskManagerInterface getTaskManager(String appId) {
     WeakReference<TaskManagerInterface> weakRef = sTaskManagers.get(appId);
     TaskManagerInterface taskManager = weakRef == null ? null : weakRef.get();

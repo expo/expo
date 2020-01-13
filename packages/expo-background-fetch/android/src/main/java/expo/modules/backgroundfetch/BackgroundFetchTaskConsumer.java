@@ -40,7 +40,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   public boolean canReceiveCustomBroadcast(String action) {
     // Let the TaskService know that we want to receive custom broadcasts
     // having "android.intent.action.BOOT_COMPLETED" action.
-    return Intent.ACTION_BOOT_COMPLETED.equals(action);
+    return Intent.ACTION_BOOT_COMPLETED.equals(action) || "customaction".equals(action);
   }
 
   @Override
@@ -134,9 +134,9 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
 
     alarmManager.setInexactRepeating(
-        AlarmManager.ELAPSED_REALTIME_WAKEUP,
-        SystemClock.elapsedRealtime() + interval,
-        interval,
+        AlarmManager.RTC,
+        0,
+        0,
         mPendingIntent
     );
   }
