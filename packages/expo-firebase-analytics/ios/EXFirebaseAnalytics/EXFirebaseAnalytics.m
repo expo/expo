@@ -5,9 +5,6 @@
 #import <UIKit/UIKit.h>
 #import <Firebase/Firebase.h>
 
-static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
-static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
-
 @implementation EXFirebaseAnalytics
 
 UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
