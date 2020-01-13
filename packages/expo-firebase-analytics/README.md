@@ -295,7 +295,7 @@ Sets multiple user properties to the supplied values. This is a web-only method 
 
 | Name   | Type   | Description                      |
 | ------ | ------ | -------------------------------- |
-| properties | `{ [key: string]: string }` | key/value set of user properties |
+| properties | `Object` | key/value set of user properties |
 
 #### Example
 
