@@ -33,15 +33,13 @@ export async function initializeAppDangerously(googleServices: {
 }
 
 /**
- * Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
- *
- * @param googleServices Platform specific Google Services file.
+ * Delete the default Firebase app instance. If no default app is running then nothing happens.
  */
-export async function deleteApp(googleServices: { [key: string]: any }): Promise<void> {
+export async function deleteDefaultApp(): Promise<void> {
   if (!ExpoFirebaseAnalytics.deleteApp) {
     throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
   }
-  return await ExpoFirebaseAnalytics.deleteApp(parseConfig(googleServices));
+  return await ExpoFirebaseAnalytics.deleteApp({});
 }
 
 /**
