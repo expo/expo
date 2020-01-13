@@ -15,6 +15,7 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
