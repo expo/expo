@@ -18,7 +18,6 @@ export var OrientationLock;
     OrientationLock[OrientationLock["LANDSCAPE_RIGHT"] = 7] = "LANDSCAPE_RIGHT";
     OrientationLock[OrientationLock["OTHER"] = 8] = "OTHER";
     OrientationLock[OrientationLock["UNKNOWN"] = 9] = "UNKNOWN";
-    OrientationLock[OrientationLock["ALL_BUT_UPSIDE_DOWN"] = 10] = "ALL_BUT_UPSIDE_DOWN";
 })(OrientationLock || (OrientationLock = {}));
 export var WebOrientationLock;
 (function (WebOrientationLock) {

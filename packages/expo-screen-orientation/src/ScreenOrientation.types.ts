@@ -17,7 +17,6 @@ export enum OrientationLock {
   LANDSCAPE_RIGHT = 7,
   OTHER = 8,
   UNKNOWN = 9,
-  ALL_BUT_UPSIDE_DOWN = 10, // iOS only -  deprecated
 }
 
 export enum WebOrientationLock {

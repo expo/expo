@@ -15,8 +15,7 @@ export declare enum OrientationLock {
     LANDSCAPE_LEFT = 6,
     LANDSCAPE_RIGHT = 7,
     OTHER = 8,
-    UNKNOWN = 9,
-    ALL_BUT_UPSIDE_DOWN = 10
+    UNKNOWN = 9
 }
 export declare enum WebOrientationLock {
     PORTRAIT_PRIMARY = "portrait-primary",
