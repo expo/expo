@@ -96,7 +96,7 @@ UM_EXPORT_METHOD_AS(deleteApp,
 {
   FIRApp *app = [FIRApp defaultApp];
   if (app != nil) return app;
-  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleServices-info.plist bundled and Firebase is being initialized natively in the AppDelegate with [FIRApp configure]. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
+  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled and Firebase is being initialized natively in the AppDelegate with [FIRApp configure]. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
   return nil;
 }
 
