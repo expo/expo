@@ -12,6 +12,8 @@
 		C4D614E4C1D151911DF1020C9F94F88B /* EXFirebaseAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = A053C7AB9AA3B9BE98EBEEB5C7C15E2A /* EXFirebaseAnalytics.m */; };
 		CD69489623CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */; };
 		CD69489723CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */; };
+		CD69489C23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = CD69489A23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.h */; };
+		CD69489D23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = CD69489B23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,8 @@
 		BFE5F9AFDEB19AD14C4B4E2FE5DACE24 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EXFirebaseAnalyticsAppDelegate.h; path = EXFirebaseAnalytics/EXFirebaseAnalyticsAppDelegate.h; sourceTree = "<group>"; };
 		CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EXFirebaseAnalyticsAppDelegate.m; path = EXFirebaseAnalytics/EXFirebaseAnalyticsAppDelegate.m; sourceTree = "<group>"; };
+		CD69489A23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "EXFirebaseAnalytics+JSON.h"; path = "EXFirebaseAnalytics/EXFirebaseAnalytics+JSON.h"; sourceTree = "<group>"; };
+		CD69489B23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "EXFirebaseAnalytics+JSON.m"; path = "EXFirebaseAnalytics/EXFirebaseAnalytics+JSON.m"; sourceTree = "<group>"; };
 		CF32273286826CE62B3FFEB37AB15404 /* EXFirebaseAnalytics.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFirebaseAnalytics.xcconfig; sourceTree = "<group>"; };
 		F601139FBA85D294DE08EE0A90D15BF1 /* EXFirebaseAnalytics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = EXFirebaseAnalytics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
@@ -116,6 +120,8 @@
 		DB31783DF10A0CEC36A48E801835DBBD /* EXFirebaseAnalytics */ = {
 			isa = PBXGroup;
 			children = (
+				CD69489A23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.h */,
+				CD69489B23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.m */,
 				CD69489423CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h */,
 				CD69489523CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m */,
 				0B1DC10D367501C8D3569871725AF84F /* EXFirebaseAnalytics.h */,
@@ -152,6 +158,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD69489C23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.h in Headers */,
 				CD69489623CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.h in Headers */,
 				5E92262BD29DE5A389F1302104B61EBF /* EXFirebaseAnalytics.h in Headers */,
 			);
@@ -231,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD69489D23CD22A000F02E57 /* EXFirebaseAnalytics+JSON.m in Sources */,
 				3DCFA9E3C2CBF70A9DD7DA7BFA705F89 /* EXFirebaseAnalytics-dummy.m in Sources */,
 				C4D614E4C1D151911DF1020C9F94F88B /* EXFirebaseAnalytics.m in Sources */,
 				CD69489723CD1DA700F02E57 /* EXFirebaseAnalyticsAppDelegate.m in Sources */,
