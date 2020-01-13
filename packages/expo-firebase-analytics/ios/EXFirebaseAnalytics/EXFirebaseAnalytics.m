@@ -23,6 +23,9 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   reject(exception.name, exception.reason, error);
 }
 
+# pragma mark - Firebase App methods
+
+
 UM_EXPORT_METHOD_AS(initializeAppDangerously,
                     initializeAppDangerously:(NSDictionary *)config
                     resolver:(UMPromiseResolveBlock)resolve
@@ -83,8 +86,6 @@ UM_EXPORT_METHOD_AS(deleteApp,
   }];
 }
 
-/*** firebase */
-
 - (nullable FIRApp *)getAppOrReject:(UMPromiseRejectBlock)reject
 {
   FIRApp *app = [FIRApp defaultApp];
@@ -92,6 +93,8 @@ UM_EXPORT_METHOD_AS(deleteApp,
   reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled and your project has react-native-unimodules installed. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
   return nil;
 }
+
+# pragma mark - Firebase Analytics methods
 
 UM_EXPORT_METHOD_AS(logEvent,
                     logEvent:(NSString *)name
@@ -107,6 +110,7 @@ UM_EXPORT_METHOD_AS(logEvent,
     return;
   }
 }
+
 UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
                     setAnalyticsCollectionEnabled:(BOOL)isEnabled
                     resolver:(UMPromiseResolveBlock)resolve
@@ -120,6 +124,7 @@ UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
     return;
   }
 }
+
 UM_EXPORT_METHOD_AS(setCurrentScreen,
                     setCurrentScreen:(NSString *)screenName
                     screenClass:(NSString *)screenClassOverview
@@ -136,6 +141,7 @@ UM_EXPORT_METHOD_AS(setCurrentScreen,
     }
   }];
 }
+
 UM_EXPORT_METHOD_AS(setUserId,
                     setUserId:(NSString *)userId
                     resolver:(UMPromiseResolveBlock)resolve
@@ -149,6 +155,7 @@ UM_EXPORT_METHOD_AS(setUserId,
     return;
   }
 }
+
 UM_EXPORT_METHOD_AS(setUserProperty,
                     setUserProperty:(NSString *)name
                     value:(NSString *)value
@@ -163,6 +170,7 @@ UM_EXPORT_METHOD_AS(setUserProperty,
     return;
   }
 }
+
 UM_EXPORT_METHOD_AS(resetAnalyticsData,
                     resetAnalyticsData:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
