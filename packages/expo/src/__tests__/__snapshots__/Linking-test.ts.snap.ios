@@ -40,6 +40,37 @@ Object {
 }
 `;
 
+exports[`parse parses "exp://127.0.0.1:19000/" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": "",
+  "queryParams": Object {},
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": "--/test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "exp://127.0.0.1:19000?query=param" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": null,
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
+}
+`;
+
 exports[`parse parses "exp://exp.host/@test/test/--/test/path" 1`] = `
 Object {
   "hostname": null,

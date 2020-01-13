@@ -432,7 +432,7 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - RNGestureHandler (1.5.0):
+  - RNGestureHandler (1.5.1):
     - React
   - RNReanimated (1.4.0):
     - React
@@ -533,8 +533,8 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../../../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
-  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
-  - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
+  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
@@ -740,7 +740,7 @@ EXTERNAL SOURCES:
   React-jsinspector:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsinspector"
   react-native-safe-area-context:
-    :podspec: "../../../node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   React-RCTActionSheet:
     :path: "../../../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -762,9 +762,9 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../../../react-native-lab/react-native/ReactCommon"
   RNGestureHandler:
-    :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
+    :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :podspec: "../../../node_modules/react-native-reanimated/RNReanimated.podspec"
+    :path: "../../../node_modules/react-native-reanimated"
   UMBarCodeScannerInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-barcode-scanner-interface/ios"
@@ -889,7 +889,7 @@ SPEC CHECKSUMS:
   React-RCTText: 21934e0a51d522abcd0a275407e80af45d6fd9ec
   React-RCTVibration: 0f76400ee3cec6edb9c125da49fed279340d145a
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
+  RNGestureHandler: 7add966bb5d90ee8cf38d4341f87814474357972
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
   UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
@@ -904,6 +904,6 @@ SPEC CHECKSUMS:
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cb4699626e12016377481e374667a9f4db8fb322
+PODFILE CHECKSUM: f8c0544004c7ca9ffcae29a1b9efb91846964d98
 
 COCOAPODS: 1.8.4

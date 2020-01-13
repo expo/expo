@@ -7,33 +7,52 @@ source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 inhibit_all_warnings!
 
+# Get the package.json for the excluded modules
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 # [Custom] Add target the root modules in the workspace
 modules_path = '../../../node_modules'
 
-# [Custom] Use the workspace root
+# Import the auto-linking packages
 require_relative "#{modules_path}/react-native-unimodules/cocoapods"
-
-# [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
-# expected (you may get `'React/<File>.h' file not found` when building)
-react_native_path = '../../../react-native-lab/react-native'
-require_relative "#{react_native_path}/scripts/autolink-ios"
+require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
 
 target 'BareExpo' do
-  # [Custom] Add FBSDKCoreKit for Expo - only required for expo-facebook and expo-ads-facebook which
-  # we disabled in this project to speed up the pod install pod 'FBSDKCoreKit', '~> 4.40'
+  # [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
+  # expected (you may get `'React/<File>.h' file not found` when building)
+  rnPrefix = '../../../react-native-lab/react-native'
 
-  # Pods for BareExpo
-  # [Custom] Use the react-native submodule
-  use_react_native! path: react_native_path
+  # React Native and its dependencies
+  pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
+  pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
+  pod 'RCTRequired', :path => "#{rnPrefix}/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "#{rnPrefix}/Libraries/TypeSafety"
+  pod 'React', :path => "#{rnPrefix}/"
+  pod 'React-Core', :path => "#{rnPrefix}/"
+  pod 'React-CoreModules', :path => "#{rnPrefix}/React/CoreModules"
+  pod 'React-RCTActionSheet', :path => "#{rnPrefix}/Libraries/ActionSheetIOS"
+  pod 'React-RCTAnimation', :path => "#{rnPrefix}/Libraries/NativeAnimation"
+  pod 'React-RCTBlob', :path => "#{rnPrefix}/Libraries/Blob"
+  pod 'React-RCTImage', :path => "#{rnPrefix}/Libraries/Image"
+  pod 'React-RCTLinking', :path => "#{rnPrefix}/Libraries/LinkingIOS"
+  pod 'React-RCTNetwork', :path => "#{rnPrefix}/Libraries/Network"
+  pod 'React-RCTSettings', :path => "#{rnPrefix}/Libraries/Settings"
+  pod 'React-RCTText', :path => "#{rnPrefix}/Libraries/Text"
+  pod 'React-RCTVibration', :path => "#{rnPrefix}/Libraries/Vibration"
+  pod 'React-Core/RCTWebSocket', :path => "#{rnPrefix}/"
+  pod 'React-Core/DevSupport', :path => "#{rnPrefix}/"
+  pod 'React-cxxreact', :path => "#{rnPrefix}/ReactCommon/cxxreact"
+  pod 'React-jsi', :path => "#{rnPrefix}/ReactCommon/jsi"
+  pod 'React-jsiexecutor', :path => "#{rnPrefix}/ReactCommon/jsiexecutor"
+  pod 'React-jsinspector', :path => "#{rnPrefix}/ReactCommon/jsinspector"
+  pod 'ReactCommon/jscallinvoker', :path => "#{rnPrefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{rnPrefix}/ReactCommon"
+  pod 'Yoga', :path => "#{rnPrefix}/ReactCommon/yoga"
+  pod 'DoubleConversion', :podspec => "#{rnPrefix}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{rnPrefix}/third-party-podspecs/glog.podspec"
+  pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
 
-  # [Custom] RNGH, Reanimated, and SAC are installed as node_modules in the root of the workspace
-  pod 'RNGestureHandler',
-      podspec: "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
-  pod 'RNReanimated', podspec: "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
-  pod 'react-native-safe-area-context', podspec: "#{modules_path}/react-native-safe-area-context"
-
+  # Auto-linking
   use_unimodules!(
     {
       modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
@@ -42,6 +61,10 @@ target 'BareExpo' do
     }
   )
 
+  # react-native-cli auto-linking
+  use_native_modules!
+
+  # Fix Google Sign-in
   post_install do |installer|
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|

@@ -16,7 +16,7 @@ export declare type GoogleLogInConfig = {
      * If this isn't defined then it will be infered from the correct client ID.
      */
     redirectUrl?: string;
-    clientId: string;
+    clientId?: string;
 };
 export declare type GoogleUser = {
     id?: string;

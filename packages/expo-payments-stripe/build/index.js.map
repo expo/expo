@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,GAAG;IACf,IAAI,cAAc;QAChB,OAAO,OAAO,CAAC,UAAU,CAAC,CAAC,OAAO,CAAC;IACrC,CAAC;CACF,CAAC","sourcesContent":["module.exports = {\n  get PaymentsStripe() {\n    return require('./Stripe').default;\n  },\n};\n"]}

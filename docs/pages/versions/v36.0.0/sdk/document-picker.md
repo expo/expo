@@ -55,6 +55,5 @@ Display the system UI for choosing a document. By default, the chosen file is co
 
 #### Returns
 
-If the user cancelled the document picking, returns `{ type: 'cancel' }`.
-
-Otherwise, returns `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its original name and `size` is its size in bytes.
+On success returns a promise that resolves to an object containing `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its original name and `size` is its size in bytes.
+If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.

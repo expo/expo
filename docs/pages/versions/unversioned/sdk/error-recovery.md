@@ -18,7 +18,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-import { ErrorRecovery } from 'expo';
+import * as ErrorRecovery from 'expo-error-recovery';
 ```
 
 ### `ErrorRecovery.setRecoveryProps(props)`
