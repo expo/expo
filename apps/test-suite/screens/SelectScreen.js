@@ -46,6 +46,7 @@ export default class SelectScreen extends React.PureComponent {
 
   constructor(props) {
     super(props);
+
     if (global.ErrorUtils) {
       const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
 
