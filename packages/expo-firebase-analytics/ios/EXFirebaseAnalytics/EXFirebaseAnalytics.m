@@ -15,7 +15,7 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   return dispatch_get_main_queue();
 }
 
-- (void)rejectException:(UMPromiseRejectBlock)reject exception:(NSException *)exception {
+- (void)reject:(UMPromiseRejectBlock)reject withException:(NSException *)exception {
   NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:4815162342 userInfo:@{
         @"message": exception.reason,
         @"code": exception.name,
@@ -103,7 +103,7 @@ UM_EXPORT_METHOD_AS(logEvent,
     [FIRAnalytics logEventWithName:name parameters:parameters];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+    [self reject:reject withException:exception];
     return;
   }
 }
@@ -116,7 +116,7 @@ UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
     [FIRAnalytics setAnalyticsCollectionEnabled:isEnabled];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+    [self reject:reject withException:exception];
     return;
   }
 }
@@ -131,7 +131,7 @@ UM_EXPORT_METHOD_AS(setCurrentScreen,
       [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
       resolve([NSNull null]);
     } @catch (NSException *exception) {
-      [self rejectException:reject exception:exception];
+      [self reject:reject withException:exception];
       return;
     }
   }];
@@ -145,7 +145,7 @@ UM_EXPORT_METHOD_AS(setUserId,
     [FIRAnalytics setUserID:userId];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+    [self reject:reject withException:exception];
     return;
   }
 }
@@ -159,7 +159,7 @@ UM_EXPORT_METHOD_AS(setUserProperty,
     [FIRAnalytics setUserPropertyString:value forName:name];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+    [self reject:reject withException:exception];
     return;
   }
 }
@@ -171,7 +171,7 @@ UM_EXPORT_METHOD_AS(resetAnalyticsData,
     [FIRAnalytics resetAnalyticsData];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
-    [self rejectException:reject exception:exception];
+    [self reject:reject withException:exception];
     return;
   }
 }
