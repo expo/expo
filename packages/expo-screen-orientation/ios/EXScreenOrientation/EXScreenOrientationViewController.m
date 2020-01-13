@@ -1,6 +1,5 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
 #import <EXScreenOrientation/EXScreenOrientationViewController.h>
@@ -9,17 +8,17 @@
 @interface EXScreenOrientationViewController ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, assign) UIInterfaceOrientationMask defaultOrientation;
+@property (nonatomic, assign) UIInterfaceOrientationMask defaultOrientationMask;
 
 @end
 
 @implementation EXScreenOrientationViewController
 
-- (instancetype)initWithBrigde:(RCTBridge*)brigde andDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientation
+- (instancetype)initWithBrigde:(RCTBridge*)brigde andDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientationMask
 {
   if (self = [super init]) {
     _bridge = brigde;
-    _defaultOrientation = defaultOrientation;
+    _defaultOrientationMask = defaultOrientationMask;
   }
   
   return self;
@@ -28,19 +27,19 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry foregroundedOrientationMask] > 0) {
-    return [screenOrientationRegistry foregroundedOrientationMask];
+  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
+    return [screenOrientationRegistry requiredOrientationMask];
   }
   
-  return _defaultOrientation;
+  return _defaultOrientationMask;
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
-    EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-    [screenOrientationRegistry traitCollectionsDidChange:self.traitCollection];
+    id<EXScreenOrientationRegistryController> screenOrientationRegistryController = (id<EXScreenOrientationRegistryController>)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+    [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
   }
 }
 

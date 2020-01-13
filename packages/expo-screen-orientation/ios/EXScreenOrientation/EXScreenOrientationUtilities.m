@@ -21,17 +21,18 @@
   return true;
 }
 
+// https://medium.com/@cafielo/how-to-detect-notch-screen-in-swift-56271827625d
 + (BOOL)doesDeviceHaveNotch {
   if (@available(iOS 11.0, *)) {
-    static BOOL result = false;
+    static BOOL bottomSafeAreaInsetIsPositive = false;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
       dispatch_sync(dispatch_get_main_queue(), ^{
-        result = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.bottom ?: 0.0) > 0.0;
+        bottomSafeAreaInsetIsPositive = ([[[UIApplication sharedApplication] delegate] window].safeAreaInsets.bottom ?: 0.0) > 0.0;
       });
     });
     
-    return result;
+    return bottomSafeAreaInsetIsPositive;
   }
   
   return false;
@@ -42,7 +43,7 @@
   return 1 << orientation;
 }
 
-+ (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation
++ (UIInterfaceOrientation)interfaceOrientationFromDeviceOrientation:(UIDeviceOrientation)deviceOrientation
 {
    switch (deviceOrientation) {
      case UIDeviceOrientationPortrait:
@@ -142,7 +143,7 @@
     exportOrientationLockMap[@(UIInterfaceOrientationMaskAllButUpsideDown)] = @0; // UIInterfaceOrientationMaskAllButUpsideDown is default value
   });
   
-  return exportOrientationLockMap[@(orientationMask)] ?: @(8);
+  return exportOrientationLockMap[@(orientationMask)] ?: @(9);
 }
 
 + (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation

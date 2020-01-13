@@ -8,7 +8,7 @@
 + (BOOL)doesDeviceSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask;
 + (BOOL)doesOrientationMask:(UIInterfaceOrientationMask)orientationMask containOrientation:(UIInterfaceOrientation)orientation;
 + (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask;
-+ (UIInterfaceOrientation)UIDeviceOrientationToUIInterfaceOrientation:(UIDeviceOrientation)deviceOrientation;
++ (UIInterfaceOrientation)interfaceOrientationFromDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
 + (UIInterfaceOrientationMask)maskFromOrientation:(UIInterfaceOrientation)orientation;
 
 // import/export

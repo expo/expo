@@ -327,8 +327,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-  if (screenOrientationRegistry && [screenOrientationRegistry foregroundedOrientationMask] > 0) {
-    return [screenOrientationRegistry foregroundedOrientationMask];
+  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
+    return [screenOrientationRegistry requiredOrientationMask];
   }
 #endif
   
@@ -368,8 +368,8 @@ NS_ASSUME_NONNULL_BEGIN
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
     
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
-      [screenOrientationRegistry traitCollectionsDidChange:self.traitCollection];
+      id<EXScreenOrientationRegistryController> screenOrientationRegistryController = (id<EXScreenOrientationRegistryController>)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
       
     // TODO: Remove once sdk 36 is phased out

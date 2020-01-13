@@ -28,10 +28,10 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       }
     );
 
-    await this.updateCurrentOrienationAndLock();
+    await this.updateCurrentOrientationAndLock();
   }
 
-  updateCurrentOrienationAndLock = async () => {
+  updateCurrentOrientationAndLock = async () => {
     const [orientation, orientationLock] = await Promise.all([
       ScreenOrientation.getOrientationAsync(),
       ScreenOrientation.getOrientationLockAsync(),
@@ -68,7 +68,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       await document.exitFullscreen();
     }
 
-    await this.updateCurrentOrienationAndLock();
+    await this.updateCurrentOrientationAndLock();
   };
 
   lockPlatformExample = async () => {
@@ -90,7 +90,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       await document.exitFullscreen();
     }
 
-    await this.updateCurrentOrienationAndLock();
+    await this.updateCurrentOrientationAndLock();
   };
 
   doesSupport = async () => {
@@ -103,10 +103,10 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
   unlock = async () => {
     await ScreenOrientation.unlockAsync().catch(console.warn);
 
-    await this.updateCurrentOrienationAndLock();
+    await this.updateCurrentOrientationAndLock();
   };
 
-  getScreenOrienationLockOptions(): Array<{
+  getScreenOrientationLockOptions(): Array<{
     key: string;
     value: ScreenOrientation.OrientationLock;
   }> {
@@ -141,7 +141,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
         {orientationLock !== undefined && (
           <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
         )}
-        {this.getScreenOrienationLockOptions().map(o => (
+        {this.getScreenOrientationLockOptions().map(o => (
           <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />
         ))}
         <ListButton

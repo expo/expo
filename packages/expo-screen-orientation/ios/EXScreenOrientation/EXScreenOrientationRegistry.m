@@ -3,14 +3,14 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import <EXScreenOrientation/EXScreenOrientationUtilities.h>
 #import <UMCore/UMDefines.h>
+#import <UMCore/UMUtilities.h>
 
 @interface EXScreenOrientationRegistry ()
 
-@property (nonatomic, assign) BOOL isGeneratingDeviceOrientationNotifications;
 @property (nonatomic, assign) UIInterfaceOrientation currentScreenOrientation;
-@property (nonatomic, strong) NSPointerArray *notificationReceiver;
-@property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleMask;
-@property (nonatomic, weak) id foregrounded;
+@property (nonatomic, strong) NSPointerArray *notificationListeners;
+@property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleInterfaceMasks;
+@property (nonatomic, weak) id foregroundedModule;
 
 @end
 
@@ -21,23 +21,18 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 - (instancetype)init
 {
   if (self = [super init]) {
-    _moduleMask =  [NSMapTable weakToStrongObjectsMapTable];
-    _notificationReceiver = [NSPointerArray weakObjectsPointerArray];
-    _isGeneratingDeviceOrientationNotifications = false;
+    _moduleInterfaceMasks =  [NSMapTable weakToStrongObjectsMapTable];
+    _notificationListeners = [NSPointerArray weakObjectsPointerArray];
   
-    UM_WEAKIFY(self)
-    dispatch_async(dispatch_get_main_queue(), ^{
-      UM_STRONGIFY(self);
-      if (![[UIDevice currentDevice] isGeneratingDeviceOrientationNotifications]) {
-        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-        self->_isGeneratingDeviceOrientationNotifications = true;
-      }
-    });
-    
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleDeviceOrientationChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:[UIDevice currentDevice]];
+                                            selector:@selector(handleDeviceOrientationChange:)
+                                                name:UIDeviceOrientationDidChangeNotification
+                                              object:[UIDevice currentDevice]];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    });
+
   }
   
   return self;
@@ -45,11 +40,9 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)dealloc
 {
-  if (_isGeneratingDeviceOrientationNotifications) {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-    });
-  }
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+  });
 }
 
 #pragma mark - affecting screen orientation
@@ -74,17 +67,17 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 }
 
 - (void)setMask:(UIInterfaceOrientationMask)mask forModule:(id)module {
-  [_moduleMask setObject:@(mask) forKey:module];
-  if (_foregrounded == module) {
+  [_moduleInterfaceMasks setObject:@(mask) forKey:module];
+  if (_foregroundedModule == module) {
     [self enforceDesiredDeviceOrientationWithOrientationMask:mask];
   }
 }
 
 #pragma mark - getters
 
-- (UIInterfaceOrientationMask)foregroundedOrientationMask
+- (UIInterfaceOrientationMask)requiredOrientationMask
 {
-  NSNumber *current = [_moduleMask objectForKey:_foregrounded];
+  NSNumber *current = [_moduleInterfaceMasks objectForKey:_foregroundedModule];
   if (!current) {
     return 0;
   }
@@ -94,18 +87,11 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (UIInterfaceOrientationMask)currentOrientationMask
 {
-  __block UIInterfaceOrientationMask currentOrientationMask = [self foregroundedOrientationMask];
-  if (!currentOrientationMask) {
-    dispatch_block_t onMain = ^{
-      currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
-    };
-
-    if ([NSThread isMainThread]) {
-      onMain();
-    } else {
-      dispatch_sync(dispatch_get_main_queue(), onMain);
-    }
-  }
+  
+  __block UIInterfaceOrientationMask currentOrientationMask = [self requiredOrientationMask];
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
+  }];
   return currentOrientationMask;
 }
 
@@ -118,11 +104,11 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)handleDeviceOrientationChange:(NSNotification *)notification
 {
-  UIInterfaceOrientation newScreenOrientation = [EXScreenOrientationUtilities UIDeviceOrientationToUIInterfaceOrientation:[notification.object orientation]];
-  [self deviceOrientationDidChange:newScreenOrientation];
+  UIInterfaceOrientation newScreenOrientation = [EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[notification.object orientation]];
+  [self interfaceOrientationDidChange:newScreenOrientation];
 }
 
-- (void)deviceOrientationDidChange:(UIInterfaceOrientation)newScreenOrientation
+- (void)interfaceOrientationDidChange:(UIInterfaceOrientation)newScreenOrientation
 {
   if (_currentScreenOrientation == newScreenOrientation || newScreenOrientation == UIInterfaceOrientationUnknown) {
     return;
@@ -148,44 +134,63 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   }
 }
 
-- (void)traitCollectionsDidChange:(UITraitCollection *)traitCollection
+- (void)traitCollectionDidChangeTo:(UITraitCollection *)traitCollection
 {
   UIUserInterfaceSizeClass verticalSizeClass = traitCollection.verticalSizeClass;
   UIUserInterfaceSizeClass horizontalSizeClass = traitCollection.horizontalSizeClass;
-  UIInterfaceOrientation currentDeviceOrientation = [EXScreenOrientationUtilities UIDeviceOrientationToUIInterfaceOrientation:[[UIDevice currentDevice]  orientation]];
+  UIInterfaceOrientation currentDeviceOrientation = [EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
   UIInterfaceOrientationMask currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
    
   UIInterfaceOrientation newScreenOrientation = UIInterfaceOrientationUnknown;
 
   if (verticalSizeClass == UIUserInterfaceSizeClassRegular && horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
-    // portrait
-    UIInterfaceOrientationMask portraitMask = currentOrientationMask & UIInterfaceOrientationPortrait;
+    // From trait collection, we know that screen is in portrait or upside down orientation.
+    UIInterfaceOrientationMask portraitMask = currentOrientationMask & (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
+    
+    // Mask allows only proper portrait - we know that the device is in either proper portrait or upside down
+    // we deduce it is proper portrait.
     if (portraitMask == UIInterfaceOrientationMaskPortrait) {
       newScreenOrientation = UIInterfaceOrientationPortrait;
-    } else if (portraitMask == UIInterfaceOrientationMaskPortraitUpsideDown) {
+    }
+    // Mask allows only upside down portrait - we know that the device is in either proper portrait or upside down
+    // we deduce it is upside down portrait.
+    else if (portraitMask == UIInterfaceOrientationMaskPortraitUpsideDown) {
       newScreenOrientation = UIInterfaceOrientationPortraitUpsideDown;
-    } else if (currentDeviceOrientation == UIInterfaceOrientationPortrait || currentDeviceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+    }
+    // Mask allows portrait or upside down portrait - we can try to deduce orientation
+    // from device orientation.
+    else if (currentDeviceOrientation == UIInterfaceOrientationPortrait || currentDeviceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
       newScreenOrientation = currentDeviceOrientation;
     }
   } else if ((verticalSizeClass == UIUserInterfaceSizeClassCompact && horizontalSizeClass == UIUserInterfaceSizeClassCompact)
-              || (verticalSizeClass == UIUserInterfaceSizeClassCompact && horizontalSizeClass == UIUserInterfaceSizeClassRegular)){
-     // landscape
-      UIInterfaceOrientationMask landscapeMask = currentOrientationMask & UIInterfaceOrientationMaskLandscape;
-     if (landscapeMask == UIInterfaceOrientationMaskLandscapeLeft) {
+            || (verticalSizeClass == UIUserInterfaceSizeClassRegular && horizontalSizeClass == UIUserInterfaceSizeClassRegular)
+            || (verticalSizeClass == UIUserInterfaceSizeClassCompact && horizontalSizeClass == UIUserInterfaceSizeClassRegular)) {
+    // From trait collection, we know that screen is in landspace left or right orientation.
+    UIInterfaceOrientationMask landscapeMask = currentOrientationMask & UIInterfaceOrientationMaskLandscape;
+    
+    // Mask allows only proper landspace - we know that the device is in either proper landspace left or right
+    // we deduce it is proper left.
+    if (landscapeMask == UIInterfaceOrientationMaskLandscapeLeft) {
        newScreenOrientation = UIInterfaceOrientationLandscapeLeft;
-     } else if (landscapeMask == UIInterfaceOrientationMaskLandscapeRight) {
-       newScreenOrientation = UIInterfaceOrientationLandscapeRight;
-     } else if (currentDeviceOrientation == UIInterfaceOrientationLandscapeLeft
-                || currentDeviceOrientation == UIInterfaceOrientationLandscapeRight) {
-       newScreenOrientation = currentDeviceOrientation;
-     }
+    }
+    // Mask allows only upside down portrait - we know that the device is in either proper portrait or upside down
+    // we deduce it is upside right.
+    else if (landscapeMask == UIInterfaceOrientationMaskLandscapeRight) {
+      newScreenOrientation = UIInterfaceOrientationLandscapeRight;
+    }
+    // Mask allows landspace left or right - we can try to deduce orientation
+    // from device orientation.
+    else if (currentDeviceOrientation == UIInterfaceOrientationLandscapeLeft
+               || currentDeviceOrientation == UIInterfaceOrientationLandscapeRight) {
+      newScreenOrientation = currentDeviceOrientation;
+    }
   }
   [self screenOrientationDidChange:newScreenOrientation];
 }
 
 -(void)screenOrientationDidChange:(UIInterfaceOrientation)newScreenOrientation {
   _currentScreenOrientation = newScreenOrientation;
-  for (id module in [_notificationReceiver allObjects]) {
+  for (id module in [_notificationListeners allObjects]) {
     [module screenOrientationDidChange:newScreenOrientation];
   }
 }
@@ -194,34 +199,37 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)moduleDidForeground:(id)module
 {
-  _foregrounded = module;
+  _foregroundedModule = module;
   [self enforceDesiredDeviceOrientationWithOrientationMask:[self currentOrientationMask]];
 }
 
 - (void)moduleDidBackground:(id)module
 {
-  if (_foregrounded == module) {
-    _foregrounded = nil;
+  if (_foregroundedModule == module) {
+    _foregroundedModule = nil;
   }
 }
 
 - (void)moduleWillDeallocate:(id)module
 {
-  [_moduleMask removeObjectForKey:module];
-  
-  for (int i = 0; i < _notificationReceiver.count; i++) {
-    id pointer = [_notificationReceiver pointerAtIndex:i];
+  [_moduleInterfaceMasks removeObjectForKey:module];
+}
+
+- (void)registerModuleToReceiveNotification:(id<EXScreenOrientationListener>)module
+{
+  [_notificationListeners addPointer:(__bridge void * _Nullable)(module)];
+}
+
+- (void)unregisterModuleFromReceivingNotification:(id<EXScreenOrientationListener>)module
+{
+  for (int i = 0; i < _notificationListeners.count; i++) {
+    id pointer = [_notificationListeners pointerAtIndex:i];
     if (pointer == (__bridge void * _Nullable)(module) || !pointer) {
-      [_notificationReceiver removePointerAtIndex:i];
+      [_notificationListeners removePointerAtIndex:i];
       i--;
     }
   }
-  [_notificationReceiver compact];
-}
-
-- (void)registerModuleToReceiveNotification:(id)module
-{
-  [_notificationReceiver addPointer:(__bridge void * _Nullable)(module)];
+  [_notificationListeners compact];
 }
 
 @end
