@@ -16,13 +16,9 @@ export declare function initializeAppDangerously(googleServices: {
     [key: string]: any;
 }): Promise<void>;
 /**
- * Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
- *
- * @param googleServices Platform specific Google Services file.
+ * Delete the default Firebase app instance. If no default app is running then nothing happens.
  */
-export declare function deleteApp(googleServices: {
-    [key: string]: any;
-}): Promise<void>;
+export declare function deleteDefaultApp(): Promise<void>;
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
  * the same parameters. Up to 500 event names are supported. Using predefined events and/or

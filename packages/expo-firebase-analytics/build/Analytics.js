@@ -26,15 +26,13 @@ export async function initializeAppDangerously(googleServices) {
     return await ExpoFirebaseAnalytics.initializeAppDangerously(parseConfig(googleServices));
 }
 /**
- * Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
- *
- * @param googleServices Platform specific Google Services file.
+ * Delete the default Firebase app instance. If no default app is running then nothing happens.
  */
-export async function deleteApp(googleServices) {
+export async function deleteDefaultApp() {
     if (!ExpoFirebaseAnalytics.deleteApp) {
         throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
     }
-    return await ExpoFirebaseAnalytics.deleteApp(parseConfig(googleServices));
+    return await ExpoFirebaseAnalytics.deleteApp({});
 }
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have

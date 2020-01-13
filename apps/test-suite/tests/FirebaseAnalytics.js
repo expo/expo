@@ -16,7 +16,7 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
     */
 
     beforeAll(async () => {
-      await Analytics.deleteApp({});
+      await Analytics.deleteDefaultApp();
 
       await Analytics.initializeAppDangerously(
         Platform.select({
@@ -47,7 +47,7 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
     });
 
     afterAll(async () => {
-      await Analytics.deleteApp({});
+      await Analytics.deleteDefaultApp();
     });
 
     describe('logEvent()', async () => {

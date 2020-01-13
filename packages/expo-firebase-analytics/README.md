@@ -96,28 +96,18 @@ if (Platform.OS === 'ios' && global.__DEV__ === true) {
 }
 ```
 
-### deleteApp
+### deleteDefaultApp
 
 ```tsx
-deleteApp(googleServices: { [key: string]: any }): Promise<void>
+deleteDefaultApp(): Promise<void>
 ```
 
-Delete a running Firebase app instance. Only works for the default app. If no default app is running then nothing happens.
-
-#### Parameters
-
-| Name       | Type   | Description                                                      |
-| ---------- | ------ | ---------------------------------------------------------------- |
-| name       | string | Platform specific Google Services file.  |
+Delete the default Firebase app instance. If no default app is running then nothing happens.
 
 #### Example
 
 ```js
-await Analytics.deleteApp(Platform.select({
-  ios: { /* GoogleService-Info.plist contents as JSON */ },
-  android: { /* google-services.json */ },
-  web: { /* Google Services JSON */ }
-}));
+await Analytics.deleteDefaultApp();
 ```
 
 ### logEvent

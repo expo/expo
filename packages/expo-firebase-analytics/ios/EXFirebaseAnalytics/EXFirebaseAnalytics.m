@@ -71,8 +71,7 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
 }
 
 UM_EXPORT_METHOD_AS(deleteApp,
-                    deleteApp:(NSDictionary *)config
-                    resolver:(UMPromiseResolveBlock)resolve
+                    deleteApp:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   FIRApp *existingApp = [FIRApp defaultApp];
   
