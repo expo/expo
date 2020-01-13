@@ -20,37 +20,63 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-```javascript
-import React from 'react';
+Let's make our app support English and Japanese.
+
+- Install the i18n package `i18n-js`
+
+  ```sh
+  yarn add i18n-js
+  ```
+
+- Configure the languages for your app.
+
+  ```tsx
+  import * as Localization from 'expo-localization';
+  import i18n from 'i18n-js';
+  // Set the key-value pairs for the different languages you want to support.
+  i18n.translations = {
+    en: { welcome: 'Hello' },
+    ja: { welcome: 'こんにちは' },
+  };
+  // Set the locale once at the beginning of your app.
+  i18n.locale = Localization.locale;
+  ```
+
+### API Design Tips
+
+- You may want to refrain from localizing text for certain things, like names. In this case you can define them _once_ in your default language and reuse them with `i18n.fallbacks = true;`.
+- When a user changes the device's language, your app will reset. This means you can set the language once, and don't need to update any of your React components to account for the language changes.
+
+### Full Demo
+
+```tsx
+import * as React from 'react';
 import { Text } from 'react-native';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
-const en = {
-  foo: 'Foo',
-  bar: 'Bar {{someValue}}',
-};
-const fr = {
-  foo: 'como telle fous',
-  bar: 'chatouiller {{someValue}}',
-};
 
-i18n.fallbacks = true;
-i18n.translations = { fr, en };
+// Set the key-value pairs for the different languages you want to support.
+i18n.translations = {
+  en: { welcome: 'Hello', name: 'Charlie' },
+  ja: { welcome: 'こんにちは' },
+};
+// Set the locale once at the beginning of your app.
 i18n.locale = Localization.locale;
-export default class LitView extends React.Component {
-  render() {
-    return (
-      <Text style={{ flex: 1, paddingTop: 50, alignSelf: 'center' }}>
-        {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
-      </Text>
-    );
-  }
+// When a value is missing from a language it'll fallback to another language with the key present.
+i18n.fallbacks = true;
+
+function App() {
+  return (
+    <Text>
+      {i18n.t('welcome')} {i18n.t('name')}
+    </Text>
+  );
 }
 ```
 
 ## API
 
-```js
+```ts
 import * as Localization from 'expo-localization';
 ```
 
@@ -60,7 +86,9 @@ import * as Localization from 'expo-localization';
 
 ## Constants
 
-This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initally the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
+### Behavior
+
+This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initially the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
 
 ### `Localization.locale`
 
@@ -76,17 +104,17 @@ List of all the native languages provided by the user settings. These are return
 
 ### `Localization.isoCurrencyCodes`
 
-A list of all the supported ISO codes.
+A list of all the supported language ISO codes.
 
 ### `Localization.timezone`
 
-The current time zone in display format. ex: `America/Los_Angeles`
+The current timezone in display format. ex: `America/Los_Angeles`
 
-On Web `timezone` is calculated with `Intl.DateTimeFormat().resolvedOptions().timeZone`. For a better guess you could use the `moment-timezone` library but is a very large library and will add significant bloat to your bundle.
+On Web `timezone` is calculated with `Intl.DateTimeFormat().resolvedOptions().timeZone`. For a better estimation you could use the `moment-timezone` package but it will add significant bloat to your website's bundle size.
 
 ### `Localization.isRTL`
 
-This will return `true` if the current language is Right-to-Left.
+Returns if the system's language is written from Right-to-Left. This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
 
 ## Methods
 
