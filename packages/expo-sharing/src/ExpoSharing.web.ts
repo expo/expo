@@ -12,12 +12,12 @@ export default {
   get name(): string {
     return 'ExpoSharing';
   },
-  isAvailableAsync(): Promise<boolean> {
+  async isAvailableAsync(): Promise<boolean> {
     if (typeof navigator === 'undefined') {
-      return Promise.resolve(false);
+      return false;
     }
 
-    return Promise.resolve(!!(navigator as Navigator).share);
+     return !!(navigator as Navigator).share;
   },
   async shareAsync(url: string, options: ShareOptions = {}): Promise<{}> {
     const sharingNavigator: Navigator = navigator as Navigator;
