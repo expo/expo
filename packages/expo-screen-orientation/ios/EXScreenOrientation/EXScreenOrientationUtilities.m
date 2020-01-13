@@ -106,7 +106,6 @@
       @5 : @(UIInterfaceOrientationMaskLandscape),
       @6 : @(UIInterfaceOrientationMaskLandscapeLeft),
       @7 : @(UIInterfaceOrientationMaskLandscapeRight),
-      @10: @(UIInterfaceOrientationMaskAllButUpsideDown)
     };
   });
   

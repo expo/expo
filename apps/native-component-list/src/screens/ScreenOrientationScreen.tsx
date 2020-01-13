@@ -121,10 +121,6 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
     ];
 
-    if (Platform.OS === 'ios') {
-      orientationOptions.push(ScreenOrientation.OrientationLock.ALL_BUT_UPSIDE_DOWN);
-    }
-
     return orientationOptions.map(orientation => ({
       key: ScreenOrientation.OrientationLock[orientation],
       value: orientation,
