@@ -92,7 +92,7 @@ This method should not be used in production, instead the app should be bundled 
 
 ```js
 if (Platform.OS === 'ios' && global.__DEV__ === true) {
-  await Analytics.initializeAppDangerously({ /* GoogleService-Info.plist contents as JSON. */ });
+  Analytics.initializeAppDangerously({ /* GoogleService-Info.plist contents as JSON. */ });
 }
 ```
 
@@ -239,7 +239,7 @@ Sets the user ID property. This feature must be used in accordance with [Google'
 #### Example
 
 ```tsx
-await Analytics.setUserId('bacon_boi_uid');
+await Analytics.setUserId('my_user_uid');
 ```
 
 ### setUserProperty
@@ -324,19 +324,20 @@ You can gain deeper insight into what works and what doesn't by using the `logEv
 ```tsx
 /*
  * Say we are in a tinder clone, and a user presses the card to view more
- * information on a user. We should track this event so we can see if people * are even using it.
+ * information on a user. We should track this event so we can see if people
+ * are even using it.
  *
  * If lots of users are opening the card then swiping through photos, just
  * to dismiss again, then we should consider making it possible to look
  * through photos without having to enter the profile.
  */
 onPressProfileButton = (uid) => {
-  await Analytics.logEvent('ExpandProfile', {
+  Analytics.logEvent('ExpandProfile', {
     /*
      * We want to know if the user came from from the swipe card as
      * opposed to from chat or a deep link.
      */
-    sender: "card",
+    sender: 'card',
     /*
      * This may be too specific and not very useful, but maybe down the line * we could investigate why a certain user is more popular than others.
      */
@@ -345,7 +346,7 @@ onPressProfileButton = (uid) => {
      * We can use this information later to compare against other events.
      */
     screen: 'profile',
-    purpose: "Viewing more info on a user",
+    purpose: 'Viewing more info on a user',
   });
 }
 ```
