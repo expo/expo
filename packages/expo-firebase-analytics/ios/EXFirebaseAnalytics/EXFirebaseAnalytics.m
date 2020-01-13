@@ -2,6 +2,7 @@
 
 #import <UMCore/UMUtilities.h>
 #import <EXFirebaseAnalytics/EXFirebaseAnalytics.h>
+#import <EXFirebaseAnalytics/EXFirebaseAnalytics+JSON.h>
 #import <UIKit/UIKit.h>
 #import <Firebase/Firebase.h>
 
@@ -48,16 +49,12 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
     FIRApp *existingApp = [FIRApp defaultApp];
     
     if (!existingApp) {
-      FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:options[@"appId"] GCMSenderID:options[@"messagingSenderId"]];
+      FIROptions *firOptions = [EXFirebaseAnalytics firOptionsJSONToNative:options];
+      if (firOptions == nil) {
+          reject(@"ERR_FIREBASE_ANALYTICS", @"Failed to convert nil options to FIROptions.", nil);
+          return;
+      }
       
-      firOptions.APIKey = options[@"apiKey"];
-      firOptions.projectID = options[@"projectId"];
-      firOptions.clientID = options[@"clientId"];
-      firOptions.trackingID = options[@"trackingId"];
-      firOptions.databaseURL = options[@"databaseURL"];
-      firOptions.storageBucket = options[@"storageBucket"];
-      firOptions.androidClientID = options[@"androidClientId"];
-      firOptions.deepLinkURLScheme = options[@"deepLinkURLScheme"];
       firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
            
       [FIRApp configureWithOptions:firOptions];
@@ -92,7 +89,7 @@ UM_EXPORT_METHOD_AS(deleteApp,
 {
   FIRApp *app = [FIRApp defaultApp];
   if (app != nil) return app;
-  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled and Firebase is being initialized natively in the AppDelegate with [FIRApp configure]. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
+  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled and your project has react-native-unimodules installed. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
   return nil;
 }
 
@@ -179,31 +176,15 @@ UM_EXPORT_METHOD_AS(resetAnalyticsData,
   }
 }
 
-- (NSDictionary *)convertFirOptionsToDictionary:(FIROptions *)firOptions
-{
-  return @{
-    @"androidClientID": firOptions.androidClientID,
-    @"apiKey": firOptions.APIKey,
-    @"appId": firOptions.googleAppID,
-    @"clientId": firOptions.clientID,
-    @"databaseURL": firOptions.databaseURL,
-    @"deepLinkUrlScheme": firOptions.deepLinkURLScheme,
-    @"messagingSenderId": firOptions.GCMSenderID,
-    @"projectId": firOptions.projectID,
-    @"storageBucket": firOptions.storageBucket,
-    @"trackingId": firOptions.trackingID,
-  };
-}
-
 - (NSDictionary *)constantsToExport
 {
   NSMutableDictionary *constants = [NSMutableDictionary new];
 
   FIROptions *defaultOptions = [FIROptions defaultOptions];
   if (defaultOptions != nil) {
-    constants[@"app"] = [self convertFirOptionsToDictionary:defaultOptions];
+    constants[@"app"] = [EXFirebaseAnalytics firOptionsNativeToJSON:defaultOptions];
   }
-    
+
   return constants;
 }
 
