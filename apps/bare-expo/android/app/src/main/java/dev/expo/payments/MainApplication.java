@@ -26,7 +26,7 @@ import dev.expo.payments.generated.BasePackageList;
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList(),
-    Arrays.<SingletonModule>asList()
+    null
   );
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
