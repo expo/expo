@@ -394,23 +394,3 @@ export default () => (
   />
 );
 ```
-
-## Variable Data
-
-Ensure your data is Firebase compliant.
-
-```js
-import * as Analytics from 'expo-firebase-analytics';
-
-function ensureFormat(input) {
-  if (input != null) {
-    return input.toString().replace(/\W/g, '');
-  } else {
-    return '';
-  }
-}
-
-const eventName = ensureFormat(someWackyValue);
-
-Analytics.logEvent(eventName);
-```
