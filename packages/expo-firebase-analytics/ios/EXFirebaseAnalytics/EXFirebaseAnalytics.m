@@ -42,8 +42,8 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
 }
 
 - (void)initApp:(NSDictionary *)options
-              resolver:(UMPromiseResolveBlock)resolve
-              rejecter:(UMPromiseRejectBlock)reject
+       resolver:(UMPromiseResolveBlock)resolve
+       rejecter:(UMPromiseRejectBlock)reject
 {
   [UMUtilities performSynchronouslyOnMainThread:^{
     FIRApp *existingApp = [FIRApp defaultApp];
