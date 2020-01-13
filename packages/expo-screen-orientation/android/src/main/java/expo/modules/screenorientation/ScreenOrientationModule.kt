@@ -130,7 +130,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
     }
   }
 
-  // https://stackoverflow.com/questions/10380989/how-do-i-get-the-current-orientation-activityinfo-screen-orientation-of-an-a
+  // https://stackoverflow.com/a/10383164/1123156
   // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort
   private fun getScreenOrientation(activity: Activity): Orientation {
     val windowManager = activity.windowManager ?: return Orientation.UNKNOWN
@@ -139,7 +139,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
 
     val currentOrientation: Orientation
 
-    if (isPortraitNaturalOrientation(rotation, dm.heightPixels, dm.widthPixels)) {
+    if (isPortraitNaturalOrientation(rotation, dm.widthPixels, dm.heightPixels)) {
       currentOrientation = when (rotation) {
         Surface.ROTATION_0 -> Orientation.PORTRAIT_UP
         Surface.ROTATION_90 -> Orientation.LANDSCAPE_LEFT
@@ -165,7 +165,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
   /*
    * Check if the device's natural orientation is portrait.
    */
-  private fun isPortraitNaturalOrientation(rotation: Int, height: Int, width: Int): Boolean {
+  private fun isPortraitNaturalOrientation(rotation: Int, width: Int, height: Int): Boolean {
     return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
         && height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
         && width > height
@@ -181,7 +181,7 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
       ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> 5
       ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 6
       ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 7
-      else -> 8 // unknown orientation
+      else -> 8 // other orientation
     }
   }
 

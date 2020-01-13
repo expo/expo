@@ -68,8 +68,8 @@ export function test(t) {
         });
       });
 
-      t.afterEach(async () => {
-        await ScreenOrientation.removeOrientationChangeListeners();
+      t.afterEach(() => {
+        ScreenOrientation.removeOrientationChangeListeners();
       });
 
       t.afterAll(async () => {
@@ -286,7 +286,7 @@ export function test(t) {
       t.it('supports accepted orientation locks', async () => {
         // orientation locks that we should be able to apply
         const acceptedLocks = [
-          ScreenOrientation.OrientationLock.ALL, // will fail if device has a notch =  >=Iphone X
+          ScreenOrientation.OrientationLock.DEFAULT,
           ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
         ];
 
