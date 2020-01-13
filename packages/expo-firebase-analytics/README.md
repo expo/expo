@@ -80,7 +80,7 @@ Similar to `firebase.initializeApp()` on web but works to start a native Firebas
 This can be used to test the native iOS Firebase app in the Expo client.
 This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
 
-> You can convert your `GoogleServices-info.plist` using `npx plist-to-json ./GoogleServices-info.plist`.
+> You can convert your `GoogleService-Info.plist` using `npx plist-to-json ./GoogleService-Info.plist`.
 
 #### Parameters
 
@@ -92,7 +92,7 @@ This method should not be used in production, instead the app should be bundled 
 
 ```js
 if (Platform.OS === 'ios' && global.__DEV__ === true) {
-  await Analytics.initializeAppDangerously({ /* GoogleServices-info.plist contents as JSON. */ });
+  await Analytics.initializeAppDangerously({ /* GoogleService-Info.plist contents as JSON. */ });
 }
 ```
 
@@ -114,7 +114,7 @@ Delete a running Firebase app instance. Only works for the default app. If no de
 
 ```js
 await Analytics.deleteApp(Platform.select({
-  ios: { /* GoogleServices-info.plist contents as JSON */ },
+  ios: { /* GoogleService-Info.plist contents as JSON */ },
   android: { /* google-services.json */ },
   web: { /* Google Services JSON */ }
 }));
