@@ -17,7 +17,7 @@ describe('Sharing', () => {
         it(`returns false`, async () => {
           let isAvailable = await Sharing.isAvailableAsync();
           expect(isAvailable).toBeFalsy();
-        })
+        });
       });
     }
   });
