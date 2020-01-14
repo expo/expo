@@ -215,12 +215,12 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   [_moduleInterfaceMasks removeObjectForKey:module];
 }
 
-- (void)registerModuleToReceiveNotification:(id<EXScreenOrientationListener>)module
+- (void)registerModuleToReceiveNotification:(id<EXOrientationListener>)module
 {
   [_notificationListeners addPointer:(__bridge void * _Nullable)(module)];
 }
 
-- (void)unregisterModuleFromReceivingNotification:(id<EXScreenOrientationListener>)module
+- (void)unregisterModuleFromReceivingNotification:(id<EXOrientationListener>)module
 {
   for (int i = 0; i < _notificationListeners.count; i++) {
     id pointer = [_notificationListeners pointerAtIndex:i];

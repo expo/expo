@@ -332,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 #endif
   
-  // TODO: Remove once sdk 36 is phased out
+  // TODO: Remove once sdk 37 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
@@ -355,7 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
-// TODO: Remove once sdk 36 is phased out
+// TODO: Remove once sdk 37 is phased out
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   _supportedInterfaceOrientations = supportedInterfaceOrientations;
@@ -368,16 +368,16 @@ NS_ASSUME_NONNULL_BEGIN
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
     
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      id<EXScreenOrientationRegistryController> screenOrientationRegistryController = (id<EXScreenOrientationRegistryController>)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
       
-    // TODO: Remove once sdk 36 is phased out
+    // TODO: Remove once sdk 37 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
 }
 
-// TODO: Remove once sdk 36 is phased out
+// TODO: Remove once sdk 37 is phased out
 - (void)_enforceDesiredDeviceOrientation
 {
   RCTAssertMainQueue();

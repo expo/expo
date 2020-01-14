@@ -11,6 +11,8 @@
 
 #import <UIKit/UIKit.h>
 
+static NSString *const EXScreenOrientationDidUpdateDimensions = @"expoDidUpdateDimensions";
+
 @interface EXScreenOrientationModule ()
 
 @property (nonatomic, weak) EXScreenOrientationRegistry *screenOrientationRegistry;
@@ -108,13 +110,11 @@ UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
 {
   UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities importOrientationLock:orientationLock];
  
-  if (!orientationMask) {
-    resolve(@NO);
-  } else if ([EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
-    resolve(@YES);
-  } else {
-    resolve(@NO);
+  if (orientationMask && [EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
+    return resolve(@YES);
   }
+  
+  resolve(@NO);
 }
 
 UM_EXPORT_METHOD_AS(getOrientationAsync,
@@ -138,7 +138,7 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
 
 - (void)screenOrientationDidChange:(UIInterfaceOrientation)orientation
 {
-  [_eventEmitter sendEventWithName:@"expoDidUpdateDimensions" body:@{
+  [_eventEmitter sendEventWithName:EXScreenOrientationDidUpdateDimensions body:@{
     @"orientation": [EXScreenOrientationUtilities exportOrientation:orientation],
     @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[_screenOrientationRegistry currentOrientationMask]]
   }];
@@ -146,7 +146,7 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"expoDidUpdateDimensions"];
+  return @[EXScreenOrientationDidUpdateDimensions];
 }
 
 - (void)onAppBackgrounded {
