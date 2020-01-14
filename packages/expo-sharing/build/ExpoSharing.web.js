@@ -3,11 +3,11 @@ export default {
     get name() {
         return 'ExpoSharing';
     },
-    isAvailableAsync() {
+    async isAvailableAsync() {
         if (typeof navigator === 'undefined') {
-            return Promise.resolve(false);
+            return false;
         }
-        return Promise.resolve(!!navigator.share);
+        return !!navigator.share;
     },
     async shareAsync(url, options = {}) {
         const sharingNavigator = navigator;
