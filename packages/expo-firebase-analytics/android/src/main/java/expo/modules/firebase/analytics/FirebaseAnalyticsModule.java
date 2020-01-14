@@ -17,6 +17,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.Nullable;
 
@@ -170,9 +171,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   }
 
   @ExpoMethod
-  public void setUserProperty(final String name, final String value, Promise promise) {
+  public void setUserProperties(@Nullable Map<String, Object> properties, Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserProperty(name, value);
+      Set<String> keys = properties.keySet();
+      for (String key : keys) {
+        FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserProperty(key, (String) properties.get(key));
+      }
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);

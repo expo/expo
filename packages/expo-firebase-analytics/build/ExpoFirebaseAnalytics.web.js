@@ -53,9 +53,6 @@ export default {
     async setUserId(userId) {
         getAnalyticsModule().setUserId(userId);
     },
-    async setUserProperty(name, value) {
-        getAnalyticsModule().setUserProperties({ [name]: value });
-    },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
      */

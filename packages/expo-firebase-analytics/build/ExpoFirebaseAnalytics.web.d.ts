@@ -24,9 +24,6 @@ declare const _default: {
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
     setUserId(userId: string): Promise<void>;
-    setUserProperty(name: string, value?: {
-        [key: string]: any;
-    } | undefined): Promise<void>;
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
      */
