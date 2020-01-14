@@ -38,10 +38,15 @@ export function parseCommonConfig(data: { [key: string]: any }): { [key: string]
       return parseCommonConfig(data);
     }
   } else {
-    if (!isValidString(data.databaseURL))
+    if (!isValidString(data.databaseURL)) {
       data.databaseURL = `https://${data.projectId}.firebaseio.com`;
-    if (!isValidString(data.storageBucket)) data.storageBucket = `${data.projectId}.appspot.com`;
-    if (!isValidString(data.authDomain)) data.authDomain = `${data.projectId}.firebaseapp.com`;
+    }
+    if (!isValidString(data.storageBucket)) {
+      data.storageBucket = `${data.projectId}.appspot.com`;
+    }
+    if (!isValidString(data.authDomain)) {
+      data.authDomain = `${data.projectId}.firebaseapp.com`;
+    }
   }
   return data;
 }
@@ -50,13 +55,18 @@ export function parseAndroidConfig(data: { [key: string]: any }): { [key: string
   const { project_info, client } = data;
 
   if (isObject(project_info)) {
-    if (!data.messagingSenderId && project_info.project_number)
+    if (!data.messagingSenderId && project_info.project_number) {
       data.messagingSenderId = project_info.project_number;
-    if (!data.databaseURL && project_info.firebase_url)
+    }
+    if (!data.databaseURL && project_info.firebase_url) {
       data.databaseURL = project_info.firebase_url;
-    if (!data.projectId && project_info.project_id) data.projectId = project_info.project_id;
-    if (!data.storageBucket && project_info.storage_bucket)
+    }
+    if (!data.projectId && project_info.project_id) {
+      data.projectId = project_info.project_id;
+    }
+    if (!data.storageBucket && project_info.storage_bucket) {
       data.storageBucket = project_info.storage_bucket;
+    }
   }
 
   function destructureArray(obj) {
@@ -67,16 +77,19 @@ export function parseAndroidConfig(data: { [key: string]: any }): { [key: string
   if (firstClient) {
     const { client_info } = firstClient;
 
-    if (isObject(client_info) && !data.appId && client_info.mobilesdk_app_id)
+    if (isObject(client_info) && !data.appId && client_info.mobilesdk_app_id) {
       data.appId = client_info.mobilesdk_app_id;
+    }
 
     const firstOAuthClient = destructureArray(firstClient.oauth_client);
-    if (!data.clientId && firstOAuthClient && firstOAuthClient.client_id)
+    if (!data.clientId && firstOAuthClient && firstOAuthClient.client_id) {
       data.clientId = firstOAuthClient.client_id;
+    }
 
     const firstAPIKey = destructureArray(firstClient.api_key);
-    if (!data.apiKey && firstAPIKey && firstAPIKey.current_key)
+    if (!data.apiKey && firstAPIKey && firstAPIKey.current_key) {
       data.apiKey = firstAPIKey.current_key;
+    }
   }
 
   return data;
