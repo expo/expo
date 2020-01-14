@@ -1,10 +1,11 @@
+declare type GoogleServicesConfig = {
+    [key: string]: any;
+};
 /**
  * Get the bundled Google Services config file.
  * This is useful for debugging if your app was built properly.
  */
-export declare function getBundledGoogleServicesConfig(): null | {
-    [key: string]: any;
-};
+export declare function getBundledGoogleServicesConfig(): null | GoogleServicesConfig;
 /**
  * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
  * This can be used to test the native iOS Firebase app in the Expo client.
@@ -12,9 +13,7 @@ export declare function getBundledGoogleServicesConfig(): null | {
  *
  * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
  */
-export declare function initializeAppDangerously(googleServices: {
-    [key: string]: any;
-}): Promise<void>;
+export declare function initializeAppDangerously(googleServices: GoogleServicesConfig): Promise<void>;
 /**
  * Delete the default Firebase app instance. If no default app is running then nothing happens.
  */
@@ -125,3 +124,4 @@ export declare function resetAnalyticsData(): Promise<void>;
 export declare function setUserProperties(properties: {
     [key: string]: string;
 }): Promise<void>;
+export {};

@@ -10,11 +10,13 @@ if (!ExpoFirebaseAnalytics) {
   );
 }
 
+type GoogleServicesConfig = { [key: string]: any };
+
 /**
  * Get the bundled Google Services config file.
  * This is useful for debugging if your app was built properly.
  */
-export function getBundledGoogleServicesConfig(): null | { [key: string]: any } {
+export function getBundledGoogleServicesConfig(): null | GoogleServicesConfig {
   return ExpoFirebaseAnalytics.app || null;
 }
 
@@ -25,9 +27,9 @@ export function getBundledGoogleServicesConfig(): null | { [key: string]: any } 
  *
  * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
  */
-export async function initializeAppDangerously(googleServices: {
-  [key: string]: any;
-}): Promise<void> {
+export async function initializeAppDangerously(
+  googleServices: GoogleServicesConfig
+): Promise<void> {
   // @ts-ignore
   if (global.__DEV__ !== true) {
     console.warn('initializeAppDangerously should only be used in dev mode');

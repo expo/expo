@@ -1,6 +1,4 @@
-import { Platform } from 'react-native';
-
-const isAndroid = Platform.OS === 'android';
+import { Platform } from '@unimodules/core';
 
 function isString(str?: string): boolean {
   return typeof str === 'string';
@@ -110,9 +108,9 @@ export function parseIosConfig(plist: { [key: string]: any }): { [key: string]: 
 }
 
 export default function parseConfig(config: { [key: string]: any }): { [key: string]: any } {
-  if (isAndroid) {
+  if (Platform.OS === 'android') {
     config = parseAndroidConfig(config);
-  } else {
+  } else if (Platform.OS === 'ios') {
     config = parseIosConfig(config);
   }
   config = parseCommonConfig(config);
