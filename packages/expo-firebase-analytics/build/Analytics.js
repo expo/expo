@@ -1,6 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 import parseConfig from './parseConfig';
+if (!ExpoFirebaseAnalytics) {
+    console.warn("No native ExpoFirebaseAnalytics module found, are you sure the expo-firebase-analytics's module is linked properly?");
+}
 /**
  * Get the bundled Google Services config file.
  * This is useful for debugging if your app was built properly.
