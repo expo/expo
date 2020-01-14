@@ -174,10 +174,7 @@ export async function setUserId(userId: string | null): Promise<void> {
  *     value to null removes the user property.
  */
 export async function setUserProperty(name: string, value: string): Promise<void> {
-  if (!ExpoFirebaseAnalytics.setUserProperty) {
-    throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperty');
-  }
-  return await ExpoFirebaseAnalytics.setUserProperty(name, value);
+  return await setUserProperties({ [name]: value });
 }
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
@@ -190,15 +187,13 @@ export async function resetAnalyticsData(): Promise<void> {
 }
 
 /**
- * Sets multiple user properties to the supplied values. This is a web-only method that's polyfilled on native to use `setUserProperty`.
+ * Sets multiple user properties to the supplied values.
  *
  * @param properties key/value set of user properties
  */
 export async function setUserProperties(properties: { [key: string]: string }): Promise<void> {
   if (!ExpoFirebaseAnalytics.setUserProperties) {
-    // Attempt to polyfill this command for native iOS and Android platforms.
-    await Promise.all(Object.keys(properties).map(key => setUserProperty(key, properties[key])));
-    return;
+    throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperties');
   }
   return await ExpoFirebaseAnalytics.setUserProperties(properties);
 }

@@ -156,14 +156,15 @@ UM_EXPORT_METHOD_AS(setUserId,
   }
 }
 
-UM_EXPORT_METHOD_AS(setUserProperty,
-                    setUserProperty:(NSString *)name
-                    value:(NSString *)value
-                    resolver:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(setUserPropertiesAsync, 
+                    setUserPropertiesAsync:(NSDictionary *)properties 
+                    resolver:(UMPromiseResolveBlock)resolve 
                     rejecter:(UMPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
-    [FIRAnalytics setUserPropertyString:value forName:name];
+    [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+      [FIRAnalytics setUserPropertyString:value forName:key];
+    }];
     resolve([NSNull null]);
   } @catch (NSException *exception) {
     [self reject:reject withException:exception];
