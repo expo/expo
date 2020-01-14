@@ -17,7 +17,7 @@ export default {
       return false;
     }
 
-     return !!(navigator as Navigator).share;
+    return !!(navigator as Navigator).share;
   },
   async shareAsync(url: string, options: ShareOptions = {}): Promise<{}> {
     const sharingNavigator: Navigator = navigator as Navigator;
