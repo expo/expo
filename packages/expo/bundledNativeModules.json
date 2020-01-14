@@ -31,7 +31,7 @@
   "expo-google-sign-in": "~8.0.0",
   "expo-haptics": "~8.0.0",
   "expo-image-manipulator": "~8.0.0",
-  "expo-image-picker": "~8.0.1",
+  "expo-image-picker": "~8.0.2",
   "expo-intent-launcher": "~8.0.0",
   "expo-keep-awake": "~8.0.0",
   "expo-linear-gradient": "~8.0.0",
