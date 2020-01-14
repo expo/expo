@@ -358,10 +358,12 @@ workflows:
       - expotools
       - client_android
       - client_ios
-      - test_suite_publish
-      - android_test_suite:
-          requires:
-            - test_suite_publish
+      # Disabled until further notice
+      # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+      # - test_suite_publish
+      # - android_test_suite:
+      #     requires:
+      #       - test_suite_publish
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -718,29 +720,31 @@ jobs:
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
-  android_test_suite:
-    executor: android
-    steps:
-      - setup
-      - guard_sdk_tests
-      - update_submodules
-      - yarn_install:
-          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-      - yarn_install:
-          working_directory: ~/expo/tools-public
-      - restore_gradle_cache
-      - run:
-          name: Build APK, upload to Device Farm, follow device logs
-          command: |
-            nix-shell android/shell.nix --pure \
-              --keep AWS_ACCESS_KEY_ID \
-              --keep AWS_SECRET_ACCESS_KEY \
-              --keep SSL_CERT_FILE \
-              --keep FASTLANE_SKIP_UPDATE_CHECK \
-              --keep FASTLANE_DISABLE_COLORS \
-              --keep CI \
-              --run "fastlane android devicefarm"
-      - save_gradle_cache
+# Disabled until further notice
+# See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+#   android_test_suite:
+#     executor: android
+#     steps:
+#       - setup
+#       - guard_sdk_tests
+#       - update_submodules
+#       - yarn_install:
+#           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+#       - yarn_install:
+#           working_directory: ~/expo/tools-public
+#       - restore_gradle_cache
+#       - run:
+#           name: Build APK, upload to Device Farm, follow device logs
+#           command: |
+#             nix-shell android/shell.nix --pure \
+#               --keep AWS_ACCESS_KEY_ID \
+#               --keep AWS_SECRET_ACCESS_KEY \
+#               --keep SSL_CERT_FILE \
+#               --keep FASTLANE_SKIP_UPDATE_CHECK \
+#               --keep FASTLANE_DISABLE_COLORS \
+#               --keep CI \
+#               --run "fastlane android devicefarm"
+#       - save_gradle_cache
 
   client_android:
     executor: android
@@ -850,17 +854,19 @@ jobs:
           command: ./deploy.sh
           working_directory: docs
 
-  test_suite_publish:
-    executor: nix
-    steps:
-      - setup
-      - conditionally_halt:
-          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
-          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates|native-component-list|bare-expo).*|\.md$)'
-          search_depth: 1
-      - update_submodules
-      - decrypt_secrets_if_possible
-      - run:
-          name: Publish
-          working_directory: ~/expo/apps/test-suite
-          command: ./publish.sh
+# Disabled until further notice
+# See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+#   test_suite_publish:
+#     executor: nix
+#     steps:
+#       - setup
+#       - conditionally_halt:
+#           # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
+#           exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates|native-component-list|bare-expo).*|\.md$)'
+#           search_depth: 1
+#       - update_submodules
+#       - decrypt_secrets_if_possible
+#       - run:
+#           name: Publish
+#           working_directory: ~/expo/apps/test-suite
+#           command: ./publish.sh
