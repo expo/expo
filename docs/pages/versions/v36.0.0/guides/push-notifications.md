@@ -2,19 +2,23 @@
 title: Push Notifications
 ---
 
-Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
+Push Notifications are an important feature, no matter what kind of app you're building. Not only is it nice to let users know about something that may interest them, be it a new album being released, a sale or other limited-time-only deal, or that one of their friends sent them a message, but push notifications are proven to help boost user interaction and create a better overall user experience.
 
-> **Note:**
->
-> iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
->
-> For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for push notifications to work.
+Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNS (Apple Push Notification Service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
 
-There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to). This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34?platform=ios)!
+There are three main steps to setting up push notifications:
 
-## 1. Save the user's Expo Push Token on your server
+- getting a user's Expo Push Token
+- calling Expo's Push API with the token when you want to send a notification
+- responding to receiving the notification in your app (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
-In order to send a push notification to somebody, we need to know about their device. Sure, we know our user's account information, but Apple, Google, and Expo do not understand what devices correspond to "Brent" in your proprietary user account system. Expo takes care of identifying your device with Apple and Google through the Expo push token, which is unique each time an app is installed on a device. All we need to do is send this token to your server so you can associate it with the user account and use it in the future for sending push notifications.
+> Reading the full guide is important, but to take a quick look at this in action, check out [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications36?platform=ios)!
+
+## Set Up
+
+### 1. Getting the user's Push Token
+
+In order to send a push notification, Expo needs to know which device to send it to. Expo takes care of identifying your device with Apple and Google through the Expo push token, which is uniquely generated each time an app is installed on a device. Once you have this token, save it in association with that user account on your server. This token is what you'll provide to Expo's push notification service. Halfway done with the setup!
 
 ![Diagram explaining saving tokens](/static/images/saving-token.png)
 
@@ -25,26 +29,19 @@ import * as Permissions from 'expo-permissions';
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
 export default async function registerForPushNotificationsAsync() {
-  const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
-  let finalStatus = existingStatus;
-
-  // only ask if permissions have not already been determined, because
+  const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+  // only asks if permissions have not already been determined, because
   // iOS won't necessarily prompt the user a second time.
-  if (existingStatus !== 'granted') {
-    // Android remote notification permissions are granted during the app
-    // install, so this will only ask on iOS
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    finalStatus = status;
-  }
+  // On Android, permissions are granted on app installation, so
+  // `askAsync` will never prompt the user
 
   // Stop here if the user did not grant permissions
-  if (finalStatus !== 'granted') {
+  if (status !== 'granted') {
+    alert('No notification permissions!');
     return;
   }
 
-  // Get the token that uniquely identifies this device
+  // Get the token that identifies this device
   let token = await Notifications.getExpoPushTokenAsync();
 
   // POST the token to your backend server from where you can retrieve it to send push notifications.
@@ -66,20 +63,22 @@ export default async function registerForPushNotificationsAsync() {
 }
 ```
 
-## 2. Call Expo's Push API with the user's token
+### 2. Call Expo's Push API with the user's token to send the Notification
 
-Push notifications have to come from somewhere, and that somewhere is your server, probably (you could write a command line tool to send them if you wanted, it's all the same). When you're ready to send a push notification, grab the Expo push token off of the user record and send it over to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:
+> If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
+
+Push notifications have to come from somewhere, and that somewhere is probably your server (you could write a command line tool to send them if you wanted, or send them straight from your app, it's all the same). When you're ready to send a push notification, take the Expo push token from your user record and send it to the Expo API using a plain old HTTPS POST request. We've taken care of wrapping that for you in a few languages:
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
--   [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
--   [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
--   [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
--   [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
--   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
--   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
--   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
--   [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
+- [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
+- [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
+- [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
+- [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
+- [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
+- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
+- [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
+- [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
 
 Check out the source if you would like to implement it in another language.
 
@@ -87,25 +86,16 @@ Check out the source if you would like to implement it in another language.
 >
 > For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
 
-The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
+### 3. Handle receiving the notification in your app
 
-## 3. Handle receiving and/or selecting the notification
+You can now successfully send a notification to your app! If all you wanted was purely informational notifications, then you can stop here. But Expo provides the capabilities to do much more: maybe you want to update the UI based on the notification, or maybe navigate to a particular screen if a notification was selected.
 
-For Android, this step is entirely optional -- if your notifications are purely informational and you have no desire to handle them when they are received or selected, you're already done. Notifications will appear in the system notification tray as you've come to expect, and tapping them will open/foreground the app.
-
-For iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app is foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
-
-Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener using the `Notifications` API.
+Like most things with Expo, handling received notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](../../sdk/notifications).
 
 ```javascript
 import React from 'react';
-import {
-  Notifications,
-} from 'expo';
-import {
-  Text,
-  View,
-} from 'react-native';
+import { Notifications } from 'expo';
+import { Text, View } from 'react-native';
 
 // This refers to the function defined earlier in this guide
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
@@ -126,13 +116,14 @@ export default class AppContainer extends React.Component {
     this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
-  _handleNotification = (notification) => {
-    this.setState({notification: notification});
+  _handleNotification = notification => {
+    // do whatever you want to do with the notification
+    this.setState({ notification: notification });
   };
 
   render() {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Origin: {this.state.notification.origin}</Text>
         <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
       </View>
@@ -141,25 +132,30 @@ export default class AppContainer extends React.Component {
 }
 ```
 
-### Determining `origin` of the notification
+> **Important Note**: On iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, otherwise the user will never see them. You can handle this specific case in your listener by checking if the `origin` of the notification is `received`. Notifications that arrive while the app is foregrounded on iOS do not show up in the system notification list.
 
-Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#eventsubscription)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
+Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#notification)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
 
-| Push was received when...                       | `origin` will be...               |
-| ------------------------------------------------|:-----------------:|
-| App is open and foregrounded                    | `'received'` |
-| App is open and backgrounded, then notification not selected | n/a, no notification is passed to listener |
-| App is open and backgrounded, then notification is selected | `'selected'` |
-| App was not open, and then opened by selecting the push notification | `'selected'` |
-| App was not open, and then opened by tapping the home screen icon | n/a, no notification is passed to listener |
+| Push was received when...                                            |          `origin` will be...          |
+| -------------------------------------------------------------------- | :-----------------------------------: |
+| App is open and foregrounded                                         |             `'received'`              |
+| App is open and backgrounded, then notification is not selected      | no notification is passed to listener |
+| App is open and backgrounded, then notification is selected          |             `'selected'`              |
+| App was not open, and then opened by selecting the push notification |             `'selected'`              |
+| App was not open, and then opened by tapping the home screen icon    | no notification is passed to listener |
 
-## HTTP/2 API
+<!-- Maybe example of custom UI for handling a notification?
+Want to see an example of navigating to a screen with a Notification? Check this out! [][][][][][][][][][][][][] -->
 
-Although there are server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API.
+## Testing
 
-### Sending notifications
+iOS and Android simulators cannot receive push notifications, so you will need to test using a physical device. Additionally, when calling `Permissions.askAsync` on the simulator, it will resolve immediately with `undetermined` as the status, regardless of whether you choose to allow or not.
 
-Send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
+The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device, without having to use your CLI or write out a test server.
+
+## Sending notifications from your server
+
+Although there are server-side SDKs in several languages to help you send push notifications, you may want to directly send requests to our HTTP/2 API (this API currently does not require any authentication). All you need to do is send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 
 ```
 host: exp.host
@@ -168,11 +164,7 @@ accept-encoding: gzip, deflate
 content-type: application/json
 ```
 
-The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node SDK](https://github.com/expo/expo-server-sdk-node) automatically gzips requests for you.
-
-This API currently does not require any authentication.
-
-This is a "hello world" request using cURL (replace the placeholder push token with your own):
+This is a "hello world" push notification using cURL that you can send using your CLI (replace the placeholder push token with your own):
 
 ```bash
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
@@ -182,52 +174,80 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends four messages:
+The request body must be JSON. It may either be a single [message object](#message-request-format) (example above) or an array of up to 100 message objects, as long as they are all for the same project (show below). **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** Here's an example request body that sends four messages:
 
 ```json
-[{
-  "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
-  "sound": "default",
-  "body": "Hello world!"
-}, {
-  "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
-  "badge": 1,
-  "body": "You've got mail"
-}, {
-  "to": [
-    "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
-    "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
-  ],
-  "body": "Breaking news!"
-}]
+[
+  {
+    "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+    "sound": "default",
+    "body": "Hello world!"
+  },
+  {
+    "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
+    "badge": 1,
+    "body": "You've got mail"
+  },
+  {
+    "to": [
+      "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
+      "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
+    ],
+    "body": "Breaking news!"
+  }
+]
 ```
 
-Upon success, the HTTP response will be a JSON object whose `data` field is an array of **push tickets**, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
+The Expo server also optionally accepts gzip-compressed request bodies. This can greatly reduce the amount of upload bandwidth needed to send large numbers of notifications. The [Node Expo Server SDK](https://github.com/expo/expo-server-sdk-node) automatically gzips requests for you, and automatically throttles your requests to smooth out the load, so we highly recommend it!
+
+### Push tickets
+
+The requests above will respond with a JSON object with two optional fields, `data` and `errors`. `data` will contain an array of [**push tickets**](#push-ticket-format) in the same order in which the messages were sent (or one push ticket object, if you send a single message to a single recipient). Each ticket includes a `status` field that indicates whether Expo successfully received the notification and, if successful, an `id` field that can be used to later retrieve a push receipt.
+
+> **Note**: a status of `ok` along with a receipt ID means that the message was received by Expo's servers, **not** that it was received by the user (for that you will need to check the [push receipt](#push-receipts)).
+
+Continuing the above example, this is what a successful response body looks like:
 
 ```json
 {
   "data": [
-    {"status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"},
-    {"status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ"},
-    {"status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+    { "status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" },
+    { "status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY" },
+    { "status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ" },
+    { "status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA" }
   ]
 }
 ```
 
-If you send a single message that isn't wrapped in an array to a single recipient, the `data` field will be the push ticket also not wrapped in an array.
+If there were errors with individual messages, but not the entire request, the bad messages' corresponding push tickets will have a status of `error`, and fields that describe the error, like this:
 
-#### Push tickets
+```json
+{
+  "data": [
+    {
+      "status": "error",
+      "message": "\\\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\\\" is not a registered push notification recipient",
+      "details": {
+        "error": "DeviceNotRegistered"
+      }
+    },
+    {
+      "status": "ok",
+      "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    }
+  ]
+}
+```
 
-Each push ticket indicates whether Expo successfully received the notification and, when successful, a receipt ID to later retrieve a push receipt. When there is an error receiving a message, the ticket's status will be "error" and the ticket will contain information about the error and might not contain a receipt ID. More information about the response format is documented below.
+If the entire request failed, the HTTP status code will be 4xx or 5xx and the `errors` field will be an array of error objects (usually just one). Otherwise, the HTTP status code will be 200 and your messages will be on their way to the iOS and Android push notification services!
 
-> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service.
+### Push receipts
 
-#### Push receipts
+After receiving a batch of notifications, Expo enqueues each notification to be delivered to the iOS and Android push notification services (APNs and FCM, respectively). Most notifications are typically delivered within a few seconds. Sometimes it may take longer to deliver notifications, particularly if the iOS or Android push notification services are taking longer than usual to receive and deliver notifications, or if Expo's cloud infrastructure is under high load.
 
-After receiving a batch of notifications, Expo enqueues each notification to be delivered to the iOS and Android push notification services (APNs and FCM, respectively). Most notifications are typically delivered within a few seconds. Sometimes it may take longer to deliver notifications, particularly if the iOS or Android push notification services are taking longer than usual to receive and deliver notifications, or if Expo's cloud infrastructure is under high load. Once Expo delivers a notification to the iOS or Android push notification service, Expo creates a **push receipt** that indicates whether the iOS or Android push notification service successfully received the notification. If there was an error delivering the notification, perhaps due to faulty credentials or service downtime, the push receipt will contain information about the error.
+Once Expo delivers a notification to the iOS or Android push notification service, Expo creates a [**push receipt**](#push-receipt-response-format) that indicates whether the iOS or Android push notification service successfully received the notification. If there was an error delivering the notification, perhaps due to faulty credentials or service downtime, the push receipt will contain more information regarding that error.
 
-To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The request body must be a JSON object with a field name "ids" that is an array of receipt ID strings:
+To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The [request body](#push-receipt-request-format) must be a JSON object with a field name `ids` that is an array of ticket ID strings:
 
 ```bash
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
@@ -235,7 +255,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-The response body contains a mapping from receipt IDs to receipts:
+The [response body](#push-receipt-response-format) for push receipts is very similar to that of push tickets; it is a JSON object with two optional fields, `data` and `errors`. `data` contains a mapping of receipt IDs to receipts. Receipts include a `status` field, and two optional `message` and `details` fields (in the case where `"status": "error"`). If there is no push receipt for a requested receipt ID, the mapping won't contain that ID. This is what a successful response to the above request looks like:
 
 ```json
 {
@@ -246,200 +266,19 @@ The response body contains a mapping from receipt IDs to receipts:
 }
 ```
 
-**You must check each push receipt, which may contain information about errors you need to resolve.** For example, if a device is no longer eligible to receive notifications, Apple's documentation asks that you stop sending notifications to that device. The push receipts will contain information about these errors.
+**You must check each push receipt, since they may contain information about errors you need to resolve.** For example, if a device is no longer eligible to receive notifications, Apple's documentation asks that you stop sending notifications to that device. The push receipts will contain information about these errors.
 
-> **Note:** Even if a receipt says "ok", it doesn't guarantee that the device has received the message; "ok" in a push receipt means that the Android or iOS push notification service successfully received the notification. If the recipient device is turned off, for example, the iOS or Android push notification service will try to deliver the message but the device won't necessarily receive it.
+> **Note:** Even if a receipt's `status` says `ok`, this doesn't guarantee that the device has received the message; "ok" in a push receipt means that the Android or iOS push notification service successfully received the notification. If the recipient device is turned off, for example, the iOS or Android push notification service will try to deliver the message but the device won't necessarily receive it.
 
-### Message format
+If the entire request failed, the HTTP status code will be 4xx or 5xx and the `errors` field will be an array of error objects (usually just one). Otherwise, the HTTP status code will be 200 and your messages will be on their way to your users' devices!
 
-Each message must be a JSON object with the given fields:
+## Errors
 
-```javascript
-type PushMessage = {
-  /**
-   * An Expo push token or an array of Expo push tokens specifying the recipient(s)
-   * of this message.
-   */
-  to: string | string[],
+Expo provides details regarding any errors that occur during this entire process. We'll cover some of the most common errors below so that you can implement logic to handle them automatically on your server. If, for whatever reason, Expo couldn't deliver the message to the Android or iOS push notification service, the push receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
 
-  /**
-   * A JSON object delivered to your app. It may be up to about 4KiB; the total
-   * notification payload sent to Apple and Google must be at most 4KiB or else
-   * you will get a "Message Too Big" error.
-   */
-  data?: Object,
+### Individual errors
 
-  /**
-   * The title to display in the notification. Devices often display this in
-   * bold above the notification body. Only the title might be displayed on
-   * devices with smaller screens like Apple Watch.
-   */
-  title?: string,
-
-  /**
-   * The message to display in the notification
-   */
-  body?: string,
-
-  /**
-   * Time to Live: the number of seconds for which the message may be kept
-   * around for redelivery if it hasn't been delivered yet. Defaults to
-   * `undefined` in order to use the respective defaults of each provider.
-   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM and web
-   * push notifications.
-   *
-   * On Android, we make a best effort to deliver messages with zero TTL
-   * immediately and do not throttle them.
-   *
-   * However, note that setting TTL to a low value (e.g. zero) can prevent
-   * normal-priority notifications from ever reaching Android devices that are
-   * in doze mode. In order to guarantee that a notification will be delivered,
-   * TTL must be long enough for the device to wake from doze mode.
-   *
-   * This field takes precedence over `expiration` when both are specified.
-   */
-  ttl?: number,
-
-  /**
-   * A timestamp since the UNIX epoch specifying when the message expires. This
-   * has the same effect as the `ttl` field and is just an absolute timestamp
-   * instead of a relative time.
-   */
-  expiration?: number,
-
-  /**
-   * The delivery priority of the message. Specify "default" or omit this field
-   * to use the default priority on each platform, which is "normal" on Android
-   * and "high" on iOS.
-   *
-   * On Android, normal-priority messages won't open network connections on
-   * sleeping devices and their delivery may be delayed to conserve the battery.
-   * High-priority messages are delivered immediately if possible and may wake
-   * sleeping devices to open network connections, consuming energy.
-   *
-   * On iOS, normal-priority messages are sent at a time that takes into account
-   * power considerations for the device, and may be grouped and delivered in
-   * bursts. They are throttled and may not be delivered by Apple. High-priority
-   * messages are sent immediately. Normal priority corresponds to APNs priority
-   * level 5 and high priority to 10.
-   */
-  priority?: 'default' | 'normal' | 'high',
-
-  // iOS-specific fields
-
-  /**
-   * The subtitle to display in the notification below the title
-   */
-  subtitle?: string,
-
-  /**
-   * A sound to play when the recipient receives this notification. Specify
-   * "default" to play the device's default notification sound, or omit this
-   * field to play no sound.
-   *
-   * Note that on apps that target Android 8.0+ (if using `expo build`, built
-   * in June 2018 or later), this setting will have no effect on Android.
-   * Instead, use `channelId` and a channel with the desired setting.
-   */
-  sound?: 'default' | null,
-
-  /**
-   * Number to display in the badge on the app icon. Specify zero to clear the
-   * badge.
-   */
-  badge?: number,
-
-  // Android-specific fields
-
-  /**
-   * ID of the Notification Channel through which to display this notification
-   * on Android devices. If an ID is specified but the corresponding channel
-   * does not exist on the device (i.e. has not yet been created by your app),
-   * the notification will not be displayed to the user.
-   *
-   * If left null, a "Default" channel will be used, and Expo will create the
-   * channel on the device if it does not yet exist. However, use caution, as
-   * the "Default" channel is user-facing and you may not be able to fully
-   * delete it.
-   */
-  channelId?: string,
-}
-```
-
-### Response format
-
-The response is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects (usually just one):
-
-```json
-{
-  "errors": [{
-    "code": "INTERNAL_SERVER_ERROR",
-    "message": "An unknown error occurred."
-  }]
-}
-```
-
-If there are errors that affect individual messages but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will contain push tickets that describe the errors:
-
-```json
-{
-  "data": [{
-    "status": "error",
-    "message": "\\\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\\\" is not a registered push notification recipient",
-    "details": {
-      "error": "DeviceNotRegistered"
-    }
-  }, {
-    "status": "ok",
-    "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-  }]
-}
-```
-
-> **Note:** You should check the ticket for each notification to determine if there was a problem delivering it to Expo. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
-
-The HTTP status code will be 200 also if all of the messages were successfully delivered to Expo and enqueued to be delivered to the iOS and Android push notification services.
-
-Successful push receipts, and some types of failed ones, will contain an "id" field with the ID of a receipt to fetch later.
-
-### Receipt request format
-
-Each receipt request must contain a field named "ids" that is an array of receipt IDs:
-
-```javascript
-{
-  "ids": string[]
-}
-```
-
-### Receipt response format
-
-The response format for push receipts is similar to that of push tickets; it is a JSON object with two optional fields, `data` and `errors`. If there is an error with the entire request, the HTTP status code will be 4xx or 5xx and `errors` will be an array of error objects.
-
-If there are errors that affected individual notifications but not the entire request, the HTTP status code will be 200, the `errors` field will be empty, and the `data` field will be a JSON object whose keys are receipt IDs and values are corresponding push receipts. If there is no push receipt for a requested receipt ID, the mapping won't contain that ID. This is an example response:
-
-```json
-{
-  "data": {
-    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX": {
-      "status": "error",
-      "message": "The Apple Push Notification service failed to send the notification",
-      "details": {
-        "error": "DeviceNotRegistered"
-      }
-    },
-    "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY": {
-      "status": "ok"
-    }
-  }
-}
-```
-
-> **Note:** You should check each receipt to determine if there was an issue delivering the notification to the Android or iOS push notification service. In particular, **do not assume a 200 HTTP status code means your notifications were sent successfully**; the granularity of push notification errors is finer than that of HTTP statuses.
-
-The HTTP status code will be 200 also if all of the messages were successfully delivered to the Android and iOS push notification services.
-
-**Important:** in particular, look for an `details` object with an `error` field inside both push tickets and push receipts. If present, it may be one of these values: `DeviceNotRegistered`, `MessageTooBig`, `MessageRateExceeded`, and `InvalidCredentials`. You should handle these errors like so:
+Inside both push tickets and push receipts, look for a `details` object with an `error` field. If present, it may be one of the following values, and you should handle these errors like so:
 
 - `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
@@ -449,9 +288,13 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS.
 
-If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
+### Request errors
 
-# FAQ
+If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
+
+- `PUSH_TOO_MANY_EXPERIENCE_IDS`: you are trying to send push notifications to different Expo experiences, for example `@username/projectAAA` and `@username/projectBBB`. Check the `details` field for a mapping of experience names to their associated push tokens from the request, and remove any from another experience.
+
+## FAQ
 
 - **Does Expo store the contents of push notifications?** Expo does not store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, etc... Push notifications are stored only in memory and in message queues and **not** stored in databases.
 
@@ -462,3 +305,80 @@ If Expo couldn't deliver the message to the Android or iOS push notification ser
 - **What browsers does Expo for Web's push notifications support?** It works on all browsers that support Push API such as Chrome and Firefox. Check the full list here: https://caniuse.com/#feat=push-api.
 
 - **How do I handle expired push notification credentials?** When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+
+## Formats
+
+### Message request format
+
+Each message must be a JSON object with the given fields (only the `to` field is required):
+
+| Field        | Platform?     | Type                            | Description                                                                                                                                                                                                                                                           |
+| ------------ | ------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `to`         | iOS & Android | `string | string[]`             | An Expo push token or an array of Expo push tokens specifying the recipient(s) of this message.                                                                                                                                                                       |
+| `data`       | iOS & Android | `Object`                        | A JSON object delivered to your app. It may be up to about 4KiB; the total notification payload sent to Apple and Google must be at most 4KiB or else you will get a "Message Too Big" error.                                                                         |
+| `title`      | iOS & Android | `string`                        | The title to display in the notification. Often displayed above the notification body                                                                                                                                                                                 |
+| `body`       | iOS & Android | `string`                        | The message to display in the notification.                                                                                                                                                                                                                           |
+| `ttl`        | iOS & Android | `number`                        | Time to Live: the number of seconds for which the message may be kept around for redelivery if it hasn't been delivered yet. Defaults to `undefined` in order to use the respective defaults of each provider (0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM). |
+| `expiration` | iOS & Android | `number`                        | Timestamp since the UNIX epoch specifying when the message expires. Same effect as `ttl` (`ttl` takes precedence over `expiration`).                                                                                                                                  |
+| `priority`   | iOS & Android | `'default' | 'normal' | 'high'` | The delivery priority of the message. Specify "default" or omit this field to use the default priority on each platform ("normal" on Android and "high" on iOS).                                                                                                      |
+| `subtitle`   | iOS Only      | `string`                        | The subtitle to display in the notification below the title.                                                                                                                                                                                                          |
+| `sound`      | iOS Only      | `'default' | null`              | Play a sound when the recipient receives this notification. Specify `"default"` to play the device's default notification sound, or omit this field to play no sound.                                                                                                 |
+| `badge`      | iOS Only      | `number`                        | Number to display in the badge on the app icon. Specify zero to clear the badge.                                                                                                                                                                                      |
+| `channelId`  | Android Only  | `string`                        | ID of the Notification Channel through which to display this notification. If an ID is specified but the corresponding channel does not exist on the device (i.e. has not yet been created by your app), the notification will not be displayed to the user.          |
+
+**Note on `ttl`**: On Android, we make a best effort to deliver messages with zero TTL immediately and do not throttle them. However, setting TTL to a low value (e.g. zero) can prevent normal-priority notifications from ever reaching Android devices that are in doze mode. In order to guarantee that a notification will be delivered, TTL must be long enough for the device to wake from doze mode. This field takes precedence over `expiration` when both are specified.
+
+**Note on `priority`**: On Android, normal-priority messages won't open network connections on sleeping devices and their delivery may be delayed to conserve the battery. High-priority messages are delivered immediately if possible and may wake sleeping devices to open network connections, consuming energy. On iOS, normal-priority messages are sent at a time that takes into account power considerations for the device, and may be grouped and delivered in bursts. They are throttled and may not be delivered by Apple. High-priority messages are sent immediately. Normal priority corresponds to APNs priority level 5 and high priority to 10.
+
+**Note on `channelId`**: If left null, a "Default" channel will be used, and Expo will create the channel on the device if it does not yet exist. However, use caution, as the "Default" channel is user-facing and you may not be able to fully delete it.
+
+### Push ticket format
+
+```javascript
+{
+  "data": [
+    {
+      "status": "error" | "ok",
+      "id": string, // this is the Receipt ID
+      // if status === "error"
+      "message": string,
+      "details": JSON
+    },
+    ...
+  ],
+  // only populated if there was an error with the entire request
+  "errors": [{
+    "code": number,
+    "message": string
+  }]
+}
+```
+
+### Push receipt request format
+
+```javascript
+{
+  "ids": string[]
+}
+```
+
+### Push receipt response format
+
+```javascript
+{
+  "data": {
+    Receipt ID: {
+      "status": "error" | "ok",
+      // if status === "error"
+      "message": string,
+      "details": JSON
+    },
+    ...
+  },
+  // only populated if there was an error with the entire request
+  "errors": [{
+    "code": string,
+    "message": string
+  }]
+}
+```
