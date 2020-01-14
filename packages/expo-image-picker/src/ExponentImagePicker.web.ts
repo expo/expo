@@ -1,4 +1,6 @@
 import uuidv4 from 'uuid/v4';
+import * as Permissions from 'expo-permissions';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import {
   ImagePickerResult,
@@ -17,6 +19,7 @@ export default {
   get name(): string {
     return 'ExponentImagePicker';
   },
+
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
@@ -26,6 +29,7 @@ export default {
       allowsMultipleSelection,
     });
   },
+
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.All,
     allowsMultipleSelection = false,
@@ -36,7 +40,37 @@ export default {
       capture: true,
     });
   },
+
+  /*
+   * Delegate to expo-permissions to request camera permissions
+   */
+  async getCameraPermissionAsync() {
+    return Permissions.getAsync(Permissions.CAMERA);
+  },
+  async requestCameraPermissionsAsync() {
+    return Permissions.askAsync(Permissions.CAMERA);
+  },
+
+  /*
+   * Camera roll permissions don't need to be requested on web, so we always
+   * respond with granted.
+   */
+  async getCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+    return permissionGrantedResponse();
+  },
+  async requestCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+    return permissionGrantedResponse();
+  },
 };
+
+function permissionGrantedResponse(): PermissionResponse {
+  return {
+    status: PermissionStatus.GRANTED,
+    expires: 'never',
+    granted: true,
+    canAskAgain: true,
+  };
+}
 
 function openFileBrowserAsync({
   mediaTypes,
