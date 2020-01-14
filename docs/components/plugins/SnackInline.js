@@ -99,7 +99,7 @@ export default class SnackInline extends React.Component {
           <div ref={this.contentRef}>{this.props.children}</div>
 
           {/* TODO: this should be a POST request, need to change Snack to support it though */}
-          <form ref={this.formRef} action="https://snack.expo.io" method="GET" target="_blank">
+          <form ref={this.formRef} action="https://snack.expo.io" method="POST" target="_blank">
             <input type="hidden" name="platform" value={DEFAULT_PLATFORM} />
             <input type="hidden" name="name" value={this.props.label || 'Example'} />
             <input type="hidden" name="dependencies" value={this._getDependencies()} />
