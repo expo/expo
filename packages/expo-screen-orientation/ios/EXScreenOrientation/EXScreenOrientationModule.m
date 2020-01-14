@@ -11,6 +11,8 @@
 
 #import <UIKit/UIKit.h>
 
+static NSString *const EXScreenOrientationDidUpdateDimensions = @"expoDidUpdateDimensions";
+
 @interface EXScreenOrientationModule ()
 
 @property (nonatomic, weak) EXScreenOrientationRegistry *screenOrientationRegistry;
@@ -108,13 +110,11 @@ UM_EXPORT_METHOD_AS(supportsOrientationLockAsync,
 {
   UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities importOrientationLock:orientationLock];
  
-  if (!orientationMask) {
-    resolve(@NO);
-  } else if ([EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
-    resolve(@YES);
-  } else {
-    resolve(@NO);
+  if (orientationMask && [EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
+    return resolve(@YES);
   }
+  
+  resolve(@NO);
 }
 
 UM_EXPORT_METHOD_AS(getOrientationAsync,
@@ -138,15 +138,19 @@ UM_EXPORT_METHOD_AS(getOrientationAsync,
 
 - (void)screenOrientationDidChange:(UIInterfaceOrientation)orientation
 {
-  [_eventEmitter sendEventWithName:@"expoDidUpdateDimensions" body:@{
-    @"orientation": [EXScreenOrientationUtilities exportOrientation:orientation],
-    @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[_screenOrientationRegistry currentOrientationMask]]
+  UITraitCollection * currentTraitCollection = [_screenOrientationRegistry currentTrailCollection];
+  [_eventEmitter sendEventWithName:EXScreenOrientationDidUpdateDimensions body:@{
+    @"orientationLock": [EXScreenOrientationUtilities exportOrientationLock:[_screenOrientationRegistry currentOrientationMask]],
+    @"orientationInfo": @{
+      @"orientation": [EXScreenOrientationUtilities exportOrientation:orientation],
+      @"verticalSizeClass": UMNullIfNil(@(currentTraitCollection.verticalSizeClass)),
+      @"horizontalSizeClass": UMNullIfNil(@(currentTraitCollection.horizontalSizeClass)),
+    }
   }];
-
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"expoDidUpdateDimensions"];
+  return @[EXScreenOrientationDidUpdateDimensions];
 }
 
 - (void)onAppBackgrounded {

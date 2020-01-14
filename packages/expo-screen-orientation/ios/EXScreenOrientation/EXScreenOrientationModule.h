@@ -6,6 +6,6 @@
 #import <UMCore/UMAppLifecycleListener.h>
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 
-@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter, UMAppLifecycleListener, EXScreenOrientationListener>
+@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter, UMAppLifecycleListener, EXOrientationListener>
 
 @end

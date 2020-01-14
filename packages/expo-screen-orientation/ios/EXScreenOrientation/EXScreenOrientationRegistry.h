@@ -3,23 +3,24 @@
 #import <Foundation/Foundation.h>
 #import <UMCore/UMSingletonModule.h>
 
-@protocol EXScreenOrientationListener <NSObject>
+@protocol EXOrientationListener <NSObject>
 
 - (void)screenOrientationDidChange:(UIInterfaceOrientation)orientation;
 
 @end
 
-@protocol EXScreenOrientationEventsEmitter <NSObject>
+@protocol EXScreenOrientationEventEmitter <NSObject>
 
-- (void)unregisterModuleFromReceivingNotification:(id<EXScreenOrientationListener>)module;
-- (void)registerModuleToReceiveNotification:(id<EXScreenOrientationListener>)module;
+- (void)unregisterModuleFromReceivingNotification:(id<EXOrientationListener>)module;
+- (void)registerModuleToReceiveNotification:(id<EXOrientationListener>)module;
 
 @end
 
-@protocol EXScreenOrientationConsumer <NSObject>
+@protocol EXScreenOrientationRegistry <NSObject>
 
 - (UIInterfaceOrientation)currentOrientation;
 - (UIInterfaceOrientationMask)currentOrientationMask;
+- (UITraitCollection *)currentTrailCollection;
 
 - (void)setMask:(UIInterfaceOrientationMask)mask forModule:(id)module;
 
@@ -29,13 +30,9 @@
 
 @end
 
-@protocol EXScreenOrientationRegistryController <NSObject>
+@interface EXScreenOrientationRegistry : UMSingletonModule <EXScreenOrientationEventEmitter, EXScreenOrientationRegistry>
 
 - (UIInterfaceOrientationMask)requiredOrientationMask;
 - (void)traitCollectionDidChangeTo:(UITraitCollection *)traitCollection;
-
-@end
-
-@interface EXScreenOrientationRegistry : UMSingletonModule <EXScreenOrientationEventsEmitter, EXScreenOrientationConsumer, EXScreenOrientationRegistryController>
 
 @end

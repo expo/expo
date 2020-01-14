@@ -17,6 +17,11 @@ export declare enum OrientationLock {
     OTHER = 8,
     UNKNOWN = 9
 }
+export declare enum SizeClassIOS {
+    REGULAR = 0,
+    COMPACT = 1,
+    UNKNOWN = 2
+}
 export declare enum WebOrientationLock {
     PORTRAIT_PRIMARY = "portrait-primary",
     PORTRAIT_SECONDARY = "portrait-secondary",
@@ -39,8 +44,13 @@ export declare type PlatformOrientationInfo = {
     screenOrientationArrayIOS?: Orientation[];
     screenOrientationLockWeb?: WebOrientationLock;
 };
+export declare type OrientationInfo = {
+    orientation: Orientation;
+    verticalSizeClass?: SizeClassIOS;
+    horizontalSizeClass?: SizeClassIOS;
+};
 export declare type OrientationChangeListener = (event: OrientationChangeEvent) => void;
 export declare type OrientationChangeEvent = {
     orientationLock: OrientationLock;
-    orientation: Orientation;
+    orientationInfo: OrientationInfo;
 };

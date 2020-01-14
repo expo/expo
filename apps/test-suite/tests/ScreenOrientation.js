@@ -10,27 +10,29 @@ export const name = 'ScreenOrientation';
 const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientations }) => {
   return new Promise(async function(resolve, reject) {
     let subscriptionCancelled = false;
-    const subscription = ScreenOrientation.addOrientationChangeListener(update => {
-      const { orientation, orientationLock } = update;
-      if (validOrientations && !validOrientations.includes(orientation)) {
-        reject(new Error(`Should not have received an orientation of ${orientation}`));
-      }
-      if (desiredOrientations && !desiredOrientations.includes(orientation)) {
-        return;
-      } else if (desiredOrientationLock && orientationLock !== desiredOrientationLock) {
-        return;
-      }
+    const subscription = ScreenOrientation.addOrientationChangeListener(
+      ({ orientationInfo, orientationLock }) => {
+        const { orientation } = orientationInfo;
+        if (validOrientations && !validOrientations.includes(orientation)) {
+          reject(new Error(`Should not have received an orientation of ${orientation}`));
+        }
+        if (desiredOrientations && !desiredOrientations.includes(orientation)) {
+          return;
+        } else if (desiredOrientationLock && orientationLock !== desiredOrientationLock) {
+          return;
+        }
 
-      // We have met all the desired orientation conditions
-      // remove itself
-      if (!subscriptionCancelled) {
-        ScreenOrientation.removeOrientationChangeListener(subscription);
-        subscriptionCancelled = true;
-      }
+        // We have met all the desired orientation conditions
+        // remove itself
+        if (!subscriptionCancelled) {
+          ScreenOrientation.removeOrientationChangeListener(subscription);
+          subscriptionCancelled = true;
+        }
 
-      // resolve promise
-      resolve();
-    });
+        // resolve promise
+        resolve();
+      }
+    );
 
     if (desiredOrientationLock) {
       // set the screen orientation to desired orientation lock
@@ -113,8 +115,8 @@ export function test(t) {
         async () => {
           const callListenerAsync = new Promise(async function(resolve, reject) {
             // Register for screen orientation changes
-            ScreenOrientation.addOrientationChangeListener(update => {
-              const { orientation } = update;
+            ScreenOrientation.addOrientationChangeListener(({ orientationInfo }) => {
+              const { orientation } = orientationInfo;
               if (orientation === ScreenOrientation.Orientation.PORTRAIT_UP) {
                 // orientation update has not happened yet
               } else if (orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT) {

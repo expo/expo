@@ -11,6 +11,7 @@
 @property (nonatomic, strong) NSPointerArray *notificationListeners;
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleInterfaceMasks;
 @property (nonatomic, weak) id foregroundedModule;
+@property (nonatomic, weak, nullable) UITraitCollection *currentTraitCollection;
 
 @end
 
@@ -23,7 +24,8 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   if (self = [super init]) {
     _moduleInterfaceMasks =  [NSMapTable weakToStrongObjectsMapTable];
     _notificationListeners = [NSPointerArray weakObjectsPointerArray];
-  
+    _currentTraitCollection = nil;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                             selector:@selector(handleDeviceOrientationChange:)
                                                 name:UIDeviceOrientationDidChangeNotification
@@ -100,6 +102,11 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   return _currentScreenOrientation;
 }
 
+- (UITraitCollection *)currentTrailCollection
+{
+  return _currentTraitCollection;
+}
+
 #pragma mark - events
 
 - (void)handleDeviceOrientationChange:(NSNotification *)notification
@@ -136,6 +143,8 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)traitCollectionDidChangeTo:(UITraitCollection *)traitCollection
 {
+  _currentTraitCollection = traitCollection;
+  
   UIUserInterfaceSizeClass verticalSizeClass = traitCollection.verticalSizeClass;
   UIUserInterfaceSizeClass horizontalSizeClass = traitCollection.horizontalSizeClass;
   UIInterfaceOrientation currentDeviceOrientation = [EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
@@ -215,12 +224,12 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   [_moduleInterfaceMasks removeObjectForKey:module];
 }
 
-- (void)registerModuleToReceiveNotification:(id<EXScreenOrientationListener>)module
+- (void)registerModuleToReceiveNotification:(id<EXOrientationListener>)module
 {
   [_notificationListeners addPointer:(__bridge void * _Nullable)(module)];
 }
 
-- (void)unregisterModuleFromReceivingNotification:(id<EXScreenOrientationListener>)module
+- (void)unregisterModuleFromReceivingNotification:(id<EXOrientationListener>)module
 {
   for (int i = 0; i < _notificationListeners.count; i++) {
     id pointer = [_notificationListeners pointerAtIndex:i];

@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// TODO: Remove once sdk 37 is phased out
 @protocol EXScreenOrientationScopedModuleDelegate
 
 - (void)screenOrientationModule:(nonnull id)scopedOrientationModule

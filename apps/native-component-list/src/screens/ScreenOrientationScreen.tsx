@@ -20,9 +20,9 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(
-      ({ orientation, orientationLock }) => {
+      ({ orientationInfo, orientationLock }) => {
         this.setState({
-          orientation,
+          orientation: orientationInfo.orientation,
           orientationLock,
         });
       }
@@ -100,12 +100,6 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   };
 
-  unlock = async () => {
-    await ScreenOrientation.unlockAsync().catch(console.warn);
-
-    await this.updateCurrentOrientationAndLock();
-  };
-
   getScreenOrientationLockOptions(): Array<{
     key: string;
     value: ScreenOrientation.OrientationLock;
@@ -151,9 +145,9 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
           title="Check Orientation.PORTRAIT_DOWN support"
         />
         <ListButton
-          key="unlock"
-          onPress={this.unlock}
-          title="unlock orientation back to default settings"
+          key="updateCurrentOrientationAndLock"
+          onPress={this.updateCurrentOrientationAndLock}
+          title="Update current orientation and lock"
         />
       </ScrollView>
     );

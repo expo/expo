@@ -9,6 +9,11 @@
 
 # pragma mark - helpers
 
++ (BOOL)isIPad
+{
+  return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+}
+
 + (BOOL)doesDeviceSupportOrientationMask:(UIInterfaceOrientationMask)orientationMask
 {
   if ((UIInterfaceOrientationMaskPortraitUpsideDown & orientationMask) // UIInterfaceOrientationMaskPortraitUpsideDown is part of orientationMask
@@ -142,7 +147,15 @@
     exportOrientationLockMap[@(UIInterfaceOrientationMaskAllButUpsideDown)] = @0; // UIInterfaceOrientationMaskAllButUpsideDown is default value
   });
   
-  return exportOrientationLockMap[@(orientationMask)] ?: @(9);
+  NSNumber *exportedOrientation = exportOrientationLockMap[@(orientationMask)];
+  if (!exportedOrientation) {
+    if (orientationMask & UIInterfaceOrientationMaskAll) {
+      return @(8);
+    }
+    return @(9);
+  }
+  
+  return exportedOrientation;
 }
 
 + (NSNumber *)exportOrientation:(UIInterfaceOrientation)orientation
@@ -158,11 +171,6 @@
     exportOrientationMap = [self inverted:[self orientationMap]];
   });
   return [exportOrientationMap[orientation] intValue] ?: UIInterfaceOrientationUnknown;
-}
-
-+ (BOOL)isIPad
-{
-  return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 }
 
 @end

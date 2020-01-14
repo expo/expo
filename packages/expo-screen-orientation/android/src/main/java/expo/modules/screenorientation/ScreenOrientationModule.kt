@@ -142,18 +142,18 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
     if (isPortraitNaturalOrientation(rotation, dm.widthPixels, dm.heightPixels)) {
       currentOrientation = when (rotation) {
         Surface.ROTATION_0 -> Orientation.PORTRAIT_UP
-        Surface.ROTATION_90 -> Orientation.LANDSCAPE_LEFT
+        Surface.ROTATION_90 -> Orientation.LANDSCAPE_RIGHT
         Surface.ROTATION_180 -> Orientation.PORTRAIT_DOWN
-        Surface.ROTATION_270 -> Orientation.LANDSCAPE_RIGHT
+        Surface.ROTATION_270 -> Orientation.LANDSCAPE_LEFT
         else -> Orientation.UNKNOWN
       }
     } else {
       // if the device's natural orientation is landscape or if the device
       // is square:
       currentOrientation = when (rotation) {
-        Surface.ROTATION_0 -> Orientation.LANDSCAPE_LEFT
+        Surface.ROTATION_0 -> Orientation.LANDSCAPE_RIGHT
         Surface.ROTATION_90 -> Orientation.PORTRAIT_DOWN
-        Surface.ROTATION_180 -> Orientation.LANDSCAPE_RIGHT
+        Surface.ROTATION_180 -> Orientation.LANDSCAPE_LEFT
         Surface.ROTATION_270 -> Orientation.PORTRAIT_UP
         else -> Orientation.UNKNOWN
       }
@@ -179,8 +179,8 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
       ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> 3
       ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT -> 4
       ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> 5
-      ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 6
-      ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 7
+      ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 6
+      ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 7
       else -> 8 // other orientation
     }
   }
@@ -194,8 +194,8 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
       3 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
       4 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
       5 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-      6 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-      7 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+      6 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+      7 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
       else -> throw InvalidArgumentException("OrientationLock $orientationLock is not mappable to a native Android orientation attr")
     }
   }
