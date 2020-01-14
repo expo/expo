@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
 
 import Video from '../../../../components/plugins/Video'
 
-**`expo-sharing`** allows sharing files.
+**`expo-sharing`** allows you to share files directly with other compatible applications.
 
 <Video file={"sdk/sharing.mp4"} loop={false} />
 
