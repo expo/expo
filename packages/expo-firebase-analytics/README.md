@@ -289,7 +289,7 @@ await Analytics.resetAnalyticsData();
 setUserProperties(properties: { [key: string]: string }): Promise<void>
 ```
 
-Sets multiple user properties to the supplied values. This is a web-only method that's polyfilled on native to use `setUserProperty`.
+Sets multiple user properties to the supplied values.
 
 #### Parameters
 
