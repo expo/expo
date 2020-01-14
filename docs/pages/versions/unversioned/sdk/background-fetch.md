@@ -11,7 +11,9 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+| ✅ *           | ✅ *             | ✅ *       | ✅ *          | ✅  |
+
+* the feature only works when the app is backgrounded, but not if the app was terminated or upon device reboot.
 
 ## Installation
 
