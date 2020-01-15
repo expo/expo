@@ -1,15 +1,17 @@
 package expo.modules.notifications;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
+import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.tokens.PushTokenManager;
 
 /**
- * Subclass of FirebaseMessagingService responsible for dispatching new tokens.
+ * Subclass of FirebaseMessagingService responsible for dispatching new tokens and remote messages.
  */
 public class FirebaseListenerService extends FirebaseMessagingService {
   // Unfortunately we cannot save state between instances of a service other way
@@ -26,6 +28,7 @@ public class FirebaseListenerService extends FirebaseMessagingService {
    * is already registered and to iterate over when notifying of new token.
    */
   private static WeakHashMap<PushTokenManager, WeakReference<PushTokenManager>> sTokenListenersReferences = new WeakHashMap<>();
+  private static WeakHashMap<NotificationManager, WeakReference<NotificationManager>> sNotificationListenersReferences = new WeakHashMap<>();
 
   /**
    * Used only by {@link PushTokenManager} instances. If you look for a place to register
@@ -50,6 +53,24 @@ public class FirebaseListenerService extends FirebaseMessagingService {
   }
 
   /**
+   * Used only by {@link NotificationManager} instances. If you look for a place to register
+   * your listener, use {@link NotificationManager} singleton module.
+   * <p>
+   * Purposefully the argument is expected to be a {@link NotificationManager} and just a listener.
+   * <p>
+   * This class doesn't hold strong references to listeners, so you need to own your listeners.
+   *
+   * @param listener A listener instance to be informed of new push device tokens.
+   */
+  public static void addNotificationListener(NotificationManager listener) {
+    // Checks whether this listener has already been registered
+    if (!sNotificationListenersReferences.containsKey(listener)) {
+      WeakReference<NotificationManager> listenerReference = new WeakReference<>(listener);
+      sNotificationListenersReferences.put(listener, listenerReference);
+    }
+  }
+
+  /**
    * Called on new token, dispatches it to {@link FirebaseListenerService#sTokenListenersReferences}.
    *
    * @param token New device push token.
@@ -66,5 +87,29 @@ public class FirebaseListenerService extends FirebaseMessagingService {
     }
 
     sLastToken = token;
+  }
+
+  @Override
+  public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+    super.onMessageReceived(remoteMessage);
+
+    for (WeakReference<NotificationManager> listenerReference : sNotificationListenersReferences.values()) {
+      NotificationManager listener = listenerReference.get();
+      if (listener != null) {
+        listener.onMessage(remoteMessage);
+      }
+    }
+  }
+
+  @Override
+  public void onDeletedMessages() {
+    super.onDeletedMessages();
+
+    for (WeakReference<NotificationManager> listenerReference : sNotificationListenersReferences.values()) {
+      NotificationManager listener = listenerReference.get();
+      if (listener != null) {
+        listener.onDeletedMessages();
+      }
+    }
   }
 }
