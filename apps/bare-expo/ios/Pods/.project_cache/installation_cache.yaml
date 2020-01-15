@@ -531,6 +531,13 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
