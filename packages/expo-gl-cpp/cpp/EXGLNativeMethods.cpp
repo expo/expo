@@ -92,7 +92,7 @@ EXJS_MAP_EXT(OFFSET, _EXJS_LITERAL(;), _EXJS_UNPACK_NUMBER, __VA_ARGS__)
 #define _WRAP_METHOD_SIMPLE(name, glFunc, ...) _WRAP_METHOD_SIMPLE_INTERNAL(name, false, glFunc, __VA_ARGS__)
 #define _WRAP_WEBGL2_METHOD_SIMPLE(name, glFunc, ...) _WRAP_METHOD_SIMPLE_INTERNAL(name, true, glFunc, __VA_ARGS__)
 
-#define _WRAP_METHOD_SIMPLE_UNPACK(i, _) jsArgv[i].isBool() ? jsArgv[i].getBool() : jsArgv[i].asNumber()
+#define _WRAP_METHOD_SIMPLE_UNPACK(i, _) jsArgv[i].isBool() ? jsArgv[i].getBool() : jsArgv[i].isNull() ? 0 : jsArgv[i].asNumber()
 
 
 // This listing follows the order in
@@ -305,7 +305,7 @@ _WRAP_METHOD(isEnabled, 1) {
   EXJS_UNPACK_ARGV(GLenum cap);
   GLboolean glResult;
   addBlockingToNextBatch([&] { glResult = glIsEnabled(cap); });
-  return static_cast<bool>(glResult);
+  return glResult == GL_TRUE;
 }
 
 _WRAP_METHOD_SIMPLE(lineWidth, glLineWidth, width)
@@ -407,7 +407,7 @@ _WRAP_METHOD_INTERNAL(is ## type, 1, requiresWebGL2) {          \
   addBlockingToNextBatch([&] {                                  \
     glResult = glIs ## type(lookupObject(f));                   \
   });                                                           \
-  return static_cast<bool>(glResult);                           \
+  return glResult == GL_TRUE;                                   \
 }
 
 #define _WRAP_METHOD_IS_OBJECT(type)        _WRAP_METHOD_IS_OBJECT_INTERNAL(type, false)
@@ -671,7 +671,6 @@ _WRAP_METHOD(texImage2D, 6) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  EXGLSysLog("%s", std::to_string(TypedArray::typeFromJSValue(runtime, jsPixels)).c_str());
   if (TypedArray::typeFromJSValue(runtime, jsPixels) != TypedArray::None) {
     std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
@@ -726,7 +725,7 @@ _WRAP_METHOD(texSubImage2D, 7) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  if (TypedArray::typeFromJSValue(runtime, jsPixels) == TypedArray::None) {
+  if (TypedArray::typeFromJSValue(runtime, jsPixels) != TypedArray::None) {
     std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
     std::copy(vec.begin(), vec.end(), data.get());
@@ -947,9 +946,9 @@ _WRAP_METHOD(getProgramParameter, 2) {
   GLint glResult;
   addBlockingToNextBatch([&] { glGetProgramiv(lookupObject(fProgram), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_LINK_STATUS || pname == GL_VALIDATE_STATUS) {
-    return jsi::Value(static_cast<bool>(glResult));
+    return glResult == GL_TRUE;
   } else {
-    return jsi::Value(glResult);
+    return glResult;
   }
 }
 
@@ -958,9 +957,9 @@ _WRAP_METHOD(getShaderParameter, 2) {
   GLint glResult;
   addBlockingToNextBatch([&] { glGetShaderiv(lookupObject(fShader), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_COMPILE_STATUS) {
-    return jsi::Value(static_cast<bool>(glResult));
+    return glResult == GL_TRUE;
   } else {
-    return jsi::Value(glResult);
+    return glResult;
   }
 }
 
@@ -1137,7 +1136,7 @@ _WRAP_METHOD(getUniformLocation, 2) {
   addBlockingToNextBatch([&] {
     location = glGetUniformLocation(lookupObject(fProgram), name.c_str());
   });
-  return location == -1 ? jsi::Value::null() : jsi::Value(location);
+  return location == -1 ? jsi::Value::null() : location;
 }
 
 _WRAP_METHOD_UNIMPL(getVertexAttrib)
@@ -1485,7 +1484,7 @@ _WRAP_WEBGL2_METHOD(transformFeedbackVaryings, 3) {
 
   addToNextBatch([=] {
     std::vector<const char*> varyingsRaw(varyings.size());
-    std::transform(varyings.begin(), varyings.end(), varyingsRaw.begin(), [](const std::string str){ return str.c_str(); });
+    std::transform(varyings.begin(), varyings.end(), varyingsRaw.begin(), [](const std::string& str){ return str.c_str(); });
 
     glTransformFeedbackVaryings(lookupObject(program), varyingsRaw.size(), varyingsRaw.data(), bufferMode);
   });
@@ -1527,7 +1526,7 @@ _WRAP_WEBGL2_METHOD(getUniformIndices, 2) {
   std::vector<std::string> uniformNames = jsArrayToVector<std::string>(runtime, jsArgv[1].asObject(runtime).asArray(runtime));
 
   std::vector<const char*> uniformNamesRaw(uniformNames.size());
-  std::transform(uniformNames.begin(), uniformNames.end(), uniformNamesRaw.begin(), [](const std::string str){ return str.c_str(); });
+  std::transform(uniformNames.begin(), uniformNames.end(), uniformNamesRaw.begin(), [](const std::string& str){ return str.c_str(); });
 
   GLuint indices[uniformNames.size()];
   addBlockingToNextBatch([&] {

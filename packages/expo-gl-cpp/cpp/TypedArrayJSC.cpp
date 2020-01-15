@@ -21,7 +21,7 @@
 //
 // Inefficient implementation used when JSC does not provide
 // JSTypedArray.h (iOS < 10 or android with react-native < 0.59)
-// and typed array hack is enabled
+// and typed array hack is enabled.
 //
 // #include "TypedArrayJSCHack.h"
 
@@ -29,7 +29,9 @@
 // CASE III
 // Use TypedArray api provided by JSC
 //
+#if __has_include(<JavaScriptCore/JSTypedArray.h>)
 #include <JavaScriptCore/JSTypedArray.h>
+#endif
 
 using Type = TypedArray::Type;
 
@@ -185,7 +187,6 @@ std::vector<ContentType<T>> TypedArray::fromJSValue(jsi::Runtime& runtime, const
   auto start = reinterpret_cast<ContentType<T>*>(data + byteOffset);
   auto end = reinterpret_cast<ContentType<T>*>(data + byteOffset + byteLength);
   return std::vector<ContentType<T>>(start, end);
-
 }
 
 std::vector<uint8_t> TypedArray::rawFromJSValue(jsi::Runtime& runtime, const jsi::Value& val) {

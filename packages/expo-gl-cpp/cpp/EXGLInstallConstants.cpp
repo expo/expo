@@ -4,9 +4,8 @@
   jsGl.setProperty(                                                                 \
           runtime,                                                                  \
           jsi::PropNameID::forUtf8(runtime, #name),                                 \
-          static_cast<int>(GL_ ## name))
+          static_cast<double>(GL_ ## name))
 
-// TODO(wkozyra95): remove cast on value
 
 void EXGLContext::installConstants(jsi::Runtime& runtime, jsi::Object& jsGl) {
   _INSTALL_CONSTANT(ACTIVE_ATTRIBUTES); //35721

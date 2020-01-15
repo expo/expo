@@ -6539,7 +6539,7 @@ CACHE_KEYS:
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP: 99468d5c41520658b3565507679a1e9a
-    CHECKSUM: 99ceac9364d2b070fa47f15e119dc696fb93fa53
+    CHECKSUM: 9cb07a4473769e120e8bf4be7010d6ffc3cfb143
     FILES:
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../packages/expo-gl-cpp/cpp/EXGLContext.h"
@@ -6552,8 +6552,6 @@ CACHE_KEYS:
       - "../../packages/expo-gl-cpp/cpp/EXJSUtils.h"
       - "../../packages/expo-gl-cpp/cpp/stb_image.h"
       - "../../packages/expo-gl-cpp/cpp/TypedArrayJSC.cpp"
-      - "../../packages/expo-gl-cpp/cpp/TypedArrayJSCHack.cpp"
-      - "../../packages/expo-gl-cpp/cpp/TypedArrayJSCHack.h"
       - "../../packages/expo-gl-cpp/cpp/TypedArrayJSCMock.h"
       - "../../packages/expo-gl-cpp/cpp/TypedArrayJSI.h"
       - "../../packages/expo-gl-cpp/cpp/UEXGL.cpp"

@@ -1,25 +1,25 @@
 #pragma once
 
+#if ! __has_include(<JavaScriptCore/JSTypedArray.h>)
+
 #include <JavaScriptCore/JSValueRef.h>
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSContextRef.h>
 
-#if false
-
-//typedef enum {
-//    kJSTypedArrayTypeNone = 0,
-//    kJSTypedArrayTypeInt8Array = 1,
-//    kJSTypedArrayTypeInt16Array = 2,
-//    kJSTypedArrayTypeInt32Array = 3,
-//    kJSTypedArrayTypeUint8Array = 4,
-//    kJSTypedArrayTypeUint8ClampedArray = 5,
-//    kJSTypedArrayTypeUint16Array = 6,
-//    kJSTypedArrayTypeUint32Array = 7,
-//    kJSTypedArrayTypeFloat32Array = 8,
-//    kJSTypedArrayTypeFloat64Array = 9,
-//    kJSTypedArrayTypeArrayBuffer = 10
-//} JSTypedArrayType;
+typedef enum {
+    kJSTypedArrayTypeNone = 0,
+    kJSTypedArrayTypeInt8Array = 1,
+    kJSTypedArrayTypeInt16Array = 2,
+    kJSTypedArrayTypeInt32Array = 3,
+    kJSTypedArrayTypeUint8Array = 4,
+    kJSTypedArrayTypeUint8ClampedArray = 5,
+    kJSTypedArrayTypeUint16Array = 6,
+    kJSTypedArrayTypeUint32Array = 7,
+    kJSTypedArrayTypeFloat32Array = 8,
+    kJSTypedArrayTypeFloat64Array = 9,
+    kJSTypedArrayTypeArrayBuffer = 10
+} JSTypedArrayType;
 
 JS_EXPORT JSTypedArrayType JSValueGetTypedArrayType(JSContextRef ctx, JSValueRef value, JSValueRef* exception) {
   return kJSTypedArrayTypeNone;

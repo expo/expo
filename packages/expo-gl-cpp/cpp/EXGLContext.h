@@ -131,7 +131,7 @@ private:
       assert(objects.find(exglObjId) == objects.end());
       mapObject(exglObjId, f());
     });
-    return static_cast<int>(exglObjId);
+    return static_cast<double>(exglObjId);
   }
 
 public:
@@ -180,7 +180,6 @@ public:
   }
 
   inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
-    EXGLSysLog("lookup object %d", exglObjId);
     auto iter = objects.find(exglObjId);
     return iter == objects.end() ? 0 : iter->second;
   }
@@ -192,7 +191,6 @@ private:
 
 public:
   EXGLContext(jsi::Runtime& runtime, UEXGLContextId exglCtxId) {
-    // Create JS version of us
     jsi::Object jsGl(runtime);
     jsGl.setProperty(runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
     installMethods(runtime, jsGl);

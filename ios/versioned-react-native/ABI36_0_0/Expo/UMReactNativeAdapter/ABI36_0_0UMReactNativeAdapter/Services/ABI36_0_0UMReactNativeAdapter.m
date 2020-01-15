@@ -185,7 +185,7 @@ ABI36_0_0UM_REGISTER_MODULE();
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return NULL;
   } else if (_bridge.runtime) {
-      return (long)_bridge.runtime;
+    return (long)_bridge.runtime;
   }
   return NULL;
 }
@@ -210,7 +210,7 @@ ABI36_0_0UM_REGISTER_MODULE();
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
                            UIApplicationWillEnterForegroundNotification]) {
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name

@@ -315,7 +315,7 @@ CACHE_KEYS:
       - EXFont (8.0.0)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL: b21ff559aacb62ac621d51e446f9cbce
+      EXGL: e2693ac9b23793b0d76b54ea5efb250c
     CHECKSUM: 3add8ba2c89377285f57cda493d4bc50939b5300
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
@@ -335,8 +335,8 @@ CACHE_KEYS:
       - EXGL (8.0.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL_CPP: e5c21be87c49c4ea22fb524158d76c6f
-    CHECKSUM: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
+      EXGL_CPP: 2048fe04f075c294e3d06750bdb6e79a
+    CHECKSUM: 9cb07a4473769e120e8bf4be7010d6ffc3cfb143
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.h"
@@ -345,17 +345,17 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLNativeMethods.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.mm"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.c"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSConvertTypedArray.h"
-      - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.c"
+      - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/stb_image.h"
+      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSC.cpp"
+      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSCMock.h"
+      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSI.h"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
       - EXGL_CPP (8.0.0)
-      - EXGL_CPP/EXGLContext (8.0.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: f09b309f99f7a0147df78dd155d49661
@@ -709,12 +709,12 @@ CACHE_KEYS:
   GTMSessionFetcher:
     BUILD_SETTINGS_CHECKSUM:
       GTMSessionFetcher: d9c89823d2516fe6150cc01204ef77f0
-    CHECKSUM: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
+    CHECKSUM: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
     PROJECT_NAME: GTMSessionFetcher
     SPECS:
-      - GTMSessionFetcher (1.3.0)
-      - GTMSessionFetcher/Core (1.3.0)
-      - GTMSessionFetcher/Full (1.3.0)
+      - GTMSessionFetcher (1.3.1)
+      - GTMSessionFetcher/Core (1.3.1)
+      - GTMSessionFetcher/Full (1.3.1)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 56436cf11abb9cf3f33b76749e92e0af

@@ -70,8 +70,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXGL_CPP (8.0.0):
-    - EXGL_CPP/EXGLContext (= 8.0.0)
-  - EXGL_CPP/EXGLContext (8.0.0)
+    - React-jsi
   - EXGoogleSignIn (8.0.0):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -163,11 +162,11 @@ PODS:
   - GTMAppAuth (1.0.0):
     - AppAuth/Core (~> 1.0)
     - GTMSessionFetcher (~> 1.1)
-  - GTMSessionFetcher (1.3.0):
-    - GTMSessionFetcher/Full (= 1.3.0)
-  - GTMSessionFetcher/Core (1.3.0)
-  - GTMSessionFetcher/Full (1.3.0):
-    - GTMSessionFetcher/Core (= 1.3.0)
+  - GTMSessionFetcher (1.3.1):
+    - GTMSessionFetcher/Full (= 1.3.1)
+  - GTMSessionFetcher/Core (1.3.1)
+  - GTMSessionFetcher/Full (1.3.1):
+    - GTMSessionFetcher/Core (= 1.3.1)
   - RCTRequired (0.61.4)
   - RCTTypeSafety (0.61.4):
     - FBLazyVector (= 0.61.4)
@@ -750,7 +749,7 @@ SPEC CHECKSUMS:
   EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
   EXFont: 6187b5ab46ee578d5f8e7f2ea092752e78772235
   EXGL: 3add8ba2c89377285f57cda493d4bc50939b5300
-  EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
+  EXGL_CPP: 9cb07a4473769e120e8bf4be7010d6ffc3cfb143
   EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
   EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
   EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
@@ -782,7 +781,7 @@ SPEC CHECKSUMS:
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
-  GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
+  GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
   RCTRequired: f3b3fb6f4723e8e52facb229d0c75fdc76773849
   RCTTypeSafety: 2ec60de6abb1db050b56ecc4b60188026078fd10
   React: 10e0130b57e55a7cd8c3dee37c1261102ce295f4

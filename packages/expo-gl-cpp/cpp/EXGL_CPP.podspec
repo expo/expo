@@ -15,8 +15,9 @@ Pod::Spec.new do |s|
   s.source_files   = '**/*.{h,c,cpp,mm}'
   s.preserve_paths = '**/*.{h,c,cpp,mm}'
   s.compiler_flags = '-x objective-c++'
+  s.exclude_files  = '**/{TypedArrayJSCHack}*'
   s.requires_arc   = true
-  
+
   s.pod_target_xcconfig = {
     'CLANG_WARN_COMMA' => 'NO',
     'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO'

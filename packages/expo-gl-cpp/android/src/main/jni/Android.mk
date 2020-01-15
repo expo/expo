@@ -22,6 +22,7 @@ LOCAL_SRC_FILES := \
 #TARGET-process-src-files-tags += $(call add-src-files-target-cflags, $(LOCAL_C99_FILES), -std=c99)
 
 # LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
+LOCAL_CFLAGS := -fexceptions -frtti -O3
 LOCAL_STATIC_LIBRARIES := libjsi
 LOCAL_SHARED_LIBRARIES := libjsc libfolly_json glog
 

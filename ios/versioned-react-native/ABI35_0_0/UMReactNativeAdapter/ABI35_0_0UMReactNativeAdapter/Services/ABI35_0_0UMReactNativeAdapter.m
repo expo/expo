@@ -170,7 +170,7 @@ ABI35_0_0UM_REGISTER_MODULE();
 {
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
-  } else { 
+  } else {
     // In ReactABI35_0_0-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
     // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
@@ -184,7 +184,7 @@ ABI35_0_0UM_REGISTER_MODULE();
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return NULL;
   } else if (_bridge.runtime) {
-      return (long)_bridge.runtime;
+    return (long)_bridge.runtime;
   }
   return NULL;
 }
@@ -209,7 +209,7 @@ ABI35_0_0UM_REGISTER_MODULE();
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
                            UIApplicationWillEnterForegroundNotification]) {
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
                                                  name:name

@@ -15,6 +15,7 @@ import GLCameraScreen from './GLCameraScreen';
 import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
+import GLViewScreen from './GLViewScreen';
 import ProcessingWrap from './ProcessingWrap';
 
 interface Screens {
@@ -114,6 +115,10 @@ const GLScreens: Screens = {
         },
       };
     }),
+  },
+
+  GLViewcreen: {
+    screen: GLViewScreen,
   },
 
   Mask: {

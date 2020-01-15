@@ -9,7 +9,7 @@
 
 extern "C" {
 
-// react-natives before JSI was introduced are not supported
+// Any version of ReactNative that from before JSI was introduced is not supported
 // JNIEXPORT jint JNICALL
 // Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 // (JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
