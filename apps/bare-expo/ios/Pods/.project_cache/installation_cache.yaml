@@ -531,11 +531,11 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)
