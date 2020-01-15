@@ -90,6 +90,9 @@ function parse(url) {
         throw new Error('parse cannot be called with a null value');
     }
     const parsed = URL(url, /* parseQueryString */ true);
+    for (const param in parsed.query) {
+        parsed.query[param] = decodeURIComponent(parsed.query[param]);
+    }
     let queryParams = parsed.query;
     let hostUri = HOST_URI || '';
     let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
