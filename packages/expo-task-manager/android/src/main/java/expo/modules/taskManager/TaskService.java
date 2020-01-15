@@ -14,6 +14,13 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -25,20 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.unimodules.core.interfaces.SingletonModule;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import expo.loaders.provider.interfaces.TaskManagerAppLoader;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-
 import javax.annotation.Nullable;
 
+import expo.loaders.provider.AppLoaderProvider;
+import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
-import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
+import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -52,6 +52,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
+  private TaskManagerAppLoader mAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -74,6 +75,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
+    mAppLoader = AppLoaderProvider.createLoader("react-native-experience", context);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
@@ -403,7 +405,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     sEventsQueues.get(appId).add(body);
 
-    getTaskManager(appId).loadApp(mContextRef.get(), new TaskManagerAppLoader.Params(appId, task.getAppUrl()), () -> {
+    mAppLoader.loadApp(mContextRef.get(), new TaskManagerAppLoader.Params(appId, task.getAppUrl()), () -> {
       appEvents.remove(eventId);
       sEventsQueues.remove(appId);
       try {
@@ -627,7 +629,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appId) {
-    if (getTaskManager(appId).invalidateApp(appId)) {
+    if (mAppLoader.invalidateApp(appId)) {
       sHeadlessTaskManagers.remove(appId);
     }
   }

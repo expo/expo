@@ -52,7 +52,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
-    mAppLoader = moduleRegistry.getSingletonModule("TaskManagerAppLoader", TaskManagerAppLoader.class);
 
     // Register in TaskService
     mTaskService.setTaskManager(this, getAppId(), getAppUrl());
@@ -78,20 +77,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   public void unregisterTask(String taskName, Class consumerClass) throws Exception {
     checkTaskService();
     mTaskService.unregisterTask(taskName, getAppId(), consumerClass);
-  }
-
-  @Override
-  public void loadApp(Context context, Object params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
-    if(params instanceof TaskManagerAppLoader.Params) {
-      mAppLoader.loadApp(context, (TaskManagerAppLoader.Params)params, alreadyRunning, callback);
-    } else {
-      throw new IllegalArgumentException("Params must be of type " + TaskManagerAppLoader.Params.class.getCanonicalName());
-    }
-  }
-
-  @Override
-  public boolean invalidateApp(String appId) {
-    return mAppLoader.invalidateApp(appId);
   }
 
   @Override

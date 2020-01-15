@@ -32,6 +32,6 @@ public class TaskManagerPackage extends BasePackage {
 
   @Override
   public List<SingletonModule> createSingletonModules(Context context) {
-    return Arrays.asList(new TaskService(context), new ExpoHeadlessAppLoader());
+    return Collections.singletonList(new TaskService(context));
   }
 }
