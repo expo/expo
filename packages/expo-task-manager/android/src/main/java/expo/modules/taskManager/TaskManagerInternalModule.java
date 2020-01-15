@@ -4,18 +4,22 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.Consumer;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+
+import expo.loaders.provider.AppLoaderProvider;
+import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   private ConstantsInterface mConstants;
   private TaskServiceInterface mTaskService;
   private WeakReference<Context> mContextRef;
+  private TaskManagerAppLoader mAppLoader;
   private List<Bundle> mEventsQueue = new ArrayList<>();
 
   public TaskManagerInternalModule(Context context) {
@@ -35,7 +40,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Arrays.<Class>asList(TaskManagerInterface.class);
+    return Collections.singletonList(TaskManagerInterface.class);
   }
 
   //endregion
@@ -47,8 +52,9 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
+    mAppLoader = moduleRegistry.getSingletonModule("TaskManagerAppLoader", TaskManagerAppLoader.class);
 
-    // Register in TaskService.
+    // Register in TaskService
     mTaskService.setTaskManager(this, getAppId(), getAppUrl());
 
     mUIManager.registerLifecycleEventListener(this);
@@ -75,13 +81,27 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   }
 
   @Override
+  public void loadApp(Context context, Object params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
+    if(params instanceof TaskManagerAppLoader.Params) {
+      mAppLoader.loadApp(context, (TaskManagerAppLoader.Params)params, alreadyRunning, callback);
+    } else {
+      throw new IllegalArgumentException("Params must be of type " + TaskManagerAppLoader.Params.class.getCanonicalName());
+    }
+  }
+
+  @Override
+  public boolean invalidateApp(String appId) {
+    return mAppLoader.invalidateApp(appId);
+  }
+
+  @Override
   public synchronized void executeTaskWithBody(Bundle body) {
     if (mEventsQueue != null) {
       // `startObserving` on TaskManagerModule wasn't called yet - add event body to the queue.
       mEventsQueue.add(body);
     } else {
       // Manager is already being observed by JS app, so we can execute the event immediately.
-      mEventEmitter.emit(TaskManagerModule.EVENT_NAME, body);
+      mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
     }
   }
 
@@ -98,7 +118,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     // Execute any events that came before this call.
     if (mEventsQueue != null) {
       for (Bundle body : mEventsQueue) {
-        mEventEmitter.emit(TaskManagerModule.EVENT_NAME, body);
+        mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
       }
       mEventsQueue = null;
     }
@@ -112,7 +132,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return null;
   }
 
-  @Override
   public boolean isRunningInHeadlessMode() {
 //    if (mConstants != null) {
 //      return (boolean) mConstants.getConstants().get("isHeadless");

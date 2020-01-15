@@ -16,7 +16,10 @@ import abi33_0_0.org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import abi33_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi33_0_0.org.unimodules.core.interfaces.services.UIManager;
 import abi33_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
+
+import org.unimodules.core.interfaces.Consumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
@@ -114,11 +117,20 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
     return null;
   }
 
-  @Override
   public boolean isRunningInHeadlessMode() {
     if (mConstants != null) {
       return (boolean) mConstants.getConstants().get("isHeadless");
     }
+    return false;
+  }
+
+  @Override
+  public void loadApp(Context context, TaskManagerAppLoader.Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
+
+  }
+
+  @Override
+  public boolean invalidateApp(String appId) {
     return false;
   }
 

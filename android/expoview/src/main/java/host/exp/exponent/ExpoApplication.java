@@ -28,6 +28,7 @@ import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.taskManager.TaskManagerInternalAppLoader;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
@@ -59,7 +60,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
     }
 
-    AppLoaderProvider.registerLoader("react-native-experience", HeadlessAppLoader.class);
+    AppLoaderProvider.registerLoader("react-native-experience", TaskManagerInternalAppLoader.class);
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
       public KernelInterface create() {

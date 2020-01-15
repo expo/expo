@@ -30,12 +30,11 @@ import java.util.List;
 public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<ViewManager> mViewManagers;
   private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
-  private Collection<Function<Context, SingletonModule>> mSingletonModulesFactories;
   private Collection<SingletonModule> mSingletonModules;
 
-  public ReactModuleRegistryProvider(List<Package> initialPackages, List<Function<Context, SingletonModule>> singletonModules) {
+  public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
     super(initialPackages);
-    mSingletonModulesFactories = singletonModules;
+    mSingletonModules = singletonModules;
   }
 
   @Override
@@ -65,13 +64,6 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
       return mSingletonModules;
     }
     Collection<SingletonModule> singletonModules = new ArrayList<>();
-
-    if (mSingletonModulesFactories != null) {
-      for(Function<Context, SingletonModule> factory: mSingletonModulesFactories) {
-        mSingletonModules.add(factory.apply(context));
-      }
-      mSingletonModulesFactories = null;
-    }
 
     for (Package pkg : getPackages()) {
       singletonModules.addAll(pkg.createSingletonModules(context));

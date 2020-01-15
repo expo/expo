@@ -5,13 +5,6 @@ import android.util.Log;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.common.LifecycleState;
-
-import java.util.Map;
-
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
-import expo.loaders.provider.interfaces.AppRecordInterface;
 
 public class HeadlessAppLoader {
 
@@ -21,8 +14,7 @@ public class HeadlessAppLoader {
         this.mContext = context;
     }
 
-    public AppRecordInterface loadApp() {
-        HeadlessAppRecord appRecord = new HeadlessAppRecord();
+    public void loadApp() {
 
         ReactInstanceManager reactInstanceManager = ((ReactApplication) mContext.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
         if (!isReactInstanceRunning(reactInstanceManager)) {
@@ -32,8 +24,6 @@ public class HeadlessAppLoader {
             });
             reactInstanceManager.createReactContextInBackground();
         }
-
-        return appRecord;
     }
 
     private boolean isReactInstanceRunning(ReactInstanceManager reactInstanceManager) {

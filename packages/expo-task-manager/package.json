@@ -34,7 +34,8 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/task-manager/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "unimodules-task-manager-interface": "*"
+    "unimodules-task-manager-interface": "*",
+    "unimodule-app-provider-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.1.1"

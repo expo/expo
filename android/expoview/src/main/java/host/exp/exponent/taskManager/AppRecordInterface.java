@@ -1,4 +1,4 @@
-package expo.loaders.provider.interfaces;
+package host.exp.exponent.taskManager;
 
 public interface AppRecordInterface {
   void invalidate();

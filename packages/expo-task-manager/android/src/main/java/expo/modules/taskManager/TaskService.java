@@ -11,17 +11,9 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.interfaces.SingletonModule;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -33,10 +25,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.modules.taskManager.apploader.ExpoHeadlessAppLoader;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import expo.loaders.provider.interfaces.TaskManagerAppLoader;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+
+import javax.annotation.Nullable;
+
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
-import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
+import expo.modules.taskManager.exceptions.TaskNotFoundException;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -50,7 +52,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
-  private ExpoHeadlessAppLoader expoHeadlessAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -73,7 +74,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
-    expoHeadlessAppLoader = new ExpoHeadlessAppLoader(mContextRef);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
@@ -244,7 +244,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = taskManager.isRunningInHeadlessMode();
+//    boolean isHeadless = taskManager.isRunningInHeadlessMode();
+    boolean isHeadless = true;
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -375,17 +376,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     String eventId = executionInfo.getString("eventId");
     String appId = task.getAppId();
-    List<String> appEvents = sEvents.get(appId);
 
     if (callback != null) {
       sTaskCallbacks.put(eventId, callback);
     }
 
-    if (appEvents == null) {
+    final List<String> appEvents;
+    if (sEvents.get(appId) == null) {
       appEvents = new ArrayList<>();
       appEvents.add(eventId);
       sEvents.put(appId, appEvents);
     } else {
+      appEvents = new ArrayList<>();
       appEvents.add(eventId);
     }
 
@@ -401,28 +403,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     sEventsQueues.get(appId).add(body);
 
-    final List<String> finalAppEvents = appEvents;
-
-    expoHeadlessAppLoader.runApp(appId, task, new ExpoHeadlessAppLoader.AppRunCallback() {
-      @Override
-      public void appAlreadyRunning() {
-        // do nothing
+    getTaskManager(appId).loadApp(mContextRef.get(), new TaskManagerAppLoader.Params(appId, task.getAppUrl()), () -> {
+      appEvents.remove(eventId);
+      sEventsQueues.remove(appId);
+      try {
+        unregisterTask(task.getName(), appId, null);
+      } catch (Exception e) {
+        Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
-
-      @Override
-      public void appStarted() {
-        // do nothing
-      }
-
-      @Override
-      public void appStartError(@Nullable Exception e) {
-        try {
-          unregisterTask(task.getName(), appId, null);
-        } catch (Exception ex) {
-          Log.e(TAG, "Error occurred while unregistering invalid task.", ex);
-        }
-        finalAppEvents.remove(eventId);
+    }, success -> {
+      if (!success) {
+        sEvents.remove(appId);
         sEventsQueues.remove(appId);
+        unregisterAllTasksForAppId(appId);
       }
     });
   }
@@ -482,7 +475,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return errorBundle;
   }
 
-  private TaskInterface getTask(String taskName, String appId) {
+  private static TaskInterface getTask(String taskName, String appId) {
     Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
     return appTasks != null ? appTasks.get(taskName) : null;
   }
@@ -607,7 +600,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
+   * Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
    */
   @Nullable
   private TaskManagerInterface getTaskManager(String appId) {
@@ -634,8 +627,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appId) {
-    expoHeadlessAppLoader.invalidate(appId);
-    sHeadlessTaskManagers.remove(appId);
+    if (getTaskManager(appId).invalidateApp(appId)) {
+      sHeadlessTaskManagers.remove(appId);
+    }
   }
 
   private void finishJobAfterTimeout(final JobService jobService, final JobParameters params, long timeout) {
@@ -705,7 +699,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
+   * Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
    */
   private static int getConsumerVersion(Class consumerClass) {
     try {
@@ -717,7 +711,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Method that unversions class names, so we can always use unversioned task consumer classes.
+   * Method that unversions class names, so we can always use unversioned task consumer classes.
    */
   private static String unversionedClassNameForClass(Class versionedClass) {
     String className = versionedClass.getName();
@@ -725,7 +719,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns unversioned class from versioned one.
+   * Returns unversioned class from versioned one.
    */
   private static Class unversionedClassForClass(Class versionedClass) {
     if (versionedClass == null) {

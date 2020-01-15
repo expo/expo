@@ -2,6 +2,7 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +11,15 @@ import org.unimodules.core.BasePackage;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
+import expo.loaders.provider.AppLoaderProvider;
+import expo.modules.taskManager.apploader.ExpoHeadlessAppLoader;
+
 public class TaskManagerPackage extends BasePackage {
+
+  static {
+    AppLoaderProvider.registerLoader("react-native-experience", ExpoHeadlessAppLoader.class);
+  }
+
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Collections.singletonList((ExportedModule) new TaskManagerModule(context));
@@ -18,11 +27,11 @@ public class TaskManagerPackage extends BasePackage {
 
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    return Collections.singletonList((InternalModule) new TaskManagerInternalModule(context));
+    return Collections.singletonList(new TaskManagerInternalModule(context));
   }
 
   @Override
   public List<SingletonModule> createSingletonModules(Context context) {
-    return Collections.singletonList((SingletonModule) new TaskService(context));
+    return Arrays.asList(new TaskService(context), new ExpoHeadlessAppLoader());
   }
 }

@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
+import host.exp.exponent.taskManager.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
-import expo.loaders.provider.interfaces.AppRecordInterface;
+import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;

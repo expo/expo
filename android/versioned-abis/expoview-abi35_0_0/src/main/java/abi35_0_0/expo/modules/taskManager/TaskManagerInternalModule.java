@@ -15,7 +15,10 @@ import abi35_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 import abi35_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi35_0_0.org.unimodules.core.interfaces.services.UIManager;
 import abi35_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
+
+import org.unimodules.core.interfaces.Consumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
@@ -75,6 +78,16 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   }
 
   @Override
+  public void loadApp(Context context, TaskManagerAppLoader.Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
+
+  }
+
+  @Override
+  public boolean invalidateApp(String appId) {
+    return false;
+  }
+
+  @Override
   public synchronized void executeTaskWithBody(Bundle body) {
     if (mEventsQueue != null) {
       // `startObserving` on TaskManagerModule wasn't called yet - add event body to the queue.
@@ -112,7 +125,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return null;
   }
 
-  @Override
+//  @Override
   public boolean isRunningInHeadlessMode() {
     if (mConstants != null) {
       return (boolean) mConstants.getConstants().get("isHeadless");

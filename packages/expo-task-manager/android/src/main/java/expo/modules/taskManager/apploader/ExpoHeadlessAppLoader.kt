@@ -1,34 +1,39 @@
 package expo.modules.taskManager.apploader
 
 import android.content.Context
-import android.util.Log
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.ReactContext
-import expo.loaders.provider.AppLoaderProvider
-import expo.loaders.provider.interfaces.AppLoaderInterface
-import expo.loaders.provider.interfaces.AppRecordInterface
-import org.unimodules.interfaces.taskManager.TaskInterface
-import java.lang.ref.WeakReference
+import org.unimodules.core.interfaces.Consumer
+import org.unimodules.core.interfaces.SingletonModule
+import expo.loaders.provider.interfaces.TaskManagerAppLoader
 import java.util.*
 
-class ExpoHeadlessAppLoader(private val contextRef: WeakReference<Context>) {
-    interface AppRunCallback {
-        fun appAlreadyRunning()
-        fun appStarted()
-        fun appStartError(e: Exception?)
-    }
-    
-    fun runApp(appId: String?, task: TaskInterface, callback: AppRunCallback) {
-        val reactInstanceManager = (contextRef.get()?.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
-        if (!isReactInstanceRunning(reactInstanceManager)) {
-            reactInstanceManager.addReactInstanceEventListener { context: ReactContext? ->
-                callback.appStarted()
+class ExpoHeadlessAppLoader : TaskManagerAppLoader, SingletonModule {
+
+    override fun loadApp(context: Context, params: TaskManagerAppLoader.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
+        if (params == null || params.appId == null) {
+           throw IllegalArgumentException("Params must be set with appId!")
+        }
+
+        val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
+        if (appRecords.containsKey(params.appId) && !isReactInstanceRunning(reactInstanceManager)) {
+            reactInstanceManager.addReactInstanceEventListener {
+                callback?.apply(true)
                 reactInstanceManager.packages
             }
             reactInstanceManager.createReactContextInBackground()
+            appRecords.put(params.appId, reactInstanceManager)
         } else {
-            callback.appAlreadyRunning()
+            alreadyRunning?.run()
+        }
+    }
+
+    override fun invalidateApp(appId: String?): Boolean {
+        return if(appRecords.containsKey(appId)) {
+            appRecords[appId]!!.destroy()
+            true
+        } else {
+            false
         }
     }
 
@@ -36,16 +41,11 @@ class ExpoHeadlessAppLoader(private val contextRef: WeakReference<Context>) {
         return reactInstanceManager.hasStartedCreatingInitialContext()
     }
 
-    fun invalidate(appId: String) {
-        val appRecord: AppRecordInterface? = appRecords[appId]
-
-        if (appRecord != null) {
-            appRecord.invalidate()
-            appRecords.remove(appId)
-        }}
+    override fun getName(): String = "TaskManagerAppLoader"
 
     companion object {
         // { "<appId>": AppRecordInterface }
-        private val appRecords: MutableMap<String, AppRecordInterface> = HashMap()
+        private val appRecords: MutableMap<String, ReactInstanceManager> = HashMap()
     }
+
 }
