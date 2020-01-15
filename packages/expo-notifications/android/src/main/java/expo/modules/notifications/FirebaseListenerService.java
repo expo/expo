@@ -1,4 +1,4 @@
-package expo.modules.notifications.tokens;
+package expo.modules.notifications;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 
@@ -6,11 +6,12 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
+import expo.modules.notifications.tokens.PushTokenManager;
 
 /**
  * Subclass of FirebaseMessagingService responsible for dispatching new tokens.
  */
-public class FirebaseTokenListenerService extends FirebaseMessagingService {
+public class FirebaseListenerService extends FirebaseMessagingService {
   // Unfortunately we cannot save state between instances of a service other way
   // than by static properties. Fortunately, using weak references we can
   // be somehow sure instances of PushTokenListeners won't be leaked by this component.
@@ -24,7 +25,7 @@ public class FirebaseTokenListenerService extends FirebaseMessagingService {
    * A weak map of listeners -> reference. Used to check quickly whether given listener
    * is already registered and to iterate over when notifying of new token.
    */
-  private static WeakHashMap<PushTokenManager, WeakReference<PushTokenManager>> sListenersReferences = new WeakHashMap<>();
+  private static WeakHashMap<PushTokenManager, WeakReference<PushTokenManager>> sTokenListenersReferences = new WeakHashMap<>();
 
   /**
    * Used only by {@link PushTokenManager} instances. If you look for a place to register
@@ -36,11 +37,11 @@ public class FirebaseTokenListenerService extends FirebaseMessagingService {
    *
    * @param listener A listener instance to be informed of new push device tokens.
    */
-  static void addListener(PushTokenManager listener) {
+  public static void addTokenListener(PushTokenManager listener) {
     // Checks whether this listener has already been registered
-    if (!sListenersReferences.containsKey(listener)) {
+    if (!sTokenListenersReferences.containsKey(listener)) {
       WeakReference<PushTokenManager> listenerReference = new WeakReference<>(listener);
-      sListenersReferences.put(listener, listenerReference);
+      sTokenListenersReferences.put(listener, listenerReference);
       // Since it's a new listener and we know of a last valid token, let's let them know.
       if (sLastToken != null) {
         listener.onNewToken(sLastToken);
@@ -49,7 +50,7 @@ public class FirebaseTokenListenerService extends FirebaseMessagingService {
   }
 
   /**
-   * Called on new token, dispatches it to {@link FirebaseTokenListenerService#sListenersReferences}.
+   * Called on new token, dispatches it to {@link FirebaseListenerService#sTokenListenersReferences}.
    *
    * @param token New device push token.
    */
@@ -57,7 +58,7 @@ public class FirebaseTokenListenerService extends FirebaseMessagingService {
   public void onNewToken(@NonNull String token) {
     super.onNewToken(token);
 
-    for (WeakReference<PushTokenManager> listenerReference : sListenersReferences.values()) {
+    for (WeakReference<PushTokenManager> listenerReference : sTokenListenersReferences.values()) {
       PushTokenManager listener = listenerReference.get();
       if (listener != null) {
         listener.onNewToken(token);
