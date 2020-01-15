@@ -9,14 +9,14 @@ So far we have been using code from React and React Native in our app. React giv
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-<details><summary><h4>👉 Do you want to see a quick video preview of expo-image-picker in action? Click here 👈</h4></summary>
+<!-- <details><summary><h4>👉 Do you want to see a quick video preview of expo-image-picker in action? Click here 👈</h4></summary>
 
 <p>
 
 <Video file={"sdk/imagepicker.mp4"} />
 
 </p>
-</details>
+</details> -->
 
 
 ## Installing expo-image-picker
@@ -42,7 +42,7 @@ In your project directory, run `expo install expo-image-picker`. This will tell 
 <details><summary><h4>Instructions for Snack</h4></summary>
 <p>
 
-Write `import * as ImagePicker from 'expo-image-picker';` at the top of your file. You will be prompted to install the package, confirm it.
+Write `import * as ImagePicker from 'expo-image-picker';` at the top of your file. You will be prompted to install the package, confirm it. Done!
 
 <Video file={"tutorial/snack-install.mp4"} />
 
@@ -103,11 +103,14 @@ You should see something like this when you run your app and use the picker:
 
 ## Using the selected image
 
-<SnackInline label="Image picker" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
+Now we will take the data that we get from the image picker and use it to show the selected image in the app.
+
+<SnackInline label="Image picker show image" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
 
 ```jsx
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */let [selectedImage, setSelectedImage] = React.useState(null);/* @end */
+
 
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -144,19 +147,31 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      { /* Our logo, instructions, and picker button are hidden here to keep the example brief */}
+      {/* Our logo, instructions, and picker button are hidden here to keep the example brief */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   /* Other styles hidden to keep the example brief... */
+  /* @info We're giving the selected image a fixed width and height */
   thumbnail: {
     width: 300,
     height: 300,
     resizeMode: "contain"
-  }
+  }/* @end */
+
 });
 ```
 
 </SnackInline>
+
+<br />
+
+Your app should now look and behave like this:
+
+<Video file="tutorial/picker-show.mp4" />
+
+> 👀 You might expect that because we gave our image an equal width and height it would be a square, but in the above video it's rectangular. This is because of `resizeMode`, an image style property that lets us control how the image is resized to fit the given dimensions. Try switching it from `contain` to `stretch` or `cover` to see other behaviors.
+
+🥳 We have made great progress! Up next, [let's make it possible to share the image](../../tutorial/sharing/).

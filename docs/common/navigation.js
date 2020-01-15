@@ -37,8 +37,9 @@ const sections = [
       'Creating a button',
       'Picking an image',
       'Sharing the image',
-      'Set an app icon and splash screen',
-      'Follow-up exercises',
+      'Handling platform differences',
+      'Setting the app icon and splash screen',
+      'Learning more',
     ],
   },
   {
