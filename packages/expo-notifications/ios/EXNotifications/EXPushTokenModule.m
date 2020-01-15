@@ -5,7 +5,7 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-static const NSString *onDevicePushTokenEventName = @"onDevicePushToken";
+static NSString * const onDevicePushTokenEventName = @"onDevicePushToken";
 
 @interface EXPushTokenModule ()
 
@@ -57,7 +57,7 @@ UM_EXPORT_METHOD_AS(getDevicePushTokenAsync,
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[(NSString *)onDevicePushTokenEventName];
+  return @[onDevicePushTokenEventName];
 }
 
 - (void)startObserving
@@ -102,7 +102,7 @@ UM_EXPORT_METHOD_AS(getDevicePushTokenAsync,
   }
 
   if (_isBeingObserved) {
-    [_eventEmitter sendEventWithName:(NSString *)onDevicePushTokenEventName
+    [_eventEmitter sendEventWithName:onDevicePushTokenEventName
                                 body:@{ @"devicePushToken": stringToken }];
   }
 }
