@@ -157,7 +157,10 @@ module.exports = {
       'warn',
       {
         groups: [['builtin', 'external'], 'internal', ['parent', 'index', 'sibling']],
-        'newlines-between': 'ignore',
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+        },
       },
     ],
   },
