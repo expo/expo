@@ -60,7 +60,7 @@ export default class SnackInline extends React.Component {
     let templateId = this.props.templateId;
 
     let baseUrl =
-      `https://snack.expo.io?platform=${DEFAULT_PLATFORM}&name=` +
+      `https://snack.expo.io?platform=${this.props.defaultPlatform || DEFAULT_PLATFORM}&name=` +
       encodeURIComponent(label) +
       `&sdkVersion=${this._getSnackSdkVersion()}` +
       `&dependencies=${encodeURIComponent(this._getDependencies())}`;
@@ -99,8 +99,12 @@ export default class SnackInline extends React.Component {
           <div ref={this.contentRef}>{this.props.children}</div>
 
           {/* TODO: this should be a POST request, need to change Snack to support it though */}
-          <form ref={this.formRef} action="https://snack.expo.io" method="GET" target="_blank">
-            <input type="hidden" name="platform" value={DEFAULT_PLATFORM} />
+          <form ref={this.formRef} action="https://snack.expo.io" method="POST" target="_blank">
+            <input
+              type="hidden"
+              name="platform"
+              value={this.props.defaultPlatform || DEFAULT_PLATFORM}
+            />
             <input type="hidden" name="name" value={this.props.label || 'Example'} />
             <input type="hidden" name="dependencies" value={this._getDependencies()} />
             <input type="hidden" name="code" value={this._getCode()} />
