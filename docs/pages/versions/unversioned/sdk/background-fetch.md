@@ -16,7 +16,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Known issues
 
-The feature only works when the app is backgrounded, but not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582) 
+BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582) 
 
 ## Installation
 
