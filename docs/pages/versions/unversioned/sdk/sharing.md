@@ -15,6 +15,18 @@ import Video from '../../../../components/plugins/Video'
 | -------------- | ---------------- | ---------- | ------------- | --- |
 | ✅             | ✅               | ✅         | ✅            | ✅  |
 
+<br />
+
+> 🚨 **Web browser support**: expo-sharing for web is built on top of the Web Share API, which still has [very limited browser support](https://caniuse.com/#feat=web-share). Be sure to check that the API can be used before calling it by using `Sharing.isAvailableAsync()`.
+
+<br/>
+
+> 💡 **HTTPS required on web**: The Web Share API is only available on web when the page is served over https. Run your app with `expo start --https` to enable it.
+
+<br/>
+
+> ⚠️ **No local file sharing on web**: Sharing local files by URI works on iOS and Android, but not on web. You cannot share local files on web by URI &mdash; you will need to upload them somewhere and share that URI.
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sharing`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sharing).
@@ -24,6 +36,21 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as Sharing from 'expo-sharing';
 ```
+
+**[Methods](#methods)**
+
+- [`Sharing.isAvailableAsync()`](#sharingisavailableasync)
+- [`Sharing.shareAsync(url, options)`](#sharingshareasyncurl-options)
+
+## Methods
+
+### `Sharing.isAvailableAsync()`
+
+Determine if the sharing API can be used in this app.
+
+#### Returns
+
+A promise that resolves to `true` if the sharing API can be used, and `false` otherwise.
 
 ### `Sharing.shareAsync(url, options)`
 

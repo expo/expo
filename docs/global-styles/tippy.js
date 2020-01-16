@@ -21,4 +21,8 @@ export const globalTippy = `
     color: ${Constants.colors.white};
     font-family: ${Constants.fonts.book};
   }
+
+  .tippy-content a {
+    color: #eee;
+  }
 `;
