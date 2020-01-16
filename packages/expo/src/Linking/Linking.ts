@@ -109,6 +109,9 @@ function parse(url: string): ParsedURL {
 
   const parsed = URL(url, /* parseQueryString */ true);
 
+  for (const param in parsed.query) {
+    parsed.query[param] = decodeURIComponent(parsed.query[param]!);
+  }
   let queryParams = parsed.query;
 
   let hostUri = HOST_URI || '';
