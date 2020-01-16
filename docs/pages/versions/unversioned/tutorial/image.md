@@ -4,10 +4,6 @@ title: Adding an image
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-If we wanted to build text-only user interfaces we'd be building a terminal program, not a mobile app. So let's look at adding images to our app.
-
-## Save the logo image to your project assets
-
 Let's imagine that our designer has provided us with a beautiful logo:
 
 <img src="https://imgur.com/TkIrScD.png" style={{maxWidth: 305, maxHeight: 159}} />
@@ -15,7 +11,7 @@ Let's imagine that our designer has provided us with a beautiful logo:
 <br />
 <br />
 
-Save this image to the `assets` directory inside of your project and call it `logo.png`. If you are using Snack, you can drag the logo file into the file explorer sidebar to upload it.
+Save this image to the `assets` directory inside of your project and call it `logo.png`.
 
 > 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets. 
 
@@ -52,9 +48,11 @@ const styles = StyleSheet.create({
 });
 ```
 
+> 📏 **What units are width and height in?** A useful simplification is to treat the units for numbers in styles as pixels. If your screen resolution is 640x480, then an image that is 320x240 will be half of the width and height. On the web, React Native's `width: 305` is directly translated to `305px`. [Learn more about pixels, if you're curious](https://medium.com/@pnowelldesign/pixel-density-demystified-a4db63ba2922).
+
 ## Loading images by URL
 
-Sometime you want to load images from some web URL rather than from your project directory. Let's change that up here.
+Sometimes you will want to load images from the web rather than from your project directory. We can replace the `logo` source for the image with something of the format `{ uri: 'http://path-to-your-image' }`:
 
 <SnackInline>
 
@@ -66,7 +64,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info We can use a URL instead of importing the image from your local assets */
-      <Image source="https://i.imgur.com/TkIrScD.png" style={{ width: 305, height: 159 }} />
+      <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} style={{ width: 305, height: 159 }} />
     /* @end */
 
       <Text style={{color: '#888', fontSize: 18}}> 
@@ -88,9 +86,13 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+<br />
+
+> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
+
 ## Time for a code organization break!
 
-Let's organize our code a bit by moving our inline styles into the `StyleSheet.create` object so it's a bit easier to read.
+Let's organize our code a bit by moving our styles into one place so our code is easier to read:
 
 <SnackInline>
 
@@ -136,6 +138,6 @@ const styles = StyleSheet.create({
 
 <br/>
 
-Oh, hey, we also added some new styles here to make things look a bit prettier. We use `marginBottom` on the logo to space things out between the logo and the instructions, and we added `marginHorizontal` to give our instructions some breathing room.
+You might notice that we also added some new styles here to make things look a bit prettier. We used `marginBottom` on the logo to space things out between the logo and the instructions, and we added `marginHorizontal` to give our instructions some spacing around the edges of the screen.
 
-Time to make things interactive. [Let's move on to adding a button](../../tutorial/button/).
+Time to make things interactive. [Let's move on to creating a button](../../tutorial/button/).

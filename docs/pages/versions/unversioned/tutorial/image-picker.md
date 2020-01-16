@@ -21,11 +21,7 @@ So far we have been using code from React and React Native in our app. React giv
 
 ## Installing expo-image-picker
 
-To use expo-image-picker in our project, we first need to install it. The way you install it will depend on whether you are using expo-cli or Snack for this tutorial.
-
-<details><summary><h4>Instructions for expo-cli</h4></summary>
-
-<p>
+To use expo-image-picker in our project, we first need to install it.
 
 In your project directory, run `expo install expo-image-picker`. This will tell npm (or yarn) to install the a version of the `expo-image-picker` library that is compatible with your project. That's it!
 
@@ -33,21 +29,7 @@ In your project directory, run `expo install expo-image-picker`. This will tell 
 
 > 🔢 The version numbers you see here may be different depending on when you do this tutorial.
 
-> 🧶 expo-cli used yarn here instead of npm, the installation text will be slightly different if you do not have yarn installed. It's fine.
-
-</p>
-</details>
-
-
-<details><summary><h4>Instructions for Snack</h4></summary>
-<p>
-
-Write `import * as ImagePicker from 'expo-image-picker';` at the top of your file. You will be prompted to install the package, confirm it. Done!
-
-<Video file={"tutorial/snack-install.mp4"} />
-
-</p>
-</details>
+> 🧶 expo-cli used yarn in this video instead of npm. The installation text will be slightly different if you do not have yarn installed. It's fine.
 
 ## Picking an image
 

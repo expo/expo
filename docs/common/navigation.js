@@ -31,7 +31,7 @@ const sections = [
   {
     name: 'Tutorial',
     reference: [
-      'Planning our app',
+      'Introduction',
       'Styling text',
       'Adding an image',
       'Creating a button',

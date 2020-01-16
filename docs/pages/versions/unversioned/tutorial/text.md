@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
 
 <br/>
 
-- Good, that looks better! If you want to learn more about the other styles available on the Text component, [you can read more here](https://facebook.github.io/react-native/docs/text#style).
-- Next we're going to look at adding the logo, [let's continue to looking at the Image component for that](../../tutorial/image/).
+> 🎨 **Help, I'm not familiar with any color by the name "#888"!** `#888` is equal parts red, green, and blue, which creates a nice readable grey. React Native uses the same color format as the web, so it supports hex triplets (this is what `#888` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, and, uh, `peru` and `papayawhip`. [Read more about colors in React Native here](https://facebook.github.io/react-native/docs/colors).
 
-<br/>
+Good, that looks better! If you want to learn more about the other styles available on the Text component, [you can read more here](https://facebook.github.io/react-native/docs/text#style).
+
+Next we're going to look at adding the logo, [let's continue to looking at the Image component for that](../../tutorial/image/).
