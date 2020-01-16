@@ -88,7 +88,7 @@ export default function App() {
 
 <p>
 
-Sharing didn't work here because the desktop Chrome browser doesn't implement the [Web Share API](https://web.dev/web-share/) [(you can see a list of supported browsers here)](https://caniuse.com/#feat=web-share). But wait, aren't we using expo-sharing, not the Web Share API? The way `expo-sharing` and other Expo packages work is that they provide a uniform way to use the same functionality on different platforms when it is possible to do so. You can think of these libraries as translators. Imagine we had `Greeting.sayHelloWorld()` &mdash; in California this function would say would say "Hello, world!", in England it would say "'Ello guvna!", and in Spain it would say "Hola, mundo!". If a language did not have a translation for "Hello, world!" then the function would not be able to run successfully. This is what is happening here &mdash; the web is our language and some web browsers don't have the Web Share API, so we can't say "share this image!".
+Sharing didn't work here because the desktop Chrome browser doesn't yet implement the [Web Share API](https://web.dev/web-share/). *"But wait,"* you say, *"aren't we using expo-sharing, not the Web Share API?"* You can you can think of the Expo SDK libraries as translators for different platforms. They speak the language of Expo and turn it into the language of iOS, Android, and web. It isn't always possible to translate from Expo's language to the platform that you're working with. In other words, if the platform doesn't implement a feature, Expo can't tell it to invoke that feature. In some cases Expo can attempt to [polyfill](https://en.wikipedia.org/wiki/Polyfill_(programming)) the feature for you, but this isn't always possible. Invoking your operating system's built-in share dialog to share content with other applications needs to be implemented by the platform itself &mdash; Chrome in this case.
 
 </p>
 </details>
@@ -97,6 +97,8 @@ Sharing didn't work here because the desktop Chrome browser doesn't implement th
 
 In the next section we are going to look at how we can handle this and another import platform difference. [Continue to Handling platform differences](../../tutorial/platform-differences/).
 
+
+<!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->
 
 <!-- ### Getting it working with another browser
 
