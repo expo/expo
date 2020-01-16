@@ -13,6 +13,11 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 | -------------- | ---------------- | ---------- | ------------- | --- |
 | ✅             | ✅               | ✅         | ✅            | ✅  |
 
+
+## Known issues
+
+BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582) 
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
