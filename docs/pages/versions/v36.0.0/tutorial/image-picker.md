@@ -45,7 +45,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
   /* @info Request permissions to access the "camera roll", then launch the picker and log the result. */
-  let openImagePickerAsync = () => {
+  let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
 
     if (permissionResult.granted === false) {
