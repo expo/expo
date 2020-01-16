@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
+// Keep in sync with ApplicationReleaseType in JS
 typedef NS_ENUM(NSInteger, EXAppReleaseType) {
   EXAppReleaseTypeUnknown,
   EXAppReleaseSimulator,
@@ -16,6 +17,6 @@ typedef NS_ENUM(NSInteger, EXAppReleaseType) {
 + (instancetype)mainProvisioningProfile;
 
 - (EXAppReleaseType)appReleaseType;
-- (NSString *)notificationServiceEnvironment;
+- (nullable NSString *)notificationServiceEnvironment;
 
 @end

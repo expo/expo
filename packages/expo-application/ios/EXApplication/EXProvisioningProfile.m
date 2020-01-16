@@ -25,7 +25,7 @@
   return self;
 }
 
-- (NSString *)notificationServiceEnvironment
+- (nullable NSString *)notificationServiceEnvironment
 {
   if (!_plist) {
     return nil;

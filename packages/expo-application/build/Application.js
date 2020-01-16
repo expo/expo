@@ -25,20 +25,20 @@ export async function getIosIdForVendorAsync() {
     }
     return await ExpoApplication.getIosIdForVendorAsync();
 }
-export var AppReleaseType;
-(function (AppReleaseType) {
-    AppReleaseType[AppReleaseType["UNKNOWN"] = 0] = "UNKNOWN";
-    AppReleaseType[AppReleaseType["SIMULATOR"] = 1] = "SIMULATOR";
-    AppReleaseType[AppReleaseType["ENTERPRISE"] = 2] = "ENTERPRISE";
-    AppReleaseType[AppReleaseType["DEVELOPMENT"] = 3] = "DEVELOPMENT";
-    AppReleaseType[AppReleaseType["ADHOC"] = 4] = "ADHOC";
-    AppReleaseType[AppReleaseType["APPSTORE"] = 5] = "APPSTORE";
-})(AppReleaseType || (AppReleaseType = {}));
-export async function getIosAppReleaseTypeAsync() {
-    if (!ExpoApplication.getAppReleaseTypeAsync) {
-        throw new UnavailabilityError('expo-application', 'getAppReleaseTypeAsync');
+export var ApplicationReleaseType;
+(function (ApplicationReleaseType) {
+    ApplicationReleaseType[ApplicationReleaseType["UNKNOWN"] = 0] = "UNKNOWN";
+    ApplicationReleaseType[ApplicationReleaseType["SIMULATOR"] = 1] = "SIMULATOR";
+    ApplicationReleaseType[ApplicationReleaseType["ENTERPRISE"] = 2] = "ENTERPRISE";
+    ApplicationReleaseType[ApplicationReleaseType["DEVELOPMENT"] = 3] = "DEVELOPMENT";
+    ApplicationReleaseType[ApplicationReleaseType["AD_HOC"] = 4] = "AD_HOC";
+    ApplicationReleaseType[ApplicationReleaseType["APP_STORE"] = 5] = "APP_STORE";
+})(ApplicationReleaseType || (ApplicationReleaseType = {}));
+export async function getIosApplicationReleaseTypeAsync() {
+    if (!ExpoApplication.getApplicationReleaseTypeAsync) {
+        throw new UnavailabilityError('expo-application', 'getApplicationReleaseTypeAsync');
     }
-    return await ExpoApplication.getAppReleaseTypeAsync();
+    return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
 export async function getIosPushNotificationServiceEnvironmentAsync() {
     if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {

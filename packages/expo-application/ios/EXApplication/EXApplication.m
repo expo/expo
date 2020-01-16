@@ -32,7 +32,7 @@ UM_EXPORT_METHOD_AS(getInstallationTimeAsync, getInstallationTimeAsyncWithResolv
   }
 }
 
-UM_EXPORT_METHOD_AS(getAppReleaseTypeAsync, getAppReleaseTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getApplicationReleaseTypeAsync, getApplicationReleaseTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   EXProvisioningProfile *mainProvisioningProfile = [EXProvisioningProfile mainProvisioningProfile];
   resolve(@([mainProvisioningProfile appReleaseType]));

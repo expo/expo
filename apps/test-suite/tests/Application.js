@@ -52,8 +52,8 @@ export async function test({ describe, it, expect, jasmine }) {
         expect(error).toBeNull();
       });
 
-      it('Application.getIosAppReleaseType() returns a number', async () => {
-        const appReleaseType = await Application.getIosAppReleaseTypeAsync();
+      it('Application.getIosApplicationReleaseTypeAsync() returns a number', async () => {
+        const appReleaseType = await Application.getIosApplicationReleaseTypeAsync();
         expect(appReleaseType).toBeDefined();
         expect(appReleaseType).toEqual(jasmine.any(Number));
       });
