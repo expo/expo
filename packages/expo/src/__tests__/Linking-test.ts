@@ -26,6 +26,15 @@ describe('parse', () => {
 });
 
 describe('makeUrl queries', () => {
+  const consoleWarn = console.warn;
+  beforeEach(() => {
+    console.warn = jest.fn();
+  });
+
+  afterEach(() => {
+    console.warn = consoleWarn;
+  });
+
   test.each<QueryParams>([
     { shouldEscape: '%2b%20' },
     { escapePluses: 'email+with+plus@whatever.com' },
@@ -33,10 +42,6 @@ describe('makeUrl queries', () => {
     { undefinedParam: undefined },
     { lotsOfSlashes: '/////' },
   ])(`makes url %p`, queryParams => {
-    // disable warnings
-    const consoleWarn = console.warn;
-    console.warn = jest.fn();
     expect(Linking.makeUrl('some/path', queryParams)).toMatchSnapshot();
-    console.warn = consoleWarn;
   });
 });
