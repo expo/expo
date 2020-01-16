@@ -44,4 +44,8 @@ describe('makeUrl queries', () => {
   ])(`makes url %p`, queryParams => {
     expect(Linking.makeUrl('some/path', queryParams)).toMatchSnapshot();
   });
+
+  test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+    expect(Linking.makeUrl(path)).toMatchSnapshot();
+  });
 });

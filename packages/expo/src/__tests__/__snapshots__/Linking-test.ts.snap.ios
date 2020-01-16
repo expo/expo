@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`makeUrl queries makes url "" 1`] = `"exp://exp.host/@test/test"`;
+
+exports[`makeUrl queries makes url "path/into/app" 1`] = `"exp://exp.host/@test/test/--/path/into/app"`;
+
 exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"exp://exp.host/@test/test/--/some/path?emptyParam="`;
 
 exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://exp.host/@test/test/--/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;

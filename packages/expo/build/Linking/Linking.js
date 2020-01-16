@@ -48,11 +48,8 @@ function makeUrl(path = '', queryParams = {}) {
         if (IS_EXPO_HOSTED && hostUri) {
             path = `/--/${_removeLeadingSlash(path)}`;
         }
-        if (!path.startsWith('/') && hostUri) {
+        if (!path.startsWith('/')) {
             path = `/${path}`;
-        }
-        else if (path.startsWith('/') && !hostUri) {
-            path = path.substr(1);
         }
     }
     else {
