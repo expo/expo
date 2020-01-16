@@ -19,7 +19,7 @@ Save this image to the `assets` directory inside of your project and call it `lo
 
 We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component.
 
-```jsx
+```js
 import React from 'react';
 import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
 /* @info Import the logo image */ import logo from './assets/logo.png'; /* @end */
@@ -56,7 +56,7 @@ Sometimes you will want to load images from the web rather than from your projec
 
 <SnackInline>
 
-```jsx
+```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
@@ -96,7 +96,7 @@ Let's organize our code a bit by moving our styles into one place so our code is
 
 <SnackInline>
 
-```jsx
+```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
