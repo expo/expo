@@ -11,9 +11,12 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅ *           | ✅ *             | ✅ *       | ✅ *          | ✅  |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
-* the feature only works when the app is backgrounded, but not if the app was terminated or upon device reboot.
+
+## Known issues
+
+The feature only works when the app is backgrounded, but not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582) 
 
 ## Installation
 
