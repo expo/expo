@@ -136,7 +136,7 @@ const TabNavigator =
     ? createBottomTabNavigator(TabRoutes, {
         initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
         tabBarOptions: {
           activeTintColor: {
@@ -155,7 +155,7 @@ const TabNavigator =
         inactiveColor: Colors.tabIconDefault,
         shifting: true,
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
         barStyleLight: {
           backgroundColor: '#fff',

@@ -50,16 +50,13 @@
 - (void)homeModule:(EXHomeModule *)module didSelectDevMenuItemWithKey:(NSString *)key
 {
   [[EXKernel sharedInstance].visibleApp.appManager selectDevMenuItemWithKey:key];
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController toggleMenuWithCompletion:^{}];
-    });
-  }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module
 {
   [[EXKernel sharedInstance] reloadVisibleApp];
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module
@@ -78,6 +75,7 @@
       [[EXKernel sharedInstance].browserController moveHomeToVisible];
     });
   }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectQRReader:(EXHomeModule *)module

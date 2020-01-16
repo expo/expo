@@ -79,6 +79,22 @@
 }
 
 /**
+ * Requests JavaScript side to start closing the dev menu (start the animation or so).
+ * Fully closes the dev menu once it receives a response from that event.
+ */
+- (void)requestToCloseDevMenu
+{
+  __weak typeof(self) weakSelf = self;
+  void (^close)(id) = ^(id arg){
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf->_delegate) {
+      [strongSelf->_delegate homeModuleDidSelectCloseMenu:strongSelf];
+    }
+  };
+  [self dispatchJSEvent:@"requestToCloseDevMenu" body:nil onSuccess:close onFailure:close];
+}
+
+/**
  *  Duplicates Linking.openURL but does not validate that this is an exponent URL;
  *  in other words, we just take your word for it and never hand it off to iOS.
  *  Used by the home screen URL bar.
@@ -96,7 +112,10 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
   }
 }
 
-RCT_REMAP_METHOD(doesCurrentTaskEnableDevtools,
+/**
+ * Returns boolean value determining whether the current app supports developer tools.
+ */
+RCT_REMAP_METHOD(doesCurrentTaskEnableDevtoolsAsync,
                  doesCurrentTaskEnableDevtoolsWithResolver:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 {
@@ -126,7 +145,11 @@ RCT_EXPORT_METHOD(setIsLegacyMenuBehaviorEnabledAsync:(BOOL)isEnabled)
   }
 }
 
-RCT_REMAP_METHOD(getDevMenuItemsToShow,
+/**
+ * Gets a dictionary of dev menu options available in the currently shown experience,
+ * If the experience doesn't support developer tools just returns an empty response.
+ */
+RCT_REMAP_METHOD(getDevMenuItemsToShowAsync,
                  getDevMenuItemsToShowWithResolver:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject)
 {
@@ -138,34 +161,50 @@ RCT_REMAP_METHOD(getDevMenuItemsToShow,
   }
 }
 
-RCT_EXPORT_METHOD(selectDevMenuItemWithKey:(NSString *)key)
+/**
+ * Function called every time the dev menu option is selected.
+ */
+RCT_EXPORT_METHOD(selectDevMenuItemWithKeyAsync:(NSString *)key)
 {
   if (_delegate) {
     [_delegate homeModule:self didSelectDevMenuItemWithKey:key];
   }
 }
 
-RCT_EXPORT_METHOD(selectRefresh)
+/**
+ * Reloads currently shown app with the manifest.
+ */
+RCT_EXPORT_METHOD(reloadAppAsync)
 {
   if (_delegate) {
     [_delegate homeModuleDidSelectRefresh:self];
   }
 }
 
-RCT_EXPORT_METHOD(selectCloseMenu)
+/**
+ * Immediately closes the dev menu if it's visible.
+ * Note: It skips the animation that would have been applied by the JS side.
+ */
+RCT_EXPORT_METHOD(closeDevMenuAsync)
 {
   if (_delegate) {
     [_delegate homeModuleDidSelectCloseMenu:self];
   }
 }
 
-RCT_EXPORT_METHOD(selectGoToHome)
+/**
+ * Goes back to the home app.
+ */
+RCT_EXPORT_METHOD(goToHomeAsync)
 {
   if (_delegate) {
     [_delegate homeModuleDidSelectGoToHome:self];
   }
 }
 
+/**
+ * Opens QR scanner to open another app by scanning its QR code.
+ */
 RCT_EXPORT_METHOD(selectQRReader)
 {
   if (_delegate) {
@@ -208,8 +247,12 @@ RCT_REMAP_METHOD(removeSessionAsync,
   }
 }
 
-RCT_REMAP_METHOD(getIsNuxFinishedAsync,
-                 getIsNuxFinishedWithResolver:(RCTPromiseResolveBlock)resolve
+/**
+ * Checks whether the dev menu onboarding is already finished.
+ * Onboarding is a screen that shows the dev menu to the user that opens any experience for the first time.
+*/
+RCT_REMAP_METHOD(getIsOnboardingFinishedAsync,
+                 getIsOnboardingFinishedWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   if (_delegate) {
@@ -220,14 +263,20 @@ RCT_REMAP_METHOD(getIsNuxFinishedAsync,
   }
 }
 
-RCT_REMAP_METHOD(setIsNuxFinishedAsync,
-                 setIsNuxFinished:(BOOL)isNuxFinished)
+/**
+ * Sets appropriate setting in user defaults that user's onboarding has finished.
+ */
+RCT_REMAP_METHOD(setIsOnboardingFinishedAsync,
+                 setIsOnboardingFinished:(BOOL)isOnboardingFinished)
 {
   if (_delegate) {
-    [_delegate homeModule:self didFinishNux:isNuxFinished];
+    [_delegate homeModule:self didFinishNux:isOnboardingFinished];
   }
 }
 
+/**
+ * Called when the native event has succeeded on the JS side.
+ */
 RCT_REMAP_METHOD(onEventSuccess,
                  eventId:(NSString *)eventId
                  body:(NSDictionary *)body)
@@ -240,6 +289,9 @@ RCT_REMAP_METHOD(onEventSuccess,
   }
 }
 
+/**
+ * Called when the native event has failed on the JS side.
+ */
 RCT_REMAP_METHOD(onEventFailure,
                  eventId:(NSString *)eventId
                  message:(NSString *)message)

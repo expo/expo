@@ -41,4 +41,6 @@
               onSuccess: (void (^)(NSDictionary *))success
               onFailure: (void (^)(NSString *))failure;
 
+- (void)requestToCloseDevMenu;
+
 @end

@@ -16,7 +16,6 @@
 #import "EXMenuGestureRecognizer.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
-#import "EXMenuWindow.h"
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
@@ -27,10 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) EXMenuViewController *menuViewController;
 @property (nonatomic, assign) BOOL isMenuVisible;
-@property (nonatomic, assign) BOOL isAnimatingMenu;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, strong) EXButtonView *btnMenu;
-@property (nonatomic, strong, nullable) EXMenuWindow *menuWindow;
+@property (nonatomic, strong, nullable) NSNumber *orientationBeforeShowingMenu;
 
 @end
 
@@ -67,6 +65,26 @@ NS_ASSUME_NONNULL_BEGIN
   [self.view bringSubviewToFront:_btnMenu];
 }
 
+/**
+ * Overrides UIViewController's method that returns interface orientations that the view controller supports.
+ * If EXMenuViewController is currently shown we want to use its supported orientations so the UI rotates
+ * when we open the dev menu while in the unsupported orientation.
+ * Otherwise, returns interface orientations supported by the current experience.
+ */
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  return _isMenuVisible ? [_menuViewController supportedInterfaceOrientations] : [self.contentViewController supportedInterfaceOrientations];
+}
+
+/**
+ * Same case as above with `supportedInterfaceOrientations` method.
+ * If we don't override this, we can get incorrect orientation while changing device orientation when the dev menu is visible.
+ */
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+  return _isMenuVisible ? [_menuViewController preferredInterfaceOrientationForPresentation] : [self.contentViewController preferredInterfaceOrientationForPresentation];
+}
+
 #pragma mark - EXViewController
 
 - (void)createRootAppAndMakeVisible
@@ -96,19 +114,51 @@ NS_ASSUME_NONNULL_BEGIN
   [self setIsMenuVisible:!_isMenuVisible completion:completion];
 }
 
+/**
+ * Sets the visibility of the dev menu and attempts to rotate the UI according to interface orientations supported by the view controller that is on top.
+ */
 - (void)setIsMenuVisible:(BOOL)isMenuVisible completion:(void (^ _Nullable)(void))completion
 {
   if (!_menuViewController) {
     _menuViewController = [[EXMenuViewController alloc] init];
   }
   if (isMenuVisible != _isMenuVisible) {
-    if (!_isAnimatingMenu) {
-      _isMenuVisible = isMenuVisible;
-      [self _animateMenuToVisible:_isMenuVisible completion:completion];
+    _isMenuVisible = isMenuVisible;
+
+    if (isMenuVisible) {
+      // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
+      // However, when removing it, we should set it back to the orientation from before showing the dev menu.
+      _orientationBeforeShowingMenu = [[UIDevice currentDevice] valueForKey:@"orientation"];
+      [[UIDevice currentDevice] setValue:@(UIInterfaceOrientationPortrait) forKey:@"orientation"];
+    } else {
+      // Restore the original orientation that had been set before the dev menu was displayed.
+      [[UIDevice currentDevice] setValue:_orientationBeforeShowingMenu forKey:@"orientation"];
     }
-  } else {
+    
+    // Ask the system to rotate the UI to device orientation that we've just set to fake value (see previous line of code).
+    [UIViewController attemptRotationToDeviceOrientation];
+    
+    if (isMenuVisible) {
+      // Add menu view controller as a child of the root view controller.
+      [_menuViewController willMoveToParentViewController:self];
+      [_menuViewController.view setFrame:self.view.frame];
+      [self.view addSubview:_menuViewController.view];
+      [_menuViewController didMoveToParentViewController:self];
+    } else {
+      // Detach menu view controller from the root view controller.
+      [_menuViewController willMoveToParentViewController:nil];
+      [_menuViewController.view removeFromSuperview];
+      [_menuViewController didMoveToParentViewController:nil];
+    }
+  }
+  if (completion) {
     completion();
   }
+}
+
+- (BOOL)isMenuVisible
+{
+  return _isMenuVisible;
 }
 
 - (void)showQRReader
@@ -255,56 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
       transitionFinished();
     }
-  }
-}
-
-- (void)_animateMenuToVisible:(BOOL)visible completion:(void (^ _Nullable)(void))completion
-{
-  _isAnimatingMenu = YES;
-  __weak typeof(self) weakSelf = self;
-  if (visible) {
-    [_menuViewController willMoveToParentViewController:self];
-    
-    if (_menuWindow == nil) {
-      _menuWindow = [[EXMenuWindow alloc] init];
-    }
-    
-    [_menuWindow setFrame:self.view.frame];
-    [_menuWindow addSubview:_menuViewController.view];
-    [_menuWindow makeKeyAndVisible];
-    
-    _menuViewController.view.alpha = 0.0f;
-    _menuViewController.view.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-    [UIView animateWithDuration:0.1f animations:^{
-      self.menuViewController.view.alpha = 1.0f;
-      self.menuViewController.view.transform = CGAffineTransformIdentity;
-    } completion:^(BOOL finished) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf.isAnimatingMenu = NO;
-        [strongSelf.menuViewController didMoveToParentViewController:self];
-        if (completion) {
-          completion();
-        }
-      }
-    }];
-  } else {
-    _menuViewController.view.alpha = 1.0f;
-    [UIView animateWithDuration:0.1f animations:^{
-      self.menuViewController.view.alpha = 0.0f;
-    } completion:^(BOOL finished) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf.isAnimatingMenu = NO;
-        [strongSelf.menuViewController willMoveToParentViewController:nil];
-        [strongSelf.menuViewController.view removeFromSuperview];
-        [strongSelf.menuViewController didMoveToParentViewController:nil];
-        strongSelf.menuWindow = nil;
-        if (completion) {
-          completion();
-        }
-      }
-    }];
   }
 }
 
