@@ -37,7 +37,7 @@ With the library installed our project, we can now actually use it.
 
 <SnackInline label="Image picker" templateId="tutorial/image-picker-log" dependencies={['expo-image-picker']}>
 
-```jsx
+```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 /* @info Import the ImagePicker */import * as ImagePicker from 'expo-image-picker';/* @end */
@@ -89,7 +89,7 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <SnackInline label="Image picker show image" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
 
-```jsx
+```js
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */let [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
