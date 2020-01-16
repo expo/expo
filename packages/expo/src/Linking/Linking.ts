@@ -64,10 +64,8 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
       path = `/--/${_removeLeadingSlash(path)}`;
     }
 
-    if (!path.startsWith('/') && hostUri) {
+    if (!path.startsWith('/')) {
       path = `/${path}`;
-    } else if (path.startsWith('/') && !hostUri) {
-      path = path.substr(1);
     }
   } else {
     path = '';

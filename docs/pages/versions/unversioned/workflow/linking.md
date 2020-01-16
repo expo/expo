@@ -10,11 +10,11 @@ Every good website is prefixed with `https://`, and `https` is what is known as 
 
 To navigate from one website to another, you can use an anchor tag (`<a>`) on the web. You can also use JavaScript APIs like `window.history` and `window.location`.
 
-In addition to `https`, you're likely also familiar with the `mailto` scheme. When you open a link with the `mailto` scheme, your operating system will open an installed mail application. If you have more than one mail application installed then your operating system may prompt you to pick one. Similarly, there are schemes for making phone calls and sending SMS'. Read more about [built-in URL schemes](#built-in-url-schemes) below.
+In addition to `https`, you're likely also familiar with the `mailto` scheme. When you open a link with the `mailto` scheme, your operating system will open an installed mail application. If you have more than one mail application installed then your operating system may prompt you to pick one. Similarly, there are schemes for making phone calls and sending SMS. Read more about [built-in URL schemes](#built-in-url-schemes) below.
 
-`https` and `http` are handled by your browser, but it's possible to link to other applications by using different url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
+Just like using the `mailto` scheme, it's possible to link to other applications by using other url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with scheme isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links"; Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](../../sdk/branch/).
+Deep linking with schemes isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links" (unfortunate naming, since deep links can also refer to the topic above). Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](../../sdk/branch/).
 
 ## Linking from your app to other apps
 
@@ -61,7 +61,7 @@ export default class Anchor extends React.Component {
 }
 
 // <Anchor href="https://google.com">Go to Google</Anchor>
-// <Anchor href="mailto://support@expo.io">Email support</Anchor>
+// <Anchor href="mailto:support@expo.io">Email support</Anchor>
 ```
 
 ### Using `WebBrowser` instead of `Linking` for opening web links
@@ -120,7 +120,7 @@ To save you the trouble of inserting a bunch of conditionals based on the enviro
 
 - _Published app in Expo client_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
-- _Development_: `exp://wg-qka.community.app.exp.direct:80`
+- _Development_: `exp://localhost:19000`
 
 You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
 
@@ -146,7 +146,7 @@ To pass some data into your app, you can append it as a path or query string on 
 let redirectUrl = Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
 ```
 
-This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
+This would return something like `myapp:///path/into/app?hello=world&goodbye=now` for a standalone app.
 
 When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
@@ -161,7 +161,7 @@ _handleUrl = url => {
 ```
 
 If you opened a URL like
-`myapp://path/into/app?hello=world&goodbye=now`, this would alert
+`myapp:///path/into/app?hello=world&goodbye=now`, this would alert
 `Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
 
 ### Example: linking back to your app from WebBrowser
@@ -241,7 +241,7 @@ It may be desirable for links to your domain to always open your app (without pr
         "scheme": "https",
         "host": "*.myapp.io",
         "pathPrefix": "/records"
-      },
+      }
     ],
     "category": [
       "BROWSABLE",
