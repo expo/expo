@@ -34,10 +34,6 @@ function _validateTaskName(taskName) {
   }
 }
 
-export async function dummy() {
-  return ExpoTaskManager.dummyAsync();
-}
-
 export function defineTask(taskName: string, task: Task) {
   if (!isRunningDuringInitialization) {
     console.error(`TaskManager.defineTask must be called during initialization phase!`);

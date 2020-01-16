@@ -246,8 +246,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-//    boolean isHeadless = taskManager.isRunningInHeadlessMode();
-    boolean isHeadless = true;
+    boolean isHeadless = mAppLoader.isRunningInHeadlessMode(mContextRef.get(), appId);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -406,17 +405,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     sEventsQueues.get(appId).add(body);
 
     mAppLoader.loadApp(mContextRef.get(), new TaskManagerAppLoader.Params(appId, task.getAppUrl()), () -> {
-      appEvents.remove(eventId);
-      sEventsQueues.remove(appId);
       try {
         unregisterTask(task.getName(), appId, null);
       } catch (Exception e) {
         Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
+      appEvents.remove(eventId);
+      sEventsQueues.remove(appId);
     }, success -> {
       if (!success) {
         sEvents.remove(appId);
         sEventsQueues.remove(appId);
+
         unregisterAllTasksForAppId(appId);
       }
     });

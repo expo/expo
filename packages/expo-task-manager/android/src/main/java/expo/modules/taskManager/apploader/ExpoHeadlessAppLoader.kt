@@ -9,7 +9,7 @@ import expo.loaders.provider.interfaces.TaskManagerAppLoader
 import java.util.*
 import java.util.logging.Handler
 
-class ExpoHeadlessAppLoader(val ignore: Context) : TaskManagerAppLoader, SingletonModule {
+class ExpoHeadlessAppLoader(val ignore: Context) : TaskManagerAppLoader {
 
     override fun loadApp(context: Context, params: TaskManagerAppLoader.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
         if (params == null || params.appId == null) {
@@ -32,6 +32,7 @@ class ExpoHeadlessAppLoader(val ignore: Context) : TaskManagerAppLoader, Singlet
         return if (appRecords.containsKey(appId)) {
             android.os.Handler(ignore.mainLooper).post {
               appRecords[appId]!!.destroy()
+              appRecords.remove(appId)
             }
             true
         } else {
@@ -39,11 +40,11 @@ class ExpoHeadlessAppLoader(val ignore: Context) : TaskManagerAppLoader, Singlet
         }
     }
 
-    private fun isReactInstanceRunning(reactInstanceManager: ReactInstanceManager): Boolean {
+  override fun isRunningInHeadlessMode(context: Context?, appId: String?): Boolean = appRecords.containsKey(appId)
+
+  private fun isReactInstanceRunning(reactInstanceManager: ReactInstanceManager): Boolean {
         return reactInstanceManager.hasStartedCreatingInitialContext()
     }
-
-    override fun getName(): String = "TaskManagerAppLoader"
 
     companion object {
         // { "<appId>": AppRecordInterface }

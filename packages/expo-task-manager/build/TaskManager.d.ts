@@ -16,7 +16,6 @@ export interface RegisteredTask {
     options: any;
 }
 declare type Task = (body: TaskBody) => void;
-export declare function dummy(): Promise<any>;
 export declare function defineTask(taskName: string, task: Task): void;
 export declare function isTaskDefined(taskName: string): boolean;
 export declare function isTaskRegisteredAsync(taskName: string): Promise<boolean>;

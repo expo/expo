@@ -32,9 +32,9 @@ import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import host.exp.exponent.taskManager.AppLoaderInterface;
+import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.AppLoaderProvider;
-import host.exp.exponent.taskManager.AppRecordInterface;
+import expo.loaders.provider.interfaces.AppRecordInterface;
 import abi35_0_0.expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import abi35_0_0.expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import abi35_0_0.expo.modules.taskManager.exceptions.TaskNotFoundException;
@@ -235,8 +235,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
   }
 
-
-
   @Override
   public void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl) {
     // It may be called with null when the host activity is destroyed.
@@ -248,8 +246,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-//    boolean isHeadless = taskManager.isRunningInHeadlessMode();
-    boolean isHeadless = true;
+    boolean isHeadless = taskManager.isRunningInHeadlessMode();
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.

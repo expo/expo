@@ -4,16 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.Consumer;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
@@ -29,7 +25,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   private ConstantsInterface mConstants;
   private TaskServiceInterface mTaskService;
   private WeakReference<Context> mContextRef;
-  private TaskManagerAppLoader mAppLoader;
   private List<Bundle> mEventsQueue = new ArrayList<>();
 
   public TaskManagerInternalModule(Context context) {

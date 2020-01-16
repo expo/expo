@@ -9,14 +9,14 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.util.Map;
-
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+
+import java.util.Map;
 
 public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = BackgroundFetchTaskConsumer.class.getSimpleName();
@@ -40,7 +40,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
   public boolean canReceiveCustomBroadcast(String action) {
     // Let the TaskService know that we want to receive custom broadcasts
     // having "android.intent.action.BOOT_COMPLETED" action.
-    return Intent.ACTION_BOOT_COMPLETED.equals(action) || "customaction".equals(action);
+    return Intent.ACTION_BOOT_COMPLETED.equals(action);
   }
 
   @Override
@@ -134,9 +134,9 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
 
     alarmManager.setInexactRepeating(
-        AlarmManager.RTC,
-        0,
-        0,
+        AlarmManager.ELAPSED_REALTIME_WAKEUP,
+        SystemClock.elapsedRealtime() + interval,
+        interval,
         mPendingIntent
     );
   }

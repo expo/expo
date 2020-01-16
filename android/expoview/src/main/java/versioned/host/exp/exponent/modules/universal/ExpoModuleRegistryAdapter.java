@@ -13,9 +13,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.taskManager.TaskManagerInternalModule;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.taskManager.TaskManagerInternalAppLoader;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
@@ -67,9 +65,6 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
       moduleRegistry.registerInternalModule(internalModule);
     }
-
-    moduleRegistry.registerInternalModule(new TaskManagerInternalModule(scopedContext));
-    moduleRegistry.registerSingletonModule(new TaskManagerInternalAppLoader());
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));

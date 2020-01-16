@@ -10,6 +10,8 @@ public interface TaskManagerAppLoader {
 
   boolean invalidateApp(String appId);
 
+  boolean isRunningInHeadlessMode(Context contexts, String appId);
+
   final class Params {
     private final String appId;
     private final String appUrl;

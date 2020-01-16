@@ -17,7 +17,7 @@ import java.util.Map;
 import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.headless.HeadlessAppLoader;
 
-public class TaskManagerInternalAppLoader implements InternalModule, TaskManagerAppLoader, SingletonModule {
+public class TaskManagerInternalAppLoader implements TaskManagerAppLoader {
 
   private static final String TAG = "TaskManagerInternalAppL";
 
@@ -25,13 +25,7 @@ public class TaskManagerInternalAppLoader implements InternalModule, TaskManager
 
   private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
 
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-  }
-
-  @Override
-  public void onDestroy() {
-  }
+  public TaskManagerInternalAppLoader(Context context) {}
 
   @Override
   public void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
@@ -83,13 +77,4 @@ public class TaskManagerInternalAppLoader implements InternalModule, TaskManager
     return appLoader;
   }
 
-  @Override
-  public List<? extends Class> getExportedInterfaces() {
-    return Collections.singletonList(TaskManagerAppLoader.class);
-  }
-
-  @Override
-  public String getName() {
-    return "TaskManagerAppLoader";
-  }
 }

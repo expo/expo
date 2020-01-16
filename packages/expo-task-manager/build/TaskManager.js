@@ -8,9 +8,6 @@ function _validateTaskName(taskName) {
         throw new TypeError('`taskName` must be a non-empty string.');
     }
 }
-export async function dummy() {
-    return ExpoTaskManager.dummyAsync();
-}
 export function defineTask(taskName, task) {
     if (!isRunningDuringInitialization) {
         console.error(`TaskManager.defineTask must be called during initialization phase!`);
