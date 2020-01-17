@@ -4,38 +4,47 @@ import Constants from 'expo-constants';
 import { DevicePushToken } from './getDevicePushTokenAsync';
 
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
-  const data = await _subscribeUserToPushAsync();
+  const data = await _subscribeDeviceToPushNotificationsAsync();
   SyntheticPlatformEmitter.emit('onDevicePushToken', { devicePushToken: data });
   return { type: Platform.OS, data };
 }
 
 function guardPermission() {
   if (!('Notification' in window)) {
-    throw new Error('The Notification API is not available on this device.');
+    throw new CodedError(
+      'ERR_UNAVAILABLE',
+      'The Web Notifications API is not available on this device.'
+    );
   }
   if (!navigator.serviceWorker) {
-    throw new Error(
+    throw new CodedError(
+      'ERR_UNAVAILABLE',
       'Notifications cannot be used because the service worker API is not supported on this device. This might also happen because your web page does not support HTTPS.'
     );
   }
   if (Notification.permission !== 'granted') {
-    throw new Error(
-      'Cannot use Notifications without permissions. Please request permissions with `expo-permissions`'
+    throw new CodedError(
+      'ERR_NOTIFICATIONS_PERMISSION_DENIED',
+      `Cannot use web notifications without permissions granted. Request permissions with "expo-permissions".`
     );
   }
 }
 
-async function _subscribeUserToPushAsync(): Promise<DevicePushToken['data']> {
-  if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
+async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushToken['data']> {
+  // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
+  // eslint-disable-next-line
+  if (!Constants.manifest.notification?.vapidPublicKey) {
     throw new CodedError(
-      'E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
+      'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
       'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.'
     );
   }
-  if (!Constants.manifest.notification || !Constants.manifest.notification.serviceWorkerPath) {
+  // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
+  // eslint-disable-next-line
+  if (!Constants.manifest.notification?.serviceWorkerPath) {
     throw new CodedError(
-      'E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
-      'You must provide `notification.serviceWorkerPath` in `app.json` to use push notifications on web. Please provide path to the service worker that will handle notifications.'
+      'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
+      'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.'
     );
   }
   guardPermission();
@@ -46,15 +55,17 @@ async function _subscribeUserToPushAsync(): Promise<DevicePushToken['data']> {
       Constants.manifest.notification.serviceWorkerPath
     );
   } catch (error) {
-    throw new Error(
-      `Notifications might not be working because the service worker (${Constants.manifest.notification.serviceWorkerPath}) couldn't be registered: ${error}`
+    throw new CodedError(
+      'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
+      `Could not register this device for push notifications because the service worker (${Constants.manifest.notification.serviceWorkerPath}) could not be registered: ${error}`
     );
   }
   await navigator.serviceWorker.ready;
 
   if (!registration.active) {
-    throw new Error(
-      'Notifications might not be working because the service worker API is not active.'
+    throw new CodedError(
+      'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
+      'Could not register this device for push notifications because the service worker is not active.'
     );
   }
 
@@ -67,7 +78,7 @@ async function _subscribeUserToPushAsync(): Promise<DevicePushToken['data']> {
     pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
   } catch (error) {
     throw new CodedError(
-      'E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED',
+      'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
       'The device was unable to register for remote notifications with the browser endpoint. (' +
         error +
         ')'
