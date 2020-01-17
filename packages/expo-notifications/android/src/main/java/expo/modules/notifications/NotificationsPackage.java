@@ -10,9 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.notifications.installationid.InstallationIdProvider;
-import expo.modules.notifications.notifications.channels.ExpoNotificationChannelsManager;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.channels.ExpoNotificationChannelsManager;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
+import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.tokens.PushTokenManager;
 import expo.modules.notifications.tokens.PushTokenModule;
 
@@ -22,6 +23,7 @@ public class NotificationsPackage extends BasePackage {
     return Arrays.asList(
         new PushTokenModule(context),
         new NotificationsEmitter(context),
+        new NotificationsHandler(context),
         new InstallationIdProvider(context)
     );
   }
