@@ -1,0 +1,2 @@
+// mock
+export default {};

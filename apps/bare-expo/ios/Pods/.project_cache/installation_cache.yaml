@@ -492,6 +492,19 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (2.0.0)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 42083d7be3b81dc87f399732a97ebffe
+    CHECKSUM: d654494e84df90927cca410ebac178c61553647b
+    FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (1.0.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -797,12 +810,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a333ebad6efc4c2de7688b552b392906
-      Release: a333ebad6efc4c2de7688b552b392906
+      Debug: 56436cf11abb9cf3f33b76749e92e0af
+      Release: 56436cf11abb9cf3f33b76749e92e0af
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 19d52321c9e39b1cae48ac2f1c3dfd3d
-      Release: 19d52321c9e39b1cae48ac2f1c3dfd3d
+      Debug: 9af093871462b0148da322b01f112ded
+      Release: 9af093871462b0148da322b01f112ded
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

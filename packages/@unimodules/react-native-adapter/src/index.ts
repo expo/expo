@@ -1,5 +1,5 @@
 import { EventEmitter, Subscription } from './EventEmitter';
-import NativeModulesProxy from './NativeModulesProxy';
+import NativeModulesProxy, { ProxyNativeModule } from './NativeModulesProxy';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
@@ -14,6 +14,7 @@ export {
   RCTDeviceEventEmitter,
   EventEmitter,
   NativeModulesProxy,
+  ProxyNativeModule,
   Platform,
   Subscription,
   SyntheticPlatformEmitter,
