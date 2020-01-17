@@ -19,7 +19,7 @@ export async function test(t) {
       let tokenFromMethodCall = null;
 
       t.beforeAll(() => {
-        subscription = Notifications.addTokenListener(newEvent => {
+        subscription = Notifications.addPushTokenListener(newEvent => {
           tokenFromEvent = newEvent;
         });
       });
