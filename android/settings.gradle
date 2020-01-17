@@ -33,6 +33,7 @@ includeUnimodulesProjects(
 // FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
         'expo-bluetooth',
+        'expo-notifications',
         'expo-in-app-purchases',
         'expo-updates',
 // FLAG_END_REMOVE__UPDATE_EXPOKIT

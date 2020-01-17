@@ -3,9 +3,7 @@ title: Limitations
 sidebar_title: Limitations
 ---
 
-> *Your success will be limited if you don't know the limitations of your tools.*
->
-> &mdash; *Confucius <small>(but not really)</small>*
+Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions she makes.
 
 ## Limitations of the managed workflow
 

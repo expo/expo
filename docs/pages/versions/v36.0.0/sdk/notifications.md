@@ -59,6 +59,16 @@ An object that is passed into each event listener when a notification is receive
 - **data (_object_)** -- Any data that has been attached with the notification.
 - **remote (_boolean_)** -- `true` if the notification is a push notification, `false` if it is a local notification.
 
+The `origin` will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
+
+| Push was received when...                                            |          `origin` will be...          |
+| -------------------------------------------------------------------- | :-----------------------------------: |
+| App is open and foregrounded                                         |             `'received'`              |
+| App is open and backgrounded, then notification is not selected      | no notification is passed to listener |
+| App is open and backgrounded, then notification is selected          |             `'selected'`              |
+| App was not open, and then opened by selecting the push notification |             `'selected'`              |
+| App was not open, and then opened by tapping the home screen icon    | no notification is passed to listener |
+
 ## Notifications
 
 ### `Notifications.getExpoPushTokenAsync()`
@@ -246,6 +256,6 @@ A Promise that resolves to an object with the following fields:
 
 ## Error Codes
 
-| Code                                               | Description                                                                                                                                                                               |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED          | The device was unable to register for remote notifications with Expo.                                                                                                                     |                                                                                      |
+| Code                                      | Description                                                           |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |  |

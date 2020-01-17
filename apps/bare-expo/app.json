@@ -15,8 +15,15 @@
         }
       }
     },
+    "android": {
+      "package": "dev.expo.payments",
+    },
     "ios": {
       "bundleIdentifier": "dev.expo.Payments"
+    },
+    "notification": {
+      "serviceWorkerPath": "/expo-service-worker.js",
+      "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
     }
   }
 }

@@ -63,6 +63,7 @@ The Expo client is configured by default to automatically reload the app wheneve
 
 ## Up next
 
-You are now in a good place to start digging in to the rest of the documentation!
+Depending on your experience level with tools similar to Expo, you may now in a good place to start digging in to the rest of the documentation!
 
-[Continue to "Using the documentation"](../../next-steps/using-the-documentation/) for suggestions on how to continue your learning journey.
+- **If you are new to React Native**, we suggest [following a tutorial](../../tutorial/planning/) before proceeding to the rest of the documentation.
+- **If you have used React Native before**, [continue to "Using the documentation"](../../next-steps/using-the-documentation/) for suggestions on how to continue your learning journey.

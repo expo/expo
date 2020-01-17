@@ -39,6 +39,7 @@ public class BasePackageList {
         new expo.modules.mailcomposer.MailComposerPackage(),
         new expo.modules.medialibrary.MediaLibraryPackage(),
         new expo.modules.network.NetworkPackage(),
+        new expo.modules.notifications.NotificationsPackage(),
         new expo.modules.permissions.PermissionsPackage(),
         new expo.modules.print.PrintPackage(),
         new expo.modules.random.RandomPackage(),
