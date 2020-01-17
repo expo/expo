@@ -16,7 +16,7 @@
       }
     },
     "android": {
-      "package": "dev.expo.payments",
+      "package": "dev.expo.payments"
     },
     "ios": {
       "bundleIdentifier": "dev.expo.Payments"
