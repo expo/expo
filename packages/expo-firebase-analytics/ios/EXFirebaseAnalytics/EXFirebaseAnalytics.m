@@ -156,8 +156,8 @@ UM_EXPORT_METHOD_AS(setUserId,
   }
 }
 
-UM_EXPORT_METHOD_AS(setUserPropertiesAsync, 
-                    setUserPropertiesAsync:(NSDictionary *)properties 
+UM_EXPORT_METHOD_AS(setUserProperties, 
+                    setUserProperties:(NSDictionary *)properties 
                     resolver:(UMPromiseResolveBlock)resolve 
                     rejecter:(UMPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;

@@ -47,7 +47,7 @@ export async function deleteDefaultApp(): Promise<void> {
   if (!ExpoFirebaseAnalytics.deleteApp) {
     throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
   }
-  return await ExpoFirebaseAnalytics.deleteApp({});
+  return await ExpoFirebaseAnalytics.deleteApp();
 }
 
 /**
