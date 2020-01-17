@@ -35,7 +35,7 @@ export async function deleteDefaultApp() {
     if (!ExpoFirebaseAnalytics.deleteApp) {
         throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
     }
-    return await ExpoFirebaseAnalytics.deleteApp({});
+    return await ExpoFirebaseAnalytics.deleteApp();
 }
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
