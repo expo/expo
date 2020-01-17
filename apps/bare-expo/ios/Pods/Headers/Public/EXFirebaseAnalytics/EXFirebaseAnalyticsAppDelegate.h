@@ -1,0 +1,1 @@
+../../../../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalyticsAppDelegate.h

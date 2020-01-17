@@ -61,7 +61,7 @@ PODS:
   - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (1.0.0):
+  - EXFirebaseAnalytics (3.0.0):
     - Firebase/Core (~> 6.13.0)
     - UMCore
   - EXFont (8.0.0):
@@ -829,7 +829,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 25d232d804087bd6fe88a74d7e582b295e5e69dd
   EXErrorRecovery: d36db99ec6a3808f313f01b0890eb443796dd1c2
   EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
-  EXFirebaseAnalytics: 32109c8e72381aac22a3f1a5b52797f6bb1c92da
+  EXFirebaseAnalytics: 00da60b41235bdd0c55979324ec53791b0f59abc
   EXFont: 6187b5ab46ee578d5f8e7f2ea092752e78772235
   EXGL: 3add8ba2c89377285f57cda493d4bc50939b5300
   EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
@@ -911,6 +911,6 @@ SPEC CHECKSUMS:
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: f8c0544004c7ca9ffcae29a1b9efb91846964d98
+PODFILE CHECKSUM: f9b310a7da0a72b720dd3e0eaf31394e24c3f736
 
 COCOAPODS: 1.8.4
