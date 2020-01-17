@@ -3,9 +3,8 @@
   "displayName": "bare-expo",
   "expo": {
     "name": "BareExpo",
-    "slug": "expo-template-bare",
+    "slug": "bare-expo",
     "privacy": "unlisted",
-    "sdkVersion": "34.0.0",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
     "web": {
@@ -15,6 +14,12 @@
           "include": ["test-suite", "bare-expo"]
         }
       }
+    },
+    "android": {
+      "package": "dev.expo.payments",
+    },
+    "ios": {
+      "bundleIdentifier": "dev.expo.Payments"
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
