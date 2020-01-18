@@ -1,9 +1,3 @@
-declare module 'react-native/Libraries/Image/AssetRegistry' {
-  export type PackagerAsset = any;
-  export function registerAsset(asset: PackagerAsset): number;
-  export function getAssetByID(assetID: number): PackagerAsset | undefined;
-}
-
 declare module 'react-native/Libraries/Image/AssetSourceResolver' {
   import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
 
@@ -34,16 +28,4 @@ declare module 'react-native/Libraries/Image/AssetSourceResolver' {
 
     static pickScale(scales: number[], deviceScale: number): number;
   }
-}
-
-declare module 'react-native/Libraries/Image/resolveAssetSource' {
-  import AssetSourceResolver, {
-    ResolvedAssetSource,
-  } from 'react-native/Libraries/Image/AssetSourceResolver';
-
-  export default function resolveAssetSource(source: any): ResolvedAssetSource;
-
-  export function setCustomSourceTransformer(
-    transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource
-  ): void;
 }

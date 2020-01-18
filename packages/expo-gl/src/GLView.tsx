@@ -6,6 +6,8 @@ import {
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+
+import packageJSON from '../package.json';
 import {
   ComponentOrHandle,
   SurfaceCreateEvent,
@@ -14,8 +16,6 @@ import {
   SnapshotOptions,
   BaseGLViewProps,
 } from './GLView.types';
-
-const packageJSON = require('../package.json');
 
 declare let global: any;
 

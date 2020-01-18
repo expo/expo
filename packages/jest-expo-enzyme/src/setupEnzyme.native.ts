@@ -5,10 +5,9 @@ import 'react-native';
 import 'jest-enzyme';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { JSDOM } from 'jsdom';
 
-const { JSDOM } = require('jsdom');
 import serializer from './serializer';
-
 
 /**
  * Set up DOM in node.js environment for Enzyme to mount to

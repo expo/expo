@@ -7,14 +7,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("react-native");
 require("jest-enzyme");
-const enzyme_adapter_react_16_1 = __importDefault(require("enzyme-adapter-react-16"));
 const enzyme_1 = __importDefault(require("enzyme"));
+const enzyme_adapter_react_16_1 = __importDefault(require("enzyme-adapter-react-16"));
+const jsdom_1 = require("jsdom");
 const serializer_1 = __importDefault(require("./serializer"));
 /**
  * Set up DOM in node.js environment for Enzyme to mount to
  */
-const { JSDOM } = require('jsdom');
-const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
+const jsdom = new jsdom_1.JSDOM('<!doctype html><html><body></body></html>');
 const { window } = jsdom;
 global.window = window;
 global.document = window.document;
