@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
-import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 import * as WebBrowser from 'expo-web-browser';
+import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
 import AuthSession from '../AuthSession';
 

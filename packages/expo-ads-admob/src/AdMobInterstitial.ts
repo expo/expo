@@ -1,7 +1,7 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
-import AdMobNativeModule from './ExpoAdsAdMobInterstitialManager';
 import { setTestDeviceIDAsync } from './AdMob';
+import AdMobNativeModule from './ExpoAdsAdMobInterstitialManager';
 
 const moduleName = 'AdMobInterstitial';
 

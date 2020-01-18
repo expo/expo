@@ -1,7 +1,6 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-
 import { Platform } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import MediaLibrary from './ExponentMediaLibrary';
 
@@ -40,7 +39,7 @@ export type Asset = {
   filename: string;
   uri: string;
   mediaType: MediaTypeValue;
-  mediaSubtypes?: Array<string>; // iOS only
+  mediaSubtypes?: string[]; // iOS only
   width: number;
   height: number;
   creationTime: number;
@@ -52,7 +51,7 @@ export type Asset = {
 export type AssetInfo = Asset & {
   localUri?: string;
   location?: Location;
-  exif?: Object;
+  exif?: object;
   isFavorite?: boolean; //iOS only
 };
 
@@ -71,7 +70,7 @@ export type Album = {
   startTime: number;
   endTime: number;
   approximateLocation?: Location;
-  locationNames?: Array<string>;
+  locationNames?: string[];
 };
 
 export type AlbumsOptions = {
@@ -83,14 +82,14 @@ export type AssetsOptions = {
   first?: number;
   after?: AssetRef;
   album?: AlbumRef;
-  sortBy?: Array<SortByValue> | SortByValue;
-  mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+  sortBy?: SortByValue[] | SortByValue;
+  mediaType?: MediaTypeValue[] | MediaTypeValue;
   createdAfter?: Date | number;
   createdBefore?: Date | number;
 };
 
 export type PagedInfo<T> = {
-  assets: Array<T>;
+  assets: T[];
   endCursor: string;
   hasNextPage: boolean;
   totalCount: number;
@@ -101,7 +100,7 @@ export { PermissionStatus, PermissionResponse };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
 
-function arrayize(item: any): Array<any> {
+function arrayize(item: any): any[] {
   if (Array.isArray(item)) {
     return item;
   }
@@ -198,7 +197,7 @@ export async function saveToLibraryAsync(localUri: string): Promise<void> {
 }
 
 export async function addAssetsToAlbumAsync(
-  assets: Array<AssetRef> | AssetRef,
+  assets: AssetRef[] | AssetRef,
   album: AlbumRef,
   copy: boolean = true
 ) {
@@ -221,10 +220,7 @@ export async function addAssetsToAlbumAsync(
   return await MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId, !!copy);
 }
 
-export async function removeAssetsFromAlbumAsync(
-  assets: Array<AssetRef> | AssetRef,
-  album: AlbumRef
-) {
+export async function removeAssetsFromAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef) {
   if (!MediaLibrary.removeAssetsFromAlbumAsync) {
     throw new UnavailabilityError('MediaLibrary', 'removeAssetsFromAlbumAsync');
   }
@@ -236,7 +232,7 @@ export async function removeAssetsFromAlbumAsync(
   return await MediaLibrary.removeAssetsFromAlbumAsync(assetIds, albumId);
 }
 
-export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
+export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef) {
   if (!MediaLibrary.deleteAssetsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'deleteAssetsAsync');
   }
@@ -266,7 +262,7 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
 }
 
 export async function getAlbumsAsync({ includeSmartAlbums = false }: AlbumsOptions = {}): Promise<
-  Array<Album>
+  Album[]
 > {
   if (!MediaLibrary.getAlbumsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
@@ -313,7 +309,7 @@ export async function createAlbumAsync(
 }
 
 export async function deleteAlbumsAsync(
-  albums: Array<AlbumRef> | AlbumRef,
+  albums: AlbumRef[] | AlbumRef,
   assetRemove: boolean = false
 ) {
   if (!MediaLibrary.deleteAlbumsAsync) {

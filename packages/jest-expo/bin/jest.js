@@ -2,6 +2,7 @@
 'use strict';
 
 const childProcess = require('child_process');
+const jestPackageJson = require('jest/package.json');
 const path = require('path');
 const process = require('process');
 
@@ -15,7 +16,6 @@ const process = require('process');
 //
 // If you need to run Jest with the JS debugger enabled, run Jest directly. It is usually under
 // node_modules/jest/bin/jest.js.
-const jestPackageJson = require('jest/package.json');
 const jestPackagePath = path.resolve(require.resolve('jest/package.json'), '..');
 const jestProgramPath = path.resolve(jestPackagePath, jestPackageJson.bin.jest);
 const jestProgramArgs = process.argv.slice(2);

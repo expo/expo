@@ -1,6 +1,7 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
 
+import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import {
   OrientationInfo,
   Orientation,
@@ -8,8 +9,6 @@ import {
   WebOrientationLock,
   WebOrientation,
 } from './ScreenOrientation.types';
-
-import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 
 const OrientationLockAPIToWeb: {
   [lock: string]: WebOrientationLock;

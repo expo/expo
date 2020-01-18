@@ -28,7 +28,7 @@ const _isValueValid = (value: any, validValues: any[]): boolean => {
 };
 
 // Returns array of missing keys in object. Returns an empty array if no missing keys are found.
-const _populateMissingKeys = (userAudioMode: Object, defaultAudioMode: AudioMode): AudioMode => {
+const _populateMissingKeys = (userAudioMode: object, defaultAudioMode: AudioMode): AudioMode => {
   for (let key in defaultAudioMode) {
     if (!userAudioMode.hasOwnProperty(key)) {
       userAudioMode[key] = defaultAudioMode[key];

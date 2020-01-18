@@ -1,9 +1,8 @@
-import UUID from 'uuid-js';
-import { Platform } from 'react-native';
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
+import UUID from 'uuid-js';
 
 import ExponentFileSystem from './ExponentFileSystem';
-
 import {
   DownloadOptions,
   DownloadResult,
