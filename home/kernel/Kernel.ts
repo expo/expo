@@ -35,10 +35,6 @@ export function selectQRReader(): void {
   NativeKernel.selectQRReader();
 }
 
-export async function setLegacyMenuBehaviorEnabledAsync(enabled: boolean): Promise<void> {
-  await NativeKernel.setIsLegacyMenuBehaviorEnabledAsync(enabled);
-}
-
 export type KernelSession = {
   sessionSecret: string;
 };

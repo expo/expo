@@ -6,7 +6,6 @@
 #import "EXHomeModuleManager.h"
 #import "EXManifestResource.h"
 #import "EXKernel.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
@@ -17,19 +16,8 @@
 {
   if (self = [super init]) {
     [EXKernelDevMotionHandler sharedInstance];
-    [EXKernelDevKeyCommands sharedInstance];
   }
   return self;
-}
-
-- (BOOL)homeModuleShouldEnableLegacyMenuBehavior:(EXHomeModule *)module
-{
-  return [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
-}
-
-- (void)homeModule:(EXHomeModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled
-{
-  [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled = isEnabled;
 }
 
 - (BOOL)homeModuleShouldEnableDevtools:(__unused EXHomeModule *)module

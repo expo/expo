@@ -4,16 +4,13 @@
 
 #import "EXAppDelegate.h"
 #import "EXAppViewController.h"
-#import "EXButtonView.h"
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
-#import "EXMenuGestureRecognizer.h"
 #import "EXMenuViewController.h"
 #import "EXRootViewController.h"
 
@@ -27,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXMenuViewController *menuViewController;
 @property (nonatomic, assign) BOOL isMenuVisible;
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
-@property (nonatomic, strong) EXButtonView *btnMenu;
 @property (nonatomic, strong, nullable) NSNumber *orientationBeforeShowingMenu;
 
 @end
@@ -38,31 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self = [super init]) {
     [EXKernel sharedInstance].browserController = self;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_updateMenuButtonBehavior)
-                                                 name:kEXKernelDidChangeMenuBehaviorNotification
-                                               object:nil];
     [self _maybeResetNuxState];
   }
   return self;
-}
-
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-  _btnMenu = [[EXButtonView alloc] init];
-  _btnMenu.hidden = YES;
-  [self.view addSubview:_btnMenu];
-  EXMenuGestureRecognizer *menuGestureRecognizer = [[EXMenuGestureRecognizer alloc] initWithTarget:self action:@selector(_onMenuGestureRecognized:)];
-  [((EXAppDelegate *)[UIApplication sharedApplication].delegate).window addGestureRecognizer:menuGestureRecognizer];
-}
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  _btnMenu.frame = CGRectMake(0, 0, 48.0f, 48.0f);
-  _btnMenu.center = CGPointMake(self.view.frame.size.width - 36.0f, self.view.frame.size.height - 72.0f);
-  [self.view bringSubviewToFront:_btnMenu];
 }
 
 /**
@@ -231,9 +205,6 @@ NS_ASSUME_NONNULL_BEGIN
       && !self.isMenuVisible) {
     [self setIsMenuVisible:YES completion:nil];
   }
-  
-  // check button availability when any new app loads
-  [self _updateMenuButtonBehavior];
 }
 
 #pragma mark - internal
@@ -320,21 +291,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (disableNuxDefaultsValue) {
     [self setIsNuxFinished:YES];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeDisableNuxDefaultsKey];
-  }
-}
-
-- (void)_updateMenuButtonBehavior
-{
-  BOOL shouldShowButton = [[EXKernelDevKeyCommands sharedInstance] isLegacyMenuButtonAvailable];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.btnMenu.hidden = !shouldShowButton;
-  });
-}
-
-- (void)_onMenuGestureRecognized:(EXMenuGestureRecognizer *)sender
-{
-  if (sender.state == UIGestureRecognizerStateEnded) {
-    [[EXKernel sharedInstance] switchTasks];
   }
 }
 

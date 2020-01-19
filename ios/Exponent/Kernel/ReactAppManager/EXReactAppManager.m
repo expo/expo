@@ -5,7 +5,6 @@
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
@@ -264,10 +263,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isDetached = [EXEnvironment sharedEnvironment].isDetached;
-  BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
-  
   _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
 
   NSDictionary *params = @{
@@ -286,7 +281,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"exceptionsManagerDelegate": _exceptionHandler,
                            @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),
                            @"isDeveloper": @([self enablesDeveloperTools]),
-                           @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
                            @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
                            @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
                            @"singletonModules": [UMModuleRegistryProvider singletonModules],

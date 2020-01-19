@@ -127,24 +127,6 @@ RCT_REMAP_METHOD(doesCurrentTaskEnableDevtoolsAsync,
   }
 }
 
-RCT_REMAP_METHOD(isLegacyMenuBehaviorEnabledAsync,
-                 isLegacyMenuBehaviorEnabledWithResolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject)
-{
-  if (_delegate) {
-    resolve(@([_delegate homeModuleShouldEnableLegacyMenuBehavior:self]));
-  } else {
-    resolve(@(NO));
-  }
-}
-
-RCT_EXPORT_METHOD(setIsLegacyMenuBehaviorEnabledAsync:(BOOL)isEnabled)
-{
-  if (_delegate) {
-    [_delegate homeModule:self didSelectEnableLegacyMenuBehavior:isEnabled];
-  }
-}
-
 /**
  * Gets a dictionary of dev menu options available in the currently shown experience,
  * If the experience doesn't support developer tools just returns an empty response.

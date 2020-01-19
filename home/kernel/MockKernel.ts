@@ -30,8 +30,6 @@ export default {
 
   selectQRReader(): void {},
 
-  async setIsLegacyMenuBehaviorEnabledAsync(_enabled: boolean): Promise<void> {},
-
   async getIsOnboardingFinishedAsync(): Promise<boolean> {
     const item = await AsyncStorage.getItem(`${STORAGE_PREFIX}:onboarding`);
     return !!item;
