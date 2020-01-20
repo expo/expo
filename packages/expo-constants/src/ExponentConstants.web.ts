@@ -1,10 +1,8 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 
-import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
+import { NativeConstants, PlatformManifest, WebManifest } from './Constants.types';
 
-const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
 declare var __DEV__: boolean;
@@ -14,6 +12,28 @@ declare var location: Location;
 declare var localStorage: Storage;
 
 const _sessionId = uuidv4();
+
+function getBrowserName(): string | undefined {
+  const agent = window.navigator.userAgent.toLowerCase();
+  switch (true) {
+    case agent.includes('edge'):
+      return 'Edge';
+    case agent.includes('edg'):
+      return 'Chromium Edge';
+    case agent.includes('opr') && !!window['opr']:
+      return 'Opera';
+    case agent.includes('chrome') && !!window['chrome']:
+      return 'Chrome';
+    case agent.includes('trident'):
+      return 'IE';
+    case agent.includes('firefox'):
+      return 'Firefox';
+    case agent.includes('safari'):
+      return 'Safari';
+    default:
+      return undefined;
+  }
+}
 
 export default {
   get name(): string {
@@ -40,7 +60,7 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
+    return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
   },
   get isHeadless(): false {
     return false;
@@ -67,9 +87,7 @@ export default {
     return this.expoVersion;
   },
   get deviceName(): string | undefined {
-    const { browser, engine, os: OS } = parser.getResult();
-
-    return browser.name || engine.name || OS.name || undefined;
+    return getBrowserName();
   },
   get nativeAppVersion(): null {
     return null;
