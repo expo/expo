@@ -3,7 +3,7 @@ id: slider
 title: Slider
 ---
 
-> **Deprecated.** Use [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider) instead.
+> **Deprecated.** If you are using the bare workflow, use `react-native-community/react-native-slider` instead. Managed workflow users should continue using the `Slider` from `react-native`.
 
 A component used to select a single value from a range of values.
 
