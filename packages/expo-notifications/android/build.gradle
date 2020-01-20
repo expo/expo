@@ -62,11 +62,14 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-      '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
-          'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
+          '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
+                  'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
 dependencies {
   unimodule 'unimodules-core'
+  unimodule 'unimodules-permissions-interface'
+
+  api 'androidx.core:core:1.1.0'
   api 'com.google.firebase:firebase-messaging:20.1.0'
 }
