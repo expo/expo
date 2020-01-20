@@ -1,6 +1,6 @@
 import React from 'react';
 
-type Context = {
+export type Context = {
   expand: () => any;
   collapse: () => any;
 };

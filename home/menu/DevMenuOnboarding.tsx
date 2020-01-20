@@ -24,7 +24,7 @@ const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
   const fragment = Constants.isDevice
     ? 'you can shake your device'
-    : 'in an iOS Simulator you can press \u2318D';
+    : 'in an iOS Simulator you can press \u2303\u2318Z';
   return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
 
@@ -47,6 +47,7 @@ class DevMenuOnboarding extends React.PureComponent<Props, {}> {
           lightBackgroundColor="#fff"
           darkBackgroundColor="#000"
         />
+        <View style={styles.onboardingTopMargin} />
         <View>
           <View style={styles.onboardingHeadingRow}>
             <StyledText style={headingStyles} lightColor="#595c68">
@@ -68,7 +69,6 @@ class DevMenuOnboarding extends React.PureComponent<Props, {}> {
 const styles = StyleSheet.create({
   onboardingContainer: {
     flex: 1,
-    justifyContent: 'center',
     paddingHorizontal: 36,
     position: 'absolute',
     top: 0,
@@ -85,7 +85,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.9,
+    opacity: 0.8,
+  },
+  onboardingTopMargin: {
+    // Moves the actual onboarding content a little bit down.
+    // This percentage value is also a percentage of screen's height.
+    height: '27%',
   },
   onboardingHeadingRow: {
     flexDirection: 'row',

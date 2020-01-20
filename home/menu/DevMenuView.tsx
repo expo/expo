@@ -7,7 +7,7 @@ import { StyledView } from '../components/Views';
 import DevMenuTaskInfo from './DevMenuTaskInfo';
 import DevMenuOnboarding from './DevMenuOnboarding';
 import DevMenuCloseButton from './DevMenuCloseButton';
-import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
+import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';
 
 type Props = {
   task: { [key: string]: any };
@@ -41,6 +41,8 @@ const MENU_ITEMS_ICON_MAPPINGS = {
 
 class DevMenuView extends React.PureComponent<Props, State> {
   static contextType = DevMenuBottomSheetContext;
+
+  context!: Context;
 
   constructor(props, context) {
     super(props, context);
