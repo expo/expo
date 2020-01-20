@@ -1,7 +1,7 @@
 import { EventEmitter } from '@unimodules/core';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 export class Sound {
     constructor() {
         this._loaded = false;

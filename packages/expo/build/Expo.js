@@ -1,9 +1,9 @@
 import './Expo.fx';
 import * as AR from './AR';
-import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
+import * as Logs from './logs/Logs';
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
