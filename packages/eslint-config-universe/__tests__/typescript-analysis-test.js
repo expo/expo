@@ -3,7 +3,7 @@ const path = require('path');
 const getBaseConfig = require('./tools/getBaseConfig');
 const lintAsync = require('./tools/lintAsync');
 
-const configFile = path.resolve(__dirname, '../shared/typescript-parsed-linting.js');
+const configFile = path.resolve(__dirname, '../shared/typescript-analysis.js');
 
 const alteredBaseConfig = {
   ...getBaseConfig(),
@@ -21,7 +21,7 @@ it(`lints`, async () => {
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*typescript-parsed-linting*']
+    ['__tests__/fixtures/*typescript-analysis*']
   );
   let { results } = report;
   for (let result of results) {

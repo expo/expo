@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`lints: fixtures/typescript-parsed-linting-00.ts 1`] = `
+exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
 Object {
   "errorCount": 0,
   "fixableErrorCount": 0,
@@ -22,7 +22,7 @@ export function myFunc(foo: T | null) {
 }
 `;
 
-exports[`lints: fixtures/typescript-parsed-linting-01.ts 1`] = `
+exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
 Object {
   "errorCount": 1,
   "fixableErrorCount": 0,
@@ -51,7 +51,7 @@ export { sum };",
 }
 `;
 
-exports[`lints: fixtures/typescript-parsed-linting-02.ts 1`] = `
+exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 Object {
   "errorCount": 0,
   "fixableErrorCount": 0,
@@ -66,7 +66,7 @@ Object {
 }
 `;
 
-exports[`lints: fixtures/typescript-parsed-linting-03.ts 1`] = `
+exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
 Object {
   "errorCount": 0,
   "fixableErrorCount": 0,

@@ -9,7 +9,7 @@ module.exports = async function lintAsync(cliOptions, sourceFiles) {
   );
   const childProcess = lintProcess.child;
   childProcess.stderr.on('data', data => {
-    console.error(`[lintAsync]: ${data}`);
+    console.error(`[eslint]: ${data}`);
   });
   const result = await lintProcess;
   return JSON.parse(result.stdout);

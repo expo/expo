@@ -6,17 +6,12 @@ module.exports = {
   extends: ['plugin:import/typescript'],
   plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/consistent-type-assertions': [
+    '@typescript-eslint/array-type': [
       'warn',
-      { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' },
+      {
+        default: 'array',
+      },
     ],
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      { vars: 'all', args: 'none', ignoreRestSiblings: true },
-    ],
-    'no-useless-constructor': 'off',
-    '@typescript-eslint/no-useless-constructor': 'warn',
     '@typescript-eslint/ban-types': [
       'error',
       {
@@ -48,13 +43,18 @@ module.exports = {
         },
       },
     ],
-    '@typescript-eslint/array-type': [
+    '@typescript-eslint/consistent-type-assertions': [
       'warn',
-      {
-        default: 'array',
-      },
+      { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' },
     ],
     '@typescript-eslint/no-extra-non-null-assertion': 'warn',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      { vars: 'all', args: 'none', ignoreRestSiblings: true },
+    ],
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'warn',
   },
   settings: {
     'import/extensions': allExtensions,

@@ -80,30 +80,6 @@ Universe also provides optional additional config for typescript-eslint rules th
 
 To enable the additional config, the following changes to your config are required:
 
-### package.json
-```diff
-{
-  "eslintConfig": {
-    "extends": [
-      "universe",
-+     "universe/shared/typescript-parsed-linting"
-    ],
-+   "overrides": [
-+     {
-+       "files": [
-+         "*.ts",
-+         "*.tsx",
-+         "*.d.ts"
-+       ],
-+       "parserOptions": {
-+         "project": "./tsconfig.json"
-+       }
-+     }
-+   ]
-  }
-}
-```
-
 ### .eslintrc.js
 
 ```diff
