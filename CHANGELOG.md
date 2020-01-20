@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- `expo-constants` `Constants.deviceName` now only returns the possible Browser name and doesn't fallback to engine or OS name. ([#6809](https://github.com/expo/expo/pull/6809) [@evanbacon](https://github.com/evanbacon))
+- `expo-constants` `Constants.platform.web` now only returns the `ua` (user agent string). ([#6809](https://github.com/expo/expo/pull/6809) [@evanbacon](https://github.com/evanbacon))
 - Enriched `androidStatusBar` configuration in `app.json`. ([#6506](https://github.com/expo/expo/pull/6506) [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
