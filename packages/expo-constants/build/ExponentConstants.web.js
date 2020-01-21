@@ -3,27 +3,31 @@ import uuidv4 from 'uuid/v4';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
 function getBrowserName() {
-    const agent = navigator.userAgent.toLowerCase();
-    switch (true) {
-        case agent.includes('edge'):
+    if (canUseDOM) {
+        const agent = navigator.userAgent.toLowerCase();
+        if (agent.includes('edge')) {
             return 'Edge';
-        case agent.includes('edg'):
+        }
+        else if (agent.includes('edg')) {
             return 'Chromium Edge';
-        // @ts-ignore: window is not defined
-        case agent.includes('opr') && !!window['opr']:
+        }
+        else if (agent.includes('opr') && !!window['opr']) {
             return 'Opera';
-        // @ts-ignore: window is not defined
-        case agent.includes('chrome') && !!window['chrome']:
+        }
+        else if (agent.includes('chrome') && !!window['chrome']) {
             return 'Chrome';
-        case agent.includes('trident'):
+        }
+        else if (agent.includes('trident')) {
             return 'IE';
-        case agent.includes('firefox'):
+        }
+        else if (agent.includes('firefox')) {
             return 'Firefox';
-        case agent.includes('safari'):
+        }
+        else if (agent.includes('safari')) {
             return 'Safari';
-        default:
-            return undefined;
+        }
     }
+    return undefined;
 }
 export default {
     get name() {
@@ -80,7 +84,7 @@ export default {
         return this.expoVersion;
     },
     get deviceName() {
-        return canUseDOM ? getBrowserName() : undefined;
+        return getBrowserName();
     },
     get nativeAppVersion() {
         return null;
