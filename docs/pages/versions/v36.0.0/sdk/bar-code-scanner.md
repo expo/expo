@@ -41,7 +41,11 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 | upc_ean         | No    | Yes     |
 | qr              | Yes   | Yes     |
 
-- sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
+> Important notes:
+>
+> - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
+
+> - Scanning for either `PDF417` and/or `Code39` formats can result in a noticable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
 ## Usage
 
@@ -89,9 +93,7 @@ export default function App() {
         style={StyleSheet.absoluteFillObject}
       />
 
-      {scanned && (
-        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
-      )}
+      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
     </View>
   );
 }
@@ -111,7 +113,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 - **type (_string_)** -- Camera facing. Use one of `BarCodeScanner.Constants.Type`. Use either `Type.front` or `Type.back`. Same as `Camera.Constants.Type`. Default: `Type.back`.
 
-- **barCodeTypes (_Array\<string\>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`
+- **barCodeTypes (_Array\<string\>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of these [listed above](#supported-formats). Defaults to all supported bar code types. It is recommended to provide only the bar code formats you expect to scan to minimize battery usage. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`.
 
 - **onBarCodeScanned (_function_)** -- A callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL).
 
