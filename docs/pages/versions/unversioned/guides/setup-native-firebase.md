@@ -3,7 +3,7 @@ title: Using the native Firebase SDK
 sidebar_title: Native Firebase
 ---
 
-It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for Firebase Analytics. If this is important for you, it may make sense to install the native SDK in your app. Using the bare workflow it is fairly straightforward to install the native Firebase SDK, but it's a bit trickier in the managed workflow currently.
+It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app. Using the bare workflow it is fairly straightforward to install the native Firebase SDK, but it's a bit trickier in the managed workflow currently.
 
 The native Firebase SDK requires build-time configuration (app-specific strings that must be present when the Expo client app is compiled) and consequently you cannot use it with the Expo client available on the App Store. It's possible to work around this using [../../guides/adhoc-builds](a custom iOS client), and that will be explained in this guide. There is no workaround available yet for the Android Expo client, but it is possible to use the native Firebase SDK for Android standalone apps.
 
