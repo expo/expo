@@ -5,6 +5,7 @@ package host.exp.exponent.utils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,6 +22,7 @@ import androidx.core.view.ViewCompat;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.expoview.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,10 +58,22 @@ public class ExperienceActivityUtils {
 
   // region user interface style - light/dark/automatic mode
 
-  public static void overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
+  /**
+   * Returns true if activity will be reloaded after night mode change.
+   * Otherwise returns false.
+   **/
+  public static boolean overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
     String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
     int mode = nightModeFromString(userInterfaceStyle);
+    boolean isNightModeCurrentlyOn = activity.getResources().getBoolean(R.bool.dark_mode);
+    boolean willBeReloaded = false;
+    if (mode != AppCompatDelegate.MODE_NIGHT_AUTO) {
+      willBeReloaded = isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_NO
+        || !isNightModeCurrentlyOn && mode == AppCompatDelegate.MODE_NIGHT_YES;
+    }
+
     activity.getDelegate().setLocalNightMode(mode);
+    return willBeReloaded;
   }
 
   private static int nightModeFromString(@Nullable String userInterfaceStyle) {
