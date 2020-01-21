@@ -6191,6 +6191,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../packages/expo-application/ios/EXApplication/EXApplication.m"
+      - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.h"
+      - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
