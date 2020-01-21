@@ -3,14 +3,16 @@ import uuidv4 from 'uuid/v4';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
 function getBrowserName() {
-    const agent = window.navigator.userAgent.toLowerCase();
+    const agent = navigator.userAgent.toLowerCase();
     switch (true) {
         case agent.includes('edge'):
             return 'Edge';
         case agent.includes('edg'):
             return 'Chromium Edge';
+        // @ts-ignore: window is not defined
         case agent.includes('opr') && !!window['opr']:
             return 'Opera';
+        // @ts-ignore: window is not defined
         case agent.includes('chrome') && !!window['chrome']:
             return 'Chrome';
         case agent.includes('trident'):
@@ -78,7 +80,7 @@ export default {
         return this.expoVersion;
     },
     get deviceName() {
-        return getBrowserName();
+        return canUseDOM ? getBrowserName() : undefined;
     },
     get nativeAppVersion() {
         return null;
