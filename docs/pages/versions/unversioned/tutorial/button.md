@@ -60,7 +60,7 @@ Give it a try! Notice that when you press on the button it fades a little bit &m
 
 ## Making it easier to press the button
 
-When you are using your finger to tap on a button, you don't want to have to hold your breathe and carefully aim your finger &mdash; the button should be big enough that it's easy to press for people with varying levels of dexterity and an assortment of finger sizes, from baby right up to big boy.
+When you are using your finger to tap on a button, you don't want to have to hold your breath and carefully aim your finger &mdash; the button should be big enough that it's easy to press for people with varying levels of dexterity and an assortment of finger sizes, from baby right up to big boy.
 
 We can make our button bigger by adding some `padding` to our `TouchableOpacity`. We've already seen `width`, `height`, and various `margin` properties on our styles, `padding` is in the same family as those. They all tell React Native's layout system how big components should be and how they should be positioned relative to other components. The layout system is called [flexbox](https://facebook.github.io/react-native/docs/flexbox), but don't worry about that for now, in this tutorial we will tell you exactly what styles to use and you can learn about flexbox later.
 
