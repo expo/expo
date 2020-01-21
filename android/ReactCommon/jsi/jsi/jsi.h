@@ -63,6 +63,12 @@ class PreparedJavaScript {
   virtual ~PreparedJavaScript() = 0;
 };
 
+enum class TypedArrayKind {
+  #define TYPED_ARRAY(name, content) name##Array,
+  #include "TypedArrays.def"
+  #undef TYPED_ARRAY
+};
+
 class Runtime;
 class Pointer;
 class PropNameID;
@@ -72,6 +78,8 @@ class Object;
 class WeakObject;
 class Array;
 class ArrayBuffer;
+class TypedArrayBase;
+template <TypedArrayKind T> class TypedArray;
 class Function;
 class Value;
 class Instrumentation;
@@ -214,6 +222,8 @@ class Runtime {
   friend class WeakObject;
   friend class Array;
   friend class ArrayBuffer;
+  friend class TypedArrayBase;
+  template<TypedArrayKind> friend class TypedArray;
   friend class Function;
   friend class Value;
   friend class Scope;
@@ -268,18 +278,25 @@ class Runtime {
 
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
+  virtual bool isTypedArray(const Object&) const = 0;
   virtual bool isFunction(const Object&) const = 0;
   virtual bool isHostObject(const jsi::Object&) const = 0;
   virtual bool isHostFunction(const jsi::Function&) const = 0;
+  virtual TypedArrayKind getTypedArrayKind(const TypedArrayBase&) const = 0;
   virtual Array getPropertyNames(const Object&) = 0;
 
   virtual WeakObject createWeakObject(const Object&) = 0;
   virtual Value lockWeakObject(const WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
+  virtual TypedArrayBase createTypedArray(size_t length, TypedArrayKind kind) = 0;
   virtual size_t size(const Array&) = 0;
   virtual size_t size(const ArrayBuffer&) = 0;
+  virtual size_t size(const TypedArrayBase&) = 0;
+  virtual size_t byteOffset(const TypedArrayBase&) = 0;
   virtual uint8_t* data(const ArrayBuffer&) = 0;
+  virtual bool hasBuffer(const TypedArrayBase&) = 0;
+  virtual ArrayBuffer getBuffer(const TypedArrayBase&) = 0;
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void setValueAtIndexImpl(Array&, size_t i, const Value& value) = 0;
 
@@ -347,7 +364,7 @@ class PropNameID : public Pointer {
   using Pointer::Pointer;
 
   PropNameID(Runtime& runtime, const PropNameID& other)
-      : Pointer(runtime.clonePropNameID(other.ptr_)) {}
+      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;
@@ -580,6 +597,10 @@ class Object : public Pointer {
     return runtime.isArrayBuffer(*this);
   }
 
+  bool isTypedArray(Runtime& runtime) const {
+    return runtime.isTypedArray(*this);
+  }
+
   /// \return true iff the Object is callable.  If so, then \c
   /// getFunction will succeed.
   bool isFunction(Runtime& runtime) const {
@@ -617,6 +638,15 @@ class Object : public Pointer {
   /// \return an ArrayBuffer instance which refers to the same underlying
   /// object.  If \c isArrayBuffer() would return false, this will assert.
   ArrayBuffer getArrayBuffer(Runtime& runtime) &&;
+
+  ArrayBuffer asArrayBuffer(Runtime& runtime) const&;
+  ArrayBuffer asArrayBuffer(Runtime& runtime) &&;
+
+
+  TypedArrayBase getTypedArray(Runtime& runtime) const&;
+  TypedArrayBase getTypedArray(Runtime& runtime) &&;
+  TypedArrayBase asTypedArray(Runtime& runtime) const&;
+  TypedArrayBase asTypedArray(Runtime& runtime) &&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will assert.
@@ -777,9 +807,12 @@ class ArrayBuffer : public Object {
     return runtime.size(*this);
   }
 
-  uint8_t* data(Runtime& runtime) {
-    return runtime.data(*this);
+  size_t byteLength(Runtime& runtime) const {
+    return runtime.size(*this);
   }
+
+  std::vector<uint8_t> data(Runtime& runtime) const;
+  void update(Runtime&, std::vector<uint8_t>, size_t offset = 0);
 
  private:
   friend class Object;
@@ -787,6 +820,84 @@ class ArrayBuffer : public Object {
 
   ArrayBuffer(Runtime::PointerValue* value) : Object(value) {}
 };
+
+class TypedArrayBase : public Object {
+ private:
+  template <TypedArrayKind T> struct typeMap;
+  #define TYPED_ARRAY(name, content) \
+    template <> struct typeMap<TypedArrayKind::name##Array> { typedef content type; };
+  #include "TypedArrays.def"
+  #undef TYPED_ARRAY
+  
+ public:
+  template<TypedArrayKind T> using ContentType = typename typeMap<T>::type;
+
+  TypedArrayBase(Runtime& runtime, size_t size, TypedArrayKind kind) : TypedArrayBase(runtime.createTypedArray(size, kind)) {}
+  TypedArrayBase(TypedArrayBase&&) = default;
+  TypedArrayBase& operator=(TypedArrayBase&&) = default;
+
+  TypedArrayKind getKind(Runtime& runtime) const { return runtime.getTypedArrayKind(*this); };
+
+  template<TypedArrayKind T>TypedArray<T> get(Runtime& runtime) const&;
+  template<TypedArrayKind T>TypedArray<T> get(Runtime& runtime) &&;
+  template<TypedArrayKind T>TypedArray<T> as(Runtime& runtime) const&;
+  template<TypedArrayKind T>TypedArray<T> as(Runtime& runtime) &&;
+
+  size_t size(Runtime& runtime) const {
+    return runtime.size(*this);
+  }
+
+  size_t length(Runtime& runtime) const {
+    return runtime.size(*this);
+  }
+
+  size_t byteLength(Runtime& runtime) const {
+    if (hasBuffer(runtime)) {
+      return getBuffer(runtime).byteLength(runtime) - byteOffset(runtime);
+    }
+    return 0;
+  }
+
+  size_t byteOffset(Runtime& runtime) const {
+    return runtime.byteOffset(*this);
+  }
+
+  bool hasBuffer(Runtime& runtime) const {
+    return runtime.hasBuffer(*this);
+  }
+
+  ArrayBuffer getBuffer(Runtime& runtime) const {
+    return runtime.getBuffer(*this);
+  }
+
+ private:
+  friend class Object;
+  friend class Value;
+  template <TypedArrayKind> friend class TypedArray;
+  
+  TypedArrayBase(Runtime::PointerValue* value) : Object(value) {}
+};
+
+template <TypedArrayKind T>
+class TypedArray : public TypedArrayBase {
+ public:
+  TypedArray(Runtime& runtime, size_t size) : TypedArrayBase(runtime.createTypedArray(size, T)) {};
+  TypedArray(Runtime& runtime, std::vector<ContentType<T>> data) : TypedArrayBase(runtime.createTypedArray(data.size(), T)) {
+    update(runtime, data);
+  };
+  TypedArray(TypedArray&&) = default;
+  TypedArray& operator=(TypedArray&&) = default;
+
+  constexpr TypedArrayKind getKind() { return T; };
+
+  std::vector<ContentType<T>> data(Runtime& runtime);
+  void update(Runtime& runtime, std::vector<ContentType<T>>);
+ private:
+  friend TypedArrayBase;
+  
+  TypedArray(Runtime::PointerValue* value) : TypedArrayBase(value) {}
+};
+
 
 /// Represents a JS Object which is guaranteed to be Callable.
 class Function : public Object {

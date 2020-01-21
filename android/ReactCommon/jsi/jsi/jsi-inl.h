@@ -146,6 +146,52 @@ inline ArrayBuffer Object::getArrayBuffer(Runtime& runtime) && {
   return ArrayBuffer(value);
 }
 
+inline TypedArrayBase Object::getTypedArray(Runtime& runtime) const& {
+  assert(runtime.isTypedArray(*this));
+  (void)runtime; // when assert is disabled we need to mark this as used
+  return TypedArrayBase(runtime.cloneObject(ptr_));
+}
+
+inline TypedArrayBase Object::getTypedArray(Runtime& runtime) && {
+  assert(runtime.isTypedArray(*this));
+  (void)runtime; // when assert is disabled we need to mark this as used
+  Runtime::PointerValue* value = ptr_;
+  ptr_ = nullptr;
+  return TypedArrayBase(value);
+}
+
+template <TypedArrayKind T>
+inline TypedArray<T> TypedArrayBase::get(Runtime& runtime) const& {
+  assert(getKind(runtime) == T);
+  (void)runtime; // when assert is disabled we need to mark this as used
+  return TypedArray<T>(runtime.cloneObject(ptr_));
+}
+
+template <TypedArrayKind T>
+inline TypedArray<T> TypedArrayBase::get(Runtime& runtime) && {
+  assert(getKind(runtime) == T);
+  (void)runtime; // when assert is disabled we need to mark this as used
+  Runtime::PointerValue* value = ptr_;
+  ptr_ = nullptr;
+  return TypedArray<T>(value);
+}
+
+template <TypedArrayKind T>
+inline TypedArray<T> TypedArrayBase::as(Runtime& runtime) const& {
+  if (getKind(runtime) != T) {
+    throw JSError(runtime, "Object is not a TypedArray");
+  }
+  return get<T>(runtime);
+}
+
+template <TypedArrayKind T>
+inline TypedArray<T> TypedArrayBase::as(Runtime& runtime) && {
+  if (getKind(runtime) != T) {
+    throw JSError(runtime, "Object is not a TypedArray");
+  }
+  return std::move(*this).get<T>(runtime);
+}
+
 inline Function Object::getFunction(Runtime& runtime) const& {
   assert(runtime.isFunction(*this));
   return Function(runtime.cloneObject(ptr_));

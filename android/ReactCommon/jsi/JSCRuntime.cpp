@@ -172,9 +172,11 @@ class JSCRuntime : public jsi::Runtime {
       const jsi::Value& value) override;
   bool isArray(const jsi::Object&) const override;
   bool isArrayBuffer(const jsi::Object&) const override;
+  bool isTypedArray(const jsi::Object&) const override;
   bool isFunction(const jsi::Object&) const override;
   bool isHostObject(const jsi::Object&) const override;
   bool isHostFunction(const jsi::Function&) const override;
+  jsi::TypedArrayKind getTypedArrayKind(const jsi::TypedArrayBase&) const override;
   jsi::Array getPropertyNames(const jsi::Object&) override;
 
   // TODO: revisit this implementation
@@ -182,9 +184,14 @@ class JSCRuntime : public jsi::Runtime {
   jsi::Value lockWeakObject(const jsi::WeakObject&) override;
 
   jsi::Array createArray(size_t length) override;
+  jsi::TypedArrayBase createTypedArray(size_t length, jsi::TypedArrayKind kind) override;
   size_t size(const jsi::Array&) override;
   size_t size(const jsi::ArrayBuffer&) override;
+  size_t size(const jsi::TypedArrayBase&) override;
+  size_t byteOffset(const jsi::TypedArrayBase&) override;
   uint8_t* data(const jsi::ArrayBuffer&) override;
+  jsi::ArrayBuffer getBuffer(const jsi::TypedArrayBase&) override;
+  bool hasBuffer(const jsi::TypedArrayBase&) override;
   jsi::Value getValueAtIndex(const jsi::Array&, size_t i) override;
   void setValueAtIndexImpl(jsi::Array&, size_t i, const jsi::Value& value)
       override;
@@ -888,25 +895,45 @@ bool JSCRuntime::isArray(const jsi::Object& obj) const {
 #endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object& /*obj*/) const {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
-  // nullptr);  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
-  throw std::runtime_error("Unsupported");
+bool JSCRuntime::isArrayBuffer(const jsi::Object& obj) const {
+  auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
 }
 
-uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return static_cast<uint8_t*>(
-  //    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
-  throw std::runtime_error("Unsupported");
+
+size_t JSCRuntime::size(const jsi::ArrayBuffer& arr) {
+  return JSObjectGetArrayBufferByteLength(ctx_, objectRef(arr), nullptr);
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer& /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
-  // return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
-  throw std::runtime_error("Unsupported");
+uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& obj) {
+  return static_cast<uint8_t*>(
+    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
 }
+
+bool JSCRuntime::isTypedArray(const jsi::Object& obj) const {
+  auto type = JSValueGetTypedArrayType(ctx_, objectRef(obj), nullptr);
+  return type != kJSTypedArrayTypeNone && type != kJSTypedArrayTypeArrayBuffer;
+}
+
+size_t JSCRuntime::size(const jsi::TypedArrayBase& arr) {
+  return JSObjectGetTypedArrayLength(ctx_, objectRef(arr), nullptr);
+}
+
+size_t JSCRuntime::byteOffset(const jsi::TypedArrayBase& obj) {
+  return JSObjectGetTypedArrayByteOffset(ctx_, objectRef(obj), nullptr);
+}
+
+bool JSCRuntime::hasBuffer(const jsi::TypedArrayBase& arr) {
+  auto typedArrayType = JSValueGetTypedArrayType(
+      ctx_,
+      JSObjectGetTypedArrayBuffer(ctx_, objectRef(arr), nullptr),
+      nullptr);
+  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
+};
+
+jsi::ArrayBuffer JSCRuntime::getBuffer(const jsi::TypedArrayBase& arr) {
+  return createObject(JSObjectGetTypedArrayBuffer(ctx_, objectRef(arr), nullptr)).getTypedArray(*this).getArrayBuffer(*this);
+};
 
 bool JSCRuntime::isFunction(const jsi::Object& obj) const {
   return JSObjectIsFunction(ctx_, objectRef(obj));
@@ -915,6 +942,19 @@ bool JSCRuntime::isFunction(const jsi::Object& obj) const {
 bool JSCRuntime::isHostObject(const jsi::Object& obj) const {
   auto cls = hostObjectClass;
   return cls != nullptr && JSValueIsObjectOfClass(ctx_, objectRef(obj), cls);
+}
+
+jsi::TypedArrayKind JSCRuntime::getTypedArrayKind(const jsi::TypedArrayBase& arr) const {
+  auto type = JSValueGetTypedArrayType(ctx_, objectRef(arr), nullptr);
+  switch (type) {
+    #define TYPED_ARRAY(name, content) \
+    case kJSTypedArrayType##name##Array: return jsi::TypedArrayKind::name##Array;
+
+    #include "./jsi/TypedArrays.def"
+    #undef TYPED_ARRAY
+    default:
+      throw std::logic_error("unreachable");
+  }
 }
 
 // Very expensive
@@ -965,6 +1005,18 @@ jsi::Array JSCRuntime::createArray(size_t length) {
       &exc);
   checkException(exc);
   return createObject(obj).getArray(*this);
+}
+
+jsi::TypedArrayBase JSCRuntime::createTypedArray(size_t length, jsi::TypedArrayKind kind) {
+  JSTypedArrayType typedArrayType = kJSTypedArrayTypeNone;
+  switch (kind) {
+    #define TYPED_ARRAY(name, content) \
+    case jsi::TypedArrayKind::name##Array: typedArrayType = kJSTypedArrayType##name##Array; break;
+
+    #include "./jsi/TypedArrays.def"
+    #undef TYPED_ARRAY
+  }
+  return createObject(JSObjectMakeTypedArray(ctx_, typedArrayType, length, nullptr)).getTypedArray(*this);
 }
 
 size_t JSCRuntime::size(const jsi::Array& arr) {

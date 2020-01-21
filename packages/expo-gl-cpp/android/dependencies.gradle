@@ -3,7 +3,6 @@ buildscript {
     google()
     jcenter()
   }
-
   dependencies {
     classpath 'com.android.tools.build:gradle:3.5.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
@@ -99,26 +98,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
   into("$thirdPartyNdkDir/folly")
 }
 
-task prepareHermes() {
-  def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  if (!hermesPackagePath) {
-    throw new GradleScriptException("Could not find the hermes-engine npm package")
-  }
-
-  def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
-  if (!hermesAAR.exists()) {
-    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"")
-  }
-
-  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-
-  copy {
-    from soFiles
-    from "src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
-  }
-}
-
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
   src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
   onlyIfNewer(true)
@@ -164,46 +143,15 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
   }
 }
 
-// Create Android.mk library module based on jsc from npm
-task prepareJSC {
-  doLast {
-    def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
-    if (!jscPackagePath) {
-      throw new GradleScriptException("Could not find the jsc-android npm package")
-    }
-
-    def jscDist = file("$jscPackagePath/dist")
-    if (!jscDist.exists()) {
-      throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory")
-    }
-
-    def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
-
-    def headerFiles = fileTree(jscDist).matching({ it.include "**/include/*.h" })
-
-    copy {
-      from(soFiles)
-      from(headerFiles)
-      from("src/main/jni/jsc/Android.mk")
-
-      filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-
-      includeEmptyDirs(false)
-      into("$thirdPartyNdkDir/jsc")
-    }
-  }
-}
-
 task prepareJSI() {
-  doLast {
-    copy {
-      from("../../../android/ReactCommon/jsi")
-
-      includeEmptyDirs(false)
-      into("$thirdPartyNdkDir/jsi")
-    }
+  def hermesPackagePath = findNodeModulePath(projectDir, "@expo/hermes-dev")
+  if (!hermesPackagePath) {
+    throw new GradleScriptException("Could not find the hermes-engine npm package")
   }
+  copy {
+    from("../../../android/ReactCommon/jsi")
+    into "$thirdPartyNdkDir/jsi"
+  }  
 }
 
 task downloadNdkBuildDependencies {
@@ -301,7 +249,7 @@ def getNdkBuildFullPath() {
   return ndkBuildFullPath
 }
 
-task buildNdkLib(dependsOn: [prepareJSC, prepareJSI, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog /* */], type: Exec) {
+task buildNdkLib(dependsOn: [prepareJSI, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog /* */], type: Exec) {
   inputs.dir("src/main/jni")
   inputs.dir("../cpp")
   outputs.dir("$buildDir/expo-gl-ndk/all")
@@ -311,6 +259,7 @@ task buildNdkLib(dependsOn: [prepareJSC, prepareJSI, prepareHermes, prepareBoost
     "NDK_OUT=" + temporaryDir,
     "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
     "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+    "VM=HERMES",
     "-C", file("src/main/jni").absolutePath,
     "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
   )

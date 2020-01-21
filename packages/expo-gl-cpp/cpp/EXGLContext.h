@@ -1,6 +1,5 @@
 #include "UEXGL.h"
 #include "EXJSUtils.h"
-#include "TypedArrayJSI.h"
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
@@ -286,6 +285,17 @@ private:
       strings[i] = jsArray.getValueAtIndex(runtime, i).asString(runtime).utf8(runtime);
     }
     return strings;
+  }
+
+  std::vector<uint8_t> rawArrayBuffer(jsi::Runtime& runtime, const jsi::Object& arr) {
+    if (arr.isArrayBuffer(runtime)) {
+      auto buffer = arr.getArrayBuffer(runtime);
+      return buffer.data(runtime);
+    } else if (arr.isTypedArray(runtime)) {
+      auto buffer = arr.getTypedArray(runtime).getBuffer(runtime);
+      return buffer.data(runtime);
+    }
+    throw std::runtime_error("Object is not an ArrayBuffer nor a TypedArray");
   }
 
   bool jsValueToBool(jsi::Runtime& runtime, const jsi::Value& jsValue) {

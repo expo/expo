@@ -94,7 +94,7 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 }
 
 task prepareHermes() {
-    def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
+    def hermesPackagePath = findNodeModulePath(projectDir, "@expo/hermes-engine")
     if (!hermesPackagePath) {
         throw new GradleScriptException("Could not find the hermes-engine npm package")
     }
@@ -110,6 +110,11 @@ task prepareHermes() {
         from soFiles
         from "src/main/jni/first-party/hermes/Android.mk"
         into "$thirdPartyNdkDir/hermes"
+    }
+
+    copy {
+        from "$hermesPackagePath/jsi/jsi"
+        into "$thirdPartyNdk/../../../ReactCommon/jsi/jsi"
     }
 }
 

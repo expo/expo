@@ -239,6 +239,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   bool isArrayBuffer(const Object& o) const override {
     return plain_.isArrayBuffer(o);
   };
+  bool isTypedArray(const Object& o) const override {
+    return plain_.isTypedArray(o);
+  };
   bool isFunction(const Object& o) const override {
     return plain_.isFunction(o);
   };
@@ -248,6 +251,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   bool isHostFunction(const jsi::Function& f) const override {
     return plain_.isHostFunction(f);
   };
+  TypedArrayKind getTypedArrayKind(const TypedArrayBase& a) const override {
+    return plain_.getTypedArrayKind(a);
+  }
   Array getPropertyNames(const Object& o) override {
     return plain_.getPropertyNames(o);
   };
@@ -262,15 +268,30 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Array createArray(size_t length) override {
     return plain_.createArray(length);
   };
+  TypedArrayBase createTypedArray(size_t length, TypedArrayKind kind) override {
+    return plain_.createTypedArray(length, kind);
+  }
   size_t size(const Array& a) override {
     return plain_.size(a);
   };
   size_t size(const ArrayBuffer& ab) override {
     return plain_.size(ab);
   };
+  size_t size(const TypedArrayBase &tab) override {
+    return plain_.size(tab);
+  }
+  size_t byteOffset(const TypedArrayBase &tab) override {
+    return plain_.byteOffset(tab);
+  }
   uint8_t* data(const ArrayBuffer& ab) override {
     return plain_.data(ab);
   };
+  bool hasBuffer(const TypedArrayBase& tab) override {
+    return plain_.hasBuffer(tab);
+  }
+  ArrayBuffer getBuffer(const TypedArrayBase& tab) override {
+    return plain_.getBuffer(tab);
+  }
   Value getValueAtIndex(const Array& a, size_t i) override {
     return plain_.getValueAtIndex(a, i);
   };

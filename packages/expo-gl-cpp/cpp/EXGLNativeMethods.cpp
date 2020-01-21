@@ -164,38 +164,39 @@ _WRAP_METHOD_SIMPLE(frontFace, glFrontFace, mode)
 
 _WRAP_METHOD(getParameter, 1) {
   EXJS_UNPACK_ARGV(GLenum pname);
+  
   switch (pname) {
       // Float32Array[0]
     case GL_COMPRESSED_TEXTURE_FORMATS:
-      return TypedArray::create<TypedArray::Float32Array>(runtime, std::vector<float>());
+      return jsi::TypedArray<jsi::TypedArrayKind::Float32Array>(runtime, {});
 
       // FLoat32Array[2]
     case GL_ALIASED_LINE_WIDTH_RANGE:
     case GL_ALIASED_POINT_SIZE_RANGE:
     case GL_DEPTH_RANGE: {
-      std::vector<TypedArray::ContentType<TypedArray::Float32Array>> glResults(2);
+      std::vector<jsi::TypedArrayBase::ContentType<jsi::TypedArrayKind::Float32Array>> glResults(2);
       addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
-      return TypedArray::create<TypedArray::Float32Array>(runtime, glResults);
+      return jsi::TypedArray<jsi::TypedArrayKind::Float32Array>(runtime, glResults);
     }
       // FLoat32Array[4]
     case GL_BLEND_COLOR:
     case GL_COLOR_CLEAR_VALUE: {
-      std::vector<TypedArray::ContentType<TypedArray::Float32Array>> glResults(4);
+      std::vector<jsi::TypedArrayBase::ContentType<jsi::TypedArrayKind::Float32Array>> glResults(4);
       addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
-      return TypedArray::create<TypedArray::Float32Array>(runtime, glResults);
+      return jsi::TypedArray<jsi::TypedArrayKind::Float32Array>(runtime, glResults);
     }
       // Int32Array[2]
     case GL_MAX_VIEWPORT_DIMS: {
-      std::vector<TypedArray::ContentType<TypedArray::Int32Array>> glResults(2);
+      std::vector<jsi::TypedArrayBase::ContentType<jsi::TypedArrayKind::Int32Array>> glResults(2);
       addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
-      return TypedArray::create<TypedArray::Int32Array>(runtime, glResults);
+      return jsi::TypedArray<jsi::TypedArrayKind::Int32Array>(runtime, glResults);
     }
       // Int32Array[4]
     case GL_SCISSOR_BOX:
     case GL_VIEWPORT: {
-      std::vector<TypedArray::ContentType<TypedArray::Int32Array>> glResults(4);
+      std::vector<jsi::TypedArrayBase::ContentType<jsi::TypedArrayKind::Int32Array>> glResults(4);
       addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
-      return TypedArray::create<TypedArray::Int32Array>(runtime, glResults);
+      return jsi::TypedArray<jsi::TypedArrayKind::Int32Array>(runtime, glResults);
     }
       // boolean[4]
     case GL_COLOR_WRITEMASK: {
@@ -361,8 +362,8 @@ _WRAP_METHOD(bufferData, 3) {
     addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
   } else if (sizeOrData.isNull()) {
     addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
-  } else {
-    auto data = TypedArray::rawFromJSValue(runtime, sizeOrData);
+  } else if (sizeOrData.isObject()){
+    auto data = rawArrayBuffer(runtime, sizeOrData.getObject(runtime));
     addToNextBatch([=] { glBufferData(target, data.size(), data.data(), usage); });
   }
   return nullptr;
@@ -371,7 +372,7 @@ _WRAP_METHOD(bufferData, 3) {
 _WRAP_METHOD(bufferSubData, 3) {
   EXJS_UNPACK_ARGV(GLenum target, GLintptr offset);
   const jsi::Value& jsData = jsArgv[2];
-  auto data = TypedArray::rawFromJSValue(runtime, jsData);
+  auto data = rawArrayBuffer(runtime, jsArgv[2].asObject(runtime));
   addToNextBatch([=] { glBufferSubData(target, offset, data.size(), data.data()); });
   return nullptr;
 }
@@ -491,7 +492,9 @@ _WRAP_METHOD(readPixels, 7) {
   addBlockingToNextBatch([&] {
     glReadPixels(x, y, width, height, format, type, pixels.data());
   });
-  TypedArray::updateWithData(runtime, jsArgv[6], pixels);
+
+  jsi::TypedArrayBase arr = jsArgv[6].asObject(runtime).asTypedArray(runtime);
+  arr.getBuffer(runtime).update(runtime, pixels, arr.byteOffset(runtime));
   return nullptr;
 }
 
@@ -671,8 +674,8 @@ _WRAP_METHOD(texImage2D, 6) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  if (TypedArray::typeFromJSValue(runtime, jsPixels) != TypedArray::None) {
-    std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
+  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) || jsPixels.asObject(runtime).isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
     std::copy(vec.begin(), vec.end(), data.get());
   } else {
@@ -725,8 +728,8 @@ _WRAP_METHOD(texSubImage2D, 7) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  if (TypedArray::typeFromJSValue(runtime, jsPixels) != TypedArray::None) {
-    std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
+  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) || jsPixels.asObject(runtime).isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
     std::copy(vec.begin(), vec.end(), data.get());
   } else {
@@ -777,8 +780,8 @@ _WRAP_WEBGL2_METHOD(texImage3D, 10) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  if (TypedArray::typeFromJSValue(runtime, jsPixels) == TypedArray::None) {
-    std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
+  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) || jsPixels.asObject(runtime).isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
     std::copy(vec.begin(), vec.end(), data.get());
   } else {
@@ -824,8 +827,8 @@ _WRAP_WEBGL2_METHOD(texSubImage3D, 11) {
 
   std::shared_ptr<uint8_t> data(nullptr);
 
-  if (TypedArray::typeFromJSValue(runtime, jsPixels) == TypedArray::None) {
-    std::vector<uint8_t>&& vec = TypedArray::rawFromJSValue(runtime, jsPixels);
+  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) || jsPixels.asObject(runtime).isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
     data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
     std::copy(vec.begin(), vec.end(), data.get());
   } else {
@@ -1103,7 +1106,7 @@ inline jsi::Value EXGLContext::getActiveInfo(
   }
 
   jsi::Object jsResult(runtime);
-  jsResult.setProperty(runtime, "name", jsi::String::createFromUtf8(runtime, name));
+  jsResult.setProperty(runtime, "name", jsi::String::createFromAscii(runtime, name.c_str()));
   jsResult.setProperty(runtime, "size", size);
   jsResult.setProperty(runtime, "type", static_cast<double>(type));
   return jsResult;
@@ -1155,27 +1158,27 @@ _WRAP_METHOD_SIMPLE(uniform4i, glUniform4i, uniform, x, y, z, w)
 #define _WRAP_METHOD_UNIFORM_V(suffix, dim, Type, ArrayType)                        \
 _WRAP_METHOD(uniform##suffix, 2) {                                                  \
   GLuint uniform = jsArgv[0].asNumber();                                            \
-  std::vector<Type> data = TypedArray::fromJSValue<ArrayType>(runtime, jsArgv[1]);  \
+  std::vector<Type> data = jsArgv[1].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
   addToNextBatch([=] {                                                              \
     glUniform##suffix(uniform, data.size() / dim, data.data());                     \
   });                                                                               \
   return nullptr;                                                                   \
 }
 
-_WRAP_METHOD_UNIFORM_V(1fv, 1, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_UNIFORM_V(2fv, 2, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_UNIFORM_V(3fv, 3, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_UNIFORM_V(4fv, 4, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_UNIFORM_V(1iv, 1, GLint, TypedArray::Int32Array)
-_WRAP_METHOD_UNIFORM_V(2iv, 2, GLint, TypedArray::Int32Array)
-_WRAP_METHOD_UNIFORM_V(3iv, 3, GLint, TypedArray::Int32Array)
-_WRAP_METHOD_UNIFORM_V(4iv, 4, GLint, TypedArray::Int32Array)
+_WRAP_METHOD_UNIFORM_V(1fv, 1, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_UNIFORM_V(2fv, 2, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_UNIFORM_V(3fv, 3, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_UNIFORM_V(4fv, 4, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_UNIFORM_V(1iv, 1, GLint, jsi::TypedArrayKind::Int32Array)
+_WRAP_METHOD_UNIFORM_V(2iv, 2, GLint, jsi::TypedArrayKind::Int32Array)
+_WRAP_METHOD_UNIFORM_V(3iv, 3, GLint, jsi::TypedArrayKind::Int32Array)
+_WRAP_METHOD_UNIFORM_V(4iv, 4, GLint, jsi::TypedArrayKind::Int32Array)
 
 #define _WRAP_METHOD_UNIFORM_MATRIX(suffix, dim)                                                        \
 _WRAP_METHOD(uniformMatrix##suffix, 3) {                                                                \
   GLuint uniform = jsArgv[0].asNumber();                                                                \
   GLboolean transpose = jsValueToBool(runtime, jsArgv[1]);                                              \
-  std::vector<GLfloat> data = TypedArray::fromJSValue<TypedArray::Float32Array>(runtime, jsArgv[2]);    \
+  std::vector<GLfloat> data = jsArgv[2].asObject(runtime).asTypedArray(runtime).as<jsi::TypedArrayKind::Float32Array>(runtime).data(runtime); \
   addToNextBatch([=] {                                                                                  \
     glUniformMatrix##suffix(uniform, data.size() / dim, transpose, data.data());                        \
   });                                                                                                   \
@@ -1189,14 +1192,14 @@ _WRAP_METHOD_UNIFORM_MATRIX(4fv, 16)
 #define _WRAP_METHOD_VERTEX_ATTRIB_V(suffix, Type, ArrayType)                   \
 _WRAP_METHOD(vertexAttrib##suffix, 2) {                                         \
   GLuint index = jsArgv[0].asNumber();                                          \
-  auto data = TypedArray::fromJSValue<ArrayType>(runtime, jsArgv[1]);           \
+  auto data = jsArgv[1].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
   addToNextBatch([=] { glVertexAttrib##suffix(index, data.data());});           \
   return nullptr;                                                               \
 }
-_WRAP_METHOD_VERTEX_ATTRIB_V(1fv, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(2fv, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(3fv, GLfloat, TypedArray::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(4fv, GLfloat, TypedArray::Float32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(1fv, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(2fv, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(3fv, GLfloat, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(4fv, GLfloat, jsi::TypedArrayKind::Float32Array)
 
 _WRAP_METHOD_SIMPLE(vertexAttrib1f, glVertexAttrib1f, index, x)
 _WRAP_METHOD_SIMPLE(vertexAttrib2f, glVertexAttrib2f, index, x, y)
@@ -1221,10 +1224,10 @@ _WRAP_METHOD_SIMPLE(uniform2ui, glUniform2ui, location, x, y)
 _WRAP_METHOD_SIMPLE(uniform3ui, glUniform3ui, location, x, y, z)
 _WRAP_METHOD_SIMPLE(uniform4ui, glUniform4ui, location, x, y, z, w)
 
-_WRAP_METHOD_UNIFORM_V(1uiv, 1, GLuint, TypedArray::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(2uiv, 2, GLuint, TypedArray::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(3uiv, 3, GLuint, TypedArray::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(4uiv, 4, GLuint, TypedArray::Uint32Array)
+_WRAP_METHOD_UNIFORM_V(1uiv, 1, GLuint, jsi::TypedArrayKind::Uint32Array)
+_WRAP_METHOD_UNIFORM_V(2uiv, 2, GLuint, jsi::TypedArrayKind::Uint32Array)
+_WRAP_METHOD_UNIFORM_V(3uiv, 3, GLuint, jsi::TypedArrayKind::Uint32Array)
+_WRAP_METHOD_UNIFORM_V(4uiv, 4, GLuint, jsi::TypedArrayKind::Uint32Array)
 
 _WRAP_METHOD_UNIFORM_MATRIX(3x2fv, 6)
 _WRAP_METHOD_UNIFORM_MATRIX(4x2fv, 8)
@@ -1236,8 +1239,8 @@ _WRAP_METHOD_UNIFORM_MATRIX(3x4fv, 12)
 _WRAP_METHOD_SIMPLE(vertexAttribI4i, glVertexAttribI4i, index, x, y, z, w)
 _WRAP_METHOD_SIMPLE(vertexAttribI4ui, glVertexAttribI4ui, index, x, y, z, w)
 
-_WRAP_METHOD_VERTEX_ATTRIB_V(I4iv, GLint, TypedArray::Int32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(I4uiv, GLuint, TypedArray::Uint32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(I4iv, GLint, jsi::TypedArrayKind::Int32Array)
+_WRAP_METHOD_VERTEX_ATTRIB_V(I4uiv, GLuint, jsi::TypedArrayKind::Uint32Array)
 
 _WRAP_METHOD(vertexAttribIPointer, 5) {
   EXJS_UNPACK_ARGV(GLuint index, GLuint size, GLenum type, GLsizei stride, GLint offset);
@@ -1306,16 +1309,16 @@ _WRAP_WEBGL2_METHOD(drawBuffers, 1) {
 #define _WRAP_METHOD_CLEAR_BUFFER(suffix, ArrayType)                        \
 _WRAP_WEBGL2_METHOD(clearBuffer##suffix, 4) {                               \
   EXJS_UNPACK_ARGV(GLenum buffer, GLint drawbuffer);                        \
-  auto values = TypedArray::fromJSValue<ArrayType>(runtime, jsArgv[2]);     \
+  auto values = jsArgv[2].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
   addToNextBatch([=] {                                                      \
     glClearBuffer##suffix(buffer, drawbuffer, values.data());               \
   });                                                                       \
   return nullptr;                                                           \
 }
 
-_WRAP_METHOD_CLEAR_BUFFER(fv, TypedArray::Float32Array)
-_WRAP_METHOD_CLEAR_BUFFER(iv, TypedArray::Int32Array)
-_WRAP_METHOD_CLEAR_BUFFER(uiv, TypedArray::Uint32Array)
+_WRAP_METHOD_CLEAR_BUFFER(fv, jsi::TypedArrayKind::Float32Array)
+_WRAP_METHOD_CLEAR_BUFFER(iv, jsi::TypedArrayKind::Int32Array)
+_WRAP_METHOD_CLEAR_BUFFER(uiv, jsi::TypedArrayKind::Uint32Array)
 
 #undef _WRAP_METHOD_CLEAR_BUFFER
 
@@ -1532,7 +1535,7 @@ _WRAP_WEBGL2_METHOD(getUniformIndices, 2) {
   addBlockingToNextBatch([&] {
     glGetUniformIndices(lookupObject(program), uniformNames.size(), uniformNamesRaw.data(), indices);
   });
-  return TypedArray::create<TypedArray::Uint32Array>(runtime, std::vector<GLuint>(indices, indices + uniformNames.size()));
+  return jsi::TypedArray<jsi::TypedArrayKind::Uint32Array>(runtime, std::vector<GLuint>(indices, indices + uniformNames.size()));
 }
 
 _WRAP_WEBGL2_METHOD(getActiveUniforms, 3) {
@@ -1544,7 +1547,7 @@ _WRAP_WEBGL2_METHOD(getActiveUniforms, 3) {
   addBlockingToNextBatch([&] {
     glGetActiveUniformsiv(lookupObject(program), (GLsizei) uniformIndices.size(), uniformIndices.data(), pname, params);
   });
-  return TypedArray::create<TypedArray::Int32Array>(runtime, std::vector<GLint>(params, params + uniformIndices.size()));
+  return jsi::TypedArray<jsi::TypedArrayKind::Int32Array>(runtime, std::vector<GLint>(params, params + uniformIndices.size()));
 }
 
 _WRAP_WEBGL2_METHOD(getUniformBlockIndex, 2) {

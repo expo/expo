@@ -159,6 +159,82 @@ Array Object::asArray(Runtime& runtime) && {
   return std::move(*this).getArray(runtime);
 }
 
+std::vector<uint8_t> ArrayBuffer::data(Runtime& runtime) const {
+  uint8_t *dataBlock = runtime.data(*this);
+  size_t blockSize = byteLength(runtime);
+  return std::vector<uint8_t>(dataBlock, dataBlock + blockSize);
+}
+
+void ArrayBuffer::update(Runtime& runtime, std::vector<uint8_t> data, size_t offset) {
+  uint8_t *dataBlock = runtime.data(*this);
+  size_t blockSize = byteLength(runtime);
+  if (data.size() > blockSize) {
+    throw JSError(runtime, "ArrayBuffer is to small to fit data"); 
+  }
+  std::copy(data.begin(), data.end(), dataBlock + offset);
+}
+
+template <TypedArrayKind T>
+std::vector<TypedArrayBase::ContentType<T>> TypedArray<T>::data(Runtime& runtime) {
+  auto start = reinterpret_cast<ContentType<T>*>(runtime.data(getBuffer(runtime)) + byteOffset(runtime));
+  auto end = start + size(runtime);
+  return std::vector<ContentType<T>>(start, end);
+}
+
+template <TypedArrayKind T>
+void TypedArray<T>::update(Runtime& runtime, std::vector<ContentType<T>> data) {
+  if (data.size() != size(runtime)) {
+    throw JSError(runtime, "TypedArray can only be updated with a vector of the same size");
+  }
+  uint8_t *rawData = runtime.data(getBuffer(runtime)) + byteOffset(runtime);
+  std::copy(data.begin(), data.end(), reinterpret_cast<ContentType<T>*>(rawData));
+}
+
+#define TYPED_ARRAY(name, content) \
+    template class TypedArray<TypedArrayKind::name##Array>;
+#include "TypedArrays.def"
+#undef TYPED_ARRAY
+
+TypedArrayBase Object::asTypedArray(Runtime& runtime) const& {
+  if (!isTypedArray(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a TypedArray");
+  }
+  return getTypedArray(runtime);
+}
+
+TypedArrayBase Object::asTypedArray(Runtime& runtime) && {
+  if (!isTypedArray(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a TypedArray");
+  }
+  return std::move(*this).getTypedArray(runtime);
+}
+
+ArrayBuffer Object::asArrayBuffer(Runtime& runtime) const& {
+  if (!isArrayBuffer(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected an ArrayBuffer");
+  }
+  return getArrayBuffer(runtime);
+}
+
+ArrayBuffer Object::asArrayBuffer(Runtime& runtime) && {
+  if (!isArrayBuffer(runtime)) {
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a ArrayBuffer");
+  }
+  return std::move(*this).getArrayBuffer(runtime);
+}
+
 Function Object::asFunction(Runtime& runtime) const& {
   if (!isFunction(runtime)) {
     throw JSError(

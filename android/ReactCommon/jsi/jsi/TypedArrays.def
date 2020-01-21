@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
+// The TypedArray objects, see ES6 22.2 (Table 49)
+
+#ifndef TYPED_ARRAY
+#error "TYPED_ARRAY must exist before including this file"
+#endif
+
+TYPED_ARRAY(Int8, int8_t)
+TYPED_ARRAY(Int16, int16_t)
+TYPED_ARRAY(Int32, int32_t)
+TYPED_ARRAY(Uint8, uint8_t)
+TYPED_ARRAY(Uint8Clamped, uint8_t)
+TYPED_ARRAY(Uint16, uint16_t)
+TYPED_ARRAY(Uint32, uint32_t)
+TYPED_ARRAY(Float32, float)
+TYPED_ARRAY(Float64, double)
+
+#undef TYPED_ARRAY
