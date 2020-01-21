@@ -55,13 +55,14 @@ You can add any native packages you want (including the full native Firebase SDK
   ```
 - Rebuild your iOS project to see the changes: `yarn react-native run-ios`
 
-### Usage with react-native-firebase
+## Usage with react-native-firebase
 
-After following the iOS and Android setup, you can optionally configure your project to work with react-native-firebase as well.
+After following the iOS and Android setup, you can optionally configure your project to work with `react-native-firebase` version 6 as well.
 
-- Ensure your `ios/Podfile` has the following lines:
+- Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth etc..`)
+- On iOS, Ensure your `ios/Podfile` has the following lines:
 
-  ```rb
+```rb
   # At the top of the file
   require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
   require_relative '../node_modules/react-native-unimodules/cocoapods'
@@ -74,9 +75,9 @@ After following the iOS and Android setup, you can optionally configure your pro
   # The community version of use_unimodules (used for react-native-firebase)
   use_native_modules!
   ```
+- Install the pods on iOS
 
-- Install the packages `yarn add @react-native-firebase/app`
-- Re-install the Cocoapods in your iOS project then rebuild both native projects.
+Continue further on the [react-native-firebase](https://invertase.io/oss/react-native-firebase/) website.
 
 # Managed Workflow Setup
 
