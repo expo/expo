@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -36,6 +34,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
@@ -99,6 +99,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsShellApp;
   private String mIntentUri;
   private boolean mIsReadyForBundle;
+  private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
   private Handler mNotificationAnimationHandler;
@@ -396,7 +397,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
-    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
+    mWillBeReloaded = ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
@@ -472,7 +473,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // by this point, setManifest should have also been called, so prevent
     // setLoadingScreenManifest from showing a rogue loading screen
     mShouldShowLoadingScreenWithOptimisticManifest = false;
-    if (!isDebugModeEnabled()) {
+
+    // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
+    // Restart of the activity could be triggered by dark mode change.
+    if (!isDebugModeEnabled() && !mWillBeReloaded) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
