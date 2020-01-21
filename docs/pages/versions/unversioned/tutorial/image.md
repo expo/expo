@@ -6,7 +6,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Let's imagine that our designer has provided us with a beautiful logo:
 
-<img src="https://imgur.com/TkIrScD.png" style={{maxWidth: 305, maxHeight: 159}} />
+<img src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
 <br />
 <br />
