@@ -38,6 +38,7 @@ const sections = [
       'Picking an image',
       'Sharing the image',
       'Handling platform differences',
+      'Configuring a splash screen and app icon',
       'Learning more',
     ],
   },

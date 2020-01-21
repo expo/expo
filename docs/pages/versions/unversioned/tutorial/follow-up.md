@@ -14,7 +14,7 @@ We used React components and APIs here with little explaination. Having a solid 
 
 <!-- TODO: replace this recommendation with the react-native tutorial when it's live -->
 
-### How to verify your Learning
+### How to verify your learning
 
 - You understand how to use `React.useState`, that it is a *hook*, and what the equivalent for React *class* components is.
 - Add a new button to clear the selected image state.
@@ -24,7 +24,7 @@ We used React components and APIs here with little explaination. Having a solid 
 
 Read about [Modern JavaScript on React Native Express](http://www.reactnativeexpress.com/modern_javascript).
 
-### How to verify your Learning
+### How to verify your learning
 
 - You can move part of the code from our app into a separate file, export it, and import it successfully into App.js.
 
@@ -32,7 +32,7 @@ Read about [Modern JavaScript on React Native Express](http://www.reactnativeexp
 
 Read through the [View API reference](https://facebook.github.io/react-native/docs/view) and [Text API reference](https://facebook.github.io/react-native/docs/text) in the React Native documentation.
 
-### How to verify your Learning
+### How to verify your learning
 
 - Remove all of the styles from your app and attempt to re-create them from scratch, only referring to the View and Text API reference pages when needed.
 
@@ -40,21 +40,25 @@ Read through the [View API reference](https://facebook.github.io/react-native/do
 
 This is the way you position and size the components on your screen. Learn more about it in [Height & Width](https://facebook.github.io/react-native/docs/height-and-width) and [Layout with Flexbox](https://facebook.github.io/react-native/docs/flexbox) in the React Native documentation.
 
-### How to verify your Learning
+### How to verify your learning
 
 - Remove the logo image and re-build it using just `View`, `Text`. Use the "sunrise over mountains" 🌄 emoji where needed.
+
+## Configuring your app with app.json
+
+We covered the basic minimal configuration, but you learn more about about customizing your [app icon](../../guides/splash-screens/) and [splash screen](../../guides/app-icons/) in their respective guides. Learn more about other properties you can configure in [app.json property reference](../../workflow/configuration/)
+
+### How to verify your Learning
+
+- You will typically be referred back to `app.json` as part of guides that explain how to accomplish specific tasks, as such there isn't much you need to learn beyond its existence and how to use specific properties as the need arises.
 
 <br />
 
 # Topics that we didn't cover and you will soon care about
 
-## Deployment
+## Standalone apps & deployment
 
 How can you take what you have built and turn it into an app that you ship to the App Store and Play Store. Learn more about [distributing your app to stores](../../distribution/introduction/) and [deploying websites](../../guides/deploying-websites/).
-
-## Configuration with app.json
-
-You will want to configure your app icon, splash screen, and other things that are done in `app.json` rather than in your app code. Learn more about [app icons](../../guides/splash-screens/) and [splash screens](../../guides/app-icons/).
 
 ## Navigation
 
