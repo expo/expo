@@ -117,7 +117,7 @@ const GLScreens: Screens = {
     }),
   },
 
-  GLViewcreen: {
+  GLViewScreen: {
     screen: GLViewScreen,
   },
 

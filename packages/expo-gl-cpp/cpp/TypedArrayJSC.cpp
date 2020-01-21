@@ -5,33 +5,9 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSContextRef.h>
+#include <JavaScriptCore/JSTypedArray.h>
 
 #include "TypedArrayJSI.h"
-
-// CASE I
-//
-// Mock implementation for cases when JSC does not provide
-// JSTypedArray.h (iOS < 10 or android with react-native < 0.59)
-// and typed array hack is disabled. Implementaion is provided only
-// to prevent linking errors
-//
-#include "TypedArrayJSCMock.h"
-
-// CASE II (disabled)
-//
-// Inefficient implementation used when JSC does not provide
-// JSTypedArray.h (iOS < 10 or android with react-native < 0.59)
-// and typed array hack is enabled.
-//
-// #include "TypedArrayJSCHack.h"
-
-
-// CASE III
-// Use TypedArray api provided by JSC
-//
-#if __has_include(<JavaScriptCore/JSTypedArray.h>)
-#include <JavaScriptCore/JSTypedArray.h>
-#endif
 
 using Type = TypedArray::Type;
 

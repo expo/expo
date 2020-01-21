@@ -180,14 +180,13 @@ UM_REGISTER_MODULE();
   return nil;
 }
 
-- (long)javaScriptRuntimePtr
+- (void *)javaScriptRuntimePointer
 {
-  if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
-    return NULL;
-  } else if (_bridge.runtime) {
-    return (long)_bridge.runtime;
+  if ([_bridge respondsToSelector:@selector(runtime)]) {
+    return _bridge.runtime;
+  } else {
+    return nil;
   }
-  return NULL;
 }
 
 # pragma mark - UMImageLoader

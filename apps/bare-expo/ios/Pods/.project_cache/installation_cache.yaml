@@ -349,7 +349,6 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/EXJSUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/stb_image.h"
       - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSC.cpp"
-      - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSCMock.h"
       - "../../../../packages/expo-gl-cpp/cpp/TypedArrayJSI.h"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"

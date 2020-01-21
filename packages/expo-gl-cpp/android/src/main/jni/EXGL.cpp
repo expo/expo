@@ -9,21 +9,10 @@
 
 extern "C" {
 
-// Any version of ReactNative that from before JSI was introduced is not supported
-// JNIEXPORT jint JNICALL
-// Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
-// (JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
-//   JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) jsCtxPtr;
-//   if (jsCtx) {
-//     return UEXGLContextCreate(jsCtx);
-//   }
-//   return 0;
-// }
-
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextCreateV2
 (JNIEnv *env, jclass clazz, jlong jsiPtr) {
-  return UEXGLContextCreate((long) jsiPtr);
+  return UEXGLContextCreate((void*) jsiPtr);
 }
 
 JNIEXPORT void JNICALL

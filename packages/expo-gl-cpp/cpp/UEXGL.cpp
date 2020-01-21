@@ -1,7 +1,7 @@
 #include "UEXGL.h"
 #include "EXGLContext.h"
 
-UEXGLContextId UEXGLContextCreate(long jsiPtr) {
+UEXGLContextId UEXGLContextCreate(void* jsiPtr) {
   return EXGLContext::ContextCreate(*reinterpret_cast<jsi::Runtime*>(jsiPtr));
 }
 

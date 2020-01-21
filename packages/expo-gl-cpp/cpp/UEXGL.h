@@ -12,7 +12,7 @@
 #ifdef __cplusplus
 #include <functional>
 #else
-#include <stdbool.h> 
+#include <stdbool.h>
 #endif
 
 // NOTE: The symbols exposed by this header are named with a `UEX` prefix rather than an `EX`
@@ -36,7 +36,7 @@ typedef unsigned int UEXGLObjectId;
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-UEXGLContextId UEXGLContextCreate(long runtime);
+UEXGLContextId UEXGLContextCreate(void* runtime);
 
 #ifdef __cplusplus
 // [JS thread] Pass function to cpp that will run GL operations on GL thread

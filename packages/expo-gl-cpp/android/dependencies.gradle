@@ -16,13 +16,10 @@ import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def JSC_REVISION = "236355"
-def JSC_VERSION = "${JSC_REVISION}.1.1"
 def BOOST_VERSION = "1_63_0"
 def DOUBLE_CONVERSION_VERSION = "1.1.6"
 def FOLLY_VERSION = "2018.10.22.00"
 def GLOG_VERSION = "0.3.5"
-def FLIPPER_VERSION = "0.23.4"
 
 
 
@@ -46,8 +43,6 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 
-// Setup build type for NDK, supported values: {debug, release}
-def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
 task createNativeDepsDirectories {
   downloadsDir.mkdirs()

@@ -1,1 +1,0 @@
-../../../../../../../packages/expo-gl-cpp/cpp/TypedArrayJSCMock.h
