@@ -48,5 +48,8 @@ class RNHeadlessAppStarter(private val ignore: Context) : HeadlessAppStarter {
     }
   }
 
+  override fun isRunning(appId: String?): Boolean =
+    appRecords.contains(appId) && appRecords[appId]!!.hasStartedCreatingInitialContext()
+
   //endregion AppLoader
 }

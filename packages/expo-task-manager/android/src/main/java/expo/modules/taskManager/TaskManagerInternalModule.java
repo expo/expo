@@ -113,12 +113,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return null;
   }
 
-  @Override
-  public boolean isRunningInHeadlessMode() {
-    Boolean value = getBooleanConstant("isHeadless");
-    return value != null ? value : false;
-  }
-
   private Boolean getBooleanConstant(String key) {
     if (mConstants != null && mConstants.getConstants() != null) {
       return (Boolean) mConstants.getConstants().get(key);
@@ -168,6 +162,10 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   //endregion
   //region helpers
+
+  private boolean isRunningInHeadlessMode() {
+    return mTaskService.isRunningInHeadlessMode(getAppId());
+  }
 
   private String getAppUrl() {
     // If Constants module is available and experienceUrl is provided, just return it.

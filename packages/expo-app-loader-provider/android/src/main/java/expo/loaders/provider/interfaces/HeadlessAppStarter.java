@@ -10,6 +10,8 @@ public interface HeadlessAppStarter {
 
   boolean invalidateApp(String appId);
 
+  boolean isRunning(String appId);
+
   final class Params {
     private final String appId;
     private final String appUrl;

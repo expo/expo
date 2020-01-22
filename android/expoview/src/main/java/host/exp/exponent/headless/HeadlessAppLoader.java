@@ -281,8 +281,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri,
-        IS_HEADLESS_KEY, true
+        INTENT_URI_KEY, mIntentUri
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();

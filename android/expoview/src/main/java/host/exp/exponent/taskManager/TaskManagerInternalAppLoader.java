@@ -74,4 +74,8 @@ public class TaskManagerInternalAppLoader implements HeadlessAppStarter {
     return appLoader;
   }
 
+  @Override
+  public boolean isRunning(String appId) {
+    return appIdsToAppRecords.containsKey(appId);
+  }
 }

@@ -83,4 +83,9 @@ public interface TaskServiceInterface extends SingletonModule {
    */
   void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback);
 
+  /**
+   *  Checks whether appId is currently being run in headless mode.
+   */
+  boolean isRunningInHeadlessMode(String appId);
+
 }
