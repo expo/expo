@@ -108,26 +108,6 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
   return toDataURL(canvas, imageType, quality);
 }
 
-export function captureImageData(
-  video: HTMLVideoElement,
-  pictureOptions: PictureOptions = {}
-): ImageData | null {
-  const config = ensureCaptureOptions(pictureOptions);
-  const canvas = captureImageContext(video, config);
-
-  const context = canvas.getContext('2d');
-  if (!context || !canvas.width || !canvas.height) {
-    return null;
-  }
-
-  // const image = new Image();
-  // image.src = require('./qr.png');
-  // context.drawImage(image, 0, 0);
-
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  return imageData;
-}
-
 function getSupportedConstraints(): MediaTrackSupportedConstraints | null {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();
@@ -194,7 +174,11 @@ export async function getStreamDevice(
   return stream;
 }
 
-function drawCorner(ctx: CanvasRenderingContext2D, x: number, y: number, angle) {
+export function isWebKit(): boolean {
+  return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
+}
+
+function drawCorner(ctx: CanvasRenderingContext2D, x: number, y: number, angle): void {
   const size = 50;
   const h = size / 2;
   ctx.save();
@@ -228,7 +212,7 @@ function drawLine(
   context: CanvasRenderingContext2D,
   points: { x: number; y: number }[],
   options: any = {}
-) {
+): void {
   const { color = '#4630EB', lineWidth = 4 } = options;
   const [start, end] = points;
   context.beginPath();
@@ -243,7 +227,7 @@ export function drawBarcodeBounds(
   context: CanvasRenderingContext2D,
   { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner },
   options: any = {}
-) {
+): void {
   // drawCorner(context, topLeftCorner.x, topLeftCorner.y, Math.PI * -0.5);
   // drawCorner(context, topRightCorner.x, topRightCorner.y, 0);
   // drawCorner(context, bottomLeftCorner.x, bottomLeftCorner.y, Math.PI);
@@ -254,6 +238,22 @@ export function drawBarcodeBounds(
   drawLine(context, [bottomLeftCorner, topLeftCorner], options);
 }
 
-export function isWebKit(): boolean {
-  return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
+export function captureImageData(
+  video: HTMLVideoElement,
+  pictureOptions: PictureOptions = {}
+): ImageData | null {
+  const config = ensureCaptureOptions(pictureOptions);
+  const canvas = captureImageContext(video, config);
+
+  const context = canvas.getContext('2d');
+  if (!context || !canvas.width || !canvas.height) {
+    return null;
+  }
+
+  // const image = new Image();
+  // image.src = require('./qr.png');
+  // context.drawImage(image, 0, 0);
+
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  return imageData;
 }

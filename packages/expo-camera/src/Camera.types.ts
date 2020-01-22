@@ -1,10 +1,6 @@
 import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
-import { BarCodeSettings, BarCodeScanningResult } from './CameraModule/CameraModule.types';
-
-export { BarCodeSettings, BarCodeScanningResult };
-
 export type PictureOptions = {
   quality?: number;
   base64?: boolean;
@@ -33,6 +29,8 @@ export type CapturedPicture = {
 
 export type MountError = { message: string };
 
+export type BarCodeScanningResult = { type: string; data: string };
+
 export type FaceDetectionResult = { faces: any[] };
 
 export type Props = ViewProps & {
@@ -48,10 +46,8 @@ export type Props = ViewProps & {
   pictureSize?: string;
   videoStabilizationMode?: number;
   onMountError?: (event: MountError) => void;
-  barCodeScannerEnabled?: boolean;
-  barCodeScannerSettings?: BarCodeSettings;
+  barCodeScannerSettings?: {};
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
-  faceDetectorEnabled?: boolean;
   faceDetectorSettings?: {};
   onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
@@ -83,3 +79,9 @@ export type NativeProps = {
 };
 
 export { PermissionResponse, PermissionStatus };
+
+export type BarCodeSettings = {
+  barCodeTypes: string[];
+  interval?: number;
+  shouldRenderIndicator?: boolean;
+};

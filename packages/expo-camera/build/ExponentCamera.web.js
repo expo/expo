@@ -19,6 +19,39 @@ export default class ExponentCamera extends React.Component {
             if (actualCameraType !== this.state.type) {
                 this.setState({ type: actualCameraType });
             }
+            this.updateScanner();
+        };
+        this.updateScanner = () => {
+            if (!this.camera)
+                return;
+            const { barCodeScannerSettings, onBarCodeScanned } = this.props;
+            if (onBarCodeScanned && barCodeScannerSettings) {
+                this.camera.barCodeScanner.startScanner({
+                    // Default barcode scanning update interval, same as is defined in the API layer.
+                    // TODO: Bacon: Make this larger for low-end devices.
+                    interval: this.shouldRenderIndicator() ? -1 : 500,
+                    ...barCodeScannerSettings,
+                }, nativeEvent => {
+                    if (this.props.onBarCodeScanned) {
+                        this.props.onBarCodeScanned({ nativeEvent });
+                        return;
+                    }
+                    this.updateScanner();
+                });
+            }
+            else {
+                this.camera.barCodeScanner.stopScanner();
+            }
+        };
+        this.setCanvasRef = ref => {
+            this.canvas = ref;
+            this.updateCameraCanvas();
+        };
+        this.shouldRenderIndicator = () => {
+            if (this.props.barCodeScannerSettings && this.props.barCodeScannerSettings) {
+                return this.props.barCodeScannerSettings.shouldRenderIndicator || false;
+            }
+            return false;
         };
         this.getCamera = () => {
             if (this.camera) {
@@ -74,6 +107,7 @@ export default class ExponentCamera extends React.Component {
             this.camera = new CameraModule(ref);
             this.camera.onCameraReady = this.onCameraReady;
             this.camera.onMountError = this.onMountError;
+            this.updateCameraCanvas();
             this._updateCameraProps(this.props);
         };
     }
@@ -84,6 +118,11 @@ export default class ExponentCamera extends React.Component {
     }
     componentWillReceiveProps(nextProps) {
         this._updateCameraProps(nextProps);
+    }
+    updateCameraCanvas() {
+        if (this.camera) {
+            this.camera.barCodeScanner.canvas = this.canvas;
+        }
     }
     render() {
         const { pointerEvents } = this.props;
@@ -97,10 +136,12 @@ export default class ExponentCamera extends React.Component {
         };
         return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
         <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
+        {this.shouldRenderIndicator() && <Canvas ref={this.setCanvasRef} style={styles.canvas}/>}
         {this.props.children}
       </View>);
     }
 }
+const Canvas = forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
 const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
@@ -111,6 +152,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         objectFit: 'cover',
+    },
+    canvas: {
+        ...StyleSheet.absoluteFillObject,
+        width: '100%',
+        height: '100%',
     },
 });
 //# sourceMappingURL=ExponentCamera.web.js.map

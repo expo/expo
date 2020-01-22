@@ -5,6 +5,7 @@ import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
+import BarCodeScanner from './barcode/BarCodeScanner';
 export { ImageType, CameraType };
 const VALID_SETTINGS_KEYS = [
     'autoFocus',
@@ -50,6 +51,7 @@ class CameraModule {
             ]);
             return types.filter(Boolean);
         };
+        this.barCodeScanner = new BarCodeScanner(videoElement);
         if (this.videoElement) {
             this.videoElement.addEventListener('loadedmetadata', () => {
                 this.syncTrackCapabilities();
@@ -160,6 +162,7 @@ class CameraModule {
         if (this.settings) {
             // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
             const { facingMode = 'user' } = this.settings;
+            this.barCodeScanner.isImageMirrored = facingMode === 'user';
             return FacingModeToCameraType[facingMode];
         }
         return null;
@@ -211,6 +214,7 @@ class CameraModule {
     stopAsync() {
         stopMediaStream(this.stream);
         this.setStream(null);
+        this.barCodeScanner.stopScanner();
     }
 }
 function stopMediaStream(stream) {

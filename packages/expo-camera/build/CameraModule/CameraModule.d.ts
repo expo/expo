@@ -1,5 +1,6 @@
 import { PictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
+import BarCodeScanner from './barcode/BarCodeScanner';
 export { ImageType, CameraType, CaptureOptions };
 declare type OnCameraReadyListener = () => void;
 declare type OnMountErrorListener = (event: {
@@ -30,6 +31,7 @@ declare class CameraModule {
     private cameraType;
     private webCameraSettings;
     get type(): CameraType;
+    barCodeScanner: BarCodeScanner;
     constructor(videoElement: HTMLVideoElement);
     updateWebCameraSettingsAsync(nextSettings: {
         [key: string]: any;

@@ -8,6 +8,8 @@ import CameraManager from './ExponentCameraManager.web';
 export default class ExponentCamera extends React.Component<NativeProps> {
   video?: number | null;
   camera?: CameraModule;
+  canvas?: HTMLCanvasElement;
+
   state = { type: null };
 
   componentWillUnmount() {
@@ -17,7 +19,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.updateCameraProps(nextProps);
+    this._updateCameraProps(nextProps);
   }
 
   _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: NativeProps) => {
@@ -39,6 +41,48 @@ export default class ExponentCamera extends React.Component<NativeProps> {
       this.setState({ type: actualCameraType });
     }
     this.updateScanner();
+  };
+
+  private updateScanner = () => {
+    if (!this.camera) return;
+    const { barCodeScannerSettings, onBarCodeScanned } = this.props;
+    if (onBarCodeScanned && barCodeScannerSettings) {
+      this.camera.barCodeScanner.startScanner(
+        {
+          // Default barcode scanning update interval, same as is defined in the API layer.
+          // TODO: Bacon: Make this larger for low-end devices.
+          interval: this.shouldRenderIndicator() ? -1 : 500,
+          ...barCodeScannerSettings,
+        },
+        nativeEvent => {
+          if (this.props.onBarCodeScanned) {
+            this.props.onBarCodeScanned({ nativeEvent });
+            return;
+          }
+          this.updateScanner();
+        }
+      );
+    } else {
+      this.camera.barCodeScanner.stopScanner();
+    }
+  };
+
+  private setCanvasRef = ref => {
+    this.canvas = ref;
+    this.updateCameraCanvas();
+  };
+
+  private updateCameraCanvas() {
+    if (this.camera) {
+      this.camera.barCodeScanner.canvas = this.canvas;
+    }
+  }
+
+  private shouldRenderIndicator = (): boolean => {
+    if (this.props.barCodeScannerSettings && this.props.barCodeScannerSettings) {
+      return this.props.barCodeScannerSettings.shouldRenderIndicator || false;
+    }
+    return false;
   };
 
   getCamera = (): CameraModule => {
@@ -89,7 +133,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   };
 
-  private setRef = async ref => {
+  _setRef = ref => {
     if (!ref) {
       this.video = null;
       if (this.camera) {
@@ -106,49 +150,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     this.camera.onCameraReady = this.onCameraReady;
     this.camera.onMountError = this.onMountError;
     this.updateCameraCanvas();
-    this.updateCameraProps(this.props);
-  };
-
-  private updateScanner = () => {
-    if (!this.camera) return;
-    const { barCodeScannerSettings, onBarCodeScanned } = this.props;
-    if (onBarCodeScanned && barCodeScannerSettings) {
-      this.camera.startScanner(
-        {
-          // Default barcode scanning update interval, same as is defined in the API layer.
-          // TODO: Bacon: Make this larger for low-end devices.
-          interval: this.shouldRenderIndicator() ? -1 : 500,
-          ...barCodeScannerSettings,
-        },
-        nativeEvent => {
-          if (this.props.onBarCodeScanned) {
-            this.props.onBarCodeScanned({ nativeEvent });
-            return;
-          }
-          this.updateScanner();
-        }
-      );
-    }
-  };
-
-  canvas?: HTMLCanvasElement;
-
-  private setCanvasRef = ref => {
-    this.canvas = ref;
-    this.updateCameraCanvas();
-  };
-
-  private updateCameraCanvas() {
-    if (this.camera) {
-      this.camera.canvas = this.canvas;
-    }
-  }
-
-  private shouldRenderIndicator = (): boolean => {
-    if (this.props.barCodeScannerSettings) {
-      return this.props.barCodeScannerSettings.shouldRenderIndicator || false;
-    }
-    return false;
+    this._updateCameraProps(this.props);
   };
 
   render() {
@@ -174,23 +176,14 @@ export default class ExponentCamera extends React.Component<NativeProps> {
           ref={this._setRef}
           style={[StyleSheet.absoluteFill, styles.video, style]}
         />
-        {this.shouldRenderIndicator() && <canvas ref={this.setCanvasRef} style={canvasStyle} />}
+        {this.shouldRenderIndicator() && <Canvas ref={this.setCanvasRef} style={styles.canvas} />}
         {this.props.children}
       </View>
     );
   }
 }
 
-const canvasStyle = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  width: '100%',
-  height: '100%',
-};
-
+const Canvas: any = forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
 const Video: any = forwardRef((props, ref) => createElement('video', { ...props, ref }));
 
 const styles = StyleSheet.create({
@@ -202,5 +195,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+  },
+  canvas: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
 });

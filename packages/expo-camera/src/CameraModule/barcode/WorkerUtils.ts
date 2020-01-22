@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 export class WebWorker extends Worker {
   constructor(worker) {
     const code = worker.toString();
@@ -8,9 +10,7 @@ export class WebWorker extends Worker {
   }
 }
 
-/**
- * From https://gist.github.com/nolanlawson/10340255
- */
+// From https://gist.github.com/nolanlawson/10340255
 export function createBlob(parts: BlobPart[], properties: BlobPropertyBag | undefined): Blob {
   try {
     return new Blob(parts, properties);

@@ -289,7 +289,9 @@ export default class Camera extends React.Component<Props> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onBarCodeScanned = this.props.onBarCodeScanned
+      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      : undefined;
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

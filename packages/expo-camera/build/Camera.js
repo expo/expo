@@ -184,7 +184,9 @@ export default class Camera extends React.Component {
     }
     render() {
         const nativeProps = ensureNativeProps(this.props);
-        const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+        const onBarCodeScanned = this.props.onBarCodeScanned
+            ? this._onObjectDetected(this.props.onBarCodeScanned)
+            : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
         return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onFacesDetected={onFacesDetected} onPictureSaved={_onPictureSaved}/>);
     }

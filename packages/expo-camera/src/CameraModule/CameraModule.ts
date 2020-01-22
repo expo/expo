@@ -1,22 +1,13 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions } from '../Camera.types';
-import {
-  CameraType,
-  CapturedPicture,
-  CaptureOptions,
-  BarCodeSettings,
-  ImageType,
-} from './CameraModule.types';
+import { PictureOptions, BarCodeSettings } from '../Camera.types';
+import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
-
-import { WebWorker } from './barcode/WorkerUtils';
-
-import BarcodeScannerWorker from './barcode/BarcodeScannerWorker.js';
+import BarCodeScanner from './barcode/BarCodeScanner';
 
 export { ImageType, CameraType, CaptureOptions };
 
@@ -72,7 +63,11 @@ class CameraModule {
     return this.cameraType;
   }
 
+  public barCodeScanner: BarCodeScanner;
+
   constructor(private videoElement: HTMLVideoElement) {
+    this.barCodeScanner = new BarCodeScanner(videoElement);
+
     if (this.videoElement) {
       this.videoElement.addEventListener('loadedmetadata', () => {
         this.syncTrackCapabilities();
@@ -240,7 +235,7 @@ class CameraModule {
     if (this.settings) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
       const { facingMode = 'user' } = this.settings;
-      this.isImageMirrored = facingMode === 'user';
+      this.barCodeScanner.isImageMirrored = facingMode === 'user';
       return FacingModeToCameraType[facingMode];
     }
     return null;
@@ -298,6 +293,7 @@ class CameraModule {
   public stopAsync(): void {
     stopMediaStream(this.stream);
     this.setStream(null);
+    this.barCodeScanner.stopScanner();
   }
 
   // TODO: Bacon: we don't even use ratio in native...
@@ -415,10 +411,3 @@ function validatedConstrainedValue(
 }
 
 export default CameraModule;
-
-function scalePreserveAspectRatio(imgW, imgH, maxW, maxH) {
-  return Math.min(maxW / imgW, maxH / imgH);
-}
-function scaleAspectFill(imgW, imgH, maxW, maxH) {
-  return Math.max(maxW / imgW, maxH / imgH);
-}
