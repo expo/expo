@@ -499,7 +499,7 @@ public class FileSystemModule extends ExportedModule {
         getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, String.valueOf(e.getMessage()));
             promise.reject(e);
           }
 
