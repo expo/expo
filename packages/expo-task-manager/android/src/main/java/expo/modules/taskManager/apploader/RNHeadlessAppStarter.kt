@@ -3,18 +3,18 @@ package expo.modules.taskManager.apploader
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
-import expo.loaders.provider.interfaces.AppLoader
+import expo.loaders.provider.interfaces.HeadlessAppStarter
 import expo.modules.taskManager.TaskService
 import org.unimodules.core.interfaces.Consumer
 import java.util.*
 
 private val appRecords: MutableMap<String, ReactInstanceManager> = HashMap()
 
-class RNHeadlessAppLoader(private val ignore: Context) : AppLoader {
+class RNHeadlessAppStarter(private val ignore: Context) : HeadlessAppStarter {
 
   //region AppLoader
 
-  override fun loadApp(context: Context, params: AppLoader.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
+  override fun startApp(context: Context, params: HeadlessAppStarter.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
     if (params == null || params.appId == null) {
       throw IllegalArgumentException("Params must be set with appId!")
     }

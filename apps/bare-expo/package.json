@@ -33,10 +33,6 @@
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
   },
   "excludedUnimodules": [
-    "expo-task-manager",
-    "unimodules-task-manager-interface",
-    "expo-background-fetch",
-    "expo-location",
     "expo-branch",
     "expo-camera",
     "expo-face-detector",
@@ -84,7 +80,6 @@
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "~36.0.0",
-    "expo-notifications": "~1.0.0",
     "expo-yarn-workspaces": "^1.2.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",
@@ -95,6 +90,7 @@
     "react-native-unimodules": "~0.7.0-rc.3",
     "react-native-web": "^0.11.4",
     "react-navigation": "4.1.0-alpha.0",
+    "expo-task-manager": "^8.0.0",
     "test-suite": "*"
   },
   "devDependencies": {

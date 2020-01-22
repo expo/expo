@@ -35,7 +35,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoader;
+import expo.loaders.provider.interfaces.HeadlessAppStarter;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
@@ -52,7 +52,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
-  private AppLoader mAppLoader;
+  private HeadlessAppStarter mAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -409,7 +409,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     sEventsQueues.get(appId).add(body);
 
     try {
-      mAppLoader.loadApp(mContextRef.get(), new AppLoader.Params(appId, task.getAppUrl()), () -> {
+      mAppLoader.startApp(mContextRef.get(), new HeadlessAppStarter.Params(appId, task.getAppUrl()), () -> {
       }, success -> {
         if (!success) {
           sEvents.remove(appId);

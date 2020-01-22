@@ -6,7 +6,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.loaders.provider.interfaces.AppLoader;
+import expo.loaders.provider.interfaces.HeadlessAppStarter;
 
 public class AppLoaderProvider {
   private static Map<String, Class> loaderClasses = new HashMap<>();
@@ -15,10 +15,10 @@ public class AppLoaderProvider {
     loaderClasses.put(name, loaderClass);
   }
 
-  public static AppLoader createLoader(String name, Context context) {
+  public static HeadlessAppStarter createLoader(String name, Context context) {
     try {
       Class loaderClass = loaderClasses.get(name);
-      return (AppLoader) loaderClass.getDeclaredConstructor(Context.class).newInstance(context);
+      return (HeadlessAppStarter) loaderClass.getDeclaredConstructor(Context.class).newInstance(context);
     } catch (Exception e) {
       Log.e("Expo", "Cannot initialize app loader. " + e.getMessage());
       return null;

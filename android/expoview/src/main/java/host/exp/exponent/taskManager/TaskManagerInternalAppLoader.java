@@ -5,7 +5,7 @@ import android.util.Log;
 
 import org.unimodules.core.interfaces.Consumer;
 
-import expo.loaders.provider.interfaces.AppLoader;
+import expo.loaders.provider.interfaces.HeadlessAppStarter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
 import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.headless.HeadlessAppLoader;
 
-public class TaskManagerInternalAppLoader implements AppLoader {
+public class TaskManagerInternalAppLoader implements HeadlessAppStarter {
 
   private static final String TAG = "TaskManagerInternalAppL";
 
@@ -21,10 +21,11 @@ public class TaskManagerInternalAppLoader implements AppLoader {
 
   private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
 
+  @SuppressWarnings("unused")
   public TaskManagerInternalAppLoader(Context context) {}
 
   @Override
-  public void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
+  public void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
 
     AppLoaderInterface appLoader = createAppLoader(context);
 

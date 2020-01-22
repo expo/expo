@@ -4,9 +4,9 @@ import android.content.Context;
 
 import org.unimodules.core.interfaces.Consumer;
 
-public interface AppLoader {
+public interface HeadlessAppStarter {
 
-  void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException;
+  void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException;
 
   boolean invalidateApp(String appId);
 

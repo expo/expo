@@ -1,29 +1,40 @@
 import React from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 
-import MainNavigator from './MainNavigator';
-import { createProxy, startAsync, addListener } from './relapse/client';
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundFetch from 'expo-background-fetch';
 
 // import NativeComponentList from '../native-component-list/App';
 
+TaskManager.defineTask('TEST_TASK', () => {
+  console.warn('What the actual?');
+  return BackgroundFetch.Result.NoData;
+});
+
+console.warn('GLOBALS, man!');
+
 export default function Main() {
   // @ts-ignore
-  if (global.DETOX) {
-    React.useEffect(() => {
-      addListener(data => {
-        if (data.globals) {
-          for (const moduleName of data.globals) {
-            // @ts-ignore
-            global[moduleName] = createProxy(moduleName);
-          }
-        }
-      });
 
-      let stop;
-      startAsync().then(_stop => (stop = _stop));
+  console.warn('Component, dude!');
 
-      return () => stop && stop();
-    }, []);
+  BackgroundFetch.registerTaskAsync('TEST_TASK', { startOnBoot: true });
+
+  async function pressedButton() {
+    console.log('Dummying');
   }
 
-  return <MainNavigator uriPrefix="bareexpo://" />;
+  return (
+    <View style={styles.container}>
+      <Button title="You can click me." onPress={pressedButton} />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

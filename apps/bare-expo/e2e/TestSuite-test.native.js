@@ -9,8 +9,6 @@ let TESTS = [
   // 'FileSystem',
   // 'Font',
   'Permissions',
-  'Blur',
-  'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',
@@ -22,7 +20,6 @@ let TESTS = [
   // 'SQLite',
   'Random',
   'Permissions',
-  'KeepAwake',
   // 'Audio',
 ];
 

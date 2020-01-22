@@ -1,4 +1,4 @@
-/* global page, browser */
+/* global page */
 import { setDefaultOptions } from 'expect-puppeteer';
 
 import config from '../jest-puppeteer.config';
@@ -16,15 +16,9 @@ const TESTS = [
   'Contacts',
   'Random',
   'Crypto',
-  'Blur',
-  'LinearGradient',
-  'KeepAwake',
-  // Overridding permissions doesn't work in headless mode
-  // see https://github.com/puppeteer/puppeteer/issues/3279
-  !config.launch.headless && 'expo-notifications',
   //   'Haptics',
   //   'SecureStore',
-].filter(t => t);
+];
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.
 const MIN_TIME = 50000;
@@ -32,11 +26,6 @@ const RENDER_MOUNTING_TIMEOUT = 500;
 
 setDefaultOptions({
   timeout: MIN_TIME * 1.5,
-});
-
-beforeAll(async () => {
-  const context = browser.defaultBrowserContext();
-  await context.overridePermissions(config.url, ['notifications']);
 });
 
 function matchID(id, ...props) {
