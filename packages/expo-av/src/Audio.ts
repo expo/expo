@@ -55,12 +55,12 @@ function getCurrentAudioMode(): AudioMode {
   return currentAudioMode;
 }
 
-export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void> {
-  const fullMode = _populateMissingKeys(mode, getCurrentAudioMode());
-  currentAudioMode = fullMode;
+export async function setAudioModeAsync(partialMode: Partial<AudioMode>): Promise<void> {
+  const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
+  currentAudioMode = mode;
 
   if (
-    !_isValueValid(fullMode.interruptionModeIOS, [
+    !_isValueValid(mode.interruptionModeIOS, [
       INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
       INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       INTERRUPTION_MODE_IOS_DUCK_OTHERS,
@@ -69,7 +69,7 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
     throw new Error(`"interruptionModeIOS" was set to an invalid value.`);
   }
   if (
-    !_isValueValid(fullMode.interruptionModeAndroid, [
+    !_isValueValid(mode.interruptionModeAndroid, [
       INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
     ])
@@ -77,15 +77,15 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
     throw new Error(`"interruptionModeAndroid" was set to an invalid value.`);
   }
   if (
-    typeof fullMode.allowsRecordingIOS !== 'boolean' ||
-    typeof fullMode.playsInSilentModeIOS !== 'boolean' ||
-    typeof fullMode.staysActiveInBackground !== 'boolean' ||
-    typeof fullMode.shouldDuckAndroid !== 'boolean' ||
-    typeof fullMode.playThroughEarpieceAndroid !== 'boolean'
+    typeof mode.allowsRecordingIOS !== 'boolean' ||
+    typeof mode.playsInSilentModeIOS !== 'boolean' ||
+    typeof mode.staysActiveInBackground !== 'boolean' ||
+    typeof mode.shouldDuckAndroid !== 'boolean' ||
+    typeof mode.playThroughEarpieceAndroid !== 'boolean'
   ) {
     throw new Error(
       '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.'
     );
   }
-  return await ExponentAV.setAudioMode(fullMode);
+  return await ExponentAV.setAudioMode(mode);
 }

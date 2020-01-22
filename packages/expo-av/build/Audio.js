@@ -36,29 +36,29 @@ function getCurrentAudioMode() {
     }
     return currentAudioMode;
 }
-export async function setAudioModeAsync(mode) {
-    const fullMode = _populateMissingKeys(mode, getCurrentAudioMode());
-    currentAudioMode = fullMode;
-    if (!_isValueValid(fullMode.interruptionModeIOS, [
+export async function setAudioModeAsync(partialMode) {
+    const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
+    currentAudioMode = mode;
+    if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
         INTERRUPTION_MODE_IOS_DUCK_OTHERS,
     ])) {
         throw new Error(`"interruptionModeIOS" was set to an invalid value.`);
     }
-    if (!_isValueValid(fullMode.interruptionModeAndroid, [
+    if (!_isValueValid(mode.interruptionModeAndroid, [
         INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
         INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
     ])) {
         throw new Error(`"interruptionModeAndroid" was set to an invalid value.`);
     }
-    if (typeof fullMode.allowsRecordingIOS !== 'boolean' ||
-        typeof fullMode.playsInSilentModeIOS !== 'boolean' ||
-        typeof fullMode.staysActiveInBackground !== 'boolean' ||
-        typeof fullMode.shouldDuckAndroid !== 'boolean' ||
-        typeof fullMode.playThroughEarpieceAndroid !== 'boolean') {
+    if (typeof mode.allowsRecordingIOS !== 'boolean' ||
+        typeof mode.playsInSilentModeIOS !== 'boolean' ||
+        typeof mode.staysActiveInBackground !== 'boolean' ||
+        typeof mode.shouldDuckAndroid !== 'boolean' ||
+        typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
-    return await ExponentAV.setAudioMode(fullMode);
+    return await ExponentAV.setAudioMode(mode);
 }
 //# sourceMappingURL=Audio.js.map
