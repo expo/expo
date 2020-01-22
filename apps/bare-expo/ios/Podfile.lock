@@ -20,6 +20,7 @@ PODS:
   - EXAppLoaderProvider (8.0.0)
   - EXAV (8.0.0):
     - UMCore
+    - UMFileSystemInterface
     - UMPermissionsInterface
   - EXBarCodeScanner (8.0.0):
     - UMCore
@@ -69,8 +70,8 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXGL_CPP (8.0.0):
-    - EXGL_CPP/UEXGL (= 8.0.0)
-  - EXGL_CPP/UEXGL (8.0.0)
+    - EXGL_CPP/EXGLContext (= 8.0.0)
+  - EXGL_CPP/EXGLContext (8.0.0)
   - EXGoogleSignIn (8.0.0):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -83,6 +84,7 @@ PODS:
   - EXImagePicker (8.0.0):
     - UMCore
     - UMFileSystemInterface
+    - UMPermissionsInterface
   - EXKeepAwake (8.0.0):
     - UMCore
   - EXLinearGradient (8.0.0):
@@ -99,6 +101,8 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - EXNetwork (2.0.0):
+    - UMCore
+  - EXNotifications (1.0.0):
     - UMCore
   - EXPermissions (8.0.0):
     - UMCore
@@ -364,7 +368,7 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - RNGestureHandler (1.5.0):
+  - RNGestureHandler (1.5.1):
     - React
   - RNReanimated (1.4.0):
     - React
@@ -375,7 +379,8 @@ PODS:
   - UMFileSystemInterface (5.0.0)
   - UMFontInterface (5.0.0)
   - UMImageLoaderInterface (5.0.0)
-  - UMPermissionsInterface (5.0.0)
+  - UMPermissionsInterface (5.0.0):
+    - UMCore
   - UMReactNativeAdapter (5.0.0):
     - React-Core
     - UMCore
@@ -423,6 +428,7 @@ DEPENDENCIES:
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
+  - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
@@ -463,8 +469,8 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../../../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
-  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
-  - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
+  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
@@ -590,6 +596,9 @@ EXTERNAL SOURCES:
   EXNetwork:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-network/ios"
+  EXNotifications:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-notifications/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-permissions/ios"
@@ -656,7 +665,7 @@ EXTERNAL SOURCES:
   React-jsinspector:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsinspector"
   react-native-safe-area-context:
-    :podspec: "../../../node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   React-RCTActionSheet:
     :path: "../../../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -678,9 +687,9 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../../../react-native-lab/react-native/ReactCommon"
   RNGestureHandler:
-    :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
+    :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :podspec: "../../../node_modules/react-native-reanimated/RNReanimated.podspec"
+    :path: "../../../node_modules/react-native-reanimated"
   UMBarCodeScannerInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-barcode-scanner-interface/ios"
@@ -724,7 +733,7 @@ SPEC CHECKSUMS:
   EXAppAuth: bd859a5717613e72cc3cfbc2128e04b4f0e0ff5a
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
   EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
-  EXAV: 39a3b794d690e91404774cabfc563182d4f84ac3
+  EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
   EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
@@ -741,11 +750,11 @@ SPEC CHECKSUMS:
   EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
   EXFont: 6187b5ab46ee578d5f8e7f2ea092752e78772235
   EXGL: 3add8ba2c89377285f57cda493d4bc50939b5300
-  EXGL_CPP: a737ee53425d37df03538e81e4bb285739196c50
+  EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
   EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
   EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
   EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
-  EXImagePicker: e6bd62b64a84c7ae29fbdb6207fee26e2dd2ccda
+  EXImagePicker: aecd617c31562f41e85a0770bfce51a8b9d58bd1
   EXKeepAwake: 66e9f80b6d129633725a0e42f8d285c229876811
   EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
   EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd
@@ -753,6 +762,7 @@ SPEC CHECKSUMS:
   EXMailComposer: b9be58adaabb860fc8b722204ce27b33c7da5aad
   EXMediaLibrary: 9281707de8f95cc391d242b614f493ab781030fa
   EXNetwork: a52f713ced4b05a2634eb88a1f1f8678fcb8b69c
+  EXNotifications: d654494e84df90927cca410ebac178c61553647b
   EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   EXPrint: b20aef0e774d96e0ea6688b97d9e0c1d268b95ae
   EXRandom: 3a6f6dce1997a40a7fc3bb00d18eabc380c51c2e
@@ -793,7 +803,7 @@ SPEC CHECKSUMS:
   React-RCTText: 21934e0a51d522abcd0a275407e80af45d6fd9ec
   React-RCTVibration: 0f76400ee3cec6edb9c125da49fed279340d145a
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
+  RNGestureHandler: 7add966bb5d90ee8cf38d4341f87814474357972
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
   UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
@@ -802,12 +812,12 @@ SPEC CHECKSUMS:
   UMFileSystemInterface: 2ed004c9620f43f0b36b33c42ce668500850d6a4
   UMFontInterface: 24fbc0a02ade6c60ad3ee3e2b5d597c8dcfc3208
   UMImageLoaderInterface: 3976a14c588341228881ff75970fbabf122efca4
-  UMPermissionsInterface: 2abf9f7f4aa7110e27beaf634a7deda2d50ff3d7
+  UMPermissionsInterface: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
   UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cb4699626e12016377481e374667a9f4db8fb322
+PODFILE CHECKSUM: f9b310a7da0a72b720dd3e0eaf31394e24c3f736
 
 COCOAPODS: 1.8.4

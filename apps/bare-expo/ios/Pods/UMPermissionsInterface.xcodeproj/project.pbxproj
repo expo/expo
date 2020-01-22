@@ -7,14 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2030073F653423AEBC50DD1A93D2845A /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ADE3546ED406E6F9DF787CBA6815ED5 /* UMPermissionsMethodsDelegate.m */; };
-		23A3DE6ABF0D19967ABCC95E9B3E185F /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = E984E35FADFA1405B78C5E508C7929F0 /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		375DF6B05CAC85DA606A4CE1E353650C /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5496363ABB7779B8AE462FFFE654131 /* UMPermissionsInterface-dummy.m */; };
-		8E0C4B27EF37844F6DC4454E66194DCB /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AD92967CB70FC017D4052C794526FBB /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9AC67A46AE6795E38169943C81CFBAB5 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F2139983B4B1DE9A445755B277E84A /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 58F2139983B4B1DE9A445755B277E84A /* UMUserNotificationCenterProxyInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AD92967CB70FC017D4052C794526FBB /* UMPermissionsMethodsDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B5496363ABB7779B8AE462FFFE654131 /* UMPermissionsInterface-dummy.m */; };
+		C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ADE3546ED406E6F9DF787CBA6815ED5 /* UMPermissionsMethodsDelegate.m */; };
+		C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = E984E35FADFA1405B78C5E508C7929F0 /* UMPermissionsInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		EB9B14D8F4DB84FD07B561FDBFA6727E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 093AF6407C4F406805F73F83B5108CA3 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		093AF6407C4F406805F73F83B5108CA3 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		1AD92967CB70FC017D4052C794526FBB /* UMPermissionsMethodsDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMPermissionsMethodsDelegate.h; path = UMPermissionsInterface/UMPermissionsMethodsDelegate.h; sourceTree = "<group>"; };
 		2FCF47CA8EAB57524D550EAB92FED462 /* UMPermissionsInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMPermissionsInterface.xcconfig; sourceTree = "<group>"; };
 		3DABE5EB000B9B609CF181103E83A805 /* UMPermissionsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMPermissionsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -27,7 +38,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		756C61506E1D6A74E1BEE65086419702 /* Frameworks */ = {
+		DA93715BD5E88A14162E62F84B84423F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -37,9 +48,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F77EF0F302994220BDCDE53EF1347D5 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				093AF6407C4F406805F73F83B5108CA3 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		741BE9407F3D2B13551C84485F56D413 = {
 			isa = PBXGroup;
 			children = (
+				4F77EF0F302994220BDCDE53EF1347D5 /* Dependencies */,
 				AA3BBFA666D890DF382F11006ADD0F5B /* Frameworks */,
 				845B87769981B7D4A462D671DFE1FE63 /* Products */,
 				94C15841ED796D29BD74BC447644B848 /* UMPermissionsInterface */,
@@ -97,13 +117,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		2EC29FBB15E227258FFF4D634E3FF85A /* Headers */ = {
+		9B057D980BE4154DC8DFC464DDAD7EF6 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23A3DE6ABF0D19967ABCC95E9B3E185F /* UMPermissionsInterface.h in Headers */,
-				8E0C4B27EF37844F6DC4454E66194DCB /* UMPermissionsMethodsDelegate.h in Headers */,
-				9AC67A46AE6795E38169943C81CFBAB5 /* UMUserNotificationCenterProxyInterface.h in Headers */,
+				C618FF940BEB5A0A8E50216D1DE2B872 /* UMPermissionsInterface.h in Headers */,
+				19346D80E7AE0D0A657F3BF9F8BE5305 /* UMPermissionsMethodsDelegate.h in Headers */,
+				14094174E889887D1F78815287512552 /* UMUserNotificationCenterProxyInterface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,15 +132,16 @@
 /* Begin PBXNativeTarget section */
 		12FF61416C5E794E9DEAC78D381D9726 /* UMPermissionsInterface */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 79C740A5F4009679EB228416F7CC6E10 /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */;
+			buildConfigurationList = 504921805372C9562281132D549E1DDB /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */;
 			buildPhases = (
-				2EC29FBB15E227258FFF4D634E3FF85A /* Headers */,
-				A649C462A84F5734477B13AC8F91236D /* Sources */,
-				756C61506E1D6A74E1BEE65086419702 /* Frameworks */,
+				9B057D980BE4154DC8DFC464DDAD7EF6 /* Headers */,
+				9DA88099A25B7499E281C4D5418C5F20 /* Sources */,
+				DA93715BD5E88A14162E62F84B84423F /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8BA89E27449C54A285BA2E48D61D5495 /* PBXTargetDependency */,
 			);
 			name = UMPermissionsInterface;
 			productName = UMPermissionsInterface;
@@ -147,6 +168,11 @@
 			mainGroup = 741BE9407F3D2B13551C84485F56D413;
 			productRefGroup = 845B87769981B7D4A462D671DFE1FE63 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 093AF6407C4F406805F73F83B5108CA3 /* UMCore */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				12FF61416C5E794E9DEAC78D381D9726 /* UMPermissionsInterface */,
@@ -155,16 +181,24 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A649C462A84F5734477B13AC8F91236D /* Sources */ = {
+		9DA88099A25B7499E281C4D5418C5F20 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				375DF6B05CAC85DA606A4CE1E353650C /* UMPermissionsInterface-dummy.m in Sources */,
-				2030073F653423AEBC50DD1A93D2845A /* UMPermissionsMethodsDelegate.m in Sources */,
+				3A639FA21B1EFD59BD204CD4171BEB02 /* UMPermissionsInterface-dummy.m in Sources */,
+				C0EB2515F54EB45C66C44E585CF3B317 /* UMPermissionsMethodsDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8BA89E27449C54A285BA2E48D61D5495 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = EB9B14D8F4DB84FD07B561FDBFA6727E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		39D0AC112C7E1C7E687C14776B45F85C /* Release */ = {
@@ -227,7 +261,31 @@
 			};
 			name = Release;
 		};
-		5572FDA129B4081998D4C6C9A7633ECC /* Release */ = {
+		A09A4B37121D04D950D9D9AC727F587D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2FCF47CA8EAB57524D550EAB92FED462 /* UMPermissionsInterface.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMPermissionsInterface;
+				PRODUCT_NAME = UMPermissionsInterface;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DF4893C010B09D901AA608F94AADA497 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2FCF47CA8EAB57524D550EAB92FED462 /* UMPermissionsInterface.xcconfig */;
 			buildSettings = {
@@ -251,30 +309,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		D189A3E7ADC6263FBFB0C0327C1BFD27 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FCF47CA8EAB57524D550EAB92FED462 /* UMPermissionsInterface.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMPermissionsInterface/UMPermissionsInterface-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMPermissionsInterface;
-				PRODUCT_NAME = UMPermissionsInterface;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		E72B84A7876D739DBADC5CEABA31DE65 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -343,20 +377,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		504921805372C9562281132D549E1DDB /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A09A4B37121D04D950D9D9AC727F587D /* Debug */,
+				DF4893C010B09D901AA608F94AADA497 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6BC62061A0893EEBD0BC4605150AA966 /* Build configuration list for PBXProject "UMPermissionsInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E72B84A7876D739DBADC5CEABA31DE65 /* Debug */,
 				39D0AC112C7E1C7E687C14776B45F85C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		79C740A5F4009679EB228416F7CC6E10 /* Build configuration list for PBXNativeTarget "UMPermissionsInterface" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D189A3E7ADC6263FBFB0C0327C1BFD27 /* Debug */,
-				5572FDA129B4081998D4C6C9A7633ECC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

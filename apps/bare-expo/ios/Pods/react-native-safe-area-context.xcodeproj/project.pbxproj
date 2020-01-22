@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		35DF2EEFFC5B1352C8C67399CCCA5257 /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4A5AB968AC54B427C5C950FF4901A7E /* RNCSafeAreaView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7B111BAAEA3763132B7A608D190B9C35 /* react-native-safe-area-context-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 10174562D7A3B437FF56A674239ABAE1 /* react-native-safe-area-context-dummy.m */; };
-		B9E4150B1AD02450ED5E5845BEBB64C2 /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E2BD03EC1893F01FD9FE2F62CD53225C /* RNCSafeAreaViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E093037A41FED90BDF491C8E105A06DE /* RNCSafeAreaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CFEE51F4C02A28E998CA124505759658 /* RNCSafeAreaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FFD691B4B55DF34F09B0462A7251D5ED /* RNCSafeAreaView.h in Headers */ = {isa = PBXBuildFile; fileRef = 0069CAA0622518F1B46202774EAC45B9 /* RNCSafeAreaView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		35DF2EEFFC5B1352C8C67399CCCA5257 /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7B111BAAEA3763132B7A608D190B9C35 /* react-native-safe-area-context-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */; };
+		B9E4150B1AD02450ED5E5845BEBB64C2 /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E093037A41FED90BDF491C8E105A06DE /* RNCSafeAreaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FFD691B4B55DF34F09B0462A7251D5ED /* RNCSafeAreaView.h in Headers */ = {isa = PBXBuildFile; fileRef = EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,15 +25,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0069CAA0622518F1B46202774EAC45B9 /* RNCSafeAreaView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaView.h; path = ios/SafeAreaView/RNCSafeAreaView.h; sourceTree = "<group>"; };
+		08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaViewManager.h; path = ios/SafeAreaView/RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
 		0BD18714644802D7AE06BB2A95F67E74 /* libreact-native-safe-area-context.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-safe-area-context.a"; path = "libreact-native-safe-area-context.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		10174562D7A3B437FF56A674239ABAE1 /* react-native-safe-area-context-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-safe-area-context-dummy.m"; sourceTree = "<group>"; };
+		4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-safe-area-context-dummy.m"; sourceTree = "<group>"; };
+		4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaViewManager.m; path = ios/SafeAreaView/RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
 		509041B2622E35FCD10CF7604DB038E8 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		A4A5AB968AC54B427C5C950FF4901A7E /* RNCSafeAreaView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaView.m; path = ios/SafeAreaView/RNCSafeAreaView.m; sourceTree = "<group>"; };
-		B2A24BC166B9BF47A108E8666C4EB58F /* react-native-safe-area-context-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-safe-area-context-prefix.pch"; sourceTree = "<group>"; };
-		CFEE51F4C02A28E998CA124505759658 /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaViewManager.h; path = ios/SafeAreaView/RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
-		E2BD03EC1893F01FD9FE2F62CD53225C /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaViewManager.m; path = ios/SafeAreaView/RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
-		FBD62A885D92F0B3525DB0506230D0D0 /* react-native-safe-area-context.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-safe-area-context.xcconfig"; sourceTree = "<group>"; };
+		56DC03E644EB6579F8FEC924EF96BEEC /* react-native-safe-area-context-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-safe-area-context-prefix.pch"; sourceTree = "<group>"; };
+		960987EDD56016B5553E7049175914A7 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		D1BAA55B6414E406F54CF236688C15AA /* react-native-safe-area-context.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-safe-area-context.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DE8CCD1CB199D29A03B3FBF9D0D71CED /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaView.m; path = ios/SafeAreaView/RNCSafeAreaView.m; sourceTree = "<group>"; };
+		EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaView.h; path = ios/SafeAreaView/RNCSafeAreaView.h; sourceTree = "<group>"; };
+		F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-safe-area-context.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,8 +64,18 @@
 				66D1554282099562788EC0859FE53CB1 /* Dependencies */,
 				B88FA61B60B5D8AC8486644F6197EBA9 /* Frameworks */,
 				1B04BFDC0F319861B68D96839BA3B583 /* Products */,
-				917A5AD7B1C8D2DE6F85DD3A6002F85A /* react-native-safe-area-context */,
+				853EC671C8E6A29297900100F0154C59 /* react-native-safe-area-context */,
 			);
+			sourceTree = "<group>";
+		};
+		3715800B32353E3E5B11C049C3460E95 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				960987EDD56016B5553E7049175914A7 /* LICENSE */,
+				D1BAA55B6414E406F54CF236688C15AA /* react-native-safe-area-context.podspec */,
+				DE8CCD1CB199D29A03B3FBF9D0D71CED /* README.md */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		66D1554282099562788EC0859FE53CB1 /* Dependencies */ = {
@@ -73,17 +86,29 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		917A5AD7B1C8D2DE6F85DD3A6002F85A /* react-native-safe-area-context */ = {
+		853EC671C8E6A29297900100F0154C59 /* react-native-safe-area-context */ = {
 			isa = PBXGroup;
 			children = (
-				0069CAA0622518F1B46202774EAC45B9 /* RNCSafeAreaView.h */,
-				A4A5AB968AC54B427C5C950FF4901A7E /* RNCSafeAreaView.m */,
-				CFEE51F4C02A28E998CA124505759658 /* RNCSafeAreaViewManager.h */,
-				E2BD03EC1893F01FD9FE2F62CD53225C /* RNCSafeAreaViewManager.m */,
-				E047F68D317465B9AE76509A0366E7B1 /* Support Files */,
+				EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */,
+				E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */,
+				08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */,
+				4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */,
+				3715800B32353E3E5B11C049C3460E95 /* Pod */,
+				99F7947A6C4F2F9C8FE361EAD27D9263 /* Support Files */,
 			);
 			name = "react-native-safe-area-context";
-			path = "react-native-safe-area-context";
+			path = "../../../../node_modules/react-native-safe-area-context";
+			sourceTree = "<group>";
+		};
+		99F7947A6C4F2F9C8FE361EAD27D9263 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */,
+				4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */,
+				56DC03E644EB6579F8FEC924EF96BEEC /* react-native-safe-area-context-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/react-native-safe-area-context";
 			sourceTree = "<group>";
 		};
 		B88FA61B60B5D8AC8486644F6197EBA9 /* Frameworks */ = {
@@ -91,17 +116,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		E047F68D317465B9AE76509A0366E7B1 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				FBD62A885D92F0B3525DB0506230D0D0 /* react-native-safe-area-context.xcconfig */,
-				10174562D7A3B437FF56A674239ABAE1 /* react-native-safe-area-context-dummy.m */,
-				B2A24BC166B9BF47A108E8666C4EB58F /* react-native-safe-area-context-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/react-native-safe-area-context";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,7 +207,7 @@
 /* Begin XCBuildConfiguration section */
 		59B281E9F3307740122675B50DA29363 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FBD62A885D92F0B3525DB0506230D0D0 /* react-native-safe-area-context.xcconfig */;
+			baseConfigurationReference = F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -280,7 +294,7 @@
 		};
 		85382B0DD01836678217A48E8FA77046 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FBD62A885D92F0B3525DB0506230D0D0 /* react-native-safe-area-context.xcconfig */;
+			baseConfigurationReference = F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
