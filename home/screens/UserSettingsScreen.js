@@ -89,7 +89,7 @@ export default class UserSettingsScreen extends React.Component {
         <TouchableHighlight
           onPress={() => this._setLegacyMenuGestureAsync(false)}
           underlayColor={Colors.light.greyUnderlayColor}
-          style={styles.button}>
+        >
           <GenericCardContainer>
             <GenericCardBody style={styles.cardBody}>
               <GenericCardTitle>{Constants.isDevice ? 'Shake device' : '\u2318D'}</GenericCardTitle>
@@ -101,7 +101,7 @@ export default class UserSettingsScreen extends React.Component {
         <TouchableHighlight
           onPress={() => this._setLegacyMenuGestureAsync(true)}
           underlayColor={Colors.light.greyUnderlayColor}
-          style={styles.button}>
+        >
           <GenericCardContainer>
             <GenericCardBody style={styles.cardBody}>
               <GenericCardTitle>
@@ -134,7 +134,7 @@ export default class UserSettingsScreen extends React.Component {
         <TouchableHighlight
           onPress={() => this._setPreferredAppearance('no-preference')}
           underlayColor={Colors.light.greyUnderlayColor}
-          style={styles.button}>
+        >
           <GenericCardContainer>
             <GenericCardBody style={styles.cardBody}>
               <GenericCardTitle>Automatic</GenericCardTitle>
