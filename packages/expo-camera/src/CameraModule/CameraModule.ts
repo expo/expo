@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions, BarCodeSettings } from '../Camera.types';
+import { PictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';

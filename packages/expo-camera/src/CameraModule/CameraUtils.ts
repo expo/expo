@@ -178,36 +178,6 @@ export function isWebKit(): boolean {
   return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }
 
-function drawCorner(ctx: CanvasRenderingContext2D, x: number, y: number, angle): void {
-  const size = 50;
-  const h = size / 2;
-  ctx.save();
-  ctx.translate(x, y);
-  // ctx.translate(size / 2, size / 2);
-  ctx.beginPath();
-
-  ctx.fillStyle = 'blue';
-  ctx.arc(0, 0, 10, 0, 2 * Math.PI); // Start point
-  ctx.fill();
-  ctx.rotate(angle);
-  ctx.translate(-h, -h);
-  // Define the points as {x, y}
-  let start = { x: 0, y: 0 };
-  let cp1 = { x: size * 1.1, y: 0 };
-  let cp2 = { x: size, y: size * -0.1 };
-  let end = { x: size, y: size };
-
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = 'orange';
-  // Cubic Bézier curve
-  ctx.beginPath();
-  ctx.moveTo(start.x, start.y);
-  ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y);
-  ctx.stroke();
-
-  ctx.restore();
-}
-
 function drawLine(
   context: CanvasRenderingContext2D,
   points: { x: number; y: number }[],
@@ -228,10 +198,6 @@ export function drawBarcodeBounds(
   { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner },
   options: any = {}
 ): void {
-  // drawCorner(context, topLeftCorner.x, topLeftCorner.y, Math.PI * -0.5);
-  // drawCorner(context, topRightCorner.x, topRightCorner.y, 0);
-  // drawCorner(context, bottomLeftCorner.x, bottomLeftCorner.y, Math.PI);
-  // drawCorner(context, bottomRightCorner.x, bottomRightCorner.y, Math.PI / 2);
   drawLine(context, [topLeftCorner, topRightCorner], options);
   drawLine(context, [topRightCorner, bottomRightCorner], options);
   drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
