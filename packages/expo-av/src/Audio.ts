@@ -27,8 +27,7 @@ const _isValueValid = (value: any, validValues: any[]): boolean => {
   return validValues.filter(validValue => validValue === value).length > 0;
 };
 
-// Returns array of missing keys in object. Returns an empty array if no missing keys are found.
-const _populateMissingKeys = (userAudioMode: Object, defaultAudioMode: AudioMode): AudioMode => {
+const _populateMissingKeys = (userAudioMode: Partial<AudioMode>, defaultAudioMode: AudioMode): AudioMode => {
   for (let key in defaultAudioMode) {
     if (!userAudioMode.hasOwnProperty(key)) {
       userAudioMode[key] = defaultAudioMode[key];
@@ -56,12 +55,12 @@ function getCurrentAudioMode(): AudioMode {
   return currentAudioMode;
 }
 
-export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
-  mode = _populateMissingKeys(mode, getCurrentAudioMode());
-  currentAudioMode = mode;
+export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void> {
+  const fullMode = _populateMissingKeys(mode, getCurrentAudioMode());
+  currentAudioMode = fullMode;
 
   if (
-    !_isValueValid(mode.interruptionModeIOS, [
+    !_isValueValid(fullMode.interruptionModeIOS, [
       INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
       INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       INTERRUPTION_MODE_IOS_DUCK_OTHERS,
@@ -70,7 +69,7 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
     throw new Error(`"interruptionModeIOS" was set to an invalid value.`);
   }
   if (
-    !_isValueValid(mode.interruptionModeAndroid, [
+    !_isValueValid(fullMode.interruptionModeAndroid, [
       INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
     ])
@@ -78,15 +77,15 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
     throw new Error(`"interruptionModeAndroid" was set to an invalid value.`);
   }
   if (
-    typeof mode.allowsRecordingIOS !== 'boolean' ||
-    typeof mode.playsInSilentModeIOS !== 'boolean' ||
-    typeof mode.staysActiveInBackground !== 'boolean' ||
-    typeof mode.shouldDuckAndroid !== 'boolean' ||
-    typeof mode.playThroughEarpieceAndroid !== 'boolean'
+    typeof fullMode.allowsRecordingIOS !== 'boolean' ||
+    typeof fullMode.playsInSilentModeIOS !== 'boolean' ||
+    typeof fullMode.staysActiveInBackground !== 'boolean' ||
+    typeof fullMode.shouldDuckAndroid !== 'boolean' ||
+    typeof fullMode.playThroughEarpieceAndroid !== 'boolean'
   ) {
     throw new Error(
       '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.'
     );
   }
-  return await ExponentAV.setAudioMode(mode);
+  return await ExponentAV.setAudioMode(fullMode);
 }
