@@ -128,6 +128,8 @@ export async function revokeAsync(
   }
 }
 
+// NOTE: This function is unused; delete it if we don't need it
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function parseAuthRevocationResults(results: Response): Promise<any> {
   const data = await results.json();
   const token = results.headers['update-client-auth'];
@@ -135,7 +137,7 @@ async function parseAuthRevocationResults(results: Response): Promise<any> {
   if (results.ok) {
     // successful op
     return { type: 'success', status: results.status, data, token };
-  } else if (results.status == 503 && results.headers['retry-after']) {
+  } else if (results.status === 503 && results.headers['retry-after']) {
     // Failed op
     const retryAfterValue = results.headers['retry-after'];
     let retryAfter: number | undefined;

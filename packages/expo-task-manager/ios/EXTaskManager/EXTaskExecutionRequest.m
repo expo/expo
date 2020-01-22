@@ -52,10 +52,15 @@
 - (void)_maybeExecuteCallback
 {
   if (_callback) {
+    // Make a strong pointer to self before executing a callback as the request may be deallocated there,
+    // due to this fact `_callback = nil;` was crashing on older versions of iOS (below 12.0).
+    __strong EXTaskExecutionRequest *strongSelf = self;
+
     _callback(_results);
     _callback = nil;
     _tasks = nil;
     _results = nil;
+    strongSelf = nil;
   }
 }
 

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI34_0_0/UMCore/ABI34_0_0UMCore/UMModuleRegistry/ABI34_0_0UMModuleRegistry.h

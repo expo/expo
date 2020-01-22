@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 
 import { PictureOptions } from '../Camera.types';
@@ -9,8 +10,9 @@ import {
   ImageType,
 } from './CameraModule.types';
 import * as Utils from './CameraUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+import { FacingModeToCameraType, PictureSizes } from './constants';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
 
 import { WebWorker } from './barcode/WorkerUtils';
 
@@ -18,115 +20,101 @@ import BarcodeScannerWorker from './barcode/BarcodeScannerWorker.js';
 
 export { ImageType, CameraType, CaptureOptions };
 
-/*
- * TODO: Bacon: Add more props for Android
- *
- * aspectRatio: { min (0.00033), max (4032) }
- * colorTemperature: MediaSettingsRange  (max: 7000, min: 2850, step: 50)
- * exposureCompensation: MediaSettingsRange (max: 2, min: -2, step: 0.1666666716337204)
- * exposureMode: 'continuous' | 'manual'
- * frameRate: { min: (1), max: (60) }
- * iso: MediaSettingsRange (max: 3200, min: 50, step: 1)
- * width: { min: 1, max}
- * height: { min: 1, max}
- */
-
 type OnCameraReadyListener = () => void;
-type OnMountErrorListener = ({ nativeEvent: Error }) => void;
+type OnMountErrorListener = (event: { nativeEvent: Error }) => void;
+
+export type WebCameraSettings = Partial<{
+  autoFocus: string;
+  flashMode: string;
+  whiteBalance: string;
+  exposureCompensation: number;
+  colorTemperature: number;
+  iso: number;
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  sharpness: number;
+  focusDistance: number;
+  zoom: number;
+}>;
+
+const VALID_SETTINGS_KEYS = [
+  'autoFocus',
+  'flashMode',
+  'exposureCompensation',
+  'colorTemperature',
+  'iso',
+  'brightness',
+  'contrast',
+  'saturation',
+  'sharpness',
+  'focusDistance',
+  'whiteBalance',
+  'zoom',
+];
 
 class CameraModule {
-  videoElement: HTMLVideoElement;
-  canvas?: HTMLCanvasElement;
+  public onCameraReady: OnCameraReadyListener = () => {};
+  public onMountError: OnMountErrorListener = () => {};
+  private stream: MediaStream | null = null;
+  private settings: MediaTrackSettings | null = null;
+  private pictureSize?: string;
+  private isStartingCamera = false;
+  private cameraType: CameraType = CameraType.front;
+  private webCameraSettings: WebCameraSettings = {
+    autoFocus: 'continuous',
+    flashMode: 'off',
+    whiteBalance: 'continuous',
+    zoom: 1,
+  };
 
-  stream: MediaStream | null = null;
-  settings: MediaTrackSettings | null = null;
-  drawBarcodeOptions: any;
-  onCameraReady: OnCameraReadyListener = () => {};
-  onMountError: OnMountErrorListener = () => {};
-
-  private _pictureSize?: string;
-  private _isStartingCamera = false;
-  private _autoFocus: string = 'continuous';
-  private _flashMode: string = 'off';
-  private _whiteBalance: string = 'continuous';
-  private _cameraType: CameraType = CameraType.front;
-  private _zoom: number = 1;
-
-  private webWorker?: WebWorker;
-  private barcodeLoop?: NodeJS.Timeout;
-
-  get autoFocus(): string {
-    return this._autoFocus;
+  public get type(): CameraType {
+    return this.cameraType;
   }
 
-  async setAutoFocusAsync(value: string): Promise<void> {
-    if (value === this.autoFocus) {
-      return;
-    }
-    this._autoFocus = value;
-    await this._syncTrackCapabilities();
-  }
-
-  get flashMode(): string {
-    return this._flashMode;
-  }
-
-  async setFlashModeAsync(value: string): Promise<void> {
-    if (value === this.flashMode) {
-      return;
-    }
-    this._flashMode = value;
-    await this._syncTrackCapabilities();
-  }
-
-  get whiteBalance(): string {
-    return this._whiteBalance;
-  }
-
-  async setWhiteBalanceAsync(value: string): Promise<void> {
-    if (value === this.whiteBalance) {
-      return;
-    }
-    this._whiteBalance = value;
-    await this._syncTrackCapabilities();
-  }
-
-  get type(): CameraType {
-    return this._cameraType;
-  }
-
-  async setTypeAsync(value: CameraType) {
-    if (value === this._cameraType) {
-      return;
-    }
-    this._cameraType = value;
-    await this.resumePreview();
-  }
-
-  get zoom(): number {
-    return this._zoom;
-  }
-
-  async setZoomAsync(value: number): Promise<void> {
-    if (value === this.zoom) {
-      return;
-    }
-    //TODO: Bacon: IMP on non-android devices
-    this._zoom = value;
-    await this._syncTrackCapabilities();
-  }
-
-  constructor(videoElement: HTMLVideoElement) {
-    this.videoElement = videoElement;
+  constructor(private videoElement: HTMLVideoElement) {
     if (this.videoElement) {
       this.videoElement.addEventListener('loadedmetadata', () => {
-        this._syncTrackCapabilities();
+        this.syncTrackCapabilities();
       });
     }
   }
 
-  setPictureSize(value: string) {
-    if (value === this._pictureSize) {
+  public async updateWebCameraSettingsAsync(nextSettings: {
+    [key: string]: any;
+  }): Promise<boolean> {
+    const changes: WebCameraSettings = {};
+
+    for (const key of Object.keys(nextSettings)) {
+      if (!VALID_SETTINGS_KEYS.includes(key)) continue;
+      const nextValue = nextSettings[key];
+      if (nextValue !== this.webCameraSettings[key]) {
+        changes[key] = nextValue;
+      }
+    }
+
+    // Only update the native camera if changes were found
+    const hasChanges = !!Object.keys(changes).length;
+
+    this.webCameraSettings = { ...this.webCameraSettings, ...changes };
+    if (hasChanges) {
+      await this.syncTrackCapabilities(changes);
+    }
+
+    return hasChanges;
+  }
+
+  public async setTypeAsync(value: CameraType) {
+    if (value === this.cameraType) {
+      return;
+    }
+    this.cameraType = value;
+
+    await this.resumePreview();
+  }
+
+  public setPictureSize(value: string) {
+    if (value === this.pictureSize) {
       return;
     }
     invariant(
@@ -136,72 +124,119 @@ class CameraModule {
       )}`
     );
 
-    const [width, height] = value.split('x');
-    //TODO: Bacon: IMP
-    const aspectRatio = parseFloat(width) / parseFloat(height);
+    // TODO: Bacon: IMP
+    // const [width, height] = value.split('x');
+    // const aspectRatio = parseFloat(width) / parseFloat(height);
 
-    this._pictureSize = value;
+    this.pictureSize = value;
   }
 
-  async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
-    const capabilities = track.getCapabilities() as any;
+  public isTorchAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'torch');
+  }
+
+  public isZoomAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'zoom');
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+  private async onCapabilitiesReady(
+    track: MediaStreamTrack,
+    settings: WebCameraSettings = {}
+  ): Promise<void> {
+    const capabilities = track.getCapabilities();
 
     // Create an empty object because if you set a constraint that isn't available an error will be thrown.
-    const constraints: {
-      zoom?: number;
-      torch?: boolean;
-      whiteBalance?: string;
-      focusMode?: string;
-    } = {};
+    const constraints: MediaTrackConstraintSet = {};
 
-    if (capabilities.zoom) {
-      // TODO: Bacon: We should have some async method for getting the (min, max, step) externally
-      const { min, max } = capabilities.zoom;
-      constraints.zoom = Math.min(max, Math.max(min, this._zoom));
+    // TODO: Bacon: Add `pointsOfInterest` support
+    const clampedValues = [
+      'exposureCompensation',
+      'colorTemperature',
+      'iso',
+      'brightness',
+      'contrast',
+      'saturation',
+      'sharpness',
+      'focusDistance',
+      'zoom',
+    ];
+
+    for (const property of clampedValues) {
+      if (capabilities[property]) {
+        constraints[property] = convertNormalizedSetting(
+          capabilities[property],
+          settings[property]
+        );
+      }
     }
-    if (capabilities.focusMode) {
-      constraints.focusMode = CapabilityUtils.convertAutoFocusJSONToNative(this.autoFocus);
+
+    const _validatedConstrainedValue = (key, propName, converter) =>
+      validatedConstrainedValue(
+        key,
+        propName,
+        converter(settings[propName]),
+        capabilities,
+        settings,
+        this.cameraType
+      );
+
+    if (capabilities.focusMode && settings.autoFocus !== undefined) {
+      constraints.focusMode = _validatedConstrainedValue(
+        'focusMode',
+        'autoFocus',
+        CapabilityUtils.convertAutoFocusJSONToNative
+      );
     }
-    if (capabilities.torch) {
-      constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
+
+    if (capabilities.torch && settings.flashMode !== undefined) {
+      constraints.torch = _validatedConstrainedValue(
+        'torch',
+        'flashMode',
+        CapabilityUtils.convertFlashModeJSONToNative
+      );
     }
-    if (capabilities.whiteBalance) {
-      constraints.whiteBalance = this.whiteBalance;
+
+    if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
+      constraints.whiteBalanceMode = _validatedConstrainedValue(
+        'whiteBalanceMode',
+        'whiteBalance',
+        CapabilityUtils.convertWhiteBalanceJSONToNative
+      );
     }
 
     await track.applyConstraints({ advanced: [constraints] as any });
   }
 
-  private async _syncTrackCapabilities(): Promise<void> {
-    if (this.stream) {
-      await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
+  private async applyVideoConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getVideoTracks) {
+      return false;
+    }
+    return await applyConstraints(this.stream.getVideoTracks(), constraints);
+  }
+
+  private async applyAudioConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getAudioTracks) {
+      return false;
+    }
+    return await applyConstraints(this.stream.getAudioTracks(), constraints);
+  }
+
+  private async syncTrackCapabilities(settings: WebCameraSettings = {}): Promise<void> {
+    if (this.stream && this.stream.getVideoTracks) {
+      await Promise.all(
+        this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track, settings))
+      );
     }
   }
 
-  setVideoSource(stream: MediaStream | MediaSource | Blob | null): void {
-    if ('srcObject' in this.videoElement) {
-      this.videoElement.srcObject = stream;
-    } else {
-      // TODO: Bacon: Check if needed
-      (this.videoElement['src'] as any) = window.URL.createObjectURL(stream);
-    }
-  }
-
-  setSettings(stream: MediaStream | null): void {
-    this.settings = null;
-    if (stream && this.stream) {
-      this.settings = this.stream.getTracks()[0].getSettings();
-    }
-  }
-
-  setStream(stream: MediaStream | null): void {
+  private setStream(stream: MediaStream | null): void {
     this.stream = stream;
-    this.setSettings(stream);
-    this.setVideoSource(stream);
+    this.settings = stream ? stream.getTracks()[0].getSettings() : null;
+    setVideoSource(this.videoElement, stream);
   }
 
-  private isImageMirrored: boolean = true;
-  getActualCameraType(): CameraType | null {
+  public getActualCameraType(): CameraType | null {
     if (this.settings) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
       const { facingMode = 'user' } = this.settings;
@@ -211,152 +246,32 @@ class CameraModule {
     return null;
   }
 
-  async ensureCameraIsRunningAsync(): Promise<void> {
+  public async ensureCameraIsRunningAsync(): Promise<void> {
     if (!this.stream) {
       await this.resumePreview();
     }
   }
 
-  async resumePreview(): Promise<MediaStream | null> {
-    if (this._isStartingCamera) {
+  public async resumePreview(): Promise<MediaStream | null> {
+    if (this.isStartingCamera) {
       return null;
     }
-    this._isStartingCamera = true;
+    this.isStartingCamera = true;
     try {
-      this.pausePreview();
+      this.stopAsync();
       const stream = await Utils.getStreamDevice(this.type);
       this.setStream(stream);
-      this._isStartingCamera = false;
+      this.isStartingCamera = false;
       this.onCameraReady();
       return stream;
     } catch (error) {
-      this._isStartingCamera = false;
+      this.isStartingCamera = false;
       this.onMountError({ nativeEvent: error });
     }
     return null;
   }
 
-  startScanner(settings: BarCodeSettings, callback: (results: any) => void) {
-    if (this.webWorker) {
-      this.stopScanner();
-    }
-    // Initiate web worker execute handler according to mode.
-    this.webWorker = new WebWorker(BarcodeScannerWorker);
-
-    this.webWorker.onmessage = event => {
-      if (callback && this.webWorker) {
-        if (event && Array.isArray(event.data)) {
-          let context: CanvasRenderingContext2D | undefined;
-          if (settings.shouldRenderIndicator && this.canvas) {
-            const { videoWidth, videoHeight } = this.videoElement;
-            const elementWidth: number = this.videoElement.offsetWidth;
-            const elementHeight: number = this.videoElement.offsetHeight;
-
-            const videoRatio = scaleAspectFill(
-              videoWidth,
-              videoHeight,
-              elementWidth,
-              elementHeight
-            );
-            // let videoRatio = scalePreserveAspectRatio(videoWidth, videoHeight, elementWidth, elementHeight);
-
-            this.canvas.width = elementWidth;
-            this.canvas.height = elementHeight;
-
-            const dW = videoWidth * videoRatio;
-            const dH = videoHeight * videoRatio;
-
-            const diffW = elementWidth - dW;
-            const diffH = elementHeight - dH;
-            const xScale = (elementWidth - diffW) / videoWidth;
-            const yScale = (elementHeight - diffH) / videoHeight;
-
-            const xOffset = diffW * 0.5;
-            const yOffset = diffH * 0.5;
-
-            context = this.canvas.getContext('2d')!;
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-            context.save();
-            if (this.isImageMirrored) {
-              context.setTransform(-1, 0, 0, 1, this.canvas.width, 0);
-            }
-
-            // DEBUG: Screen bounds
-            // context.strokeStyle = 'rgba(200, 0, 0, 1)';
-            // context.strokeRect(20, 20, this.canvas.width - 40, this.canvas.height - 40);
-
-            context.save();
-            context.translate(xOffset, yOffset);
-            context.scale(xScale, yScale);
-
-            // DEBUG: If this doesn't match the edges, something is wrong
-            // context.strokeStyle = 'rgba(0, 200, 0, 1)';
-            // context.strokeRect(0, 0, videoWidth, videoHeight);
-          }
-          for (const result of event.data) {
-            if (context) {
-              Utils.drawBarcodeBounds(context, result.location, this.drawBarcodeOptions);
-            }
-            callback(result);
-          }
-
-          if (context) {
-            // Restore the transform
-            context.restore();
-            context.restore();
-          }
-        }
-        // If interval is 0 then only scan once.
-        if (settings.interval) {
-          if (settings.interval < 0) {
-            // @ts-ignore
-            this.barcodeLoop = requestAnimationFrame(() => {
-              this.scanForBarcodes(settings.barCodeTypes);
-            });
-          } else {
-            // @ts-ignore
-            this.barcodeLoop = setTimeout(() => {
-              this.scanForBarcodes(settings.barCodeTypes);
-            }, settings.interval);
-          }
-        }
-        return;
-      }
-
-      this.stopScanner();
-    };
-
-    // Invoke the initial scan
-    this.scanForBarcodes(settings.barCodeTypes);
-  }
-
-  stopScanner() {
-    // Stop web-worker and clear the component
-    if (this.webWorker) {
-      this.webWorker.terminate();
-      this.webWorker = undefined;
-    }
-
-    // @ts-ignore
-    clearTimeout(this.barcodeLoop);
-  }
-
-  private scanForBarcodes(types: string[], config: PictureOptions = {}) {
-    if (!this.webWorker) {
-      throw new Error('Cannot process a barcode before the worker has been created.');
-    }
-    const image = Utils.captureImageData(this.videoElement, config);
-    // this.canvas.drawImage
-    this.invokeWorker({ image, types, options: { inversionAttempts: 'dontInvert' } });
-  }
-
-  private invokeWorker(payload: any) {
-    if (!this.webWorker || !payload) return;
-    this.webWorker.postMessage({ module: 'expo-barcode-scanner', payload });
-  }
-
-  takePicture(config: PictureOptions): CapturedPicture {
+  public takePicture(config: PictureOptions): CapturedPicture {
     const base64 = Utils.captureImage(this.videoElement, config);
 
     const capturedPicture: CapturedPicture = {
@@ -380,24 +295,123 @@ class CameraModule {
     return capturedPicture;
   }
 
-  pausePreview(): void {
-    if (!this.stream) {
-      return;
-    }
-    this.stream.getTracks().forEach(track => track.stop());
+  public stopAsync(): void {
+    stopMediaStream(this.stream);
     this.setStream(null);
   }
 
   // TODO: Bacon: we don't even use ratio in native...
-  getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
+  public getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
     return PictureSizes;
   };
 
-  unmount() {
-    this.stopScanner();
-    this.settings = null;
-    this.stream = null;
+  public getAvailableCameraTypesAsync = async (): Promise<string[]> => {
+    if (!navigator.mediaDevices.enumerateDevices) {
+      return [];
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+
+    const types: (string | null)[] = await Promise.all([
+      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+      (await isBackCameraAvailableAsync()) && CameraType.back,
+    ]);
+
+    return types.filter(Boolean) as string[];
+  };
+}
+
+function stopMediaStream(stream: MediaStream | null) {
+  if (!stream) return;
+  if (stream.getAudioTracks) stream.getAudioTracks().forEach(track => track.stop());
+  if (stream.getVideoTracks) stream.getVideoTracks().forEach(track => track.stop());
+  if (isMediaStreamTrack(stream)) stream.stop();
+}
+
+function setVideoSource(
+  video: HTMLVideoElement,
+  stream: MediaStream | MediaSource | Blob | null
+): void {
+  try {
+    video.srcObject = stream;
+  } catch (_) {
+    if (stream) {
+      video.src = window.URL.createObjectURL(stream);
+    } else if (typeof video.src === 'string') {
+      window.URL.revokeObjectURL(video.src);
+    }
   }
+}
+
+async function applyConstraints(
+  tracks: MediaStreamTrack[],
+  constraints: { [key: string]: any }
+): Promise<boolean> {
+  try {
+    await Promise.all(
+      tracks.map(async track => {
+        await track.applyConstraints({ advanced: [constraints] as any });
+      })
+    );
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean {
+  const stream = video.srcObject;
+
+  if (stream instanceof MediaStream) {
+    const videoTrack = stream.getVideoTracks()[0];
+
+    if (typeof videoTrack.getCapabilities === 'undefined') {
+      return false;
+    }
+
+    const capabilities: any = videoTrack.getCapabilities();
+
+    return !!capabilities[keyName];
+  }
+
+  return false;
+}
+
+function isMediaStreamTrack(input: any): input is MediaStreamTrack {
+  return typeof input.stop === 'function';
+}
+
+function convertNormalizedSetting(range: MediaSettingsRange, value?: number): number | undefined {
+  if (!value) return;
+  // convert the normalized incoming setting to the native camera zoom range
+  const converted = convertRange(value, [range.min, range.max]);
+  // clamp value so we don't get an error
+  return Math.min(range.max, Math.max(range.min, converted));
+}
+
+function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): number {
+  return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
+}
+
+function validatedConstrainedValue(
+  constraintKey: string,
+  settingsKey: string,
+  convertedSetting: any,
+  capabilities: MediaTrackCapabilities,
+  settings: any,
+  cameraType: string
+): any {
+  const setting = settings[settingsKey];
+  if (
+    Array.isArray(capabilities[constraintKey]) &&
+    convertedSetting &&
+    !capabilities[constraintKey].includes(convertedSetting)
+  ) {
+    console.warn(
+      ` { ${settingsKey}: "${setting}" } (converted to "${convertedSetting}" in the browser) is not supported for camera type "${cameraType}" in your browser. Using the default value instead.`
+    );
+    return undefined;
+  }
+  return convertedSetting;
 }
 
 export default CameraModule;

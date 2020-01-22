@@ -1,5 +1,7 @@
-import { Asset, Permissions, MediaLibrary } from 'expo';
+import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as MediaLibrary from 'expo-media-library';
 
 export const name = 'MediaLibrary';
 
@@ -27,30 +29,29 @@ const ASSET_KEYS = [
   'creationTime',
   'modificationTime',
   'duration',
-  Platform.OS == 'ios' ? 'mediaSubtypes' : 'albumId',
+  Platform.OS === 'ios' ? 'mediaSubtypes' : 'albumId',
 ];
 
 const INFO_KEYS = [
   'localUri',
   'location',
   'exif',
-  ...(Platform != 'ios' ? [] : ['orientation', 'isFavorite']),
+  ...(Platform !== 'ios' ? [] : ['orientation', 'isFavorite']),
 ];
 
 const ALBUM_KEYS = [
   'id',
   'title',
   'assetCount',
-  ...(Platform != 'ios'
+  ...(Platform !== 'ios'
     ? []
     : ['type', 'startTime', 'endTime', 'approximateLocation', 'locationNames']),
 ];
 
 const GET_ASSETS_KEYS = ['assets', 'endCursor', 'hasNextPage', 'totalCount'];
-const ALBUM_NAME = '__tseTyrarbiLaidem__';
+const ALBUM_NAME = 'Expo Test-Suite Album #1';
+const SECOND_ALBUM_NAME = 'Expo Test-Suite Album #2';
 const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
-const FIRST_ALBUM = '__iosTestAlbum__';
-const SECOND_ALBUM = '__mublAtseTsoi__';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
@@ -92,6 +93,11 @@ export async function test(t) {
       else await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
     });
 
+    t.afterAll(async () => {
+      await MediaLibrary.deleteAssetsAsync(testAssets);
+      await MediaLibrary.deleteAlbumsAsync(album);
+    });
+
     t.describe('Every return value has proper shape', async () => {
       t.it('createAssetAsync', () => {
         const keys = Object.keys(testAssets[0]);
@@ -121,7 +127,7 @@ export async function test(t) {
     t.describe('Small tests', async () => {
       t.it('Function getAlbums returns test album', async () => {
         const albums = await MediaLibrary.getAlbumsAsync();
-        t.expect(albums.filter(elem => elem.id == album.id).length).toBe(1);
+        t.expect(albums.filter(elem => elem.id === album.id).length).toBe(1);
       });
 
       t.it('getAlbum returns test album', async () => {
@@ -204,10 +210,63 @@ export async function test(t) {
         t.expect(assets.length).toBe(IMG_NUMBER);
         assets.forEach(asset => t.expect(asset.mediaType).toBe(mediaType));
       });
+
+      t.it('check size - photo', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        t.expect(assets.length).toBe(IMG_NUMBER);
+        assets.forEach(asset => {
+          t.expect(asset.width).not.toEqual(0);
+          t.expect(asset.height).not.toEqual(0);
+        });      
+      });
+
+      t.it('check size - video', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        t.expect(assets.length).toBe(VIDEO_NUMBER);
+        assets.forEach(asset => {
+          t.expect(asset.width).not.toEqual(0);
+          t.expect(asset.height).not.toEqual(0);
+        });      
+      });
+
+      t.it('supports getting assets from specified time range', async () => {
+        const assetsToCheck = 7;
+
+        // Get some assets with the biggest creation time.
+        const { assets } = await MediaLibrary.getAssetsAsync({
+          first: assetsToCheck,
+          sortBy: MediaLibrary.SortBy.creationTime,
+        });
+
+        // Set time range based on the newest and oldest creation times.
+        const createdAfter = assets[assets.length - 1].creationTime;
+        const createdBefore = assets[0].creationTime;
+
+        // Repeat assets request but with the time range.
+        const { assets: filteredAssets } = await MediaLibrary.getAssetsAsync({
+          first: assetsToCheck,
+          sortBy: MediaLibrary.SortBy.creationTime,
+          createdAfter,
+          createdBefore,
+        });
+
+        // We can't get more assets than previously, but they could be equal if there are multiple assets with the same timestamp.
+        t.expect(filteredAssets.length).toBeLessThanOrEqual(assets.length);
+
+        // Check if every asset was created within the time range.
+        for (const asset of filteredAssets) {
+          t.expect(asset.creationTime).toBeLessThanOrEqual(createdBefore);
+          t.expect(asset.creationTime).toBeGreaterThanOrEqual(createdAfter);
+        }
+      });
     });
 
     t.describe('Delete tests', async () => {
-      t.it('deleteAsstetsAsync', async () => {
+      t.it('deleteAssetsAsync', async () => {
         const { assets } = await MediaLibrary.getAssetsAsync({ album, mediaType: MEDIA_TYPES });
         const result = await MediaLibrary.deleteAssetsAsync(assets.slice(0, 2));
         const { assets: rest } = await MediaLibrary.getAssetsAsync({
@@ -225,11 +284,11 @@ export async function test(t) {
       });
       t.it('deleteManyAlbums', async () => {
         const assets = await getAssets(files.slice(0, 2));
-        let firstAlbum = await MediaLibrary.createAlbumAsync(FIRST_ALBUM, assets[0], false);
-        let secondAlbum = await MediaLibrary.createAlbumAsync(SECOND_ALBUM, assets[1], false);
+        let firstAlbum = await MediaLibrary.createAlbumAsync(ALBUM_NAME, assets[0], false);
+        let secondAlbum = await MediaLibrary.createAlbumAsync(SECOND_ALBUM_NAME, assets[1], false);
         await MediaLibrary.deleteAlbumsAsync([firstAlbum, secondAlbum], true);
-        firstAlbum = await MediaLibrary.getAlbumAsync(FIRST_ALBUM);
-        secondAlbum = await MediaLibrary.getAlbumAsync(SECOND_ALBUM);
+        firstAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
+        secondAlbum = await MediaLibrary.getAlbumAsync(SECOND_ALBUM_NAME);
         const firstAsset = await MediaLibrary.getAssetInfoAsync(assets[0]);
         const secondAsset = await MediaLibrary.getAssetInfoAsync(assets[1]);
         t.expect(firstAlbum).toBeNull();

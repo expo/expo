@@ -1,38 +1,48 @@
 import * as React from 'react';
-import { AppLoading, Asset, Font } from 'expo';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import { useScreens } from 'react-native-screens';
+import { enableScreens } from 'react-native-screens';
+import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
 
 import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
 
-// workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
-  useScreens();
-  // @ts-ignore
-  SafeAreaView.setStatusBarHeight(0);
+  enableScreens(true);
 }
 
 const initialState = {
   appIsReady: false,
 };
 
+type Props = { colorScheme: ColorSchemeName };
 type State = typeof initialState;
 
-export default class App extends React.Component<{}, State> {
+export default function AppContainer() {
+  let colorScheme = useColorScheme();
+  return (
+    <AppearanceProvider>
+      <App colorScheme={colorScheme} />
+    </AppearanceProvider>
+  );
+}
+
+class App extends React.Component<Props, State> {
   readonly state: State = initialState;
 
-  componentWillMount() {
+  componentDidMount() {
     this._loadAssetsAsync();
   }
 
   async _loadAssetsAsync() {
     try {
       const iconRequires = Object.keys(Icons).map(key => Icons[key]);
-      await Promise.all([
+
+      const assetPromises: Promise<any>[] = [
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
         // @ts-ignore
@@ -44,7 +54,14 @@ export default class App extends React.Component<{}, State> {
         Font.loadAsync({
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         }),
-      ]);
+      ];
+      if (Platform.OS !== 'web')
+        assetPromises.push(
+          Font.loadAsync({
+            Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
+          })
+        );
+      await Promise.all(assetPromises);
     } catch (e) {
       console.log({ e });
     } finally {
@@ -56,11 +73,8 @@ export default class App extends React.Component<{}, State> {
     if (this.state.appIsReady) {
       return (
         <View style={styles.container} testID="native_component_list">
-          {Platform.OS === 'android' && (
-            <View style={styles.statusBarUnderlay} />
-          )}
           <RootNavigation />
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         </View>
       );
     } else {
@@ -73,9 +87,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
   },
 });

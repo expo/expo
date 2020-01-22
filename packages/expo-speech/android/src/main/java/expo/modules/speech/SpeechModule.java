@@ -4,25 +4,25 @@ import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-
-
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Queue;
+import android.speech.tts.Voice;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class SpeechModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Queue;
+
+public class SpeechModule extends ExportedModule implements LifecycleEventListener {
 
   private TextToSpeech mTextToSpeech;
   private boolean mTtsReady = false;
@@ -78,6 +78,15 @@ public class SpeechModule extends ExportedModule implements ModuleRegistryConsum
     if (options.containsKey("rate")) {
       textToSpeech.setSpeechRate(((Number) options.get("rate")).floatValue());
     }
+    if (options.containsKey("voice")) {
+      for (Voice voice : textToSpeech.getVoices()) {
+        if (voice.getName().equals(options.get("voice"))) {
+          textToSpeech.setVoice(voice);
+
+          break;
+        }
+      }
+    }
 
     textToSpeech.speak(
         text,
@@ -90,6 +99,36 @@ public class SpeechModule extends ExportedModule implements ModuleRegistryConsum
   @ExpoMethod
   public void isSpeaking(Promise promise) {
     promise.resolve(getTextToSpeech().isSpeaking());
+  }
+
+  @ExpoMethod
+  public void getVoices(Promise promise) {
+    TextToSpeech textToSpeech = getTextToSpeech();
+    ArrayList<Voice> nativeVoices = new ArrayList();
+    ArrayList<Bundle> voices = new ArrayList();
+
+    try {
+      nativeVoices = new ArrayList<>(textToSpeech.getVoices());
+    } catch (Exception e) {}
+
+    for (Voice voice : nativeVoices) {
+        Bundle voiceMap = new Bundle();
+
+        String quality = "Default";
+
+        if (voice.getQuality() > Voice.QUALITY_NORMAL) {
+          quality = "Enhanced";
+        }
+
+        voiceMap.putString("identifier", voice.getName());
+        voiceMap.putString("name", voice.getName());
+        voiceMap.putString("quality", quality);
+        voiceMap.putString("language", LanguageUtils.getISOCode(voice.getLocale()));
+
+        voices.add(voiceMap);
+    }
+
+    promise.resolve(voices);
   }
 
   @ExpoMethod
@@ -166,17 +205,21 @@ public class SpeechModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
-    }
-
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
 
     // Register to new UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    // Unregister from old UIManager
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+    }
+    mModuleRegistry = null;
   }
 }

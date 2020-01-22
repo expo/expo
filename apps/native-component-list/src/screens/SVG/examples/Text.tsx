@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { LinearGradient, Stop, Defs, Path, G, TSpan, TextPath } = Svg;
@@ -10,11 +10,11 @@ class TextExample extends React.Component {
 
   render() {
     return (
-      <Svg height="30" width="100">
+      <Svg.Svg height="30" width="100">
         <Svg.Text x="50" y="9" fill="red" textAnchor="middle">
           I love SVG!
         </Svg.Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -24,7 +24,7 @@ class TextRotate extends React.Component {
 
   render() {
     return (
-      <Svg height="60" width="200">
+      <Svg.Svg height="60" width="200">
         <Svg.Text x="0" y="15" fill="red" rotate="30" origin="20,40">
           I love SVG
         </Svg.Text>
@@ -34,7 +34,7 @@ class TextRotate extends React.Component {
         <Svg.Text x="126" y="5" fill="#f60" rotate="106" scale="1.36" origin="140, 0">
           I love SVG
         </Svg.Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -43,7 +43,7 @@ class TextStroke extends React.Component {
   static title = 'Stroke the text';
   render() {
     return (
-      <Svg height="60" width="200">
+      <Svg.Svg height="60" width="200">
         <Defs>
           <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <Stop offset="100%" stopColor="red" stopOpacity="0" />
@@ -61,7 +61,7 @@ class TextStroke extends React.Component {
         >
           <TSpan textAnchor="middle">{['STROKE TEXT']}</TSpan>
         </Svg.Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -70,7 +70,7 @@ class TextFill extends React.Component {
   static title = 'Fill the text with LinearGradient';
   render() {
     return (
-      <Svg height="60" width="200">
+      <Svg.Svg height="60" width="200">
         <Defs>
           <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <Stop offset="0%" stopColor="rgb(255,255,0)" stopOpacity="0.5" />
@@ -91,7 +91,7 @@ class TextFill extends React.Component {
         >
           FILL TEXT
         </Svg.Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -108,7 +108,7 @@ C 160 10 180 10 180 10
 `;
 
     return (
-      <Svg height="100" width="200">
+      <Svg.Svg height="100" width="200">
         <Defs>
           <Path id="path" d={path} />
         </Defs>
@@ -123,7 +123,7 @@ C 160 10 180 10 180 10
           </Svg.Text>
           <Path d={path} fill="none" stroke="red" strokeWidth="1" />
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -133,7 +133,7 @@ class TSpanExample extends React.Component {
 
   render() {
     return (
-      <Svg height="160" width="200">
+      <Svg.Svg height="160" width="200">
         <Svg.Text y="20" dx="5 5">
           <TSpan x="10">tspan line 1</TSpan>
           <TSpan x="10" dy="15">
@@ -156,13 +156,13 @@ class TSpanExample extends React.Component {
         <Svg.Text y="140" dx="0 5 5" dy="0 -5 -5">
           delta on text
         </Svg.Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Svg.Text
       x="10"
       y="15"
@@ -176,7 +176,7 @@ const icon = (
     >
       字
     </Svg.Text>
-  </Svg>
+  </Svg.Svg>
 );
 
 const Text: Example = {

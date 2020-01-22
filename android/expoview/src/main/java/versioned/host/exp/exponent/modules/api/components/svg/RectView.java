@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Build;
 
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
@@ -75,14 +76,19 @@ class RectView extends RenderableView {
         double y = relativeOnHeight(mY);
         double w = relativeOnWidth(mW);
         double h = relativeOnHeight(mH);
-        double rx = relativeOnWidth(mRx);
-        double ry = relativeOnHeight(mRy);
 
-        if (rx != 0 || ry != 0) {
-            if (rx == 0) {
+        if (mRx != null || mRy != null) {
+            double rx = 0d;
+            double ry = 0d;
+            if (mRx == null) {
+                ry = relativeOnHeight(mRy);
                 rx = ry;
-            } else if (ry == 0) {
+            } else if (mRy == null) {
+                rx = relativeOnWidth(mRx);
                 ry = rx;
+            } else {
+                rx = relativeOnWidth(mRx);
+                ry = relativeOnHeight(mRy);
             }
 
             if (rx > w / 2) {
@@ -92,9 +98,14 @@ class RectView extends RenderableView {
             if (ry > h / 2) {
                 ry = h / 2;
             }
-            path.addRoundRect(new RectF((float) x, (float) y, (float) (x + w), (float) (y + h)), (float) rx, (float) ry, Path.Direction.CW);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                path.addRoundRect((float) x, (float) y, (float) (x + w), (float) (y + h), (float) rx, (float) ry, Path.Direction.CW);
+            } else {
+                path.addRoundRect(new RectF((float) x, (float) y, (float) (x + w), (float) (y + h)), (float) rx, (float) ry, Path.Direction.CW);
+            }
         } else {
             path.addRect((float) x, (float) y, (float) (x + w), (float) (y + h), Path.Direction.CW);
+            path.close(); // Ensure isSimplePath = false such that rect doesn't become represented using integers
         }
         return path;
     }

@@ -18,6 +18,7 @@
     RNSVGGlyphContext *_glyphContext;
     NSString *_alignmentBaseline;
     NSString *_baselineShift;
+    CGFloat cachedAdvance;
 }
 
 - (void)invalidate
@@ -27,6 +28,21 @@
     }
     [super invalidate];
     [self clearChildCache];
+}
+
+- (void)clearPath
+{
+    [super clearPath];
+    cachedAdvance = NAN;
+}
+
+- (void)setInlineSize:(RNSVGLength *)inlineSize
+{
+    if ([inlineSize isEqualTo:_inlineSize]) {
+        return;
+    }
+    [self invalidate];
+    _inlineSize = inlineSize;
 }
 
 - (void)setTextLength:(RNSVGLength *)textLength
@@ -112,10 +128,12 @@
 
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
-    [self clip:context];
     CGContextSaveGState(context);
+    [self clip:context];
     [self setupGlyphContext:context];
-    [self renderGroupTo:context rect:rect];
+    [self pushGlyphContext];
+    [super renderGroupTo:context rect:rect];
+    [self popGlyphContext];
     CGContextRestoreGState(context);
 }
 
@@ -246,6 +264,41 @@
 - (CTFontRef)getFontFromContext
 {
     return [[self.textRoot getGlyphContext] getGlyphFont];
+}
+
+- (RNSVGText*)getTextAnchorRoot
+{
+    RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+    NSArray* font = [gc getFontContext];
+    RNSVGText* node = self;
+    UIView* parent = [self superview];
+    for (NSInteger i = [font count] - 1; i >= 0; i--) {
+        RNSVGFontData* fontData = [font objectAtIndex:i];
+        if (![parent isKindOfClass:[RNSVGText class]] ||
+            fontData->textAnchor == RNSVGTextAnchorStart ||
+            node.positionX != nil) {
+            return node;
+        }
+        node = (RNSVGText*) parent;
+        parent = [node superview];
+    }
+    return node;
+}
+
+- (CGFloat)getSubtreeTextChunksTotalAdvance
+{
+    if (!isnan(cachedAdvance)) {
+        return cachedAdvance;
+    }
+    CGFloat advance = 0;
+    for (UIView *node in self.subviews) {
+        if ([node isKindOfClass:[RNSVGText class]]) {
+            RNSVGText *text = (RNSVGText*)node;
+            advance += [text getSubtreeTextChunksTotalAdvance];
+        }
+    }
+    cachedAdvance = advance;
+    return advance;
 }
 
 @end

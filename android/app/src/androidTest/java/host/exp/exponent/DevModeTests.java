@@ -1,8 +1,8 @@
 package host.exp.exponent;
 
 import android.Manifest;
-import android.support.test.espresso.Espresso;
-import android.support.test.rule.GrantPermissionRule;
+import androidx.test.espresso.Espresso;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Before;

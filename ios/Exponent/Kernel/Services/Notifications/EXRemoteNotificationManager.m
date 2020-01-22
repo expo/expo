@@ -3,7 +3,6 @@
 #import "EXApiV2Client+EXRemoteNotifications.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
-#import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
 #import "NSData+EXRemoteNotifications.h"
 #import "EXUserNotificationCenter.h"
@@ -175,17 +174,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
       [self registerForRemoteNotifications];
     }];
   });
-}
-
-- (void)getExpoPushTokenForScopedModule:(id)scopedModule success:(void (^)(NSDictionary *))success failure:(void (^)(NSString *))failure
-{
-  [self getExpoPushTokenForScopedModule:scopedModule completionHandler:^(NSString * _Nullable pushToken, NSError * _Nullable error) {
-    if (error) {
-      failure(error.localizedDescription);
-    } else {
-      success(@{ @"exponentPushToken": pushToken });
-    }
-  }];
 }
 
 #pragma mark - Internal

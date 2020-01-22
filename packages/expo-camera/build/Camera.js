@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash.mapvalues';
+import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
@@ -45,7 +45,9 @@ function ensureNativeProps(options) {
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
     if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
+        console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
         newProps.barCodeScannerSettings = {
+            // @ts-ignore
             barCodeTypes: newProps.barCodeTypes,
         };
     }
@@ -107,7 +109,7 @@ export default class Camera extends React.Component {
         this._setReference = (ref) => {
             if (ref) {
                 this._cameraRef = ref;
-                // TODO: Bacon: Make this one...
+                // TODO: Bacon: Unify these
                 if (Platform.OS === 'web') {
                     this._cameraHandle = ref;
                 }
@@ -120,6 +122,24 @@ export default class Camera extends React.Component {
                 this._cameraHandle = null;
             }
         };
+    }
+    static async isAvailableAsync() {
+        if (!CameraManager.isAvailableAsync) {
+            throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
+        }
+        return await CameraManager.isAvailableAsync();
+    }
+    static async getAvailableCameraTypesAsync() {
+        if (!CameraManager.getAvailableCameraTypesAsync) {
+            throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
+        }
+        return await CameraManager.getAvailableCameraTypesAsync();
+    }
+    static async getPermissionsAsync() {
+        return CameraManager.getPermissionsAsync();
+    }
+    static async requestPermissionsAsync() {
+        return CameraManager.requestPermissionsAsync();
     }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
@@ -213,5 +233,5 @@ Camera.defaultProps = {
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
-export const Constants = Camera.Constants;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
 //# sourceMappingURL=Camera.js.map

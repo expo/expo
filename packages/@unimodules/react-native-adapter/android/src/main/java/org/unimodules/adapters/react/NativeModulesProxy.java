@@ -196,4 +196,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       }
     }
   }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    mModuleRegistry.onDestroy();
+  }
 }

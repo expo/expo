@@ -67,15 +67,13 @@ public class LocalizationModule extends ExportedModule {
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
         Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
-
-        String country = locales.get(0).getCountry();
+        
         String locale = localeNames.get(0);
         constants.putBoolean("isRTL", isRTL);
         constants.putString("locale", locale);
         constants.putStringArrayList("locales", localeNames);
         constants.putString("timezone", getTimezone());
         constants.putStringArrayList("isoCurrencyCodes", getISOCurrencyCodes());
-        constants.putString("country", country);
 
         return constants;
     }

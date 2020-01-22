@@ -1,20 +1,30 @@
 'use strict';
-
-import React from 'react';
-import { NativeModules, StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
-import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
+import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
+import React from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 
-const { ExponentTest } = NativeModules;
+import Portal from '../components/Portal';
+import RunnerError from '../components/RunnerError';
+import Suites from '../components/Suites';
+import ExponentTest from '../ExponentTest';
+
+const initialState = {
+  portalChildShouldBeVisible: false,
+  state: Immutable.fromJS({
+    suites: [],
+    path: ['suites'], // Path to current 'children' List in state
+  }),
+  testPortal: null,
+  numFailed: 0,
+  done: false,
+};
 
 export default class TestScreen extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = TestScreen.initialState;
-    this._results = '';
-    this._failures = '';
-    this._scrollViewRef = null;
-  }
+  state = initialState;
+  _results = '';
+  _failures = '';
+  _scrollViewRef = null;
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -31,17 +41,6 @@ export default class TestScreen extends React.Component {
     title: 'Test Runner',
   };
 
-  static initialState = {
-    portalChildShouldBeVisible: false,
-    state: Immutable.fromJS({
-      suites: [],
-      path: ['suites'], // Path to current 'children' List in state
-    }),
-    testPortal: null,
-    numFailed: 0,
-    done: false,
-  };
-
   setPortalChild = testPortal => {
     if (this._isMounted) return this.setState({ testPortal });
   };
@@ -54,7 +53,7 @@ export default class TestScreen extends React.Component {
 
   _runTests = async modules => {
     // Reset results state
-    this.setState(TestScreen.initialState);
+    this.setState(initialState);
 
     const { jasmineEnv, jasmine } = await this._setupJasmine();
 
@@ -119,17 +118,17 @@ export default class TestScreen extends React.Component {
           }
           const emoji = result.status === 'passed' ? ':green_heart:' : ':broken_heart:';
           console.log(`${grouping} ${emoji} ${result.fullName}`);
-          this._results += `${grouping} ${result.fullName}\n`;
+          app._results += `${grouping} ${result.fullName}\n`;
 
           if (result.status === 'failed') {
-            this._failures += `${grouping} ${result.fullName}\n`;
-            result.failedExpectations.forEach(({ matcherName, message }) => {
+            app._failures += `${grouping} ${result.fullName}\n`;
+            result.failedExpectations.forEach(({ matcherName = 'NO_MATCHER', message }) => {
               if (ExponentTest && ExponentTest.log) {
                 ExponentTest.log(`${matcherName}: ${message}`);
               }
               console.log(`${matcherName}: ${message}`);
-              this._results += `${matcherName}: ${message}\n`;
-              this._failures += `${matcherName}: ${message}\n`;
+              app._results += `${matcherName}: ${message}\n`;
+              app._failures += `${matcherName}: ${message}\n`;
             });
             failedSpecs.push(result);
           }
@@ -143,19 +142,23 @@ export default class TestScreen extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- sending results to runner');
-        if (app._isMounted) {
-          app.setState({ done: true, numFailed: failedSpecs.length });
-        }
+
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
-          results: this._results,
+          failures: app._failures,
+          results: app._results,
         };
+
+        const jsonResult = JSON.stringify(result);
+        if (app._isMounted) {
+          app.setState({ done: true, numFailed: failedSpecs.length, results: jsonResult });
+        }
+
         if (Platform.OS === 'web') {
           // This log needs to be an object for puppeteer tests
           console.log(result);
         } else {
-          const jsonResult = JSON.stringify(result);
           console.log(jsonResult);
         }
 
@@ -163,8 +166,8 @@ export default class TestScreen extends React.Component {
           ExponentTest.completed(
             JSON.stringify({
               failed: failedSpecs.length,
-              failures: this._failures,
-              results: this._results,
+              failures: app._failures,
+              results: app._results,
             })
           );
         }
@@ -233,9 +236,7 @@ export default class TestScreen extends React.Component {
       specDone(jasmineResult) {
         if (app.state.testPortal) {
           console.warn(
-            `The test portal has not been cleaned up by \`${
-              jasmineResult.fullName
-            }\`. Call \`cleanupPortal\` before finishing the test.`
+            `The test portal has not been cleaned up by \`${jasmineResult.fullName}\`. Call \`cleanupPortal\` before finishing the test.`
           );
         }
         if (app._isMounted) {
@@ -258,132 +259,32 @@ export default class TestScreen extends React.Component {
     };
   }
 
-  _renderSpecResult = r => {
-    const status = r.get('status') || 'running';
-    return (
-      <View
-        key={r.get('id')}
-        style={{
-          paddingLeft: 10,
-          marginVertical: 3,
-          borderColor: {
-            running: '#ff0',
-            passed: '#0f0',
-            failed: '#f00',
-            disabled: '#888',
-          }[status],
-          borderLeftWidth: 3,
-        }}>
-        <Text style={{ fontSize: 16 }}>
-          {
-            {
-              running: '😮 ',
-              passed: '😄 ',
-              failed: '😞 ',
-            }[status]
-          }
-          {r.get('description')} ({status})
-        </Text>
-        {r.get('failedExpectations').map((e, i) => (
-          <Text key={i}>{e.get('message')}</Text>
-        ))}
-      </View>
-    );
-  };
-
-  _renderSuiteResult = (r, depth) => {
-    const titleStyle =
-      depth === 0
-        ? { marginBottom: 8, fontSize: 16, fontWeight: 'bold' }
-        : { marginVertical: 8, fontSize: 16 };
-    const containerStyle =
-      depth === 0
-        ? {
-            paddingLeft: 16,
-            paddingVertical: 16,
-            borderBottomWidth: 1,
-            borderColor: '#ddd',
-          }
-        : { paddingLeft: 16 };
-    return (
-      <View key={r.get('result').get('id')} style={containerStyle}>
-        <Text style={titleStyle}>{r.get('result').get('description')}</Text>
-        {r.get('specs').map(this._renderSpecResult)}
-        {r.get('children').map(r => this._renderSuiteResult(r, depth + 1))}
-      </View>
-    );
-  };
-
-  _onScrollViewContentSizeChange = () => {
-    if (this._scrollViewRef) {
-      this._scrollViewRef.scrollToEnd();
-    }
-  };
-
-  _renderDoneText = () => {
-    if (this.state.done) {
-      return (
-        <Text style={styles.doneMessage}>
-          All done! {this.state.numFailed} {this.state.numFailed === 1 ? 'test' : 'tests'} failed.
-        </Text>
-      );
-    }
-  };
-
-  _renderPortal = () => {
-    const styles = {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      position: 'absolute',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgb(255, 255, 255)',
-      opacity: this.state.portalChildShouldBeVisible ? 0.5 : 0,
-    };
-
-    if (this.state.testPortal) {
-      return (
-        <View style={styles} pointerEvents="none">
-          {this.state.testPortal}
-        </View>
-      );
-    }
-  };
-
   render() {
+    const {
+      testRunnerError,
+      results,
+      done,
+      numFailed,
+      state,
+      portalChildShouldBeVisible,
+      testPortal,
+    } = this.state;
+    if (testRunnerError) {
+      return <RunnerError>{testRunnerError}</RunnerError>;
+    }
     return (
-      <View style={styles.scrollViewContainer} testID="test_suite_container">
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-          ref={ref => (this._scrollViewRef = ref)}
-          onContentSizeChange={this._onScrollViewContentSizeChange}>
-          {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
-          {this._renderDoneText()}
-        </ScrollView>
-        {this._renderPortal()}
+      <View testID="test_suite_container" style={styles.container}>
+        <Suites numFailed={numFailed} results={results} done={done} suites={state.get('suites')} />
+        <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
+  container: {
     flex: 1,
     alignItems: 'stretch',
     justifyContent: 'center',
-  },
-  scrollViewContent: {
-    padding: 5,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  doneMessage: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20,
   },
 });

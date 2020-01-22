@@ -29,15 +29,14 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
     List result = new ArrayList();
     final String countColumn = "COUNT(*)";
     final String[] projection = {MediaStore.Images.Media.BUCKET_ID, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, countColumn};
-    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE + ") /*";
+    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE + ") GROUP BY (" + MediaStore.Images.Media.BUCKET_ID;
 
     try (Cursor albums = mContext.getContentResolver().query(
         EXTERNAL_CONTENT,
         projection,
         selection,
         null,
-        "*/ GROUP BY " + MediaStore.Images.Media.BUCKET_ID +
-            " ORDER BY " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME)) {
+        MediaStore.Images.Media.BUCKET_DISPLAY_NAME)) {
 
       if (albums == null) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums. Query returns null.");

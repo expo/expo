@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Circle, Path, Rect, G, Text, ClipPath, Defs } = Svg;
@@ -11,7 +11,7 @@ class PressExample extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Circle cx="50%" cy="50%" r="38%" fill="red" onPress={() => alert('Press on Circle')} />
         <Rect
           x="20%"
@@ -22,7 +22,7 @@ class PressExample extends React.Component {
           onLongPress={() => alert('Long press on Rect')}
         />
         <Path d="M50,5L20,99L95,39L5,39L80,99z" fill="pink" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -40,7 +40,7 @@ class HoverExample extends React.Component {
 
   render() {
     return (
-      <Svg height="120" width="120">
+      <Svg.Svg height="120" width="120">
         <Defs>
           <ClipPath id="clip">
             <Circle r="30" cx="50%" cy="50%" />
@@ -63,7 +63,7 @@ class HoverExample extends React.Component {
             />
           </G>
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -73,7 +73,7 @@ class GroupExample extends React.Component {
 
   render() {
     return (
-      <Svg height="120" width="120" viewBox="0 0 240 240">
+      <Svg.Svg height="120" width="120" viewBox="0 0 240 240">
         <G onPress={() => alert('Pressed on G')}>
           <G scale="1.4">
             <G>
@@ -92,13 +92,13 @@ class GroupExample extends React.Component {
             </G>
           </G>
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Circle fill="#ccc" stroke="#000" cx="11.1" cy="4.4" r="2.6" />
     <Path
       fill="#fff"
@@ -117,7 +117,7 @@ c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0l0.1,0v0.5c0,0,0,0,0,0l0,1.1l0,0.2 M6.2,
       `}
       // tslint:enable max-line-length
     />
-  </Svg>
+  </Svg.Svg>
 );
 
 const TouchEvents: Example = {

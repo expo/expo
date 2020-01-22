@@ -1,4 +1,4 @@
-export type GetDocumentOptions = {
+export type DocumentPickerOptions = {
   type?: string;
   copyToCacheDirectory?: boolean;
   multiple?: boolean;

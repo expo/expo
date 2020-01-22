@@ -148,7 +148,7 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
       [self _loadEmbeddedBundleUrlWithManifest:embeddedManifest];
 
       // load everything else from EXShell
-      [self _loadMiscPropertiesWithConfig:shellConfig];
+      [self _loadMiscPropertiesWithConfig:shellConfig andInfoPlist:infoPlist];
 
       [self _setAnalyticsPropertiesWithStandaloneManifestUrl:_standaloneManifestUrl isUserDetached:isUserDetach];
     }
@@ -197,13 +197,17 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   }
 }
 
-- (void)_loadMiscPropertiesWithConfig:(NSDictionary *)shellConfig
+- (void)_loadMiscPropertiesWithConfig:(NSDictionary *)shellConfig andInfoPlist:(NSDictionary *)infoPlist
 {
   _isManifestVerificationBypassed = [shellConfig[@"isManifestVerificationBypassed"] boolValue];
   _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
     ? YES
     : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
-  _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
+  if (infoPlist[@"ExpoReleaseChannel"]) {
+    _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
+  } else {
+    _releaseChannel = (shellConfig[@"releaseChannel"] == nil) ? @"default" : shellConfig[@"releaseChannel"];
+  }
   // other shell config goes here
 }
 

@@ -1,8 +1,17 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 
 import { PictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
+import { requestUserMediaAsync } from './UserMediaManager';
+
+interface ConstrainLongRange {
+  max?: number;
+  min?: number;
+  exact?: number;
+  ideal?: number;
+}
 
 export function getImageSize(videoWidth: number, videoHeight: number, scale: number): ImageSize {
   const width = videoWidth * scale;
@@ -119,22 +128,11 @@ export function captureImageData(
   return imageData;
 }
 
-function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia(constraints);
-  } else {
-    let _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'];
-    return new Promise((resolve, reject) =>
-      _getUserMedia.call(navigator, constraints, resolve, reject)
-    );
-  }
-}
-
-function getSupportedConstraints() {
+function getSupportedConstraints(): MediaTrackSupportedConstraints | null {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();
   }
-  return {};
+  return null;
 }
 
 export function getIdealConstraints(
@@ -152,21 +150,34 @@ export function getIdealConstraints(
   }
 
   const supports = getSupportedConstraints();
-  if (!supports.facingMode || !supports.width || !supports.height) {
+  // TODO: Bacon: Test this
+  if (!supports || !supports.facingMode || !supports.width || !supports.height)
     return MinimumConstraints;
-  }
 
   if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
-    (preferredConstraints.video as MediaTrackConstraints).facingMode = {
-      ideal: CameraTypeToFacingMode[preferredCameraType],
-      // exact: CameraTypeToFacingMode[preferredCameraType],
-    };
+    const facingMode = CameraTypeToFacingMode[preferredCameraType];
+    if (isWebKit()) {
+      const key = facingMode === 'user' ? 'exact' : 'ideal';
+      (preferredConstraints.video as MediaTrackConstraints).facingMode = {
+        [key]: facingMode,
+      };
+    } else {
+      (preferredConstraints.video as MediaTrackConstraints).facingMode = {
+        ideal: CameraTypeToFacingMode[preferredCameraType],
+      };
+    }
   }
 
-  (preferredConstraints.video as MediaTrackConstraints).width = width;
-  (preferredConstraints.video as MediaTrackConstraints).height = height;
+  if (isMediaTrackConstraints(preferredConstraints.video)) {
+    preferredConstraints.video.width = width;
+    preferredConstraints.video.height = height;
+  }
 
   return preferredConstraints;
+}
+
+function isMediaTrackConstraints(input: any): input is MediaTrackConstraints {
+  return input && typeof input.video !== 'boolean';
 }
 
 export async function getStreamDevice(
@@ -179,7 +190,7 @@ export async function getStreamDevice(
     preferredWidth,
     preferredHeight
   );
-  const stream: MediaStream = await getUserMedia(constraints);
+  const stream: MediaStream = await requestUserMediaAsync(constraints);
   return stream;
 }
 
@@ -241,4 +252,8 @@ export function drawBarcodeBounds(
   drawLine(context, [topRightCorner, bottomRightCorner], options);
   drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
   drawLine(context, [bottomLeftCorner, topLeftCorner], options);
+}
+
+export function isWebKit(): boolean {
+  return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }

@@ -1,4 +1,5 @@
-import { Brightness, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 
@@ -9,7 +10,17 @@ export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  t.describe(`Brightness`, () => {
+  t.describe(name, () => {
+    let originalBrightness;
+
+    t.beforeAll(async () => {
+      originalBrightness = await Brightness.getBrightnessAsync();
+    });
+
+    t.afterAll(async () => {
+      await Brightness.setBrightnessAsync(originalBrightness);
+    });
+
     t.describe(`Brightness.getBrightnessAsync(), Brightness.setBrightnessAsync()`, () => {
       t.it(`gets and sets the current brightness of the app screen`, async () => {
         const originalValue = 0.2;

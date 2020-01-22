@@ -8,12 +8,12 @@ Provides cryptography primitives.
 
 # Installation
 
-Not yet available in managed projects. For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For managed apps, you'll need to run `expo install expo-crypto`. For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-crypto
+expo install expo-crypto
 ```
 
 ### Configure for iOS

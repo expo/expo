@@ -20,7 +20,6 @@ static NSString *const EXAdsAdMobInterstitialWillLeaveApplication = @"interstiti
   GADInterstitial  *_interstitial;
   NSString *_adUnitID;
   bool _hasListeners;
-  NSString *_testDeviceID;
   UMPromiseResolveBlock _showAdResolver;
   UMPromiseResolveBlock _requestAdResolver;
   UMPromiseRejectBlock _requestAdRejecter;
@@ -68,17 +67,9 @@ UM_EXPORT_METHOD_AS(setAdUnitID,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTestDeviceID,
-                    setTestDeviceID:(NSString *)testDeviceID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  _testDeviceID = testDeviceID;
-  resolve(nil);
-}
-
 UM_EXPORT_METHOD_AS(requestAd,
-                    requestAd:(UMPromiseResolveBlock)resolve
+                    requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+                    resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([_interstitial hasBeenUsed] || _interstitial == nil) {
@@ -89,12 +80,10 @@ UM_EXPORT_METHOD_AS(requestAd,
     _interstitial.delegate = self;
     
     GADRequest *request = [GADRequest request];
-    if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
+    if (additionalRequestParams) {
+      GADExtras *extras = [[GADExtras alloc] init];
+      extras.additionalParameters = additionalRequestParams;
+      [request registerAdNetworkExtras:extras];
     }
     [_interstitial loadRequest:request];
   } else {
@@ -128,7 +117,7 @@ UM_EXPORT_METHOD_AS(dismissAd,
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     UIViewController *presentedViewController = self.utilities.currentViewController;
-    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
+    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) hasPrefix:@"GAD"]) {
       [presentedViewController dismissViewControllerAnimated:true completion:^{
         resolve(nil);
         UM_ENSURE_STRONGIFY(self);

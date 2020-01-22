@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Image, Text, View, Switch } from 'react-native';
-import { DocumentPicker } from 'expo';
+import * as DocumentPicker from 'expo-document-picker';
 import Button from '../components/Button';
 
 interface State {
@@ -36,7 +36,7 @@ export default class DocumentPickerScreen extends React.Component<{}, State> {
     }
     return (
       <View>
-        {this.state.document.uri!.match(/\.(png|jpg)$/gi) ? (
+        {this.state.document.name!.match(/\.(png|jpg)$/gi) ? (
           <Image
             source={{ uri: this.state.document.uri }}
             resizeMode="cover"

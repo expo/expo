@@ -1,5 +1,8 @@
 import React from 'react';
-import { Asset, FileSystem, GLView, GL } from 'expo';
+import * as GL from 'expo-gl';
+import { GLView } from 'expo-gl';
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 import { Image, Slider, StyleSheet, Text, View } from 'react-native';
 
 import exampleImage from '../../../assets/images/example3.jpg';

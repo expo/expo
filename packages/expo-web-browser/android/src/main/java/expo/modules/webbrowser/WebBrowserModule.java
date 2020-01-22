@@ -6,8 +6,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import org.unimodules.core.ExportedModule;
@@ -16,7 +16,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.List;
 import expo.modules.webbrowser.error.NoPreferredPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer {
+public class WebBrowserModule extends ExportedModule {
 
   private final static String BROWSER_PACKAGE_KEY = "browserPackage";
   private final static String SERVICE_PACKAGE_KEY = "servicePackage";
@@ -32,6 +31,8 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   private final static String SERVICE_PACKAGES_KEY = "servicePackages";
   private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
   private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
+
+  private final static String SHOW_IN_RECENTS = "showInRecents";
 
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
@@ -54,7 +55,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
   }
@@ -168,6 +169,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean(ENABLE_BAR_COLLAPSING_KEY, false));
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
+    }
+
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    if (!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     }
 
     return intent;

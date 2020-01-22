@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdOptionsViewManager.h

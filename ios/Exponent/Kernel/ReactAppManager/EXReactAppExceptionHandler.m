@@ -49,15 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (void)handleSoftJSExceptionWithMessage:(NSString *)message
-                                   stack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+- (void)handleSoftJSExceptionWithMessage:(nullable NSString *)message
+                                   stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                              exceptionId:(NSNumber *)exceptionId
 {
   [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
 }
 
-- (void)handleFatalJSExceptionWithMessage:(NSString *)message
-                                    stack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+- (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
+                                    stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                               exceptionId:(NSNumber *)exceptionId
 {
   [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
@@ -74,8 +74,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)updateJSExceptionWithMessage:(NSString *)message
-                               stack:(NSArray *)stack
+- (void)updateJSExceptionWithMessage:(nullable NSString *)message
+                               stack:(nullable NSArray *)stack
                          exceptionId:(NSNumber *)exceptionId
 {
   [[self _bridgeForRecord].redBox updateErrorMessage:message withStack:stack];

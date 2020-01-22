@@ -46,7 +46,7 @@ UM_EXPORT_METHOD_AS(updateProps,
                     resolve:(UMPromiseResolveBlock)resolver
                     reject:(UMPromiseRejectBlock)rejecter)
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] addUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXBlurView class]]) {
       EXBlurView *blurView = view;
       NSMutableArray *changedProps = [NSMutableArray new];

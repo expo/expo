@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Region;
+import android.view.View;
 import android.view.ViewParent;
 
 import com.facebook.react.bridge.Dynamic;
@@ -29,15 +30,17 @@ import static versioned.host.exp.exponent.modules.api.components.svg.TextPropert
 
 @SuppressLint("ViewConstructor")
 class TextView extends GroupView {
+    SVGLength mInlineSize = null;
     SVGLength mTextLength = null;
-    String mBaselineShift = null;
+    private String mBaselineShift = null;
     TextLengthAdjust mLengthAdjust = TextLengthAdjust.spacing;
-    AlignmentBaseline mAlignmentBaseline;
-    @Nullable ArrayList<SVGLength> mPositionX;
-    @Nullable ArrayList<SVGLength> mPositionY;
-    @Nullable ArrayList<SVGLength> mRotate;
-    @Nullable ArrayList<SVGLength> mDeltaX;
-    @Nullable ArrayList<SVGLength> mDeltaY;
+    private AlignmentBaseline mAlignmentBaseline;
+    @Nullable private ArrayList<SVGLength> mPositionX;
+    @Nullable private ArrayList<SVGLength> mPositionY;
+    @Nullable private ArrayList<SVGLength> mRotate;
+    @Nullable private ArrayList<SVGLength> mDeltaX;
+    @Nullable private ArrayList<SVGLength> mDeltaY;
+    double cachedAdvance = Double.NaN;
 
     public TextView(ReactContext reactContext) {
         super(reactContext);
@@ -49,7 +52,18 @@ class TextView extends GroupView {
             return;
         }
         super.invalidate();
-        clearChildCache();
+        getTextContainer().clearChildCache();
+    }
+
+    void clearCache() {
+        cachedAdvance = Double.NaN;
+        super.clearCache();
+    }
+
+    @ReactProp(name = "inlineSize")
+    public void setInlineSize(Dynamic inlineSize) {
+        mInlineSize = SVGLength.from(inlineSize);
+        invalidate();
     }
 
     @ReactProp(name = "textLength")
@@ -134,7 +148,9 @@ class TextView extends GroupView {
             setupGlyphContext(canvas);
             clip(canvas, paint);
             getGroupPath(canvas, paint);
+            pushGlyphContext();
             drawGroup(canvas, paint, opacity);
+            popGlyphContext();
         }
     }
 
@@ -206,5 +222,46 @@ class TextView extends GroupView {
     void pushGlyphContext() {
         boolean isTextNode = !(this instanceof TextPathView) && !(this instanceof TSpanView);
         getTextRootGlyphContext().pushContext(isTextNode, this, mFont, mPositionX, mPositionY, mDeltaX, mDeltaY, mRotate);
+    }
+
+    TextView getTextAnchorRoot() {
+        GlyphContext gc = getTextRootGlyphContext();
+        ArrayList<FontData> font = gc.mFontContext;
+        TextView node = this;
+        ViewParent parent = this.getParent();
+        for (int i = font.size() - 1; i >= 0; i--) {
+            if (!(parent instanceof TextView) || font.get(i).textAnchor == TextProperties.TextAnchor.start || node.mPositionX != null) {
+                return node;
+            }
+            node = (TextView) parent;
+            parent = node.getParent();
+        }
+        return node;
+    }
+
+    double getSubtreeTextChunksTotalAdvance(Paint paint) {
+        if (!Double.isNaN(cachedAdvance)) {
+            return cachedAdvance;
+        }
+        double advance = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof TextView) {
+                TextView text = (TextView) child;
+                advance += text.getSubtreeTextChunksTotalAdvance(paint);
+            }
+        }
+        cachedAdvance = advance;
+        return advance;
+    }
+
+    TextView getTextContainer() {
+        TextView node = this;
+        ViewParent parent = this.getParent();
+        while (parent instanceof TextView) {
+            node = (TextView) parent;
+            parent = node.getParent();
+        }
+        return node;
     }
 }

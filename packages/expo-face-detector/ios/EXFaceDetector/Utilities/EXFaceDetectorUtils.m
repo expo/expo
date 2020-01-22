@@ -7,10 +7,16 @@
 //
 
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
+#import <Firebase/Firebase.h>
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
 NSString *const EXGMVDataOutputHeightKey = @"Height";
+
+static const NSString *kModeOptionName = @"mode";
+static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
+static const NSString *kRunClassificationsOptionName = @"runClassifications";
+static const NSString *kTrackingEnabled = @"tracking";
 
 @implementation EXFaceDetectorUtils
 
@@ -18,78 +24,115 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
 {
   return @{
            @"Mode" : @{
-               @"fast" : @(EXFaceDetectionFastMode),
-               @"accurate" : @(EXFaceDetectionAccurateMode)
+               @"fast" : @(FIRVisionFaceDetectorPerformanceModeFast),
+               @"accurate" : @(FIRVisionFaceDetectorPerformanceModeAccurate)
                },
            @"Landmarks" : @{
-               @"all" : @(EXFaceDetectAllLandmarks),
-               @"none" : @(EXFaceDetectNoLandmarks)
+               @"all" : @(FIRVisionFaceDetectorLandmarkModeAll),
+               @"none" : @(FIRVisionFaceDetectorLandmarkModeNone)
                },
            @"Classifications" : @{
-               @"all" : @(EXFaceRunAllClassifications),
-               @"none" : @(EXFaceRunNoClassifications)
+               @"all" : @(FIRVisionFaceDetectorClassificationModeAll),
+               @"none" : @(FIRVisionFaceDetectorClassificationModeNone)
                }
            };
 }
 
-# pragma mark - GMVDataOutput transformations
-
-+ (CGAffineTransform)transformFromDeviceVideoOrientation:(AVCaptureVideoOrientation)deviceVideoOrientation toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation videoWidth:(NSNumber *)width videoHeight:(NSNumber *)height
++ (BOOL)didOptionsChange:(FIRVisionFaceDetectorOptions *)options comparingTo:(FIRVisionFaceDetectorOptions *)other
 {
-  EXFaceDetectorPointTransformCalculator *calculator = [[EXFaceDetectorPointTransformCalculator alloc] initToTransformFromOrientation:deviceVideoOrientation toOrientation:interfaceVideoOrientation forVideoWidth:[width floatValue] andVideoHeight:[height floatValue]];
-  return [calculator transform];
+  return options.performanceMode == other.performanceMode &&
+  options.classificationMode == other.classificationMode &&
+  options.contourMode == other.contourMode &&
+  options.minFaceSize == other.minFaceSize &&
+  options.landmarkMode == other.landmarkMode &&
+  options.trackingEnabled == other.trackingEnabled;
 }
 
-// Normally we would use `dataOutput.xScale`, `.yScale` and `.offset`.
-// Unfortunately, it turns out that using these attributes results in different results
-// on iPhone {6, 7} and iPhone 5S. On newer iPhones the transform works properly,
-// whereas on iPhone 5S the scale is too big (~0.7, while it should be ~0.4) and the offset
-// moves the face points away. This workaround (using screen + orientation + video resolution
-// to calculate proper scale) has been proven to work all three devices.
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput withInterfaceOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
++ (FIRVisionFaceDetectorOptions *)createCopy:(FIRVisionFaceDetectorOptions *)from
 {
-  UIScreen *mainScreen = [UIScreen mainScreen];
-  BOOL interfaceIsLandscape = interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeLeft || interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeRight;
-  CGFloat interfaceWidth = interfaceIsLandscape ? mainScreen.bounds.size.height : mainScreen.bounds.size.width;
-  CGFloat interfaceHeight = interfaceIsLandscape ? mainScreen.bounds.size.width : mainScreen.bounds.size.height;
-  CGFloat xScale = interfaceWidth / [(NSNumber *)dataOutput.videoSettings[EXGMVDataOutputHeightKey] floatValue];
-  CGFloat yScale = interfaceHeight / [(NSNumber *)dataOutput.videoSettings[EXGMVDataOutputWidthKey] floatValue];
-  CGAffineTransform dataOutputTransform = CGAffineTransformIdentity;
-  dataOutputTransform = CGAffineTransformScale(dataOutputTransform, xScale, yScale);
-  return dataOutputTransform;
+  FIRVisionFaceDetectorOptions *options = [FIRVisionFaceDetectorOptions new];
+  options.performanceMode = from.performanceMode;
+  options.classificationMode = from.classificationMode;
+  options.contourMode = from.contourMode;
+  options.minFaceSize = from.minFaceSize;
+  options.landmarkMode = from.landmarkMode;
+  options.trackingEnabled = from.trackingEnabled;
+  return options;
 }
 
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
-{
-  UIDeviceOrientation currentDeviceOrientation = [[UIDevice currentDevice] orientation];
-  AVCaptureVideoOrientation deviceVideoOrientation = [self videoOrientationForDeviceOrientation:currentDeviceOrientation];
-  
-  NSNumber *videoWidth = dataOutput.videoSettings[EXGMVDataOutputWidthKey];
-  NSNumber *videoHeight = dataOutput.videoSettings[EXGMVDataOutputHeightKey];
-  
-  CGAffineTransform interfaceTransform = [self transformFromDeviceVideoOrientation:deviceVideoOrientation toInterfaceVideoOrientation:interfaceVideoOrientation videoWidth:videoWidth videoHeight:videoHeight];
-  
-  CGAffineTransform dataOutputTransform = [self transformFromDeviceOutput:dataOutput withInterfaceOrientation:interfaceVideoOrientation];
-  
-  return CGAffineTransformConcat(interfaceTransform, dataOutputTransform);
+
++ (FIRVisionFaceDetectorOptions *) mapOptions:(NSDictionary*)options {
+  return [self newOptions:[FIRVisionFaceDetectorOptions new] withValues:options];
 }
 
-# pragma mark - Enum conversion
-
-+ (AVCaptureVideoOrientation)videoOrientationForDeviceOrientation:(UIDeviceOrientation)orientation
++ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary *)values
 {
-  switch (orientation) {
-    case UIDeviceOrientationPortrait:
-      return AVCaptureVideoOrientationPortrait;
-    case UIDeviceOrientationPortraitUpsideDown:
-      return AVCaptureVideoOrientationPortraitUpsideDown;
-    case UIDeviceOrientationLandscapeLeft:
-      return AVCaptureVideoOrientationLandscapeRight;
-    case UIDeviceOrientationLandscapeRight:
-      return AVCaptureVideoOrientationLandscapeLeft;
-    default:
-      return AVCaptureVideoOrientationPortrait;
+  FIRVisionFaceDetectorOptions *result = [self createCopy:options];
+  if([values objectForKey:kModeOptionName]) {
+    result.performanceMode = [values[kModeOptionName] longValue];
   }
+  if([values objectForKey:kDetectLandmarksOptionName]) {
+    result.landmarkMode = [values[kDetectLandmarksOptionName] longValue];
+  }
+  if([values objectForKey:kRunClassificationsOptionName]) {
+    result.classificationMode = [values[kRunClassificationsOptionName] longValue];
+  }
+  if([values objectForKey:kTrackingEnabled]) {
+    result.trackingEnabled = [values[kTrackingEnabled] boolValue];
+  }
+  return result;
+}
+
++ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions*)second {
+  return [self didOptionsChange:first comparingTo:second];
+}
+
++ (NSDictionary *)defaultFaceDetectorOptions
+{
+  return @{
+           kModeOptionName: @(FIRVisionFaceDetectorPerformanceModeFast),
+           kDetectLandmarksOptionName: @(FIRVisionFaceDetectorLandmarkModeNone),
+           kRunClassificationsOptionName: @(FIRVisionFaceDetectorClassificationModeNone)
+           };
+}
+
++ (int)toCGImageOrientation:(UIImageOrientation)imageOrientation
+{
+  switch (imageOrientation) {
+    case UIImageOrientationUp:
+      return kCGImagePropertyOrientationUp;
+      break;
+    case UIImageOrientationUpMirrored:
+      return kCGImagePropertyOrientationUpMirrored;
+      break;
+    case UIImageOrientationDown:
+      return kCGImagePropertyOrientationDown;
+      break;
+    case UIImageOrientationDownMirrored:
+      return kCGImagePropertyOrientationDownMirrored;
+      break;
+    case UIImageOrientationRight:
+      return kCGImagePropertyOrientationRight;
+      break;
+    case UIImageOrientationRightMirrored:
+      return kCGImagePropertyOrientationRightMirrored;
+      break;
+    case UIImageOrientationLeft:
+      return kCGImagePropertyOrientationLeft;
+      break;
+    case UIImageOrientationLeftMirrored:
+      return kCGImagePropertyOrientationLeftMirrored;
+      break;
+  }
+};
+
+# pragma mark - Encoder helpers
+
++ (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform
+{
+  return ^(float angle) {
+    return (float)(angle - (atan2(transform.b, transform.a) * (180 / M_PI)));
+  };
 }
 
 @end

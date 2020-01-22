@@ -1,12 +1,17 @@
 self: super:
 
 {
-  # TODO: Delete this after removing `native_target` usage from xdl podfile template
-  cocoapods = super.bundlerApp {
-    pname = "cocoapods";
-    gemdir = ./cocoapods;
-    exes = [ "pod" ];
-  };
+  fastlane =
+    super.bundlerApp {
+      pname = "fastlane";
+      gemdir = ./fastlane;
+      exes = [ "fastlane" ];
+      buildInputs = [ super.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/fastlane \
+          --set FASTLANE_SKIP_UPDATE_CHECK 1
+      '';
+    };
 
   nodejs = super.nodejs-10_x;
 

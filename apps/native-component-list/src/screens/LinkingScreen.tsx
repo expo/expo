@@ -96,9 +96,8 @@ export default class LinkingScreen extends React.Component<{}, State> {
     Linking.removeEventListener('url', this.onEvent);
   }
 
-  onEvent = ({ url, nativeEvent }: any) => {
-    const { data, origin, source } = nativeEvent;
-    console.log('onEvent:', { url, data, origin, source });
+  onEvent = ({ url }: any) => {
+    alert(`Linking url event: ${url}`);
   }
 
   setupAsync = async () => {

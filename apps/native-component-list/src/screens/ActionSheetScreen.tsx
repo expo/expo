@@ -1,6 +1,6 @@
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 
@@ -12,6 +12,10 @@ const ActionSheetScreen = () => (
   </ActionSheetProvider>
 );
 
+ActionSheetScreen.navigationOptions = {
+  title: 'Action Sheet',
+}
+
 export default ActionSheetScreen;
 
 interface State {
@@ -22,10 +26,6 @@ interface State {
 @connectActionSheet
 class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
   readonly state: State = {};
-
-  static navigationOptions = {
-    title: 'Action Sheet',
-  };
 
   _updateSelectionText = (selectedIndex: number) => {
     this.setState({ selectedIndex });
@@ -104,7 +104,6 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
 
   render() {
     return (
-      <SafeAreaView style={styles.flex}>
         <ScrollView style={styles.flex} contentContainerStyle={styles.contentContainer}>
           <Text style={styles.headerText}>
             {
@@ -118,7 +117,6 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
             only be toggled on Android or web; they always show on iOS.
           </Text>
         </ScrollView>
-      </SafeAreaView>
     );
   }
 }

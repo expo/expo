@@ -1,5 +1,6 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXSegment/EXSegment.h>)
 #import "EXScopedSegment.h"
 #import "EXConstantsBinding.h"
 #import <UMConstantsInterface/UMConstantsInterface.h>
@@ -31,3 +32,4 @@ UM_EXPORT_METHOD_AS(setEnabledAsync,
 }
 
 @end
+#endif

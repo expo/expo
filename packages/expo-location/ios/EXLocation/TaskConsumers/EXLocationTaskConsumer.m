@@ -50,7 +50,6 @@
 
     locationManager.delegate = self;
     locationManager.allowsBackgroundLocationUpdates = YES;
-    locationManager.pausesLocationUpdatesAutomatically = NO;
 
     // Set options-specific things in location manager.
     [self setOptions:task.options];
@@ -70,6 +69,8 @@
 
     locationManager.desiredAccuracy = [EXLocation CLLocationAccuracyFromOption:accuracy];
     locationManager.distanceFilter = [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone;
+    locationManager.activityType = [EXLocation CLActivityTypeFromOption:[options[@"activityType"] integerValue]];
+    locationManager.pausesLocationUpdatesAutomatically = [options[@"pausesUpdatesAutomatically"] boolValue];
 
     if (@available(iOS 11.0, *)) {
       locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];

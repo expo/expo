@@ -8,7 +8,7 @@ import {
   View,
   Picker,
 } from 'react-native';
-import { Speech } from 'expo';
+import * as Speech from 'expo-speech';
 import Touchable from 'react-native-platform-touchable';
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
@@ -177,7 +177,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
     };
 
     Speech.speak(this.state.selectedExample.text, {
-      voiceIOS: this.state.voice,
+      voice: this.state.voice,
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,

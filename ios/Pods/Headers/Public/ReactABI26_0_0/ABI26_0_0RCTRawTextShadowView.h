@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI26_0_0/Libraries/Text/RawText/ABI26_0_0RCTRawTextShadowView.h

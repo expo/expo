@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { ImageProps, View } from 'react-native';
 
 import { PlaybackNativeSource, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+
 export type NaturalSize = {
   width: number;
   height: number;
@@ -24,10 +25,11 @@ export type FullscreenUpdateEvent = {
   status: PlaybackStatus;
 };
 
-export type VideoPlaybackProps = {
+export type VideoProps = {
   // Source stuff
   source?: PlaybackSource; // { uri: 'http://foo/bar.mp4' }, Asset, or require('./foo/bar.mp4')
-  posterSource?: { uri: string } | number; // { uri: 'http://foo/bar.mp4' } or require('./foo/bar.mp4')
+  posterSource?: ImageProps['source']; // { uri: 'http://foo/bar.mp4' } or require('./foo/bar.mp4')
+  posterStyle?: ImageProps['style'];
 
   // Callbacks
   onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
@@ -65,7 +67,7 @@ export type VideoPlaybackProps = {
 } & React.ComponentProps<typeof View>;
 
 export type NativeProps = {
-  source: PlaybackNativeSource | null;
+  source?: PlaybackNativeSource | null;
   resizeMode?: unknown;
   status?: PlaybackStatusToSet;
   onLoadStart?: () => void;
@@ -77,7 +79,7 @@ export type NativeProps = {
   useNativeControls?: boolean;
 } & React.ComponentProps<typeof View>;
 
-export type VideoPlaybackState = {
+export type VideoState = {
   showPoster: boolean;
 };
 export type ExponentVideoComponent = React.ComponentClass<NativeProps>;

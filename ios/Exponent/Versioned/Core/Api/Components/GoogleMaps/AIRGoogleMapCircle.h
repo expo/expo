@@ -4,6 +4,8 @@
 //  Created by Nick Italiano on 10/24/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import <GoogleMaps/GoogleMaps.h>
 #import "AIRMapCoordinate.h"
 
@@ -18,3 +20,5 @@
 @property (nonatomic, assign) int zIndex;
 
 @end
+
+#endif

@@ -1,4 +1,5 @@
-import { Amplitude, Constants } from 'expo';
+import Constants from 'expo-constants';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 import Environment from '../utils/Environment';
@@ -16,7 +17,6 @@ export const events = {
   USER_UPDATED_EMAIL: 'USER_UPDATED_EMAIL',
   USER_UPDATED_PROFILE: 'USER_UPDATED_PROFILE',
   USER_UPDATED_LINKS: 'USER_UPDATED_SOCIAL_LINKS',
-  USER_UPDATED_LIKE: 'USER_UPDATED_LIKE',
   USER_UPDATED_PRIVACY: 'USER_UPDATED_PRIVACY',
   USER_REMOVED_PROJECT: 'USER_REMOVED_PROJECT',
   USER_OPENED_CREATION: 'USER_OPENED_CREATION',

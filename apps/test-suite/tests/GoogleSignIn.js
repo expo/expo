@@ -1,5 +1,5 @@
-'use strict';
-import { Localization, GoogleSignIn } from 'expo';
+import * as Localization from 'expo-localization';
+import * as GoogleSignIn from 'expo-google-sign-in';
 import { Platform } from '@unimodules/core';
 import { Image } from 'react-native';
 export const name = 'GoogleSignIn';
@@ -11,7 +11,7 @@ const accountName = 'bacon@expo.io'; // undefined;
 const config = {
   language: Localization.locale,
   /*
-    [iOS]: Only this clientId works in the Expo Client. 
+    [iOS]: Only this clientId works in the Expo Client.
   */
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,88 +7,93 @@
 
 #pragma once
 
-#include <folly/Optional.h>
+#include <better/optional.h>
+#include <folly/Likely.h>
 #include <folly/dynamic.h>
-#include <fabric/graphics/Color.h>
-#include <fabric/graphics/Geometry.h>
-#include <fabric/graphics/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
 
-inline void fromDynamic(const folly::dynamic &value, bool &result) { result = value.getBool(); }
-inline void fromDynamic(const folly::dynamic &value, int &result) {
-  // All numbers from JS are treated as double, and JS cannot represent int64 in practice.
-  // So this always converts the value to int64 instead.
-  result = value.asInt();
+template <typename T>
+void fromRawValue(RawValue const &rawValue, T &result) {
+  result = (T)rawValue;
 }
-inline void fromDynamic(const folly::dynamic &value, float &result) { result = (float)value.asDouble(); }
-inline void fromDynamic(const folly::dynamic &value, double &result) { result = value.asDouble(); }
-inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>
-inline void fromDynamic(const folly::dynamic &value, std::vector<T> &result) {
-  if (!value.isArray()) {
-    T itemResult;
-    fromDynamic(value, itemResult);
-    result = {itemResult};
+void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
+  if (rawValue.hasType<std::vector<RawValue>>()) {
+    auto items = (std::vector<RawValue>)rawValue;
+    auto length = items.size();
+    result.clear();
+    result.reserve(length);
+    for (int i = 0; i < length; i++) {
+      T itemResult;
+      fromRawValue(items.at(i), itemResult);
+      result.push_back(itemResult);
+    }
     return;
   }
 
+  // The case where `value` is not an array.
   result.clear();
+  result.reserve(1);
   T itemResult;
-  for (auto &itemValue : value) {
-    fromDynamic(itemValue, itemResult);
-    result.push_back(itemResult);
-  }
+  fromRawValue(rawValue, itemResult);
+  result.push_back(itemResult);
 }
 
-template <typename T>
-inline T convertRawProp(
-  const RawProps &rawProps,
-  const std::string &name,
-  const T &sourceValue,
-  const T &defaultValue = T()
-) {
-  const auto &iterator = rawProps.find(name);
-  if (iterator == rawProps.end()) {
+template <typename T, typename U = T>
+T convertRawProp(
+    RawProps const &rawProps,
+    char const *name,
+    T const &sourceValue,
+    U const &defaultValue = U(),
+    char const *namePrefix = nullptr,
+    char const *nameSuffix = nullptr) {
+  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
+
+  if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
 
-  const auto &value = iterator->second;
-
-  // Special case: `null` always means `the prop was removed, use default value`.
-  if (value.isNull()) {
+  // Special case: `null` always means "the prop was removed, use default
+  // value".
+  if (UNLIKELY(!rawValue->hasValue())) {
     return defaultValue;
   }
 
   T result;
-  fromDynamic(value, result);
+  fromRawValue(*rawValue, result);
   return result;
 }
 
 template <typename T>
-inline static folly::Optional<T> convertRawProp(
-  const RawProps &rawProps,
-  const std::string &name,
-  const folly::Optional<T> &sourceValue,
-  const folly::Optional<T> &defaultValue = {}
-) {
-  const auto &iterator = rawProps.find(name);
-  if (iterator == rawProps.end()) {
+static better::optional<T> convertRawProp(
+    RawProps const &rawProps,
+    char const *name,
+    better::optional<T> const &sourceValue,
+    better::optional<T> const &defaultValue = {},
+    char const *namePrefix = nullptr,
+    char const *nameSuffix = nullptr) {
+  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
+
+  if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
 
-  const auto &value = iterator->second;
-
-  // Special case: `null` always means `the prop was removed, use default value`.
-  if (value.isNull()) {
+  // Special case: `null` always means `the prop was removed, use default
+  // value`.
+  if (UNLIKELY(!rawValue->hasValue())) {
     return defaultValue;
   }
 
   T result;
-  fromDynamic(value, result);
-  return result;
+  fromRawValue(*rawValue, result);
+  return better::optional<T>{result};
 }
 
 } // namespace react

@@ -105,14 +105,14 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   if (newModuleListenersCount == 0) {
     [eventEmitter stopObserving];
   } else if (newModuleListenersCount < 0) {
-    UMLogError(@"Attemted to remove more `%@` listeners than added", moduleName);
+    UMLogError(@"Attempted to remove more `%@` listeners than added", moduleName);
     newModuleListenersCount = 0;
   }
   _modulesListenersCounts[moduleName] = [NSNumber numberWithInt:newModuleListenersCount];
 
   // Global observing state
   if (_listenersCount - 1 < 0) {
-    UMLogError(@"Attemted to remove more proxied event emitter listeners than added");
+    UMLogError(@"Attempted to remove more proxied event emitter listeners than added");
     _listenersCount = 0;
   } else {
     _listenersCount -= 1;

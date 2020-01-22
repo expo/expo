@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, FBMediaViewRenderingMethod) {
     FBMediaViewRenderingMethodOpenGL,
     /// Software fallback
     FBMediaViewRenderingMethodSoftware
-};
+} FB_DEPRECATED_WITH_MESSAGE("Rendering method is no longer used in Audience Network");
 
 /**
  Test Ad type to be injected when test mode is on
@@ -90,7 +90,11 @@ typedef NS_ENUM(NSInteger, FBAdTestAdType) {
     /// carousel ad with square image and app install CTA option
     FBAdTestAdType_Carousel_Img_Square_App_Install,
     /// carousel ad with square image and link CTA option
-    FBAdTestAdType_Carousel_Img_Square_Link
+    FBAdTestAdType_Carousel_Img_Square_Link,
+    /// carousel ad with square video and link CTA option
+    FBAdTestAdType_Carousel_Vid_Square_Link,
+    /// sample playable ad with app install CTA
+    FBAdTestAdType_Playable
 };
 
 @protocol FBAdLoggingDelegate;
@@ -227,7 +231,8 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
     FBMediaViewRenderingMethodOpenGL: use OpenGL rendering method
     FBMediaViewRenderingMethodSoftware: use software rendering method
  */
-+ (void)setMediaViewRenderingMethod:(FBMediaViewRenderingMethod)mediaViewRenderingMethod;
++ (void)setMediaViewRenderingMethod:(FBMediaViewRenderingMethod)mediaViewRenderingMethod
+    FB_DEPRECATED_WITH_MESSAGE("Rendering method is no longer used in Audience Network");
 
 @end
 

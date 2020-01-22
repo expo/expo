@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, InteractionManager, StyleSheet, View } from 'react-native';
-import { GL } from 'expo';
+import * as GL from 'expo-gl';
 
 import REGL from 'regl';
 import mat4 from 'gl-mat4';
@@ -18,7 +18,7 @@ export default class BasicScene extends React.Component {
     transitionIsComplete: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.setState({ transitionIsComplete: true });
     });

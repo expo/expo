@@ -41,7 +41,9 @@ You can find the source of the documentation inside the `pages/versions` directo
 
 ### Redirects
 
-Server-side redirects are re-created on each run of `deploy.sh`.  See that file for 
+#### Server-side redirects
+
+These redirects are limited in their expresiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of `deploy.sh`.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -49,6 +51,12 @@ We currently do two client-side redirects, using meta tags with `http-equiv="ref
 - `/versions` -> `/versions/latest`
 
 This method is not great for accessibility and should be avoided where possible.
+
+#### Client-side redirects
+
+Use these for more complex rules than one-to-one path-to-path redirect mapping. For example, we use client-side redirects to strip the `.html` extension off, and to identify if the request is for a version of the documentation that we no longer support.
+
+You can add your own client-side redirect rules in `pages/_error.js`.
 
 ### Adding Images and Assets
 
@@ -95,7 +103,7 @@ Make sure to also grab the upgrade instructions from the release notes blog post
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `sidebar-navigation-order.js`.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navigation.js`.
 
 #### Importing from the React Native docs
 

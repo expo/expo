@@ -1,18 +1,18 @@
 /* @flow */
 
 import React from 'react';
-import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import SessionActions from '../redux/SessionActions';
 
 import Analytics from '../api/Analytics';
-import Alerts from '../constants/Alerts';
 import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
+import { StyledScrollView as ScrollView } from '../components/Views';
 
 const DEBUG = false;
 
@@ -55,8 +55,8 @@ export default class SignUpScreen extends React.Component {
   _keyboardDidShowSubscription: { remove: Function };
   _keyboardDidHideSubscription: { remove: Function };
 
-  componentWillReceiveProps(nextProps: Object) {
-    if (nextProps.session.sessionSecret && !this.props.session.sessionSecret) {
+  componentDidUpdate(prevProps: Object) {
+    if (this.props.session.sessionSecret && !prevProps.session.sessionSecret) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.pop();
     }
@@ -88,12 +88,13 @@ export default class SignUpScreen extends React.Component {
   render() {
     return (
       <ScrollView
+        lightBackgroundColor={Colors.light.greyBackground}
         contentContainerStyle={{ paddingTop: 20 }}
         keyboardShouldPersistTaps="always"
         style={styles.container}>
         <Form>
           <Form.Input
-            onChangeText={this._updateValue.bind(this, 'firstName')}
+            onChangeText={value => this._updateValue('firstName', value)}
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autoFocus
@@ -107,7 +108,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._lastNameInput = view;
             }}
-            onChangeText={this._updateValue.bind(this, 'lastName')}
+            onChangeText={value => this._updateValue('lastName', value)}
             onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
             autoCorrect={false}
@@ -120,7 +121,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._usernameInput = view;
             }}
-            onChangeText={this._updateValue.bind(this, 'username')}
+            onChangeText={value => this._updateValue('username', value)}
             onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
             autoCorrect={false}
@@ -134,7 +135,7 @@ export default class SignUpScreen extends React.Component {
               this._emailInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('email')}
-            onChangeText={this._updateValue.bind(this, 'email')}
+            onChangeText={value => this._updateValue('email', value)}
             autoCorrect={false}
             autoCapitalize="none"
             value={this.state.email}
@@ -147,7 +148,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('password')}
-            onChangeText={this._updateValue.bind(this, 'password')}
+            onChangeText={value => this._updateValue('password', value)}
             value={this.state.password}
             autoCorrect={false}
             autoCapitalize="none"
@@ -160,7 +161,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordConfirmationInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
-            onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
+            onChangeText={value => this._updateValue('passwordConfirmation', value)}
             value={this.state.passwordConfirmation}
             hideBottomBorder
             autoCorrect={false}
@@ -226,13 +227,7 @@ export default class SignUpScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let signUpResult = await AuthApi.signUpAsync(this.state);
-
-      if (signUpResult.errors) {
-        this._isMounted && this._handleError(signUpResult);
-        return;
-      }
-
+      await AuthApi.signUpAsync(this.state);
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
       let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
@@ -249,49 +244,8 @@ export default class SignUpScreen extends React.Component {
     }
   };
 
-  _handleError = (result: any) => {
-    // Our signup endpoint has this format for result object if there
-    // is an error:
-    // {
-    //  "errors":[
-    //    {
-    //      "code":"AUTHENTICATION_ERROR",
-    //      "message":"Error creating user.",
-    //      "details":{
-    //        "statusCode":400,
-    //        "error":"Bad Request",
-    //        "message":"The user already exists (username: notbrent).",
-    //        "errorCode":"auth0_idp_error"
-    //      }
-    //    }
-    //  ]
-    // }
-    //
-    // NOTE(jim): On September 20th 2017, ben helped me discover that
-    // some messages were not returning 'details', but just a message.
-    // therefore I performed a hotfix for the following shape.
-    //
-    // { errors:
-    //  [
-    //    {
-    //      code: 'API_ERROR',
-    //      message: 'Please provide us with a username.'
-    //    }
-    //  ]
-    // }
-    //
-    // TODO(jim) Since I am inheriting the maintenance of these
-    // endpoints, It would be reasonable to take some spare time to
-    // make sure the shape of all errors are consistent for all clients.
-
-    let errorMessage = 'Sorry, something went wrong.';
-    if (result.errors) {
-      const { details, message } = result.errors[0];
-      errorMessage = details ? details.message : message;
-    } else if (result.error_description || result.message) {
-      errorMessage = result.error_description || result.message;
-    }
-
+  _handleError = (error: Error) => {
+    let errorMessage = error.message || 'Sorry, something went wrong.';
     alert(errorMessage);
   };
 }
@@ -299,6 +253,5 @@ export default class SignUpScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { KeepAwake } from 'expo';
+import * as KeepAwake from 'expo-keep-awake';
 import Button from '../components/Button';
 
 export default class KeepAwakeScreen extends React.Component {
@@ -9,11 +9,11 @@ export default class KeepAwakeScreen extends React.Component {
   };
 
   _activate = () => {
-    KeepAwake.activate();
+    KeepAwake.activateKeepAwake();
   }
 
   _deactivate = () => {
-    KeepAwake.deactivate();
+    KeepAwake.deactivateKeepAwake();
   }
 
   render() {

@@ -3,34 +3,17 @@ id: slider
 title: Slider
 ---
 
+> **Deprecated.** Use [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider) instead.
+
 A component used to select a single value from a range of values.
-
-### Props
-
-* [View props...](../view/#props)
-
-- [`style`](../slider/#style)
-- [`disabled`](../slider/#disabled)
-- [`maximumValue`](../slider/#maximumvalue)
-- [`minimumTrackTintColor`](../slider/#minimumtracktintcolor)
-- [`minimumValue`](../slider/#minimumvalue)
-- [`onSlidingComplete`](../slider/#onslidingcomplete)
-- [`onValueChange`](../slider/#onvaluechange)
-- [`step`](../slider/#step)
-- [`maximumTrackTintColor`](../slider/#maximumtracktintcolor)
-- [`testID`](../slider/#testid)
-- [`value`](../slider/#value)
-- [`thumbTintColor`](../slider/#thumbtintcolor)
-- [`maximumTrackImage`](../slider/#maximumtrackimage)
-- [`minimumTrackImage`](../slider/#minimumtrackimage)
-- [`thumbImage`](../slider/#thumbimage)
-- [`trackImage`](../slider/#trackimage)
 
 ---
 
 # Reference
 
 ## Props
+
+Inherits [View Props](../view/#props).
 
 ### `style`
 
@@ -66,8 +49,8 @@ Initial maximum value of the slider. Default value is 1.
 
 The color used for the track to the left of the button. Overrides the default blue gradient image on iOS.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -116,8 +99,8 @@ Step value of the slider. The value should be between 0 and (maximumValue - mini
 
 The color used for the track to the right of the button. Overrides the default gray gradient image on iOS.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -146,11 +129,11 @@ _This is not a controlled component_, you don't need to update the value during 
 
 ### `thumbTintColor`
 
-Color of the foreground switch grip.
+The color used to tint the default thumb images on iOS, or the color of the foreground switch grip on Android.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
-| [color](../colors/) | No       | Android  |
+| Type                | Required |
+| ------------------- | -------- |
+| [color](../colors/) | No       |
 
 ---
 
@@ -191,4 +174,3 @@ Assigns a single image for the track. Only static images are supported. The cent
 | Type                   | Required | Platform |
 | ---------------------- | -------- | -------- |
 | Image.propTypes.source | No       | iOS      |
-

@@ -3,6 +3,7 @@
 #import <EXAmplitude/EXAmplitude.h>
 
 #import <Amplitude-iOS/Amplitude.h>
+#import <Amplitude-iOS/AMPTrackingOptions.h>
 
 @implementation EXAmplitude
 
@@ -77,6 +78,63 @@ UM_EXPORT_METHOD_AS(setGroup,
                     reject:(UMPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] setGroup:groupType groupName:groupNames];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setTrackingOptions,
+                    setTrackingOptions:(NSDictionary *)options
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  AMPTrackingOptions *trackingOptions = [AMPTrackingOptions options];
+  
+  if ([options[@"disableCarrier"] boolValue]) {
+    [trackingOptions disableCarrier];
+  }
+  if ([options[@"disableCity"] boolValue]) {
+    [trackingOptions disableCity];
+  }
+  if ([options[@"disableCountry"] boolValue]) {
+    [trackingOptions disableCountry];
+  }
+  if ([options[@"disableDeviceModel"] boolValue]) {
+    [trackingOptions disableDeviceModel];
+  }
+  if ([options[@"disableDMA"] boolValue]) {
+    [trackingOptions disableDMA];
+  }
+  if ([options[@"disableIDFA"] boolValue]) {
+    [trackingOptions disableIDFA];
+  }
+  if ([options[@"disableIDFV"] boolValue]) {
+    [trackingOptions disableIDFV];
+  }
+  if ([options[@"disableIPAddress"] boolValue]) {
+    [trackingOptions disableIPAddress];
+  }
+  if ([options[@"disableLanguage"] boolValue]) {
+    [trackingOptions disableLanguage];
+  }
+  if ([options[@"disableLatLng"] boolValue]) {
+    [trackingOptions disableLatLng];
+  }
+  if ([options[@"disableOSName"] boolValue]) {
+    [trackingOptions disableOSName];
+  }
+  if ([options[@"disableOSVersion"] boolValue]) {
+    [trackingOptions disableOSVersion];
+  }
+  if ([options[@"disablePlatform"] boolValue]) {
+    [trackingOptions disablePlatform];
+  }
+  if ([options[@"disableRegion"] boolValue]) {
+    [trackingOptions disableRegion];
+  }
+  if ([options[@"disableVersionName"] boolValue]) {
+    [trackingOptions disableVersionName];
+  }
+
+  [[self amplitudeInstance] setTrackingOptions:trackingOptions];
   resolve(nil);
 }
 

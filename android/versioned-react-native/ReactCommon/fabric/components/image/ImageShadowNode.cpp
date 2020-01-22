@@ -1,15 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include <cstdlib>
+#include <limits>
 
-#include <fabric/components/image/ImageShadowNode.h>
-#include <fabric/components/image/ImageLocalData.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/image/ImageLocalData.h>
+#include <react/components/image/ImageShadowNode.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,8 @@ void ImageShadowNode::updateLocalData() {
   const auto &currentLocalData = getLocalData();
   if (currentLocalData) {
     assert(std::dynamic_pointer_cast<const ImageLocalData>(currentLocalData));
-    auto currentImageLocalData = std::static_pointer_cast<const ImageLocalData>(currentLocalData);
+    auto currentImageLocalData =
+        std::static_pointer_cast<const ImageLocalData>(currentLocalData);
     if (currentImageLocalData->getImageSource() == imageSource) {
       // Same `imageSource` is already in `localData`,
       // no need to (re)request an image resource.
@@ -38,7 +40,8 @@ void ImageShadowNode::updateLocalData() {
   ensureUnsealed();
 
   auto imageRequest = imageManager_->requestImage(imageSource);
-  auto imageLocalData = std::make_shared<ImageLocalData>(imageSource, std::move(imageRequest));
+  auto imageLocalData =
+      std::make_shared<ImageLocalData>(imageSource, std::move(imageRequest));
   setLocalData(imageLocalData);
 }
 
@@ -46,7 +49,9 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto sources = getProps()->sources;
 
   if (sources.size() == 0) {
-    return {.type = ImageSource::Type::Invalid};
+    return {
+        /* .type = */ ImageSource::Type::Invalid,
+    };
   }
 
   if (sources.size() == 1) {
@@ -57,15 +62,15 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto size = layoutMetrics.getContentFrame().size;
   auto scale = layoutMetrics.pointScaleFactor;
   auto targetImageArea = size.width * size.height * scale * scale;
-  auto bestFit = kFloatMax;
+  auto bestFit = std::numeric_limits<Float>::infinity();
 
-  ImageSource bestSource;
+  auto bestSource = ImageSource{};
 
   for (const auto &source : sources) {
     auto sourceSize = source.size;
     auto sourceScale = source.scale == 0 ? scale : source.scale;
     auto sourceArea =
-      sourceSize.width * sourceSize.height * sourceScale * sourceScale;
+        sourceSize.width * sourceSize.height * sourceScale * sourceScale;
 
     auto fit = std::abs(1 - (sourceArea / targetImageArea));
 

@@ -10,13 +10,15 @@
 package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.graphics.Matrix;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.MatrixMathHelper;
@@ -27,6 +29,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.facebook.react.uimanager.MatrixMathHelper.determinant;
@@ -39,7 +42,57 @@ import static com.facebook.react.uimanager.MatrixMathHelper.v3Cross;
 import static com.facebook.react.uimanager.MatrixMathHelper.v3Dot;
 import static com.facebook.react.uimanager.MatrixMathHelper.v3Length;
 import static com.facebook.react.uimanager.MatrixMathHelper.v3Normalize;
-import static com.facebook.react.uimanager.ViewProps.*;
+import static com.facebook.react.uimanager.ViewProps.ALIGN_CONTENT;
+import static com.facebook.react.uimanager.ViewProps.ALIGN_ITEMS;
+import static com.facebook.react.uimanager.ViewProps.ALIGN_SELF;
+import static com.facebook.react.uimanager.ViewProps.BORDER_BOTTOM_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_END_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_LEFT_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_RIGHT_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_START_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_TOP_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BORDER_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.BOTTOM;
+import static com.facebook.react.uimanager.ViewProps.COLLAPSABLE;
+import static com.facebook.react.uimanager.ViewProps.DISPLAY;
+import static com.facebook.react.uimanager.ViewProps.END;
+import static com.facebook.react.uimanager.ViewProps.FLEX;
+import static com.facebook.react.uimanager.ViewProps.FLEX_BASIS;
+import static com.facebook.react.uimanager.ViewProps.FLEX_DIRECTION;
+import static com.facebook.react.uimanager.ViewProps.FLEX_GROW;
+import static com.facebook.react.uimanager.ViewProps.FLEX_SHRINK;
+import static com.facebook.react.uimanager.ViewProps.FLEX_WRAP;
+import static com.facebook.react.uimanager.ViewProps.HEIGHT;
+import static com.facebook.react.uimanager.ViewProps.JUSTIFY_CONTENT;
+import static com.facebook.react.uimanager.ViewProps.LEFT;
+import static com.facebook.react.uimanager.ViewProps.MARGIN;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_BOTTOM;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_END;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_HORIZONTAL;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_LEFT;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_RIGHT;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_START;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_TOP;
+import static com.facebook.react.uimanager.ViewProps.MARGIN_VERTICAL;
+import static com.facebook.react.uimanager.ViewProps.MAX_HEIGHT;
+import static com.facebook.react.uimanager.ViewProps.MAX_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.MIN_HEIGHT;
+import static com.facebook.react.uimanager.ViewProps.MIN_WIDTH;
+import static com.facebook.react.uimanager.ViewProps.OVERFLOW;
+import static com.facebook.react.uimanager.ViewProps.PADDING;
+import static com.facebook.react.uimanager.ViewProps.PADDING_BOTTOM;
+import static com.facebook.react.uimanager.ViewProps.PADDING_END;
+import static com.facebook.react.uimanager.ViewProps.PADDING_HORIZONTAL;
+import static com.facebook.react.uimanager.ViewProps.PADDING_LEFT;
+import static com.facebook.react.uimanager.ViewProps.PADDING_RIGHT;
+import static com.facebook.react.uimanager.ViewProps.PADDING_START;
+import static com.facebook.react.uimanager.ViewProps.PADDING_TOP;
+import static com.facebook.react.uimanager.ViewProps.PADDING_VERTICAL;
+import static com.facebook.react.uimanager.ViewProps.POSITION;
+import static com.facebook.react.uimanager.ViewProps.RIGHT;
+import static com.facebook.react.uimanager.ViewProps.START;
+import static com.facebook.react.uimanager.ViewProps.TOP;
+import static com.facebook.react.uimanager.ViewProps.WIDTH;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.CAP_ROUND;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.FILL_RULE_NONZERO;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.JOIN_ROUND;
@@ -49,7 +102,7 @@ import static versioned.host.exp.exponent.modules.api.components.svg.RenderableV
  */
 class RenderableViewManager extends ViewGroupManager<VirtualView> {
 
-    enum SVGClass {
+    private enum SVGClass {
         RNSVGGroup,
         RNSVGPath,
         RNSVGText,
@@ -68,11 +121,12 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         RNSVGRadialGradient,
         RNSVGPattern,
         RNSVGMask,
+        RNSVGMarker,
     }
 
     class RenderableShadowNode extends LayoutShadowNode {
 
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "EmptyMethod"})
         @ReactPropGroup(
             names = {
                 ALIGN_SELF,
@@ -176,7 +230,6 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     private static void decomposeMatrix() {
-        Assertions.assertCondition(sTransformDecompositionArray.length == 16);
 
         // output values
         final double[] perspective = sMatrixDecompositionContext.perspective;
@@ -314,8 +367,12 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
             float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
 
             // The following converts the matrix's perspective to a camera distance
-            // such that the camera perspective looks the same on Android and iOS
-            float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+            // such that the camera perspective looks the same on Android and iOS.
+            // The native Android implementation removed the screen density from the
+            // calculation, so squaring and a normalization value of
+            // sqrt(5) produces an exact replica with iOS.
+            // For more information, see https://github.com/facebook/react-native/pull/18302
+            float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
             view.setCameraDistance(normalizedCameraDistance);
 
         }
@@ -345,6 +402,38 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         public void setFont(GroupView node, @Nullable ReadableMap font) {
             node.setFont(font);
         }
+
+        @ReactProp(name = "fontSize")
+        public void setFontSize(GroupView node, Dynamic fontSize) {
+            JavaOnlyMap map = new JavaOnlyMap();
+            switch (fontSize.getType()) {
+                case Number:
+                    map.putDouble("fontSize", fontSize.asDouble());
+                    break;
+                case String:
+                    map.putString("fontSize", fontSize.asString());
+                    break;
+                default:
+                    return;
+            }
+            node.setFont(map);
+        }
+
+        @ReactProp(name = "fontWeight")
+        public void setFontWeight(GroupView node, Dynamic fontWeight) {
+            JavaOnlyMap map = new JavaOnlyMap();
+            switch (fontWeight.getType()) {
+                case Number:
+                    map.putDouble("fontWeight", fontWeight.asDouble());
+                    break;
+                case String:
+                    map.putString("fontWeight", fontWeight.asString());
+                    break;
+                default:
+                    return;
+            }
+            node.setFont(map);
+        }
     }
 
 
@@ -366,6 +455,11 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
 
         TextViewManager(SVGClass svgClass) {
             super(svgClass);
+        }
+
+        @ReactProp(name = "inlineSize")
+        public void setInlineSize(TextView node, Dynamic inlineSize) {
+            node.setInlineSize(inlineSize);
         }
 
         @ReactProp(name = "textLength")
@@ -813,6 +907,72 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         }
     }
 
+    static class MarkerManager extends GroupViewManager {
+        MarkerManager() {
+            super(SVGClass.RNSVGMarker);
+        }
+
+        @ReactProp(name = "refX")
+        public void setRefX(MarkerView node, Dynamic refX) {
+            node.setRefX(refX);
+        }
+
+        @ReactProp(name = "refY")
+        public void setRefY(MarkerView node, Dynamic refY) {
+            node.setRefY(refY);
+        }
+
+        @ReactProp(name = "markerWidth")
+        public void setMarkerWidth(MarkerView node, Dynamic markerWidth) {
+            node.setMarkerWidth(markerWidth);
+        }
+
+        @ReactProp(name = "markerHeight")
+        public void setMarkerHeight(MarkerView node, Dynamic markerHeight) {
+            node.setMarkerHeight(markerHeight);
+        }
+
+        @ReactProp(name = "markerUnits")
+        public void setMarkerUnits(MarkerView node, String markerUnits) {
+            node.setMarkerUnits(markerUnits);
+        }
+
+        @ReactProp(name = "orient")
+        public void setOrient(MarkerView node, String orient) {
+            node.setOrient(orient);
+        }
+
+        @ReactProp(name = "minX")
+        public void setMinX(MarkerView node, float minX) {
+            node.setMinX(minX);
+        }
+
+        @ReactProp(name = "minY")
+        public void setMinY(MarkerView node, float minY) {
+            node.setMinY(minY);
+        }
+
+        @ReactProp(name = "vbWidth")
+        public void setVbWidth(MarkerView node, float vbWidth) {
+            node.setVbWidth(vbWidth);
+        }
+
+        @ReactProp(name = "vbHeight")
+        public void setVbHeight(MarkerView node, float vbHeight) {
+            node.setVbHeight(vbHeight);
+        }
+
+        @ReactProp(name = "align")
+        public void setAlign(MarkerView node, String align) {
+            node.setAlign(align);
+        }
+
+        @ReactProp(name = "meetOrSlice")
+        public void setMeetOrSlice(MarkerView node, int meetOrSlice) {
+            node.setMeetOrSlice(meetOrSlice);
+        }
+    }
+
     static class LinearGradientManager extends RenderableViewManager {
         LinearGradientManager() {
             super(SVGClass.RNSVGLinearGradient);
@@ -910,6 +1070,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         mClassName = svgclass.toString();
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return mClassName;
@@ -918,6 +1079,21 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     @ReactProp(name = "mask")
     public void setMask(VirtualView node, String mask) {
         node.setMask(mask);
+    }
+
+    @ReactProp(name = "markerStart")
+    public void setMarkerStart(VirtualView node, String markerStart) {
+        node.setMarkerStart(markerStart);
+    }
+
+    @ReactProp(name = "markerMid")
+    public void setMarkerMid(VirtualView node, String markerMid) {
+        node.setMarkerMid(markerMid);
+    }
+
+    @ReactProp(name = "markerEnd")
+    public void setMarkerEnd(VirtualView node, String markerEnd) {
+        node.setMarkerEnd(markerEnd);
     }
 
     @ReactProp(name = "clipPath")
@@ -931,7 +1107,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     @ReactProp(name = "opacity", defaultFloat = 1f)
-    public void setOpacity(VirtualView node, float opacity) {
+    public void setOpacity(@Nonnull VirtualView node, float opacity) {
         node.setOpacity(opacity);
     }
 
@@ -991,17 +1167,26 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setStrokeLinejoin(strokeLinejoin);
     }
 
+    @ReactProp(name = "vectorEffect")
+    public void setVectorEffect(RenderableView node, int vectorEffect) {
+        node.setVectorEffect(vectorEffect);
+    }
+
     @ReactProp(name = "matrix")
     public void setMatrix(VirtualView node, Dynamic matrixArray) {
         node.setMatrix(matrixArray);
     }
 
     @ReactProp(name = "transform")
-    public void setTransform(VirtualView node, ReadableArray matrix) {
-        if (matrix == null) {
+    public void setTransform(VirtualView node, Dynamic matrix) {
+        if (matrix.getType() != ReadableType.Array) {
+            return;
+        }
+        ReadableArray ma = matrix.asArray();
+        if (ma == null) {
             resetTransformProperty(node);
         } else {
-            setTransformProperty(node, matrix);
+            setTransformProperty(node, ma);
         }
         Matrix m = node.getMatrix();
         node.mTransform = m;
@@ -1018,6 +1203,11 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setResponsible(responsible);
     }
 
+    @ReactProp(name = "onLayout")
+    public void setOnLayout(VirtualView node, boolean onLayout) {
+        node.setOnLayout(onLayout);
+    }
+
     @ReactProp(name = "name")
     public void setName(VirtualView node, String name) {
         node.setName(name);
@@ -1028,10 +1218,13 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         if (view!= null) {
             view.invalidate();
         }
+        if (node instanceof TextView) {
+            ((TextView)node).getTextContainer().clearChildCache();
+        }
     }
 
     @Override
-    protected void addEventEmitters(ThemedReactContext reactContext, VirtualView view) {
+    protected void addEventEmitters(@Nonnull ThemedReactContext reactContext, @Nonnull VirtualView view) {
         super.addEventEmitters(reactContext, view);
         view.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
@@ -1057,13 +1250,14 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
      * the parent class of the ViewManager may rely on callback being executed.
      */
     @Override
-    protected void onAfterUpdateTransaction(VirtualView node) {
+    protected void onAfterUpdateTransaction(@Nonnull VirtualView node) {
         super.onAfterUpdateTransaction(node);
         invalidateSvgView(node);
     }
 
+    @Nonnull
     @Override
-    protected VirtualView createViewInstance(ThemedReactContext reactContext) {
+    protected VirtualView createViewInstance(@Nonnull ThemedReactContext reactContext) {
         switch (svgClass) {
             case RNSVGGroup:
                 return new GroupView(reactContext);
@@ -1101,8 +1295,36 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
                 return new PatternView(reactContext);
             case RNSVGMask:
                 return new MaskView(reactContext);
+            case RNSVGMarker:
+                return new MarkerView(reactContext);
             default:
                 throw new IllegalStateException("Unexpected type " + svgClass.toString());
         }
+    }
+
+    private static final SparseArray<RenderableView> mTagToRenderableView = new SparseArray<>();
+    private static final SparseArray<Runnable> mTagToRunnable = new SparseArray<>();
+
+    static void setRenderableView(int tag, RenderableView svg) {
+        mTagToRenderableView.put(tag, svg);
+        Runnable task = mTagToRunnable.get(tag);
+        if (task != null) {
+            task.run();
+            mTagToRunnable.delete(tag);
+        }
+    }
+
+    static void runWhenViewIsAvailable(int tag, Runnable task) {
+        mTagToRunnable.put(tag, task);
+    }
+
+    static @Nullable RenderableView getRenderableViewByTag(int tag) {
+        return mTagToRenderableView.get(tag);
+    }
+
+    @Override
+    public void onDropViewInstance(@Nonnull VirtualView view) {
+        super.onDropViewInstance(view);
+        mTagToRenderableView.remove(view.getId());
     }
 }

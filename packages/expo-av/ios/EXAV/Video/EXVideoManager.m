@@ -77,7 +77,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)viewTag
      withRejecter:(UMPromiseRejectBlock)reject
 {
   id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  [uiManager addUIBlock:^(id view) {
+  [uiManager executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block((EXVideoView *)view);
     } else {

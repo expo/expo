@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Calendar } from 'expo';
+import * as Calendar from 'expo-calendar';
 import { NavigationScreenProps } from 'react-navigation';
 
 interface RowProps {

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,CAAC;AAEpB,cAAc,SAAS,CAAC","sourcesContent":["import './Asset.fx';\n\nexport * from './Asset';\n"]}

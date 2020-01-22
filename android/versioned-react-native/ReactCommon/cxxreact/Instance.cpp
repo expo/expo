@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -43,7 +43,6 @@ void Instance::initializeBridge(
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
@@ -109,6 +108,24 @@ bool Instance::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
+  BundleHeader header;
+  strncpy(reinterpret_cast<char *>(&header), script->get()->c_str(), sizeof(header));
+
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL) {
+  auto bundle = folly::make_unique<JSIndexedRAMBundle>(std::move(script));
+  auto startupScript = bundle->getStartupCode();
+  auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
+  loadRAMBundle(
+    std::move(registry),
+    std::move(startupScript),
+    sourceURL,
+    true);
+}
+
 void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
                            const std::string& sourceURL,
                            bool loadSynchronously) {
@@ -149,6 +166,10 @@ void *Instance::getJavaScriptContext() {
 bool Instance::isInspectable() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
 }
+  
+bool Instance::isBatchActive() {
+  return nativeToJsBridge_ ? nativeToJsBridge_->isBatchActive() : false;
+}
 
 void Instance::callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) {
@@ -175,6 +196,13 @@ ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
 void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+}
+
+void Instance::invokeAsync(std::function<void()>&& func) {
+  nativeToJsBridge_->runOnExecutorQueue([func=std::move(func)](JSExecutor *executor) {
+    func();
+    executor->flush();
+  });
 }
 
 } // namespace react

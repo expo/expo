@@ -15,6 +15,7 @@ import org.unimodules.core.Promise;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SAVE;
+import static expo.modules.medialibrary.MediaLibraryUtils.convertMediaType;
 import static expo.modules.medialibrary.MediaLibraryUtils.queryAssetInfo;
 import static expo.modules.medialibrary.MediaLibraryUtils.safeCopyFile;
 
@@ -22,11 +23,24 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
   private final Context mContext;
   private final Uri mUri;
   private final Promise mPromise;
+  private final boolean resolveWithAdditionalData;
 
   CreateAsset(Context context, String uri, Promise promise) {
+    this(context, uri, promise, true);
+  }
+
+  CreateAsset(Context context, String uri, Promise promise, boolean additionalData) {
     mContext = context;
-    mUri = Uri.parse(uri);
+    mUri = normalizeAssetUri(uri);
     mPromise = promise;
+    resolveWithAdditionalData = additionalData;
+  }
+
+  private Uri normalizeAssetUri(String uri) {
+    if (uri.startsWith("/")) {
+      return Uri.fromFile(new File(uri));
+    }
+    return Uri.parse(uri);
   }
 
   private File createAssetFile() throws IOException {
@@ -60,9 +74,13 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
                 mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.");
                 return;
               }
-              final String selection = MediaStore.Images.Media.DATA + "=?";
-              final String[] args = {path};
-              queryAssetInfo(mContext, selection, args, false, mPromise);
+              if (resolveWithAdditionalData) {
+                final String selection = MediaStore.Images.Media.DATA + "=?";
+                final String[] args = {path};
+                queryAssetInfo(mContext, selection, args, false, mPromise);
+              } else {
+                mPromise.resolve(null);
+              }
             }
           });
     } catch (IOException e) {

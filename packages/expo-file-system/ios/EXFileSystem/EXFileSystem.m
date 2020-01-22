@@ -185,6 +185,10 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
+  // no scheme provided in uri, handle as a local path and add 'file://' scheme
+  if (!uri.scheme) {
+    uri = [NSURL fileURLWithPath:uriString isDirectory:false];
+  }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
@@ -194,7 +198,7 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
-  } else if ([uri.scheme isEqualToString:@"assets-library"]) {
+  } else if ([uri.scheme isEqualToString:@"assets-library"] || [uri.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -210,6 +214,10 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
+  // no scheme provided in uri, handle as a local path and add 'file://' scheme
+  if (!uri.scheme) {
+    uri = [NSURL fileURLWithPath:uriString isDirectory:false];
+  }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
@@ -453,7 +461,7 @@ UM_EXPORT_METHOD_AS(copyAsync,
   
   if ([from.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler copyFrom:from to:to resolver:resolve rejecter:reject];
-  } else if ([from.scheme isEqualToString:@"assets-library"]) {
+  } else if ([from.scheme isEqualToString:@"assets-library"] || [from.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -480,7 +488,7 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
   if ([uri.scheme isEqualToString:@"file"]) {
     NSError *error;
     if ([[NSFileManager defaultManager] createDirectoryAtPath:uri.path
-                                  withIntermediateDirectories:options[@"intermediates"]
+                                  withIntermediateDirectories:[options[@"intermediates"] boolValue]
                                                    attributes:nil
                                                         error:&error]) {
       resolve([NSNull null]);
@@ -536,6 +544,12 @@ UM_EXPORT_METHOD_AS(downloadAsync,
 {
   NSURL *url = [NSURL URLWithString:uriString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
+  if (!([self checkIfFileDirExists:localUri.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", localUriString],
+           nil);
+    return;
+  }
   if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
@@ -585,6 +599,12 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
+  if (!([self checkIfFileDirExists:localUrl.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", fileUri],
+           nil);
+    return;
+  }
   if (![localUrl.scheme isEqualToString:@"file"]) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
@@ -632,6 +652,24 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                nil);
       }
     }];
+  }
+}
+
+UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  if(![self freeDiskStorage]) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine free disk storage capacity", nil);
+  } else {
+    resolve([self freeDiskStorage]);
+  }
+}
+
+UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  if(![self totalDiskCapacity]) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine total disk capacity", nil);
+  } else {
+    resolve([self totalDiskCapacity]);
   }
 }
 
@@ -745,6 +783,10 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   }
 }
 
+- (NSDictionary *)documentFileSystemAttributes {
+  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:_documentDirectory error:nil];
+}
+
 #pragma mark - Public utils
 
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
@@ -753,6 +795,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                             @"assets-library",
                             @"http",
                             @"https",
+                            @"ph",
                             ];
   if ([validSchemas containsObject:uri.scheme]) {
     return UMFileSystemPermissionRead;
@@ -761,6 +804,12 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
     return [self _permissionsForPath:uri.path];
   }
   return UMFileSystemPermissionNone;
+}
+
+- (BOOL)checkIfFileDirExists:(NSString *)path
+{
+  NSString *dir = [path stringByDeletingLastPathComponent];
+  return [[NSFileManager defaultManager] fileExistsAtPath:dir];
 }
 
 #pragma mark - Class methods
@@ -795,6 +844,26 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   [EXFileSystem ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:fileName];
+}
+
+- (NSNumber *)totalDiskCapacity {
+  NSDictionary *storage = [self documentFileSystemAttributes];
+  
+  if (storage) {
+    NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
+    return fileSystemSizeInBytes;
+  }
+  return nil;
+}
+
+- (NSNumber *)freeDiskStorage {
+  NSDictionary *storage = [self documentFileSystemAttributes];
+  
+  if (storage) {
+    NSNumber *freeFileSystemSizeInBytes = storage[NSFileSystemFreeSize];
+    return freeFileSystemSizeInBytes;
+  }
+  return nil;
 }
 
 @end

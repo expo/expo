@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { View, StyleSheet, Button } from 'react-native';
-import { Transitioning, Transition } from 'expo';
+import { Transitioning, Transition } from 'react-native-reanimated';
 
 interface State {
   perc: number;

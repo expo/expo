@@ -1,0 +1,403 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		35DF2EEFFC5B1352C8C67399CCCA5257 /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7B111BAAEA3763132B7A608D190B9C35 /* react-native-safe-area-context-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */; };
+		B9E4150B1AD02450ED5E5845BEBB64C2 /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E093037A41FED90BDF491C8E105A06DE /* RNCSafeAreaViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FFD691B4B55DF34F09B0462A7251D5ED /* RNCSafeAreaView.h in Headers */ = {isa = PBXBuildFile; fileRef = EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		56C8B1F1DF29086928105A4D937CAC15 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 509041B2622E35FCD10CF7604DB038E8 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaViewManager.h; path = ios/SafeAreaView/RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
+		0BD18714644802D7AE06BB2A95F67E74 /* libreact-native-safe-area-context.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libreact-native-safe-area-context.a"; path = "libreact-native-safe-area-context.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "react-native-safe-area-context-dummy.m"; sourceTree = "<group>"; };
+		4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaViewManager.m; path = ios/SafeAreaView/RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
+		509041B2622E35FCD10CF7604DB038E8 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		56DC03E644EB6579F8FEC924EF96BEEC /* react-native-safe-area-context-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "react-native-safe-area-context-prefix.pch"; sourceTree = "<group>"; };
+		960987EDD56016B5553E7049175914A7 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		D1BAA55B6414E406F54CF236688C15AA /* react-native-safe-area-context.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "react-native-safe-area-context.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		DE8CCD1CB199D29A03B3FBF9D0D71CED /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCSafeAreaView.m; path = ios/SafeAreaView/RNCSafeAreaView.m; sourceTree = "<group>"; };
+		EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCSafeAreaView.h; path = ios/SafeAreaView/RNCSafeAreaView.h; sourceTree = "<group>"; };
+		F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "react-native-safe-area-context.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9F7A41BE17DAA77ED1FDBAD539A5CD5A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1B04BFDC0F319861B68D96839BA3B583 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0BD18714644802D7AE06BB2A95F67E74 /* libreact-native-safe-area-context.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		31EE85197B013D0811DF36A00F40CBC0 = {
+			isa = PBXGroup;
+			children = (
+				66D1554282099562788EC0859FE53CB1 /* Dependencies */,
+				B88FA61B60B5D8AC8486644F6197EBA9 /* Frameworks */,
+				1B04BFDC0F319861B68D96839BA3B583 /* Products */,
+				853EC671C8E6A29297900100F0154C59 /* react-native-safe-area-context */,
+			);
+			sourceTree = "<group>";
+		};
+		3715800B32353E3E5B11C049C3460E95 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				960987EDD56016B5553E7049175914A7 /* LICENSE */,
+				D1BAA55B6414E406F54CF236688C15AA /* react-native-safe-area-context.podspec */,
+				DE8CCD1CB199D29A03B3FBF9D0D71CED /* README.md */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		66D1554282099562788EC0859FE53CB1 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				509041B2622E35FCD10CF7604DB038E8 /* React */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		853EC671C8E6A29297900100F0154C59 /* react-native-safe-area-context */ = {
+			isa = PBXGroup;
+			children = (
+				EEAE96EDFEF763CA44EDD9CC230252BB /* RNCSafeAreaView.h */,
+				E65FAC71E10E7FA0FA8AD3AF6B96A8D7 /* RNCSafeAreaView.m */,
+				08B55D26635D959E64283121F53D8852 /* RNCSafeAreaViewManager.h */,
+				4EB88632E47CEC28B5A566B467BBC2C3 /* RNCSafeAreaViewManager.m */,
+				3715800B32353E3E5B11C049C3460E95 /* Pod */,
+				99F7947A6C4F2F9C8FE361EAD27D9263 /* Support Files */,
+			);
+			name = "react-native-safe-area-context";
+			path = "../../../../node_modules/react-native-safe-area-context";
+			sourceTree = "<group>";
+		};
+		99F7947A6C4F2F9C8FE361EAD27D9263 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */,
+				4721026F65F1BCF0795A38D01F0B314E /* react-native-safe-area-context-dummy.m */,
+				56DC03E644EB6579F8FEC924EF96BEEC /* react-native-safe-area-context-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/react-native-safe-area-context";
+			sourceTree = "<group>";
+		};
+		B88FA61B60B5D8AC8486644F6197EBA9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		1CD3BB17543A04B30D1641E50E6CFEC9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FFD691B4B55DF34F09B0462A7251D5ED /* RNCSafeAreaView.h in Headers */,
+				E093037A41FED90BDF491C8E105A06DE /* RNCSafeAreaViewManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6FF729CB9CEA59FDDF1BA16AEB2B98D6 /* react-native-safe-area-context */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7E2D988BD94A9237A67F2D193B235E3 /* Build configuration list for PBXNativeTarget "react-native-safe-area-context" */;
+			buildPhases = (
+				1CD3BB17543A04B30D1641E50E6CFEC9 /* Headers */,
+				9DF0BF87E0787CBED93E93A9A8E4F700 /* Sources */,
+				9F7A41BE17DAA77ED1FDBAD539A5CD5A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B6CC4501451D7E04D92E0EA2D46E0FA8 /* PBXTargetDependency */,
+			);
+			name = "react-native-safe-area-context";
+			productName = "react-native-safe-area-context";
+			productReference = 0BD18714644802D7AE06BB2A95F67E74 /* libreact-native-safe-area-context.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		595DD214EF15B4867A301D6EC9D6565F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 0DD31125CE10BF5F7542E2F3A3BE07D9 /* Build configuration list for PBXProject "react-native-safe-area-context" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 31EE85197B013D0811DF36A00F40CBC0;
+			productRefGroup = 1B04BFDC0F319861B68D96839BA3B583 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 509041B2622E35FCD10CF7604DB038E8 /* React */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				6FF729CB9CEA59FDDF1BA16AEB2B98D6 /* react-native-safe-area-context */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9DF0BF87E0787CBED93E93A9A8E4F700 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B111BAAEA3763132B7A608D190B9C35 /* react-native-safe-area-context-dummy.m in Sources */,
+				35DF2EEFFC5B1352C8C67399CCCA5257 /* RNCSafeAreaView.m in Sources */,
+				B9E4150B1AD02450ED5E5845BEBB64C2 /* RNCSafeAreaViewManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B6CC4501451D7E04D92E0EA2D46E0FA8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 56C8B1F1DF29086928105A4D937CAC15 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		59B281E9F3307740122675B50DA29363 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_safe_area_context;
+				PRODUCT_NAME = "react-native-safe-area-context";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		658A3438D718CD0C83C31D2566A7AEEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		85382B0DD01836678217A48E8FA77046 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F822FE2ED3F0E6851958D51BC2FA8131 /* react-native-safe-area-context.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/react-native-safe-area-context/react-native-safe-area-context-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = react_native_safe_area_context;
+				PRODUCT_NAME = "react-native-safe-area-context";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BA4023B52F77A7CBF19E480EDD954123 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0DD31125CE10BF5F7542E2F3A3BE07D9 /* Build configuration list for PBXProject "react-native-safe-area-context" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				658A3438D718CD0C83C31D2566A7AEEA /* Debug */,
+				BA4023B52F77A7CBF19E480EDD954123 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7E2D988BD94A9237A67F2D193B235E3 /* Build configuration list for PBXNativeTarget "react-native-safe-area-context" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				59B281E9F3307740122675B50DA29363 /* Debug */,
+				85382B0DD01836678217A48E8FA77046 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 595DD214EF15B4867A301D6EC9D6565F /* Project object */;
+}

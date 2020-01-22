@@ -3,6 +3,7 @@
 #import <EXBarCodeScanner/EXBarCodeScannerView.h>
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
+#import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
@@ -175,8 +176,7 @@
 
 - (BOOL)ensurePermissionsGranted
 {
-  NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"camera"];
-  if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]]) {
     [self onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
     return FALSE;
   }
@@ -234,6 +234,8 @@
 
 - (void)startSession
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
@@ -268,6 +270,7 @@
     [self.session startRunning];
     [self onReady];
   });
+#pragma clang diagnostic pop
 }
 
 - (void)stopSession

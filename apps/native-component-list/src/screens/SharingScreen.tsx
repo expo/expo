@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { Sharing, Asset } from 'expo';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import Button from '../components/Button';
 
 // https://www.deviantart.com/squishypanda96/art/ceci-n-est-pas-un-chapeau-296137053
@@ -25,9 +27,12 @@ export default class SharingScreen extends React.Component {
   _shareLocalImage = async () => {
     const asset = Asset.fromModule(image);
     await asset.downloadAsync();
+    const tmpFile = FileSystem.cacheDirectory + 'chapeau.png';
 
     try {
-      await Sharing.shareAsync(asset.localUri!, {
+      // sharing only works with `file://` urls on Android so we need to copy it out of assets
+      await FileSystem.copyAsync({ from: asset.localUri!, to: tmpFile });
+      await Sharing.shareAsync(tmpFile, {
         dialogTitle: 'Is it a snake or a hat?',
       });
     } catch (e) {

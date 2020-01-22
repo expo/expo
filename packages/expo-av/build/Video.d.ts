@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
-import { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoPlaybackProps, ReadyForDisplayEvent, ResizeMode, VideoPlaybackState } from './Video.types';
-export { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoPlaybackProps, ReadyForDisplayEvent, ResizeMode, VideoPlaybackState, };
+import { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoProps, ReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
+export { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoProps, ReadyForDisplayEvent, ResizeMode, VideoState, };
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -11,7 +11,18 @@ export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export declare class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlaybackState> implements Playback {
+export default class Video extends React.Component<VideoProps, VideoState> implements Playback {
+    static RESIZE_MODE_CONTAIN: ResizeMode;
+    static RESIZE_MODE_COVER: ResizeMode;
+    static RESIZE_MODE_STRETCH: ResizeMode;
+    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT: number;
+    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT: number;
+    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS: number;
+    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS: number;
+    static FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT: number;
+    static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT: number;
+    static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS: number;
+    static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS: number;
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
         onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;
@@ -23,10 +34,14 @@ export declare class VideoPlayback extends React.Component<VideoPlaybackProps, V
         collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
         needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
         renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
         onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
@@ -45,15 +60,22 @@ export declare class VideoPlayback extends React.Component<VideoPlaybackProps, V
         onTouchCancel?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityActions?: PropTypes.Validator<readonly Readonly<{
+            name: import("react-native").AccessibilityActionName;
+            label?: string | undefined;
+        }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityRole?: PropTypes.Validator<"none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined> | undefined;
-        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"none" | "button" | "header" | "link" | "menu" | "menuitem" | "summary" | "image" | "switch" | "text" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | "alert" | "checkbox" | "combobox" | "menubar" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
+        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
+        accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"key" | "none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"key" | "none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -64,6 +86,7 @@ export declare class VideoPlayback extends React.Component<VideoPlaybackProps, V
         posterSource: PropTypes.Requireable<number | PropTypes.InferProps<{
             uri: PropTypes.Requireable<string>;
         }>>;
+        posterStyle: PropTypes.Validator<import("react-native").StyleProp<import("react-native").ViewStyle>> | undefined;
         onPlaybackStatusUpdate: PropTypes.Requireable<(...args: any[]) => any>;
         onLoadStart: PropTypes.Requireable<(...args: any[]) => any>;
         onLoad: PropTypes.Requireable<(...args: any[]) => any>;
@@ -99,7 +122,8 @@ export declare class VideoPlayback extends React.Component<VideoPlaybackProps, V
         rotation: PropTypes.Requireable<number>;
     };
     _nativeRef: React.RefObject<React.Component<NativeProps, any, any> & import("react-native").NativeMethodsMixinStatic>;
-    constructor(props: VideoPlaybackProps);
+    _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
+    constructor(props: VideoProps);
     setNativeProps(nativeProps: NativeProps): void;
     _handleNewStatus: (status: PlaybackStatus) => void;
     _performOperationAndHandleStatusAsync: (operation: (tag: number) => Promise<PlaybackStatus>) => Promise<PlaybackStatus>;
@@ -114,6 +138,7 @@ export declare class VideoPlayback extends React.Component<VideoPlaybackProps, V
     unloadAsync: () => Promise<PlaybackStatus>;
     setStatusAsync: (status: PlaybackStatusToSet) => Promise<PlaybackStatus>;
     replayAsync: (status?: PlaybackStatusToSet) => Promise<PlaybackStatus>;
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null): void;
     playAsync: () => Promise<PlaybackStatus>;
     playFromPositionAsync: (positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;

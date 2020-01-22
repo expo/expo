@@ -8,10 +8,9 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
-class BackgroundFetchModule extends ExportedModule implements ModuleRegistryConsumer {
+class BackgroundFetchModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;
 
   public BackgroundFetchModule(Context context) {
@@ -24,7 +23,7 @@ class BackgroundFetchModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
   }
 

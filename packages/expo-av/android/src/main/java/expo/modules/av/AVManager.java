@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -20,7 +19,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -35,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Iterator;
 
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
@@ -42,7 +41,7 @@ import expo.modules.av.video.VideoViewWrapper;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
-public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule, ModuleRegistryConsumer {
+public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
@@ -90,6 +89,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
+  private boolean mIsRegistered = false;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -109,6 +109,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     };
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
         new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+    mIsRegistered = true;
   }
 
   @Override
@@ -117,7 +118,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }
@@ -182,10 +183,21 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostDestroy() {
-    mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
-    for (final Integer key : mSoundMap.keySet()) {
-      removeSoundForKey(key);
+    if (mIsRegistered) {
+      mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
+      mIsRegistered = false;
     }
+
+    // remove all remaining sounds
+    Iterator<PlayerData> iter = mSoundMap.values().iterator();
+    while (iter.hasNext()) {
+      final PlayerData data = iter.next();
+      iter.remove();
+      if (data != null) {
+        data.release();
+      }
+    }
+
     for (final VideoView videoView : mVideoViewSet) {
       videoView.unloadPlayerAndMediaController();
     }
@@ -247,7 +259,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       throw new AudioFocusNotAcquiredException("Expo Audio is disabled, so audio focus could not be acquired.");
     }
 
-    if (mAppIsPaused) {
+    if (mAppIsPaused && !mStaysActiveInBackground) {
       throw new AudioFocusNotAcquiredException("This experience is currently in the background, so audio focus could not be acquired.");
     }
 
@@ -500,7 +512,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return mModuleRegistry.getModule(Permissions.class).getPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+    return !mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

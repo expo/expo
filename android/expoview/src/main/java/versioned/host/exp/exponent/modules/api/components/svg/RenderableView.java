@@ -36,12 +36,14 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
 abstract public class RenderableView extends VirtualView {
 
     RenderableView(ReactContext reactContext) {
         super(reactContext);
     }
 
+    static RenderableView contextElement;
     // strokeLinecap
     private static final int CAP_BUTT = 0;
     static final int CAP_ROUND = 1;
@@ -56,10 +58,17 @@ abstract public class RenderableView extends VirtualView {
     private static final int FILL_RULE_EVENODD = 0;
     static final int FILL_RULE_NONZERO = 1;
 
+    // vectorEffect
+    private static final int VECTOR_EFFECT_DEFAULT = 0;
+    private static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
+    //static final int VECTOR_EFFECT_INHERIT = 2;
+    //static final int VECTOR_EFFECT_URI = 3;
+
     /*
     Used in mergeProperties, keep public
     */
 
+    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
     public @Nullable ReadableArray stroke;
     public @Nullable SVGLength[] strokeDasharray;
 
@@ -78,13 +87,24 @@ abstract public class RenderableView extends VirtualView {
     /*
     End merged properties
     */
-
-    @Nullable ArrayList<String> mLastMergedList;
-    @Nullable ArrayList<Object> mOriginProperties;
-    @Nullable ArrayList<String> mPropList;
-    @Nullable ArrayList<String> mAttributeList;
+    private @Nullable ArrayList<String> mLastMergedList;
+    private @Nullable ArrayList<Object> mOriginProperties;
+    private @Nullable ArrayList<String> mPropList;
+    private @Nullable ArrayList<String> mAttributeList;
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        RenderableViewManager.setRenderableView(id, this);
+    }
+
+    @ReactProp(name = "vectorEffect")
+    public void setVectorEffect(int vectorEffect) {
+        this.vectorEffect = vectorEffect;
+        invalidate();
+    }
 
     @ReactProp(name = "fill")
     public void setFill(@Nullable Dynamic fill) {
@@ -102,7 +122,7 @@ abstract public class RenderableView extends VirtualView {
             Matcher m = regex.matcher(fill.asString());
             int i = 0;
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(i++ < 3 ? parsed / 255 : parsed);
             }
             this.fill = arr;
@@ -126,7 +146,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "fillRule " + this.fillRule + " unrecognized");
+                        "fillRule " + fillRule + " unrecognized");
         }
 
         invalidate();
@@ -147,7 +167,7 @@ abstract public class RenderableView extends VirtualView {
             arr.pushInt(0);
             Matcher m = regex.matcher(strokeColors.asString());
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(parsed);
             }
             stroke = arr;
@@ -207,7 +227,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinecap " + this.strokeLinecap + " unrecognized");
+                        "strokeLinecap " + strokeLinecap + " unrecognized");
         }
         invalidate();
     }
@@ -226,7 +246,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinejoin " + this.strokeLinejoin + " unrecognized");
+                        "strokeLinejoin " + strokeLinejoin + " unrecognized");
         }
         invalidate();
     }
@@ -268,9 +288,9 @@ abstract public class RenderableView extends VirtualView {
 
             // Clip to mask bounds and render the mask
             float maskX = (float) relativeOnWidth(mask.mX);
-            float maskY = (float) relativeOnWidth(mask.mY);
+            float maskY = (float) relativeOnHeight(mask.mY);
             float maskWidth = (float) relativeOnWidth(mask.mW);
-            float maskHeight = (float) relativeOnWidth(mask.mH);
+            float maskHeight = (float) relativeOnHeight(mask.mH);
             maskCanvas.clipRect(maskX, maskY, maskWidth, maskHeight);
 
             Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -322,16 +342,23 @@ abstract public class RenderableView extends VirtualView {
                 mPath = getPath(canvas, paint);
                 mPath.setFillType(fillRule);
             }
+            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
             Path path = mPath;
+            if (nonScalingStroke) {
+                Path scaled = new Path();
+                //noinspection deprecation
+                mPath.transform(mCTM, scaled);
+                canvas.setMatrix(null);
+                path = scaled;
+            }
 
-            RectF clientRect = new RectF();
-            path.computeBounds(clientRect, true);
-            mBox = new RectF(clientRect);
+            if (computePaths || path != mPath) {
+                mBox = new RectF();
+                path.computeBounds(mBox, true);
+            }
 
-            // We create the canvas ourselves, thus we can depend on getMatrix
-            @SuppressWarnings("deprecation")
-            Matrix svgToViewMatrix = new Matrix(canvas.getMatrix());
-            svgToViewMatrix.mapRect(clientRect);
+            RectF clientRect = new RectF(mBox);
+            mCTM.mapRect(clientRect);
             this.setClientRect(clientRect);
 
             clip(canvas, paint);
@@ -350,6 +377,43 @@ abstract public class RenderableView extends VirtualView {
                 }
                 canvas.drawPath(path, paint);
             }
+            renderMarkers(canvas, paint, opacity);
+        }
+    }
+
+    void renderMarkers(Canvas canvas, Paint paint, float opacity) {
+        MarkerView markerStart = (MarkerView)getSvgView().getDefinedMarker(mMarkerStart);
+        MarkerView markerMid = (MarkerView)getSvgView().getDefinedMarker(mMarkerMid);
+        MarkerView markerEnd = (MarkerView)getSvgView().getDefinedMarker(mMarkerEnd);
+        if (elements != null && (markerStart != null || markerMid != null  || markerEnd != null)) {
+            contextElement = this;
+            ArrayList<RNSVGMarkerPosition> positions = RNSVGMarkerPosition.fromPath(elements);
+            float width = (float)(this.strokeWidth != null ? relativeOnOther(this.strokeWidth) : 1);
+            mMarkerPath = new Path();
+            for (RNSVGMarkerPosition position : positions) {
+                RNSVGMarkerType type = position.type;
+                MarkerView marker = null;
+                switch (type) {
+                    case kStartMarker:
+                        marker = markerStart;
+                        break;
+
+                    case kMidMarker:
+                        marker = markerMid;
+                        break;
+
+                    case kEndMarker:
+                        marker = markerEnd;
+                        break;
+                }
+                if (marker == null) {
+                    continue;
+                }
+                marker.renderMarker(canvas, paint, opacity, position, width);
+                Matrix transform = marker.markerTransform;
+                mMarkerPath.addPath(marker.getPath(canvas, paint), transform);
+            }
+            contextElement = null;
         }
     }
 
@@ -429,6 +493,18 @@ abstract public class RenderableView extends VirtualView {
                 paint.setColor(brush);
                 break;
             }
+            case 3: {
+                if (contextElement != null && contextElement.fill != null) {
+                    setupPaint(paint, opacity, contextElement.fill);
+                }
+                break;
+            }
+            case 4: {
+                if (contextElement != null && contextElement.stroke != null) {
+                    setupPaint(paint, opacity, contextElement.stroke);
+                }
+                break;
+            }
         }
 
     }
@@ -447,28 +523,18 @@ abstract public class RenderableView extends VirtualView {
         int x = Math.round(dst[0]);
         int y = Math.round(dst[1]);
 
-        if (mRegion == null && mFillPath != null) {
-            mRegion = getRegion(mFillPath);
-        }
-        if (mRegion == null && mPath != null) {
-            mRegion = getRegion(mPath);
-        }
-        if (mStrokeRegion == null && mStrokePath != null) {
-            mStrokeRegion = getRegion(mStrokePath);
-        }
+        initBounds();
+
         if (
             (mRegion == null || !mRegion.contains(x, y)) &&
-            (mStrokeRegion == null || !mStrokeRegion.contains(x, y))
+            (mStrokeRegion == null || !mStrokeRegion.contains(x, y) &&
+            (mMarkerRegion == null || !mMarkerRegion.contains(x, y)))
         ) {
             return -1;
         }
 
         Path clipPath = getClipPath();
         if (clipPath != null) {
-            if (mClipRegionPath != clipPath) {
-                mClipRegionPath = clipPath;
-                mClipRegion = getRegion(clipPath);
-            }
             if (!mClipRegion.contains(x, y)) {
                 return -1;
             }
@@ -477,10 +543,39 @@ abstract public class RenderableView extends VirtualView {
         return getId();
     }
 
-    Region getRegion(Path path) {
-        RectF rectF = new RectF();
-        path.computeBounds(rectF, true);
+    void initBounds() {
+        if (mRegion == null && mFillPath != null) {
+            mFillBounds = new RectF();
+            mFillPath.computeBounds(mFillBounds, true);
+            mRegion = getRegion(mFillPath, mFillBounds);
+        }
+        if (mRegion == null && mPath != null) {
+            mFillBounds = new RectF();
+            mPath.computeBounds(mFillBounds, true);
+            mRegion = getRegion(mPath, mFillBounds);
+        }
+        if (mStrokeRegion == null && mStrokePath != null) {
+            mStrokeBounds = new RectF();
+            mStrokePath.computeBounds(mStrokeBounds, true);
+            mStrokeRegion = getRegion(mStrokePath, mStrokeBounds);
+        }
+        if (mMarkerRegion == null && mMarkerPath != null) {
+            mMarkerBounds = new RectF();
+            mMarkerPath.computeBounds(mMarkerBounds, true);
+            mMarkerRegion = getRegion(mMarkerPath, mMarkerBounds);
+        }
+        Path clipPath = getClipPath();
+        if (clipPath != null) {
+            if (mClipRegionPath != clipPath) {
+                mClipRegionPath = clipPath;
+                mClipBounds = new RectF();
+                clipPath.computeBounds(mClipBounds, true);
+                mClipRegion = getRegion(clipPath, mClipBounds);
+            }
+        }
+    }
 
+    Region getRegion(Path path, RectF rectF) {
         Region region = new Region();
         region.setPath(path,
                 new Region(

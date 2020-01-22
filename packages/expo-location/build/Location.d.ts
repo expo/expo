@@ -1,7 +1,9 @@
 import { EventEmitter } from '@unimodules/core';
+import { PermissionResponse as UMPermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 declare const LocationEventEmitter: EventEmitter;
 export interface ProviderStatus {
     locationServicesEnabled: boolean;
+    backgroundModeEnabled: boolean;
     gpsAvailable?: boolean;
     networkAvailable?: boolean;
     passiveAvailable?: boolean;
@@ -44,6 +46,17 @@ export interface Address {
     postalCode: string;
     name: string;
 }
+export { PermissionStatus };
+export declare type PermissionDetailsLocationIOS = {
+    scope: 'whenInUse' | 'always';
+};
+export declare type PermissionDetailsLocationAndroid = {
+    scope: 'fine' | 'coarse' | 'none';
+};
+export interface PermissionResponse extends UMPermissionResponse {
+    ios?: PermissionDetailsLocationIOS;
+    android?: PermissionDetailsLocationAndroid;
+}
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
     timeInterval?: number;
@@ -52,6 +65,8 @@ interface LocationTaskOptions {
     deferredUpdatesDistance?: number;
     deferredUpdatesTimeout?: number;
     deferredUpdatesInterval?: number;
+    activityType?: LocationActivityType;
+    pausesUpdatesAutomatically?: boolean;
     foregroundService?: {
         notificationTitle: string;
         notificationBody: string;
@@ -76,7 +91,14 @@ declare enum LocationAccuracy {
     Highest = 5,
     BestForNavigation = 6
 }
-export { LocationAccuracy as Accuracy };
+declare enum LocationActivityType {
+    Other = 1,
+    AutomotiveNavigation = 2,
+    Fitness = 3,
+    OtherNavigation = 4,
+    Airborne = 5
+}
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 export declare enum GeofencingEventType {
     Enter = 1,
     Exit = 2
@@ -90,6 +112,7 @@ declare function _getCurrentWatchId(): number;
 export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
+export declare function getLastKnownPositionAsync(): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
     remove: () => void;
@@ -103,8 +126,10 @@ export declare function setApiKey(apiKey: string): void;
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function requestPermissionsAsync(): Promise<void>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
+export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;

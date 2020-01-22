@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ namespace react {
 
 static const char *errorPrefix = "Malformed calls from JS: ";
 
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::invalid_argument) {
+std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
   if (jsonData.isNull()) {
     return {};
   }
@@ -53,7 +53,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
       throw std::invalid_argument(
         folly::to<std::string>(errorPrefix, "invalid callId", jsonData[REQUEST_CALLID].typeName()));
     }
-    callId = jsonData[REQUEST_CALLID].asInt();
+    callId = (int)jsonData[REQUEST_CALLID].asInt();
   }
 
   std::vector<MethodCall> methodCalls;
@@ -69,7 +69,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
       std::move(params[i]),
       callId);
 
-    // only incremement callid if contains valid callid as callid is optional
+    // only increment callid if contains valid callid as callid is optional
     callId += (callId != -1) ? 1 : 0;
   }
 
@@ -77,4 +77,3 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
 }
 
 }}
-

@@ -2,7 +2,7 @@
 name: "\U0001F41B Bug Report in Expo SDK"
 about: You want to report a reproducible bug or regression in Expo SDK.
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---
@@ -53,7 +53,10 @@ assignees: ''
       This is useful for finding the root cause. You may then optionally create a Snack.
 
   This is a good guide to creating bug demos: https://stackoverflow.com/help/mcve
-  Once you’re done, copy and paste the link to the Snack or a public GitHub repository below:
+  Once you’re done, copy and paste the link to the Snack or a public GitHub repository below.
+
+  (Even if your issue can only be reproduced in a standalone app, please include a Snack
+  or GitHub repo we can use to build a standalone app!)
 -->
 
 <!--

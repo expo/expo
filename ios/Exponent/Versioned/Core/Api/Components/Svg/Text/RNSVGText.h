@@ -11,6 +11,7 @@
 
 @interface RNSVGText : RNSVGGroup
 
+@property (nonatomic, strong) RNSVGLength *inlineSize;
 @property (nonatomic, strong) RNSVGLength *textLength;
 @property (nonatomic, strong) NSString *baselineShift;
 @property (nonatomic, strong) NSString *lengthAdjust;
@@ -23,5 +24,7 @@
 
 - (CGPathRef)getGroupPath:(CGContextRef)context;
 - (CTFontRef)getFontFromContext;
+- (CGFloat)getSubtreeTextChunksTotalAdvance;
+- (RNSVGText*)getTextAnchorRoot;
 
 @end

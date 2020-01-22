@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,12 +27,12 @@ typedef NS_OPTIONS(NSInteger, RCTFontVariant) {
 };
 
 struct RCTFontProperties {
-  NSString *family;
-  CGFloat size;
-  UIFontWeight weight;
-  RCTFontStyle style;
-  RCTFontVariant variant;
-  CGFloat sizeMultiplier;
+  NSString *family = nil;
+  CGFloat size = NAN;
+  UIFontWeight weight = NAN;
+  RCTFontStyle style = RCTFontStyleUndefined;
+  RCTFontVariant variant = RCTFontVariantUndefined;
+  CGFloat sizeMultiplier = NAN;
 };
 
 NS_ASSUME_NONNULL_END

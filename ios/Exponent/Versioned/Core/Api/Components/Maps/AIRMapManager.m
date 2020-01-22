@@ -23,17 +23,21 @@
 #import "AIRMapCircle.h"
 #import "SMCalloutView.h"
 #import "AIRMapUrlTile.h"
+#import "AIRMapWMSTile.h"
 #import "AIRMapLocalTile.h"
 #import "AIRMapSnapshot.h"
 #import "RCTConvert+AirMap.h"
 #import "AIRMapOverlay.h"
-
+#import "AIRWeakTimerReference.h"
+#import "AIRWeakMapReference.h"
 #import <MapKit/MapKit.h>
 
 static NSString *const RCTMapViewKey = @"MapView";
 
 
-@interface AIRMapManager() <MKMapViewDelegate>
+@interface AIRMapManager() <MKMapViewDelegate, UIGestureRecognizerDelegate>
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
 
 @end
 
@@ -48,26 +52,38 @@ RCT_EXPORT_MODULE()
     AIRMap *map = [AIRMap new];
     map.delegate = self;
 
+    map.isAccessibilityElement = YES;
+    map.accessibilityElementsHidden = NO;
+    
     // MKMapView doesn't report tap events, so we attach gesture recognizers to it
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMapTap:)];
+    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMapDoubleTap:)];
+    [doubleTap setNumberOfTapsRequired:2];
+    [tap requireGestureRecognizerToFail:doubleTap];
+    
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleMapLongPress:)];
     UIPanGestureRecognizer *drag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleMapDrag:)];
     [drag setMinimumNumberOfTouches:1];
-    [drag setMaximumNumberOfTouches:1];
     // setting this to NO allows the parent MapView to continue receiving marker selection events
     tap.cancelsTouchesInView = NO;
+    doubleTap.cancelsTouchesInView = NO;
     longPress.cancelsTouchesInView = NO;
-
+    
+    doubleTap.delegate = self;
+    
     // disable drag by default
     drag.enabled = NO;
-
+    drag.delegate = self;
+  
     [map addGestureRecognizer:tap];
+    [map addGestureRecognizer:doubleTap];
     [map addGestureRecognizer:longPress];
     [map addGestureRecognizer:drag];
 
     return map;
 }
 
+RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(userLocationAnnotationTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(followsUserLocation, BOOL)
@@ -88,6 +104,7 @@ RCT_EXPORT_VIEW_PROPERTY(loadingIndicatorColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(handlePanDrag, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(compassOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(onMapReady, RCTBubblingEventBlock)
@@ -95,6 +112,7 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPanDrag, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLongPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onDoublePress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMarkerPress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMarkerSelect, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMarkerDeselect, RCTDirectEventBlock)
@@ -495,6 +513,24 @@ RCT_EXPORT_METHOD(pointForCoordinate:(nonnull NSNumber *)reactTag
     }];
 }
 
+RCT_EXPORT_METHOD(getMarkersFrames:(nonnull NSNumber *)reactTag
+                  onlyVisible:(BOOL)onlyVisible
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        AIRMap *mapView = (AIRMap *)view;
+        if (![view isKindOfClass:[AIRMap class]]) {
+            reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting AIRMap, got: %@", view], NULL);
+        } else {
+            resolve([mapView getMarkersFramesWithOnlyVisible:onlyVisible]);
+        }
+    }];
+}
+
+
+
 RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
                   point:(NSDictionary *)point
                   resolver: (RCTPromiseResolveBlock)resolve
@@ -547,25 +583,30 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
 
                       CGRect rect = CGRectMake(0.0f, 0.0f, image.size.width, image.size.height);
 
-                      for (id <MKAnnotation> annotation in mapView.annotations) {
-                          CGPoint point = [snapshot pointForCoordinate:annotation.coordinate];
-
-                          MKAnnotationView* anView = [mapView viewForAnnotation: annotation];
-
-                          if (anView){
-                              pin = anView;
-                          }
-
-                          if (CGRectContainsPoint(rect, point)) {
-                              point.x = point.x + pin.centerOffset.x - (pin.bounds.size.width / 2.0f);
-                              point.y = point.y + pin.centerOffset.y - (pin.bounds.size.height / 2.0f);
-                              [pin.image drawAtPoint:point];
-                          }
-                      }
-
                       for (id <AIRMapSnapshot> overlay in mapView.overlays) {
                           if ([overlay respondsToSelector:@selector(drawToSnapshot:context:)]) {
                                   [overlay drawToSnapshot:snapshot context:UIGraphicsGetCurrentContext()];
+                          }
+                      }
+                      
+                      for (id <MKAnnotation> annotation in mapView.annotations) {
+                          CGPoint point = [snapshot pointForCoordinate:annotation.coordinate];
+                          
+                          MKAnnotationView* anView = [mapView viewForAnnotation: annotation];
+                          
+                          if (anView){
+                              pin = anView;
+                          }
+                          
+                          if (CGRectContainsPoint(rect, point)) {
+                              point.x = point.x + pin.centerOffset.x - (pin.bounds.size.width / 2.0f);
+                              point.y = point.y + pin.centerOffset.y - (pin.bounds.size.height / 2.0f);
+                              if (pin.image) {
+                                  [pin.image drawAtPoint:point];
+                              } else {
+                                  CGRect pinRect = CGRectMake(point.x, point.y, pin.bounds.size.width, pin.bounds.size.height);
+                                  [pin drawViewHierarchyInRect:pinRect afterScreenUpdates:NO];
+                              }
                           }
                       }
 
@@ -722,6 +763,25 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
 
 }
 
+- (void)handleMapDoubleTap:(UIPanGestureRecognizer*)recognizer {
+    AIRMap *map = (AIRMap *)recognizer.view;
+    if (!map.onDoublePress) return;
+    
+    CGPoint touchPoint = [recognizer locationInView:map];
+    CLLocationCoordinate2D coord = [map convertPoint:touchPoint toCoordinateFromView:map];
+    map.onDoublePress(@{
+                    @"coordinate": @{
+                            @"latitude": @(coord.latitude),
+                            @"longitude": @(coord.longitude),
+                            },
+                    @"position": @{
+                            @"x": @(touchPoint.x),
+                            @"y": @(touchPoint.y),
+                            },
+                    });
+    
+}
+
 
 - (void)handleMapLongPress:(UITapGestureRecognizer *)recognizer {
 
@@ -759,6 +819,8 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
         return ((AIRMapCircle *)overlay).renderer;
     } else if ([overlay isKindOfClass:[AIRMapUrlTile class]]) {
         return ((AIRMapUrlTile *)overlay).renderer;
+    } else if ([overlay isKindOfClass:[AIRMapWMSTile class]]) {
+        return ((AIRMapWMSTile *)overlay).renderer;
     } else if ([overlay isKindOfClass:[AIRMapLocalTile class]]) {
         return ((AIRMapLocalTile *)overlay).renderer;
     } else if ([overlay isKindOfClass:[AIRMapOverlay class]]) {
@@ -902,10 +964,12 @@ static int kDragCenterContext;
 {
     [self _regionChanged:mapView];
 
+    AIRWeakTimerReference *weakTarget = [[AIRWeakTimerReference alloc] initWithTarget:self andSelector:@selector(_onTick:)];
+    
     mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:AIRMapRegionChangeObserveInterval
-                                                               target:self
-                                                             selector:@selector(_onTick:)
-                                                             userInfo:@{ RCTMapViewKey: mapView }
+                                                               target:weakTarget
+                                                             selector:@selector(timerDidFire:)
+                                                             userInfo:@{ RCTMapViewKey: [[AIRWeakMapReference alloc] initWithMapView: mapView] }
                                                               repeats:YES];
 
     [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
@@ -955,7 +1019,8 @@ static int kDragCenterContext;
 
 - (void)_onTick:(NSTimer *)timer
 {
-    [self _regionChanged:timer.userInfo[RCTMapViewKey]];
+    AIRWeakMapReference *weakRef = timer.userInfo[RCTMapViewKey];
+    [self _regionChanged:weakRef.mapView];
 }
 
 - (void)_regionChanged:(AIRMap *)mapView
@@ -1212,6 +1277,10 @@ static int kDragCenterContext;
     double zoomLevel = AIRMapMaxZoomLevel - zoomExponent;
 
     return zoomLevel;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 @end

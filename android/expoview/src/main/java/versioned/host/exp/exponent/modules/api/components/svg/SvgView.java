@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -56,6 +57,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             mName = name;
         }
 
+        @Nonnull
         public String toString() {
             return mName;
         }
@@ -101,8 +103,19 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         if (mBitmap == null) {
             mBitmap = drawOutput();
         }
-        if (mBitmap != null)
+        if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
+            if (toDataUrlTask != null) {
+                toDataUrlTask.run();
+                toDataUrlTask = null;
+            }
+        }
+    }
+
+    private Runnable toDataUrlTask = null;
+
+    void setToDataUrlTask(Runnable task) {
+        toDataUrlTask = task;
     }
 
     @Override
@@ -120,6 +133,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     private final Map<String, VirtualView> mDefinedClipPaths = new HashMap<>();
     private final Map<String, VirtualView> mDefinedTemplates = new HashMap<>();
+    private final Map<String, VirtualView> mDefinedMarkers = new HashMap<>();
     private final Map<String, VirtualView> mDefinedMasks = new HashMap<>();
     private final Map<String, Brush> mDefinedBrushes = new HashMap<>();
     private Canvas mCanvas;
@@ -133,10 +147,14 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private SVGLength mbbHeight;
     private String mAlign;
     private int mMeetOrSlice;
-    private final Matrix mInvViewBoxMatrix = new Matrix();
+    final Matrix mInvViewBoxMatrix = new Matrix();
     private boolean mInvertible = true;
     private boolean mRendered = false;
     int mTintColor = 0;
+
+    boolean notRendered() {
+        return !mRendered;
+    }
 
     private void clearChildCache() {
         if (!mRendered) {
@@ -152,13 +170,15 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         }
     }
 
-    @ReactProp(name = "tintColor", customType = "Color")
+    @ReactProp(name = "tintColor")
     public void setTintColor(@Nullable Integer tintColor) {
         if (tintColor == null) {
             mTintColor = 0;
         } else {
             mTintColor = tintColor;
         }
+        invalidate();
+        clearChildCache();
     }
 
     @ReactProp(name = "minX")
@@ -238,9 +258,10 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         return mCanvas.getClipBounds();
     }
 
-    void drawChildren(final Canvas canvas) {
+    synchronized void drawChildren(final Canvas canvas) {
         mRendered = true;
         mCanvas = canvas;
+        Matrix mViewBoxMatrix = new Matrix();
         if (mAlign != null) {
             RectF vbRect = getViewBox();
             float width = canvas.getWidth();
@@ -254,7 +275,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             if (nested) {
                 canvas.clipRect(eRect);
             }
-            Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
+            mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
             mInvertible = mViewBoxMatrix.invert(mInvViewBoxMatrix);
             canvas.concat(mViewBoxMatrix);
         }
@@ -277,7 +298,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             View lNode = getChildAt(i);
             if (lNode instanceof VirtualView) {
                 VirtualView node = (VirtualView)lNode;
-                int count = node.saveAndSetupCanvas(canvas);
+                int count = node.saveAndSetupCanvas(canvas, mViewBoxMatrix);
                 node.render(canvas, paint, 1f);
                 node.restoreCanvas(canvas, count);
 
@@ -298,7 +319,27 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
                 getHeight(),
                 Bitmap.Config.ARGB_8888);
 
+        clearChildCache();
         drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.recycle();
+        byte[] bitmapBytes = stream.toByteArray();
+        return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+    }
+
+    String toDataURL(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                width,
+                height,
+                Bitmap.Config.ARGB_8888);
+
+        clearChildCache();
+        drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         bitmap.recycle();
@@ -371,5 +412,13 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     VirtualView getDefinedMask(String maskRef) {
         return mDefinedMasks.get(maskRef);
+    }
+
+    void defineMarker(VirtualView marker, String markerRef) {
+        mDefinedMarkers.put(markerRef, marker);
+    }
+
+    VirtualView getDefinedMarker(String markerRef) {
+        return mDefinedMarkers.get(markerRef);
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.unimodules</groupId>
+  <artifactId>unimodules-file-system-interface</artifactId>
+  <versioning>
+    <release>5.0.0</release>
+    <versions>
+      <version>5.0.0</version>
+    </versions>
+    <lastUpdated>20191204213341</lastUpdated>
+  </versioning>
+</metadata>

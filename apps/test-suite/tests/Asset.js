@@ -1,6 +1,7 @@
 'use strict';
 
-import { Asset, FileSystem } from 'expo';
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 
 export const name = 'Asset';
 

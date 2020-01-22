@@ -1,0 +1,18 @@
+import { EventEmitter, Platform } from '@unimodules/core';
+import PushTokenManager from './PushTokenManager';
+// Web uses SyntheticEventEmitter
+const tokenEmitter = new EventEmitter(PushTokenManager);
+const newTokenEventName = 'onDevicePushToken';
+export function addPushTokenListener(listener) {
+    const wrappingListener = ({ devicePushToken }) => 
+    // @ts-ignore: TS can't decide what Platform.OS is.
+    listener({ data: devicePushToken, type: Platform.OS });
+    return tokenEmitter.addListener(newTokenEventName, wrappingListener);
+}
+export function removePushTokenSubscription(subscription) {
+    tokenEmitter.removeSubscription(subscription);
+}
+export function removeAllPushTokenListeners() {
+    tokenEmitter.removeAllListeners(newTokenEventName);
+}
+//# sourceMappingURL=TokenEmitter.js.map

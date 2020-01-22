@@ -39,7 +39,7 @@
                                    error:(NSError*_Nullable __autoreleasing *_Nullable)error;
 
 /**
- @brief Returns an array of all items found in the keychain.
+ @brief Returns an array of all items found in the keychain for an app.
 
  @param error       If an error occurs, the error is returned in `error` if it is not `NULL`.
  @return            Returns an array of the items stored in the keychain or `nil`.
@@ -58,4 +58,7 @@
                       forService:(NSString*_Nonnull)service
                              key:(NSString*_Nonnull)key
                 cloudAccessGroup:(NSString*_Nullable)accessGroup;
+
+/// The default security access group for the app.
++ (NSString*_Nullable) securityAccessGroup;
 @end

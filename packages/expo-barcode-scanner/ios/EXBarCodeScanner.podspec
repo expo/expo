@@ -17,7 +17,9 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
+  s.dependency 'UMImageLoaderInterface'
+  s.dependency 'UMPermissionsInterface'
+  s.dependency 'ZXingObjC/PDF417'
+  s.dependency 'ZXingObjC/OneD'
 
 end
-
-  

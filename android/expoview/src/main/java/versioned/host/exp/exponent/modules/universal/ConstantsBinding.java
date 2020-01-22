@@ -4,7 +4,7 @@ package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import org.json.JSONException;
@@ -46,16 +46,8 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     mManifest = manifest;
     mExperienceProperties = experienceProperties;
 
-    if (!manifest.has(ExponentManifest.MANIFEST_STATUS_BAR_COLOR)) {
-      int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        int statusBarHeightPixels = mContext.getResources().getDimensionPixelSize(resourceId);
-        // Convert from pixels to dip
-        mStatusBarHeight = convertPixelsToDp(statusBarHeightPixels, mContext);
-      }
-    } else {
-      mStatusBarHeight = 0;
-    }
+    int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    mStatusBarHeight = resourceId > 0 ? convertPixelsToDp(mContext.getResources().getDimensionPixelSize(resourceId), mContext) : 0;
   }
 
   @Nullable
@@ -66,18 +58,21 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
-    constants.put("nativeAppVersion", Constants.VERSION_NAME);
+    constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
+    constants.put("supportedExpoSdks", Constants.SDK_VERSIONS_LIST);
 
-    if (mExperienceProperties != null) {
-      constants.put("appOwnership", getAppOwnership());
-      constants.putAll(mExperienceProperties);
-    }
+    String appOwnership = getAppOwnership();
+
+    constants.put("appOwnership", appOwnership);
+    constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
     Map<String, Object> androidPlatform = new HashMap<>();
 
-    androidPlatform.put("versionCode", Constants.ANDROID_VERSION_CODE);
+    Integer versionCode = appOwnership.equals("expo") ? null : Constants.ANDROID_VERSION_CODE;
+    androidPlatform.put("versionCode", versionCode);
+
     platform.put("android", androidPlatform);
     constants.put("platform", platform);
     constants.put("isDetached", Constants.isStandaloneApp());

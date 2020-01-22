@@ -1,6 +1,6 @@
 {
   "name": "EXFacebook",
-  "version": "4.0.0",
+  "version": "8.0.0",
   "summary": "Expo universal module for Facebook SDK",
   "description": "Expo universal module for Facebook SDK",
   "license": "MIT",
@@ -23,10 +23,10 @@
 
     ],
     "FBSDKCoreKit": [
-
+      "~> 5.8.0"
     ],
     "FBSDKLoginKit": [
-
+      "~> 5.8.0"
     ]
   }
 }

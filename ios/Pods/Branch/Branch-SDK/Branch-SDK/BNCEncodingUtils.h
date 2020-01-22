@@ -52,8 +52,10 @@ extern NSString* BNCWireFormatFromString(NSString *string);
 + (NSString*) stringByPercentDecodingString:(NSString*)string;
 + (NSString*) stringByPercentEncodingStringForQuery:(NSString *)string;
 
++ (NSString *)sanitizedStringFromString:(NSString *)dirtyString;
 + (NSDictionary *)decodeJsonDataToDictionary:(NSData *)jsonData;
 + (NSDictionary *)decodeJsonStringToDictionary:(NSString *)jsonString;
+
 + (NSDictionary *)decodeQueryStringToDictionary:(NSString *)queryString;
 + (NSString *)encodeDictionaryToQueryString:(NSDictionary *)dictionary;
 

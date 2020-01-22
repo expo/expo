@@ -1,4 +1,9 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+} from 'unimodules-permissions-interface';
+
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -7,6 +12,7 @@ const LocationEventEmitter = new EventEmitter(ExpoLocation);
 
 export interface ProviderStatus {
   locationServicesEnabled: boolean;
+  backgroundModeEnabled: boolean;
   gpsAvailable?: boolean;
   networkAvailable?: boolean;
   passiveAvailable?: boolean;
@@ -55,6 +61,21 @@ export interface Address {
   name: string;
 }
 
+export { PermissionStatus };
+
+export type PermissionDetailsLocationIOS = {
+  scope: 'whenInUse' | 'always';
+};
+
+export type PermissionDetailsLocationAndroid = {
+  scope: 'fine' | 'coarse' | 'none';
+};
+
+export interface PermissionResponse extends UMPermissionResponse {
+  ios?: PermissionDetailsLocationIOS;
+  android?: PermissionDetailsLocationAndroid;
+}
+
 interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
@@ -63,12 +84,17 @@ interface LocationTaskOptions {
   deferredUpdatesDistance?: number;
   deferredUpdatesTimeout?: number;
   deferredUpdatesInterval?: number;
+
+  // iOS only
+  activityType?: LocationActivityType;
+  pausesUpdatesAutomatically?: boolean;
+
   foregroundService?: {
     notificationTitle: string;
     notificationBody: string;
     notificationColor?: string;
   };
-};
+}
 
 interface Region {
   identifier?: string;
@@ -93,7 +119,16 @@ enum LocationAccuracy {
   Highest = 5,
   BestForNavigation = 6,
 }
-export { LocationAccuracy as Accuracy };
+
+enum LocationActivityType {
+  Other = 1,
+  AutomotiveNavigation = 2,
+  Fitness = 3,
+  OtherNavigation = 4,
+  Airborne = 5,
+}
+
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 
 export enum GeofencingEventType {
   Enter = 1,
@@ -144,6 +179,10 @@ export async function getCurrentPositionAsync(
   options: LocationOptions = {}
 ): Promise<LocationData> {
   return ExpoLocation.getCurrentPositionAsync(options);
+}
+
+export async function getLastKnownPositionAsync(): Promise<LocationData> {
+  return ExpoLocation.getLastKnownPositionAsync();
 }
 
 // Start Compass Module
@@ -261,7 +300,10 @@ export async function geocodeAsync(address: string): Promise<Array<GeocodedLocat
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleGeocodeAsync(address);
     }
@@ -283,7 +325,10 @@ export async function reverseGeocodeAsync(location: {
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleReverseGeocodeAsync(location);
     }
@@ -299,12 +344,11 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
   const resultObject = await result.json();
 
-  const { status } = resultObject;
-  if (status === 'ZERO_RESULTS') {
+  if (resultObject.status === 'ZERO_RESULTS') {
     return [];
-  } else if (status !== 'OK') {
-    throw new Error(`An error occurred during geocoding. ${status}`);
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     let location = result.geometry.location;
@@ -325,9 +369,11 @@ async function _googleReverseGeocodeAsync(options: {
   );
   const resultObject = await result.json();
 
-  if (resultObject.status !== 'OK') {
-    throw new Error('An error occurred during geocoding.');
+  if (resultObject.status === 'ZERO_RESULTS') {
+    return [];
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     const address: any = {};
@@ -349,6 +395,22 @@ async function _googleReverseGeocodeAsync(options: {
     });
     return address as Address;
   });
+}
+
+// https://developers.google.com/maps/documentation/geocoding/intro
+function assertGeocodeResults(resultObject: any): void {
+  const { status, error_message } = resultObject;
+  if (status !== 'ZERO_RESULTS' && status !== 'OK') {
+    if (error_message) {
+      throw new CodedError(status, error_message);
+    } else if (status === 'UNKNOWN_ERROR') {
+      throw new CodedError(
+        status,
+        'the request could not be processed due to a server error. The request may succeed if you try again.'
+      );
+    }
+    throw new CodedError(status, `An error occurred during geocoding.`);
+  }
 }
 
 // Polyfill: navigator.geolocation.watchPosition
@@ -434,8 +496,12 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function requestPermissionsAsync(): Promise<void> {
-  await ExpoLocation.requestPermissionsAsync();
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service
@@ -448,6 +514,11 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 
 function _validateTaskName(taskName: string) {
   invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
+}
+
+export async function isBackgroundLocationAvailableAsync(): Promise<boolean> {
+  const providerStatus = await getProviderStatusAsync();
+  return providerStatus.backgroundModeEnabled;
 }
 
 export async function startLocationUpdatesAsync(

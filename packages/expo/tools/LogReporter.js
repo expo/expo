@@ -1,11 +1,10 @@
 const serializeError = require('serialize-error');
-
+/**
+ * @deprecated: Remove in SDK 38
+ * https://github.com/expo/expo-cli/pull/1269
+ */
 class LogReporter {
   update(event) {
-    if (event.type === 'bundle_built') {
-      event.type = 'bundle_build_done';
-    }
-
     if (event.error instanceof Error) {
       event.error = serializeError(event.error);
     }

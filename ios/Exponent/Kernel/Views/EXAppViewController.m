@@ -15,6 +15,7 @@
 #import "EXReactAppManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXUpdatesManager.h"
+#import "EXUtil.h"
 
 #import <React/RCTUtils.h>
 
@@ -70,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
+  // TODO(brentvatne): probably this should not just be UIColor whiteColor?
   self.view.backgroundColor = [UIColor whiteColor];
 
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
@@ -118,6 +121,15 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
     return;
   }
+
+  // we don't ever want to show any Expo UI in a production standalone app, so hard crash
+  if ([EXEnvironment sharedEnvironment].isDetached && ![_appRecord.appManager enablesDeveloperTools]) {
+    NSException *e = [NSException exceptionWithName:@"ExpoFatalError"
+                                             reason:[NSString stringWithFormat:@"Expo encountered a fatal error: %@", [error localizedDescription]]
+                                           userInfo:@{NSUnderlyingErrorKey: error}];
+    @throw e;
+  }
+
   NSString *domain = (error && error.domain) ? error.domain : @"";
   BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
 
@@ -179,6 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
+      [self _overrideUserInterfaceStyle];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -260,7 +273,8 @@ NS_ASSUME_NONNULL_BEGIN
   UIView *reactView = appManager.rootView;
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  reactView.backgroundColor = [UIColor clearColor];
+
+  [self _setRootViewBackgroundColor:reactView];
   
   [_contentView removeFromSuperview];
   _contentView = reactView;
@@ -343,10 +357,13 @@ NS_ASSUME_NONNULL_BEGIN
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
   UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
   switch (mask) {
-    case UIInterfaceOrientationMaskPortrait:
+    case UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown:
       if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
         newOrientation = UIInterfaceOrientationPortrait;
       }
+      break;
+    case UIInterfaceOrientationMaskPortrait:
+      newOrientation = UIInterfaceOrientationPortrait;
       break;
     case UIInterfaceOrientationMaskPortraitUpsideDown:
       newOrientation = UIInterfaceOrientationPortraitUpsideDown;
@@ -375,6 +392,66 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [UIViewController attemptRotationToDeviceOrientation];
 }
+
+#pragma mark - user interface style
+
+- (void)_overrideUserInterfaceStyle
+{
+  if (@available(iOS 13.0, *)) {
+    NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
+    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+  }
+}
+
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(NSDictionary *)manifest
+{
+  if (manifest[@"ios"] && manifest[@"ios"][@"userInterfaceStyle"]) {
+    return manifest[@"ios"][@"userInterfaceStyle"];
+  }
+  return manifest[@"userInterfaceStyle"];
+}
+
+- (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
+  if ([userInterfaceStyleString isEqualToString:@"dark"]) {
+    return UIUserInterfaceStyleDark;
+  }
+  if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
+    return UIUserInterfaceStyleUnspecified;
+  }
+  return UIUserInterfaceStyleLight;
+}
+
+#pragma mark - root view background color
+
+- (void)_setRootViewBackgroundColor:(UIView *)view
+{
+    NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
+    UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
+
+    if (backgroundColor) {
+      view.backgroundColor = backgroundColor;
+    } else {
+      view.backgroundColor = [UIColor whiteColor];
+
+      // NOTE(brentvatne): we may want to default to respecting the default system background color
+      // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
+      // as well. This would also be a breaking change. Leaaving this here as a placeholder for the future.
+      // if (@available(iOS 13.0, *)) {
+      //   view.backgroundColor = [UIColor systemBackgroundColor];
+      // } else {
+      //  view.backgroundColor = [UIColor whiteColor];
+      // }
+    }
+}
+
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(NSDictionary *)manifest
+{
+  if (manifest[@"ios"] && manifest[@"ios"][@"backgroundColor"]) {
+    return manifest[@"ios"][@"backgroundColor"];
+  }
+  return manifest[@"backgroundColor"];
+}
+
 
 #pragma mark - Internal
 

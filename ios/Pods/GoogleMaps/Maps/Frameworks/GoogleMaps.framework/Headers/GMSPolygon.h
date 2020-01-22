@@ -12,9 +12,10 @@
 
 #import "GMSOverlay.h"
 
-NS_ASSUME_NONNULL_BEGIN;
-
 @class GMSPath;
+@class GMSPolygonLayer;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSPolygon defines a polygon that appears on the map. A polygon (like a polyline) defines a
@@ -33,16 +34,16 @@ NS_ASSUME_NONNULL_BEGIN;
 @property(nonatomic, copy, nullable) NSArray<GMSPath *> *holes;
 
 /** The width of the polygon outline in screen points. Defaults to 1. */
-@property(nonatomic, assign) CGFloat strokeWidth;
+@property(nonatomic) CGFloat strokeWidth;
 
 /** The color of the polygon outline. Defaults to nil. */
-@property(nonatomic, strong, nullable) UIColor *strokeColor;
+@property(nonatomic, nullable) UIColor *strokeColor;
 
 /** The fill color. Defaults to blueColor. */
-@property(nonatomic, strong, nullable) UIColor *fillColor;
+@property(nonatomic, nullable) UIColor *fillColor;
 
 /** Whether this polygon should be rendered with geodesic correction. */
-@property(nonatomic, assign) BOOL geodesic;
+@property(nonatomic) BOOL geodesic;
 
 /**
  * Convenience constructor for GMSPolygon for a particular path. Other properties will have default
@@ -52,4 +53,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

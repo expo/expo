@@ -1,13 +1,7 @@
 {
-  "name": "test_suite_flutter",
+  "name": "example",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/main.dart",
   "license": "MIT",
-  "dependencies": {
-    "@unimodules/core": "file:../../@unimodules/core",
-    "expo-permissions": "file:../../expo-permissions",
-    "expo-permissions-interface": "file:../../expo-permissions-interface",
-    "expo-sensors": "file:../../expo-sensors",
-    "expo-sensors-interface": "file:../../expo-sensors-interface"
-  }
+  "private": true
 }

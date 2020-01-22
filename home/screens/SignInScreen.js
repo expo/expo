@@ -1,10 +1,9 @@
 /* @flow */
 
 import React from 'react';
-import { ScrollView, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 
-import Alerts from '../constants/Alerts';
 import Analytics from '../api/Analytics';
 import SessionActions from '../redux/SessionActions';
 import Colors from '../constants/Colors';
@@ -13,6 +12,7 @@ import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import AuthApi from '../api/AuthApi';
 import ApolloClient from '../api/ApolloClient';
+import { StyledScrollView as ScrollView } from '../components/Views';
 
 const DEBUG = false;
 
@@ -51,8 +51,8 @@ export default class SignInScreen extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps: Object) {
-    const hasNewUserSession = nextProps.session.sessionSecret && !this.props.session.sessionSecret;
+  componentDidUpdate(prevProps: Object) {
+    const hasNewUserSession = this.props.session.sessionSecret && !prevProps.session.sessionSecret;
     if (hasNewUserSession) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.pop();
@@ -62,6 +62,7 @@ export default class SignInScreen extends React.Component {
   render() {
     return (
       <ScrollView
+        lightBackgroundColor={Colors.light.greyBackground}
         style={styles.container}
         contentContainerStyle={{ paddingTop: 15 }}
         keyboardShouldPersistTaps="always"
@@ -132,19 +133,15 @@ export default class SignInScreen extends React.Component {
     try {
       let result = await AuthApi.signInAsync(email, password);
       if (this._isMounted) {
-        if (result.error) {
-          this._handleError(result);
-        } else {
-          let trackingOpts = {
-            id: result.id,
-            emailOrUsername: email,
-          };
-          Analytics.identify(result.id, trackingOpts);
-          Analytics.track(Analytics.events.USER_LOGGED_IN, trackingOpts);
+        let trackingOpts = {
+          id: result.id,
+          usernameOrEmail: email,
+        };
+        Analytics.identify(result.id, trackingOpts);
+        Analytics.track(Analytics.events.USER_LOGGED_IN, trackingOpts);
 
-          ApolloClient.resetStore();
-          this.props.dispatch(SessionActions.setSession({ sessionSecret: result.sessionSecret }));
-        }
+        ApolloClient.resetStore();
+        this.props.dispatch(SessionActions.setSession({ sessionSecret: result.sessionSecret }));
       }
     } catch (e) {
       this._isMounted && this._handleError(e);
@@ -154,8 +151,7 @@ export default class SignInScreen extends React.Component {
   };
 
   _handleError = (error: Error) => {
-    console.log({ error });
-    let message = error.error_description || error.message || 'Sorry, something went wrong.';
+    let message = error.message || 'Sorry, something went wrong.';
     alert(message);
   };
 }
@@ -163,6 +159,5 @@ export default class SignInScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
 });

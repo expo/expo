@@ -30,22 +30,22 @@ typedef NS_ENUM(NSInteger, EXOrientationLock) {
 
 @interface RCTConvert (OrientationLock)
 
-+ (EXOrientationLock)EXOrientationLock:(id)json;
++ (EXOrientationLock)EXOrientationLock:(nullable id)json;
 
 @end
 
 @protocol EXScreenOrientationScopedModuleDelegate
 
-- (void)screenOrientationModule:(id)scopedOrientationModule
+- (void)screenOrientationModule:(nonnull id)scopedOrientationModule
 didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientationsForVisibleApp;
 
-- (void)removeOrientationChangeListener:(NSString *)experienceId;
+- (void)removeOrientationChangeListener:(nonnull NSString *)experienceId;
 
-- (void)addOrientationChangeListener:(NSString *)experienceId subscriberModule:(id)subscriberModule;
+- (void)addOrientationChangeListener:(nonnull NSString *)experienceId subscriberModule:(nonnull id)subscriberModule;
 
-- (UITraitCollection *)getTraitCollection;
+- (nullable UITraitCollection *)getTraitCollection;
 
 @end
 
@@ -53,5 +53,5 @@ didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInt
 
 - (void)handleScreenOrientationChange:(nullable UITraitCollection *)traitCollection;
 
-+ (NSDictionary *)getStringToOrientationLockJSDict;
++ (nonnull NSDictionary *)getStringToOrientationLockJSDict;
 @end

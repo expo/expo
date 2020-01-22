@@ -1,31 +1,25 @@
 import './Expo.fx';
 
 import * as AR from './AR';
-import * as Google from './Google';
 import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
-import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
 
-export { AR };
-export { Google };
 export { Logs };
+export { default as apisAreAvailable } from './apisAreAvailable';
+export { default as registerRootComponent } from './launch/registerRootComponent';
+export { default as Linking } from './Linking/Linking';
+export { default as Notifications } from './Notifications/Notifications';
+
+// The following should all be extracted from this package
+export { AR };
 export { ScreenOrientation };
 export { SplashScreen };
-export { StoreReview };
 export { Updates };
-
-export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as AppLoading } from './launch/AppLoading';
 export { default as AuthSession } from './AuthSession';
 export { default as DangerZone } from './DangerZone';
-export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
-export { default as Linking } from './Linking/Linking';
-export { default as Notifications } from './Notifications/Notifications';
-export { default as Pedometer } from './Pedometer';
-export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 
 // @ts-ignore
 export {
@@ -37,6 +31,8 @@ export {
   AdMobInterstitial,
   // @ts-ignore
   AdMobRewarded,
+  // @ts-ignore
+  Animated,
   // @ts-ignore
   Amplitude,
   // @ts-ignore
@@ -68,6 +64,8 @@ export {
   // @ts-ignore
   DocumentPicker,
   // @ts-ignore
+  Easing,
+  // @ts-ignore
   Facebook,
   // @ts-ignore
   FacebookAds,
@@ -85,6 +83,8 @@ export {
   GLView,
   // @ts-ignore
   GoogleSignIn,
+  // @ts-ignore
+  Google,
   // @ts-ignore
   Gyroscope,
   // @ts-ignore
@@ -122,6 +122,8 @@ export {
   // @ts-ignore
   MediaLibrary,
   // @ts-ignore
+  Pedometer,
+  // @ts-ignore
   Permissions,
   // @ts-ignore
   Print,
@@ -146,24 +148,17 @@ export {
   // @ts-ignore
   Svg,
   // @ts-ignore
+  takeSnapshotAsync,
+  // @ts-ignore
   TaskManager,
+  // @ts-ignore
+  Transition,
+  // @ts-ignore
+  Transitioning,
   // @ts-ignore
   Video,
   // @ts-ignore
   WebBrowser,
   // @ts-ignore
   WebView,
-} from './deprecated';
-
-declare var module: any;
-
-if (module && module.exports) {
-  if (global) {
-    // @ts-ignore
-    global.__exponent = module.exports;
-    // @ts-ignore
-    global.__expo = module.exports;
-    // @ts-ignore
-    global.Expo = module.exports;
-  }
-}
+} from './removed';

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
-import { Font, Svg } from 'expo';
+import * as Svg from 'react-native-svg';
+import * as Font from 'expo-font';
 import { VictoryArea, VictoryChart, VictoryStack } from 'victory-native';
 
 import Example from './Example';
@@ -51,7 +52,7 @@ class VictoryChartExample extends React.Component {
             />
           </VictoryStack>
         </VictoryChart>
-        <Svg width={Dimensions.get('window').width} height={50}>
+        <Svg.Svg width={Dimensions.get('window').width} height={50}>
           <Svg.Text
             fill="#fff"
             stroke="#000"
@@ -62,7 +63,7 @@ class VictoryChartExample extends React.Component {
           >
             drawn with victory-native
           </Svg.Text>
-        </Svg>
+        </Svg.Svg>
       </View>
     );
   }

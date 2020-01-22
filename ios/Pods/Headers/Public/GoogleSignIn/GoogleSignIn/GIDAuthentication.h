@@ -1,1 +1,0 @@
-../../../../GoogleSignIn/Frameworks/GoogleSignIn.framework/Headers/GIDAuthentication.h

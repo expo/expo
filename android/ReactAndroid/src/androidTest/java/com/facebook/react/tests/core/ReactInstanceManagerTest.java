@@ -6,10 +6,10 @@
 package com.facebook.react.tests.core;
 
 import android.app.Activity;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.common.LifecycleState;
@@ -36,26 +36,28 @@ public class ReactInstanceManagerTest {
     Activity activity = mActivityRule.getActivity();
     mReactRootView = new ReactRootView(activity);
     mReactInstanceManager =
-      ReactTestHelper.getReactTestFactory()
-        .getReactInstanceManagerBuilder()
-        .setApplication(activity.getApplication())
-        .setBundleAssetName("AndroidTestBundle.js")
-        .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-        .addPackage(new MainReactPackage())
-        .build();
+        ReactTestHelper.getReactTestFactory()
+            .getReactInstanceManagerBuilder()
+            .setApplication(activity.getApplication())
+            .setBundleAssetName("AndroidTestBundle.js")
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .addPackage(new MainReactPackage())
+            .build();
   }
 
   @After
   public void tearDown() {
     final ReactRootView reactRootView = mReactRootView;
     final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
-    InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-      @Override
-      public void run() {
-        reactRootView.unmountReactApplication();
-        reactInstanceManager.destroy();
-      }
-    });
+    InstrumentationRegistry.getInstrumentation()
+        .runOnMainSync(
+            new Runnable() {
+              @Override
+              public void run() {
+                reactRootView.unmountReactApplication();
+                reactInstanceManager.destroy();
+              }
+            });
   }
 
   @Test

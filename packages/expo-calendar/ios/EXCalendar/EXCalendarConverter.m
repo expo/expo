@@ -21,7 +21,7 @@
   if (type == EKCalendarTypeExchange) return @"exchange";
   if (type == EKCalendarTypeSubscription) return @"subscribed";
   if (type == EKCalendarTypeBirthday) return @"birthdays";
-  return @"none";
+  return @"unknown";
 }
 
 + (NSString *)_entityType:(EKEntityMask)entityType
@@ -124,11 +124,11 @@
   return @{
        @"id": source.sourceIdentifier,
        @"type": [EXCalendarConverter _sourceType:source.sourceType],
-       @"name": source.title
+       @"name": UMNullIfNil(source.title)
        };
 }
 
-+ (NSMutableDictionary *)_serializeCalendar:(EKCalendar *)calendar
++ (NSMutableDictionary *)serializeCalendar:(EKCalendar *)calendar
 {
   NSMutableDictionary *serializedCalendar = [[NSMutableDictionary alloc] init];
 
@@ -149,7 +149,7 @@
   NSMutableArray *serializedCalendars = [[NSMutableArray alloc] init];
 
   for (EKCalendar *calendar in calendars) {
-    [serializedCalendars addObject:[EXCalendarConverter _serializeCalendar:calendar]];
+    [serializedCalendars addObject:[EXCalendarConverter serializeCalendar:calendar]];
   }
 
   return serializedCalendars;
@@ -204,6 +204,36 @@
 
     if ([[rule recurrenceEnd] occurrenceCount]) {
       recurrenceRule[@"occurrence"] = @([[rule recurrenceEnd] occurrenceCount]);
+    }
+
+    if ([rule daysOfTheWeek]) {
+      NSMutableArray *daysOfTheWeek = [[NSMutableArray alloc] init];
+
+      for (EKRecurrenceDayOfWeek *dayOfTheWeek in [rule daysOfTheWeek]) {
+        [daysOfTheWeek addObject:@{@"dayOfTheWeek":@([dayOfTheWeek dayOfTheWeek]),
+                   @"weekNumber":@([dayOfTheWeek weekNumber])}];
+      }
+      recurrenceRule[@"daysOfTheWeek"] = daysOfTheWeek;
+    }
+
+    if ([rule daysOfTheMonth]) {
+      recurrenceRule[@"daysOfTheMonth"] = [rule daysOfTheMonth];
+    }
+
+    if ([rule daysOfTheYear]) {
+      recurrenceRule[@"daysOfTheYear"] = [rule daysOfTheYear];
+    }
+
+    if ([rule weeksOfTheYear]) {
+      recurrenceRule[@"weeksOfTheYear"] = [rule weeksOfTheYear];
+    }
+
+    if ([rule monthsOfTheYear]) {
+      recurrenceRule[@"monthsOfTheYear"] = [rule monthsOfTheYear];
+    }
+
+    if ([rule setPositions]) {
+      recurrenceRule[@"setPositions"] = [rule setPositions];
     }
 
     serializedItem[@"recurrenceRule"] = recurrenceRule;

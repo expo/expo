@@ -1,15 +1,15 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 class CircleExample extends React.Component {
   static title = 'Circle';
   render() {
     return (
-      <Svg height="100" width="140">
+      <Svg.Svg height="100" width="140">
         <Svg.Circle cx="50%" cy="50%" r="40%" fill="pink" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -18,9 +18,9 @@ class StrokeCircle extends React.Component {
   static title = 'Stroke Circle';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.Circle cx="50" cy="50" r="45" stroke="purple" strokeWidth="2.5" fill="none" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -29,7 +29,7 @@ class StrokeOpacityCircle extends React.Component {
   static title = 'Circle with strokeOpacity';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.Circle
           cx="50"
           cy="50"
@@ -39,7 +39,7 @@ class StrokeOpacityCircle extends React.Component {
           strokeWidth="10"
           fill="pink"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -48,7 +48,7 @@ class PieCircle extends React.Component {
   static title = 'Draw a Pie shape with circle';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.Circle cx="50" cy="50" r="40" fill="#ddd" />
         <Svg.Circle
           origin="50, 50"
@@ -61,15 +61,15 @@ class PieCircle extends React.Component {
           fill="none"
           strokeDasharray="80, 160"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Svg.Circle cx="10" cy="10" r="8" stroke="purple" strokeWidth="1" fill="pink" />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Circle: Example = {

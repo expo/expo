@@ -4,7 +4,7 @@ title: Google Sign-In
 
 > Introduced in Expo v32
 
-This library provides full Google authentication for **standalone** Expo apps. It cannot be used in the Expo Client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Client with web authentication, check out `Expo.Google`.
+This library provides full Google authentication for **standalone** Expo apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client with web authentication, check out `Expo.Google`.
 
 `expo-google-sign-in` is a Unimodule that can be used outside of Expo in apps using bare React Native. For more information on how to set it up outside of Expo, look through the [npm page](https://www.npmjs.com/package/expo-google-sign-in).
 

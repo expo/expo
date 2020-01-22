@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI26_0_0/Libraries/Text/Text/ABI26_0_0RCTTextShadowView.h

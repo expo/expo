@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -20,7 +20,6 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.imageloader.ImageLoader;
 
 import expo.modules.imagemanipulator.arguments.Action;
@@ -29,7 +28,7 @@ import expo.modules.imagemanipulator.arguments.ActionFlip;
 import expo.modules.imagemanipulator.arguments.ActionResize;
 import expo.modules.imagemanipulator.arguments.SaveOptions;
 
-public class ImageManipulatorModule extends ExportedModule implements ModuleRegistryConsumer {
+public class ImageManipulatorModule extends ExportedModule {
   private static final String TAG = "ExpoImageManipulator";
   private static final String ERROR_TAG = "E_IMAGE_MANIPULATOR";
   private ImageLoader mImageLoader;
@@ -44,7 +43,7 @@ public class ImageManipulatorModule extends ExportedModule implements ModuleRegi
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mImageLoader = moduleRegistry.getModule(ImageLoader.class);
   }
 
@@ -114,7 +113,7 @@ public class ImageManipulatorModule extends ExportedModule implements ModuleRegi
 
   private Bitmap cropBitmap(Bitmap bitmap, ActionCrop crop) throws IllegalArgumentException {
     if (crop.getOriginX() > bitmap.getWidth()
-        || crop.getOriginX() > bitmap.getHeight()
+        || crop.getOriginY() > bitmap.getHeight()
         || crop.getOriginX() + crop.getWidth() > bitmap.getWidth()
         || crop.getOriginY() + crop.getHeight() > bitmap.getHeight()
     ) {

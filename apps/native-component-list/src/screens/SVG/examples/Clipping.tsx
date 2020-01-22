@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const {
@@ -22,7 +22,7 @@ class ClipPathElement extends React.Component {
   static title = 'Clip by set clip-path with a path data';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Defs>
           <RadialGradient id="grad" cx="50%" cy="50%" rx="50%" ry="50%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor="#ff0" stopOpacity="1" />
@@ -41,7 +41,7 @@ class ClipPathElement extends React.Component {
           </ClipPath>
         </Defs>
         <Rect x="0" y="0" width="100" height="100" fill="url(#grad)" clipPath="url(#clip)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -50,7 +50,7 @@ class ClipRule extends React.Component {
   static title = 'Clip a group with clipRule="evenodd"';
   render() {
     return (
-      <Svg height={200} width={200}>
+      <Svg.Svg height={200} width={200}>
         <Defs>
           {/*
           // @ts-ignore */}
@@ -75,7 +75,7 @@ class ClipRule extends React.Component {
           <Use href="#a" clipPath="url(#b)" clipRule="evenodd" />
           <Use href="#a" clipPath="url(#c)" y={100} />
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -84,7 +84,7 @@ class TextClipping extends React.Component {
   static title = 'Transform the text';
   render() {
     return (
-      <Svg height="60" width="200">
+      <Svg.Svg height="60" width="200">
         <Defs>
           <ClipPath id="clip">
             <Circle cx="-20" cy="35" r="10" />
@@ -113,13 +113,13 @@ class TextClipping extends React.Component {
         >
           NOT THE FACE
         </Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Defs>
       <ClipPath id="clip">
         <Path d="M50,5L20,99L95,39L5,39L80,99z" />
@@ -134,7 +134,7 @@ const icon = (
         <Rect x="50" y="50" width="50" height="50" fill="green" />
       </G>
     </G>
-  </Svg>
+  </Svg.Svg>
 );
 
 const Clipping: Example = {

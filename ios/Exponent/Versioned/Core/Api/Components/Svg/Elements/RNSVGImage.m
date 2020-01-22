@@ -9,7 +9,20 @@
 #import "RNSVGImage.h"
 #import "RCTConvert+RNSVG.h"
 #import <React/RCTImageSource.h>
+
+#if __has_include(<React/RCTImageLoader.h>)
+
 #import <React/RCTImageLoader.h>
+
+#else
+
+#import <React/RCTImageURLLoader.h>
+#import <React/RCTImageShadowView.h>
+#import <React/RCTImageView.h>
+#import <React/RCTImageLoaderProtocol.h>
+
+#endif
+
 #import <React/RCTLog.h>
 #import "RNSVGViewBox.h"
 
@@ -40,7 +53,7 @@
         _reloadImageCancellationBlock = nil;
     }
 
-    _reloadImageCancellationBlock = [self.bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:src] callback:^(NSError *error, UIImage *image) {
+    _reloadImageCancellationBlock = [[self.bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:src] callback:^(NSError *error, UIImage *image) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_image = CGImageRetain(image.CGImage);
             self->_imageSize = CGSizeMake(CGImageGetWidth(self->_image), CGImageGetHeight(self->_image));
@@ -110,6 +123,9 @@
 
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
+    if (CGSizeEqualToSize(CGSizeZero, _imageSize)) {
+        return;
+    }
     CGContextSaveGState(context);
 
     // add hit area
@@ -118,21 +134,30 @@
     [self setHitArea:hitAreaPath];
     CGPathRelease(hitAreaPath);
     self.pathBounds = hitArea;
+    self.fillBounds = hitArea;
+    self.strokeBounds = hitArea;
 
     // apply viewBox transform on Image render.
     CGRect imageBounds = CGRectMake(0, 0, _imageSize.width, _imageSize.height);
     CGAffineTransform viewbox = [RNSVGViewBox getTransform:imageBounds eRect:hitArea align:self.align meetOrSlice:self.meetOrSlice];
 
     [self clip:context];
-    CGContextTranslateCTM(context, 0, hitArea.size.height);
-    CGContextScaleCTM(context, 1, -1);
     CGContextClipToRect(context, hitArea);
     CGContextConcatCTM(context, viewbox);
+    CGContextTranslateCTM(context, 0, imageBounds.size.height);
+    CGContextScaleCTM(context, 1, -1);
     CGContextDrawImage(context, imageBounds, _image);
     CGContextRestoreGState(context);
 
     CGRect bounds = hitArea;
     self.clientRect = bounds;
+
+    CGAffineTransform current = CGContextGetCTM(context);
+    CGAffineTransform svgToClientTransform = CGAffineTransformConcat(current, self.svgView.invInitialCTM);
+
+    self.ctm = svgToClientTransform;
+    self.screenCTM = current;
+
     CGAffineTransform transform = CGAffineTransformConcat(self.matrix, self.transforms);
     CGPoint mid = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
     CGPoint center = CGPointApplyAffineTransform(mid, transform);
@@ -147,7 +172,7 @@
 - (CGRect)getHitArea
 {
     CGFloat x = [self relativeOnWidth:self.x];
-    CGFloat y = -1 * [self relativeOnHeight:self.y];
+    CGFloat y = [self relativeOnHeight:self.y];
     CGFloat width = [self relativeOnWidth:self.imagewidth];
     CGFloat height = [self relativeOnHeight:self.imageheight];
     if (width == 0) {

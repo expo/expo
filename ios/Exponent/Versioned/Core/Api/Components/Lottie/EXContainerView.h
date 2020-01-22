@@ -25,10 +25,13 @@
 @property (nonatomic, assign) CGFloat progress;
 @property (nonatomic, strong) NSDictionary *sourceJson;
 @property (nonatomic, strong) NSString *sourceName;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnimationFinish;
 
 - (void)play;
+- (void)play:(nullable LOTAnimationCompletionBlock)completion;
 - (void)playFromFrame:(NSNumber *)startFrame
-              toFrame:(NSNumber *)endFrame;
+              toFrame:(NSNumber *)endFrame
+       withCompletion:(nullable LOTAnimationCompletionBlock)completion;
 - (void)reset;
 
 @end

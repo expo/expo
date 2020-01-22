@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/EXPermissionsInterface/ABI30_0_0EXPermissionsInterface/ABI30_0_0EXPermissionsInterface.h

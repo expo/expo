@@ -1,6 +1,7 @@
-import { NativeEventEmitter, Platform } from 'react-native';
-import ExponentSpeech from './ExponentSpeech';
+import { NativeEventEmitter } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+
+import ExponentSpeech from './ExponentSpeech';
 import { SpeechOptions, VoiceQuality, Voice } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);

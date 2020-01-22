@@ -1,9 +1,9 @@
 /* @flow */
 
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BarCodeScanner } from 'expo';
-import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
 
@@ -16,19 +16,14 @@ export default class BarCodeScreen extends React.Component {
     scannerIsVisible: false,
   };
 
-  _hasOpenedUrl: boolean;
-  _isMounted: boolean;
-
-  componentWillMount() {
-    this._hasOpenedUrl = false;
-
-    setTimeout(() => {
-      this.setState({ scannerIsVisible: true });
-    }, 800);
-  }
+  _hasOpenedUrl = false;
+  _isMounted = false;
 
   componentDidMount() {
     this._isMounted = true;
+    setTimeout(() => {
+      this.setState({ scannerIsVisible: true });
+    }, 800);
   }
 
   componentWillUnmount() {
@@ -101,7 +96,7 @@ const BOX_SIZE = Layout.window.width - BOX_MARGIN * 2;
 const BOX_TOP = Layout.window.height / 2 - BOX_SIZE / 2;
 const BOX_BOTTOM = BOX_TOP + BOX_SIZE;
 const BOX_LEFT = BOX_MARGIN;
-const BOX_RIGHT = Layout.window.width - BOX_MARGIN;
+const BOX_RIGHT = Layout.window.width - BOX_LEFT;
 
 const overlayBaseStyle = {
   position: 'absolute',

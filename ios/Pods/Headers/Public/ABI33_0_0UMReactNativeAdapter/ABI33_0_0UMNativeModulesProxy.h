@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/UMReactNativeAdapter/ABI33_0_0UMReactNativeAdapter/UMNativeModulesProxy/ABI33_0_0UMNativeModulesProxy.h

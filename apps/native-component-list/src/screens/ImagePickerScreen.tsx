@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image, Platform, ScrollView, View } from 'react-native';
-import { ImagePicker, Permissions, Video } from 'expo';
+import { Video } from 'expo-av';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -114,7 +116,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
           }}
         >
           {selection.type === 'video' ? (
-            <Video.VideoPlayback
+            <Video
               source={{ uri: selection.uri }}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"

@@ -17,6 +17,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -28,20 +29,32 @@ class SvgViewManager extends ReactViewManager {
     private static final String REACT_CLASS = "RNSVGSvgView";
 
     private static final SparseArray<SvgView> mTagToSvgView = new SparseArray<>();
+    private static final SparseArray<Runnable> mTagToRunnable = new SparseArray<>();
 
     static void setSvgView(int tag, SvgView svg) {
         mTagToSvgView.put(tag, svg);
+        Runnable task = mTagToRunnable.get(tag);
+        if (task != null) {
+            task.run();
+            mTagToRunnable.delete(tag);
+        }
+    }
+
+    static void runWhenViewIsAvailable(int tag, Runnable task) {
+        mTagToRunnable.put(tag, task);
     }
 
     static @Nullable SvgView getSvgViewByTag(int tag) {
         return mTagToSvgView.get(tag);
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return REACT_CLASS;
     }
 
+    @Nonnull
     @Override
     public SvgView createViewInstance(ThemedReactContext reactContext) {
         return new SvgView(reactContext);
@@ -54,7 +67,7 @@ class SvgViewManager extends ReactViewManager {
     }
 
     @Override
-    public void onDropViewInstance(ReactViewGroup view) {
+    public void onDropViewInstance(@Nonnull ReactViewGroup view) {
         super.onDropViewInstance(view);
         mTagToSvgView.remove(view.getId());
     }
@@ -64,9 +77,14 @@ class SvgViewManager extends ReactViewManager {
         return true;
     }
 
-    @ReactProp(name = "tintColor", customType = "Color")
+    @ReactProp(name = "tintColor")
     public void setTintColor(SvgView node, @Nullable Integer tintColor) {
         node.setTintColor(tintColor);
+    }
+
+    @ReactProp(name = "color")
+    public void setColor(SvgView node, @Nullable Integer color) {
+        node.setTintColor(color);
     }
 
     @ReactProp(name = "minX")

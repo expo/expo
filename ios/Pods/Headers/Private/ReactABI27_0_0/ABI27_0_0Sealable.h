@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/ReactCommon/ABI27_0_0fabric/core/primitives/ABI27_0_0Sealable.h

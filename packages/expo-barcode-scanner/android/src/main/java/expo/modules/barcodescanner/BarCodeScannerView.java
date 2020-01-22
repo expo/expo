@@ -46,6 +46,12 @@ public class BarCodeScannerView extends ViewGroup {
       mOrientationListener.disable();
     }
   }
+  
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mOrientationListener != null) mOrientationListener.disable();
+  }
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {

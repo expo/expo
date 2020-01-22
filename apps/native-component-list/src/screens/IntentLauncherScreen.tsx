@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { IntentLauncher } from 'expo';
+import * as IntentLauncher from 'expo-intent-launcher';
 import Button from '../components/Button';
 
 export default class IntentLauncherScreen extends React.Component {

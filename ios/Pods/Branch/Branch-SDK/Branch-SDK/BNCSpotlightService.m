@@ -133,37 +133,31 @@ static NSString* const kDomainIdentifier = @"io.branch.sdk.spotlight";
                                       completion(url,error);
                               }];
         
-    }else {
-        
+    } else {
+
+        __weak __typeof(self) weakSelf = self;
         [universalObject getShortUrlWithLinkProperties:linkProperty
-                                           andCallback:^(NSString * _Nullable url, NSError * _Nullable error) {
-                                               if (error) {
-                                                   if (completion) {
-                                                       completion([BNCPreferenceHelper preferenceHelper].userUrl, error);
-                                                   }
-                                               }else {
-                                                   id attributes = [self attributeSetWithUniversalObject:universalObject
-                                                                                               thumbnail:thumbnailData
-                                                                                                     url:url];
-                                                   NSDictionary *indexingParams = @{@"title": universalObject.title,
-                                                                                    @"url": url,
-                                                                                    @"spotlightId": url,
-                                                                                    @"userInfo": [universalObject.contentMetadata.customMetadata mutableCopy],
-                                                                                    @"keywords": [NSSet setWithArray:universalObject.keywords],
-                                                                                    @"attributeSet": attributes
-                                                                                    };
-                                                   [self indexUsingNSUserActivity:indexingParams];
-                                                   
-                                                   // Not handling error scenarios because they are already handled upstream by the caller
-                                                   if (url) {
-                                                       if (completion) {
-                                                           completion(url, nil);
-                                                       }
-                                                   }
-                                               }
-                                           }];
+            andCallback:^(NSString * _Nullable url, NSError * _Nullable error) {
+                __strong __typeof(self) strongSelf = weakSelf;
+                if (!strongSelf || !url || error) {
+                    if (completion) completion([BNCPreferenceHelper preferenceHelper].userUrl, error);
+                    return;
+                }
+            id attributes =
+                [strongSelf attributeSetWithUniversalObject:universalObject thumbnail:thumbnailData url:url];
+            NSMutableDictionary *indexingParams = [NSMutableDictionary new];
+            indexingParams[@"title"] = universalObject.title;
+            indexingParams[@"url"] = url;
+            indexingParams[@"spotlightId"] = url;
+            indexingParams[@"userInfo"] = [universalObject.contentMetadata.customMetadata mutableCopy];
+            indexingParams[@"keywords"] = [NSSet setWithArray:universalObject.keywords];
+            indexingParams[@"attributeSet"] = attributes;
+            [self indexUsingNSUserActivity:indexingParams];
+            if (completion) completion(url, nil);
+            }
+        ];
+
     }
-    
 }
 
 - (id)attributeSetWithUniversalObject:(BranchUniversalObject*)universalObject
@@ -248,7 +242,7 @@ static NSString* const kDomainIdentifier = @"io.branch.sdk.spotlight";
                                                               andTags:nil
                                                            andFeature:BNCSpotlightFeature
                                                              andStage:nil andAlias:nil];
-        
+        if (!dynamicUrl) continue;
         mapSpotlightIdentifier[dynamicUrl] = universalObject;
         NSURL* thumbnailUrl = [NSURL URLWithString:universalObject.imageUrl];
         BOOL thumbnailIsRemote = thumbnailUrl && ![thumbnailUrl isFileURL];
@@ -417,7 +411,7 @@ static NSString* const kDomainIdentifier = @"io.branch.sdk.spotlight";
     if (identifier == nil) {
         NSError *error = [NSError branchErrorWithCode:BNCSpotlightIdentifierError
                                      localizedMessage:@"Spotlight indentifier not available"];
-        completion(error);
+        if (completion) completion(error);
         return;
     }
     [self removeSearchableItemsWithIdentifiers:@[identifier] callback:^(NSError * _Nullable error) {

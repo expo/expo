@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p, httpStatusCode: %ld, data: %@, error: %@>",
-          NSStringFromClass([self class]), self, _httpStatusCode, _data, _error];
+          NSStringFromClass([self class]), self, (long) _httpStatusCode, _data, _error];
 }
 
 @end

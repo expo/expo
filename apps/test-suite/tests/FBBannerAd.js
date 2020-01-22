@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 import { mountAndWaitForWithTimeout } from './helpers';
 
 const { BannerAd, AdSettings } = FacebookAds;

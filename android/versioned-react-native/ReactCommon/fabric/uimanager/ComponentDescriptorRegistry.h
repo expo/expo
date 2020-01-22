@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -7,29 +7,75 @@
 
 #include <memory>
 
-#include <fabric/core/ComponentDescriptor.h>
+#include <better/map.h>
+#include <better/mutex.h>
+
+#include <react/core/ComponentDescriptor.h>
+#include <react/uimanager/ComponentDescriptorProvider.h>
 
 namespace facebook {
 namespace react {
 
 class ComponentDescriptorRegistry;
 
-using SharedComponentDescriptorRegistry = std::shared_ptr<const ComponentDescriptorRegistry>;
+using SharedComponentDescriptorRegistry =
+    std::shared_ptr<const ComponentDescriptorRegistry>;
 
 /*
  * Registry of particular `ComponentDescriptor`s.
  */
 class ComponentDescriptorRegistry {
+ public:
+  using Shared = std::shared_ptr<const ComponentDescriptorRegistry>;
 
-public:
-  void registerComponentDescriptor(SharedComponentDescriptor componentDescriptor);
+  /*
+   * Deprecated. Use custom constructor instead.
+   */
+  ComponentDescriptorRegistry() = default;
 
-  const SharedComponentDescriptor operator[](const SharedShadowNode &shadowNode) const;
-  const SharedComponentDescriptor operator[](const ComponentName &componentName) const;
+  /*
+   * Creates an object with stored `ComponentDescriptorParameters`  which will
+   * be used later to create `ComponentDescriptor`s.
+   */
+  ComponentDescriptorRegistry(ComponentDescriptorParameters const &parameters);
 
-private:
-  std::unordered_map<ComponentHandle, SharedComponentDescriptor> _registryByHandle;
-  std::unordered_map<ComponentName, SharedComponentDescriptor> _registryByName;
+  /*
+   * Deprecated. Use `add` instead.
+   */
+  void registerComponentDescriptor(
+      SharedComponentDescriptor componentDescriptor) const;
+
+  ComponentDescriptor const &at(std::string const &componentName) const;
+  ComponentDescriptor const &at(ComponentHandle componentHandle) const;
+
+  SharedShadowNode createNode(
+      Tag tag,
+      std::string const &viewName,
+      SurfaceId surfaceId,
+      folly::dynamic const &props,
+      SharedEventTarget const &eventTarget) const;
+
+  void setFallbackComponentDescriptor(SharedComponentDescriptor descriptor);
+  ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
+
+ private:
+  friend class ComponentDescriptorProviderRegistry;
+
+  /*
+   * Adds (or removes) a `ComponentDescriptor ` created using given
+   * `ComponentDescriptorProvider` and stored `ComponentDescriptorParameters`.
+   * To be used by `ComponentDescriptorProviderRegistry` only.
+   * Thread safe.
+   */
+  void add(ComponentDescriptorProvider componentDescriptorProvider) const;
+  void remove(ComponentDescriptorProvider componentDescriptorProvider) const;
+
+  mutable better::shared_mutex mutex_;
+  mutable better::map<ComponentHandle, SharedComponentDescriptor>
+      _registryByHandle;
+  mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
+  ComponentDescriptor::Shared _fallbackComponentDescriptor;
+  ComponentDescriptorParameters parameters_{};
 };
 
 } // namespace react

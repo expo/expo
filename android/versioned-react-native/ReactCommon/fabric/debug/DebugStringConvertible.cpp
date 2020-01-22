@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,33 +7,50 @@
 
 #include "DebugStringConvertible.h"
 
+#include <folly/Conv.h>
+#include <folly/Format.h>
+
 namespace facebook {
 namespace react {
 
-std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConvertibleOptions options, int depth) const {
-  if (depth >= options.maximumDepth) {
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string DebugStringConvertible::getDebugChildrenDescription(
+    DebugStringConvertibleOptions options) const {
+  if (options.depth >= options.maximumDepth) {
     return "";
   }
 
-  std::string childrenString = "";
+  options.depth++;
+
+  auto trailing = options.format ? std::string{"\n"} : std::string{""};
+  auto childrenString = std::string{""};
 
   for (auto child : getDebugChildren()) {
     if (!child) {
       continue;
     }
 
-    childrenString += child->getDebugDescription(options, depth + 1);
+    childrenString += child->getDebugDescription(options) + trailing;
+  }
+
+  if (!childrenString.empty() && !trailing.empty()) {
+    // Removing trailing fragment.
+    childrenString.erase(childrenString.end() - 1);
   }
 
   return childrenString;
 }
 
-std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConvertibleOptions options, int depth) const {
-  if (depth >= options.maximumDepth) {
+std::string DebugStringConvertible::getDebugPropsDescription(
+    DebugStringConvertibleOptions options) const {
+  if (options.depth >= options.maximumDepth) {
     return "";
   }
 
-  std::string propsString = "";
+  options.depth++;
+
+  auto propsString = std::string{""};
 
   for (auto prop : getDebugProps()) {
     if (!prop) {
@@ -42,9 +59,11 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
 
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
-    auto children = prop->getDebugPropsDescription(options, depth + 1);
-    auto valueAndChildren = value + (children.empty() ? "" : "(" + children + ")");
-    propsString += " " + name + (valueAndChildren.empty() ? "" : "=" + valueAndChildren);
+    auto children = prop->getDebugPropsDescription(options);
+    auto valueAndChildren =
+        value + (children.empty() ? "" : "(" + children + ")");
+    propsString +=
+        " " + name + (valueAndChildren.empty() ? "" : "=" + valueAndChildren);
   }
 
   if (!propsString.empty()) {
@@ -55,19 +74,36 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
   return propsString;
 }
 
-std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
-  std::string nameString = getDebugName();
-  std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(options, depth);
-  std::string propsString = getDebugPropsDescription(options, depth);
+std::string DebugStringConvertible::getDebugDescription(
+    DebugStringConvertibleOptions options) const {
+  auto nameString = getDebugName();
+  auto valueString = getDebugValue();
 
-  std::string leading = options.format ? std::string(depth * 2, ' ') : "";
-  std::string trailing = options.format ? "\n" : "";
+  // Convention:
+  // If `name` and `value` are empty, `description` is also empty.
+  if (nameString.empty() && valueString.empty()) {
+    return "";
+  }
+
+  // Convention:
+  // If `name` is empty and `value` isn't empty, `description` equals `value`.
+  if (nameString.empty()) {
+    return valueString;
+  }
+
+  auto childrenString = getDebugChildrenDescription(options);
+  auto propsString = getDebugPropsDescription(options);
+
+  auto leading =
+      options.format ? std::string(options.depth * 2, ' ') : std::string{""};
+  auto trailing = options.format ? std::string{"\n"} : std::string{""};
 
   return leading + "<" + nameString +
-    (valueString.empty() ? "" : "=" + valueString) +
-    (propsString.empty() ? "" : " " + propsString) +
-    (childrenString.empty() ? "/>" + trailing : ">" + trailing + childrenString + leading + "</" + nameString + ">" + trailing);
+      (valueString.empty() ? "" : "=" + valueString) +
+      (propsString.empty() ? "" : " " + propsString) +
+      (childrenString.empty() ? "/>"
+                              : ">" + trailing + childrenString + trailing +
+               leading + "</" + nameString + ">");
 }
 
 std::string DebugStringConvertible::getDebugName() const {
@@ -78,13 +114,41 @@ std::string DebugStringConvertible::getDebugValue() const {
   return "";
 }
 
-SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren() const {
+SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren()
+    const {
   return SharedDebugStringConvertibleList();
 }
 
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return SharedDebugStringConvertibleList();
 }
+
+/*
+ * `toString`-family implementation.
+ */
+std::string toString(std::string const &value) {
+  return value;
+}
+std::string toString(int const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(bool const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(float const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(double const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(void const *value) {
+  if (value == nullptr) {
+    return "null";
+  }
+  return folly::sformat("0x{0:016x}", reinterpret_cast<size_t>(value));
+}
+
+#endif
 
 } // namespace react
 } // namespace facebook

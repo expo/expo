@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo-updates</artifactId>
+  <versioning>
+    <release>0.0.1-rc.0</release>
+    <versions>
+      <version>0.0.1-rc.0</version>
+    </versions>
+    <lastUpdated>20191119214850</lastUpdated>
+  </versioning>
+</metadata>

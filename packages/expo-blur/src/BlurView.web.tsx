@@ -28,25 +28,21 @@ export default class BlurView extends React.Component<Props> {
 function isBlurSupported(): boolean {
   // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
   // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
-  // TODO: Bacon: Chrome blur seems broken natively
-  return typeof CSS !== 'undefined' && CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
-  // TODO: Bacon: Chrome doesn't work, RNWeb uses webkit on Safari, which works.
-  // || CSS.supports('backdrop-filter', 'blur(1px)')
+  return (
+    typeof CSS !== 'undefined' &&
+    (CSS.supports('-webkit-backdrop-filter', 'blur(1px)') ||
+      CSS.supports('backdrop-filter', 'blur(1px)'))
+  );
 }
 
 function getBlurStyle({ intensity, tint }): { [key: string]: string } {
+  const style: any = {
+    backgroundColor: getBackgroundColor(intensity, tint),
+  };
+
   if (isBlurSupported()) {
-    let backdropFilter = `blur(${intensity * 0.25}px)`;
-    if (tint === 'dark') {
-      backdropFilter += ' brightness(50%)';
-    } else if (tint === 'light') {
-      backdropFilter += ' brightness(150%)';
-    }
-    return {
-      backdropFilter,
-    };
-  } else {
-    let backgroundColor = getBackgroundColor(intensity, tint);
-    return { backgroundColor };
+    style.backdropFilter = `blur(${intensity * 0.8}px)`;
   }
+
+  return style;
 }

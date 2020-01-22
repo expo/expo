@@ -13,7 +13,7 @@
 
 #import "GMSCALayer.h"
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * kGMSLayerPanoramaHeadingKey ranges from [0, 360).
@@ -48,10 +48,10 @@ extern NSString *const kGMSLayerPanoramaFOVKey;
  * This layer should not be instantiated directly.
  */
 @interface GMSPanoramaLayer : GMSCALayer
-@property(nonatomic, assign) CLLocationDirection cameraHeading;
-@property(nonatomic, assign) double cameraPitch;
-@property(nonatomic, assign) float cameraZoom;
-@property(nonatomic, assign) double cameraFOV;
+@property(nonatomic) CLLocationDirection cameraHeading;
+@property(nonatomic) double cameraPitch;
+@property(nonatomic) float cameraZoom;
+@property(nonatomic) double cameraFOV;
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

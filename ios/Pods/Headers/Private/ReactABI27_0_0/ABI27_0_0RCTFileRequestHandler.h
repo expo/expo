@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/Libraries/Network/ABI27_0_0RCTFileRequestHandler.h

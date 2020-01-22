@@ -631,7 +631,7 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
 - (GTM_NULLABLE NSDate *)stoppedAllFetchersDate;
 
 // Methods for compatibility with the old GTMHTTPFetcher.
-@property(readonly, strong, GTM_NULLABLE) NSOperationQueue *delegateQueue;
+@property(atomic, readonly, strong, GTM_NULLABLE) NSOperationQueue *delegateQueue;
 
 @end  // @protocol GTMSessionFetcherServiceProtocol
 
@@ -653,25 +653,25 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
 
 - (BOOL)isAuthorizedRequest:(NSURLRequest *)request;
 
-@property(strong, readonly, GTM_NULLABLE) NSString *userEmail;
+@property(atomic, strong, readonly, GTM_NULLABLE) NSString *userEmail;
 
 @optional
 
 // Indicate if authorization may be attempted. Even if this succeeds,
 // authorization may fail if the user's permissions have been revoked.
-@property(readonly) BOOL canAuthorize;
+@property(atomic, readonly) BOOL canAuthorize;
 
 // For development only, allow authorization of non-SSL requests, allowing
 // transmission of the bearer token unencrypted.
-@property(assign) BOOL shouldAuthorizeAllRequests;
+@property(atomic, assign) BOOL shouldAuthorizeAllRequests;
 
 - (void)authorizeRequest:(GTM_NULLABLE NSMutableURLRequest *)request
        completionHandler:(void (^)(NSError * GTM_NULLABLE_TYPE error))handler;
 
 #if GTM_USE_SESSION_FETCHER
-@property (weak, GTM_NULLABLE) id<GTMSessionFetcherServiceProtocol> fetcherService;
+@property(atomic, weak, GTM_NULLABLE) id<GTMSessionFetcherServiceProtocol> fetcherService;
 #else
-@property (weak, GTM_NULLABLE) id<GTMHTTPFetcherServiceProtocol> fetcherService;
+@property(atomic, weak, GTM_NULLABLE) id<GTMHTTPFetcherServiceProtocol> fetcherService;
 #endif
 
 - (BOOL)primeForRefresh;
@@ -728,7 +728,7 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
 
 // The fetcher's request.  This may not be set after beginFetch has been invoked. The request
 // may change due to redirects.
-@property(strong, GTM_NULLABLE) NSURLRequest *request;
+@property(atomic, strong, GTM_NULLABLE) NSURLRequest *request;
 
 // Set a header field value on the request. Header field value changes will not
 // affect a fetch after the fetch has begun.
@@ -819,7 +819,7 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
 //   "Background Session Task state persistence"
 //   https://forums.developer.apple.com/thread/11554
 //
-@property(assign) BOOL useBackgroundSession;
+@property(atomic, assign) BOOL useBackgroundSession;
 
 // Indicates if the fetcher was started using a background session.
 @property(atomic, readonly, getter=isUsingBackgroundSession) BOOL usingBackgroundSession;

@@ -1,32 +1,24 @@
-import React from 'react';
-import { findNodeHandle, View } from 'react-native';
+import React, { forwardRef } from 'react';
+import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 export default class ExponentCamera extends React.Component {
     constructor() {
         super(...arguments);
         this.state = { type: null };
-        this.updateCameraProps = async ({ type, zoom, pictureSize, flashMode, autoFocus, 
-        // focusDepth,
-        whiteBalance, }) => {
+        this._updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }) => {
             const { camera } = this;
             if (!camera) {
                 return;
             }
-            await Promise.all([
-                camera.setTypeAsync(type),
-                camera.setPictureSize(pictureSize),
-                camera.setZoomAsync(zoom),
-                camera.setAutoFocusAsync(autoFocus),
-                camera.setWhiteBalanceAsync(whiteBalance),
-                camera.setFlashModeAsync(flashMode),
-                camera.ensureCameraIsRunningAsync(),
-            ]);
+            await camera.setTypeAsync(type);
+            await camera.updateWebCameraSettingsAsync(webCameraSettings);
+            // await camera.setPictureSize(pictureSize as string);
+            await camera.ensureCameraIsRunningAsync();
             const actualCameraType = camera.getActualCameraType();
             if (actualCameraType !== this.state.type) {
                 this.setState({ type: actualCameraType });
             }
-            this.updateScanner();
         };
         this.getCamera = () => {
             if (this.camera) {
@@ -46,13 +38,17 @@ export default class ExponentCamera extends React.Component {
                 onPictureSaved: this.props.onPictureSaved,
             });
         };
+        this.getAvailableCameraTypesAsync = async () => {
+            const camera = this.getCamera();
+            return await camera.getAvailableCameraTypesAsync();
+        };
         this.resumePreview = async () => {
             const camera = this.getCamera();
             await camera.resumePreview();
         };
-        this.pausePreview = () => {
+        this.pausePreview = async () => {
             const camera = this.getCamera();
-            camera.pausePreview();
+            await camera.stopAsync();
         };
         this.onCameraReady = () => {
             if (this.props.onCameraReady) {
@@ -64,92 +60,57 @@ export default class ExponentCamera extends React.Component {
                 this.props.onMountError({ nativeEvent });
             }
         };
-        this.setRef = async (ref) => {
+        this._setRef = ref => {
             if (!ref) {
                 this.video = null;
                 if (this.camera) {
-                    this.camera.unmount();
-                    this.camera.stopScanner();
+                    this.camera.stopAsync();
                     this.camera = undefined;
                 }
                 return;
             }
             this.video = findNodeHandle(ref);
+            this.video.webkitPlaysinline = true;
             this.camera = new CameraModule(ref);
             this.camera.onCameraReady = this.onCameraReady;
             this.camera.onMountError = this.onMountError;
-            this.updateCameraCanvas();
-            this.updateCameraProps(this.props);
-        };
-        this.updateScanner = () => {
-            if (!this.camera)
-                return;
-            const { barCodeScannerSettings, onBarCodeScanned } = this.props;
-            if (onBarCodeScanned && barCodeScannerSettings) {
-                this.camera.startScanner({
-                    // Default barcode scanning update interval, same as is defined in the API layer.
-                    // TODO: Bacon: Make this larger for low-end devices.
-                    interval: this.shouldRenderIndicator() ? -1 : 500,
-                    ...barCodeScannerSettings,
-                }, nativeEvent => {
-                    if (this.props.onBarCodeScanned) {
-                        this.props.onBarCodeScanned({ nativeEvent });
-                        return;
-                    }
-                    this.updateScanner();
-                });
-            }
-        };
-        this.setCanvasRef = ref => {
-            this.canvas = ref;
-            this.updateCameraCanvas();
-        };
-        this.shouldRenderIndicator = () => {
-            if (this.props.barCodeScannerSettings) {
-                return this.props.barCodeScannerSettings.shouldRenderIndicator || false;
-            }
-            return false;
+            this._updateCameraProps(this.props);
         };
     }
     componentWillUnmount() {
         if (this.camera) {
-            this.camera.unmount();
+            this.camera.stopAsync();
         }
     }
     componentWillReceiveProps(nextProps) {
-        this.updateCameraProps(nextProps);
-    }
-    updateCameraCanvas() {
-        if (this.camera) {
-            this.camera.canvas = this.canvas;
-        }
+        this._updateCameraProps(nextProps);
     }
     render() {
-        const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-        return (<View style={[{ flex: 1, alignItems: 'stretch' }, this.props.style]}>
-        <video ref={this.setRef} style={{ ...videoStyle, transform }} autoPlay playsInline/>
-        {this.shouldRenderIndicator() && <canvas ref={this.setCanvasRef} style={canvasStyle}/>}
+        const { pointerEvents } = this.props;
+        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
+        // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+        const isMuted = true;
+        const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
+        const style = {
+            // Flip the camera
+            transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
+        };
+        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
+        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
         {this.props.children}
       </View>);
     }
 }
-const videoStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-};
-const canvasStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-};
+const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const styles = StyleSheet.create({
+    videoWrapper: {
+        flex: 1,
+        alignItems: 'stretch',
+    },
+    video: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+    },
+});
 //# sourceMappingURL=ExponentCamera.web.js.map

@@ -1,5 +1,5 @@
 export type TrackingOptions = {
-  usernameOrEmail: string;
+  usernameOrEmail?: string;
   [key: string]: any;
 };
 
@@ -10,10 +10,12 @@ export function normalizeTrackingOptions(options?: TrackingOptions): { [key: str
 
   const { usernameOrEmail, ...rest } = options;
 
-  if (usernameOrEmail.includes('@')) {
-    rest.email = options.usernameOrEmail;
-  } else {
-    rest.username = options.usernameOrEmail;
+  if (usernameOrEmail) {
+    if (usernameOrEmail.includes('@')) {
+      rest.email = usernameOrEmail;
+    } else {
+      rest.username = usernameOrEmail;
+    }
   }
 
   return rest;

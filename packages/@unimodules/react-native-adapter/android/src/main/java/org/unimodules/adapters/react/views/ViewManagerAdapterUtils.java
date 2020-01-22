@@ -14,7 +14,6 @@ import java.util.Map;
 import org.unimodules.adapters.react.ArgumentsHelper;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class ViewManagerAdapterUtils {
   /* package */ static String getViewManagerAdapterName(ViewManager viewManager) {
@@ -54,12 +53,6 @@ public class ViewManagerAdapterUtils {
       } catch (Exception e) {
         Log.e(viewManagerAdapterName, "Error when setting prop " + key + ". " + e.getMessage());
       }
-    }
-  }
-
-  /* package */ static void setModuleRegistryOnViewManager(ViewManager viewManager, ModuleRegistry moduleRegistry) {
-    if (viewManager instanceof ModuleRegistryConsumer) {
-      ((ModuleRegistryConsumer) viewManager).setModuleRegistry(moduleRegistry);
     }
   }
 }

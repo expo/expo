@@ -30,7 +30,7 @@ export default {
     // TODO: Bacon: Add this - very low priority
     return [];
   },
-  get country(): string | undefined {
+  get region(): string | undefined {
     const { locale } = this;
     if (typeof locale === 'string' && locale.length) {
       const isoCountryCode = locale.substring(locale.lastIndexOf('-') + 1);
@@ -39,9 +39,9 @@ export default {
     return undefined;
   },
   async getLocalizationAsync(): Promise<Localization> {
-    const { country, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;
+    const { region, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;
     return {
-      country,
+      region,
       isoCurrencyCodes,
       timezone,
       locales,

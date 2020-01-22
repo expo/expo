@@ -1,29 +1,100 @@
+import FontObserver from 'fontfaceobserver';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError } from '@unimodules/core';
+import { FontDisplay } from './Font.types';
+function getFontFaceStyleSheet() {
+    if (!canUseDOM) {
+        return null;
+    }
+    const styleSheet = getStyleElement();
+    return styleSheet.sheet ? styleSheet.sheet : null;
+}
+function getFontFaceRules() {
+    const sheet = getFontFaceStyleSheet();
+    if (sheet) {
+        // @ts-ignore: rule iterator
+        const rules = [...sheet.cssRules];
+        const items = [];
+        for (let i = 0; i < rules.length; i++) {
+            const rule = rules[i];
+            if (rule instanceof CSSFontFaceRule) {
+                items.push({ rule, index: i });
+            }
+        }
+        return items;
+    }
+    return [];
+}
+function getFontFaceRulesMatchingResource(fontFamilyName, options) {
+    const rules = getFontFaceRules();
+    return rules.filter(({ rule }) => {
+        return (rule.style.fontFamily === fontFamilyName &&
+            (options && options.display ? options.display === rule.style.fontDisplay : true));
+    });
+}
 export default {
     get name() {
         return 'ExpoFontLoader';
     },
-    loadAsync(fontFamilyName, resource) {
+    async unloadAllAsync() {
+        if (!canUseDOM)
+            return;
+        const element = document.getElementById(ID);
+        if (element && element instanceof HTMLStyleElement) {
+            document.removeChild(element);
+        }
+    },
+    async unloadAsync(fontFamilyName, options) {
+        const sheet = getFontFaceStyleSheet();
+        if (!sheet)
+            return;
+        const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
+        for (const item of items) {
+            sheet.deleteRule(item.index);
+        }
+    },
+    async loadAsync(fontFamilyName, resource) {
+        if (!canUseDOM) {
+            return;
+        }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
         if (!canInjectStyle) {
-            throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
+            throw new CodedError('ERR_WEB_ENVIRONMENT', `The browser's \`document.head\` element doesn't support injecting fonts.`);
         }
         const style = _createWebStyle(fontFamilyName, resource);
         document.head.appendChild(style);
-        return Promise.resolve();
+        // https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
+        if (navigator.userAgent.includes('Edge')) {
+            return;
+        }
+        return new FontObserver(fontFamilyName).load();
     },
 };
+const ID = 'expo-generated-fonts';
+function getStyleElement() {
+    const element = document.getElementById(ID);
+    if (element && element instanceof HTMLStyleElement) {
+        return element;
+    }
+    const styleElement = document.createElement('style');
+    styleElement.id = ID;
+    styleElement.type = 'text/css';
+    return styleElement;
+}
 function _createWebStyle(fontFamily, resource) {
     const fontStyle = `@font-face {
     font-family: ${fontFamily};
-    src: url(${resource});
+    src: url(${resource.uri});
+    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
-    const styleElement = document.createElement('style');
-    styleElement.type = 'text/css';
+    const styleElement = getStyleElement();
     // @ts-ignore: TypeScript does not define HTMLStyleElement::styleSheet. This is just for IE and
     // possibly can be removed if it's unnecessary on IE 11.
     if (styleElement.styleSheet) {
-        // @ts-ignore
-        styleElement.styleSheet.cssText = fontStyle;
+        const styleElementIE = styleElement;
+        styleElementIE.styleSheet.cssText = styleElementIE.styleSheet.cssText
+            ? styleElementIE.styleSheet.cssText + fontStyle
+            : fontStyle;
     }
     else {
         const textNode = document.createTextNode(fontStyle);

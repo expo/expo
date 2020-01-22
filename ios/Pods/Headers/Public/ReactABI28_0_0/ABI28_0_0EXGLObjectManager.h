@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI28_0_0/Expo/Core/Api/GL/ABI28_0_0EXGLObjectManager.h

@@ -1,8 +1,8 @@
-import omit from 'lodash.omit';
+import omit from 'lodash/omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes } from 'react-native';
+import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes, } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
@@ -41,11 +41,12 @@ const _STYLES = StyleSheet.create({
 // we have to use the provided native module mock to access constants
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
-export class VideoPlayback extends React.Component {
+export default class Video extends React.Component {
     // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
     constructor(props) {
         super(props);
         this._nativeRef = React.createRef();
+        this._onPlaybackStatusUpdate = null;
         // Internal methods
         this._handleNewStatus = (status) => {
             if (this.state.showPoster &&
@@ -55,6 +56,9 @@ export class VideoPlayback extends React.Component {
             }
             if (this.props.onPlaybackStatusUpdate) {
                 this.props.onPlaybackStatusUpdate(status);
+            }
+            if (this._onPlaybackStatusUpdate) {
+                this._onPlaybackStatusUpdate(status);
             }
         };
         this._performOperationAndHandleStatusAsync = async (operation) => {
@@ -162,7 +166,7 @@ export class VideoPlayback extends React.Component {
         };
         this._renderPoster = () => this.props.usePoster && this.state.showPoster ? (
         // @ts-ignore: the react-native type declarations are overly restrictive
-        <Image style={_STYLES.poster} source={this.props.posterSource}/>) : null;
+        <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource}/>) : null;
         this.state = {
             showPoster: !!props.usePoster,
         };
@@ -171,8 +175,12 @@ export class VideoPlayback extends React.Component {
         const nativeVideo = nullthrows(this._nativeRef.current);
         nativeVideo.setNativeProps(nativeProps);
     }
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
+        this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
+        this.getStatusAsync();
+    }
     render() {
-        const source = getNativeSourceFromSource(this.props.source || null);
+        const source = getNativeSourceFromSource(this.props.source) || undefined;
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
         if (this.props.resizeMode) {
             let resizeMode = this.props.resizeMode;
@@ -205,7 +213,7 @@ export class VideoPlayback extends React.Component {
         // Replace selected native props
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
-            ...omit(this.props, 'source', ...Object.keys(status)),
+            ...omit(this.props, 'source', 'onPlaybackStatusUpdate', 'usePoster', 'posterSource', ...Object.keys(status)),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
             source,
             resizeMode: nativeResizeMode,
@@ -223,7 +231,18 @@ export class VideoPlayback extends React.Component {
       </View>);
     }
 }
-VideoPlayback.propTypes = {
+Video.RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
+Video.RESIZE_MODE_COVER = ResizeMode.COVER;
+Video.RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+Video.propTypes = {
     // Source stuff
     source: PropTypes.oneOfType([
         PropTypes.shape({
@@ -238,6 +257,7 @@ VideoPlayback.propTypes = {
         }),
         PropTypes.number,
     ]),
+    posterStyle: ViewPropTypes.style,
     // Callbacks
     onPlaybackStatusUpdate: PropTypes.func,
     onLoadStart: PropTypes.func,
@@ -277,5 +297,5 @@ VideoPlayback.propTypes = {
     rotation: PropTypes.number,
     ...ViewPropTypes,
 };
-Object.assign(VideoPlayback.prototype, PlaybackMixin);
+Object.assign(Video.prototype, PlaybackMixin);
 //# sourceMappingURL=Video.js.map

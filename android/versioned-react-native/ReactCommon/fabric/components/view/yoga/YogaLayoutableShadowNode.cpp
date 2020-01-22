@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,40 +8,36 @@
 #include "YogaLayoutableShadowNode.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 
-#include <fabric/components/view/conversions.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/components/view/conversions.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/LayoutContext.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
 
 namespace facebook {
 namespace react {
 
-YogaLayoutableShadowNode::YogaLayoutableShadowNode():
-  yogaNode_({}),
-  yogaConfig_(nullptr) {
-
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+YogaLayoutableShadowNode::YogaLayoutableShadowNode()
+    : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
-  yogaNode_.setDirty(true);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
-  const YogaLayoutableShadowNode &layoutableShadowNode
-):
-  yogaNode_(layoutableShadowNode.yogaNode_),
-  yogaConfig_(nullptr) {
-
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+    const YogaLayoutableShadowNode &layoutableShadowNode)
+    : LayoutableShadowNode(layoutableShadowNode),
+      yogaConfig_(nullptr),
+      yogaNode_(
+          layoutableShadowNode.yogaNode_,
+          &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
-  yogaNode_.setDirty(true);
+
+  // Yoga node must inherit dirty flag.
+  assert(layoutableShadowNode.yogaNode_.isDirty() == yogaNode_.isDirty());
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -49,7 +45,7 @@ void YogaLayoutableShadowNode::cleanLayout() {
 }
 
 void YogaLayoutableShadowNode::dirtyLayout() {
-  yogaNode_.markDirtyAndPropogate();
+  yogaNode_.setDirty(true);
 }
 
 bool YogaLayoutableShadowNode::getIsLayoutClean() const {
@@ -69,36 +65,87 @@ void YogaLayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
 void YogaLayoutableShadowNode::enableMeasurement() {
   ensureUnsealed();
 
-  yogaNode_.setMeasureFunc(YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+  yogaNode_.setMeasureFunc(
+      YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
 }
 
 void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
   ensureUnsealed();
 
+  yogaNode_.setDirty(true);
+
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child->yogaNode_;
 
   if (childYogaNodeRawPtr->getOwner() != nullptr) {
-    child = static_cast<YogaLayoutableShadowNode *>(cloneAndReplaceChild(child, yogaNode_.getChildren().size()));
+    child = static_cast<YogaLayoutableShadowNode *>(
+        cloneAndReplaceChild(child, yogaNode_.getChildren().size()));
     childYogaNodeRawPtr = &child->yogaNode_;
-    assert(childYogaNodeRawPtr->getOwner() == nullptr);
   }
+
+  // Inserted node must have a clear owner (must not be shared).
+  assert(childYogaNodeRawPtr->getOwner() == nullptr);
 
   child->ensureUnsealed();
   childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
 
-  yogaNodeRawPtr->insertChild(childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
+  yogaNodeRawPtr->insertChild(
+      childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 }
 
-void YogaLayoutableShadowNode::setChildren(std::vector<YogaLayoutableShadowNode *> children) {
+void YogaLayoutableShadowNode::setChildren(
+    YogaLayoutableShadowNode::UnsharedList children) {
+  ensureUnsealed();
+
+  // Optimization:
+  // If the new list of child nodes consists of clean nodes, and if their styles
+  // are identical to styles of old children, we don't dirty the node.
+  bool isClean = !yogaNode_.getDirtied() &&
+      children.size() == yogaNode_.getChildren().size();
+  auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
+
   yogaNode_.setChildren({});
-  for (const auto &child : children) {
+
+  auto i = int{0};
+  for (auto const &child : children) {
     appendChild(child);
+
+    isClean = isClean && !child->yogaNode_.isDirty() &&
+        child->yogaNode_.getStyle() == oldChildren[i++]->getStyle();
   }
+
+  yogaNode_.setDirty(!isClean);
 }
 
 void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
+  ensureUnsealed();
+
+  // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
+  if (!yogaNode_.isDirty() && (props.yogaStyle != yogaNode_.getStyle())) {
+    yogaNode_.setDirty(true);
+  }
+
   yogaNode_.setStyle(props.yogaStyle);
+}
+
+void YogaLayoutableShadowNode::setSize(Size size) const {
+  ensureUnsealed();
+
+  auto style = yogaNode_.getStyle();
+  style.dimensions()[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
+  style.dimensions()[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
+}
+
+void YogaLayoutableShadowNode::setPositionType(
+    YGPositionType positionType) const {
+  ensureUnsealed();
+
+  auto style = yogaNode_.getStyle();
+  style.positionType() = positionType;
+  yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
@@ -115,7 +162,13 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
      * (and this is by design).
      */
     yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
-    YGNodeCalculateLayout(&yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+
+    {
+      SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+
+      YGNodeCalculateLayout(
+          &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+    }
   }
 
   LayoutableShadowNode::layout(layoutContext);
@@ -123,22 +176,41 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   for (const auto &childYogaNode : yogaNode_.getChildren()) {
-    auto childNode =
-      static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+    if (!childYogaNode->getHasNewLayout()) {
+      continue;
+    }
 
-    LayoutMetrics childLayoutMetrics = layoutMetricsFromYogaNode(childNode->yogaNode_);
+    auto childNode =
+        static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+
+    // Verifying that the Yoga node belongs to the ShadowNode.
+    assert(&childNode->yogaNode_ == childYogaNode);
+
+    LayoutMetrics childLayoutMetrics =
+        layoutMetricsFromYogaNode(childNode->yogaNode_);
     childLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
-    childNode->setLayoutMetrics(childLayoutMetrics);
+
+    // We must copy layout metrics from Yoga node only once (when the parent
+    // node exclusively ownes the child node).
+    assert(childYogaNode->getOwner() == &yogaNode_);
+
+    childNode->ensureUnsealed();
+    auto affected = childNode->setLayoutMetrics(childLayoutMetrics);
+
+    if (affected && layoutContext.affectedNodes) {
+      layoutContext.affectedNodes->push_back(childNode);
+    }
   }
 }
 
-std::vector<LayoutableShadowNode *> YogaLayoutableShadowNode::getLayoutableChildNodes() const {
-  std::vector<LayoutableShadowNode *> yogaLayoutableChildNodes;
+LayoutableShadowNode::UnsharedList
+YogaLayoutableShadowNode::getLayoutableChildNodes() const {
+  LayoutableShadowNode::UnsharedList yogaLayoutableChildNodes;
   yogaLayoutableChildNodes.reserve(yogaNode_.getChildren().size());
 
   for (const auto &childYogaNode : yogaNode_.getChildren()) {
     auto childNode =
-      static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+        static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
     yogaLayoutableChildNodes.push_back(childNode);
   }
 
@@ -147,32 +219,48 @@ std::vector<LayoutableShadowNode *> YogaLayoutableShadowNode::getLayoutableChild
 
 #pragma mark - Yoga Connectors
 
-YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex) {
-  // At this point it is garanteed that all shadow nodes associated with yoga nodes are `YogaLayoutableShadowNode` subclasses.
+YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
+    YGNode *oldYogaNode,
+    YGNode *parentYogaNode,
+    int childIndex) {
+  SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
+
+  // At this point it is guaranteed that all shadow nodes associated with yoga
+  // nodes are `YogaLayoutableShadowNode` subclasses.
   auto parentNode =
-    static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
+      static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
   auto oldNode =
-    static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
-  auto clonedNode =
-    static_cast<YogaLayoutableShadowNode *>(parentNode->cloneAndReplaceChild(oldNode, childIndex));
+      static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
+  auto clonedNode = static_cast<YogaLayoutableShadowNode *>(
+      parentNode->cloneAndReplaceChild(oldNode, childIndex));
   return &clonedNode->yogaNode_;
 }
 
-YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode) {
-  auto shadowNodeRawPtr = static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
+YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
+    YGNode *yogaNode,
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode) {
+  SystraceSection s(
+      "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 
-  auto minimumSize = Size {0, 0};
-  auto maximumSize = Size {kFloatMax, kFloatMax};
+  auto shadowNodeRawPtr =
+      static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
+
+  auto minimumSize = Size{0, 0};
+  auto maximumSize = Size{std::numeric_limits<Float>::infinity(),
+                          std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
       break;
     case YGMeasureModeExactly:
-      minimumSize.width = fabricFloatFromYogaFloat(width);
-      maximumSize.width = fabricFloatFromYogaFloat(width);
+      minimumSize.width = floatFromYogaFloat(width);
+      maximumSize.width = floatFromYogaFloat(width);
       break;
     case YGMeasureModeAtMost:
-      maximumSize.width = fabricFloatFromYogaFloat(width);
+      maximumSize.width = floatFromYogaFloat(width);
       break;
   }
 
@@ -180,24 +268,25 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNo
     case YGMeasureModeUndefined:
       break;
     case YGMeasureModeExactly:
-      minimumSize.height = fabricFloatFromYogaFloat(height);
-      maximumSize.height = fabricFloatFromYogaFloat(height);
+      minimumSize.height = floatFromYogaFloat(height);
+      maximumSize.height = floatFromYogaFloat(height);
       break;
     case YGMeasureModeAtMost:
-      maximumSize.height = fabricFloatFromYogaFloat(height);
+      maximumSize.height = floatFromYogaFloat(height);
       break;
   }
 
   auto size = shadowNodeRawPtr->measure({minimumSize, maximumSize});
 
-  return YGSize {
-    yogaFloatFromFabricFloat(size.width),
-    yogaFloatFromFabricFloat(size.height)
-  };
+  return YGSize{yogaFloatFromFloat(size.width),
+                yogaFloatFromFloat(size.height)};
 }
 
-void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
+YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
+  config.setCloneNodeCallback(
+      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
+  config.useLegacyStretchBehaviour = true;
+  return config;
 }
 
 } // namespace react

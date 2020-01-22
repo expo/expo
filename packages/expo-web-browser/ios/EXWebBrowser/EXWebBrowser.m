@@ -5,6 +5,10 @@
 
 #import <UMCore/UMUtilities.h>
 
+static NSString* const WebBrowserErrorCode = @"WebBrowser";
+static NSString* const WebBrowserControlsColorKey = @"controlsColor";
+static NSString* const WebBrowserToolbarColorKey = @"toolbarColor";
+
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
 @property (nonatomic, copy) UMPromiseResolveBlock redirectResolve;
@@ -17,9 +21,6 @@
 #pragma clang diagnostic pop
 
 @end
-
-NSString *EXWebBrowserErrorCode = @"EXWebBrowser";
-
 
 @implementation EXWebBrowser
 {
@@ -96,25 +97,22 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];
   }
-  
-  NSString *toolbarColorKey = @"toolbarColor";
-  if([[arguments allKeys] containsObject:toolbarColorKey]) {
-    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+
+  if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
+    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[WebBrowserToolbarColorKey]];
   }
-  NSString *controlsColorKey = @"controlsColor";
-  if([[arguments allKeys] containsObject:controlsColorKey]) {
-    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+  if([[arguments allKeys] containsObject:WebBrowserControlsColorKey]) {
+    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[WebBrowserControlsColorKey]];
   }
   safariVC.delegate = self;
-
-  // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
-  // gesture that is causing a bug where sometimes `safariViewControllerDidFinish` is not called.
-  // There are bugs filed already about it on OpenRadar.
-  [safariVC setModalPresentationStyle: UIModalPresentationOverFullScreen];
 
   // This is a hack to present the SafariViewController modally
   UINavigationController *safariHackVC = [[UINavigationController alloc] initWithRootViewController:safariVC];
   [safariHackVC setNavigationBarHidden:true animated:false];
+  // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
+  // gesture that is causing a bug where sometimes `safariViewControllerDidFinish` is not called.
+  // There are bugs filed already about it on OpenRadar.
+  [safariHackVC setModalPresentationStyle: UIModalPresentationOverFullScreen];
 
   UIViewController *currentViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
   while (currentViewController.presentedViewController) {
@@ -136,9 +134,11 @@ UM_EXPORT_METHOD_AS(dismissBrowser,
     resolve(nil);
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      strongSelf.redirectResolve(@{
-                                   @"type": @"dismiss",
-                                   });
+      if (strongSelf.redirectResolve) {
+        strongSelf.redirectResolve(@{
+          @"type": @"dismiss",
+        });
+      }
       [strongSelf flowDidFinish];
     }
   }];
@@ -200,7 +200,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
  */
 - (BOOL)initializeWebBrowserWithResolver:(UMPromiseResolveBlock)resolve andRejecter:(UMPromiseRejectBlock)reject {
   if (_redirectResolve) {
-    reject(EXWebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
+    reject(WebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
     return NO;
   }
   _redirectReject = reject;
@@ -254,7 +254,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
   int r = (hex >> 16) & 0xFF;
   int g = (hex >> 8) & 0xFF;
   int b = (hex) & 0xFF;
-  
+
   return [UIColor colorWithRed:r / 255.0f
                          green:g / 255.0f
                           blue:b / 255.0f

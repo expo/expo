@@ -26,7 +26,7 @@
 }
 
 - (void)loadBanner {
-  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError) {
+  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError && _additionalRequestParams) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
     _bannerView = [[GADBannerView alloc] initWithAdSize:size];
     if (!CGRectEqualToRect(self.bounds, _bannerView.bounds)) {
@@ -41,13 +41,9 @@
     _bannerView.adUnitID = _adUnitID;
     _bannerView.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     GADRequest *request = [GADRequest request];
-    if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
-    }
+    GADExtras *extras = [[GADExtras alloc] init];
+    extras.additionalParameters = _additionalRequestParams;
+    [request registerAdNetworkExtras:extras];
     [_bannerView loadRequest:request];
   }
 }
@@ -84,9 +80,10 @@
   }
 }
 
-- (void)setTestDeviceID:(NSString *)testDeviceID {
-  if (![testDeviceID isEqual:_testDeviceID]) {
-    _testDeviceID = testDeviceID;
+- (void)setAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+{
+  if (![additionalRequestParams isEqual:_additionalRequestParams]) {
+    _additionalRequestParams = additionalRequestParams;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
     }

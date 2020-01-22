@@ -1,5 +1,6 @@
 <manifest package="host.exp.expoview"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
     <supports-screens
@@ -21,6 +22,9 @@
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+    <!-- Used by react-native-netinfo module -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- These require runtime permissions on M -->
     <!-- All of these must be in the blacklist in xdl/src/detach/AndroidShellApp.js as well -->
@@ -68,10 +72,23 @@
         <receiver
             android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
             android:exported="false"/>
+
+        <receiver
+            android:name="host.exp.exponent.notifications.receivers.SchedulingTriggerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.REBOOT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.TIME_CHANGED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+
         <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">

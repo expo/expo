@@ -16,13 +16,14 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 
+NS_SWIFT_NAME(GraphRequestPiggybackManager)
 @interface FBSDKGraphRequestPiggybackManager : NSObject
 
 + (void)addPiggybackRequests:(FBSDKGraphRequestConnection *)connection;
 
-+ (void)addRefreshPiggyback:(FBSDKGraphRequestConnection *)connection permissionHandler:(FBSDKGraphRequestHandler)permissionHandler;
++ (void)addRefreshPiggyback:(FBSDKGraphRequestConnection *)connection permissionHandler:(FBSDKGraphRequestBlock)permissionHandler;
 
 + (void)addRefreshPiggybackIfStale:(FBSDKGraphRequestConnection *)connection;
 

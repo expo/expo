@@ -4,6 +4,7 @@
 //  Created by Nick Italiano on 10/22/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
 #import <UIKit/UIKit.h>
 #import "AIRGoogleMapPolyline.h"
 #import "AIRGMSPolyline.h"
@@ -43,6 +44,26 @@
   _strokeColor = strokeColor;
   _polyline.strokeColor = strokeColor;
   [self configureStyleSpansIfNeeded];
+}
+
+-(void)setStrokeColors:(NSArray<UIColor *> *)strokeColors
+{
+  NSMutableArray *spans = [NSMutableArray arrayWithCapacity:[strokeColors count]];
+  for (int i = 0; i < [strokeColors count]; i++)
+  {
+    GMSStrokeStyle *stroke;
+
+     if (i == 0) {
+      stroke = [GMSStrokeStyle solidColor:strokeColors[i]];
+    } else {
+      stroke = [GMSStrokeStyle gradientFromColor:strokeColors[i-1] toColor:strokeColors[i]];
+    }
+
+     [spans addObject:[GMSStyleSpan spanWithStyle:stroke]];
+  }
+
+  _strokeColors = strokeColors;
+  _polyline.spans = spans;
 }
 
 -(void)setStrokeWidth:(double)strokeWidth
@@ -110,3 +131,5 @@
 }
 
 @end
+
+#endif

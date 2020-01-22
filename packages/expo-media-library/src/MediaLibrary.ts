@@ -1,5 +1,6 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExponentMediaLibrary';
@@ -9,7 +10,6 @@ const eventEmitter = new EventEmitter(MediaLibrary);
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey =
   | 'default'
-  | 'id'
   | 'mediaType'
   | 'width'
   | 'height'
@@ -27,7 +27,6 @@ export type MediaTypeObject = {
 
 export type SortByObject = {
   default: 'default';
-  id: 'id';
   mediaType: 'mediaType';
   width: 'width';
   height: 'height';
@@ -86,6 +85,8 @@ export type AssetsOptions = {
   album?: AlbumRef;
   sortBy?: Array<SortByValue> | SortByValue;
   mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+  createdAfter?: Date | number;
+  createdBefore?: Date | number;
 };
 
 export type PagedInfo<T> = {
@@ -94,6 +95,8 @@ export type PagedInfo<T> = {
   hasNextPage: boolean;
   totalCount: number;
 };
+
+export { PermissionStatus, PermissionResponse };
 
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
@@ -148,9 +151,27 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
+function dateToNumber(value?: Date | number): number | undefined {
+  return value instanceof Date ? value.getTime() : value;
+}
+
 // export constants
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (!MediaLibrary.requestPermissionsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
+  }
+  return await MediaLibrary.requestPermissionsAsync();
+}
+
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (!MediaLibrary.getPermissionsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+  }
+  return await MediaLibrary.getPermissionsAsync();
+}
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
   if (!MediaLibrary.createAssetAsync) {
@@ -167,6 +188,13 @@ export async function createAssetAsync(localUri: string): Promise<Asset> {
     return asset[0];
   }
   return asset;
+}
+
+export async function saveToLibraryAsync(localUri: string): Promise<void> {
+  if (!MediaLibrary.saveToLibraryAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+  }
+  return await MediaLibrary.saveToLibraryAsync(localUri);
 }
 
 export async function addAssetsToAlbumAsync(
@@ -306,7 +334,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType } = assetsOptions;
+  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -314,6 +342,8 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     album: getId(album),
     sortBy: arrayize(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
+    createdAfter: dateToNumber(createdAfter),
+    createdBefore: dateToNumber(createdBefore),
   };
 
   if (first != null && typeof options.first !== 'number') {

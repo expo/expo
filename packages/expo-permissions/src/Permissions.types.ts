@@ -1,3 +1,9 @@
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
+
 export type PermissionType =
   | 'camera'
   | 'cameraRoll'
@@ -10,28 +16,22 @@ export type PermissionType =
   | 'reminders'
   | 'systemBrightness';
 
-export type PermissionResponse = {
-  status: PermissionStatus;
-  expires: PermissionExpiration;
+export interface PermissionResponse extends UMPermissionResponse {
   permissions: PermissionMap;
-};
-
-export type PermissionMap = { [permissionType: string /* PermissionType */]: PermissionInfo };
-
-export type PermissionInfo = {
-  status: PermissionStatus;
-  expires: PermissionExpiration;
-  ios?: PermissionDetailsLocationIOS;
-  android?: PermissionDetailsLocationAndroid;
-};
-
-export enum PermissionStatus {
-  UNDETERMINED = 'undetermined',
-  GRANTED = 'granted',
-  DENIED = 'denied',
 }
 
-export type PermissionExpiration = 'never' | number;
+export interface PermissionMap {
+  [permissionType: string /* PermissionType */]: PermissionInfo;
+}
+
+export interface PermissionInfo extends UMPermissionResponse {
+  ios?: PermissionDetailsLocationIOS;
+  android?: PermissionDetailsLocationAndroid;
+}
+
+export { PermissionStatus };
+
+export { PermissionExpiration };
 
 export type PermissionDetailsLocationIOS = {
   scope: 'whenInUse' | 'always';

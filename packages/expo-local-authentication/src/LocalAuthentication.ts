@@ -3,8 +3,11 @@ import invariant from 'invariant';
 import { Platform } from 'react-native';
 
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-
-import { AuthenticationType, LocalAuthenticationResult } from './LocalAuthentication.types';
+import {
+  AuthOptions,
+  AuthenticationType,
+  LocalAuthenticationResult,
+} from './LocalAuthentication.types';
 
 export { AuthenticationType, LocalAuthenticationResult };
 
@@ -30,19 +33,30 @@ export async function isEnrolledAsync(): Promise<boolean> {
 }
 
 export async function authenticateAsync(
-  promptMessageIOS: string = 'Authenticate'
+  options: AuthOptions = {}
 ): Promise<LocalAuthenticationResult> {
   if (!ExpoLocalAuthentication.authenticateAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
   }
 
-  if (Platform.OS === 'ios') {
-    invariant(
-      typeof promptMessageIOS === 'string' && promptMessageIOS.length,
-      'LocalAuthentication.authenticateAsync must be called with a non-empty string on iOS'
+  // Warn if using an old API - to be removed in SDK35.
+  if (typeof options === 'string') {
+    console.warn(
+      'String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.'
     );
+    options = { promptMessage: options };
+  }
 
-    const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS);
+  if (Platform.OS === 'ios') {
+    if (options.hasOwnProperty('promptMessage')) {
+      invariant(
+        typeof options.promptMessage === 'string' && options.promptMessage.length,
+        'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.'
+      );
+    }
+
+    const promptMessage = options.promptMessage || 'Authenticate';
+    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
 
     if (result.warning) {
       console.warn(result.warning);

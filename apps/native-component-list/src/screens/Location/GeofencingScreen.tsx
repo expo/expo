@@ -1,7 +1,12 @@
 import React from 'react';
 import { NavigationEvents } from 'react-navigation';
 import { StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
-import { BlurView, Location, MapView, Notifications, TaskManager } from 'expo';
+import { Notifications } from 'expo';
+
+import * as TaskManager from 'expo-task-manager';
+import MapView from 'react-native-maps';
+import * as Location from 'expo-location';
+import { BlurView } from 'expo-blur';
 
 import Button from '../../components/Button';
 

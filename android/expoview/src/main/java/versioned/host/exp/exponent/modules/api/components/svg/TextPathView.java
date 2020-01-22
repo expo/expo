@@ -103,7 +103,7 @@ class TextPathView extends TextView {
         SvgView svg = getSvgView();
         VirtualView template = svg.getDefinedTemplate(mHref);
 
-        if (template == null || !(template instanceof RenderableView)) {
+        if (!(template instanceof RenderableView)) {
             // warning about this.
             return null;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <fabric/core/ComponentDescriptor.h>
-#include <fabric/events/EventDispatcher.h>
-#include <fabric/uimanager/ContextContainer.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/core/EventDispatcher.h>
+#include <react/utils/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"
 
@@ -23,11 +23,12 @@ namespace react {
  * Each app must provide an implementation of the static class method which
  * should register its specific set of supported components.
  */
-class ComponentDescriptorFactory {
+using ComponentRegistryFactory =
+    std::function<SharedComponentDescriptorRegistry(
+        EventDispatcher::Shared const &eventDispatcher,
+        ContextContainer::Shared const &contextContainer)>;
 
-public:
-  static SharedComponentDescriptorRegistry buildRegistry(const SharedEventDispatcher &eventDispatcher, const SharedContextContainer &contextContainer);
-};
+ComponentRegistryFactory getDefaultComponentRegistryFactory();
 
 } // namespace react
 } // namespace facebook

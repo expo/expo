@@ -2,17 +2,16 @@ package expo.modules.ads.admob;
 
 import android.content.Context;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.interfaces.services.EventEmitter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.core.interfaces.services.EventEmitter;
-
-public class AdMobBannerViewManager extends ViewManager<AdMobBannerView>
-    implements ModuleRegistryConsumer {
+public class AdMobBannerViewManager extends ViewManager<AdMobBannerView> {
   public enum Events {
     EVENT_SIZE_CHANGE("onSizeChange"),
     EVENT_RECEIVE_AD("onAdViewDidReceiveAd"),
@@ -36,7 +35,7 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView>
 
   public static final String PROP_BANNER_SIZE = "bannerSize";
   public static final String PROP_AD_UNIT_ID = "adUnitID";
-  public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
+  public static final String PROP_ADDITIONAL_REQUEST_PARAMS = "additionalRequestParams";
 
   private EventEmitter mEventEmitter;
 
@@ -46,7 +45,7 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView>
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
   }
 
@@ -63,7 +62,7 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView>
   @Override
   public List<String> getExportedEventNames() {
     List<String> eventNames = new ArrayList<>(Events.values().length);
-    for(Events event : Events.values()) {
+    for (Events event : Events.values()) {
       eventNames.add(event.toString());
     }
     return eventNames;
@@ -79,8 +78,8 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView>
     view.setAdUnitID(adUnitID);
   }
 
-  @ExpoProp(name = PROP_TEST_DEVICE_ID)
-  public void setPropTestDeviceID(AdMobBannerView view, final String testDeviceID) {
-    view.setPropTestDeviceID(testDeviceID);
+  @ExpoProp(name = PROP_ADDITIONAL_REQUEST_PARAMS)
+  public void setPropAdditionalRequestParams(AdMobBannerView view, final ReadableArguments additionalRequestParams) {
+    view.setAdditionalRequestParams(additionalRequestParams.toBundle());
   }
 }

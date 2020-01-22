@@ -58,7 +58,7 @@ export declare type PlaybackStatusToSet = {
 };
 export declare const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number;
 export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet;
-export declare function getNativeSourceFromSource(source: PlaybackSource | null): PlaybackNativeSource | null;
+export declare function getNativeSourceFromSource(source?: PlaybackSource | null): PlaybackNativeSource | null;
 export declare function assertStatusValuesInBounds(status: PlaybackStatusToSet): void;
 export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: PlaybackSource | null, initialStatus: PlaybackStatusToSet | null, downloadFirst: boolean): Promise<{
     nativeSource: PlaybackNativeSource;
@@ -67,15 +67,19 @@ export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: 
 export declare function getUnloadedStatus(error?: string | null): PlaybackStatus;
 export interface AV {
     setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    getStatusAsync(): Promise<PlaybackStatus>;
 }
 export interface Playback extends AV {
     playAsync(): Promise<PlaybackStatus>;
+    loadAsync(source: PlaybackSource, initialStatus: PlaybackStatusToSet, downloadAsync: boolean): any;
+    unloadAsync(): Promise<PlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
     }): Promise<PlaybackStatus>;
     pauseAsync(): Promise<PlaybackStatus>;
     stopAsync(): Promise<PlaybackStatus>;
+    replayAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;

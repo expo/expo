@@ -149,12 +149,22 @@ static const NSNumber *trueValue;
     if (obj != [NSNull null]) {
       [invocation setArgument:&obj atIndex:(2 + idx)];
     }
+    
+    // According to objc.h, the BOOL type can be represented by `bool` or `signed char` so
+    // getArgumentTypeAtIndex can return _C_BOOL (when `bool`) or _C_CHR (when `signed char`)
+#if OBJC_BOOL_IS_BOOL
     if ([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_BOOL) {
       // We need this intermediary variable, see
       // https://stackoverflow.com/questions/11061166/pointer-to-bool-in-objective-c
       BOOL value = [obj boolValue];
       [invocation setArgument:&value atIndex:(2 + idx)];
     }
+#else // BOOL is represented by `signed char`
+    if ([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_CHR){
+      BOOL value = [obj charValue];
+      [invocation setArgument:&value atIndex:(2 + idx)];
+    }
+#endif
   }];
   [invocation setArgument:&resolve atIndex:(2 + [arguments count])];
   [invocation setArgument:&reject atIndex:([arguments count] + 2 + 1)];

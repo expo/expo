@@ -4,18 +4,41 @@ let path = require('path');
 
 let minimist = require('minimist');
 let fsExtra = require('fs-extra');
+let spawnAsync = require('@expo/spawn-async');
 
 let args = minimist(process.argv.slice(2));
 
 let from = args._[0] || path.join(__dirname, '..', 'react-native-website');
 let to = args._[1] || path.join(__dirname, '..');
 let version = args._[2] || 'unversioned';
-let toVersion = path.join(to, 'versions', version);
+let toVersion = path.join(to, 'pages', 'versions', version);
 
 let docsFrom = path.join(from, 'docs/');
 let sidebarsJson = path.join(from, 'website', 'sidebars.json');
 
 let reactNative = path.join(toVersion, 'react-native');
+
+let formatWithPrettierAsync = async () => {
+  let prettier = spawnAsync('prettier', [
+    '--print-width',
+    '100',
+    '--tab-width',
+    '2',
+    '--single-quote',
+    '--jsx-bracket-same-line',
+    '--trailing-comma',
+    'es5',
+    '--write',
+    `pages/versions/${version}/react-native/**/*.md`,
+  ]);
+
+  let childProcess = prettier.child;
+  childProcess.stdout.on('data', data => {
+    console.log(`formatted with prettier: ${data.toString().trim()}`);
+  });
+
+  return prettier;
+}
 
 let mainAsync = async () => {
   // Go through each file and fix them
@@ -23,8 +46,8 @@ let mainAsync = async () => {
 
   let sidebarInfo = await fsExtra.readJson(sidebarsJson);
   let guides = sidebarInfo.docs.Guides;
-  let components = sidebarInfo.docs.Components;
-  let apis = sidebarInfo.docs.APIs;
+  let components = sidebarInfo.api.Components;
+  let apis = sidebarInfo.api.APIs;
   let basics = sidebarInfo.docs['The Basics'];
 
   await fsExtra.ensureDir(reactNative);
@@ -50,6 +73,13 @@ let mainAsync = async () => {
       // TODO: Maybe do that?
       case 'imageeditor.md':
       case 'imagepickerios.md':
+      case 'navigation.md':
+      case 'performance.md':
+      case 'drawerlayoutandroid.md':
+      case 'native-modules-setup.md':
+      case 'out-of-tree-platforms.md':
+      case 'settings.md':
+      case 'systrace.md':
       case 'cameraroll.md':
       case 'linking.md':
       case 'permissionsandroid.md':
@@ -75,8 +105,8 @@ let mainAsync = async () => {
       );
 
       l.replace(
-       /\[`Toolbar` widget\]\([^\)]+\)/,
-       '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
+        /\[`Toolbar` widget\]\([^\)]+\)/,
+        '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
       );
       l.replace(
         /\[navigator\.geolocation\]\([^\)]+\)/g,
@@ -84,15 +114,21 @@ let mainAsync = async () => {
       );
 
       l.replace(
-        /\[CameraRoll\]([^\)]+\)/g,
+        /\[CameraRoll\]\([^)]+\)/g,
         '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
       );
 
+      // A lot of table cells have things like "<string>" and "<any>" that mdx dislikes
+      if (l[0] == '|') {
+        l = l.replace(/</g, '\\<');
+        l = l.replace(/>/g, '\\>');
+      }
+
+      // mdx prefers void image tags
+      l = l.replace('></img>', ' />');
+
       // `](./foo` -> `](foo`
-      l = l.replace(
-        /\]\(\.\/([^\):]+)/g,
-        (_match, path) => `](${path}`
-      );
+      l = l.replace(/\]\(\.\/([^\):]+)/g, (_match, path) => `](${path}`);
       // `](foo.md)` -> `](../foo/)`
       // `](foo.md#bar)` -> `](../foo/#bar]`
       l = l.replace(
@@ -130,40 +166,6 @@ let mainAsync = async () => {
             inCodeBlock = !inCodeBlock;
           }
           break;
-      }
-
-      if (!inCodeBlock) {
-        let nl = '';
-        let inInlineCodeBlock = false;
-        for (let c of l) {
-          let nc = c;
-          if (c === '`') {
-            inInlineCodeBlock = !inInlineCodeBlock;
-          }
-          if (!inInlineCodeBlock && ['<', '>'].includes(c)) {
-            nc = '\\' + c;
-          }
-          nl += nc;
-        }
-        l = nl;
-      }
-
-      if (basename === 'alert.md') {
-        if (l === '</table>') {
-          inAlertSpecialSection = false;
-
-          l =
-            '#### iOS Alert Example\n\n![iOS Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif)' +
-            '\n';
-          l +=
-            '#### Android Alert Example\n\n![Android Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif)';
-        }
-        if (l === '<table>') {
-          inAlertSpecialSection = true;
-        }
-        if (inAlertSpecialSection) {
-          l = '';
-        }
       }
 
       if (basename === 'image.md') {
@@ -233,9 +235,6 @@ let mainAsync = async () => {
           break;
       }
 
-      if (l.startsWith('|')) {
-      }
-
       s += l + '\n';
     }
 
@@ -248,7 +247,10 @@ let mainAsync = async () => {
     for (let i = 0; i < x.length; i++) {
       let src = path.join(docsFrom, x[i]) + '.md';
       let dest = path.join(destDir, x[i]) + '.md';
-      await transformFileAysnc(src, dest);
+
+      if (await fsExtra.exists(src)) {
+        await transformFileAysnc(src, dest);
+      }
     }
   };
 
@@ -260,6 +262,9 @@ let mainAsync = async () => {
   ]) {
     await copyFilesAsync(x, dest);
   }
+
+  console.log('running prettier...');
+  await formatWithPrettierAsync();
 
   console.log(
     '#guides',
@@ -280,7 +285,7 @@ if (require.main === module) {
         // done
       })
       .catch(err => {
-        console.error('Error: ' + err);
+        console.error('Error:', err.stack);
       });
   })();
 }

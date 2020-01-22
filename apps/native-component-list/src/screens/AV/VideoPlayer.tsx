@@ -1,5 +1,6 @@
 import React from 'react';
-import { Asset, Video } from 'expo';
+import { Asset } from 'expo-asset';
+import { Video } from 'expo-av';
 
 import Player from './Player';
 import { StyleProp, ViewStyle } from 'react-native';
@@ -14,7 +15,7 @@ interface State {
   rate: number;
   shouldCorrectPitch: boolean;
   useNativeControls: boolean;
-  resizeMode: Video.ResizeMode;
+  resizeMode: any;
 }
 
 export default class VideoPlayer extends React.Component<
@@ -42,14 +43,14 @@ export default class VideoPlayer extends React.Component<
     rate: 1,
     shouldCorrectPitch: false,
     useNativeControls: false,
-    resizeMode: Video.ResizeMode.CONTAIN,
+    resizeMode: Video.RESIZE_MODE_CONTAIN,
   };
 
-  _video?: Video.VideoPlayback;
+  _video?: Video;
 
   _handleError = (errorMessage: string) => this.setState({ errorMessage });
 
-  _handleVideoMount = (ref: Video.VideoPlayback) => (this._video = ref);
+  _handleVideoMount = (ref: Video) => (this._video = ref);
 
   _updateStateToStatus = (status: any) => this.setState(status);
 
@@ -69,12 +70,12 @@ export default class VideoPlayer extends React.Component<
   _toggleNativeControls = () =>
     this.setState(({ useNativeControls }) => ({ useNativeControls: !useNativeControls }));
 
-  _resizeModeSetter = (resizeMode: Video.ResizeMode) => () => this.setState({ resizeMode });
+  _resizeModeSetter = (resizeMode: any) => () => this.setState({ resizeMode });
 
   _openFullscreen = () => this._video!.presentFullscreenPlayer();
 
   _renderVideo = () => (
-    <Video.VideoPlayback
+    <Video
       useNativeControls={this.state.useNativeControls}
       ref={this._handleVideoMount}
       source={this.props.source}
@@ -107,20 +108,20 @@ export default class VideoPlayer extends React.Component<
           {
             iconName: 'move',
             title: 'Resize mode – stretch',
-            onPress: this._resizeModeSetter(Video.ResizeMode.STRETCH),
-            active: this.state.resizeMode === Video.ResizeMode.STRETCH,
+            onPress: this._resizeModeSetter(Video.RESIZE_MODE_STRETCH),
+            active: this.state.resizeMode === Video.RESIZE_MODE_STRETCH,
           },
           {
             iconName: 'log-in',
             title: 'Resize mode – contain',
-            onPress: this._resizeModeSetter(Video.ResizeMode.CONTAIN),
-            active: this.state.resizeMode === Video.ResizeMode.CONTAIN,
+            onPress: this._resizeModeSetter(Video.RESIZE_MODE_CONTAIN),
+            active: this.state.resizeMode === Video.RESIZE_MODE_CONTAIN,
           },
           {
             iconName: 'qr-scanner',
             title: 'Resize mode – cover',
-            onPress: this._resizeModeSetter(Video.ResizeMode.COVER),
-            active: this.state.resizeMode === Video.ResizeMode.COVER,
+            onPress: this._resizeModeSetter(Video.RESIZE_MODE_COVER),
+            active: this.state.resizeMode === Video.RESIZE_MODE_COVER,
           },
           {
             iconName: 'resize',

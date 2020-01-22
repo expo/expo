@@ -1,6 +1,6 @@
 import path from 'path';
 import uuid from 'uuid';
-import { Versions, Config } from 'xdl';
+import { Versions, Config } from '@expo/xdl';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
@@ -40,27 +40,46 @@ export async function updateExpoKitIosAsync(
   await Versions.setVersionsAsync(versions);
 }
 
+export async function updateReactNativeUnimodulesAsync(
+  expoDir: string,
+  reactNativeUnimodulesVersion: string,
+  sdkVersion: string
+): Promise<void> {
+  process.env.EXPO_STAGING = '1';
+  Config.api.host = 'staging.exp.host';
+  let versions = await Versions.versionsAsync();
+  if (!versions.sdkVersions[sdkVersion]) {
+    throw new Error(`SDK version ${sdkVersion} not found in versions JSON`);
+  }
+
+  if (!versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting) {
+    versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting = {};
+  }
+
+  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting![
+    'react-native-unimodules'
+  ] = reactNativeUnimodulesVersion;
+
+  await Versions.setVersionsAsync(versions);
+}
+
 export async function updateExpoKitAndroidAsync(
   expoDir: string,
   appVersion: string,
   sdkVersion: string,
-  expokitVersion: string
+  expokitVersion: string,
+  expokitTag: string = 'latest'
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
 
   // Populate android template files now since we take out the prebuild step later on
-  await spawnAsync(`../../tools-public/generate-dynamic-macros-android.sh`, [], {
+  await spawnAsync('et', ['android-generate-dynamic-macros'], {
     stdio: 'inherit',
-    cwd: path.join(androidDir, 'app'),
+    cwd: path.resolve(expoDir),
   });
 
   await S3.uploadDirectoriesAsync(BUCKET, key, [
-    {
-      isFile: true,
-      source: path.join(androidDir, 'android.iml'),
-      destination: 'android.iml',
-    },
     {
       source: path.join(androidDir, 'app'),
       destination: 'app',
@@ -124,20 +143,20 @@ export async function updateExpoKitAndroidAsync(
   const expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
   const npmVersionArg = expokitVersion || 'patch';
 
-  await spawnAsync(`npm`, ['version', npmVersionArg], {
+  await spawnAsync(`npm`, ['version', npmVersionArg, '--allow-same-version'], {
     stdio: 'inherit',
     cwd: expokitNpmPackageDir,
   });
 
   let expokitPackageJson = new JsonFile(path.join(expokitNpmPackageDir, 'package.json'));
-  let expokitNpmVersion = await expokitPackageJson.getAsync('version');
+  let expokitNpmVersion = await expokitPackageJson.getAsync('version', null);
 
   versions.sdkVersions[sdkVersion].androidExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
   versions.sdkVersions[sdkVersion].expokitNpmPackage = `expokit@${expokitNpmVersion}`;
   await Versions.setVersionsAsync(versions);
 
   try {
-    await spawnAsync('npm', ['publish'], {
+    await spawnAsync('npm', ['publish', '--tag', expokitTag], {
       stdio: 'inherit',
       cwd: expokitNpmPackageDir,
     });

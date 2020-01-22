@@ -1,7 +1,9 @@
 import React from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { Facebook } from 'expo';
+import * as Facebook from 'expo-facebook';
 import ListButton from '../components/ListButton';
+
+const appId = '1201211719949057';
 
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {
@@ -14,34 +16,29 @@ export default class FacebookLoginScreen extends React.Component {
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'web')}
-          title="Authenticate with Facebook (web)"
+          onPress={async () => await Facebook.initializeAsync(appId)}
+          title="Initialize Facebook SDK"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'browser')}
-          title="Authenticate with Facebook (browser)"
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
+          title="Set autoinit to true"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'native')}
-          title="Authenticate with Facebook (native)"
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(false)}
+          title="Set autoinit to false"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'system')}
-          title="Authenticate with Facebook (system)"
+          onPress={() => this._testFacebookLogin(permissions)}
+          title="Authenticate with Facebook"
         />
       </ScrollView>
     );
   }
 
-  _testFacebookLogin = async (
-    id: string,
-    perms: string[],
-    behavior: 'web' | 'native' | 'browser' | 'system' = 'web'
-  ) => {
+  _testFacebookLogin = async (perms: string[]) => {
     try {
-      const result = await Facebook.logInWithReadPermissionsAsync(id, {
+      const result = await Facebook.logInWithReadPermissionsAsync({
         permissions: perms,
-        behavior,
       });
 
       const { type, token } = result;
@@ -59,5 +56,5 @@ export default class FacebookLoginScreen extends React.Component {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 }

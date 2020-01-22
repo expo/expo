@@ -1,7 +1,7 @@
 import path from 'path';
 import Request from 'request-promise-native';
 
-import { User, ProjectUtils, Project, ProjectSettings, Simulator } from 'xdl';
+import { User, ProjectUtils, Project, ProjectSettings, Simulator } from '@expo/xdl';
 
 const request = Request.defaults({
   resolveWithFullResponse: true,

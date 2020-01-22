@@ -16,8 +16,8 @@
     NSMutableDictionary<NSString *, RNSVGNode *> *_clipPaths;
     NSMutableDictionary<NSString *, RNSVGNode *> *_templates;
     NSMutableDictionary<NSString *, RNSVGPainter *> *_painters;
+    NSMutableDictionary<NSString *, RNSVGNode *> *_markers;
     NSMutableDictionary<NSString *, RNSVGNode *> *_masks;
-    CGAffineTransform _viewBoxTransform;
     CGAffineTransform _invviewBoxTransform;
     bool rendered;
 }
@@ -77,6 +77,12 @@
         return;
     }
     [self setNeedsDisplay];
+}
+
+- (void)tintColorDidChange
+{
+    [self invalidate];
+    [self clearChildCache];
 }
 
 - (void)setMinX:(CGFloat)minX
@@ -247,11 +253,26 @@
     return nil;
 }
 
-
 - (NSString *)getDataURL
 {
     UIGraphicsBeginImageContextWithOptions(_boundingBox.size, NO, 0);
+    [self clearChildCache];
     [self drawRect:_boundingBox];
+    [self clearChildCache];
+    [self invalidate];
+    NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
+    NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    UIGraphicsEndImageContext();
+    return base64;
+}
+
+- (NSString *)getDataURLwithBounds:(CGRect)bounds
+{
+    UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
+    [self clearChildCache];
+    [self drawRect:bounds];
+    [self clearChildCache];
+    [self invalidate];
     NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
     NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
     UIGraphicsEndImageContext();
@@ -301,6 +322,19 @@
 - (RNSVGPainter *)getDefinedPainter:(NSString *)painterName;
 {
     return _painters ? [_painters objectForKey:painterName] : nil;
+}
+
+- (void)defineMarker:(RNSVGNode *)marker markerName:(NSString *)markerName
+{
+    if (!_markers) {
+        _markers = [[NSMutableDictionary alloc] init];
+    }
+    [_markers setObject:marker forKey:markerName];
+}
+
+- (RNSVGNode *)getDefinedMarker:(NSString *)markerName;
+{
+    return _markers ? [_markers objectForKey:markerName] : nil;
 }
 
 - (void)defineMask:(RNSVGNode *)mask maskName:(NSString *)maskName

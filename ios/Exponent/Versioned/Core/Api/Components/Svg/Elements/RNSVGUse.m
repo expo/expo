@@ -89,9 +89,19 @@
     } else if (self.href) {
         // TODO: calling yellow box here
         RCTLogWarn(@"`Use` element expected a pre-defined svg template as `href` prop, template named: %@ is not defined.", self.href);
+        return;
+    } else {
+        return;
     }
     CGRect bounds = template.clientRect;
     self.clientRect = bounds;
+    
+    CGAffineTransform current = CGContextGetCTM(context);
+    CGAffineTransform svgToClientTransform = CGAffineTransformConcat(current, self.svgView.invInitialCTM);
+    
+    self.ctm = svgToClientTransform;
+    self.screenCTM = current;
+    
     CGAffineTransform transform = CGAffineTransformConcat(self.matrix, self.transforms);
     CGPoint mid = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
     CGPoint center = CGPointApplyAffineTransform(mid, transform);
@@ -118,6 +128,17 @@
         return self;
     }
     return nil;
+}
+
+- (CGPathRef)getPath: (CGContextRef)context
+{
+    CGAffineTransform transform = CGAffineTransformMakeTranslation([self relativeOnWidth:self.x], [self relativeOnHeight:self.y]);
+    RNSVGNode const* template = [self.svgView getDefinedTemplate:self.href];
+    if (!template) {
+        return nil;
+    }
+    CGPathRef path = [template getPath:context];
+    return CGPathCreateCopyByTransformingPath(path, &transform);
 }
 
 @end

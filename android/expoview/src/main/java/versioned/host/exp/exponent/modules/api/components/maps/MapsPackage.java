@@ -34,25 +34,32 @@ public class MapsPackage implements ReactPackage {
     AirMapCalloutManager calloutManager = new AirMapCalloutManager();
     AirMapMarkerManager annotationManager = new AirMapMarkerManager();
     AirMapPolylineManager polylineManager = new AirMapPolylineManager(reactContext);
+    AirMapGradientPolylineManager gradientPolylineManager = new AirMapGradientPolylineManager(reactContext);
     AirMapPolygonManager polygonManager = new AirMapPolygonManager(reactContext);
     AirMapCircleManager circleManager = new AirMapCircleManager(reactContext);
     AirMapManager mapManager = new AirMapManager(reactContext);
     AirMapLiteManager mapLiteManager = new AirMapLiteManager(reactContext);
     AirMapUrlTileManager urlTileManager = new AirMapUrlTileManager(reactContext);
+    AirMapWMSTileManager gsUrlTileManager = new AirMapWMSTileManager(reactContext);
     AirMapLocalTileManager localTileManager = new AirMapLocalTileManager(reactContext);
     AirMapOverlayManager overlayManager = new AirMapOverlayManager(reactContext);
+    AirMapHeatmapManager heatmapManager = new AirMapHeatmapManager();
+    mapManager.setMarkerManager(annotationManager);
 
     return Arrays.<ViewManager>asList(
         calloutManager,
         annotationManager,
         polylineManager,
+        gradientPolylineManager,
         polygonManager,
         circleManager,
         mapManager,
         mapLiteManager,
         urlTileManager,
+        gsUrlTileManager,
         localTileManager,
-        overlayManager
+        overlayManager,
+        heatmapManager
     );
   }
 }

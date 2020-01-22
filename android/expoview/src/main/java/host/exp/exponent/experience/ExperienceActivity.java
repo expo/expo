@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentIntentService;
@@ -267,23 +266,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (mManifestUrl != null && mKernel.hasOptionsForManifestUrl(mManifestUrl)) {
       handleOptions(mKernel.popOptionsForManifestUrl(mManifestUrl));
     }
-
-    // this is old code from before `Expo.Notifications.dismissAllNotificationsAsync` existed
-    // since removing it is a breaking change (people have to call ^^^ explicitly if they want
-    // this behavior) we only do it starting in SDK 28
-    // TODO: eric: remove this once SDK 27 is phased out
-    if (mSDKVersion != null && ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("28.0.0")) {
-      clearNotifications();
-    }
-  }
-
-  // TODO: eric: remove this once SDK 27 is phased out
-  protected void clearNotifications() {
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId != null) {
-      ExponentNotificationManager manager = new ExponentNotificationManager(this);
-      manager.cancelAll(experienceId);
-    }
   }
 
   @Override
@@ -328,25 +310,21 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
 
   public void setLoadingScreenManifest(final JSONObject manifest) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!isInForeground()) {
-          return;
-        }
-
-        if (!mShouldShowLoadingScreenWithOptimisticManifest) {
-          return;
-        }
-
-        // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
-        String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-        ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
-
-        showLoadingScreen(manifest);
-
-        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+    runOnUiThread(() -> {
+      if (!isInForeground()) {
+        return;
       }
+
+      if (!mShouldShowLoadingScreenWithOptimisticManifest) {
+        return;
+      }
+
+      ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
+
+      showLoadingScreen(manifest);
+
+      ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
     });
   }
 
@@ -384,7 +362,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       mSDKVersion = RNObject.UNVERSIONED;
     }
-    // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
+    // In detach/shell, we always use UNVERSIONED as the ABI.
     mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
@@ -418,6 +396,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
@@ -449,48 +428,43 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!isInForeground()) {
-          return;
-        }
-
-        if (mReactInstanceManager.isNotNull()) {
-          mReactInstanceManager.onHostDestroy();
-          mReactInstanceManager.assign(null);
-        }
-
-        mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
-        mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
-        setView((View) mReactRootView.get());
-
-        String id;
-        try {
-          id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
-        } catch (UnsupportedEncodingException e) {
-          KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
-          return;
-        }
-
-        boolean hasCachedBundle;
-        if (isDebugModeEnabled()) {
-          hasCachedBundle = false;
-          mNotification = finalNotificationObject;
-          waitForDrawOverOtherAppPermission("");
-        } else {
-          mTempNotification = finalNotificationObject;
-          mIsReadyForBundle = true;
-          AsyncCondition.notify(READY_FOR_BUNDLE);
-        }
-
-        ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
-
-        showLoadingScreen(manifest);
-
-        ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
-        handleExperienceOptions(kernelOptions);
+    runOnUiThread(() -> {
+      if (!isInForeground()) {
+        return;
       }
+
+      if (mReactInstanceManager.isNotNull()) {
+        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.assign(null);
+      }
+
+      mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
+      mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
+      setView((View) mReactRootView.get());
+
+      String id;
+      try {
+        id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
+      } catch (UnsupportedEncodingException e) {
+        KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
+        return;
+      }
+
+      if (isDebugModeEnabled()) {
+        mNotification = finalNotificationObject;
+        waitForDrawOverOtherAppPermission("");
+      } else {
+        mTempNotification = finalNotificationObject;
+        mIsReadyForBundle = true;
+        AsyncCondition.notify(READY_FOR_BUNDLE);
+      }
+
+      ExperienceActivityUtils.configureStatusBar(manifest, ExperienceActivity.this);
+      ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
+      showLoadingScreen(manifest);
+
+      ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
+      handleExperienceOptions(kernelOptions);
     });
   }
 
@@ -599,11 +573,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (pushNotificationHelper != null) {
       pushNotificationHelper.removeNotifications(this, unreadNotifications);
     }
-  }
-
-  public void onEvent(BaseExperienceActivity.ExperienceDoneLoadingEvent event) {
-    // On cold boot to this experience, wait until we're done loading to load the kernel.
-    mKernel.startJSKernel();
   }
 
   /*

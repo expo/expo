@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/Sensors/ABI27_0_0EXMagnetometer.h

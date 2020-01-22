@@ -1,7 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import { View } from 'react-native';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Defs, LinearGradient, RadialGradient, Stop, Ellipse, Circle, Text, Rect, G } = Svg;
@@ -10,7 +10,7 @@ class LinearGradientHorizontal extends React.Component {
   static title = 'Define an ellipse with a horizontal linear gradient from yellow to red';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
         <Defs>
           <LinearGradient id="grad" x1="65" y1="0" x2="235" y2="0" gradientUnits="userSpaceOnUse">
@@ -18,7 +18,7 @@ class LinearGradientHorizontal extends React.Component {
             <Stop offset="1" stopColor="red" />
           </LinearGradient>
         </Defs>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -27,7 +27,7 @@ class LinearGradientRotated extends React.Component {
   static title = 'Define an ellipse with a rotated linear gradient from yellow to red';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <LinearGradient id="grad" x1={0} y1={0} x2="0%" y2="100%">
             <Stop offset="0%" stopColor="rgb(255,255,0)" stopOpacity="0" />
@@ -39,7 +39,7 @@ class LinearGradientRotated extends React.Component {
             <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
           </G>
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -49,7 +49,7 @@ class GradientUnits extends React.Component {
   render() {
     return (
       <View style={{ width: 300, height: 150, flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Svg height="150" width="90">
+        <Svg.Svg height="150" width="90">
           <Defs>
             <LinearGradient id="defaultUnits" x1="0%" y1="0%" x2="0%" y2="100%">
               <Stop offset="0%" stopColor="#000" stopOpacity="1" />
@@ -57,8 +57,8 @@ class GradientUnits extends React.Component {
             </LinearGradient>
           </Defs>
           <Rect fill="url(#defaultUnits)" x="10" y="10" width="70" height="70" rx="10" ry="10" />
-        </Svg>
-        <Svg height="150" width="90">
+        </Svg.Svg>
+        <Svg.Svg height="150" width="90">
           <Defs>
             <LinearGradient
               id="userSpaceOnUse"
@@ -73,7 +73,7 @@ class GradientUnits extends React.Component {
             </LinearGradient>
           </Defs>
           <Rect fill="url(#userSpaceOnUse)" x="10" y="10" width="70" height="70" rx="10" ry="10" />
-        </Svg>
+        </Svg.Svg>
       </View>
     );
   }
@@ -83,7 +83,7 @@ class LinearGradientPercent extends React.Component {
   static title = 'Define a linear gradient in percent unit';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
             <Stop offset="0%" stopColor="rgb(255,255,0)" stopOpacity="0" />
@@ -97,7 +97,7 @@ class LinearGradientPercent extends React.Component {
           x2=100%
         </Text>
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -106,7 +106,7 @@ class RadialGradientExample extends React.Component {
   static title = 'Define an ellipse with a radial gradient from yellow to purple';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <RadialGradient
             id="grad"
@@ -124,7 +124,7 @@ class RadialGradientExample extends React.Component {
           </RadialGradient>
         </Defs>
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -133,7 +133,7 @@ class RadialGradientPercent extends React.Component {
   static title = 'Define a radial gradient in percent unit';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <RadialGradient id="grad" cx="50%" cy="50%" rx="50%" ry="50%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor="#fff" stopOpacity="1" />
@@ -141,7 +141,7 @@ class RadialGradientPercent extends React.Component {
           </RadialGradient>
         </Defs>
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -150,7 +150,7 @@ class RadialGradientPart extends React.Component {
   static title = 'Define another ellipse with a radial gradient from white to blue';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <RadialGradient id="grad" cx="20%" cy="30%" r="30%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor="#fff" stopOpacity="0" />
@@ -158,7 +158,7 @@ class RadialGradientPart extends React.Component {
           </RadialGradient>
         </Defs>
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -167,7 +167,7 @@ class FillGradientWithOpacity extends React.Component {
   static title = 'Fill a radial gradient with fillOpacity prop';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <RadialGradient id="grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor="#fff" stopOpacity="1" />
@@ -175,7 +175,7 @@ class FillGradientWithOpacity extends React.Component {
           </RadialGradient>
         </Defs>
         <Ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad)" fillOpacity="0.2" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -184,7 +184,7 @@ class FillGradientInRect extends React.Component {
   static title = 'Fill a radial gradient inside a rect and stroke it';
   render() {
     return (
-      <Svg height="150" width="300">
+      <Svg.Svg height="150" width="300">
         <Defs>
           <RadialGradient id="grad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor="#fff" stopOpacity="1" />
@@ -200,13 +200,13 @@ class FillGradientInRect extends React.Component {
           stroke="pink"
           strokeWidth="5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Defs>
       <LinearGradient id="grad" x1="0" y1="0" x2="0" y2="20">
         <Stop offset="0%" stopColor="rgb(255,255,0)" stopOpacity="0" />
@@ -214,7 +214,7 @@ const icon = (
       </LinearGradient>
     </Defs>
     <Circle cx="10" cy="10" r="10" fill="url(#grad)" />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Gradients: Example = {

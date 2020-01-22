@@ -7,7 +7,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Map;
 
-@Table(databaseName = ActionDatabase.NAME)
+@Table(database = ActionDatabase.class)
 public class ActionObject extends BaseModel {
   @Column
   private String categoryId;
@@ -64,7 +64,7 @@ public class ActionObject extends BaseModel {
     return buttonTitle;
   }
 
-  public boolean getShouldShowTextInput() {
+  public Boolean isShouldShowTextInput() {
     return shouldShowTextInput;
   }
 
@@ -104,19 +104,19 @@ public class ActionObject extends BaseModel {
     this.buttonTitle = buttonTitle;
   }
 
-  public Boolean getIsDestructive() {
+  public Boolean isDestructive() {
     return isDestructive;
   }
 
-  public void setIsDestructive(Boolean destructive) {
+  public void setDestructive(Boolean destructive) {
     isDestructive = destructive;
   }
 
-  public Boolean getIsAuthenticationRequired() {
+  public Boolean isAuthenticationRequired() {
     return isAuthenticationRequired;
   }
 
-  public void setIsAuthenticationRequired(Boolean authenticationRequired) {
+  public void setAuthenticationRequired(Boolean authenticationRequired) {
     isAuthenticationRequired = authenticationRequired;
   }
 

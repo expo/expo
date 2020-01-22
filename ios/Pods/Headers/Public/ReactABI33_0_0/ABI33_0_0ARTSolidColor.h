@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/Libraries/ART/Brushes/ABI33_0_0ARTSolidColor.h

@@ -1,10 +1,15 @@
-import { AppLoading, Asset, Constants, Font } from 'expo';
+import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
+import * as Device from 'expo-device';
+import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
+import { Appearance } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import url from 'url';
 
 import './menu/MenuView';
 
@@ -14,18 +19,40 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import Store from './redux/Store';
 import LocalStorage from './storage/LocalStorage';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
+@connect(data => App.getDataProps(data))
 export default class App extends React.Component {
+  static getDataProps(data) {
+    let { settings } = data;
+
+    return {
+      preferredAppearance: settings.preferredAppearance,
+    };
+  }
+
   state = {
     isReady: false,
+    colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
     this._initializeStateAsync();
+    this._addProjectHistoryListener();
   }
+
+  _addProjectHistoryListener = () => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
+      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
+    });
+  };
 
   _isExpoHost = host => {
     return (
@@ -56,7 +83,6 @@ export default class App extends React.Component {
     try {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
-      await LocalStorage.migrateNuxStateToNativeAsync();
       const storedSession = await LocalStorage.getSessionAsync();
 
       if (storedSession) {
@@ -88,30 +114,37 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
+    let { preferredAppearance, colorScheme } = this.props;
+    let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+    if (theme === 'no-preference') {
+      theme = 'light';
+    }
+
+    const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
+
+    // Android below API 23 (Android 6.0) does not support 'dark-content' barStyle:
+    // - statusBar shouldn't be translucent
+    // - backgroundColor should be a color that would make status bar icons be visible
+    const translucent = !(Platform.OS === 'android' && Device.platformApiLevel < 23);
+    const statusBarBackgroundColor =
+      theme === 'dark' ? '#000000' : translucent ? '#ffffff' : '#00000088';
+
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor }]}>
         <ActionSheetProvider>
-          <Navigation />
+          <Navigation theme={theme} />
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+        <StatusBar
+          translucent={translucent}
+          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+          backgroundColor={statusBarBackgroundColor}
+        />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: Constants.statusBarHeight,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
+  container: { flex: 1 },
 });

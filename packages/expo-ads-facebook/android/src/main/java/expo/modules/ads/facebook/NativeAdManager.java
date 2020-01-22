@@ -18,11 +18,10 @@ import java.util.Map;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class NativeAdManager implements InternalModule, NativeAdsManager.Listener, ModuleRegistryConsumer {
+public class NativeAdManager implements InternalModule, NativeAdsManager.Listener {
   /**
    * @{Map} with all registered fb ads managers
    **/
@@ -40,7 +39,7 @@ public class NativeAdManager implements InternalModule, NativeAdsManager.Listene
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

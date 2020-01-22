@@ -8,7 +8,10 @@ import {
   Image,
   TouchableOpacityProps,
 } from 'react-native';
-import { Asset, ImageManipulator, Permissions, ImagePicker } from 'expo';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { Asset } from 'expo-asset';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
@@ -28,18 +31,16 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
     ready: false,
   };
 
-  componentWillMount() {
-    (async () => {
-      const image = Asset.fromModule(
-        require('../../assets/images/example2.jpg')
-      );
-      await image.downloadAsync();
-      this.setState({
-        ready: true,
-        image,
-        original: image,
-      });
-    })();
+  async componentDidMount() {
+    const image = Asset.fromModule(
+      require('../../assets/images/example2.jpg')
+    );
+    await image.downloadAsync();
+    this.setState({
+      ready: true,
+      image,
+      original: image,
+    });
   }
 
   render() {

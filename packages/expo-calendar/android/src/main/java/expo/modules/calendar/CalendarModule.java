@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,6 +13,15 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.util.Log;
+
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.errors.InvalidArgumentException;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,19 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.interfaces.permissions.Permissions;
-
-public class CalendarModule extends ExportedModule implements ModuleRegistryConsumer {
+public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private Context mContext;
-  private Permissions mPermissionsModule;
+  private Permissions mPermissionsManager;
 
   public CalendarModule(Context context) {
     super(context);
@@ -48,8 +48,8 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mPermissionsModule = moduleRegistry.getModule(Permissions.class);
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
   }
 
   //region Exported methods
@@ -160,7 +160,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
         try {
           Integer eventID = saveEvent(details);
           promise.resolve(eventID.toString());
-        } catch (ParseException e) {
+        } catch (ParseException | EventNotSavedException | InvalidArgumentException e) {
           promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
         }
       }
@@ -251,24 +251,13 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
-      return;
-    }
-    String[] permissions = new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+  public void requestCalendarPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+  }
 
-    mPermissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
-        Bundle response = new Bundle();
-
-        response.putString("status", isGranted ? "granted" : "denied");
-        response.putBoolean("granted", isGranted);
-        promise.resolve(response);
-      }
-    });
+  @ExpoMethod
+  public void getCalendarPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
   }
 
   //endregion
@@ -342,7 +331,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
     if (calendars.size() > 0) {
       String calendarQuery = "AND (";
       for (int i = 0; i < calendars.size(); i++) {
-        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = " + calendars.get(i);
+        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars.get(i) + "'";
         if (i != calendars.size() - 1) {
           calendarQuery += " OR ";
         }
@@ -591,7 +580,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
     return rows > 0;
   }
 
-  private int saveEvent(ReadableArguments details) throws ParseException, SecurityException {
+  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException, InvalidArgumentException {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -673,6 +662,17 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
           }
         }
 
+        if (endDate == null && occurrence == null) {
+          long eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART);
+          long eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND);
+          long duration = (eventEndDate - eventStartDate) / 1000;
+
+          eventValues.putNull(CalendarContract.Events.LAST_DATE);
+          eventValues.putNull(CalendarContract.Events.DTEND);
+
+          eventValues.put(CalendarContract.Events.DURATION, String.format("PT%dS", duration));
+        }
+
         String rule = createRecurrenceRule(frequency, interval, endDate, occurrence);
         if (rule != null) {
           eventValues.put(CalendarContract.Events.RRULE, rule);
@@ -733,15 +733,18 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
         if (calendar != null) {
           eventValues.put(CalendarContract.Events.CALENDAR_ID, Integer.parseInt(calendar.getString("id")));
         } else {
-          eventValues.put(CalendarContract.Events.CALENDAR_ID, 1);
+          throw new InvalidArgumentException("Couldn't find calendar with given id: " + details.getString("calendarId"));
         }
 
       } else {
-        eventValues.put(CalendarContract.Events.CALENDAR_ID, 1);
+        throw new InvalidArgumentException("CalendarId is required.");
       }
 
       Uri eventsUri = CalendarContract.Events.CONTENT_URI;
       Uri eventUri = cr.insert(eventsUri, eventValues);
+      if (eventUri == null) {
+        throw new EventNotSavedException();
+      }
       int eventID = Integer.parseInt(eventUri.getLastPathSegment());
 
       if (details.containsKey("alarms")) {
@@ -863,7 +866,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
       Object relativeOffset = reminder.get("relativeOffset");
 
       if (relativeOffset instanceof Number) {
-        int minutes = -(int) relativeOffset;
+        int minutes = - ((Number) relativeOffset).intValue();
         int method = CalendarContract.Reminders.METHOD_DEFAULT;
         ContentValues reminderValues = new ContentValues();
 
@@ -1388,11 +1391,11 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
   }
 
   private boolean checkPermissions(Promise promise) {
-    if (mPermissionsModule == null) {
+    if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
       return false;
     }
-    if (!mPermissionsModule.hasPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR})) {
+    if (!mPermissionsManager.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
       return false;
     }

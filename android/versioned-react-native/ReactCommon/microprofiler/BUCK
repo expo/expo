@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "GLOG_DEP", "cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "GLOG_DEP", "cxx_library")
 
 cxx_library(
     name = "microprofiler",
@@ -12,7 +12,7 @@ cxx_library(
     compiler_flags = [
         "-Wall",
         "-Werror",
-        "-std=c++11",
+        "-std=c++14",
         "-fexceptions",
         "-fno-data-sections",
     ],

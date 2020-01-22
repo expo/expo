@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Circle, Line, Rect, Text, Use } = Svg;
@@ -34,7 +34,7 @@ class GExample extends React.Component<{}, State> {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.G fill={this.state.fill} stroke="pink" strokeWidth="3">
           <Svg.G>
             <Circle cx="25" cy="25" r="11" />
@@ -44,7 +44,7 @@ class GExample extends React.Component<{}, State> {
           <Circle cx="75" cy="25" r="11" stroke="red" />
           <Circle cx="75" cy="75" r="11" />
         </Svg.G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -53,7 +53,7 @@ class GTransform extends React.Component {
   static title = 'G transform';
   render() {
     return (
-      <Svg height="100" width="200">
+      <Svg.Svg height="100" width="200">
         <Svg.G rotate="50" origin="40, 30" id="group">
           <Line x1="60" y1="10" x2="140" y2="10" stroke="#060" strokeWidth="1" />
 
@@ -72,13 +72,13 @@ class GTransform extends React.Component {
           stroke="red"
           opacity="0.5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Svg.G fill="purple" stroke="pink" strokeWidth="1">
       <Circle cx="5" cy="5" r="3" />
       <Circle cx="5" cy="15" r="3" />
@@ -86,7 +86,7 @@ const icon = (
       <Circle cx="15" cy="5" r="3" />
       <Circle cx="15" cy="15" r="3" />
     </Svg.G>
-  </Svg>
+  </Svg.Svg>
 );
 
 const G: Example = {

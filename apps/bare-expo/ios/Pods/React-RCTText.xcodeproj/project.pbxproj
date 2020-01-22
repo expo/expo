@@ -1,0 +1,674 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07C94107B8D88FE8E575FB982B5F7A47 /* RCTRawTextShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D39146AF0FF53A428B1F977D8F77C7 /* RCTRawTextShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		07F532D81364EBF949AB4BB6BBCD45E2 /* RCTInputAccessoryViewContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 855F3AC6A42F24E43DDA2963532BA728 /* RCTInputAccessoryViewContent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		118A42B73E852AA843D3EA401F8F59C9 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA055E5E49DA975641A1350F6A2F14AC /* RCTUITextView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		12FE536533C2E899BEDC79F033806C77 /* RCTSinglelineTextInputViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5452AF629630EDE150F405145E6C1687 /* RCTSinglelineTextInputViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		15A93FE2A1A3AA7A7BD4FBC25D981B4C /* RCTTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D77942565C5AFBAC0FE2A4A48BBD098 /* RCTTextViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		16646B3AFDFD3E50D052D26682C31AF8 /* RCTTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 45ED712FB60AE5556FFE2D8F142E5A71 /* RCTTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1FAF70CCDDFF1006DD726F4A9E7D3624 /* RCTSinglelineTextInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = E2BBC19F2944345C6121F2A9548A11BB /* RCTSinglelineTextInputView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		49F024A52424B6F999273394FC838743 /* RCTBackedTextInputDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = C057550B6DBEA731B721798FE6D7EB9B /* RCTBackedTextInputDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		504BE0DE93568189A4603DF9DD64069D /* RCTRawTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F79F8DFD1957D12D15CA235EB09FCB13 /* RCTRawTextShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		506BEA420579122819B8D0DF868193E0 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CD662E0A48F71E2835767B4C7022A6A /* RCTConvert+Text.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		535A45B1D68F9C881EC95A6FCF97EDB2 /* RCTBaseTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 129093E964BBF907917A4B43CE47423B /* RCTBaseTextInputViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		57181A74A33C6B70FA8E5EE6C7CEC13C /* RCTBaseTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DA410BA22544770FCBE671E74276197 /* RCTBaseTextViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		587348D2C04C09A4CE770B2D625E62F7 /* RCTBaseTextInputShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = D50B8F3875E290B972A8917CDE082392 /* RCTBaseTextInputShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5A14D954E9985E1F87644B24C632C9D1 /* RCTRawTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 746E3290E0AA5FEE7C1B98DC86AE8172 /* RCTRawTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5B5D325C7702E57FAF2B11CF7EB16FC2 /* RCTTextSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D8508FBF08C44F69041456EC1AEF09 /* RCTTextSelection.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5C26FC583314D4F8B3FC47DD0027AA31 /* RCTBaseTextInputShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = E5ED9D461D77023270DBC73A0A552888 /* RCTBaseTextInputShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5E117188E4021B7CC2A1CAE55D7B9577 /* RCTRawTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9336DD78266A25CDF306E2676657865 /* RCTRawTextViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5EA0562C07E9FDC93EB01B17F05BCBE2 /* RCTMultilineTextInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B3778BD8DC16D557F63E03BE1C498 /* RCTMultilineTextInputView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		60FAB4829BD71629CBB8E85CF1FB5E53 /* NSTextStorage+FontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AE26B7B33CEE569A36FAA45A61B8F80 /* NSTextStorage+FontScaling.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		665C0991B1A062A642AE6BA9BF6BCF7A /* RCTBaseTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = F715B7DFA4D9C60B19A43269601466E8 /* RCTBaseTextShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6D3C89C3DCDC0EC475BA2994BE0DEEB7 /* RCTBaseTextShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CC3819F98288270C261E8891EFF02D6 /* RCTBaseTextShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		73AD9113A99D144412E70BD19DFAED1B /* RCTInputAccessoryViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 30964E1D4277BD8EEDE775011D0381B0 /* RCTInputAccessoryViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		75DBB4DB6B3D4BA78D9B96AD5F0E50EA /* RCTBackedTextInputDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BFB3ED5BB1CD2C82802562A6D5232C0 /* RCTBackedTextInputDelegateAdapter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7D88F87DA7173CF50F749863988C0A23 /* RCTSinglelineTextInputView.h in Headers */ = {isa = PBXBuildFile; fileRef = A96A1F36FE3BBDA2E75B23AE1A9AB5DD /* RCTSinglelineTextInputView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		84D953D78F3591E568BA08D53B8E7F70 /* RCTMultilineTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A424B183B947A26EE8281DAA2FDFF37 /* RCTMultilineTextInputViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		87352C39D597C7961275AD3C75434C41 /* React-RCTText-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32045928FD1C7BDB30234C0E9712F786 /* React-RCTText-dummy.m */; };
+		8BFB956512721C14133E45C170E776EE /* RCTVirtualTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B34B9D943D6ADC620EE35C7E57033258 /* RCTVirtualTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		902212F853719B07E539E74544130E72 /* RCTTextTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = B5D8769E60F2BBF5D52742D7C7530039 /* RCTTextTransform.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9135CB0D4525286406F86791F491B93A /* RCTInputAccessoryViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AE58F5BFF53FD77BD0DE9C1511089B8 /* RCTInputAccessoryViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		95167B0759B8F2C5CA8A63A0D3FF3097 /* RCTMultilineTextInputViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B40AEF08C0833BF05CBE4393134D60DB /* RCTMultilineTextInputViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		97C68F6C37F30A180B1A84F238D5C050 /* RCTBackedTextInputDelegateAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = D424628627375181098592E36A9DA5C9 /* RCTBackedTextInputDelegateAdapter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		981E41FA5EA0DEE90B892E1ED1E6D2A7 /* RCTInputAccessoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = F11B1C365C3692EB54EC44375EA64A03 /* RCTInputAccessoryView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		986B9099A7540754F39D90ACF65E8783 /* RCTTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 126584E5C08F53D178645AE1123CD01C /* RCTTextShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9F79F307DB7092B136BBC5DB02383761 /* RCTVirtualTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = A37568FA79BDF627E7BA775413D11614 /* RCTVirtualTextShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A256EDDE9A4E8F0127CA23CFD21BE584 /* RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EB09587156B4090665FBA339DEF746E /* RCTUITextField.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A5BEEE07E3F22D98FCE4B3D9D19294AE /* RCTTextAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 6EFCFF728A4F2175604BAB1BC7A61915 /* RCTTextAttributes.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B7198A4FF3F0D81C88B9E79D46663057 /* RCTVirtualTextShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5789A70BEFCE03C2A9B0371DA6824403 /* RCTVirtualTextShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B85B1E0DF796E2948BD4A31EEE5AE075 /* RCTVirtualTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F96FE6DBDF2862ED128979B86FDA80 /* RCTVirtualTextViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C2E55B66FB105CFCABDCD0AE50CA8306 /* RCTBackedTextInputViewProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B2E0BB2E2A6989BD0D2CFF728E902E3 /* RCTBackedTextInputViewProtocol.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C308406C597F0DF13AF1DC175F2D3928 /* RCTBaseTextInputViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CFED3C6ED39887BB185F75B5E7D5EC5 /* RCTBaseTextInputViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C35D2ACB4C51C93922C270E3DF8950E1 /* RCTInputAccessoryShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92F9DB62824A99A48D9A1462F12A9955 /* RCTInputAccessoryShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CCFD80327F708C3990E9C9C8C53938BF /* RCTTextShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = FF8FC4B8E0C07A5695C3C77468CA2E27 /* RCTTextShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D842703708933407B883036B48766F6C /* RCTInputAccessoryShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DB883CF459BB76919913311AC4C4055 /* RCTInputAccessoryShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D92147FC4FE5F7A3103D229D474B37A6 /* RCTInputAccessoryViewContent.h in Headers */ = {isa = PBXBuildFile; fileRef = 070C053D38D5E4EE1EB98A45045872FC /* RCTInputAccessoryViewContent.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DD1BDEB3B95319BF8C9B23E6FA36D468 /* RCTBaseTextInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28310BA25600A728C83A5A3A8498A28B /* RCTBaseTextInputView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E3043C455DEBFB7CF583CC1E6C67BFB7 /* RCTTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 69A305223BAB60A76E1BA1734E3B4223 /* RCTTextView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E57FB3C34B8024992E0B19CC3B3D8018 /* RCTTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AEF2E4238D424E04FDF399FE6684E9D2 /* RCTTextView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E8E3C5E52DE8183D8AD5535CF43E446E /* RCTBaseTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C783113854B8C488007DD9F1548CE8F /* RCTBaseTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E9D8FFCC45414808CC0C81A8E274A20A /* RCTInputAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 971406EE473826FA84DCC873DC9870BB /* RCTInputAccessoryView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F1EBE8C812B79D2BA19FC6038C3C6DF2 /* NSTextStorage+FontScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FBEE205FC1C0966C7C9D3460E1979BB /* NSTextStorage+FontScaling.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F21E01F42051DE3537FC8EE80B461FE3 /* RCTConvert+Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 987AA46054DD89E584BFB4A6BBB3120A /* RCTConvert+Text.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F2BAE9EEE30A5A58037AEBB31BAD47E2 /* RCTTextAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = FCF31540D8FB3DFA0BD30DD699D55B27 /* RCTTextAttributes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F91C0FB2F802D240B9CCF219BFE90CFC /* RCTBaseTextInputView.h in Headers */ = {isa = PBXBuildFile; fileRef = 56AA9BB9313FA2643FD18CFF14AD7A50 /* RCTBaseTextInputView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F9D293D37ACBB49CC19C3A57A4DD3608 /* RCTMultilineTextInputView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8882055537268F099BA5D569721AC3A0 /* RCTMultilineTextInputView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FAE551A640974A526C6934FE05CAB3DD /* RCTTextSelection.h in Headers */ = {isa = PBXBuildFile; fileRef = 68396A2A332ADDCBD1A6300C9FB30B32 /* RCTTextSelection.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FC0EBA4CAA967F8382DE4BFC1EED93CD /* RCTUITextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 179F16F4F16B10487CEAD39825A797FD /* RCTUITextField.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FD6DE8E1C0EA27EB6486E73F0C28EE31 /* RCTUITextView.h in Headers */ = {isa = PBXBuildFile; fileRef = C5CAF0A952CD23A387EC7CD15D4FF089 /* RCTUITextView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FF8ADACA9344CBEB272F8DF95A9F04B9 /* RCTSinglelineTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D76F29A1E10C330DB84E05E9C9942FA /* RCTSinglelineTextInputViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9C9425BC4E4BB50CC45F74B3060ACB2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D7655CD411E16CCD96C95904AD5D5FA /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		070C053D38D5E4EE1EB98A45045872FC /* RCTInputAccessoryViewContent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryViewContent.h; sourceTree = "<group>"; };
+		0C783113854B8C488007DD9F1548CE8F /* RCTBaseTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextViewManager.h; sourceTree = "<group>"; };
+		0D7655CD411E16CCD96C95904AD5D5FA /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		126584E5C08F53D178645AE1123CD01C /* RCTTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTTextShadowView.m; sourceTree = "<group>"; };
+		129093E964BBF907917A4B43CE47423B /* RCTBaseTextInputViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextInputViewManager.m; sourceTree = "<group>"; };
+		179F16F4F16B10487CEAD39825A797FD /* RCTUITextField.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTUITextField.h; sourceTree = "<group>"; };
+		1EB09587156B4090665FBA339DEF746E /* RCTUITextField.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTUITextField.m; sourceTree = "<group>"; };
+		1FBEE205FC1C0966C7C9D3460E1979BB /* NSTextStorage+FontScaling.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NSTextStorage+FontScaling.m"; sourceTree = "<group>"; };
+		2154F5BB741AD8472CA78DD54AA7D43A /* React-RCTText.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTText.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		28310BA25600A728C83A5A3A8498A28B /* RCTBaseTextInputView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextInputView.m; sourceTree = "<group>"; };
+		2BFB3ED5BB1CD2C82802562A6D5232C0 /* RCTBackedTextInputDelegateAdapter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBackedTextInputDelegateAdapter.m; sourceTree = "<group>"; };
+		2FC6A6C3B9E3F9C474B7A681623B380B /* libReact-RCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTText.a"; path = "libReact-RCTText.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		30964E1D4277BD8EEDE775011D0381B0 /* RCTInputAccessoryViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryViewManager.h; sourceTree = "<group>"; };
+		30D39146AF0FF53A428B1F977D8F77C7 /* RCTRawTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTRawTextShadowView.h; sourceTree = "<group>"; };
+		32045928FD1C7BDB30234C0E9712F786 /* React-RCTText-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTText-dummy.m"; sourceTree = "<group>"; };
+		45ED712FB60AE5556FFE2D8F142E5A71 /* RCTTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextViewManager.h; sourceTree = "<group>"; };
+		490CE376EEBED4479E20018CAFFE42A1 /* React-RCTText-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTText-prefix.pch"; sourceTree = "<group>"; };
+		4CD662E0A48F71E2835767B4C7022A6A /* RCTConvert+Text.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Text.m"; sourceTree = "<group>"; };
+		5452AF629630EDE150F405145E6C1687 /* RCTSinglelineTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTSinglelineTextInputViewManager.h; sourceTree = "<group>"; };
+		56AA9BB9313FA2643FD18CFF14AD7A50 /* RCTBaseTextInputView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextInputView.h; sourceTree = "<group>"; };
+		5789A70BEFCE03C2A9B0371DA6824403 /* RCTVirtualTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTVirtualTextShadowView.h; sourceTree = "<group>"; };
+		5AE58F5BFF53FD77BD0DE9C1511089B8 /* RCTInputAccessoryViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryViewManager.m; sourceTree = "<group>"; };
+		5CC3819F98288270C261E8891EFF02D6 /* RCTBaseTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextShadowView.h; sourceTree = "<group>"; };
+		5D76F29A1E10C330DB84E05E9C9942FA /* RCTSinglelineTextInputViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTSinglelineTextInputViewManager.m; sourceTree = "<group>"; };
+		5DB883CF459BB76919913311AC4C4055 /* RCTInputAccessoryShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryShadowView.h; sourceTree = "<group>"; };
+		68396A2A332ADDCBD1A6300C9FB30B32 /* RCTTextSelection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextSelection.h; sourceTree = "<group>"; };
+		69A305223BAB60A76E1BA1734E3B4223 /* RCTTextView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextView.h; sourceTree = "<group>"; };
+		6EFCFF728A4F2175604BAB1BC7A61915 /* RCTTextAttributes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextAttributes.h; sourceTree = "<group>"; };
+		746E3290E0AA5FEE7C1B98DC86AE8172 /* RCTRawTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTRawTextViewManager.h; sourceTree = "<group>"; };
+		7B2E0BB2E2A6989BD0D2CFF728E902E3 /* RCTBackedTextInputViewProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputViewProtocol.h; sourceTree = "<group>"; };
+		7CFED3C6ED39887BB185F75B5E7D5EC5 /* RCTBaseTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextInputViewManager.h; sourceTree = "<group>"; };
+		7D77942565C5AFBAC0FE2A4A48BBD098 /* RCTTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTTextViewManager.m; sourceTree = "<group>"; };
+		855F3AC6A42F24E43DDA2963532BA728 /* RCTInputAccessoryViewContent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryViewContent.m; sourceTree = "<group>"; };
+		8882055537268F099BA5D569721AC3A0 /* RCTMultilineTextInputView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTMultilineTextInputView.h; sourceTree = "<group>"; };
+		8AE26B7B33CEE569A36FAA45A61B8F80 /* NSTextStorage+FontScaling.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSTextStorage+FontScaling.h"; sourceTree = "<group>"; };
+		92F9DB62824A99A48D9A1462F12A9955 /* RCTInputAccessoryShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryShadowView.m; sourceTree = "<group>"; };
+		95D8508FBF08C44F69041456EC1AEF09 /* RCTTextSelection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTTextSelection.m; sourceTree = "<group>"; };
+		971406EE473826FA84DCC873DC9870BB /* RCTInputAccessoryView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryView.m; sourceTree = "<group>"; };
+		987AA46054DD89E584BFB4A6BBB3120A /* RCTConvert+Text.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Text.h"; sourceTree = "<group>"; };
+		9A424B183B947A26EE8281DAA2FDFF37 /* RCTMultilineTextInputViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTMultilineTextInputViewManager.m; sourceTree = "<group>"; };
+		9DA410BA22544770FCBE671E74276197 /* RCTBaseTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextViewManager.m; sourceTree = "<group>"; };
+		A37568FA79BDF627E7BA775413D11614 /* RCTVirtualTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTVirtualTextShadowView.m; sourceTree = "<group>"; };
+		A96A1F36FE3BBDA2E75B23AE1A9AB5DD /* RCTSinglelineTextInputView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTSinglelineTextInputView.h; sourceTree = "<group>"; };
+		AEF2E4238D424E04FDF399FE6684E9D2 /* RCTTextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTTextView.m; sourceTree = "<group>"; };
+		B34B9D943D6ADC620EE35C7E57033258 /* RCTVirtualTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTVirtualTextViewManager.h; sourceTree = "<group>"; };
+		B40AEF08C0833BF05CBE4393134D60DB /* RCTMultilineTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTMultilineTextInputViewManager.h; sourceTree = "<group>"; };
+		B5D8769E60F2BBF5D52742D7C7530039 /* RCTTextTransform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextTransform.h; sourceTree = "<group>"; };
+		B9F96FE6DBDF2862ED128979B86FDA80 /* RCTVirtualTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTVirtualTextViewManager.m; sourceTree = "<group>"; };
+		C057550B6DBEA731B721798FE6D7EB9B /* RCTBackedTextInputDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputDelegate.h; sourceTree = "<group>"; };
+		C5CAF0A952CD23A387EC7CD15D4FF089 /* RCTUITextView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTUITextView.h; sourceTree = "<group>"; };
+		D424628627375181098592E36A9DA5C9 /* RCTBackedTextInputDelegateAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputDelegateAdapter.h; sourceTree = "<group>"; };
+		D50B8F3875E290B972A8917CDE082392 /* RCTBaseTextInputShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBaseTextInputShadowView.h; sourceTree = "<group>"; };
+		DE9B3778BD8DC16D557F63E03BE1C498 /* RCTMultilineTextInputView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTMultilineTextInputView.m; sourceTree = "<group>"; };
+		E295B79FA4405420FE7E1B34DF89A919 /* React-RCTText.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTText.xcconfig"; sourceTree = "<group>"; };
+		E2BBC19F2944345C6121F2A9548A11BB /* RCTSinglelineTextInputView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTSinglelineTextInputView.m; sourceTree = "<group>"; };
+		E5ED9D461D77023270DBC73A0A552888 /* RCTBaseTextInputShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextInputShadowView.m; sourceTree = "<group>"; };
+		F11B1C365C3692EB54EC44375EA64A03 /* RCTInputAccessoryView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryView.h; sourceTree = "<group>"; };
+		F715B7DFA4D9C60B19A43269601466E8 /* RCTBaseTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTBaseTextShadowView.m; sourceTree = "<group>"; };
+		F79F8DFD1957D12D15CA235EB09FCB13 /* RCTRawTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTRawTextShadowView.m; sourceTree = "<group>"; };
+		F9336DD78266A25CDF306E2676657865 /* RCTRawTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTRawTextViewManager.m; sourceTree = "<group>"; };
+		FA055E5E49DA975641A1350F6A2F14AC /* RCTUITextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTUITextView.m; sourceTree = "<group>"; };
+		FCF31540D8FB3DFA0BD30DD699D55B27 /* RCTTextAttributes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTTextAttributes.m; sourceTree = "<group>"; };
+		FF8FC4B8E0C07A5695C3C77468CA2E27 /* RCTTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTTextShadowView.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6CF78CAC226BBF6FC97C8D2768DEBF24 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		09F82576ED66576D828D9BD0D7EC32B5 /* Multiline */ = {
+			isa = PBXGroup;
+			children = (
+				8882055537268F099BA5D569721AC3A0 /* RCTMultilineTextInputView.h */,
+				DE9B3778BD8DC16D557F63E03BE1C498 /* RCTMultilineTextInputView.m */,
+				B40AEF08C0833BF05CBE4393134D60DB /* RCTMultilineTextInputViewManager.h */,
+				9A424B183B947A26EE8281DAA2FDFF37 /* RCTMultilineTextInputViewManager.m */,
+				C5CAF0A952CD23A387EC7CD15D4FF089 /* RCTUITextView.h */,
+				FA055E5E49DA975641A1350F6A2F14AC /* RCTUITextView.m */,
+			);
+			name = Multiline;
+			path = Multiline;
+			sourceTree = "<group>";
+		};
+		1AE3600DAEAA32FEB3092898DE5F92C0 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				0D7655CD411E16CCD96C95904AD5D5FA /* React-Core */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		418367A055C9A0A3431255DC4BCFDA73 /* React-RCTText */ = {
+			isa = PBXGroup;
+			children = (
+				987AA46054DD89E584BFB4A6BBB3120A /* RCTConvert+Text.h */,
+				4CD662E0A48F71E2835767B4C7022A6A /* RCTConvert+Text.m */,
+				6EFCFF728A4F2175604BAB1BC7A61915 /* RCTTextAttributes.h */,
+				FCF31540D8FB3DFA0BD30DD699D55B27 /* RCTTextAttributes.m */,
+				B5D8769E60F2BBF5D52742D7C7530039 /* RCTTextTransform.h */,
+				7E9A2B7D0A8DBC9DEF28DC4F9E5875F9 /* BaseText */,
+				52D37B3916A90FC4CD51E23C7CD9CA5E /* Pod */,
+				660C271C63D692A7F352A8BD0DBCEA73 /* RawText */,
+				DD707D6598CB5D752A5169C2D7E20CE2 /* Support Files */,
+				DF40AFE415877214D8CDC9D1556FBD50 /* Text */,
+				9A02165ABF5FCE6D90A979E216F53326 /* TextInput */,
+				9918F6BA669F980DCDE36DE4FC9728AB /* VirtualText */,
+			);
+			name = "React-RCTText";
+			path = "../../../../react-native-lab/react-native/Libraries/Text";
+			sourceTree = "<group>";
+		};
+		52D37B3916A90FC4CD51E23C7CD9CA5E /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				2154F5BB741AD8472CA78DD54AA7D43A /* React-RCTText.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		660C271C63D692A7F352A8BD0DBCEA73 /* RawText */ = {
+			isa = PBXGroup;
+			children = (
+				30D39146AF0FF53A428B1F977D8F77C7 /* RCTRawTextShadowView.h */,
+				F79F8DFD1957D12D15CA235EB09FCB13 /* RCTRawTextShadowView.m */,
+				746E3290E0AA5FEE7C1B98DC86AE8172 /* RCTRawTextViewManager.h */,
+				F9336DD78266A25CDF306E2676657865 /* RCTRawTextViewManager.m */,
+			);
+			name = RawText;
+			path = RawText;
+			sourceTree = "<group>";
+		};
+		6E8CA505F2BE150DC1C9A370971EF29B = {
+			isa = PBXGroup;
+			children = (
+				1AE3600DAEAA32FEB3092898DE5F92C0 /* Dependencies */,
+				A6ECBA2749480B278D14CFDB0F99B891 /* Frameworks */,
+				CD88D9E79D986EBFAD306ACAFFDE52F5 /* Products */,
+				418367A055C9A0A3431255DC4BCFDA73 /* React-RCTText */,
+			);
+			sourceTree = "<group>";
+		};
+		7E9A2B7D0A8DBC9DEF28DC4F9E5875F9 /* BaseText */ = {
+			isa = PBXGroup;
+			children = (
+				5CC3819F98288270C261E8891EFF02D6 /* RCTBaseTextShadowView.h */,
+				F715B7DFA4D9C60B19A43269601466E8 /* RCTBaseTextShadowView.m */,
+				0C783113854B8C488007DD9F1548CE8F /* RCTBaseTextViewManager.h */,
+				9DA410BA22544770FCBE671E74276197 /* RCTBaseTextViewManager.m */,
+			);
+			name = BaseText;
+			path = BaseText;
+			sourceTree = "<group>";
+		};
+		9918F6BA669F980DCDE36DE4FC9728AB /* VirtualText */ = {
+			isa = PBXGroup;
+			children = (
+				5789A70BEFCE03C2A9B0371DA6824403 /* RCTVirtualTextShadowView.h */,
+				A37568FA79BDF627E7BA775413D11614 /* RCTVirtualTextShadowView.m */,
+				B34B9D943D6ADC620EE35C7E57033258 /* RCTVirtualTextViewManager.h */,
+				B9F96FE6DBDF2862ED128979B86FDA80 /* RCTVirtualTextViewManager.m */,
+			);
+			name = VirtualText;
+			path = VirtualText;
+			sourceTree = "<group>";
+		};
+		9A02165ABF5FCE6D90A979E216F53326 /* TextInput */ = {
+			isa = PBXGroup;
+			children = (
+				C057550B6DBEA731B721798FE6D7EB9B /* RCTBackedTextInputDelegate.h */,
+				D424628627375181098592E36A9DA5C9 /* RCTBackedTextInputDelegateAdapter.h */,
+				2BFB3ED5BB1CD2C82802562A6D5232C0 /* RCTBackedTextInputDelegateAdapter.m */,
+				7B2E0BB2E2A6989BD0D2CFF728E902E3 /* RCTBackedTextInputViewProtocol.h */,
+				D50B8F3875E290B972A8917CDE082392 /* RCTBaseTextInputShadowView.h */,
+				E5ED9D461D77023270DBC73A0A552888 /* RCTBaseTextInputShadowView.m */,
+				56AA9BB9313FA2643FD18CFF14AD7A50 /* RCTBaseTextInputView.h */,
+				28310BA25600A728C83A5A3A8498A28B /* RCTBaseTextInputView.m */,
+				7CFED3C6ED39887BB185F75B5E7D5EC5 /* RCTBaseTextInputViewManager.h */,
+				129093E964BBF907917A4B43CE47423B /* RCTBaseTextInputViewManager.m */,
+				5DB883CF459BB76919913311AC4C4055 /* RCTInputAccessoryShadowView.h */,
+				92F9DB62824A99A48D9A1462F12A9955 /* RCTInputAccessoryShadowView.m */,
+				F11B1C365C3692EB54EC44375EA64A03 /* RCTInputAccessoryView.h */,
+				971406EE473826FA84DCC873DC9870BB /* RCTInputAccessoryView.m */,
+				070C053D38D5E4EE1EB98A45045872FC /* RCTInputAccessoryViewContent.h */,
+				855F3AC6A42F24E43DDA2963532BA728 /* RCTInputAccessoryViewContent.m */,
+				30964E1D4277BD8EEDE775011D0381B0 /* RCTInputAccessoryViewManager.h */,
+				5AE58F5BFF53FD77BD0DE9C1511089B8 /* RCTInputAccessoryViewManager.m */,
+				68396A2A332ADDCBD1A6300C9FB30B32 /* RCTTextSelection.h */,
+				95D8508FBF08C44F69041456EC1AEF09 /* RCTTextSelection.m */,
+				09F82576ED66576D828D9BD0D7EC32B5 /* Multiline */,
+				DB1516BE814621E9743935F2268C8685 /* Singleline */,
+			);
+			name = TextInput;
+			path = TextInput;
+			sourceTree = "<group>";
+		};
+		A6ECBA2749480B278D14CFDB0F99B891 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CD88D9E79D986EBFAD306ACAFFDE52F5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2FC6A6C3B9E3F9C474B7A681623B380B /* libReact-RCTText.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB1516BE814621E9743935F2268C8685 /* Singleline */ = {
+			isa = PBXGroup;
+			children = (
+				A96A1F36FE3BBDA2E75B23AE1A9AB5DD /* RCTSinglelineTextInputView.h */,
+				E2BBC19F2944345C6121F2A9548A11BB /* RCTSinglelineTextInputView.m */,
+				5452AF629630EDE150F405145E6C1687 /* RCTSinglelineTextInputViewManager.h */,
+				5D76F29A1E10C330DB84E05E9C9942FA /* RCTSinglelineTextInputViewManager.m */,
+				179F16F4F16B10487CEAD39825A797FD /* RCTUITextField.h */,
+				1EB09587156B4090665FBA339DEF746E /* RCTUITextField.m */,
+			);
+			name = Singleline;
+			path = Singleline;
+			sourceTree = "<group>";
+		};
+		DD707D6598CB5D752A5169C2D7E20CE2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				E295B79FA4405420FE7E1B34DF89A919 /* React-RCTText.xcconfig */,
+				32045928FD1C7BDB30234C0E9712F786 /* React-RCTText-dummy.m */,
+				490CE376EEBED4479E20018CAFFE42A1 /* React-RCTText-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../apps/bare-expo/ios/Pods/Target Support Files/React-RCTText";
+			sourceTree = "<group>";
+		};
+		DF40AFE415877214D8CDC9D1556FBD50 /* Text */ = {
+			isa = PBXGroup;
+			children = (
+				8AE26B7B33CEE569A36FAA45A61B8F80 /* NSTextStorage+FontScaling.h */,
+				1FBEE205FC1C0966C7C9D3460E1979BB /* NSTextStorage+FontScaling.m */,
+				FF8FC4B8E0C07A5695C3C77468CA2E27 /* RCTTextShadowView.h */,
+				126584E5C08F53D178645AE1123CD01C /* RCTTextShadowView.m */,
+				69A305223BAB60A76E1BA1734E3B4223 /* RCTTextView.h */,
+				AEF2E4238D424E04FDF399FE6684E9D2 /* RCTTextView.m */,
+				45ED712FB60AE5556FFE2D8F142E5A71 /* RCTTextViewManager.h */,
+				7D77942565C5AFBAC0FE2A4A48BBD098 /* RCTTextViewManager.m */,
+			);
+			name = Text;
+			path = Text;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0A2F9BCA72D101E9DC33A3EFCFDEA100 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				60FAB4829BD71629CBB8E85CF1FB5E53 /* NSTextStorage+FontScaling.h in Headers */,
+				49F024A52424B6F999273394FC838743 /* RCTBackedTextInputDelegate.h in Headers */,
+				97C68F6C37F30A180B1A84F238D5C050 /* RCTBackedTextInputDelegateAdapter.h in Headers */,
+				C2E55B66FB105CFCABDCD0AE50CA8306 /* RCTBackedTextInputViewProtocol.h in Headers */,
+				587348D2C04C09A4CE770B2D625E62F7 /* RCTBaseTextInputShadowView.h in Headers */,
+				F91C0FB2F802D240B9CCF219BFE90CFC /* RCTBaseTextInputView.h in Headers */,
+				C308406C597F0DF13AF1DC175F2D3928 /* RCTBaseTextInputViewManager.h in Headers */,
+				6D3C89C3DCDC0EC475BA2994BE0DEEB7 /* RCTBaseTextShadowView.h in Headers */,
+				E8E3C5E52DE8183D8AD5535CF43E446E /* RCTBaseTextViewManager.h in Headers */,
+				F21E01F42051DE3537FC8EE80B461FE3 /* RCTConvert+Text.h in Headers */,
+				D842703708933407B883036B48766F6C /* RCTInputAccessoryShadowView.h in Headers */,
+				981E41FA5EA0DEE90B892E1ED1E6D2A7 /* RCTInputAccessoryView.h in Headers */,
+				D92147FC4FE5F7A3103D229D474B37A6 /* RCTInputAccessoryViewContent.h in Headers */,
+				73AD9113A99D144412E70BD19DFAED1B /* RCTInputAccessoryViewManager.h in Headers */,
+				F9D293D37ACBB49CC19C3A57A4DD3608 /* RCTMultilineTextInputView.h in Headers */,
+				95167B0759B8F2C5CA8A63A0D3FF3097 /* RCTMultilineTextInputViewManager.h in Headers */,
+				07C94107B8D88FE8E575FB982B5F7A47 /* RCTRawTextShadowView.h in Headers */,
+				5A14D954E9985E1F87644B24C632C9D1 /* RCTRawTextViewManager.h in Headers */,
+				7D88F87DA7173CF50F749863988C0A23 /* RCTSinglelineTextInputView.h in Headers */,
+				12FE536533C2E899BEDC79F033806C77 /* RCTSinglelineTextInputViewManager.h in Headers */,
+				A5BEEE07E3F22D98FCE4B3D9D19294AE /* RCTTextAttributes.h in Headers */,
+				FAE551A640974A526C6934FE05CAB3DD /* RCTTextSelection.h in Headers */,
+				CCFD80327F708C3990E9C9C8C53938BF /* RCTTextShadowView.h in Headers */,
+				902212F853719B07E539E74544130E72 /* RCTTextTransform.h in Headers */,
+				E3043C455DEBFB7CF583CC1E6C67BFB7 /* RCTTextView.h in Headers */,
+				16646B3AFDFD3E50D052D26682C31AF8 /* RCTTextViewManager.h in Headers */,
+				FC0EBA4CAA967F8382DE4BFC1EED93CD /* RCTUITextField.h in Headers */,
+				FD6DE8E1C0EA27EB6486E73F0C28EE31 /* RCTUITextView.h in Headers */,
+				B7198A4FF3F0D81C88B9E79D46663057 /* RCTVirtualTextShadowView.h in Headers */,
+				8BFB956512721C14133E45C170E776EE /* RCTVirtualTextViewManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F0809BF90AC70C40646AB597C21CC420 /* React-RCTText */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8599B3F1D5B37CA451FA472A31CB16D /* Build configuration list for PBXNativeTarget "React-RCTText" */;
+			buildPhases = (
+				0A2F9BCA72D101E9DC33A3EFCFDEA100 /* Headers */,
+				20B8DB5ED6CDCF0B29BAEC88B5E493A3 /* Sources */,
+				6CF78CAC226BBF6FC97C8D2768DEBF24 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DDC859264B1EC932EABD60AAF2146980 /* PBXTargetDependency */,
+			);
+			name = "React-RCTText";
+			productName = "React-RCTText";
+			productReference = 2FC6A6C3B9E3F9C474B7A681623B380B /* libReact-RCTText.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3566DF714D9948DFADB311E4238E224B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 00C45FA1BEF2CF7E44BC225FBB82D369 /* Build configuration list for PBXProject "React-RCTText" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6E8CA505F2BE150DC1C9A370971EF29B;
+			productRefGroup = CD88D9E79D986EBFAD306ACAFFDE52F5 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 0D7655CD411E16CCD96C95904AD5D5FA /* React-Core */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F0809BF90AC70C40646AB597C21CC420 /* React-RCTText */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		20B8DB5ED6CDCF0B29BAEC88B5E493A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1EBE8C812B79D2BA19FC6038C3C6DF2 /* NSTextStorage+FontScaling.m in Sources */,
+				75DBB4DB6B3D4BA78D9B96AD5F0E50EA /* RCTBackedTextInputDelegateAdapter.m in Sources */,
+				5C26FC583314D4F8B3FC47DD0027AA31 /* RCTBaseTextInputShadowView.m in Sources */,
+				DD1BDEB3B95319BF8C9B23E6FA36D468 /* RCTBaseTextInputView.m in Sources */,
+				535A45B1D68F9C881EC95A6FCF97EDB2 /* RCTBaseTextInputViewManager.m in Sources */,
+				665C0991B1A062A642AE6BA9BF6BCF7A /* RCTBaseTextShadowView.m in Sources */,
+				57181A74A33C6B70FA8E5EE6C7CEC13C /* RCTBaseTextViewManager.m in Sources */,
+				506BEA420579122819B8D0DF868193E0 /* RCTConvert+Text.m in Sources */,
+				C35D2ACB4C51C93922C270E3DF8950E1 /* RCTInputAccessoryShadowView.m in Sources */,
+				E9D8FFCC45414808CC0C81A8E274A20A /* RCTInputAccessoryView.m in Sources */,
+				07F532D81364EBF949AB4BB6BBCD45E2 /* RCTInputAccessoryViewContent.m in Sources */,
+				9135CB0D4525286406F86791F491B93A /* RCTInputAccessoryViewManager.m in Sources */,
+				5EA0562C07E9FDC93EB01B17F05BCBE2 /* RCTMultilineTextInputView.m in Sources */,
+				84D953D78F3591E568BA08D53B8E7F70 /* RCTMultilineTextInputViewManager.m in Sources */,
+				504BE0DE93568189A4603DF9DD64069D /* RCTRawTextShadowView.m in Sources */,
+				5E117188E4021B7CC2A1CAE55D7B9577 /* RCTRawTextViewManager.m in Sources */,
+				1FAF70CCDDFF1006DD726F4A9E7D3624 /* RCTSinglelineTextInputView.m in Sources */,
+				FF8ADACA9344CBEB272F8DF95A9F04B9 /* RCTSinglelineTextInputViewManager.m in Sources */,
+				F2BAE9EEE30A5A58037AEBB31BAD47E2 /* RCTTextAttributes.m in Sources */,
+				5B5D325C7702E57FAF2B11CF7EB16FC2 /* RCTTextSelection.m in Sources */,
+				986B9099A7540754F39D90ACF65E8783 /* RCTTextShadowView.m in Sources */,
+				E57FB3C34B8024992E0B19CC3B3D8018 /* RCTTextView.m in Sources */,
+				15A93FE2A1A3AA7A7BD4FBC25D981B4C /* RCTTextViewManager.m in Sources */,
+				A256EDDE9A4E8F0127CA23CFD21BE584 /* RCTUITextField.m in Sources */,
+				118A42B73E852AA843D3EA401F8F59C9 /* RCTUITextView.m in Sources */,
+				9F79F307DB7092B136BBC5DB02383761 /* RCTVirtualTextShadowView.m in Sources */,
+				B85B1E0DF796E2948BD4A31EEE5AE075 /* RCTVirtualTextViewManager.m in Sources */,
+				87352C39D597C7961275AD3C75434C41 /* React-RCTText-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DDC859264B1EC932EABD60AAF2146980 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 9C9425BC4E4BB50CC45F74B3060ACB2D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3016610A4B1D571793ED0939201CFE59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E295B79FA4405420FE7E1B34DF89A919 /* React-RCTText.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTText/React-RCTText-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTText;
+				PRODUCT_NAME = "React-RCTText";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		59234E0A09A17222EC8452087E19B9BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E295B79FA4405420FE7E1B34DF89A919 /* React-RCTText.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTText/React-RCTText-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTText;
+				PRODUCT_NAME = "React-RCTText";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		98B42FB0E9F473FCFE93A76C263FE705 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		D604D89209DCF0C5FDFD959DD61EC387 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00C45FA1BEF2CF7E44BC225FBB82D369 /* Build configuration list for PBXProject "React-RCTText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98B42FB0E9F473FCFE93A76C263FE705 /* Debug */,
+				D604D89209DCF0C5FDFD959DD61EC387 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F8599B3F1D5B37CA451FA472A31CB16D /* Build configuration list for PBXNativeTarget "React-RCTText" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3016610A4B1D571793ED0939201CFE59 /* Debug */,
+				59234E0A09A17222EC8452087E19B9BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3566DF714D9948DFADB311E4238E224B /* Project object */;
+}

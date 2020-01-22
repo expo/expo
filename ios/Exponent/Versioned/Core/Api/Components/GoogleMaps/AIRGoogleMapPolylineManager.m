@@ -4,6 +4,8 @@
 //  Created by Nick Italiano on 10/22/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapPolylineManager.h"
 
 #import <React/RCTBridge.h>
@@ -33,6 +35,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(coordinates, AIRMapCoordinateArray)
 RCT_EXPORT_VIEW_PROPERTY(fillColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(strokeColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(strokeColors, UIColorArray)
 RCT_EXPORT_VIEW_PROPERTY(strokeWidth, double)
 RCT_EXPORT_VIEW_PROPERTY(lineDashPattern, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(geodesic, BOOL)
@@ -41,3 +44,5 @@ RCT_EXPORT_VIEW_PROPERTY(tappable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 
 @end
+
+#endif

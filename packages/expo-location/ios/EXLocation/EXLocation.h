@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <CoreLocation/CLLocation.h>
+#import <CoreLocation/CLLocationManager.h>
 
 #import <UMCore/UMEventEmitter.h>
 #import <UMCore/UMExportedModule.h>
@@ -34,5 +35,6 @@ typedef NS_ENUM(NSUInteger, EXGeofencingRegionState) {
 
 + (NSDictionary *)exportLocation:(CLLocation *)location;
 + (CLLocationAccuracy)CLLocationAccuracyFromOption:(EXLocationAccuracy)accuracy;
++ (CLActivityType)CLActivityTypeFromOption:(NSInteger)activityType;
 
 @end

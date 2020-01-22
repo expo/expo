@@ -1,0 +1,524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		056DF1392CE93C955666F9127FC70AF1 /* RNPanHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 31DCFA0D48C876D95DB52418C412C2CB /* RNPanHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		17515969576872DA0698FA5E8B1020BB /* RNRotationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1596A3328DCDAD3C3FD9FCFF56EF6B08 /* RNRotationHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2269DB021411E9C03863474A0D28C398 /* RNGestureHandlerEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 7388A9BA6A8B9DB0CADFA563703128F0 /* RNGestureHandlerEvents.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		232D2F10CA20487D17974D0681306D52 /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD0E5F3BDEAE5CC52D96FE7EED35801 /* RNGestureHandlerEvents.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		32B2B7C6397E90C5F1CA1ECC1BF53A6D /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 26ED6FA9795A51D23CCEFFD696A9DB8E /* RNNativeViewHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		34B8A2225A4070A36607791F7F80025C /* RNPinchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1FE9571656370BFD828AF715050B0843 /* RNPinchHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		481D48F19DADC3F25AF604A4E2C1C61F /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5555CFBD2CFFB54D74897AC5EEC285C2 /* RNGestureHandlerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		56B56911A195A04E889CDC8DEA5AB563 /* RNLongPressHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5B3263ABDC7EB65F5AF52BFD7EF0FE /* RNLongPressHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5CF40CDD571E0F45DB64F991008F10E6 /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 373B0D58745D1EFFE5B52BF75C2AF5F6 /* RNGestureHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		619E22A8729559265FCFE41AADC19E69 /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E00E943D41FF5FDE39393EE1F6CEBD9C /* RNGestureHandlerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		74C40D27912647CC745AA0ED97E68974 /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D4B6B40A9B657DF9084E58C977E717F /* RNRootViewGestureRecognizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		74FA859CDD774387D41775FF5E3D510E /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = AA11B582B224929EE426D622050A4DDD /* RNForceTouchHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		78433D86C326BB0BCA7061ECB1C6F09C /* RNGestureHandlerButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BECEE697780A9A93D067167F90C8594 /* RNGestureHandlerButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7869BC67D2C2C5E100A14C670015485A /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = D36B16419F2E572621BD7D0B05FB8D9D /* RNFlingHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		82EBB465C523ECE74A7286D95D835DCA /* RNGestureHandlerDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F82A274859D4FBDD2011FA62B411723 /* RNGestureHandlerDirection.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		906E20B8999CAA00CAECC7ECD4522E6F /* RNGestureHandlerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2650E5DA1AFC11A0FD1EF4912698CE04 /* RNGestureHandlerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		92757F8DEC828B68937FE69EFA130174 /* RNGestureHandlerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F9BC49F750C71A6BDD852E0A2BE5937 /* RNGestureHandlerState.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		95AEB27AA26A37FA6330BB35C477DF2B /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = FEDF8D16CBD134D1C8CB695EAB916DC9 /* RNGestureHandlerRegistry.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9EFBC0D9D3C6699B5FC5A1D609B6D4D6 /* RNPanHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 09EC312249B02201C2CD2B62F491E139 /* RNPanHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AEA67B05F8CBB51F722A1CE8F61CF3E7 /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C298EEB331C5AE610D0D1344B490636 /* RNPinchHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B7BC3EC184101C95EE3E22860D9FCAF3 /* RNForceTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A84101468307D9E389B42D558A0FA29 /* RNForceTouchHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B8359512F4A817FF974A34E90EDB4100 /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FEBA08D0ED8EB47274F90A836C90771 /* RNGestureHandlerModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C42D3568766C59552EF2DB994FE73264 /* RNGestureHandlerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EECB74743AFBD648EC6AF21F2D44A3D /* RNGestureHandlerButton.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CB86E7AE2616193A482BE0D489739051 /* RNNativeViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 39EB10B8048E7DFDA9F079267CD11EAD /* RNNativeViewHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CF30A3B82B4493E27ED4388EDAD8DAA8 /* RNRotationHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 120CEB0B53B765A24DB654499610E6BC /* RNRotationHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D49EE78A8C1E28B2B61115C78C625675 /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D421AFE395DD222F8613DB4EF53BC21 /* RNTapHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D4D4B47FF5BAC3628AB77A651D53EA1F /* RNGestureHandler-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F92ECFCCA8F0750A89993DA2987D718C /* RNGestureHandler-dummy.m */; };
+		E30AB1DBCC9A801E30F39163F4C285CE /* RNLongPressHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A1F8EF45C0C027BEA02E929D52C266B /* RNLongPressHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ED0A519D05D7AF96BE5EE8620F0D194B /* RNRootViewGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B5D0ADC5AEECAF2881EAC305EC4E988 /* RNRootViewGestureRecognizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EF54CACC4FC38305FB579501F0AA24EE /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D9A7F099798764BFDE277FCBEB9BAA /* RNFlingHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FA7CB0661455DBD7F597B038AEF6B415 /* RNTapHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E832531662E3639AEB7BB28E107AF670 /* RNTapHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FA7E4704364FA93214E1B9931FC20A5C /* RNGestureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = ADA2EFCBC7B6748A3C3627155B1148D5 /* RNGestureHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FDFFB96FCB53564317C0ADCCE7B2068E /* RNGestureHandlerRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3801813F6831E97795E0161A67B7FC50 /* RNGestureHandlerRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7FC49753EF84623646C46ED19C2D3ACA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 48D88DB0C7662878A80C8C22BC80C766 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		09EC312249B02201C2CD2B62F491E139 /* RNPanHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNPanHandler.m; sourceTree = "<group>"; };
+		0DD0E5F3BDEAE5CC52D96FE7EED35801 /* RNGestureHandlerEvents.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandlerEvents.m; path = ios/RNGestureHandlerEvents.m; sourceTree = "<group>"; };
+		120CEB0B53B765A24DB654499610E6BC /* RNRotationHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNRotationHandler.h; sourceTree = "<group>"; };
+		1596A3328DCDAD3C3FD9FCFF56EF6B08 /* RNRotationHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNRotationHandler.m; sourceTree = "<group>"; };
+		1BECEE697780A9A93D067167F90C8594 /* RNGestureHandlerButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerButton.h; path = ios/RNGestureHandlerButton.h; sourceTree = "<group>"; };
+		1D421AFE395DD222F8613DB4EF53BC21 /* RNTapHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNTapHandler.m; sourceTree = "<group>"; };
+		1FE9571656370BFD828AF715050B0843 /* RNPinchHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNPinchHandler.h; sourceTree = "<group>"; };
+		2650E5DA1AFC11A0FD1EF4912698CE04 /* RNGestureHandlerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerModule.h; path = ios/RNGestureHandlerModule.h; sourceTree = "<group>"; };
+		26ED6FA9795A51D23CCEFFD696A9DB8E /* RNNativeViewHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNNativeViewHandler.m; sourceTree = "<group>"; };
+		2A1F8EF45C0C027BEA02E929D52C266B /* RNLongPressHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNLongPressHandler.h; sourceTree = "<group>"; };
+		31DCFA0D48C876D95DB52418C412C2CB /* RNPanHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNPanHandler.h; sourceTree = "<group>"; };
+		33DF81ACC2EF83C9F5E5CCDC1FF1059A /* RNGestureHandler.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNGestureHandler.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		373B0D58745D1EFFE5B52BF75C2AF5F6 /* RNGestureHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandler.m; path = ios/RNGestureHandler.m; sourceTree = "<group>"; };
+		3801813F6831E97795E0161A67B7FC50 /* RNGestureHandlerRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerRegistry.h; path = ios/RNGestureHandlerRegistry.h; sourceTree = "<group>"; };
+		39EB10B8048E7DFDA9F079267CD11EAD /* RNNativeViewHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNNativeViewHandler.h; sourceTree = "<group>"; };
+		3C298EEB331C5AE610D0D1344B490636 /* RNPinchHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNPinchHandler.m; sourceTree = "<group>"; };
+		3D4B6B40A9B657DF9084E58C977E717F /* RNRootViewGestureRecognizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNRootViewGestureRecognizer.m; path = ios/RNRootViewGestureRecognizer.m; sourceTree = "<group>"; };
+		3F82A274859D4FBDD2011FA62B411723 /* RNGestureHandlerDirection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerDirection.h; path = ios/RNGestureHandlerDirection.h; sourceTree = "<group>"; };
+		3F9BC49F750C71A6BDD852E0A2BE5937 /* RNGestureHandlerState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerState.h; path = ios/RNGestureHandlerState.h; sourceTree = "<group>"; };
+		469D09DF6A8A8846CD262E933E046D0A /* RNGestureHandler-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNGestureHandler-prefix.pch"; sourceTree = "<group>"; };
+		48D88DB0C7662878A80C8C22BC80C766 /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		49D9A7F099798764BFDE277FCBEB9BAA /* RNFlingHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNFlingHandler.m; sourceTree = "<group>"; };
+		5555CFBD2CFFB54D74897AC5EEC285C2 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandlerManager.m; path = ios/RNGestureHandlerManager.m; sourceTree = "<group>"; };
+		7388A9BA6A8B9DB0CADFA563703128F0 /* RNGestureHandlerEvents.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerEvents.h; path = ios/RNGestureHandlerEvents.h; sourceTree = "<group>"; };
+		7A84101468307D9E389B42D558A0FA29 /* RNForceTouchHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNForceTouchHandler.h; sourceTree = "<group>"; };
+		8D41501C0544D0DECCF4781E72EACDAA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		8EECB74743AFBD648EC6AF21F2D44A3D /* RNGestureHandlerButton.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandlerButton.m; path = ios/RNGestureHandlerButton.m; sourceTree = "<group>"; };
+		8FEBA08D0ED8EB47274F90A836C90771 /* RNGestureHandlerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandlerModule.m; path = ios/RNGestureHandlerModule.m; sourceTree = "<group>"; };
+		9B5D0ADC5AEECAF2881EAC305EC4E988 /* RNRootViewGestureRecognizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNRootViewGestureRecognizer.h; path = ios/RNRootViewGestureRecognizer.h; sourceTree = "<group>"; };
+		AA11B582B224929EE426D622050A4DDD /* RNForceTouchHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNForceTouchHandler.m; sourceTree = "<group>"; };
+		ADA2EFCBC7B6748A3C3627155B1148D5 /* RNGestureHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandler.h; path = ios/RNGestureHandler.h; sourceTree = "<group>"; };
+		B3EFDBA98AD256C88F68F1DB3266ECB5 /* RNGestureHandler.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNGestureHandler.xcconfig; sourceTree = "<group>"; };
+		BD5B3263ABDC7EB65F5AF52BFD7EF0FE /* RNLongPressHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNLongPressHandler.m; sourceTree = "<group>"; };
+		D1A91A4544196E01D1DBEDC32E629E58 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		D36B16419F2E572621BD7D0B05FB8D9D /* RNFlingHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNFlingHandler.h; sourceTree = "<group>"; };
+		E00E943D41FF5FDE39393EE1F6CEBD9C /* RNGestureHandlerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNGestureHandlerManager.h; path = ios/RNGestureHandlerManager.h; sourceTree = "<group>"; };
+		E832531662E3639AEB7BB28E107AF670 /* RNTapHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNTapHandler.h; sourceTree = "<group>"; };
+		F1613653A2430215D38FCF11D6F1CF6E /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNGestureHandler.a; path = libRNGestureHandler.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F92ECFCCA8F0750A89993DA2987D718C /* RNGestureHandler-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNGestureHandler-dummy.m"; sourceTree = "<group>"; };
+		FEDF8D16CBD134D1C8CB695EAB916DC9 /* RNGestureHandlerRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNGestureHandlerRegistry.m; path = ios/RNGestureHandlerRegistry.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8C4B020341C37EBF16BD98DAE82371A5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2C5CEF514215A20D12525C5714D38F9B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F1613653A2430215D38FCF11D6F1CF6E /* libRNGestureHandler.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		319163AA9BC04BD2B5FA3FC269CDC2CE /* RNGestureHandler */ = {
+			isa = PBXGroup;
+			children = (
+				ADA2EFCBC7B6748A3C3627155B1148D5 /* RNGestureHandler.h */,
+				373B0D58745D1EFFE5B52BF75C2AF5F6 /* RNGestureHandler.m */,
+				1BECEE697780A9A93D067167F90C8594 /* RNGestureHandlerButton.h */,
+				8EECB74743AFBD648EC6AF21F2D44A3D /* RNGestureHandlerButton.m */,
+				3F82A274859D4FBDD2011FA62B411723 /* RNGestureHandlerDirection.h */,
+				7388A9BA6A8B9DB0CADFA563703128F0 /* RNGestureHandlerEvents.h */,
+				0DD0E5F3BDEAE5CC52D96FE7EED35801 /* RNGestureHandlerEvents.m */,
+				E00E943D41FF5FDE39393EE1F6CEBD9C /* RNGestureHandlerManager.h */,
+				5555CFBD2CFFB54D74897AC5EEC285C2 /* RNGestureHandlerManager.m */,
+				2650E5DA1AFC11A0FD1EF4912698CE04 /* RNGestureHandlerModule.h */,
+				8FEBA08D0ED8EB47274F90A836C90771 /* RNGestureHandlerModule.m */,
+				3801813F6831E97795E0161A67B7FC50 /* RNGestureHandlerRegistry.h */,
+				FEDF8D16CBD134D1C8CB695EAB916DC9 /* RNGestureHandlerRegistry.m */,
+				3F9BC49F750C71A6BDD852E0A2BE5937 /* RNGestureHandlerState.h */,
+				9B5D0ADC5AEECAF2881EAC305EC4E988 /* RNRootViewGestureRecognizer.h */,
+				3D4B6B40A9B657DF9084E58C977E717F /* RNRootViewGestureRecognizer.m */,
+				3E1ECC135C5AEDC5E68C5853D089C058 /* Handlers */,
+				B2B1DA4B1E0B74646D728E8413704B8C /* Pod */,
+				B8433345CC702DB7C218302B87143B54 /* Support Files */,
+			);
+			name = RNGestureHandler;
+			path = "../../../../node_modules/react-native-gesture-handler";
+			sourceTree = "<group>";
+		};
+		3E1ECC135C5AEDC5E68C5853D089C058 /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				D36B16419F2E572621BD7D0B05FB8D9D /* RNFlingHandler.h */,
+				49D9A7F099798764BFDE277FCBEB9BAA /* RNFlingHandler.m */,
+				7A84101468307D9E389B42D558A0FA29 /* RNForceTouchHandler.h */,
+				AA11B582B224929EE426D622050A4DDD /* RNForceTouchHandler.m */,
+				2A1F8EF45C0C027BEA02E929D52C266B /* RNLongPressHandler.h */,
+				BD5B3263ABDC7EB65F5AF52BFD7EF0FE /* RNLongPressHandler.m */,
+				39EB10B8048E7DFDA9F079267CD11EAD /* RNNativeViewHandler.h */,
+				26ED6FA9795A51D23CCEFFD696A9DB8E /* RNNativeViewHandler.m */,
+				31DCFA0D48C876D95DB52418C412C2CB /* RNPanHandler.h */,
+				09EC312249B02201C2CD2B62F491E139 /* RNPanHandler.m */,
+				1FE9571656370BFD828AF715050B0843 /* RNPinchHandler.h */,
+				3C298EEB331C5AE610D0D1344B490636 /* RNPinchHandler.m */,
+				120CEB0B53B765A24DB654499610E6BC /* RNRotationHandler.h */,
+				1596A3328DCDAD3C3FD9FCFF56EF6B08 /* RNRotationHandler.m */,
+				E832531662E3639AEB7BB28E107AF670 /* RNTapHandler.h */,
+				1D421AFE395DD222F8613DB4EF53BC21 /* RNTapHandler.m */,
+			);
+			name = Handlers;
+			path = ios/Handlers;
+			sourceTree = "<group>";
+		};
+		437191DBF892C95DC05CB833E376C29B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		452E682103DA459414F44FD399DBDDCC = {
+			isa = PBXGroup;
+			children = (
+				CC28032B5F701A5A0831059E68393674 /* Dependencies */,
+				437191DBF892C95DC05CB833E376C29B /* Frameworks */,
+				2C5CEF514215A20D12525C5714D38F9B /* Products */,
+				319163AA9BC04BD2B5FA3FC269CDC2CE /* RNGestureHandler */,
+			);
+			sourceTree = "<group>";
+		};
+		B2B1DA4B1E0B74646D728E8413704B8C /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				D1A91A4544196E01D1DBEDC32E629E58 /* LICENSE */,
+				8D41501C0544D0DECCF4781E72EACDAA /* README.md */,
+				33DF81ACC2EF83C9F5E5CCDC1FF1059A /* RNGestureHandler.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		B8433345CC702DB7C218302B87143B54 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B3EFDBA98AD256C88F68F1DB3266ECB5 /* RNGestureHandler.xcconfig */,
+				F92ECFCCA8F0750A89993DA2987D718C /* RNGestureHandler-dummy.m */,
+				469D09DF6A8A8846CD262E933E046D0A /* RNGestureHandler-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/RNGestureHandler";
+			sourceTree = "<group>";
+		};
+		CC28032B5F701A5A0831059E68393674 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				48D88DB0C7662878A80C8C22BC80C766 /* React */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6D8B4F16E1946C38D4B73F310E6A3B32 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7869BC67D2C2C5E100A14C670015485A /* RNFlingHandler.h in Headers */,
+				B7BC3EC184101C95EE3E22860D9FCAF3 /* RNForceTouchHandler.h in Headers */,
+				FA7E4704364FA93214E1B9931FC20A5C /* RNGestureHandler.h in Headers */,
+				78433D86C326BB0BCA7061ECB1C6F09C /* RNGestureHandlerButton.h in Headers */,
+				82EBB465C523ECE74A7286D95D835DCA /* RNGestureHandlerDirection.h in Headers */,
+				2269DB021411E9C03863474A0D28C398 /* RNGestureHandlerEvents.h in Headers */,
+				619E22A8729559265FCFE41AADC19E69 /* RNGestureHandlerManager.h in Headers */,
+				906E20B8999CAA00CAECC7ECD4522E6F /* RNGestureHandlerModule.h in Headers */,
+				FDFFB96FCB53564317C0ADCCE7B2068E /* RNGestureHandlerRegistry.h in Headers */,
+				92757F8DEC828B68937FE69EFA130174 /* RNGestureHandlerState.h in Headers */,
+				E30AB1DBCC9A801E30F39163F4C285CE /* RNLongPressHandler.h in Headers */,
+				CB86E7AE2616193A482BE0D489739051 /* RNNativeViewHandler.h in Headers */,
+				056DF1392CE93C955666F9127FC70AF1 /* RNPanHandler.h in Headers */,
+				34B8A2225A4070A36607791F7F80025C /* RNPinchHandler.h in Headers */,
+				ED0A519D05D7AF96BE5EE8620F0D194B /* RNRootViewGestureRecognizer.h in Headers */,
+				CF30A3B82B4493E27ED4388EDAD8DAA8 /* RNRotationHandler.h in Headers */,
+				FA7CB0661455DBD7F597B038AEF6B415 /* RNTapHandler.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0356CDCA5DB6D4F4B4F5991088D05580 /* RNGestureHandler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4301819C1EFEB3DFADC929FB82C4B3C /* Build configuration list for PBXNativeTarget "RNGestureHandler" */;
+			buildPhases = (
+				6D8B4F16E1946C38D4B73F310E6A3B32 /* Headers */,
+				5B620BD5EA11A720229BC3322096232D /* Sources */,
+				8C4B020341C37EBF16BD98DAE82371A5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6C07C3C0C71F0DB505456DC9D1493D73 /* PBXTargetDependency */,
+			);
+			name = RNGestureHandler;
+			productName = RNGestureHandler;
+			productReference = F1613653A2430215D38FCF11D6F1CF6E /* libRNGestureHandler.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		777A6805C3F7D2EA5A9AB9579E756515 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = ECB7A602B24B074D6C348885829900A3 /* Build configuration list for PBXProject "RNGestureHandler" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 452E682103DA459414F44FD399DBDDCC;
+			productRefGroup = 2C5CEF514215A20D12525C5714D38F9B /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 48D88DB0C7662878A80C8C22BC80C766 /* React */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0356CDCA5DB6D4F4B4F5991088D05580 /* RNGestureHandler */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5B620BD5EA11A720229BC3322096232D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF54CACC4FC38305FB579501F0AA24EE /* RNFlingHandler.m in Sources */,
+				74FA859CDD774387D41775FF5E3D510E /* RNForceTouchHandler.m in Sources */,
+				D4D4B47FF5BAC3628AB77A651D53EA1F /* RNGestureHandler-dummy.m in Sources */,
+				5CF40CDD571E0F45DB64F991008F10E6 /* RNGestureHandler.m in Sources */,
+				C42D3568766C59552EF2DB994FE73264 /* RNGestureHandlerButton.m in Sources */,
+				232D2F10CA20487D17974D0681306D52 /* RNGestureHandlerEvents.m in Sources */,
+				481D48F19DADC3F25AF604A4E2C1C61F /* RNGestureHandlerManager.m in Sources */,
+				B8359512F4A817FF974A34E90EDB4100 /* RNGestureHandlerModule.m in Sources */,
+				95AEB27AA26A37FA6330BB35C477DF2B /* RNGestureHandlerRegistry.m in Sources */,
+				56B56911A195A04E889CDC8DEA5AB563 /* RNLongPressHandler.m in Sources */,
+				32B2B7C6397E90C5F1CA1ECC1BF53A6D /* RNNativeViewHandler.m in Sources */,
+				9EFBC0D9D3C6699B5FC5A1D609B6D4D6 /* RNPanHandler.m in Sources */,
+				AEA67B05F8CBB51F722A1CE8F61CF3E7 /* RNPinchHandler.m in Sources */,
+				74C40D27912647CC745AA0ED97E68974 /* RNRootViewGestureRecognizer.m in Sources */,
+				17515969576872DA0698FA5E8B1020BB /* RNRotationHandler.m in Sources */,
+				D49EE78A8C1E28B2B61115C78C625675 /* RNTapHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6C07C3C0C71F0DB505456DC9D1493D73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 7FC49753EF84623646C46ED19C2D3ACA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		59EFA4C8AEE9BBA5DA36A4E618B6603B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		703DED486A6E128F9CFC12C7329AC396 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3EFDBA98AD256C88F68F1DB3266ECB5 /* RNGestureHandler.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNGestureHandler/RNGestureHandler-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
+				PRODUCT_NAME = RNGestureHandler;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		71D0CF33613355D8A55FA39680C42F45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		B31637E1E12E6FB2C580F301B70B01AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3EFDBA98AD256C88F68F1DB3266ECB5 /* RNGestureHandler.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNGestureHandler/RNGestureHandler-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
+				PRODUCT_NAME = RNGestureHandler;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D4301819C1EFEB3DFADC929FB82C4B3C /* Build configuration list for PBXNativeTarget "RNGestureHandler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B31637E1E12E6FB2C580F301B70B01AF /* Debug */,
+				703DED486A6E128F9CFC12C7329AC396 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ECB7A602B24B074D6C348885829900A3 /* Build configuration list for PBXProject "RNGestureHandler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71D0CF33613355D8A55FA39680C42F45 /* Debug */,
+				59EFA4C8AEE9BBA5DA36A4E618B6603B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 777A6805C3F7D2EA5A9AB9579E756515 /* Project object */;
+}

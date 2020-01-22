@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 class GlyphContext {
 
     // Current stack (one per node push/pop)
-    private final ArrayList<FontData> mFontContext = new ArrayList<>();
+    final ArrayList<FontData> mFontContext = new ArrayList<>();
 
     // Unique input attribute lists (only added if node sets a value)
     private final ArrayList<SVGLength[]> mXsContext = new ArrayList<>();

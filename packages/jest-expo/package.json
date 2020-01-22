@@ -1,29 +1,55 @@
 {
   "name": "jest-expo",
-  "version": "32.0.0",
+  "version": "36.0.1",
   "license": "MIT",
   "main": "src",
   "repository": {
     "type": "git",
-    "url": "git://github.com/expo/jest-expo.git"
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/jest-expo"
   },
   "files": [
+    "android",
     "bin",
+    "config",
+    "ios",
+    "node",
     "src",
-    "jest-preset.json"
+    "universal",
+    "web",
+    "jest-preset.js"
   ],
   "bin": {
     "jest": "bin/jest.js"
   },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo/universal"
+  },
+  "peerDependencies": {
+    "react": "~16.9.0",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
   "dependencies": {
+    "@expo/config": "^2.5.3",
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
+    "jest-watch-select-projects": "^1.0.0",
+    "jest-watch-typeahead": "^0.4.0",
     "json5": "^2.1.0",
-    "lodash.isequal": "^4.5.0",
-    "react-test-renderer": "^16.8.6",
-    "whatwg-fetch": "^3.0.0"
+    "lodash": "^4.5.0",
+    "react-test-renderer": "~16.9.0"
   },
   "devDependencies": {
-    "react": "16.8.3"
-  }
+    "react": "16.9.0"
+  },
+  "gitHead": "61bdfd46ce422569e1e7e0f0fbb9f6756cdc320d",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo"
 }

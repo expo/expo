@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 
@@ -232,14 +233,13 @@ export type Container = {
   type: ContainerType;
 };
 
+export { PermissionStatus, PermissionResponse };
+
 export async function shareContactAsync(
   contactId: string,
   message: string,
   shareOptions: Object = {}
 ): Promise<any> {
-  if (!ExpoContacts.shareContactAsync) {
-    throw new UnavailabilityError('Contacts', 'shareContactAsync');
-  }
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
       id: contactId,
@@ -251,9 +251,10 @@ export async function shareContactAsync(
       },
       shareOptions
     );
-  } else {
-    return await ExpoContacts.shareContactAsync(contactId, message);
+  } else if (!ExpoContacts.shareContactAsync) {
+    throw new UnavailabilityError('Contacts', 'shareContactAsync');
   }
+  return await ExpoContacts.shareContactAsync(contactId, message);
 }
 
 export async function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
@@ -298,8 +299,8 @@ export async function getContactByIdAsync(
     if (results && results.data && results.data.length > 0) {
       return results.data[0];
     }
-    return;
   }
+  return undefined;
 }
 
 export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
@@ -325,7 +326,7 @@ export async function removeContactAsync(contactId: string): Promise<any> {
 
 export async function writeContactToFileAsync(
   contactQuery: ContactQuery = {}
-): Promise<string | null> {
+): Promise<string | undefined> {
   if (!ExpoContacts.writeContactToFileAsync) {
     throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
   }
@@ -448,6 +449,22 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   }
 
   return await ExpoContacts.getContainersAsync(containerQuery);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoContacts.getPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+  }
+
+  return ExpoContacts.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoContacts.requestPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+  }
+
+  return await ExpoContacts.requestPermissionsAsync();
 }
 
 // Legacy

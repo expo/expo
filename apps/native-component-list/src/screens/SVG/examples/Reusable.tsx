@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const {
@@ -21,7 +21,7 @@ class UseExample extends React.Component {
   static title = 'Reuse svg code';
   render() {
     return (
-      <Svg height="100" width="300">
+      <Svg.Svg height="100" width="300">
         <Defs>
           <G id="shape">
             <G>
@@ -33,7 +33,7 @@ class UseExample extends React.Component {
         </Defs>
         <Use href="#shape" x="20" y="0" />
         <Use href="#shape" x="170" y="0" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -42,14 +42,14 @@ class UseShapes extends React.Component {
   static title = 'Using Shapes Outside of a Defs Element';
   render() {
     return (
-      <Svg height="110" width="200">
+      <Svg.Svg height="110" width="200">
         <G id="shape">
           <Rect x="0" y="0" width="50" height="50" />
         </G>
         <Use href="#shape" x="75" y="50" fill="#0f0" />
         <Use href="#shape" x="110" y="0" stroke="#0ff" fill="#8a3" rotation="45" origin="25, 25" />
         <Use href="#shape" x="150" y="50" stroke="#0f0" strokeWidth="1" fill="none" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -59,7 +59,7 @@ class DefsExample extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Defs>
           <G id="path" x="5" y="2" opacity="0.9">
             <Path
@@ -86,7 +86,7 @@ class DefsExample extends React.Component {
         <Use href="#path" x="20" y="5" fill="url(#linear)" />
         <Use href="#path" clipPath="url(#clip)" fillOpacity="0.6" stroke="#000" strokeWidth="1" />
         <Use href="#path" x="-10" y="20" fill="url(#radial)" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -95,7 +95,7 @@ class SymbolExample extends React.Component {
   static title = 'Symbol example, reuse elements with viewBox prop';
   render() {
     return (
-      <Svg height="150" width="110">
+      <Svg.Svg height="150" width="110">
         <Symbol id="symbol" viewBox="0 0 150 110">
           <Circle cx="50" cy="50" r="40" strokeWidth="8" stroke="red" fill="red" />
           <Circle cx="90" cy="60" r="40" strokeWidth="8" stroke="green" fill="white" />
@@ -104,13 +104,13 @@ class SymbolExample extends React.Component {
         <Use href="#symbol" x="0" y="0" width="100" height="50" />
         <Use href="#symbol" x="10" y="50" width="75" height="38" />
         <Use href="#symbol" x="20" y="100" width="50" height="25" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Defs>
       <G id="path" scale="0.5">
         {/* tslint:disable-next-line: max-line-length */}
@@ -129,7 +129,7 @@ const icon = (
       stroke="#000"
       strokeWidth="1"
     />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Reusable: Example = {

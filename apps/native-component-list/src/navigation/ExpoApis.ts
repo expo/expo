@@ -5,13 +5,16 @@ import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import Branch from '../screens/BranchScreen';
+import Brightness from '../screens/BrightnessScreen';
 import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
 import Contacts from '../screens/Contacts/ContactsScreen';
+import Device from '../screens/DeviceScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
+import FaceDetector from '../screens/FaceDetectorScreen';
 import FileSystem from '../screens/FileSystemScreen';
 import Font from '../screens/FontScreen';
 import Geocoding from '../screens/GeocodingScreen';
@@ -30,60 +33,56 @@ import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
 import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
+import SafeAreaContext from '../screens/SafeAreaContextScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import Sharing from '../screens/SharingScreen';
 import SecureStore from '../screens/SecureStoreScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
 import TextToSpeech from '../screens/TextToSpeechScreen';
-import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
 
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {
-    return;
-  }
+  } catch (e) {}
 }
 
-const BackgroundFetch = optionalRequire(() =>
-  require('../screens/BackgroundFetchScreen')
-);
-const GoogleSignIn = optionalRequire(() =>
-  require('../screens/GoogleSignInScreen')
-);
+const ViewShot = optionalRequire(() => require('../screens/ViewShotScreen'));
+const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
+const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
+const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
+const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
-const Localization = optionalRequire(() =>
-  require('../screens/LocalizationScreen')
-);
-const TaskManager = optionalRequire(() =>
-  require('../screens/TaskManagerScreen')
-);
-const LocationScreens = optionalRequire(() =>
-  require('../screens/Location/LocationScreens')
-);
+const Localization = optionalRequire(() => require('../screens/LocalizationScreen'));
+const TaskManager = optionalRequire(() => require('../screens/TaskManagerScreen'));
+const LocationScreens = optionalRequire(() => require('../screens/Location/LocationScreens'));
 const MediaLibraryScreens = optionalRequire(() =>
   require('../screens/MediaLibrary/MediaLibraryScreens')
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 
 const optionalScreens: {
-  [key: string]:
-    | React.ComponentType
-    | undefined
+  [key: string]: React.ComponentType | undefined;
 } = {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Appearance,
+  AppleAuthentication,
   Audio,
   AuthSession,
   BackgroundFetch,
+  Battery,
   Branch,
+  Brightness,
+  Device,
   DocumentPicker,
   Localization,
   FacebookLogin,
+  FaceDetector,
   FileSystem,
   Font,
   Google,
@@ -116,6 +115,7 @@ const optionalScreens: {
   Recording,
   // @ts-ignore
   Reminders,
+  SafeAreaContext,
   ScreenOrientation,
   SecureStore,
   Sensor,
@@ -132,10 +132,12 @@ interface ScreensObjectType {
   [key: string]: React.ComponentType;
 }
 
-export const Screens = Object.entries(optionalScreens)
-  .reduce<ScreensObjectType>((acc, [key, screen]) => {
+export const Screens = Object.entries(optionalScreens).reduce<ScreensObjectType>(
+  (acc, [key, screen]) => {
     if (screen) {
       acc[key] = screen;
     }
     return acc;
-  }, {});
+  },
+  {}
+);

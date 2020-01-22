@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,5 +45,17 @@ public class RNViewConfigurationHelper implements ViewConfigurationHelper {
       return parent.getChildAt(((ReactViewGroup) parent).getZIndexMappedChildIndex(index));
     }
     return parent.getChildAt(index);
+  }
+
+  @Override
+  public boolean isViewClippingChildren(ViewGroup view) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view.getClipChildren()) {
+        if (view instanceof ReactViewGroup) {
+            String overflow = ((ReactViewGroup) view).getOverflow();
+            return "hidden".equals(overflow);
+        }
+        return false;
+      }
+    return true;
   }
 }

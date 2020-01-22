@@ -8,10 +8,10 @@
 //  Service: https://developers.google.com/maps/terms
 //
 
-#import "GMSPath.h"
-
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
+
+#import "GMSPath.h"
 
 /**
  * GMSMutablePath is a dynamic (resizable) array of CLLocationCoordinate2D. All coordinates must be

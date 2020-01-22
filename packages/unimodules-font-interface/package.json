@@ -1,6 +1,6 @@
 {
   "name": "unimodules-font-interface",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "description": "Interface for managing fonts.",
   "keywords": [
     "expo",
@@ -8,7 +8,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/unimodules-font-interface"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -16,5 +17,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-font-interface",
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }
