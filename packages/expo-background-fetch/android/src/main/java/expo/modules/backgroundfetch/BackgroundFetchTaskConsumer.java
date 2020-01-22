@@ -134,10 +134,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
 
     alarmManager.setInexactRepeating(
-        AlarmManager.ELAPSED_REALTIME_WAKEUP,
-        SystemClock.elapsedRealtime() + interval,
-        interval,
-        mPendingIntent
+      AlarmManager.ELAPSED_REALTIME_WAKEUP,
+      SystemClock.elapsedRealtime() + interval,
+      interval,
+      mPendingIntent
     );
   }
 

@@ -2,7 +2,6 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,12 +11,12 @@ import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.modules.taskManager.apploader.ExpoHeadlessAppLoader;
+import expo.modules.taskManager.apploader.RNHeadlessAppLoader;
 
 public class TaskManagerPackage extends BasePackage {
 
   static {
-    AppLoaderProvider.registerLoader("react-native-experience", ExpoHeadlessAppLoader.class);
+    AppLoaderProvider.registerLoader("react-native-experience", RNHeadlessAppLoader.class);
   }
 
   @Override

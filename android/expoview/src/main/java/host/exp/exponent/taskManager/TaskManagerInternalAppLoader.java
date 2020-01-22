@@ -3,21 +3,17 @@ package host.exp.exponent.taskManager;
 import android.content.Context;
 import android.util.Log;
 
-import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.Consumer;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.SingletonModule;
-import expo.loaders.provider.interfaces.TaskManagerAppLoader;
 
-import java.util.Collections;
+import expo.loaders.provider.interfaces.AppLoader;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.headless.HeadlessAppLoader;
 
-public class TaskManagerInternalAppLoader implements TaskManagerAppLoader {
+public class TaskManagerInternalAppLoader implements AppLoader {
 
   private static final String TAG = "TaskManagerInternalAppL";
 

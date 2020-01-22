@@ -82,4 +82,5 @@ public interface TaskServiceInterface extends SingletonModule {
    *  Executes the task with given data bundle and given error.
    */
   void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback);
+
 }

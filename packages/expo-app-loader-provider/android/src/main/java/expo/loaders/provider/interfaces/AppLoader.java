@@ -4,13 +4,11 @@ import android.content.Context;
 
 import org.unimodules.core.interfaces.Consumer;
 
-public interface TaskManagerAppLoader {
+public interface AppLoader {
 
   void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException;
 
   boolean invalidateApp(String appId);
-
-  boolean isRunningInHeadlessMode(Context contexts, String appId);
 
   final class Params {
     private final String appId;

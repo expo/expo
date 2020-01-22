@@ -57,6 +57,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onDestroy() {
     mUIManager.unregisterLifecycleEventListener(this);
+    mTaskService.setTaskManager(null, getAppId(), getAppUrl());
   }
 
   //endregion
@@ -112,11 +113,18 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return null;
   }
 
+  @Override
   public boolean isRunningInHeadlessMode() {
-//    if (mConstants != null) {
-//      return (boolean) mConstants.getConstants().get("isHeadless");
-//    }
-    return true;
+    Boolean value = getBooleanConstant("isHeadless");
+    return value != null ? value : false;
+  }
+
+  private Boolean getBooleanConstant(String key) {
+    if (mConstants != null && mConstants.getConstants() != null) {
+      return (Boolean) mConstants.getConstants().get(key);
+    } else {
+      return null;
+    }
   }
 
   //endregion
@@ -155,7 +163,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
           ((LifecycleEventListener) taskConsumer).onHostDestroy();
         }
       }
-      mTaskService.setTaskManager(null, getAppId(), getAppUrl());
     }
   }
 

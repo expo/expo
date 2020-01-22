@@ -21,4 +21,5 @@ public interface TaskManagerInterface {
 
   String getAppId();
 
+  boolean isRunningInHeadlessMode();
 }

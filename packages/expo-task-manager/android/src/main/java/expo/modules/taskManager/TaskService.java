@@ -35,7 +35,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.TaskManagerAppLoader;
+import expo.loaders.provider.interfaces.AppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
@@ -52,7 +52,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
-  private TaskManagerAppLoader mAppLoader;
+  private AppLoader mAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -246,7 +246,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = mAppLoader.isRunningInHeadlessMode(mContextRef.get(), appId);
+    boolean isHeadless = taskManager.isRunningInHeadlessMode();
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -268,6 +268,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       // Maybe update app url in user defaults. It might change only in non-headless mode.
       maybeUpdateAppUrlForAppId(appUrl, appId);
     }
+  }
+
+  public static void removeTaskManager(String appId) {
+    sTaskManagers.remove(appId);
   }
 
   public void handleIntent(Intent intent) {
@@ -404,22 +408,28 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     sEventsQueues.get(appId).add(body);
 
-    mAppLoader.loadApp(mContextRef.get(), new TaskManagerAppLoader.Params(appId, task.getAppUrl()), () -> {
+    try {
+      mAppLoader.loadApp(mContextRef.get(), new AppLoader.Params(appId, task.getAppUrl()), () -> {
+      }, success -> {
+        if (!success) {
+          sEvents.remove(appId);
+          sEventsQueues.remove(appId);
+
+          // Host unreachable? Unregister all tasks for that app.
+          unregisterAllTasksForAppId(appId);
+
+        }
+      });
+    } catch (IllegalArgumentException ignored) {
       try {
         unregisterTask(task.getName(), appId, null);
       } catch (Exception e) {
         Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
+
       appEvents.remove(eventId);
       sEventsQueues.remove(appId);
-    }, success -> {
-      if (!success) {
-        sEvents.remove(appId);
-        sEventsQueues.remove(appId);
-
-        unregisterAllTasksForAppId(appId);
-      }
-    });
+    }
   }
 
   //endregion
@@ -513,9 +523,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
         appConfig.put("appUrl", appUrl);
 
         preferences
-            .edit()
-            .putString(appId, new JSONObject(appConfig).toString())
-            .apply();
+          .edit()
+          .putString(appId, new JSONObject(appConfig).toString())
+          .apply();
       }
     }
   }
@@ -592,9 +602,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     appConfig.put("tasks", tasks);
 
     preferences
-        .edit()
-        .putString(appId, new JSONObject(appConfig).toString())
-        .apply();
+      .edit()
+      .putString(appId, new JSONObject(appConfig).toString())
+      .apply();
   }
 
   private void removeAppFromConfig(String appId) {
