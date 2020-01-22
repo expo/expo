@@ -2,7 +2,7 @@
   "expo": {
     "name": "Blank Template (TypeScript)",
     "slug": "expo-template-blank-typescript",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
