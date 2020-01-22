@@ -1,17 +1,17 @@
 ---
 title: GLView
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-gl"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-gl'
 ---
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
+**`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -21,7 +21,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ```js
 import { GLView } from 'expo-gl';
-``` 
+```
 
 <TableOfContentSection title='Props' contents={['onContextCreate', 'msaaSamples']} />
 
@@ -35,11 +35,11 @@ Other than the regular `View` props for layout and touch handling, the following
 
 ### `onContextCreate`
 
-  A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
+A function that will be called when the OpenGL ES context is created. The function is passed a single argument `gl` that has a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.
 
 ### `msaaSamples`
 
-  `GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
+`GLView` can enable iOS's built-in [multisampling](https://www.khronos.org/registry/OpenGL/extensions/APPLE/APPLE_framebuffer_multisample.txt). This prop specifies the number of samples to use. By default this is 4. Setting this to 0 turns off multisampling. On Android this is ignored.
 
 ## Methods
 
@@ -133,4 +133,3 @@ For efficiency reasons the current implementations of the methods don't perform 
 ## Remote Debugging & GLView
 
 This API does not function as intended with remote debugging enabled. The React Native debugger runs Javascript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
-

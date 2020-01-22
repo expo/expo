@@ -38,7 +38,7 @@ The Developer Menu gives you a couple different functionalities. A few are prett
 
 - Reload manifest & JS bundle: this will reload your app. Usually this isn't necessary if you have Live or Hot Reload enabled, since it will automatically refresh whenever you save your changes in your text editor.
 - Go to Expo Home: Leave your app and navigate back to the Expo Client homescreen
-- Enable/Disable Live Reload: When enabled, your app will automatically refresh the JS bundle whenever you save file changes in your proejct directory.
+- Enable/Disable Live Reload: When enabled, your app will automatically refresh the JS bundle whenever you save file changes in your project directory.
 
 > **Note**: In order to use Live Reload, your components must be **class** components, rather than a functional components. You can read about their differences [here](https://reactjs.org/docs/components-and-props.html#function-and-class-components).
 

@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from 'react-emotion';
 import Prism from 'prismjs';
 
 import * as React from 'react';
@@ -20,7 +20,8 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: 1px 1px ${Constants.colors.black30};
+    text-shadow: rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px,
+      rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px;
   }
 
   .code-annotation:hover {
@@ -129,4 +130,6 @@ export class Code extends React.Component {
   }
 }
 
-export const InlineCode = ({ children }) => <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>;
+export const InlineCode = ({ children }) => (
+  <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>
+);

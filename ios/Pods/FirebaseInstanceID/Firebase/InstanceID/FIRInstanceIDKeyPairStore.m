@@ -416,7 +416,7 @@ NSString *FIRInstanceIDCreationTimeKeyWithSubtype(NSString *subtype) {
     (__bridge id)kSecAttrApplicationTag : updatedTagData,
     (__bridge id)kSecClass : (__bridge id)kSecClassKey,
     (__bridge id)kSecValueRef : (__bridge id)keyRef,
-    (__bridge id)kSecAttrAccessible : (__bridge id)kSecAttrAccessibleAlwaysThisDeviceOnly,
+    (__bridge id)kSecAttrAccessible : (__bridge id)kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
   };
   [[FIRInstanceIDKeychain sharedInstance] addItemWithQuery:addQuery
                                                    handler:^(NSError *addError) {

@@ -1,9 +1,9 @@
 ---
 title: Audio
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
-Provides basic sample playback and recording.
+**`expo-av`** allows you to implement audio playback and recording in your app.
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
@@ -11,9 +11,9 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -33,7 +33,7 @@ Asks the user to grant permissions for audio recording. Alias for `Permissions.a
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `Audio.getPermissionsAsync()`
 
@@ -41,7 +41,7 @@ Checks user's permissions for audio recording. Alias for `Permissions.getAsync(P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ## Enabling Audio and customizing Audio Mode
 

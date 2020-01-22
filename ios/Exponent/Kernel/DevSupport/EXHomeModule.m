@@ -4,7 +4,7 @@
 #import "EXHomeModule.h"
 #import "EXSession.h"
 #import "EXUnversioned.h"
-#import "EXProvisioningProfile.h"
+#import "EXClientReleaseType.h"
 
 #import <React/RCTEventDispatcher.h>
 
@@ -41,7 +41,7 @@
 - (NSDictionary *)constantsToExport
 {
   return @{ @"sdkVersions": _sdkVersions,
-            @"IOSClientReleaseType": [EXProvisioningProfile clientReleaseTypeToString: [EXProvisioningProfile clientReleaseType]] };
+            @"IOSClientReleaseType": [EXClientReleaseType clientReleaseType] };
 }
 
 #pragma mark - RCTEventEmitter methods

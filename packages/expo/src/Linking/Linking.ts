@@ -64,10 +64,8 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
       path = `/--/${_removeLeadingSlash(path)}`;
     }
 
-    if (!path.startsWith('/') && hostUri) {
+    if (!path.startsWith('/')) {
       path = `/${path}`;
-    } else if (path.startsWith('/') && !hostUri) {
-      path = path.substr(1);
     }
   } else {
     path = '';
@@ -109,6 +107,9 @@ function parse(url: string): ParsedURL {
 
   const parsed = URL(url, /* parseQueryString */ true);
 
+  for (const param in parsed.query) {
+    parsed.query[param] = decodeURIComponent(parsed.query[param]!);
+  }
   let queryParams = parsed.query;
 
   let hostUri = HOST_URI || '';
@@ -129,7 +130,10 @@ function parse(url: string): ParsedURL {
     let expoPrefix: string | null = null;
     if (hostUriStripped) {
       const parts = hostUriStripped.split('/');
-      expoPrefix = `${parts.slice(1).join('/')}/--/`;
+      expoPrefix = parts
+        .slice(1)
+        .concat(['--/'])
+        .join('/');
     }
 
     if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {

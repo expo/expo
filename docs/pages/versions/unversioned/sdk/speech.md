@@ -1,22 +1,21 @@
 ---
 title: Speech
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-speech"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-This module allows using Text-to-speech utility.
+**`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-speech`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-speech).
-
 
 ## Usage
 

@@ -333,15 +333,6 @@ type PushMessage = {
    */
   badge?: number,
 
-  /**
-   * ID of the Notification Category through which to display this notification.
-   *
-   * To send a notification with category to the Expo client, prefix the string
-   * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
-   * applications, use plain `yourCategoryId`.
-   */
-  _category?: string
-
   // Android-specific fields
 
   /**

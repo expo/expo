@@ -23,7 +23,7 @@ When you create new source files in your project you should use the `.ts` extens
 
 Visual Studio Code itself is written in TypeScript and has fantastic support for it out of the box. Other editors may require editional setup, consult the documentation for your editor as needed.
 
-## Confguring the TypeScript compiler
+## Configuring the TypeScript compiler
 
 `tsconfig.json` contains a variety of options that allow you to customize the behavior of the TypeScript compiler. For example, by default we enable `"noEmit"`, which tells the compiler only to typecheck and not to actually output the compiled JavaScript files (Metro, the React Native packager, takes care of that for us).
 

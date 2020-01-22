@@ -48,11 +48,8 @@ function makeUrl(path = '', queryParams = {}) {
         if (IS_EXPO_HOSTED && hostUri) {
             path = `/--/${_removeLeadingSlash(path)}`;
         }
-        if (!path.startsWith('/') && hostUri) {
+        if (!path.startsWith('/')) {
             path = `/${path}`;
-        }
-        else if (path.startsWith('/') && !hostUri) {
-            path = path.substr(1);
         }
     }
     else {
@@ -90,6 +87,9 @@ function parse(url) {
         throw new Error('parse cannot be called with a null value');
     }
     const parsed = URL(url, /* parseQueryString */ true);
+    for (const param in parsed.query) {
+        parsed.query[param] = decodeURIComponent(parsed.query[param]);
+    }
     let queryParams = parsed.query;
     let hostUri = HOST_URI || '';
     let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
@@ -105,7 +105,10 @@ function parse(url) {
         let expoPrefix = null;
         if (hostUriStripped) {
             const parts = hostUriStripped.split('/');
-            expoPrefix = `${parts.slice(1).join('/')}/--/`;
+            expoPrefix = parts
+                .slice(1)
+                .concat(['--/'])
+                .join('/');
         }
         if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);

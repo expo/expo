@@ -1,17 +1,17 @@
 ---
 title: Screens
-sourceCodeUrl: "https://github.com/kmagiera/react-native-screens"
+sourceCodeUrl: 'https://github.com/kmagiera/react-native-screens'
 ---
 
-Native primitives to represent screens instead of plain `<View>` components in order to better take advantage of operating system behavior and optimizations around screens. Used by library authors, unlikely to be used directly by most app developers.
+**`react-native-screens`** provides native primitives to represent screens instead of plain `<View>` components in order to better take advantage of operating system behavior and optimizations around screens. Used by library authors, unlikely to be used directly by most app developers.
 
 > Note: this library is still in alpha. Please refer to [the issue tracker](https://github.com/kmagiera/react-native-screens/issues) if you encounter any problems.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
@@ -22,8 +22,8 @@ To install this API in a [managed](../../introduction/managed-vs-bare/#managed-w
 To use `react-native-screens` with `react-navigation`, you will need to enable it before rendering any screens. Add the following code to your main application file (e.g. App.js):
 
 ```js
-import { useScreens } from 'react-native-screens';
-useScreens();
+import { enableScreens } from 'react-native-screens';
+enableScreens();
 ```
 
-More information on usage for library authors is available [in the README](https://github.com/kmagiera/react-native-screens/tree/43b2d7a92d1bda8ddf57d9fefa3bbe5a8d2afecf).
+More information on usage for library authors is available [in the README](https://github.com/kmagiera/react-native-screens).

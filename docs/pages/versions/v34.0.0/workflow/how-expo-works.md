@@ -75,7 +75,7 @@ If you use React Native without Expo, you would start the packager by running `r
 
 The first is to serve your app JavaScript compiled into a single file and translating any JavaScript code that you wrote which isn't compatible with your phone's JavaScript engine. JSX, for example, is not valid JavaScript -- it is a language extension that makes working with React components more pleasant and it compiles down into plain function calls -- so `<HelloWorld />` would become `React.createElement(HelloWorld, {}, null)` (see [JSX in Depth](https://facebook.github.io/react/docs/jsx-in-depth.html) for more information). Other language features like [async/await](https://blog.expo.io/react-native-meets-async-functions-3e6f81111173#.4c2517o5m) are not yet available in most engines and so they need to be compiled down into JavaScript code that will run on your phone's JavaScript engine, JavaScriptCore.
 
-The second purpose is to serve assets. When you include an image in your app, you will use syntax like `<Image source={require('./assets/example.png')} />`, unless you have already cached that asset you will see a request in the Expo CLI logs like: `<START> processing asset request my-proejct/assets/example@3x.png`. Notice that it serves up the correct asset for your screen DPI, assuming that it exists.
+The second purpose is to serve assets. When you include an image in your app, you will use syntax like `<Image source={require('./assets/example.png')} />`, unless you have already cached that asset you will see a request in the Expo CLI logs like: `<START> processing asset request my-project/assets/example@3x.png`. Notice that it serves up the correct asset for your screen DPI, assuming that it exists.
 
 ## Publishing/Deploying an Expo app in Production
 

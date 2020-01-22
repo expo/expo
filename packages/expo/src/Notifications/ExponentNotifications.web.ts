@@ -1,4 +1,4 @@
-import badgin from 'badgin';
+import * as badgin from 'badgin';
 import UUID from 'uuid-js';
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
 import {

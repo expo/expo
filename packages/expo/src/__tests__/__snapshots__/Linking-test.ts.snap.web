@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`makeUrl queries makes url "" 1`] = `"exp://localhost"`;
+
+exports[`makeUrl queries makes url "path/into/app" 1`] = `"exp://localhost/path/into/app"`;
+
+exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"exp://localhost/some/path?emptyParam="`;
+
+exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+
+exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+
+exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://localhost/some/path?shouldEscape=%25252b%252520"`;
+
+exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `"exp://localhost/some/path"`;
+
 exports[`parse parses "custom://" 1`] = `
 Object {
   "hostname": null,
@@ -14,6 +28,17 @@ Object {
   "hostname": null,
   "path": "",
   "queryParams": Object {},
+  "scheme": "custom",
+}
+`;
+
+exports[`parse parses "custom:///?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `
+Object {
+  "hostname": null,
+  "path": "",
+  "queryParams": Object {
+    "shouldBeEscaped": "x+y@xxx.com",
+  },
   "scheme": "custom",
 }
 `;
@@ -37,6 +62,37 @@ Object {
     "hello": "bar",
   },
   "scheme": "custom",
+}
+`;
+
+exports[`parse parses "exp://127.0.0.1:19000/" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": "",
+  "queryParams": Object {},
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": "--/test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "exp://127.0.0.1:19000?query=param" 1`] = `
+Object {
+  "hostname": "127.0.0.1",
+  "path": null,
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
 }
 `;
 
@@ -65,6 +121,28 @@ Object {
   "hostname": "example.com",
   "path": "test/path",
   "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "https://example.com/test/path?missingQueryValue=" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {
+    "missingQueryValue": "",
+  },
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "https://example.com/test/path?query=do+not+escape" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {
+    "query": "do not escape",
+  },
   "scheme": "https",
 }
 `;

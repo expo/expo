@@ -41,4 +41,7 @@ export default {
 
     return { status: 'undetermined' };
   },
+  async isAvailableAsync(): Promise<boolean> {
+    return true;
+  },
 };

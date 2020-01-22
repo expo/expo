@@ -2208,10 +2208,10 @@ expo-web-browser@~8.0.0:
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-8.0.0.tgz#8a4451c744c115569a4c810dac8851f219a21c72"
   integrity sha512-7/rXUajycSjEF4Zd4tWm8+zP9/zJg8UWj575w2AeGI7RbOwUjqzQd1CFRzQBJkHflrEaTOXJbFHXxjJXdJaL1g==
 
-expo@~36.0.0-rc.0:
-  version "36.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-36.0.0-rc.0.tgz#195f3fde2f51cd77509952827d1db8cdc816f72f"
-  integrity sha512-u6Ro7Rx9lU447fVYBsG5lAEkG0I9vy32kpNP82TyNR6r4YB26St1mE9HDEseePmBY01hr0JqrrwJNZEIiUYYpA==
+expo@~36.0.0:
+  version "36.0.1"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-36.0.1.tgz#943fbb348d18af9fa6b772bd209bb42132958d50"
+  integrity sha512-kaPZKp+ocN2XdVyMRSyPJeekFEZMATUjRKFtOM5/rh54XSyn8zawOCQcG53mjm38KQR1khbRqNiHnALIaOeHhg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "^10.0.2"

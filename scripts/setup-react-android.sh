@@ -26,7 +26,8 @@ fi
 source $HOME/.bash_profile
 
 # Ensure the `sdkmanager` is installed for React Android
-if [ ! -f "${ANDROID_HOME}/tools/bin/sdkmanager" ]; then
+sdk_manager="${ANDROID_HOME}/tools/bin/sdkmanager"
+if [ ! -f "${sdk_manager}" ]; then
   echo "\nDownloading android sdk tools...\n"
 
   sdk_tools_url=`curl https://developer.android.google.cn/studio/ | egrep -o "https://dl.google.com/android/repository/sdk-tools-darwin-.+?\.zip"`
@@ -43,19 +44,19 @@ mkdir -p $HOME/.android
 touch $HOME/.android/repositories.cfg
 
 # Auto accept all the Google licenses
-yes | sdkmanager --licenses
+yes | ${sdk_manager} --licenses
 
 sdk_manager_options='--no_https --verbose --channel=0'
 # To launch the emulator by shell script
-sdkmanager emulator ${sdk_manager_options}
+${sdk_manager} emulator ${sdk_manager_options}
 
 # Install NDK...
-sdkmanager ndk-bundle ${sdk_manager_options}
-sdkmanager platform-tools ${sdk_manager_options}
+${sdk_manager} ndk-bundle ${sdk_manager_options}
+${sdk_manager} platform-tools ${sdk_manager_options}
 # Install Intel HAXM (for emulators)
-sdkmanager "extras;intel;Hardware_Accelerated_Execution_Manager" ${sdk_manager_options}
+${sdk_manager} "extras;intel;Hardware_Accelerated_Execution_Manager" ${sdk_manager_options}
 # Install the version of Android required for React Native
-sdkmanager "platforms;android-26" "system-images;android-26;google_apis;x86_64" "build-tools;26.0.3" ${sdk_manager_options}
-sdkmanager --update ${sdk_manager_options}
+${sdk_manager} "platforms;android-26" "system-images;android-26;google_apis;x86_64" "build-tools;26.0.3" ${sdk_manager_options}
+${sdk_manager} --update ${sdk_manager_options}
 
 echo '✅  React Native is now setup'

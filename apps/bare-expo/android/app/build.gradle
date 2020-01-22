@@ -201,11 +201,8 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-reanimated')
-    implementation project(':react-native-gesture-handler')
-    implementation project(":react-native-screens")
-    implementation project(':react-native-safe-area-context')
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     def packageJsonFile = new File(rootProject.projectDir, '../package.json')
@@ -273,3 +270,32 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 apply plugin: ExecuteSetupAndroidProject
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs'
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+class GenerateDynamicMacrosPlugin implements Plugin<Project> {
+    @Override
+    void apply(Project target) {
+        target.exec {
+            def configuration = target.gradle.startParameter.taskNames.any {
+                it.toLowerCase().contains("release")
+            } ? "release" : "debug"
+
+            workingDir '../../../../tools/expotools/bin'
+
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+            } else {
+                commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+            }
+        }
+    }
+}
+
+apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesAppBuildGradle(project)
+
+// [Custom]: Add Google Services file
+apply plugin: GenerateDynamicMacrosPlugin
+apply plugin: 'com.google.gms.google-services'
+

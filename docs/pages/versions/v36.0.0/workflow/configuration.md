@@ -1,7 +1,3 @@
----
-title: Configuration with app.json
----
-
 `app.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
 
 ```javascript
@@ -15,15 +11,9 @@ title: Configuration with app.json
 }
 ```
 
-`app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
-
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-## ExpoKit
-
-While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
-
-This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
+> 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit).
 
 ## Properties
 
@@ -42,6 +32,10 @@ A short description of what your app is and why it is great.
 ### `"slug"`
 
 **Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"backgroundColor"`
+
+The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff`.
 
 ### `"owner"`
 
@@ -283,13 +277,7 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING,
-
-    /*
-     The URL-safe base64-encoded VAPID public key used for web push notifications.
-     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
-    */
-    "vapidPublicKey": STRING
+    "androidCollapsedTitle": STRING
   }
 }
 ```
@@ -375,6 +363,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "buildNumber": STRING,
+
+    /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
 
     /*
       Local path or remote URL to an image to use for your app's
@@ -601,6 +594,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: this is set in `android/app/build.gradle`.
     */
     "versionCode": NUMBER,
+
+    /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
 
     /*
       Local path or remote url to an image to use for your app's icon on Android.
@@ -882,3 +880,9 @@ Configuration for how and when the app should request OTA JavaScript updates
   }
 }
 ```
+
+## ExpoKit
+
+While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
+
+This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.

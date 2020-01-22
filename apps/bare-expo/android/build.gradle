@@ -18,10 +18,16 @@ buildscript {
         maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0-alpha07'
+        classpath 'com.android.tools.build:gradle:4.0.0-alpha09'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // Copied version from the Exponent Android project.
+        // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
+        // but has been resolved to 17.0.0"
+        // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
+        classpath 'com.google.gms:google-services:4.3.3'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -31,11 +37,13 @@ buildscript {
 def packageJsonFile = new File(rootProject.projectDir, '../package.json')
 def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
+// [Custom]
 ext {
     reactNativeVersion = packageJson.dependencies["react-native"]
 }
 
 allprojects {
+    // [Custom]
     configurations.all {
         resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
     }
