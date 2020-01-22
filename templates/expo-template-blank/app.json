@@ -2,7 +2,7 @@
   "expo": {
     "name": "Blank Template",
     "slug": "expo-template-blank",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
