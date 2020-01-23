@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-34/packages/expo/src/Notifications'
 ---
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
