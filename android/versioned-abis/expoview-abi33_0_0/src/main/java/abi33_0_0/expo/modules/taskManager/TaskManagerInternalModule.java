@@ -114,12 +114,12 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
     return null;
   }
 
-  @Override
-  public boolean isRunningInHeadlessMode() {
-    if (mConstants != null) {
+  private boolean isRunningInHeadlessMode() {
+    if (mConstants != null && mConstants.getConstants() != null && mConstants.getConstants().containsKey("isHeadless")) {
       return (boolean) mConstants.getConstants().get("isHeadless");
+    } else {
+      return mTaskService.isStartedByHeadlessStarter(getAppId());
     }
-    return false;
   }
 
   //endregion
