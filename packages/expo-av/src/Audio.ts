@@ -60,7 +60,6 @@ function getCurrentAudioMode(): AudioMode {
 
 export async function setAudioModeAsync(partialMode: Partial<AudioMode>): Promise<void> {
   const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
-  currentAudioMode = mode;
 
   if (
     !_isValueValid(mode.interruptionModeIOS, [
@@ -90,5 +89,6 @@ export async function setAudioModeAsync(partialMode: Partial<AudioMode>): Promis
       '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.'
     );
   }
+  currentAudioMode = mode;
   return await ExponentAV.setAudioMode(mode);
 }

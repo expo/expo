@@ -38,7 +38,6 @@ function getCurrentAudioMode() {
 }
 export async function setAudioModeAsync(partialMode) {
     const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
-    currentAudioMode = mode;
     if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -59,6 +58,7 @@ export async function setAudioModeAsync(partialMode) {
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
+    currentAudioMode = mode;
     return await ExponentAV.setAudioMode(mode);
 }
 //# sourceMappingURL=Audio.js.map
