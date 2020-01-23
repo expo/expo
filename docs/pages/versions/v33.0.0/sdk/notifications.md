@@ -163,7 +163,7 @@ _Android only_. On Android 8.0+, deletes the notification channel with the given
 
 ### Related types
 
-#### LocalNotification
+### LocalNotification
 
 An object used to describe the local notification that you would like to present or schedule.
 
