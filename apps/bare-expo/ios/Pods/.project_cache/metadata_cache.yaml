@@ -38,10 +38,6 @@ EXAV:
   LABEL: EXAV
   PROJECT_PATH: EXAV.xcodeproj
   UUID: 657B3E0E8F77DB91FA182432EC404FBF
-EXBackgroundFetch:
-  LABEL: EXBackgroundFetch
-  PROJECT_PATH: EXBackgroundFetch.xcodeproj
-  UUID: 280658D584B63A5E8CB5F0405789A353
 EXBarCodeScanner:
   LABEL: EXBarCodeScanner
   PROJECT_PATH: EXBarCodeScanner.xcodeproj
@@ -146,10 +142,6 @@ EXLocalization:
   LABEL: EXLocalization
   PROJECT_PATH: EXLocalization.xcodeproj
   UUID: 55C7C51CE4B49B971674C896CB1DC301
-EXLocation:
-  LABEL: EXLocation
-  PROJECT_PATH: EXLocation.xcodeproj
-  UUID: 9448EAC8D0286D37F065B24667BFBB8F
 EXMailComposer:
   LABEL: EXMailComposer
   PROJECT_PATH: EXMailComposer.xcodeproj
@@ -210,10 +202,6 @@ EXStoreReview:
   LABEL: EXStoreReview
   PROJECT_PATH: EXStoreReview.xcodeproj
   UUID: F2C74458D282DA74DB95F8A7FE6A5207
-EXTaskManager:
-  LABEL: EXTaskManager
-  PROJECT_PATH: EXTaskManager.xcodeproj
-  UUID: 86D546D1F048CDA66BE7589194F91D23
 EXUpdates:
   LABEL: EXUpdates
   PROJECT_PATH: EXUpdates.xcodeproj
@@ -386,10 +374,6 @@ UMSensorsInterface:
   LABEL: UMSensorsInterface
   PROJECT_PATH: UMSensorsInterface.xcodeproj
   UUID: 1FDCE556B997E87DAB0DA2727CC69285
-UMTaskManagerInterface:
-  LABEL: UMTaskManagerInterface
-  PROJECT_PATH: UMTaskManagerInterface.xcodeproj
-  UUID: A565C99DEFBAFA44A1B5C3B49ADD8A84
 Yoga:
   LABEL: Yoga
   PROJECT_PATH: Yoga.xcodeproj
