@@ -47,7 +47,6 @@ export default class BarCodeScanner {
               elementWidth,
               elementHeight
             );
-            // let videoRatio = scalePreserveAspectRatio(videoWidth, videoHeight, elementWidth, elementHeight);
 
             this.canvas.width = elementWidth;
             this.canvas.height = elementHeight;
@@ -100,7 +99,7 @@ export default class BarCodeScanner {
           if (settings.interval < 0) {
             this.scanForBarcodes(settings.barCodeTypes);
           } else {
-            // @ts-ignore
+            // @ts-ignore: Type 'Timeout' is not assignable to type 'number'.
             this.barcodeLoop = setTimeout(() => {
               this.scanForBarcodes(settings.barCodeTypes);
             }, settings.interval);
