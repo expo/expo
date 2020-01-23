@@ -60,7 +60,7 @@ Trigger a local notification immediately.
 
 #### Arguments
 
-- **localNotification (_object_)** -- An object with the properties described in [LocalNotification](#localnotification).
+- **localNotification (_object_)** -- An object with the properties described in [LocalNotification](#LocalNotification).
 
 #### Returns
 
@@ -74,7 +74,7 @@ Schedule a local notification to fire at some specific time in the future or at 
 
 - **localNotification (_object_)** --
 
-  An object with the properties described in [LocalNotification](#localnotification).
+  An object with the properties described in [LocalNotification](#LocalNotification).
 
 - **schedulingOptions (_object_)** --
 
