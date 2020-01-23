@@ -138,9 +138,6 @@ export function captureImageData(video, pictureOptions = {}) {
     if (!context || !canvas.width || !canvas.height) {
         return null;
     }
-    // const image = new Image();
-    // image.src = require('./qr.png');
-    // context.drawImage(image, 0, 0);
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     return imageData;
 }

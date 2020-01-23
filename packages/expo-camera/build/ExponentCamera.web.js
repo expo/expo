@@ -28,7 +28,6 @@ export default class ExponentCamera extends React.Component {
             if (onBarCodeScanned && barCodeScannerSettings) {
                 this.camera.barCodeScanner.startScanner({
                     // Default barcode scanning update interval, same as is defined in the API layer.
-                    // TODO: Bacon: Make this larger for low-end devices.
                     interval: this.shouldRenderIndicator() ? -1 : 500,
                     ...barCodeScannerSettings,
                 }, nativeEvent => {

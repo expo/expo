@@ -216,10 +216,6 @@ export function captureImageData(
     return null;
   }
 
-  // const image = new Image();
-  // image.src = require('./qr.png');
-  // context.drawImage(image, 0, 0);
-
   const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
   return imageData;
 }
