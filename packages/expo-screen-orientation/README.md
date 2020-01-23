@@ -23,7 +23,26 @@ npm install expo-screen-orientation
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+1. Run `pod install` in the ios directory after installing the npm package.
+2. Open the `AppDelegate.m` of your application.
+3. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
+4. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:
+
+   Replace
+
+   ```objc
+   UIViewController *rootViewController = [UIViewController new];
+   ```
+
+   with:
+
+   ```objc
+   UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:UIInterfaceOrientationMaskPortrait]; // through parameter you can specify your default orientation mask.
+   ```
+
+   To get more information about available orientation masks, please check out [UIInterfaceOrientationMask](https://developer.apple.com/documentation/uikit/uiinterfaceorientationmask?language=objc)
+
+> **Note** if you are using the custom view controller, this controller needs to extend the `EXScreenOrientationViewController`.
 
 ### Configure for Android
 
@@ -31,4 +50,4 @@ No additional set up necessary.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
