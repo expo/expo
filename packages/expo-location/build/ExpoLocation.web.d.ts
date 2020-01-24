@@ -19,13 +19,13 @@ declare const _default: {
     getProviderStatusAsync(): Promise<{
         locationServicesEnabled: boolean;
     }>;
-    getCurrentPositionAsync(options: Object): Promise<Position | null>;
+    getCurrentPositionAsync(options: object): Promise<Position | null>;
     removeWatchAsync(watchId: any): Promise<void>;
     watchDeviceHeading(headingId: any): Promise<void>;
     hasServicesEnabledAsync(): Promise<boolean>;
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
-    watchPositionImplAsync(watchId: string, options: Object): Promise<string>;
+    watchPositionImplAsync(watchId: string, options: object): Promise<string>;
     requestPermissionsAsync(): Promise<PermissionResult>;
 };
 export default _default;

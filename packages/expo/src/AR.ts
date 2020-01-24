@@ -386,7 +386,7 @@ export enum TrackingStateReason {
   Relocalizing = 'ARTrackingStateReasonRelocalizing',
 }
 
-type FrameDidUpdateEvent = {};
+type FrameDidUpdateEvent = object;
 
 type DidFailWithErrorEvent = { error: Error };
 
@@ -400,9 +400,9 @@ type CameraDidChangeTrackingStateEvent = {
   trackingStateReason: TrackingStateReason;
 };
 
-type SessionWasInterruptedEvent = {};
+type SessionWasInterruptedEvent = object;
 
-type SessionInterruptionEndedEvent = {};
+type SessionInterruptionEndedEvent = object;
 
 export function getVersion(): string {
   return ExponentAR.ARKitVersion;

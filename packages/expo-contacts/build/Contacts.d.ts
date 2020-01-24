@@ -150,7 +150,7 @@ export declare type Container = {
     type: ContainerType;
 };
 export { PermissionStatus, PermissionResponse };
-export declare function shareContactAsync(contactId: string, message: string, shareOptions?: Object): Promise<any>;
+export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getContactByIdAsync(id: string, fields?: FieldType): Promise<Contact | undefined>;

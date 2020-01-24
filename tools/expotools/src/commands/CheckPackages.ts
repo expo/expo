@@ -45,6 +45,9 @@ async function action(options) {
       }
       if (options.lint) {
         const args = ['--max-warnings', '0'];
+        if (options.fixLint) {
+          args.push('--fix');
+        }
         await runScriptAsync(pkg, 'lint', args);
       }
       console.log(`✨ ${chalk.bold.green(pkg.packageName)} checks passed.`);
@@ -136,6 +139,7 @@ export default (program: Command) => {
     .option('--no-build', 'Whether to skip `yarn build` check.', false)
     .option('--no-test', 'Whether to skip `yarn test` check.', false)
     .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
+    .option('--fix-lint', 'Whether to run `yarn lint --fix` instead of `yarn lint`.', false)
     .option(
       '--no-uniformity-check',
       'Whether to check the uniformity of committed and generated build files.',

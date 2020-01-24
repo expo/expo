@@ -23,7 +23,7 @@ export declare type Asset = {
     filename: string;
     uri: string;
     mediaType: MediaTypeValue;
-    mediaSubtypes?: Array<string>;
+    mediaSubtypes?: string[];
     width: number;
     height: number;
     creationTime: number;
@@ -34,7 +34,7 @@ export declare type Asset = {
 export declare type AssetInfo = Asset & {
     localUri?: string;
     location?: Location;
-    exif?: Object;
+    exif?: object;
     isFavorite?: boolean;
 };
 export declare type Location = {
@@ -49,7 +49,7 @@ export declare type Album = {
     startTime: number;
     endTime: number;
     approximateLocation?: Location;
-    locationNames?: Array<string>;
+    locationNames?: string[];
 };
 export declare type AlbumsOptions = {
     includeSmartAlbums?: boolean;
@@ -58,13 +58,13 @@ export declare type AssetsOptions = {
     first?: number;
     after?: AssetRef;
     album?: AlbumRef;
-    sortBy?: Array<SortByValue> | SortByValue;
-    mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+    sortBy?: SortByValue[] | SortByValue;
+    mediaType?: MediaTypeValue[] | MediaTypeValue;
     createdAfter?: Date | number;
     createdBefore?: Date | number;
 };
 export declare type PagedInfo<T> = {
-    assets: Array<T>;
+    assets: T[];
     endCursor: string;
     hasNextPage: boolean;
     totalCount: number;
@@ -78,14 +78,14 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;
-export declare function addAssetsToAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
-export declare function removeAssetsFromAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef): Promise<any>;
-export declare function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef): Promise<any>;
+export declare function addAssetsToAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
+export declare function removeAssetsFromAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef): Promise<any>;
+export declare function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promise<any>;
 export declare function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo>;
-export declare function getAlbumsAsync({ includeSmartAlbums }?: AlbumsOptions): Promise<Array<Album>>;
+export declare function getAlbumsAsync({ includeSmartAlbums }?: AlbumsOptions): Promise<Album[]>;
 export declare function getAlbumAsync(title: string): Promise<Album>;
 export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
-export declare function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, assetRemove?: boolean): Promise<any>;
+export declare function deleteAlbumsAsync(albums: AlbumRef[] | AlbumRef, assetRemove?: boolean): Promise<any>;
 export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<PagedInfo<Asset>>;
 export declare function addListener(listener: () => void): Subscription;
 export declare function removeSubscription(subscription: Subscription): void;

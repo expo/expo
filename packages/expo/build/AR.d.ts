@@ -339,7 +339,7 @@ export declare enum TrackingStateReason {
     /** Tracking is limited due to a relocalization in progress. */
     Relocalizing = "ARTrackingStateReasonRelocalizing"
 }
-declare type FrameDidUpdateEvent = {};
+declare type FrameDidUpdateEvent = object;
 declare type DidFailWithErrorEvent = {
     error: Error;
 };
@@ -351,8 +351,8 @@ declare type CameraDidChangeTrackingStateEvent = {
     trackingState: TrackingState;
     trackingStateReason: TrackingStateReason;
 };
-declare type SessionWasInterruptedEvent = {};
-declare type SessionInterruptionEndedEvent = {};
+declare type SessionWasInterruptedEvent = object;
+declare type SessionInterruptionEndedEvent = object;
 export declare function getVersion(): string;
 export declare function isAvailable(): boolean;
 export declare function getUnavailabilityReason(): string;
