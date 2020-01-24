@@ -191,6 +191,9 @@ public class ExponentPackage implements ReactPackage {
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
+        MapsPackage mapsPackage = new MapsPackage();
+        nativeModules.addAll(mapsPackage.createNativeModules(reactContext));
+
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
 
