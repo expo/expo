@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.unimodules.core.interfaces.Consumer;
 
-public interface HeadlessAppStarter {
+public interface HeadlessAppLoader {
 
   class AppConfigurationError extends Exception {
 
@@ -17,7 +17,7 @@ public interface HeadlessAppStarter {
     }
   }
 
-  void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError;
+  void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError;
 
   boolean invalidateApp(String appId);
 

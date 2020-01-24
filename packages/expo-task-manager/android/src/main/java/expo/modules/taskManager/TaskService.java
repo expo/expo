@@ -35,7 +35,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.HeadlessAppStarter;
+import expo.loaders.provider.interfaces.HeadlessAppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
@@ -52,7 +52,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
-  private HeadlessAppStarter mAppStarter;
+  private HeadlessAppLoader mAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -75,7 +75,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
-    mAppStarter = AppLoaderProvider.createLoader("react-native-experience", context);
+    mAppLoader = AppLoaderProvider.createLoader("react-native-experience", context);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
@@ -272,7 +272,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @Override
   public boolean isStartedByHeadlessStarter(String appId) {
-    return mAppStarter.isRunning(appId);
+    return mAppLoader.isRunning(appId);
   }
 
   @Override
@@ -419,7 +419,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     sEventsQueues.get(appId).add(body);
 
     try {
-      mAppStarter.startApp(mContextRef.get(), new HeadlessAppStarter.Params(appId, task.getAppUrl()), () -> {
+      mAppLoader.loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appId, task.getAppUrl()), () -> {
       }, success -> {
         if (!success) {
           sEvents.remove(appId);
@@ -430,7 +430,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
         }
       });
-    } catch (HeadlessAppStarter.AppConfigurationError ignored) {
+    } catch (HeadlessAppLoader.AppConfigurationError ignored) {
       try {
         unregisterTask(task.getName(), appId, null);
       } catch (Exception e) {
@@ -649,7 +649,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appId) {
-    if (mAppStarter.invalidateApp(appId)) {
+    if (mAppLoader.invalidateApp(appId)) {
       sHeadlessTaskManagers.remove(appId);
     }
   }

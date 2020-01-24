@@ -11,12 +11,12 @@ import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import expo.loaders.provider.AppLoaderProvider;
-import expo.modules.taskManager.apploader.RNHeadlessAppStarter;
+import expo.modules.taskManager.apploader.RNHeadlessAppLoader;
 
 public class TaskManagerPackage extends BasePackage {
 
   static {
-    AppLoaderProvider.registerLoader("react-native-experience", RNHeadlessAppStarter.class);
+    AppLoaderProvider.registerLoader("react-native-experience", RNHeadlessAppLoader.class);
   }
 
   @Override

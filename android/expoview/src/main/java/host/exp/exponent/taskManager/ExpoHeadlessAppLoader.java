@@ -5,15 +5,15 @@ import android.util.Log;
 
 import org.unimodules.core.interfaces.Consumer;
 
-import expo.loaders.provider.interfaces.HeadlessAppStarter;
+import expo.loaders.provider.interfaces.HeadlessAppLoader;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import expo.loaders.provider.AppLoaderProvider;
-import host.exp.exponent.headless.HeadlessAppLoader;
+import host.exp.exponent.headless.InternalHeadlessAppLoader;
 
-public class ExpoHeadlessAppStarter implements HeadlessAppStarter {
+public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   private static final String TAG = "TaskManagerInternalAppL";
 
@@ -22,10 +22,10 @@ public class ExpoHeadlessAppStarter implements HeadlessAppStarter {
   private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
 
   @SuppressWarnings("unused")
-  public ExpoHeadlessAppStarter(Context context) {}
+  public ExpoHeadlessAppLoader(Context context) {}
 
   @Override
-  public void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError {
+  public void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError {
 
     AppLoaderInterface appLoader = createAppLoader(context);
 
@@ -69,7 +69,7 @@ public class ExpoHeadlessAppStarter implements HeadlessAppStarter {
   private AppLoaderInterface createAppLoader(Context context) {
     // for now only react-native apps in Expo are supported
     if(appLoader == null) {
-      appLoader = new HeadlessAppLoader(context);
+      appLoader = new InternalHeadlessAppLoader(context);
     }
     return appLoader;
   }
