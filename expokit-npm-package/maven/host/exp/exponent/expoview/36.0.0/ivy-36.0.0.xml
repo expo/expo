@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="36.0.0" status="integration" publication="20191210165017"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="36.0.0" status="integration" publication="20200124120208"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -267,7 +267,7 @@
     <dependency org="host.exp.exponent" name="expo-google-sign-in" rev="8.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-haptics" rev="8.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-image-manipulator" rev="8.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-image-picker" rev="8.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-picker" rev="8.0.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-intent-launcher" rev="8.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-keep-awake" rev="8.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-linear-gradient" rev="8.0.0" conf="compileOnly-&gt;default"/>
