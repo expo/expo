@@ -23,6 +23,7 @@ import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.interfaces.NotificationChannelsManager;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
@@ -38,7 +39,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String PRIORITY_KEY = "priority";
   private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
-  private static final String EXTRAS_BADGE_KEY = "badge";
+  public static final String EXTRAS_BADGE_KEY = "badge";
   private static final String EXTRAS_BODY_KEY = "body";
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
@@ -113,9 +114,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       builder.setVibrate(vibrationPatternOverride);
     }
 
+    // Maybe this code should be extracted to a separate
+    // ExpoBadgeCompatibleNotificationBuilder.
     if (shouldSetBadge()) {
-      // TODO: Set badge as an effect of presenting notification,
-      //       not as an effect of building a notification.
+      // Forward information about badge count to set
+      // to SetBadgeCountNotificationEffect.
       Bundle extras = builder.getExtras();
       extras.putInt(EXTRAS_BADGE_KEY, getBadgeCount());
       builder.setExtras(extras);
@@ -142,7 +145,18 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   @Override
   public Notification build() {
-    return createBuilder().build();
+    Notification notification = createBuilder().build();
+
+    // Maybe this code should be extracted to a separate
+    // ExpoBadgeCompatibleNotificationBuilder.
+    if (shouldSetBadge()) {
+      // Xiaomi devices require this extra notification configuration step
+      // https://github.com/leolin310148/ShortcutBadger/wiki/Xiaomi-Device-Support
+      // Badge for other devices is set as an effect in SetBadgeCountNotificationEffect
+      ShortcutBadger.applyNotification(mContext, notification, getBadgeCount());
+    }
+
+    return notification;
   }
 
   /**
