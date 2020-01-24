@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
-export default class AdMobBanner extends React.Component<{}> {
+export default class AdMobBanner extends React.Component<object> {
   render() {
     return (
       <View>

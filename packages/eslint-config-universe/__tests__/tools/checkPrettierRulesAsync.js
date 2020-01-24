@@ -1,6 +1,6 @@
+const spawnAsync = require('@expo/spawn-async');
 const path = require('path');
 const process = require('process');
-const spawnAsync = require('@expo/spawn-async');
 
 module.exports = async function checkPrettierRulesAsync(configFile) {
   let env = Object.assign(process.env, {

@@ -20,7 +20,7 @@ export class Sound implements Playback {
   _key: AudioInstance = null;
   _lastStatusUpdate: string | null = null;
   _lastStatusUpdateTime: Date | null = null;
-  _subscriptions: Array<{ remove: () => void }> = [];
+  _subscriptions: { remove: () => void }[] = [];
   _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null;

@@ -8,9 +8,9 @@ export declare class Sound implements Playback {
     _key: AudioInstance;
     _lastStatusUpdate: string | null;
     _lastStatusUpdateTime: Date | null;
-    _subscriptions: Array<{
+    _subscriptions: {
         remove: () => void;
-    }>;
+    }[];
     _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null;
