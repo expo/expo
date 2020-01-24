@@ -144,6 +144,61 @@ function tsUnused2() {
 }
 `;
 
+exports[`lints with the web config: fixtures/all-04.ts 1`] = `
+Object {
+  "errorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [],
+  "output": "export const blah = (): string[] => {
+  return ['1'];
+};
+",
+  "warningCount": 0,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-05.ts 1`] = `
+Object {
+  "errorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [
+    Object {
+      "column": 21,
+      "endColumn": 23,
+      "endLine": 1,
+      "line": 1,
+      "message": "Forbidden extra non-null assertion.",
+      "messageId": "noExtraNonNullAssertion",
+      "nodeType": "TSNonNullExpression",
+      "ruleId": "@typescript-eslint/no-extra-non-null-assertion",
+      "severity": 1,
+    },
+  ],
+  "output": "export const blah = 3!!;
+",
+  "warningCount": 1,
+}
+`;
+
+exports[`lints with the web config: fixtures/all-06.ts 1`] = `
+Object {
+  "errorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [],
+  "output": "export const numberTest: number | null = null;
+export const booleanTest: boolean | null = null;
+export const symbolTest: symbol | null = null;
+export const objectTest: object | null = null;
+export const stringTest: string | null = null;
+export const objectShorthandTest: object | null = null;
+",
+  "warningCount": 0,
+}
+`;
+
 exports[`lints with the web config: fixtures/web-native-00.js 1`] = `
 Object {
   "errorCount": 1,

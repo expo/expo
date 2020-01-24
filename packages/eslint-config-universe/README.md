@@ -74,6 +74,37 @@ You also can extend multiple configs, which is useful for projects that span sev
 }
 ```
 
+## Optional Additional TypeScript Typed Linting
+
+Universe also provides optional additional config for typescript-eslint rules that make use of the parsed type information. Note that this may increase the time it takes to run lint for large projects. More information can be found at https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/TYPED_LINTING.md
+
+To enable the additional config, the following changes to your config are required:
+
+### .eslintrc.js
+
+```diff
+module.exports = {
+  extends: [
+    'universe',
++   'universe/shared/typescript-parsed-linting',
+  ],
++ overrides: [
++   {
++     files: [
++       '*.ts',
++       '*.tsx',
++       '*.d.ts'
++     ],
++     parserOptions: {
++       project: './tsconfig.json'
++     },
++   },
++ ],
+};
+```
+
+More info on parserOptions.project can be found at https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#parseroptionsproject
+
 ## Philosophy
 
 This config is designed to mark severe problems (ex: syntax errors) as errors and stylistic issues as warnings. This lets your team apply policies like, "make sure a commit has no errors but ignore warnings if the commit didn't introduce them."

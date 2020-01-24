@@ -57,7 +57,7 @@ export default {
       locationServicesEnabled: 'geolocation' in navigator,
     };
   },
-  async getCurrentPositionAsync(options: Object): Promise<Position | null> {
+  async getCurrentPositionAsync(options: object): Promise<Position | null> {
     return new Promise<Position | null>((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(
         position => resolve(positionToJSON(position)),
@@ -75,13 +75,13 @@ export default {
   async hasServicesEnabledAsync(): Promise<boolean> {
     return 'geolocation' in navigator;
   },
-  async geocodeAsync(): Promise<Array<any>> {
+  async geocodeAsync(): Promise<any[]> {
     throw new GeocoderError();
   },
-  async reverseGeocodeAsync(): Promise<Array<any>> {
+  async reverseGeocodeAsync(): Promise<any[]> {
     throw new GeocoderError();
   },
-  async watchPositionImplAsync(watchId: string, options: Object): Promise<string> {
+  async watchPositionImplAsync(watchId: string, options: object): Promise<string> {
     return new Promise<string>(resolve => {
       // @ts-ignore
       watchId = global.navigator.geolocation.watchPosition(
