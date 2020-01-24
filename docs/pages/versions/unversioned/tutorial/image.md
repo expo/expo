@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 
 <br />
 
-> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
+> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this typically won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
 
 ## Time for a code organization break!
 

@@ -8,7 +8,7 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 ## Splash screen
 
-After telling our designer that we need a 1242 width by 2436 height splash screen image (more about this in [the splash screen guide](../../guides/splash-screens/)), she gave us the following file:
+After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../../guides/splash-screens/)), she gave us the following file:
 
 <div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
 <img src="/static/images/tutorial/splash.png" style={{maxWidth: 150}} />
@@ -66,7 +66,7 @@ This solves our problem!
 
 ## App icon
 
-Our designer provided us with this 1024 width x 1024 height app icon:
+Our designer provided us with this 1024px width x 1024px height app icon:
 
 <div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
 <img src="/static/images/tutorial/icon.png" style={{maxWidth: 150}} />
