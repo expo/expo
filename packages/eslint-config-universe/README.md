@@ -86,7 +86,7 @@ To enable the additional config, the following changes to your config are requir
 module.exports = {
   extends: [
     'universe',
-+   'universe/shared/typescript-parsed-linting',
++   'universe/shared/typescript-analysis',
   ],
 + overrides: [
 +   {
