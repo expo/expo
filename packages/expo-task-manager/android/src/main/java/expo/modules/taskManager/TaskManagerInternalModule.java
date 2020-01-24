@@ -48,7 +48,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
 
-    // Register in TaskService
+    // Register in TaskService.
     mTaskService.setTaskManager(this, getAppId(), getAppUrl());
 
     mUIManager.registerLifecycleEventListener(this);
@@ -112,15 +112,6 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     }
     return null;
   }
-
-  private Boolean getBooleanConstant(String key) {
-    if (mConstants != null && mConstants.getConstants() != null) {
-      return (Boolean) mConstants.getConstants().get(key);
-    } else {
-      return null;
-    }
-  }
-
   //endregion
   //region LifecycleEventListener
 
@@ -164,7 +155,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   //region helpers
 
   private boolean isRunningInHeadlessMode() {
-    return mTaskService.isRunningInHeadlessMode(getAppId());
+    return mTaskService.isStartedByHeadlessStarter(getAppId());
   }
 
   private String getAppUrl() {

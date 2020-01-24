@@ -4,7 +4,7 @@
     <application>
         <receiver
             android:name=".TaskBroadcastReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="expo.modules.taskManager.TaskBroadcastReceiver.INTENT_ACTION" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

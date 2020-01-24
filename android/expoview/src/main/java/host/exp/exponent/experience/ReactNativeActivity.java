@@ -433,7 +433,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
+        INTENT_URI_KEY, mIntentUri,
+        IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();

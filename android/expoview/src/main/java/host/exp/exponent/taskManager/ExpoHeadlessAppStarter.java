@@ -13,7 +13,7 @@ import java.util.Map;
 import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.headless.HeadlessAppLoader;
 
-public class TaskManagerInternalAppLoader implements HeadlessAppStarter {
+public class ExpoHeadlessAppStarter implements HeadlessAppStarter {
 
   private static final String TAG = "TaskManagerInternalAppL";
 
@@ -22,17 +22,17 @@ public class TaskManagerInternalAppLoader implements HeadlessAppStarter {
   private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
 
   @SuppressWarnings("unused")
-  public TaskManagerInternalAppLoader(Context context) {}
+  public ExpoHeadlessAppStarter(Context context) {}
 
   @Override
-  public void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws IllegalArgumentException, IllegalStateException {
+  public void startApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError {
 
     AppLoaderInterface appLoader = createAppLoader(context);
 
     if (appLoader == null) {
-      throw new IllegalStateException("Cannot execute background task because application loader can't be found.");
+      throw new AppConfigurationError("Cannot execute background task because application loader can't be found.");
     } else if (params.getAppUrl() == null) {
-      throw new IllegalArgumentException("Cannot execute background task because application URL is invalid");
+      throw new AppConfigurationError("Cannot execute background task because application URL is invalid");
     } else {
 
       if (appIdsToAppRecords.containsKey(params.getAppId())) {

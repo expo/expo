@@ -6,13 +6,12 @@ import com.facebook.react.ReactInstanceManager
 import expo.loaders.provider.interfaces.HeadlessAppStarter
 import expo.modules.taskManager.TaskService
 import org.unimodules.core.interfaces.Consumer
-import java.util.*
 
-private val appRecords: MutableMap<String, ReactInstanceManager> = HashMap()
+private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()
 
-class RNHeadlessAppStarter(private val ignore: Context) : HeadlessAppStarter {
+class RNHeadlessAppStarter(private val context: Context) : HeadlessAppStarter {
 
-  //region AppLoader
+  //region HeadlessAppStarter
 
   override fun startApp(context: Context, params: HeadlessAppStarter.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
     if (params == null || params.appId == null) {
@@ -36,10 +35,11 @@ class RNHeadlessAppStarter(private val ignore: Context) : HeadlessAppStarter {
   }
 
   override fun invalidateApp(appId: String?): Boolean {
-    return if (appRecords.containsKey(appId)) {
-      android.os.Handler(ignore.mainLooper).post {
-        appRecords[appId]!!.destroy()
-        TaskService.removeTaskManager(appId)
+    return if (appRecords.containsKey(appId) && appRecords[appId] != null) {
+      val appRecord: ReactInstanceManager = appRecords[appId]!!
+      android.os.Handler(context.mainLooper).post {
+        appRecord.destroy()
+        TaskService.clearTaskManager(appId)
         appRecords.remove(appId)
       }
       true
@@ -51,5 +51,5 @@ class RNHeadlessAppStarter(private val ignore: Context) : HeadlessAppStarter {
   override fun isRunning(appId: String?): Boolean =
     appRecords.contains(appId) && appRecords[appId]!!.hasStartedCreatingInitialContext()
 
-  //endregion AppLoader
+  //endregion HeadlessAppStarter
 }

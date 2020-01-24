@@ -275,7 +275,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return mAppStarter.isRunning(appId);
   }
 
-  public static void removeTaskManager(String appId) {
+  @Override
+  public void removeTaskManager(String appId) {
+    clearTaskManager(appId);
+  }
+
+  public static void clearTaskManager(String appId) {
     sTaskManagers.remove(appId);
   }
 
@@ -425,7 +430,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
         }
       });
-    } catch (IllegalArgumentException ignored) {
+    } catch (HeadlessAppStarter.AppConfigurationError ignored) {
       try {
         unregisterTask(task.getName(), appId, null);
       } catch (Exception e) {
