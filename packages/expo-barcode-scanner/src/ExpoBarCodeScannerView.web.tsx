@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default class ExpoBarCodeScannerView extends React.Component<{}> {
+export default class ExpoBarCodeScannerView extends React.Component<object> {
   render() {
     return (
       <View>

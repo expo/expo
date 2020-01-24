@@ -294,7 +294,7 @@ function _maybeInitializeEmitterSubscription() {
   }
 }
 
-export async function geocodeAsync(address: string): Promise<Array<GeocodedLocation>> {
+export async function geocodeAsync(address: string): Promise<GeocodedLocation[]> {
   return ExpoLocation.geocodeAsync(address).catch(error => {
     const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
 
@@ -541,7 +541,7 @@ export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<
 
 // --- Geofencing
 
-function _validateRegions(regions: Array<Region>) {
+function _validateRegions(regions: Region[]) {
   if (!regions || regions.length === 0) {
     throw new Error(
       'Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions'
@@ -564,7 +564,7 @@ function _validateRegions(regions: Array<Region>) {
 
 export async function startGeofencingAsync(
   taskName: string,
-  regions: Array<Region> = []
+  regions: Region[] = []
 ): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);

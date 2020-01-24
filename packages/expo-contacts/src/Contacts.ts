@@ -238,7 +238,7 @@ export { PermissionStatus, PermissionResponse };
 export async function shareContactAsync(
   contactId: string,
   message: string,
-  shareOptions: Object = {}
+  shareOptions: object = {}
 ): Promise<any> {
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({

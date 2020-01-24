@@ -6,12 +6,12 @@ import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV'
 
 type ExponentVideoProps = {
   source: PlaybackNativeSource | null;
-  resizeMode?: Object;
+  resizeMode?: object;
   status?: PlaybackStatusToSet;
   useNativeControls?: boolean;
   onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: Object }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: Object }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: object }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
   onLoadStart: () => void;
   onLoad: (event: { nativeEvent: PlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
