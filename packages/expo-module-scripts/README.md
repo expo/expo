@@ -8,7 +8,7 @@ This package contains a collection of common scripts for all Expo modules and th
 - [Setup](#setup)
   - [🤡 Jest](#-jest)
   - [📝 LICENSE](#-license)
-  - [Side-Effects](#side-effects)
+  - [Side Effects](#side-effects)
   - [Entry Point and Types](#entry-point-and-types)
   - [🔗 NPM Linking](#-npm-linking)
 - [⌘ Commands](#-commands)
@@ -50,12 +50,12 @@ Add the following scripts to your `package.json` and run `yarn`
 }
 ```
 
-Running `yarn` will now run the `prepare` script which generates any missing files:
+Running `yarn` will now run the `prepare` script, which generates any missing files:
 - [`.eslintrc.js`](./templates/.eslintrc.js) ([docs](https://eslint.org/docs/user-guide/configuring)) this extends [`eslint-config-universe`](https://github.com/expo/expo/tree/master/packages/eslint-config-universe).
-  - Optionally you can customize prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/master/packages/eslint-config-universe#customizing-prettier).
+  - Optionally you can customize Prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/master/packages/eslint-config-universe#customizing-prettier).
 - [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to also add tests and docs.
   - Expo modules use `.npmignore` **instead of** the `files` field in the `package.json`.
-  - (Pro-Tip) Test which files get packaged by running `npm pack`, if you see files that aren't crucial to running the module you should add them to the `.npmignore`.
+  - (Pro Tip) Test which files get packaged by running `npm pack`. If you see files that aren't crucial to running the module, you should add them to `.npmignore`.
 - [`README.md`](./templates/README.md) A default template for Unimodule installation.
   - Project docs should try to have relevant emojis in headers because OSS is fun.
   - Use [badges](https://github.com/expo/expo#-badges)
@@ -66,9 +66,9 @@ You should also add the following fields to your `package.json`:
 
 ### 🤡 Jest
 
-The jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme) and adds proper TypeScript support and Types to the presets.
+The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
 
-**For unit testing API based modules:**
+**For unit testing API-based modules:**
 
 ```json5
 {
@@ -78,7 +78,7 @@ The jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/p
 }
 ```
 
-**For unit testing Component based modules:**
+**For unit testing component-based modules:**
 
 ```json5
 {
@@ -90,7 +90,7 @@ The jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/p
 
 ### 📝 LICENSE
 
-This makes it easier for other members of the community to work with your package. Expo usually has **MIT** licenses.
+This makes it easier for other members of the community to work with your package. Expo usually has the **MIT** license.
 
 ```json5
 {
@@ -98,11 +98,11 @@ This makes it easier for other members of the community to work with your packag
 }
 ```
 
-### Side-Effects
+### Side Effects
 
-The [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config) is optimized for tree-shaking, you should always make sure to list whatever files in your module have side-effects. In Expo modules we use the `.fx.*` extension on these files (this makes it easier to target them with `sideEffects`).
+The [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config) is optimized for tree-shaking, you should always make sure to list whatever files in your module have side effects. In Expo modules we use the `.fx.*` extension on these files (this makes it easier to target them with `sideEffects`).
 
-[**Learn more about side-effects**](https://webpack.js.org/guides/tree-shaking/)
+[**Learn more about side effects**](https://webpack.js.org/guides/tree-shaking/)
 
 ```json5
 {
