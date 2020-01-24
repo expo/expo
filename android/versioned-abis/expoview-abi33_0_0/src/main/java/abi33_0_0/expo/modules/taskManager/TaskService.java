@@ -11,9 +11,12 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.adapters.react.apploader.HeadlessAppLoaderListener;
+import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
 import org.unimodules.core.interfaces.SingletonModule;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -45,7 +48,7 @@ import abi33_0_0.expo.modules.taskManager.exceptions.TaskRegisteringFailedExcept
 // in classes like TaskJobService and TaskBroadcastReceiver, almost all properties of TaskService are static.
 // Thanks to that, we can instantiate new TaskService in those classes, that has just its own context and all other resources are shared.
 
-public class TaskService implements SingletonModule, TaskServiceInterface {
+public class TaskService implements SingletonModule, TaskServiceInterface, HeadlessAppLoaderListener {
   private static final String TAG = "TaskService";
   private static final String SHARED_PREFERENCES_NAME = "TaskManagerModule";
   private static final int MAX_TASK_EXECUTION_TIME_MS = 15000; // 15 seconds
@@ -81,6 +84,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       sTasksTable = new HashMap<>();
       restoreTasks();
     }
+
+    HeadlessAppLoaderNotifier.INSTANCE.registerListener(this);
   }
 
   public String getName() {
@@ -275,12 +280,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return mAppLoader.isRunning(appId);
   }
 
-  @Override
-  public void removeTaskManager(String appId) {
-    clearTaskManager(appId);
-  }
-
-  public static void clearTaskManager(String appId) {
+  private static void clearTaskManager(String appId) {
     sTaskManagers.remove(appId);
   }
 
@@ -443,6 +443,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   //endregion
+  // region HeadlessAppLoaderNotifier
+
+  @Override
+  public void appLoaded(@NotNull String appId) {
+  }
+
+  @Override
+  public void appDestroyed(@NotNull String appId) {
+    sTaskManagers.remove(appId);
+  }
+
+
+  // endregion HeadlessAppLoaderNotifier
   //region helpers
 
   private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {

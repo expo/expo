@@ -3,6 +3,7 @@ package host.exp.exponent.taskManager;
 import android.content.Context;
 import android.util.Log;
 
+import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
 import org.unimodules.core.interfaces.Consumer;
 
 import expo.loaders.provider.interfaces.HeadlessAppLoader;
@@ -49,6 +50,7 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
               exception.printStackTrace();
               Log.e(TAG, exception.getMessage());
             }
+            HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(params.getAppId());
             callback.apply(success);
             if (!success) {
               appIdsToAppRecords.remove(params.getAppId());
@@ -63,6 +65,8 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   @Override
   public boolean invalidateApp(String appId) {
+    appIdsToAppRecords.remove(appId);
+    HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(appId);
     return false;
   }
 

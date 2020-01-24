@@ -64,11 +64,6 @@ public interface TaskServiceInterface extends SingletonModule {
   void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl);
 
   /**
-   *  Clears a reference of task manager for given appId, previously registered with {@link #setTaskManager(TaskManagerInterface, String, String)}.
-   */
-  void removeTaskManager(String appId);
-
-  /**
    *  Handles intent that just woke up.
    */
   void handleIntent(Intent intent);

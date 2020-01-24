@@ -1,10 +1,9 @@
-package expo.modules.taskManager.apploader
+package org.unimodules.adapters.react.apploader
 
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
 import expo.loaders.provider.interfaces.HeadlessAppLoader
-import expo.modules.taskManager.TaskService
 import org.unimodules.core.interfaces.Consumer
 
 private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()
@@ -21,6 +20,7 @@ class RNHeadlessAppLoader(private val context: Context) : HeadlessAppLoader {
     val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
     if (!appRecords.containsKey(params.appId)) {
       reactInstanceManager.addReactInstanceEventListener {
+        HeadlessAppLoaderNotifier.notifyAppLoaded(params.appId)
         callback?.apply(true)
       }
       appRecords[params.appId] = reactInstanceManager
@@ -39,7 +39,7 @@ class RNHeadlessAppLoader(private val context: Context) : HeadlessAppLoader {
       val appRecord: ReactInstanceManager = appRecords[appId]!!
       android.os.Handler(context.mainLooper).post {
         appRecord.destroy()
-        TaskService.clearTaskManager(appId)
+        HeadlessAppLoaderNotifier.notifyAppDestroyed(appId)
         appRecords.remove(appId)
       }
       true
