@@ -113,6 +113,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXAV
     SPECS:
       - EXAV (8.0.0)
+  EXBackgroundFetch:
+    BUILD_SETTINGS_CHECKSUM:
+      EXBackgroundFetch: a5e0aec4c8a3ed87903824257d54d1ee
+    CHECKSUM: a99eac546ec3cf81701fdc739755c76e4a3e0619
+    FILES:
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
+    PROJECT_NAME: EXBackgroundFetch
+    SPECS:
+      - EXBackgroundFetch (8.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
@@ -450,6 +462,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXLocalization
     SPECS:
       - EXLocalization (8.0.0)
+  EXLocation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXLocation: 2cdf527b8fd9660760dea76fb7930f4a
+    CHECKSUM: 3c75d012ca92eed94d4338778d79c49d1252393a
+    FILES:
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
+    PROJECT_NAME: EXLocation
+    SPECS:
+      - EXLocation (8.0.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer: dde34d492aa6e58f5e36c7f4824e2b42
@@ -622,8 +652,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -637,6 +667,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXStoreReview
     SPECS:
       - EXStoreReview (2.0.0)
+  EXTaskManager:
+    BUILD_SETTINGS_CHECKSUM:
+      EXTaskManager: 9cea3845e2e57cfd67d0da843facfcee
+    CHECKSUM: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
+    FILES:
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
+    PROJECT_NAME: EXTaskManager
+    SPECS:
+      - EXTaskManager (8.0.0)
   EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
       EXUpdates: 4607b0f75bd46d01ee0d14c14ccef45d
@@ -717,12 +765,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 56436cf11abb9cf3f33b76749e92e0af
-      Release: 56436cf11abb9cf3f33b76749e92e0af
+      Debug: be844942dd370034a90da78ec33ad33e
+      Release: be844942dd370034a90da78ec33ad33e
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9af093871462b0148da322b01f112ded
-      Release: 9af093871462b0148da322b01f112ded
+      Debug: 58e5181e69613f5fe5589fc46c44a394
+      Release: 58e5181e69613f5fe5589fc46c44a394
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1719,6 +1767,19 @@ CACHE_KEYS:
     PROJECT_NAME: UMSensorsInterface
     SPECS:
       - UMSensorsInterface (5.0.0)
+  UMTaskManagerInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMTaskManagerInterface: 7659aca9cac609731d0f1bd954e77065
+    CHECKSUM: a98e37a576a5220bf43b8faf33cfdc129d2f441d
+    FILES:
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskLaunchReason.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskManagerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskServiceInterface.h"
+    PROJECT_NAME: UMTaskManagerInterface
+    SPECS:
+      - UMTaskManagerInterface (5.0.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 1c1562cda00c80e209af7feb55d5f6dd

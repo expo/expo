@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'kotlin-android'
 import groovy.json.JsonSlurper
 import com.android.build.OutputFile
 
@@ -76,8 +77,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js",
-    enableHermes: false,  // clean and rebuild if changing
+        entryFile   : "index.js",
+        enableHermes: false,  // clean and rebuild if changing
 ]
 
 apply from: '../../../../node_modules/react-native-unimodules/gradle.groovy'
@@ -123,9 +124,18 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 
     defaultConfig {
@@ -135,8 +145,8 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [
-            // [Custom]: Required for expo-app-auth
-            appAuthRedirectScheme: "dev.expo.payments"
+                // [Custom]: Required for expo-app-auth
+                appAuthRedirectScheme: "dev.expo.payments"
         ]
     }
     splits {
@@ -167,6 +177,13 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+    }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -192,13 +209,18 @@ dependencies {
     def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
     def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
 
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
     addUnimodulesDependencies([
-        modulesPaths : [
-            '../../../../packages'
-        ],
-        configuration: 'api',
-        target       : 'react-native',
-        exclude      : excludedUnimodules
+            modulesPaths : [
+                    '../../../../packages'
+            ],
+            configuration: 'api',
+            target       : 'react-native',
+            exclude      : excludedUnimodules
     ])
 
     if (enableHermes) {
@@ -208,6 +230,24 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation "androidx.compose:compose-runtime:0.1.0-dev02"
+    implementation "androidx.ui:ui-core:0.1.0-dev02"
+    implementation "androidx.ui:ui-layout:0.1.0-dev02"
+    implementation "androidx.ui:ui-framework:0.1.0-dev02"
+    implementation "androidx.ui:ui-material:0.1.0-dev02"
+    implementation "androidx.ui:ui-foundation:0.1.0-dev02"
+    implementation "androidx.ui:ui-text:0.1.0-dev02"
+    implementation "androidx.ui:ui-tooling:0.1.0-dev02"
+
+    debugImplementation("com.facebook.flipper:flipper:0.23.5") {
+        exclude group: 'com.facebook.yoga', module: 'yoga'
+        exclude group: 'com.facebook.flipper', module: 'fbjni'
+        exclude group: 'com.facebook.litho', module: 'litho-annotations'
+    }
+    debugImplementation 'com.facebook.soloader:soloader:0.8.0'
+
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.23.5'
 }
 
 // Run this once to be able to run the application with BUCK
@@ -228,6 +268,8 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 }
 
 apply plugin: ExecuteSetupAndroidProject
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'androidx.navigation.safeargs'
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -256,3 +298,4 @@ applyNativeModulesAppBuildGradle(project)
 // [Custom]: Add Google Services file
 apply plugin: GenerateDynamicMacrosPlugin
 apply plugin: 'com.google.gms.google-services'
+

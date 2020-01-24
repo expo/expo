@@ -22,6 +22,9 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
+  - EXBackgroundFetch (8.0.0):
+    - UMCore
+    - UMTaskManagerInterface
   - EXBarCodeScanner (8.0.0):
     - UMCore
     - UMImageLoaderInterface
@@ -94,6 +97,10 @@ PODS:
     - UMCore
   - EXLocalization (8.0.0):
     - UMCore
+  - EXLocation (8.0.0):
+    - UMCore
+    - UMPermissionsInterface
+    - UMTaskManagerInterface
   - EXMailComposer (8.0.0):
     - UMCore
     - UMFileSystemInterface
@@ -134,6 +141,11 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (2.0.0):
     - UMCore
+  - EXTaskManager (8.0.0):
+    - EXAppLoaderProvider
+    - UMConstantsInterface
+    - UMCore
+    - UMTaskManagerInterface
   - EXUpdates (0.0.1-rc.0):
     - UMCore
   - EXWebBrowser (8.0.0):
@@ -386,6 +398,7 @@ PODS:
     - UMCore
     - UMFontInterface
   - UMSensorsInterface (5.0.0)
+  - UMTaskManagerInterface (5.0.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -400,6 +413,7 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../../../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
+  - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
   - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
@@ -425,6 +439,7 @@ DEPENDENCIES:
   - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../../../packages/expo-localization/ios`)
+  - EXLocation (from `../../../packages/expo-location/ios`)
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
@@ -440,6 +455,7 @@ DEPENDENCIES:
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
+  - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -481,6 +497,7 @@ DEPENDENCIES:
   - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../../../packages/unimodules-sensors-interface/ios`)
+  - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -512,6 +529,9 @@ EXTERNAL SOURCES:
   EXAV:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-av/ios"
+  EXBackgroundFetch:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-barcode-scanner/ios"
@@ -587,6 +607,9 @@ EXTERNAL SOURCES:
   EXLocalization:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-localization/ios"
+  EXLocation:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-location/ios"
   EXMailComposer:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-mail-composer/ios"
@@ -632,6 +655,9 @@ EXTERNAL SOURCES:
   EXStoreReview:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-store-review/ios"
+  EXTaskManager:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-task-manager/ios"
   EXUpdates:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-updates/ios"
@@ -720,6 +746,9 @@ EXTERNAL SOURCES:
   UMSensorsInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-sensors-interface/ios"
+  UMTaskManagerInterface:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
@@ -734,6 +763,7 @@ SPEC CHECKSUMS:
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
   EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
   EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
+  EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
   EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
@@ -759,6 +789,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
   EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd
   EXLocalization: 6a3ec1e9dda2ec9ba9dcc4a29dd840e5e950115e
+  EXLocation: 3c75d012ca92eed94d4338778d79c49d1252393a
   EXMailComposer: b9be58adaabb860fc8b722204ce27b33c7da5aad
   EXMediaLibrary: 9281707de8f95cc391d242b614f493ab781030fa
   EXNetwork: a52f713ced4b05a2634eb88a1f1f8678fcb8b69c
@@ -774,6 +805,7 @@ SPEC CHECKSUMS:
   EXSpeech: 3f7d29b3da9283637176f0fd8dbb1e9da59b2741
   EXSQLite: 220226a354912b100dfe913f5fe6f31762c8927e
   EXStoreReview: 6fc278b9e50805ce3f7a2b9f15b5f0addaa21b90
+  EXTaskManager: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
   EXUpdates: 4bb4c813dac48562f9640b5cb7c8283a60b0e68b
   EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
@@ -815,6 +847,7 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
   UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
+  UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
