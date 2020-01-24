@@ -4,11 +4,11 @@ import android.app.Notification;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.presentation.ExpoNotificationBuilder;
+import expo.modules.notifications.notifications.presentation.builders.BadgeSettingNotificationBuilder;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class SetBadgeCountNotificationEffect extends BaseNotificationEffect {
-  public static final String EXTRAS_BADGE_KEY = ExpoNotificationBuilder.EXTRAS_BADGE_KEY;
+  private static final String EXTRAS_BADGE_KEY = BadgeSettingNotificationBuilder.EXTRAS_BADGE_KEY;
 
   public SetBadgeCountNotificationEffect(Context context) {
     super(context);
