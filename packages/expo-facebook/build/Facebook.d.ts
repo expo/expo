@@ -49,8 +49,7 @@ export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
  *   If it fails to find one, the promise will be rejected.
  * - If you provide an explicit `appId`, it will override any other source.
  * The same resolution mechanism is applied to `appName`.
- * @param appId An optional Facebook App ID argument
- * @param options An optional Facebook App Name argument
+ * @param options The options used to configure how Facebook is initialized
  */
 export declare function initializeAsync(options?: InitOptions): Promise<any>;
 /**
