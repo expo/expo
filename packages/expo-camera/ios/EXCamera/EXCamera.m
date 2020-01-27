@@ -525,6 +525,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
 
+    bool shouldBeMirrored = options[@"mirrorVideo"] && [options[@"mirrorVideo"] boolValue];
+    if (shouldBeMirrored) {
+      [connection setVideoMirrored:shouldBeMirrored];
+    }
+
     UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
       UM_STRONGIFY(self);
