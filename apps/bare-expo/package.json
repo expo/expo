@@ -42,7 +42,6 @@
     "expo-face-detector",
     "unimodules-face-detector-interface",
     "expo-payments-stripe",
-    "expo-facebook",
     "expo-ads-facebook",
     "expo-ads-admob",
     "expo-video-thumbnails",
