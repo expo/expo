@@ -217,6 +217,7 @@ An enum whose values can be passed to the [`lockAsync`](#screenorientationlockas
 - **`OrientationLock.LANDSCAPE_RIGHT`** -- Right landscape only.
 - **`OrientationLock.OTHER`** -- A platform specific orientation. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
 - **`OrientationLock.UNKNOWN`** -- An unknown screen orientation lock. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
+- **`OrientationLock.ALL_BUT_UPSIDE_DOWN`** -- ALL, excluding PORTRAIT_DOWN.
 
 ### `ScreenOrientation.SizeClassIOS`
 
