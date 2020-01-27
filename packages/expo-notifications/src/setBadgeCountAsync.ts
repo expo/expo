@@ -1,7 +1,11 @@
 import { UnavailabilityError, Platform } from '@unimodules/core';
 
 import BadgeModule from './BadgeModule';
-import { SetBadgeCountOptions } from './BadgeModule.types';
+import { WebSetBadgeCountOptions } from './BadgeModule.types';
+
+export interface SetBadgeCountOptions {
+  web?: WebSetBadgeCountOptions;
+}
 
 export default async function setBadgeCountAsync(
   badgeCount: number,

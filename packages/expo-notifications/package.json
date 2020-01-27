@@ -38,6 +38,7 @@
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806",
   "dependencies": {
+    "badgin": "^1.1.5",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
