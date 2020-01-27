@@ -135,8 +135,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
 
     alarmManager.setInexactRepeating(
       AlarmManager.ELAPSED_REALTIME_WAKEUP,
-      SystemClock.elapsedRealtime() + interval,
-      interval,
+      0,0,
       mPendingIntent
     );
   }

@@ -155,7 +155,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   //region helpers
 
   private boolean isRunningInHeadlessMode() {
-    return mTaskService.isStartedByHeadlessStarter(getAppId());
+    return mTaskService.isStartedByHeadlessLoader(getAppId());
   }
 
   private String getAppUrl() {

@@ -59,7 +59,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
     }
 
-    AppLoaderProvider.registerLoader("react-native-experience", ExpoHeadlessAppLoader.class);
+    AppLoaderProvider.registerLoader(this,"react-native-experience", ExpoHeadlessAppLoader.class);
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
       public KernelInterface create() {

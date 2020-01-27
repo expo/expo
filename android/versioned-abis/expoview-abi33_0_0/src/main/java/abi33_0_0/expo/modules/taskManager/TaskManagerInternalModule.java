@@ -119,7 +119,7 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
     if (mConstants != null && mConstants.getConstants() != null && mConstants.getConstants().containsKey("isHeadless")) {
       return (boolean) mConstants.getConstants().get("isHeadless");
     } else {
-      return mTaskService.isStartedByHeadlessStarter(getAppId());
+      return mTaskService.isStartedByHeadlessLoader(getAppId());
     }
   }
 

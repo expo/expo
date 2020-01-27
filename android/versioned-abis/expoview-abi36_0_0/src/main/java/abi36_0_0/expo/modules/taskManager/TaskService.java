@@ -246,7 +246,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = isStartedByHeadlessStarter(appId);
+    boolean isHeadless = isStartedByHeadlessLoader(appId);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -271,17 +271,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public boolean isStartedByHeadlessStarter(String appId) {
+  public boolean isStartedByHeadlessLoader(String appId) {
     return mAppLoader.isRunning(appId);
-  }
-
-  @Override
-  public void removeTaskManager(String appId) {
-    clearTaskManager(appId);
-  }
-
-  public static void clearTaskManager(String appId) {
-    sTaskManagers.remove(appId);
   }
 
   public void handleIntent(Intent intent) {
