@@ -9,7 +9,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-facebook'
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
 
 ## Installation
 
