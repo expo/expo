@@ -554,6 +554,8 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
