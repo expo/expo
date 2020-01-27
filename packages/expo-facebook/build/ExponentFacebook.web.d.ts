@@ -1,8 +1,9 @@
+/// <reference types="facebook-js-sdk" />
 import { FacebookAuth } from './Facebook';
 import { FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
 declare const _default: {
     readonly name: string;
-    initializeAsync({ appId, version, xfbml, ...options }: InitOptions): Promise<any>;
+    initializeAsync({ appId, version, xfbml, ...options }: InitOptions): Promise<fb.FacebookStatic>;
     /**
      * https://developers.facebook.com/docs/reference/javascript/FB.login/v5.0
      *

@@ -32,9 +32,6 @@ export type FacebookOptions = {
   permissions?: string[];
 };
 
-/**
- * web only
- */
 export type SDKScriptURLOptions = {
   domain?: string;
   language?: string;
@@ -51,9 +48,6 @@ export type SDKScriptURLOptions = {
 export type SDKInitOptions = {
   appId?: string;
 
-  /**
-   *
-   */
   autoLogAppEvents?: boolean;
   /**
    * With xfbml set to true, the SDK will parse your page's DOM to find and initialize any social plugins that have been added using XFBML.

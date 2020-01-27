@@ -3,26 +3,38 @@ import { CodedError } from '@unimodules/core';
 import { FacebookAuth } from './Facebook';
 import {
   FacebookLoginResult,
-  SDKScriptURLOptions,
   FacebookOptions,
   InitOptions,
+  SDKScriptURLOptions,
 } from './Facebook.types';
 
-type FB = any;
-
-declare var window: Window & { FB: FB; fbAsyncInit: Function };
+declare var window: Window & { FB: fb.FacebookStatic; fbAsyncInit?: () => void };
 
 const SCRIPT_ID = 'expo-facebook-generated-fbsdk-script';
 
-let loadingFBSDKPromise: Promise<FB>;
+let loadingFBSDKPromise: Promise<fb.FacebookStatic>;
 
 let autoLogAppEvents: boolean = true;
 let lastAppId: string;
 
+// FBSDK promises
+
+async function getLoginStatusAsync(): Promise<fb.StatusResponse> {
+  return new Promise(resolve => window.FB.getLoginStatus(resolve));
+}
+async function logoutAsync(): Promise<fb.StatusResponse> {
+  return new Promise(resolve => window.FB.logout(resolve));
+}
+async function loginAsync(options?: fb.LoginOptions): Promise<fb.StatusResponse> {
+  return new Promise(resolve => window.FB.login(resolve, options));
+}
+
+// Helper
+
 function throwIfUninitialized() {
-  if (!window.FB)
+  if (!window || !window.FB)
     throw new CodedError(
-      'E_FB_CONF_ERROR',
+      'E_FB_INIT',
       'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.'
     );
 }
@@ -45,7 +57,9 @@ function getScriptElement({
   return scriptElement;
 }
 
-function ensurePermissionsAreArray(permissions: string | string[]): string[] {
+function ensurePermissionsAreArray(permissions?: string | string[]): string[] {
+  if (!permissions) return [];
+
   if (Array.isArray(permissions)) {
     return permissions;
   }
@@ -61,10 +75,10 @@ export default {
     version = 'v5.0',
     xfbml = true,
     ...options
-  }: InitOptions): Promise<FB> {
+  }: InitOptions): Promise<fb.FacebookStatic> {
     if (!appId) {
       throw new CodedError(
-        'E_FB_INIT',
+        'E_FB_CONF_ERROR',
         `Failed to initialize app because the appId wasn't provided.`
       );
     }
@@ -92,7 +106,7 @@ export default {
 
       // If the script tag exists then resolve without creating a new one.
       const element = document.getElementById(SCRIPT_ID);
-      if (element && element instanceof HTMLScriptElement) {
+      if (element) {
         resolve(window.FB);
       }
 
@@ -118,62 +132,68 @@ export default {
 
     const { permissions = ['public_profile', 'email'] } = options;
 
-    return new Promise(resolve => {
-      window.FB.login(
-        response => {
-          if (response.authResponse) {
-            resolve({
-              type: 'success',
-              token: response.authResponse.accessToken,
-              permissions: ensurePermissionsAreArray(response.authResponse.grantedScopes),
-              expires: response.authResponse.data_access_expiration_time,
-              // TODO: Add these if possible
-              declinedPermissions: [],
-            });
-          } else {
-            resolve({ type: 'cancel' });
-          }
-        },
-        {
-          scopes: permissions.join(','),
-          return_scopes: true,
-        }
-      );
-    });
+    const loginOptions: fb.LoginOptions = {
+      scope: permissions.join(','),
+      return_scopes: true,
+    };
+
+    const response = await loginAsync(loginOptions);
+
+    if (response.authResponse) {
+      const authResponse = response.authResponse as fb.AuthResponse & {
+        graphDomain: string;
+        data_access_expiration_time: number;
+      };
+
+      return {
+        type: 'success',
+        token: authResponse.accessToken,
+        permissions: ensurePermissionsAreArray(authResponse.grantedScopes),
+        // TODO: Bacon: Ensure this is the same format as native
+        // expires: response.authResponse.expiresIn,
+        expires: authResponse.data_access_expiration_time,
+        // TODO: Add these if possible
+        declinedPermissions: [],
+      };
+    }
+
+    return { type: 'cancel' };
   },
 
   async getAccessTokenAsync(): Promise<FacebookAuth | null> {
     throwIfUninitialized();
-    return new Promise(resolve => {
-      window.FB.getLoginStatus(response => {
-        resolve(
-          response.authResponse
-            ? {
-                appID: lastAppId,
-                expires: response.authResponse.expires,
-                token: response.authResponse.accessToken,
-                userID: response.authResponse.userID,
-                signedRequest: response.authResponse.signedRequest,
-                graphDomain: response.authResponse.graphDomain,
-                dataAccessExpires: response.authResponse.data_access_expiration_time,
-              }
-            : null
-        );
-      });
-    });
+
+    const response = await getLoginStatusAsync();
+    if (!response.authResponse) {
+      return null;
+    }
+
+    const authResponse = response.authResponse as fb.AuthResponse & {
+      graphDomain: string;
+      data_access_expiration_time: number;
+    };
+
+    return {
+      appID: lastAppId,
+      // TODO: Bacon: Ensure expiresIn is returned in the correct format
+      expires: authResponse.expiresIn,
+      token: authResponse.accessToken,
+      userID: authResponse.userID,
+      signedRequest: authResponse.signedRequest,
+      graphDomain: authResponse.graphDomain,
+      dataAccessExpires: authResponse.data_access_expiration_time,
+      permissions: ensurePermissionsAreArray(authResponse.grantedScopes),
+    };
   },
   async logOutAsync(): Promise<void> {
     throwIfUninitialized();
 
-    // Prevent FB throwing a cryptic error message.
+    // Check if the user is already authenticated before attempting to log out.
+    // This will prevent the FBSDK from throwing a cryptic error message about not providing a token.
     const auth = await this.getAccessTokenAsync();
     if (!auth) return;
 
-    return new Promise(resolve => {
-      window.FB.logout(() => {
-        resolve();
-      });
-    });
+    await logoutAsync();
   },
   setAutoLogAppEventsEnabledAsync(enabled: boolean) {
     autoLogAppEvents = enabled;

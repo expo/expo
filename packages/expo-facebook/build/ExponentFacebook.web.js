@@ -3,9 +3,20 @@ const SCRIPT_ID = 'expo-facebook-generated-fbsdk-script';
 let loadingFBSDKPromise;
 let autoLogAppEvents = true;
 let lastAppId;
+// FBSDK promises
+async function getLoginStatusAsync() {
+    return new Promise(resolve => window.FB.getLoginStatus(resolve));
+}
+async function logoutAsync() {
+    return new Promise(resolve => window.FB.logout(resolve));
+}
+async function loginAsync(options) {
+    return new Promise(resolve => window.FB.login(resolve, options));
+}
+// Helper
 function throwIfUninitialized() {
-    if (!window.FB)
-        throw new CodedError('E_FB_CONF_ERROR', 'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.');
+    if (!window || !window.FB)
+        throw new CodedError('E_FB_INIT', 'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.');
 }
 function getScriptElement({ domain = 'connect.facebook.net', language = 'en_US', isCustomerSupportChatEnabled = false, isDebugEnabled = false, }) {
     const scriptUrl = `https://${domain}/${language}/sdk${isCustomerSupportChatEnabled ? '/xfbml.customerchat' : ''}${isDebugEnabled ? '/debug' : ''}.js`;
@@ -17,6 +28,8 @@ function getScriptElement({ domain = 'connect.facebook.net', language = 'en_US',
     return scriptElement;
 }
 function ensurePermissionsAreArray(permissions) {
+    if (!permissions)
+        return [];
     if (Array.isArray(permissions)) {
         return permissions;
     }
@@ -28,7 +41,7 @@ export default {
     },
     async initializeAsync({ appId, version = 'v5.0', xfbml = true, ...options }) {
         if (!appId) {
-            throw new CodedError('E_FB_INIT', `Failed to initialize app because the appId wasn't provided.`);
+            throw new CodedError('E_FB_CONF_ERROR', `Failed to initialize app because the appId wasn't provided.`);
         }
         if (loadingFBSDKPromise) {
             return loadingFBSDKPromise;
@@ -50,7 +63,7 @@ export default {
             };
             // If the script tag exists then resolve without creating a new one.
             const element = document.getElementById(SCRIPT_ID);
-            if (element && element instanceof HTMLScriptElement) {
+            if (element) {
                 resolve(window.FB);
             }
             document.body.appendChild(getScriptElement({
@@ -70,56 +83,53 @@ export default {
     async logInWithReadPermissionsAsync(options) {
         throwIfUninitialized();
         const { permissions = ['public_profile', 'email'] } = options;
-        return new Promise(resolve => {
-            window.FB.login(response => {
-                if (response.authResponse) {
-                    resolve({
-                        type: 'success',
-                        token: response.authResponse.accessToken,
-                        permissions: ensurePermissionsAreArray(response.authResponse.grantedScopes),
-                        expires: response.authResponse.data_access_expiration_time,
-                        // TODO: Add these if possible
-                        declinedPermissions: [],
-                    });
-                }
-                else {
-                    resolve({ type: 'cancel' });
-                }
-            }, {
-                scopes: permissions.join(','),
-                return_scopes: true,
-            });
-        });
+        const loginOptions = {
+            scope: permissions.join(','),
+            return_scopes: true,
+        };
+        const response = await loginAsync(loginOptions);
+        if (response.authResponse) {
+            const authResponse = response.authResponse;
+            return {
+                type: 'success',
+                token: authResponse.accessToken,
+                permissions: ensurePermissionsAreArray(authResponse.grantedScopes),
+                // TODO: Bacon: Ensure this is the same format as native
+                // expires: response.authResponse.expiresIn,
+                expires: authResponse.data_access_expiration_time,
+                // TODO: Add these if possible
+                declinedPermissions: [],
+            };
+        }
+        return { type: 'cancel' };
     },
     async getAccessTokenAsync() {
         throwIfUninitialized();
-        return new Promise(resolve => {
-            window.FB.getLoginStatus(response => {
-                resolve(response.authResponse
-                    ? {
-                        appID: lastAppId,
-                        expires: response.authResponse.expires,
-                        token: response.authResponse.accessToken,
-                        userID: response.authResponse.userID,
-                        signedRequest: response.authResponse.signedRequest,
-                        graphDomain: response.authResponse.graphDomain,
-                        dataAccessExpires: response.authResponse.data_access_expiration_time,
-                    }
-                    : null);
-            });
-        });
+        const response = await getLoginStatusAsync();
+        if (!response.authResponse) {
+            return null;
+        }
+        const authResponse = response.authResponse;
+        return {
+            appID: lastAppId,
+            // TODO: Bacon: Ensure expiresIn is returned in the correct format
+            expires: authResponse.expiresIn,
+            token: authResponse.accessToken,
+            userID: authResponse.userID,
+            signedRequest: authResponse.signedRequest,
+            graphDomain: authResponse.graphDomain,
+            dataAccessExpires: authResponse.data_access_expiration_time,
+            permissions: ensurePermissionsAreArray(authResponse.grantedScopes),
+        };
     },
     async logOutAsync() {
         throwIfUninitialized();
-        // Prevent FB throwing a cryptic error message.
+        // Check if the user is already authenticated before attempting to log out.
+        // This will prevent the FBSDK from throwing a cryptic error message about not providing a token.
         const auth = await this.getAccessTokenAsync();
         if (!auth)
             return;
-        return new Promise(resolve => {
-            window.FB.logout(() => {
-                resolve();
-            });
-        });
+        await logoutAsync();
     },
     setAutoLogAppEventsEnabledAsync(enabled) {
         autoLogAppEvents = enabled;
