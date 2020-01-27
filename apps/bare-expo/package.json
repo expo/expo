@@ -103,7 +103,7 @@
     "@types/react-native": "^0.60.15",
     "babel-preset-expo": "~8.0.0",
     "detox": "^14.8.4",
-    "expo-module-scripts": "^1.1.1",
+    "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~36.0.1",
     "jest-expo-puppeteer": "^0.0.0"

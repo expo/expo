@@ -39,7 +39,7 @@
     "serve": "^11.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1",
+    "expo-module-scripts": "~1.2.0",
     "react": "16.9.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
