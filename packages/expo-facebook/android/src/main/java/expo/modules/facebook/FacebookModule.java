@@ -63,18 +63,62 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
     promise.resolve(null);
   }
+  
+  @ExpoMethod
+  public void getAccessTokenAsync(Promise promise) {
+    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+    if (accessToken == null) {
+      promise.resolve(null);
+      return;
+    }
+
+    Bundle response = new Bundle();
+    response.putString("token", accessToken.getToken());
+    response.putString("userID", accessToken.getUserId());
+    response.putString("appID", accessToken.getApplicationId());
+
+    response.putStringArrayList("permissions", new ArrayList<>(accessToken.getPermissions()));
+    response.putStringArrayList("declinedPermissions", new ArrayList<>(accessToken.getDeclinedPermissions()));
+    response.putStringArrayList("expiredPermissions", new ArrayList<>(accessToken.getExpiredPermissions()));
+
+    response.putInt("expires", (int) accessToken.getExpires().getTime() / 1000);
+    response.putInt("dataAccessExpires", (int) accessToken.getDataAccessExpirationTime().getTime() / 1000);
+
+    response.putInt("refresh", (int) accessToken.getLastRefresh().getTime() / 1000);
+    response.putString("tokenSource", accessToken.getSource().name());
+
+    promise.resolve(response);
+  }
 
   @ExpoMethod
-  public void initializeAsync(final String appId, final String appName, final Promise promise) {
+  public void initializeAsync(ReadableArguments options, final Promise promise) {
+    final String appId = options.getString("appId");
+
     try {
       if (appId != null) {
         mAppId = appId;
         FacebookSdk.setApplicationId(appId);
       }
-      if (appName != null) {
-        mAppName = appName;
-        FacebookSdk.setApplicationName(appName);
+      if (options.containsKey("appName ")) {
+        mAppName = options.getString("appName");
+        FacebookSdk.setApplicationName(mAppName);
       }
+      if (options.containsKey("version")) {
+        FacebookSdk.setGraphApiVersion(options.getString("version"));
+      }
+      if (options.containsKey("autoLogAppEvents")) {
+        Boolean autoLogAppEvents = options.getBoolean("autoLogAppEvents");
+        FacebookSdk.setAutoLogAppEventsEnabled(autoLogAppEvents);
+      }
+      if (options.containsKey("domain")) {
+        FacebookSdk.setFacebookDomain(options.getString("domain"));
+      }
+      if (options.containsKey("isDebugEnabled")) {
+        FacebookSdk.setIsDebugEnabled(options.getBoolean("isDebugEnabled"));
+      }
+
+
       FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
         @Override
         public void onInitialized() {
@@ -87,6 +131,13 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     } catch (Exception e) {
       promise.reject(e);
     }
+  }
+
+  @ExpoMethod
+  public void logOutAsync(final Promise promise) {
+    AccessToken.setCurrentAccessToken(null);
+    LoginManager.getInstance().logOut();
+    promise.resolve(null);
   }
 
   @ExpoMethod

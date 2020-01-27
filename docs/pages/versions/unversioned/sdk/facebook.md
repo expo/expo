@@ -43,17 +43,25 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
 
+- **Web**
+  - This web guide was written in January 2020 (FBSDK is known to have breaking changes *very* often).
+  - Projects must be secure (using `https`) and using `localhost`. Start your project with `expo start:web --https` then change the IP in the URL bar to be `https://localhost:19006`.
+  - In the Facebook Developer Console be sure to add `https://localhost:19006` to the "App Domains". Be sure you're testing on the correct port `19006`.
+  - You'll need to whitelist `localhost` by navigating to **Settings > Basic > Add Platform** and selecting "Website".
+    - If you don't do this you may see the following error when attempting to log out: "Refused to display 'https://www.facebook.com/home.php' in a frame because it set 'X-Frame-Options' to 'deny'."
+
 ## API
 
 ```js
 import * as Facebook from 'expo-facebook';
 ```
 
-### `Facebook.initializeAsync(appId: string | undefined, appName: string | undefined): Promise<void>`
+### `Facebook.initializeAsync(options: InitOptions): Promise<void>`
 
 Calling this method ensures that the SDK is initialized. You have to call this method before calling `logInWithReadPermissionsAsync` to ensure that Facebook support is initialized properly.
+On web this method downloads the FBSDK script. This script will generate a side-effect of `window.FB` globally.
 
-You may or may not provide an optional `appId: string` argument.
+You may or may not provide an optional `appId: string` argument on native platforms. `appId` and `version` options must be included in the browser.
 
 - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
 - If you provide an explicit `appId`, it will override any other source.
@@ -100,7 +108,12 @@ Otherwise, returns `{ type: 'success', token, expires, permissions, declinedPerm
 ```javascript
 async function logIn() {
   try {
-    await Facebook.initializeAsync('<APP_ID>');
+    await Facebook.initializeAsync({ 
+      appId: '<APP_ID>', 
+      version: Platform.select({
+        web: '<VERSION>',
+      }),
+    });
     const {
       type,
       token,
@@ -124,3 +137,27 @@ async function logIn() {
 ```
 
 Given a valid Facebook application ID in place of `<APP_ID>`, the code above will prompt the user to log into Facebook then display the user's name. This uses React Native's [fetch](https://facebook.github.io/react-native/docs/network.html#fetch) to query Facebook's [Graph API](https://developers.facebook.com/docs/graph-api).
+
+### `Facebook.logOutAsync()`
+
+Logs out of the currently authenticated session.
+
+- [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout)
+
+### `Facebook.getAccessTokenAsync()`
+
+Returns the `FacebookAuth` object if a user is authenticated and `null` if no valid authentication exists.
+
+You can use this method to check if the user should authenticate or not.
+
+```tsx
+async function toggleAuthAsync() {
+  const auth = await Facebook.getAccessTokenAsync();
+
+  if (!auth) {
+    // Log in
+  } else {
+    // Log out
+  }
+}
+```

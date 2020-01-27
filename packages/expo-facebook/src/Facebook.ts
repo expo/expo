@@ -1,22 +1,9 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError, CodedError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
+import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
 
-export type FacebookLoginResult =
-  | {
-      type: 'cancel';
-    }
-  | {
-      type: 'success';
-      token: string;
-      expires: number;
-      permissions: string[];
-      declinedPermissions: string[];
-    };
-
-export type FacebookOptions = {
-  permissions?: string[];
-};
+export { FacebookLoginResult, FacebookOptions, FacebookAuth };
 
 export async function logInWithReadPermissionsAsync(
   options?: FacebookOptions
@@ -30,6 +17,28 @@ export async function logInWithReadPermissionsAsync(
   }
 
   return ExponentFacebook.logInWithReadPermissionsAsync(options);
+}
+
+/**
+ *
+ */
+export async function getAccessTokenAsync(): Promise<FacebookAuth | null> {
+  if (!ExponentFacebook.getAccessTokenAsync) {
+    throw new UnavailabilityError('Facebook', 'getAccessTokenAsync');
+  }
+
+  return await ExponentFacebook.getAccessTokenAsync();
+}
+
+/**
+ *
+ */
+export async function logOutAsync() {
+  if (!ExponentFacebook.logOutAsync) {
+    throw new UnavailabilityError('Facebook', 'logOutAsync');
+  }
+
+  return await ExponentFacebook.logOutAsync();
 }
 
 /**
@@ -85,13 +94,13 @@ export async function setAutoInitEnabledAsync(enabled: boolean) {
  * - If you provide an explicit `appId`, it will override any other source.
  * The same resolution mechanism is applied to `appName`.
  * @param appId An optional Facebook App ID argument
- * @param appName An optional Facebook App Name argument
+ * @param options An optional Facebook App Name argument
  */
-export async function initializeAsync(appId?: string, appName?: string) {
+export async function initializeAsync(options: InitOptions = {}) {
   if (!ExponentFacebook.initializeAsync) {
     throw new UnavailabilityError('Facebook', 'initializeAsync');
   }
-  return await ExponentFacebook.initializeAsync(appId, appName);
+  return await ExponentFacebook.initializeAsync(options);
 }
 
 /**
@@ -112,4 +121,26 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled: boolean) {
     throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
   }
   return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+}
+
+export async function getUserAsync(): Promise<any> {
+  return await requestAsync({ path: 'me' });
+}
+
+export async function requestAsync({
+  token,
+  path,
+}: {
+  token?: string;
+  path: string;
+}): Promise<any> {
+  let resolvedToken = token;
+  if (!token) {
+    const auth = await getAccessTokenAsync();
+    if (!auth) throw new CodedError('E_FB_AUTH', 'User is not authenticated');
+    resolvedToken = auth.token;
+  }
+  const response = await fetch(`https://graph.facebook.com/${path}?access_token=${resolvedToken}`);
+  const body = await response.json();
+  return body;
 }
