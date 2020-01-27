@@ -7,7 +7,7 @@ import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
 
 const ExpoApis = {
   screen: ExpoApisStackNavigator,
-  path: 'APIs',
+  path: 'apis',
   navigationOptions: {
     title: 'Expo APIs',
     tabBarLabel: 'APIs',
@@ -19,7 +19,7 @@ const ExpoApis = {
 
 const ExpoComponents = {
   screen: ExpoComponentsStackNavigator,
-  path: 'Components',
+  path: 'components',
   navigationOptions: {
     title: 'Expo Components',
     tabBarLabel: 'Components',
@@ -31,7 +31,7 @@ const ExpoComponents = {
 
 const ReactNativeCore = {
   screen: ReactNativeCoreStackNavigator,
-  path: 'ReactNative',
+  path: 'react-native',
   navigationOptions: {
     title: 'React Native Core',
     tabBarLabel: 'React Native',
