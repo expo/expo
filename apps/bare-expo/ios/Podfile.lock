@@ -94,6 +94,10 @@ PODS:
     - UMCore
   - EXLocalization (8.0.0):
     - UMCore
+  - EXLocation (8.0.0):
+    - UMCore
+    - UMPermissionsInterface
+    - UMTaskManagerInterface
   - EXMailComposer (8.0.0):
     - UMCore
     - UMFileSystemInterface
@@ -331,6 +335,8 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
   - React-jsinspector (0.61.4)
+  - react-native-appearance (0.3.2):
+    - React
   - react-native-safe-area-context (0.6.0):
     - React
   - React-RCTActionSheet (0.61.4):
@@ -386,6 +392,7 @@ PODS:
     - UMCore
     - UMFontInterface
   - UMSensorsInterface (5.0.0)
+  - UMTaskManagerInterface (5.0.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -425,6 +432,7 @@ DEPENDENCIES:
   - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../../../packages/expo-localization/ios`)
+  - EXLocation (from `../../../packages/expo-location/ios`)
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
@@ -457,6 +465,7 @@ DEPENDENCIES:
   - React-jsi (from `../../../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../../../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../react-native-lab/react-native/ReactCommon/jsinspector`)
+  - react-native-appearance (from `../node_modules/react-native-appearance`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React-RCTActionSheet (from `../../../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../../react-native-lab/react-native/Libraries/NativeAnimation`)
@@ -481,6 +490,7 @@ DEPENDENCIES:
   - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../../../packages/unimodules-sensors-interface/ios`)
+  - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -587,6 +597,9 @@ EXTERNAL SOURCES:
   EXLocalization:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-localization/ios"
+  EXLocation:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-location/ios"
   EXMailComposer:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-mail-composer/ios"
@@ -664,6 +677,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsinspector"
+  react-native-appearance:
+    :path: "../node_modules/react-native-appearance"
   react-native-safe-area-context:
     :path: "../../../node_modules/react-native-safe-area-context"
   React-RCTActionSheet:
@@ -720,6 +735,9 @@ EXTERNAL SOURCES:
   UMSensorsInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-sensors-interface/ios"
+  UMTaskManagerInterface:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
@@ -759,6 +777,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
   EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd
   EXLocalization: 6a3ec1e9dda2ec9ba9dcc4a29dd840e5e950115e
+  EXLocation: 3c75d012ca92eed94d4338778d79c49d1252393a
   EXMailComposer: b9be58adaabb860fc8b722204ce27b33c7da5aad
   EXMediaLibrary: 9281707de8f95cc391d242b614f493ab781030fa
   EXNetwork: a52f713ced4b05a2634eb88a1f1f8678fcb8b69c
@@ -792,6 +811,7 @@ SPEC CHECKSUMS:
   React-jsi: ca921f4041505f9d5197139b2d09eeb020bb12e8
   React-jsiexecutor: 8dfb73b987afa9324e4009bdce62a18ce23d983c
   React-jsinspector: d15478d0a8ada19864aa4d1cc1c697b41b3fa92f
+  react-native-appearance: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
   react-native-safe-area-context: d288138da2c800caa111f9352e9333f186a06ead
   React-RCTActionSheet: 7369b7c85f99b6299491333affd9f01f5a130c22
   React-RCTAnimation: d07be15b2bd1d06d89417eb0343f98ffd2b099a7
@@ -815,6 +835,7 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
   UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
+  UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 

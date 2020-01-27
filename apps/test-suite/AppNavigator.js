@@ -16,10 +16,10 @@ const AppNavigator = createStackNavigator(
     headerMode: Platform.select({ web: 'screen', default: undefined }),
     transitionConfig: global.DETOX
       ? () => ({
-        transitionSpec: {
-          duration: 0,
-        },
-      })
+          transitionSpec: {
+            duration: 0,
+          },
+        })
       : undefined,
     defaultNavigationOptions: {
       headerBackTitle: 'Select',
