@@ -5,6 +5,9 @@ import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
 
+// @tsapeta: These navigators are being used by `bare-expo` app,
+// so make sure they still work there once you change something here.
+
 const ExpoApis = {
   screen: ExpoApisStackNavigator,
   path: 'apis',

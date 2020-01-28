@@ -53,6 +53,8 @@ class App extends React.Component<Props, State> {
         </View>
       );
     }
+    // We should check whether `AppLoading` is set, as this code may be used by `bare-expo`
+    // where this module is not exported due to bare workflow.
     if (AppLoading) {
       return <AppLoading />;
     }

@@ -7,6 +7,9 @@ import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
 import Colors from './constants/Colors';
 
+// @tsapeta: This navigator is also being used by `bare-expo` app,
+// so make sure it still works there once you change something here.
+
 const AppNavigator = createStackNavigator(
   {
     Select: { screen: SelectScreen, path: 'select/:tests?' },

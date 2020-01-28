@@ -6,7 +6,7 @@ import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import Icons from '../constants/Icons';
 
-async function loadAssetsAsync() {
+export default async function loadAssetsAsync() {
   const iconRequires = Object.keys(Icons).map(key => Icons[key]);
 
   const assetPromises: Promise<any>[] = [
@@ -31,5 +31,3 @@ async function loadAssetsAsync() {
   }
   await Promise.all(assetPromises);
 }
-
-export default loadAssetsAsync;
