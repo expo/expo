@@ -45,9 +45,9 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 
 - **Web**
   - This web guide was written in January 2020 (FBSDK is known to have breaking changes *very* often).
-  - Projects must be secure (using `https`) and using `localhost`. Start your project with `expo start:web --https` then change the IP in the URL bar to be `https://localhost:19006`.
-  - In the Facebook Developer Console be sure to add `https://localhost:19006` to the "App Domains". Be sure you're testing on the correct port `19006`.
-  - You'll need to whitelist `localhost` by navigating to **Settings > Basic > Add Platform** and selecting "Website".
+  - Projects must be secure (using `https`) and using `localhost`. Start your project with `expo start:web --https --localhost`.
+  - In the Facebook Developer Console be sure to add `localhost` to the "App Domains".
+  - You'll need to whitelist `localhost` by navigating to **Settings > Basic > Add Platform** and selecting "Website". Then set the "Site URL" to `https://localhost:19006` for debugging.
     - If you don't do this you may see the following error when attempting to log out: "Refused to display 'https://www.facebook.com/home.php' in a frame because it set 'X-Frame-Options' to 'deny'."
 
 ## API
@@ -89,7 +89,7 @@ In Expo, by default, collecting those IDs is disabled. You may change this value
 ### `Facebook.logInWithReadPermissionsAsync(options)`
 
 Prompts the user to log into Facebook and grants your app permission
-to access their Facebook data.
+to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
 
 #### param object options
 
@@ -101,7 +101,22 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success', token, expires, permissions, declinedPermissions }`. `token` is a string giving the access token to use with Facebook HTTP API requests. `expires` is the time at which this token will expire, as seconds since epoch. You can save the access token using, say, `AsyncStorage`, and use it till the expiration time. `permissions` is a list of all the approved permissions, whereas `declinedPermissions` is a list of the permissions that the user has rejected.
+Otherwise, returns `{ type: 'success' } & FacebookAuth`.
+
+- `FacebookAuth` type:
+
+  - **token (_string_)** Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
+  - **userID (_string_)** The ID of the user.
+  - **appID (_string_)** Application ID used to initialize the FBSDK app.
+  - **permissions (_string[] | undefined_)** List of granted permissions.
+  - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
+  - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
+  - **expires (_number_)** Gets the time in milliseconds at which the `token` expires.
+  - **dataAccessExpires (_number_)** Time in milliseconds at which the current user data access expires.
+  - **refresh (_number | undefined_)** The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+  - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
+  - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
+  - **graphDomain (_string | undefined_)** A website domain within the Graph API.
 
 #### Example
 
@@ -111,7 +126,7 @@ async function logIn() {
     await Facebook.initializeAsync({ 
       appId: '<APP_ID>', 
       version: Platform.select({
-        web: '<VERSION>',
+        web: '<VERSION>', // ex: 'v5.0'
       }),
     });
     const {
@@ -142,13 +157,30 @@ Given a valid Facebook application ID in place of `<APP_ID>`, the code above wil
 
 Logs out of the currently authenticated session.
 
-- [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout)
+- [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout) can be unstable and may require reloading the page before `Facebook.getAccessTokenAsync()` returns `null`.
 
 ### `Facebook.getAccessTokenAsync()`
 
-Returns the `FacebookAuth` object if a user is authenticated and `null` if no valid authentication exists.
+Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
 
-You can use this method to check if the user should authenticate or not.
+You can use this method to check if the user should sign-in or not.
+
+#### returns 
+
+- `FacebookAuth` type:
+
+  - **token (_string_)** Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
+  - **userID (_string_)** The ID of the user.
+  - **appID (_string_)** Application ID used to initialize the FBSDK app.
+  - **permissions (_string[] | undefined_)** List of granted permissions.
+  - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
+  - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
+  - **expires (_number_)** Gets the time in milliseconds at which the `token` expires.
+  - **dataAccessExpires (_number_)** Time in milliseconds at which the current user data access expires.
+  - **refresh (_number | undefined_)** The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+  - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
+  - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
+  - **graphDomain (_string | undefined_)** A website domain within the Graph API.
 
 ```tsx
 async function toggleAuthAsync() {
@@ -161,3 +193,17 @@ async function toggleAuthAsync() {
   }
 }
 ```
+
+## Error Codes
+
+### `ERR_FB_INIT`
+
+Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.
+
+### `ERR_FB_CONF`
+
+Failed to initialize the FBSDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native config files. On web the `appId` option is required when invoking `initializeAsync({ ... })`.
+
+### `ERR_FB_LOGIN`
+
+An error occurred while trying to log in to Facebook.
