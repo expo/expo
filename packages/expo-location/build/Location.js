@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import { PermissionStatus, } from 'unimodules-permissions-interface';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
@@ -48,6 +48,9 @@ let headingEventSub;
 let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 export async function getProviderStatusAsync() {
+    if (!ExpoLocation.getProviderStatusAsync) {
+        throw new UnavailabilityError('expo-location', 'getProviderStatusAsync');
+    }
     return ExpoLocation.getProviderStatusAsync();
 }
 export async function enableNetworkProviderAsync() {
@@ -60,9 +63,15 @@ export async function enableNetworkProviderAsync() {
     }
 }
 export async function getCurrentPositionAsync(options = {}) {
+    if (!ExpoLocation.getCurrentPositionAsync) {
+        throw new UnavailabilityError('expo-location', 'getCurrentPositionAsync');
+    }
     return ExpoLocation.getCurrentPositionAsync(options);
 }
 export async function getLastKnownPositionAsync() {
+    if (!ExpoLocation.getLastKnownPositionAsync) {
+        throw new UnavailabilityError('expo-location', 'getLastKnownPositionAsync');
+    }
     return ExpoLocation.getLastKnownPositionAsync();
 }
 // Start Compass Module
@@ -114,6 +123,12 @@ export async function getHeadingAsync() {
     });
 }
 export async function watchHeadingAsync(callback) {
+    if (!ExpoLocation.watchDeviceHeading) {
+        throw new UnavailabilityError('expo-location', 'watchDeviceHeading');
+    }
+    else if (!ExpoLocation.removeWatchAsync) {
+        throw new UnavailabilityError('expo-location', 'removeWatchAsync');
+    }
     // Check if there is already a compass event watch.
     if (headingEventSub) {
         _removeHeadingWatcher(headingId);
@@ -150,6 +165,9 @@ function _removeHeadingWatcher(watchId) {
 }
 // End Compass Module
 function _maybeInitializeEmitterSubscription() {
+    if (!ExpoLocation.removeWatchAsync) {
+        throw new UnavailabilityError('expo-location', 'removeWatchAsync');
+    }
     if (!deviceEventSubscription) {
         deviceEventSubscription = LocationEventEmitter.addListener('Expo.locationChanged', ({ watchId, location }) => {
             const callback = watchCallbacks[watchId];
@@ -163,6 +181,9 @@ function _maybeInitializeEmitterSubscription() {
     }
 }
 export async function geocodeAsync(address) {
+    if (!ExpoLocation.geocodeAsync) {
+        throw new UnavailabilityError('expo-location', 'geocodeAsync');
+    }
     return ExpoLocation.geocodeAsync(address).catch(error => {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
@@ -175,6 +196,9 @@ export async function geocodeAsync(address) {
     });
 }
 export async function reverseGeocodeAsync(location) {
+    if (!ExpoLocation.reverseGeocodeAsync) {
+        throw new UnavailabilityError('expo-location', 'reverseGeocodeAsync');
+    }
     if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
         throw new TypeError('Location should be an object with number properties `latitude` and `longitude`.');
     }
@@ -265,6 +289,9 @@ function watchPosition(success, error, options) {
     return watchId;
 }
 export async function watchPositionAsync(options, callback) {
+    if (!ExpoLocation.watchPositionImplAsync) {
+        throw new UnavailabilityError('expo-location', 'watchPositionImplAsync');
+    }
     _maybeInitializeEmitterSubscription();
     const watchId = _getNextWatchId();
     watchCallbacks[watchId] = callback;
@@ -299,6 +326,9 @@ function getCurrentPosition(success, error = () => { }, options = {}) {
 // This function exists to let us continue to return undefined from getCurrentPosition, while still
 // using async/await for the internal implementation of it
 async function _getCurrentPositionAsyncWrapper(success, error, options) {
+    if (!ExpoLocation.requestPermissionsAsync) {
+        throw new UnavailabilityError('expo-location', 'requestPermissionsAsync');
+    }
     try {
         await ExpoLocation.requestPermissionsAsync();
         const result = await getCurrentPositionAsync(options);
@@ -309,13 +339,22 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
     }
 }
 export async function getPermissionsAsync() {
+    if (!ExpoLocation.getPermissionsAsync) {
+        throw new UnavailabilityError('expo-location', 'getPermissionsAsync');
+    }
     return await ExpoLocation.getPermissionsAsync();
 }
 export async function requestPermissionsAsync() {
+    if (!ExpoLocation.requestPermissionsAsync) {
+        throw new UnavailabilityError('expo-location', 'requestPermissionsAsync');
+    }
     return await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
 export async function hasServicesEnabledAsync() {
+    if (!ExpoLocation.hasServicesEnabledAsync) {
+        throw new UnavailabilityError('expo-location', 'hasServicesEnabledAsync');
+    }
     return await ExpoLocation.hasServicesEnabledAsync();
 }
 // --- Background location updates
@@ -327,14 +366,23 @@ export async function isBackgroundLocationAvailableAsync() {
     return providerStatus.backgroundModeEnabled;
 }
 export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
+    if (!ExpoLocation.startLocationUpdatesAsync) {
+        throw new UnavailabilityError('expo-location', 'startLocationUpdatesAsync');
+    }
     _validateTaskName(taskName);
     await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 export async function stopLocationUpdatesAsync(taskName) {
+    if (!ExpoLocation.stopLocationUpdatesAsync) {
+        throw new UnavailabilityError('expo-location', 'stopLocationUpdatesAsync');
+    }
     _validateTaskName(taskName);
     await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 export async function hasStartedLocationUpdatesAsync(taskName) {
+    if (!ExpoLocation.hasStartedLocationUpdatesAsync) {
+        throw new UnavailabilityError('expo-location', 'hasStartedLocationUpdatesAsync');
+    }
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
@@ -356,15 +404,24 @@ function _validateRegions(regions) {
     }
 }
 export async function startGeofencingAsync(taskName, regions = []) {
+    if (!ExpoLocation.startGeofencingAsync) {
+        throw new UnavailabilityError('expo-location', 'startGeofencingAsync');
+    }
     _validateTaskName(taskName);
     _validateRegions(regions);
     await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
 export async function stopGeofencingAsync(taskName) {
+    if (!ExpoLocation.stopGeofencingAsync) {
+        throw new UnavailabilityError('expo-location', 'stopGeofencingAsync');
+    }
     _validateTaskName(taskName);
     await ExpoLocation.stopGeofencingAsync(taskName);
 }
 export async function hasStartedGeofencingAsync(taskName) {
+    if (!ExpoLocation.hasStartedGeofencingAsync) {
+        throw new UnavailabilityError('expo-location', 'hasStartedGeofencingAsync');
+    }
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }

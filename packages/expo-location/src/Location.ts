@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError, UnavailabilityError } from '@unimodules/core';
 import {
   PermissionResponse as UMPermissionResponse,
   PermissionStatus,
@@ -161,6 +161,9 @@ let googleApiKey;
 const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 export async function getProviderStatusAsync(): Promise<ProviderStatus> {
+  if (!ExpoLocation.getProviderStatusAsync) {
+    throw new UnavailabilityError('expo-location', 'getProviderStatusAsync');
+  }
   return ExpoLocation.getProviderStatusAsync();
 }
 
@@ -178,10 +181,16 @@ export async function enableNetworkProviderAsync(): Promise<void> {
 export async function getCurrentPositionAsync(
   options: LocationOptions = {}
 ): Promise<LocationData> {
+  if (!ExpoLocation.getCurrentPositionAsync) {
+    throw new UnavailabilityError('expo-location', 'getCurrentPositionAsync');
+  }
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 
 export async function getLastKnownPositionAsync(): Promise<LocationData> {
+  if (!ExpoLocation.getLastKnownPositionAsync) {
+    throw new UnavailabilityError('expo-location', 'getLastKnownPositionAsync');
+  }
   return ExpoLocation.getLastKnownPositionAsync();
 }
 
@@ -237,6 +246,11 @@ export async function getHeadingAsync(): Promise<HeadingData> {
 export async function watchHeadingAsync(
   callback: HeadingCallback
 ): Promise<{ remove: () => void }> {
+  if (!ExpoLocation.watchDeviceHeading) {
+    throw new UnavailabilityError('expo-location', 'watchDeviceHeading');
+  } else if (!ExpoLocation.removeWatchAsync) {
+    throw new UnavailabilityError('expo-location', 'removeWatchAsync');
+  }
   // Check if there is already a compass event watch.
   if (headingEventSub) {
     _removeHeadingWatcher(headingId);
@@ -279,6 +293,9 @@ function _removeHeadingWatcher(watchId) {
 // End Compass Module
 
 function _maybeInitializeEmitterSubscription() {
+  if (!ExpoLocation.removeWatchAsync) {
+    throw new UnavailabilityError('expo-location', 'removeWatchAsync');
+  }
   if (!deviceEventSubscription) {
     deviceEventSubscription = LocationEventEmitter.addListener(
       'Expo.locationChanged',
@@ -295,6 +312,9 @@ function _maybeInitializeEmitterSubscription() {
 }
 
 export async function geocodeAsync(address: string): Promise<GeocodedLocation[]> {
+  if (!ExpoLocation.geocodeAsync) {
+    throw new UnavailabilityError('expo-location', 'geocodeAsync');
+  }
   return ExpoLocation.geocodeAsync(address).catch(error => {
     const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
 
@@ -315,6 +335,10 @@ export async function reverseGeocodeAsync(location: {
   latitude: number;
   longitude: number;
 }): Promise<Address[]> {
+  if (!ExpoLocation.reverseGeocodeAsync) {
+    throw new UnavailabilityError('expo-location', 'reverseGeocodeAsync');
+  }
+
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
@@ -433,6 +457,9 @@ function watchPosition(
 }
 
 export async function watchPositionAsync(options: LocationOptions, callback: LocationCallback) {
+  if (!ExpoLocation.watchPositionImplAsync) {
+    throw new UnavailabilityError('expo-location', 'watchPositionImplAsync');
+  }
   _maybeInitializeEmitterSubscription();
 
   const watchId = _getNextWatchId();
@@ -487,6 +514,9 @@ async function _getCurrentPositionAsyncWrapper(
   error: GeoErrorCallback,
   options: LocationOptions
 ): Promise<any> {
+  if (!ExpoLocation.requestPermissionsAsync) {
+    throw new UnavailabilityError('expo-location', 'requestPermissionsAsync');
+  }
   try {
     await ExpoLocation.requestPermissionsAsync();
     const result = await getCurrentPositionAsync(options);
@@ -497,16 +527,25 @@ async function _getCurrentPositionAsyncWrapper(
 }
 
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoLocation.getPermissionsAsync) {
+    throw new UnavailabilityError('expo-location', 'getPermissionsAsync');
+  }
   return await ExpoLocation.getPermissionsAsync();
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoLocation.requestPermissionsAsync) {
+    throw new UnavailabilityError('expo-location', 'requestPermissionsAsync');
+  }
   return await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service
 
 export async function hasServicesEnabledAsync(): Promise<boolean> {
+  if (!ExpoLocation.hasServicesEnabledAsync) {
+    throw new UnavailabilityError('expo-location', 'hasServicesEnabledAsync');
+  }
   return await ExpoLocation.hasServicesEnabledAsync();
 }
 
@@ -525,16 +564,25 @@ export async function startLocationUpdatesAsync(
   taskName: string,
   options: LocationTaskOptions = { accuracy: LocationAccuracy.Balanced }
 ): Promise<void> {
+  if (!ExpoLocation.startLocationUpdatesAsync) {
+    throw new UnavailabilityError('expo-location', 'startLocationUpdatesAsync');
+  }
   _validateTaskName(taskName);
   await ExpoLocation.startLocationUpdatesAsync(taskName, options);
 }
 
 export async function stopLocationUpdatesAsync(taskName: string): Promise<void> {
+  if (!ExpoLocation.stopLocationUpdatesAsync) {
+    throw new UnavailabilityError('expo-location', 'stopLocationUpdatesAsync');
+  }
   _validateTaskName(taskName);
   await ExpoLocation.stopLocationUpdatesAsync(taskName);
 }
 
 export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean> {
+  if (!ExpoLocation.hasStartedLocationUpdatesAsync) {
+    throw new UnavailabilityError('expo-location', 'hasStartedLocationUpdatesAsync');
+  }
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedLocationUpdatesAsync(taskName);
 }
@@ -566,17 +614,26 @@ export async function startGeofencingAsync(
   taskName: string,
   regions: Region[] = []
 ): Promise<void> {
+  if (!ExpoLocation.startGeofencingAsync) {
+    throw new UnavailabilityError('expo-location', 'startGeofencingAsync');
+  }
   _validateTaskName(taskName);
   _validateRegions(regions);
   await ExpoLocation.startGeofencingAsync(taskName, { regions });
 }
 
 export async function stopGeofencingAsync(taskName: string): Promise<void> {
+  if (!ExpoLocation.stopGeofencingAsync) {
+    throw new UnavailabilityError('expo-location', 'stopGeofencingAsync');
+  }
   _validateTaskName(taskName);
   await ExpoLocation.stopGeofencingAsync(taskName);
 }
 
 export async function hasStartedGeofencingAsync(taskName: string): Promise<boolean> {
+  if (!ExpoLocation.hasStartedGeofencingAsync) {
+    throw new UnavailabilityError('expo-location', 'hasStartedGeofencingAsync');
+  }
   _validateTaskName(taskName);
   return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
