@@ -37,22 +37,11 @@ export async function test(
       it(`authenticates, gets data, and logs out`, async () => {
         const result = await Facebook.logInWithReadPermissionsAsync();
         expect(result.type).toBeDefined();
-        console.log('logged in');
         const accessToken = await Facebook.getAccessTokenAsync();
         expect(accessToken).toBeDefined();
-        console.log('got token');
-
-        // const me = await Facebook.getUserAsync();
-        // expect(me.name).toBeDefined();
-        // expect(me.id).toBe(accessToken.userID);
-        // console.log('got user', accessToken);
-
-        console.log('try logged out');
         await Facebook.logOutAsync();
-        console.log('logged out');
         const unauthAccessToken = await Facebook.getAccessTokenAsync();
         expect(unauthAccessToken).toBe(null);
-        console.log('verify logout');
       });
     } else {
       it(`does nothing in non-interactive environments`, async () => {});
