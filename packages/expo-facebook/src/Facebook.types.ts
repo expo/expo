@@ -20,13 +20,9 @@ export type FacebookLoginResult =
   | {
       type: 'cancel';
     }
-  | {
+  | ({
       type: 'success';
-      token: string;
-      expires: number;
-      permissions: string[];
-      declinedPermissions: string[];
-    };
+    } & FacebookAuth);
 
 export type FacebookOptions = {
   permissions?: string[];

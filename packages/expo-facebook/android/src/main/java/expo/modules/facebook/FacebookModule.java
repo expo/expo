@@ -67,10 +67,12 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @ExpoMethod
   public void getAccessTokenAsync(Promise promise) {
     AccessToken accessToken = AccessToken.getCurrentAccessToken();
+    promise.resolve(accessTokenToBundle(accessToken));
+  }
 
+  private Bundle accessTokenToBundle(AccessToken accessToken) {
     if (accessToken == null) {
-      promise.resolve(null);
-      return;
+      return null;
     }
 
     Bundle response = new Bundle();
@@ -82,13 +84,13 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     response.putStringArrayList("declinedPermissions", new ArrayList<>(accessToken.getDeclinedPermissions()));
     response.putStringArrayList("expiredPermissions", new ArrayList<>(accessToken.getExpiredPermissions()));
 
-    response.putInt("expires", (int) accessToken.getExpires().getTime() / 1000);
-    response.putInt("dataAccessExpires", (int) accessToken.getDataAccessExpirationTime().getTime() / 1000);
+    response.putInt("expires", (int) accessToken.getExpires().getTime());
+    response.putInt("dataAccessExpires", (int) accessToken.getDataAccessExpirationTime().getTime());
 
-    response.putInt("refresh", (int) accessToken.getLastRefresh().getTime() / 1000);
+    response.putInt("refresh", (int) accessToken.getLastRefresh().getTime());
     response.putString("tokenSource", accessToken.getSource().name());
 
-    promise.resolve(response);
+    return response;
   }
 
   @ExpoMethod
@@ -100,7 +102,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
         mAppId = appId;
         FacebookSdk.setApplicationId(appId);
       }
-      if (options.containsKey("appName ")) {
+      if (options.containsKey("appName")) {
         mAppName = options.getString("appName");
         FacebookSdk.setApplicationName(mAppName);
       }
@@ -117,7 +119,6 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
       if (options.containsKey("isDebugEnabled")) {
         FacebookSdk.setIsDebugEnabled(options.getBoolean("isDebugEnabled"));
       }
-
 
       FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
         @Override
@@ -147,7 +148,11 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
           "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.");
     }
 
+    // Log out
     AccessToken.setCurrentAccessToken(null);
+    LoginManager.getInstance().logOut();
+
+    // Convert permissions
     List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 
     if (config.containsKey("behavior")) {
@@ -174,13 +179,8 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
           promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
           return;
         }
-        Bundle response = new Bundle();
+        Bundle response = accessTokenToBundle(loginResult.getAccessToken());
         response.putString("type", "success");
-        response.putString("token", loginResult.getAccessToken().getToken());
-        response.putInt("expires", (int) (loginResult.getAccessToken().getExpires().getTime() / 1000));
-
-        response.putStringArrayList("permissions", new ArrayList<>(loginResult.getAccessToken().getPermissions()));
-        response.putStringArrayList("declinedPermissions", new ArrayList<>(loginResult.getAccessToken().getDeclinedPermissions()));
         promise.resolve(response);
       }
 
