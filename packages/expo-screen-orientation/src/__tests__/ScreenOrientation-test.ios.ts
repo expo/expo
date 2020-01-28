@@ -1,6 +1,8 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from '@unimodules/core';
 
-import * as ScreenOrientation from '../ScreenOrientation/ScreenOrientation';
+import * as ScreenOrientation from '../ScreenOrientation';
+
+const { ExpoScreenOrientation } = NativeModulesProxy;
 
 it(`calls the lockPlatformAsync platform API with only iOS properties`, async () => {
   const androidProperties = {
@@ -21,9 +23,7 @@ it(`calls the lockPlatformAsync platform API with only iOS properties`, async ()
     ...badProperties,
   });
 
-  expect(NativeModules.ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith(
-    screenOrientationArrayIOS
-  );
+  expect(ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith(screenOrientationArrayIOS);
 });
 
 it(`throws when lockPlatformAsync is called with unsupported types in its iOS properties`, async () => {

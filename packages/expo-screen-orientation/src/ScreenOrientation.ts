@@ -5,18 +5,14 @@ import {
   Orientation,
   OrientationChangeEvent,
   OrientationChangeListener,
-  OrientationInfo,
   OrientationLock,
   PlatformOrientationInfo,
-  SizeClassIOS,
   WebOrientationLock,
 } from './ScreenOrientation.types';
 
 export {
   Orientation,
   OrientationLock,
-  SizeClassIOS,
-  OrientationInfo,
   PlatformOrientationInfo,
   OrientationChangeListener,
   OrientationChangeEvent,
@@ -96,13 +92,13 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
 }
 
 export async function unlockAsync(): Promise<void> {
-  if (!ExpoScreenOrientation.unlockAsync) {
-    throw new UnavailabilityError('ScreenOrientation', 'unlockAsync');
+  if (!ExpoScreenOrientation.lockAsync) {
+    throw new UnavailabilityError('ScreenOrientation', 'lockAsync');
   }
-  await ExpoScreenOrientation.unlockAsync();
+  await ExpoScreenOrientation.lockAsync(OrientationLock.DEFAULT);
 }
 
-export async function getOrientationAsync(): Promise<OrientationInfo> {
+export async function getOrientationAsync(): Promise<Orientation> {
   if (!ExpoScreenOrientation.getOrientationAsync) {
     throw new UnavailabilityError('ScreenOrientation', 'getOrientationAsync');
   }
@@ -174,10 +170,12 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
         orientationInfo = update.orientationInfo;
       } else {
         // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
-        [orientationLock, orientationInfo] = await Promise.all([
+        let orientation;
+        [orientationLock, orientation] = await Promise.all([
           getOrientationLockAsync(),
           getOrientationAsync(),
         ]);
+        orientationInfo = { orientation };
       }
       listener({ orientationInfo, orientationLock });
     }

@@ -1,6 +1,8 @@
-import { NativeModules } from 'react-native';
+import { NativeModulesProxy } from '@unimodules/core';
 
-import * as ScreenOrientation from '../ScreenOrientation/ScreenOrientation';
+import * as ScreenOrientation from '../ScreenOrientation';
+
+const { ExpoScreenOrientation } = NativeModulesProxy;
 
 it(`throws when lockAsync is called with an unsupported type`, async () => {
   await expect(ScreenOrientation.lockAsync(NaN as any)).rejects.toThrowError(TypeError);
@@ -9,7 +11,7 @@ it(`throws when lockAsync is called with an unsupported type`, async () => {
 
 it(`doesn't call the lockAsync platform API with known unsupported locks`, async () => {
   await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.OTHER);
-  expect(NativeModules.ExpoScreenOrientation.lockAsync).not.toHaveBeenCalled();
+  expect(ExpoScreenOrientation.lockAsync).not.toHaveBeenCalled();
 });
 
 it(`throws when supportsOrientationLockAsync is called with an unsupported type`, async () => {

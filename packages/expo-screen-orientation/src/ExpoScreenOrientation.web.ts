@@ -2,7 +2,6 @@ import { SyntheticPlatformEmitter } from '@unimodules/core';
 import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
 
 import {
-  OrientationInfo,
   Orientation,
   OrientationLock,
   WebOrientationLock,
@@ -40,13 +39,13 @@ const orientation: ScreenOrientation | null =
   canUseViewport && (screen.orientation || (screen as any).msOrientation || null);
 
 async function emitOrientationEvent() {
-  const [orientationLock, orientationInfo] = await Promise.all([
+  const [orientationLock, orientation] = await Promise.all([
     getOrientationLockAsync(),
     getOrientationAsync(),
   ]);
   SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
     orientationLock,
-    orientationInfo,
+    orientation,
   });
 }
 
@@ -115,17 +114,13 @@ export default {
   async getPlatformOrientationLockAsync(): Promise<WebOrientationLock> {
     return _lastWebOrientationLock;
   },
-  async getOrientationAsync(): Promise<OrientationInfo> {
+  async getOrientationAsync(): Promise<Orientation> {
     const webOrientation =
       screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
     if (!webOrientation) {
-      return {
-        orientation: Orientation.UNKNOWN,
-      };
+      return Orientation.UNKNOWN;
     }
-    return {
-      orientation: OrientationWebToAPI[webOrientation],
-    };
+    return OrientationWebToAPI[webOrientation];
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
     const webOrientationLock = OrientationLockAPIToWeb[orientationLock];
