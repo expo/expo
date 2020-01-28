@@ -51,7 +51,9 @@ describe('test-suite', () => {
         /// Pause the timeout
         // await jestPuppeteer.debug();
 
-        await page.goto(`${config.url}/test-suite/select/${testName}`);
+        await page.goto(`${config.url}/test-suite/select/${testName}`, {
+          timeout: MIN_TIME,
+        });
 
         // Ensure the app linked to the testing screen (give it 100ms for navigation mounting)
         await matchID('test_suite_container', { visible: true, timeout: RENDER_MOUNTING_TIMEOUT });
