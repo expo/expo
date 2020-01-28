@@ -4,13 +4,13 @@ let loadingFBSDKPromise;
 let autoLogAppEvents = true;
 let lastAppId;
 // FBSDK promises
-async function getLoginStatusAsync() {
+function getLoginStatusAsync() {
     return new Promise(resolve => window.FB.getLoginStatus(resolve));
 }
-async function logoutAsync() {
+function logoutAsync() {
     return new Promise(resolve => window.FB.logout(resolve));
 }
-async function loginAsync(options) {
+function loginAsync(options) {
     return new Promise(resolve => window.FB.login(resolve, options));
 }
 // Helper

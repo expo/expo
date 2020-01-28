@@ -19,13 +19,13 @@ let lastAppId: string;
 
 // FBSDK promises
 
-async function getLoginStatusAsync(): Promise<fb.StatusResponse> {
+function getLoginStatusAsync(): Promise<fb.StatusResponse> {
   return new Promise(resolve => window.FB.getLoginStatus(resolve));
 }
-async function logoutAsync(): Promise<fb.StatusResponse> {
+function logoutAsync(): Promise<fb.StatusResponse> {
   return new Promise(resolve => window.FB.logout(resolve));
 }
-async function loginAsync(options?: fb.LoginOptions): Promise<fb.StatusResponse> {
+function loginAsync(options?: fb.LoginOptions): Promise<fb.StatusResponse> {
   return new Promise(resolve => window.FB.login(resolve, options));
 }
 

@@ -22,7 +22,7 @@ export default class FacebookLoginScreen extends React.Component {
       <ScrollView style={{ padding: 10 }}>
         <ListButton
           onPress={async () =>
-            await Facebook.initializeAsync({ appId, version: Platform.select({ web: 'v5' }) })
+            await Facebook.initializeAsync({ appId, version: Platform.select({ web: 'v5.0' }) })
           }
           title="Initialize Facebook SDK"
         />
