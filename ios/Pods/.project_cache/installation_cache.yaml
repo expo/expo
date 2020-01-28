@@ -6747,6 +6747,22 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 5909998709fdccddd02f9653688202a8
+    CHECKSUM: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+    FILES:
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 50e8e13014befd337f5b36b246cde917
@@ -7143,16 +7159,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 975f47ebe83766cf972b07b6b2eb7075
-      Release: 975f47ebe83766cf972b07b6b2eb7075
+      Debug: 5a9c57a3a1f4cd409da2b984bf58d22b
+      Release: 5a9c57a3a1f4cd409da2b984bf58d22b
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 704bee7f7fc762df105d69e08c2d1961
-      Release: 704bee7f7fc762df105d69e08c2d1961
+      Debug: 2b3c5ca9b31e78c5d59c5b3da10bcfbf
+      Release: 2b3c5ca9b31e78c5d59c5b3da10bcfbf
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 704bee7f7fc762df105d69e08c2d1961
-      Release: 704bee7f7fc762df105d69e08c2d1961
+      Debug: 2b3c5ca9b31e78c5d59c5b3da10bcfbf
+      Release: 2b3c5ca9b31e78c5d59c5b3da10bcfbf
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -9703,6 +9719,8 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.h"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"

@@ -369,6 +369,12 @@ Object.defineProperty(exports, "Random", {
     return _removed.Random;
   }
 });
+Object.defineProperty(exports, "ScreenOrientation", {
+  enumerable: true,
+  get: function () {
+    return _removed.ScreenOrientation;
+  }
+});
 Object.defineProperty(exports, "SecureStore", {
   enumerable: true,
   get: function () {
@@ -459,7 +465,7 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
+exports.SplashScreen = exports.Updates = exports.Logs = exports.AR = void 0;
 
 require("./Expo.fx");
 
@@ -470,10 +476,6 @@ exports.AR = AR;
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
 exports.Logs = Logs;
-
-var ScreenOrientation = _interopRequireWildcard(require("./ScreenOrientation/ScreenOrientation"));
-
-exports.ScreenOrientation = ScreenOrientation;
 
 var Updates = _interopRequireWildcard(require("./Updates/Updates"));
 

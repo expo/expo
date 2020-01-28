@@ -559,6 +559,22 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 605d41100602a3265d74a60e6ef76c6d
+    CHECKSUM: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+    FILES:
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 10a623412aef75951df791abc0f7f5ba
@@ -735,12 +751,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ebe6a669e491f1f665a4b35345b94742
-      Release: ebe6a669e491f1f665a4b35345b94742
+      Debug: d083730335173076543b2da6a2004d6b
+      Release: d083730335173076543b2da6a2004d6b
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0535a068b458f8b58acdb7a873c0ff64
-      Release: 0535a068b458f8b58acdb7a873c0ff64
+      Debug: 426ac26dfce3cc0ce3eefa07146b91ad
+      Release: 426ac26dfce3cc0ce3eefa07146b91ad
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1730,6 +1746,8 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.h"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"

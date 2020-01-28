@@ -1,6 +1,26 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXScreenOrientation.h"
+// TODO: Remove once sdk 37 is phased out
+@protocol EXScreenOrientationScopedModuleDelegate
+
+- (void)screenOrientationModule:(nonnull id)scopedOrientationModule
+didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForVisibleApp;
+
+- (void)removeOrientationChangeListener:(nonnull NSString *)experienceId;
+
+- (void)addOrientationChangeListener:(nonnull NSString *)experienceId subscriberModule:(nonnull id)subscriberModule;
+
+- (nullable UITraitCollection *)getTraitCollection;
+
+@end
+
+@protocol EXScreenOrientationListener
+
+- (void)handleScreenOrientationChange:(nullable UITraitCollection *)traitCollection;
+
+@end
 
 @interface EXScreenOrientationManager : NSObject <EXScreenOrientationScopedModuleDelegate>
 
