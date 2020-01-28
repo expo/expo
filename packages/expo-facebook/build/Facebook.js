@@ -69,19 +69,30 @@ export async function setAutoInitEnabledAsync(enabled) {
 }
 /**
  * Calling this method ensures that the SDK is initialized.
- * You have to call this method before calling `logInWithReadPermissionsAsync`
- * to ensure that Facebook support is initialized properly.
+ * You have to call this method before calling any method that uses
+ * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
+ * Facebook support is initialized properly.
  *
- * You may or may not provide an optional `appId: string` argument.
- * - If you don't provide it, Facebook SDK will try to use `appId` from native app resources,
- *   If it fails to find one, the promise will be rejected.
+ * - On native platforms you can optional provide an `appId` argument.
+ *   - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+ *   - The same resolution mechanism works for `appName`.
+ *   - On web `appId` and `version` options must be included to start the app. This method downloads the JS FBSDK script, which will generate a side-effect of `window.FB` globally.
  * - If you provide an explicit `appId`, it will override any other source.
- * The same resolution mechanism is applied to `appName`.
+ *
  * @param options The options used to configure how Facebook is initialized
  */
-export async function initializeAsync(options = {}) {
+export async function initializeAsync(optionsOrAppId, appName) {
     if (!ExponentFacebook.initializeAsync) {
         throw new UnavailabilityError('Facebook', 'initializeAsync');
+    }
+    let options = {};
+    if (typeof optionsOrAppId === 'string') {
+        options.appId = optionsOrAppId;
+        options.appName = appName;
+        console.warn('The parameters of `initializeAsync(appId, appName)` have changed to support web, you must now provide an object instead: initializeAsync({ appId, appName }).');
+    }
+    else {
+        options = optionsOrAppId;
     }
     return await ExponentFacebook.initializeAsync(options);
 }

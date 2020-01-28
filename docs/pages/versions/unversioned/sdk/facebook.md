@@ -58,28 +58,28 @@ import * as Facebook from 'expo-facebook';
 
 ### `Facebook.initializeAsync(options: InitOptions): Promise<void>`
 
-Calling this method ensures that the SDK is initialized. You have to call this method before calling `logInWithReadPermissionsAsync` to ensure that Facebook support is initialized properly.
-On web this method downloads the FBSDK script. This script will generate a side-effect of `window.FB` globally.
+Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
 
-You may or may not provide an optional `appId: string` argument on native platforms. `appId` and `version` options must be included in the browser.
-
-- If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+- On native platforms you can optional provide an `appId` argument. 
+  - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+  - The same resolution mechanism works for `appName`.
+- On web `appId` and `version` options must be included to start the app. This method downloads the JS FBSDK script, which will generate a side-effect of `window.FB` globally.
 - If you provide an explicit `appId`, it will override any other source.
-
-The same resolution mechanism works for `appName`.
 
 #### param object options
 
 A map of options:
 
-- **appId (_string | undefined_)** Application ID used to initialize the FBSDK app. On web this is required, not providing it will result in a `ERR_FB_CONF` error. On native if you don't provide this, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
-- **version (_string | undefined_)** Required for web. Selects the [version of FBSDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
-- **appName (_string | undefined_)** An optional Facebook App Name argument for iOS and Android.
-- **autoLogAppEvents (_boolean | undefined_)** Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
-- **domain (_string | undefined_)** Web, Android: Sets the base Facebook domain to use when making Web requests. Defaults to: `'connect.facebook.net'`.
-- **isDebugEnabled (_boolean_)** Web only: Loads the JS SDK in an non-minified format with more logs and stricter type checking. This shouldn't be enabled in your production environment, as its payload is larger and is worse for the performance of your page. Defaults to `false`
-- **isCustomerSupportChatEnabled (_boolean_)** Web only: Enables the [customer chat plugin](https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin/sdk/). Defaults to `false`.
-- **xfbml (_boolean_)** Web only: With xfbml set to true, the SDK will parse your page's DOM to find and initialize any social plugins that have been added using XFBML. If you're not using social plugins on the page, setting `xfbml` to `false` will improve page load times. You can find out more about this by looking at [Social Plugins](https://developers.facebook.com/docs/plugins/). Defaults to `true`
+- `InitOptions` type:
+
+  - **appId (_string | undefined_)** Application ID used to initialize the FBSDK app. On web this is required, not providing it will result in a `ERR_FB_CONF` error. On native if you don't provide this, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+  - **version (_string | undefined_)** Required for web. Selects the [version of FBSDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
+  - **appName (_string | undefined_)** An optional Facebook App Name argument for iOS and Android.
+  - **autoLogAppEvents (_boolean | undefined_)** Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
+  - **domain (_string | undefined_)** Web, Android: Sets the base Facebook domain to use when making Web requests. Defaults to: `'connect.facebook.net'`.
+  - **isDebugEnabled (_boolean_)** Web only: Loads the JS SDK in an non-minified format with more logs and stricter type checking. This shouldn't be enabled in your production environment, as its payload is larger and is worse for the performance of your page. Defaults to `false`
+  - **isCustomerSupportChatEnabled (_boolean_)** Web only: Enables the [customer chat plugin](https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin/sdk/). Defaults to `false`.
+  - **xfbml (_boolean_)** Web only: With xfbml set to true, the SDK will parse your page's DOM to find and initialize any social plugins that have been added using XFBML. If you're not using social plugins on the page, setting `xfbml` to `false` will improve page load times. You can find out more about this by looking at [Social Plugins](https://developers.facebook.com/docs/plugins/). Defaults to `true`
 
 
 ### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`

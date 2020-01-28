@@ -41,17 +41,19 @@ export declare function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promi
 export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
 /**
  * Calling this method ensures that the SDK is initialized.
- * You have to call this method before calling `logInWithReadPermissionsAsync`
- * to ensure that Facebook support is initialized properly.
+ * You have to call this method before calling any method that uses
+ * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
+ * Facebook support is initialized properly.
  *
- * You may or may not provide an optional `appId: string` argument.
- * - If you don't provide it, Facebook SDK will try to use `appId` from native app resources,
- *   If it fails to find one, the promise will be rejected.
+ * - On native platforms you can optional provide an `appId` argument.
+ *   - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+ *   - The same resolution mechanism works for `appName`.
+ *   - On web `appId` and `version` options must be included to start the app. This method downloads the JS FBSDK script, which will generate a side-effect of `window.FB` globally.
  * - If you provide an explicit `appId`, it will override any other source.
- * The same resolution mechanism is applied to `appName`.
+ *
  * @param options The options used to configure how Facebook is initialized
  */
-export declare function initializeAsync(options?: InitOptions): Promise<any>;
+export declare function initializeAsync(optionsOrAppId: InitOptions | string, appName?: string): Promise<any>;
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
  * and Android Advertising ID, automatically. Advertiser IDs let you identify and target specific customers.
