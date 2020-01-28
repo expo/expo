@@ -116,7 +116,7 @@
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-preset-expo": "~8.0.0",
-    "expo-module-scripts": "^1.1.1",
+    "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1"
   }
 }
