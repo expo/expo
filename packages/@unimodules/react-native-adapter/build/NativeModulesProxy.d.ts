@@ -3,7 +3,7 @@ export declare type ProxyNativeModule = {
     addListener: (eventName: string) => void;
     removeListeners: (count: number) => void;
 };
-declare const NativeModulesProxy: {
+declare const _default: {
     [moduleName: string]: ProxyNativeModule;
 };
-export default NativeModulesProxy;
+export default _default;
