@@ -76,19 +76,6 @@ module.exports = {
     getNativeModuleNamesAsync: { type: 'function', functionType: 'promise' },
     introspectNativeModuleAsync: { type: 'function', functionType: 'promise' },
   },
-  ExpoScreenOrientation: {
-    getConstants: { type: 'function' },
-    addListener: { type: 'function', functionType: 'async' },
-    doesSupportAsync: { type: 'function', functionType: 'promise' },
-    getOrientationAsync: { type: 'function', functionType: 'promise' },
-    getOrientationLockAsync: { type: 'function', functionType: 'promise' },
-    getPlatformOrientationLockAsync: { type: 'function', functionType: 'promise' },
-    lockAsync: { type: 'function', functionType: 'promise' },
-    lockPlatformAsync: { type: 'function', functionType: 'promise' },
-    removeListeners: { type: 'function', functionType: 'async' },
-    supportsOrientationLockAsync: { type: 'function', functionType: 'promise' },
-    unlockAsync: { type: 'function', functionType: 'promise' },
-  },
   ExponentAR: {
     ARFaceTrackingConfiguration: { type: 'boolean', mock: false },
     ARKitVersion: { type: 'string' },
@@ -388,6 +375,16 @@ module.exports = {
         ExpoSMS: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 2, name: 'sendSMSAsync' },
+        ],
+        ExpoScreenOrientation: [
+          { key: 0, argumentsCount: 1, name: 'lockPlatformAsync' },
+          { key: 1, argumentsCount: 0, name: 'getOrientationLockAsync' },
+          { key: 2, argumentsCount: 1, name: 'supportsOrientationLockAsync' },
+          { key: 3, argumentsCount: 0, name: 'getPlatformOrientationLockAsync' },
+          { key: 4, argumentsCount: 1, name: 'lockAsync' },
+          { key: 5, argumentsCount: 0, name: 'unlockAsync' },
+          { key: 6, argumentsCount: 1, name: 'doesSupportAsync' },
+          { key: 7, argumentsCount: 0, name: 'getOrientationAsync' },
         ],
         ExpoSecureStore: [
           { key: 0, argumentsCount: 2, name: 'getValueWithKeyAsync' },

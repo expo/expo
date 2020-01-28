@@ -543,6 +543,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  ScreenOrientation: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { ScreenOrientation } from 'expo' -> import * as ScreenOrientation from 'expo-screen-orientation'`,
+        'ScreenOrientation',
+        'expo-screen-orientation'
+      );
+    },
+  },
+
   SecureStore: {
     enumerable: true,
     get() {
