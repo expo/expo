@@ -7,8 +7,8 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 
-NSString * const EXFacebookLoginErrorDomain = @"E_FBLOGIN";
-NSString * const EXFacebookLoginAppIdErrorDomain = @"E_FBLOGIN_APP_ID";
+NSString * const EXFacebookLoginErrorDomain = @"ERR_FB_LOGIN";
+NSString * const EXFacebookLoginAppIdErrorDomain = @"ERR_FB_LOGIN_APP_ID";
 
 @implementation EXFacebook
 
@@ -48,7 +48,7 @@ UM_EXPORT_METHOD_AS(initializeAsync,
     [FBSDKSettings setAppID:options[@"appId"]];
   }
   if (![FBSDKSettings appID]) {
-    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    reject(@"ERR_FB_CONF", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
   }
   // Caller overrides buildtime settings
@@ -93,14 +93,13 @@ UM_EXPORT_METHOD_AS(getAccessTokenAsync,
   resolve(UMNullIfNil([EXFacebook accessTokenNativeToJSON:currentAccessToken]));
 }
 
-
 UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     logInWithReadPermissionsWithConfig:(NSDictionary *)config
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![FBSDKSettings appID]) {
-    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    reject(@"ERR_FB_CONF", @"No appId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
   }
 

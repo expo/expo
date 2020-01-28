@@ -130,7 +130,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
         }
       });
     } catch (Exception e) {
-      promise.reject(e);
+      promise.reject("ERR_FB_INIT", "An error occurred while trying to initialize a FBSDK app", e);
     }
   }
 
@@ -144,7 +144,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @ExpoMethod
   public void logInWithReadPermissionsAsync(final ReadableArguments config, final Promise promise) {
     if (FacebookSdk.getApplicationId() == null) {
-      promise.reject("E_CONF_ERROR", "No appId configured, required for initialization. " +
+      promise.reject("ERR_FB_CONF", "No appId configured, required for initialization. " +
           "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.");
     }
 
@@ -197,14 +197,14 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
       public void onError(FacebookException error) {
         LoginManager.getInstance().registerCallback(mCallbackManager, null);
 
-        promise.reject(error);
+        promise.reject("ERR_FB_LOGIN", "An error occurred while trying to log in to Facebook", error);
       }
     });
 
     try {
       LoginManager.getInstance().logInWithReadPermissions(mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity(), permissions);
     } catch (FacebookException e) {
-      promise.reject("E_FBLOGIN_ERROR", "An error occurred while trying to log in to Facebook", e);
+      promise.reject("ERR_FB_LOGIN", "An error occurred while trying to log in to Facebook", e);
     }
   }
 

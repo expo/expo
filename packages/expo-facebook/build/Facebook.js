@@ -112,7 +112,7 @@ export async function requestAsync({ token, path, }) {
     if (!token) {
         const auth = await getAccessTokenAsync();
         if (!auth) {
-            throw new CodedError('E_FB_AUTH', 'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.');
+            throw new CodedError('ERR_FB_AUTH', 'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.');
         }
         resolvedToken = auth.token;
     }

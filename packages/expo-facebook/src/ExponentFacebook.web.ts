@@ -34,7 +34,7 @@ function loginAsync(options?: fb.LoginOptions): Promise<fb.StatusResponse> {
 function throwIfUninitialized() {
   if (!window || !window.FB)
     throw new CodedError(
-      'E_FB_INIT',
+      'ERR_FB_INIT',
       'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.'
     );
 }
@@ -78,7 +78,7 @@ export default {
   }: InitOptions): Promise<fb.FacebookStatic> {
     if (!appId) {
       throw new CodedError(
-        'E_FB_CONF_ERROR',
+        'ERR_FB_CONF',
         `Failed to initialize app because the appId wasn't provided.`
       );
     }

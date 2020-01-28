@@ -16,7 +16,7 @@ function loginAsync(options) {
 // Helper
 function throwIfUninitialized() {
     if (!window || !window.FB)
-        throw new CodedError('E_FB_INIT', 'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.');
+        throw new CodedError('ERR_FB_INIT', 'FBSDK is not initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.');
 }
 function getScriptElement({ domain = 'connect.facebook.net', language = 'en_US', isCustomerSupportChatEnabled = false, isDebugEnabled = false, }) {
     const scriptUrl = `https://${domain}/${language}/sdk${isCustomerSupportChatEnabled ? '/xfbml.customerchat' : ''}${isDebugEnabled ? '/debug' : ''}.js`;
@@ -41,7 +41,7 @@ export default {
     },
     async initializeAsync({ appId, version = 'v5.0', xfbml = true, ...options }) {
         if (!appId) {
-            throw new CodedError('E_FB_CONF_ERROR', `Failed to initialize app because the appId wasn't provided.`);
+            throw new CodedError('ERR_FB_CONF', `Failed to initialize app because the appId wasn't provided.`);
         }
         if (loadingFBSDKPromise) {
             return loadingFBSDKPromise;
