@@ -39,7 +39,7 @@ export async function test(
 
     if (isInteractive()) {
       it(`authenticates, gets data, and logs out`, async () => {
-        const result = await Facebook.logInWithReadPermissionsAsync({ behavior: 'fsef' });
+        const result = await Facebook.logInWithReadPermissionsAsync();
         expect(result.type).toBeDefined();
         const accessToken = await Facebook.getAccessTokenAsync();
         expect(accessToken).toBeDefined();
