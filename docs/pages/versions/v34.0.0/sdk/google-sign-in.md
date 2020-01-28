@@ -68,7 +68,7 @@ const { URLSchemes } = AppAuth;
 ```js
 import React from 'react';
 import { Text } from 'react-native';
-import { GoogleSignIn } from 'expo-google-sign-in';
+import * as GoogleSignIn from 'expo-google-sign-in';
 
 export default class AuthScreen extends React.Component {
   state = { user: null };
