@@ -10,6 +10,7 @@ export interface ProviderStatus {
 }
 export interface LocationOptions {
     accuracy?: LocationAccuracy;
+    maximumAge?: number;
     enableHighAccuracy?: boolean;
     timeInterval?: number;
     distanceInterval?: number;
