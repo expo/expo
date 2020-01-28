@@ -146,7 +146,7 @@ export default class UserSettingsScreen extends React.Component {
         <TouchableHighlight
           onPress={() => this._setPreferredAppearance('light')}
           underlayColor={Colors.light.greyUnderlayColor}
-          style={styles.button}>
+        >
           <GenericCardContainer>
             <GenericCardBody style={styles.cardBody}>
               <GenericCardTitle>Light</GenericCardTitle>
@@ -158,7 +158,7 @@ export default class UserSettingsScreen extends React.Component {
         <TouchableHighlight
           onPress={() => this._setPreferredAppearance('dark')}
           underlayColor={Colors.light.greyUnderlayColor}
-          style={styles.button}>
+        >
           <GenericCardContainer>
             <GenericCardBody style={styles.cardBody}>
               <GenericCardTitle>Dark</GenericCardTitle>
