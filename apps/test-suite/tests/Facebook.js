@@ -1,7 +1,6 @@
 import * as Facebook from 'expo-facebook';
 import { Platform } from 'react-native';
 
-import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 import { isInteractive } from '../utils/Environment';
 
 export const name = 'Facebook';
@@ -22,9 +21,6 @@ export async function test(
   afterEach(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
-
-  const mountAndWaitFor = (child, propName = 'onLayout') =>
-    originalMountAndWaitFor(child, propName, setPortalChild);
 
   describe(name, () => {
     beforeAll(async () => {
