@@ -1,15 +1,52 @@
 export declare type FacebookAuth = {
+    /**
+     * Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
+     */
     token: string;
+    /**
+     * The ID of the user.
+     */
     userID: string;
+    /**
+     * Application ID used to initialize the FBSDK app.
+     */
     appID: string;
+    /**
+     * List of granted permissions.
+     */
     permissions?: string[];
+    /**
+     * List of requested permissions that the user has declined.
+     */
     declinedPermissions?: string[];
+    /**
+     * List of permissions that were expired with this access token.
+     */
     expiredPermissions?: string[];
+    /**
+     * Gets the time in milliseconds at which the `token` expires.
+     */
     expires: number;
+    /**
+     * Time in milliseconds at which the current user data access expires.
+     */
     dataAccessExpires: number;
+    /**
+     * The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+     */
     refresh?: number;
+    /**
+     * Android: Indicates how this `token` was obtained.
+     */
     tokenSource?: string;
+    /**
+     * A valid raw signed request as a string.
+     */
     signedRequest?: string;
+    /**
+     * A website domain within the Graph API.
+     * https://developers.facebook.com/docs/graph-api/reference/v5.0/domain
+     */
     graphDomain?: string;
 };
 export declare type FacebookLoginResult = {
