@@ -142,6 +142,10 @@ EXLocalization:
   LABEL: EXLocalization
   PROJECT_PATH: EXLocalization.xcodeproj
   UUID: 55C7C51CE4B49B971674C896CB1DC301
+EXLocation:
+  LABEL: EXLocation
+  PROJECT_PATH: EXLocation.xcodeproj
+  UUID: 9448EAC8D0286D37F065B24667BFBB8F
 EXMailComposer:
   LABEL: EXMailComposer
   PROJECT_PATH: EXMailComposer.xcodeproj
@@ -282,6 +286,10 @@ React-jsinspector:
   LABEL: React-jsinspector
   PROJECT_PATH: React-jsinspector.xcodeproj
   UUID: 1AC0EAF3E808B6AA276E43B30A5B20AA
+react-native-appearance:
+  LABEL: react-native-appearance
+  PROJECT_PATH: react-native-appearance.xcodeproj
+  UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
 react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj
@@ -374,6 +382,10 @@ UMSensorsInterface:
   LABEL: UMSensorsInterface
   PROJECT_PATH: UMSensorsInterface.xcodeproj
   UUID: 1FDCE556B997E87DAB0DA2727CC69285
+UMTaskManagerInterface:
+  LABEL: UMTaskManagerInterface
+  PROJECT_PATH: UMTaskManagerInterface.xcodeproj
+  UUID: A565C99DEFBAFA44A1B5C3B49ADD8A84
 Yoga:
   LABEL: Yoga
   PROJECT_PATH: Yoga.xcodeproj

@@ -1,15 +1,11 @@
 import * as React from 'react';
 import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
-import { Asset } from 'expo-asset';
-import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Assets as StackAssets } from 'react-navigation-stack';
 import { enableScreens } from 'react-native-screens';
 import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
 
-import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
+import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
 if (Platform.OS === 'android') {
   enableScreens(true);
@@ -40,28 +36,7 @@ class App extends React.Component<Props, State> {
 
   async _loadAssetsAsync() {
     try {
-      const iconRequires = Object.keys(Icons).map(key => Icons[key]);
-
-      const assetPromises: Promise<any>[] = [
-        Asset.loadAsync(iconRequires),
-        Asset.loadAsync(StackAssets),
-        // @ts-ignore
-        Font.loadAsync(Ionicons.font),
-        // @ts-ignore
-        Font.loadAsync(Entypo.font),
-        // @ts-ignore
-        Font.loadAsync(MaterialIcons.font),
-        Font.loadAsync({
-          'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
-        }),
-      ];
-      if (Platform.OS !== 'web')
-        assetPromises.push(
-          Font.loadAsync({
-            Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
-          })
-        );
-      await Promise.all(assetPromises);
+      await loadAssetsAsync();
     } catch (e) {
       console.log({ e });
     } finally {
@@ -77,9 +52,13 @@ class App extends React.Component<Props, State> {
           {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         </View>
       );
-    } else {
+    }
+    // We should check whether `AppLoading` is set, as this code may be used by `bare-expo`
+    // where this module is not exported due to bare workflow.
+    if (AppLoading) {
       return <AppLoading />;
     }
+    return null;
   }
 }
 

@@ -3,5 +3,16 @@ module.exports = function(api) {
   return {
     // [Custom] Needed for decorators
     presets: ['babel-preset-expo'],
+    plugins: [
+      [
+        'babel-plugin-module-resolver',
+        {
+          alias: {
+            '~expo': 'expo',
+            expo: './expoResolver',
+          },
+        },
+      ],
+    ],
   };
 };
