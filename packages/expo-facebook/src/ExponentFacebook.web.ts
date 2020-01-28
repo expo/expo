@@ -147,13 +147,14 @@ export default {
 
       return {
         type: 'success',
+        appID: lastAppId,
+        expires: authResponse.expiresIn,
         token: authResponse.accessToken,
+        userID: authResponse.userID,
+        signedRequest: authResponse.signedRequest,
+        graphDomain: authResponse.graphDomain,
+        dataAccessExpires: authResponse.data_access_expiration_time,
         permissions: ensurePermissionsAreArray(authResponse.grantedScopes),
-        // TODO: Bacon: Ensure this is the same format as native
-        // expires: response.authResponse.expiresIn,
-        expires: authResponse.data_access_expiration_time,
-        // TODO: Add these if possible
-        declinedPermissions: [],
       };
     }
 
