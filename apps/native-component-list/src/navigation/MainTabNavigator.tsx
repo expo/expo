@@ -14,24 +14,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// @ts-ignore
-ExpoApisStackNavigator.path = 'API';
-ExpoApisStackNavigator.navigationOptions = {
-  title: 'Expo API',
-};
-
-// @ts-ignore
-ExpoComponentsStackNavigator.path = 'Components';
-ExpoComponentsStackNavigator.navigationOptions = {
-  title: 'Expo Components',
-};
-
-// @ts-ignore
-ReactNativeCoreStackNavigator.path = 'ReactNative';
-ReactNativeCoreStackNavigator.navigationOptions = {
-  title: 'React Native Core',
-};
-
 const MainTabNavigator = createTabNavigator(
   {
     ExpoApis: ExpoApisStackNavigator,

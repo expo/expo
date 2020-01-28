@@ -1,6 +1,6 @@
 export interface IAPQueryResponse {
   responseCode: IAPResponseCode;
-  results?: Array<InAppPurchase | IAPItemDetails>;
+  results?: (InAppPurchase | IAPItemDetails)[];
   errorCode?: IAPErrorCode;
 }
 

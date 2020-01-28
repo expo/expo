@@ -39,7 +39,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1"
+    "expo-module-scripts": "~1.2.0"
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }

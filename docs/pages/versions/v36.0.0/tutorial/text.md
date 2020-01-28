@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
 
 Good, that looks better! If you want to learn more about the other styles available on the Text component, [you can read more here](https://facebook.github.io/react-native/docs/text#style).
 
-Next we're going to look at adding the logo, [let's continue to looking at the Image component for that](../../tutorial/image/).
+Next we're going to look at adding the logo, [let's continue on to looking at the Image component for that](../../tutorial/image/).

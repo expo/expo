@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View, createElement } from 'react-native';
 import ExponentAV from './ExponentAV';
 
 import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 
 type ExponentVideoProps = {
   source: PlaybackNativeSource | null;
-  resizeMode?: Object;
+  resizeMode?: object;
   status?: PlaybackStatusToSet;
   useNativeControls?: boolean;
   onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: Object }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: Object }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: object }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
   onLoadStart: () => void;
   onLoad: (event: { nativeEvent: PlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
@@ -38,6 +38,8 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYE
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+
+const Video: any = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
 
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
@@ -146,10 +148,9 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
       position: undefined,
       objectFit,
       overflow: 'hidden',
-    } as any;
-    const finalStyle = StyleSheet.flatten([style, customStyle]) as React.CSSProperties;
+    };
     return (
-      <video
+      <Video
         ref={this.onRef}
         onLoadStart={this.onLoadStart}
         onLoadedData={this.onLoadedData}
@@ -165,7 +166,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         loop={status.isLooping}
         autoPlay={status.shouldPlay}
         controls={useNativeControls}
-        style={finalStyle}
+        style={[style, customStyle]}
       />
     );
   }

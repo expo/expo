@@ -35,7 +35,7 @@ export interface SQLTransactionErrorCallback {
 export interface SQLTransaction {
   executeSql(
     sqlStatement: string,
-    args?: Array<any>,
+    args?: any[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
@@ -86,10 +86,10 @@ export interface ResultSetError {
 export interface ResultSet {
   insertId?: number;
   rowsAffected: number;
-  rows: Array<{ [column: string]: any }>;
+  rows: { [column: string]: any }[];
 }
 
 export type SQLiteCallback = (
   error?: Error | null,
-  resultSet?: Array<ResultSetError | ResultSet>
+  resultSet?: (ResultSetError | ResultSet)[]
 ) => void;

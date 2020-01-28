@@ -72,6 +72,8 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.m"
+      - "../../../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.h"
+      - "../../../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
@@ -448,6 +450,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXLocalization
     SPECS:
       - EXLocalization (8.0.0)
+  EXLocation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXLocation: 2cdf527b8fd9660760dea76fb7930f4a
+    CHECKSUM: 3c75d012ca92eed94d4338778d79c49d1252393a
+    FILES:
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
+    PROJECT_NAME: EXLocation
+    SPECS:
+      - EXLocation (8.0.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer: dde34d492aa6e58f5e36c7f4824e2b42
@@ -487,6 +507,8 @@ CACHE_KEYS:
       EXNotifications: 42083d7be3b81dc87f399732a97ebffe
     CHECKSUM: d654494e84df90927cca410ebac178c61553647b
     FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
@@ -713,12 +735,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 56436cf11abb9cf3f33b76749e92e0af
-      Release: 56436cf11abb9cf3f33b76749e92e0af
+      Debug: ebe6a669e491f1f665a4b35345b94742
+      Release: ebe6a669e491f1f665a4b35345b94742
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9af093871462b0148da322b01f112ded
-      Release: 9af093871462b0148da322b01f112ded
+      Debug: 0535a068b458f8b58acdb7a873c0ff64
+      Release: 0535a068b458f8b58acdb7a873c0ff64
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1245,6 +1267,22 @@ CACHE_KEYS:
     PROJECT_NAME: React-jsinspector
     SPECS:
       - React-jsinspector (0.61.4)
+  react-native-appearance:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-appearance: 7404d29f4c015c0c51680f1bce6a4d8f
+    CHECKSUM: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
+    FILES:
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
+      - "../../node_modules/react-native-appearance/LICENSE"
+      - "../../node_modules/react-native-appearance/README.md"
+    PROJECT_NAME: react-native-appearance
+    SPECS:
+      - react-native-appearance (0.3.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
@@ -1715,6 +1753,19 @@ CACHE_KEYS:
     PROJECT_NAME: UMSensorsInterface
     SPECS:
       - UMSensorsInterface (5.0.0)
+  UMTaskManagerInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMTaskManagerInterface: 7659aca9cac609731d0f1bd954e77065
+    CHECKSUM: a98e37a576a5220bf43b8faf33cfdc129d2f441d
+    FILES:
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskLaunchReason.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskManagerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskServiceInterface.h"
+    PROJECT_NAME: UMTaskManagerInterface
+    SPECS:
+      - UMTaskManagerInterface (5.0.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 1c1562cda00c80e209af7feb55d5f6dd

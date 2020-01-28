@@ -6,6 +6,6 @@ declare type ShareOptions = {
 declare const _default: {
     readonly name: string;
     isAvailableAsync(): Promise<boolean>;
-    shareAsync(url: string, options?: ShareOptions): Promise<{}>;
+    shareAsync(url: string, options?: ShareOptions): Promise<object>;
 };
 export default _default;

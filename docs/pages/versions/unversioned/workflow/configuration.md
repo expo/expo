@@ -15,15 +15,9 @@ title: Configuration with app.json
 }
 ```
 
-`app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
-
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-## ExpoKit
-
-While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
-
-This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
+> 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit).
 
 ## Properties
 
@@ -904,3 +898,9 @@ Configuration for how and when the app should request OTA JavaScript updates
   }
 }
 ```
+
+## ExpoKit
+
+While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
+
+This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
