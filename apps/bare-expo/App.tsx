@@ -3,8 +3,6 @@ import React from 'react';
 import MainNavigator from './MainNavigator';
 import { createProxy, startAsync, addListener } from './relapse/client';
 
-// import NativeComponentList from '../native-component-list/App';
-
 export default function Main() {
   // @ts-ignore
   if (global.DETOX) {
