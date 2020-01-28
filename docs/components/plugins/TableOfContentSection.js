@@ -104,6 +104,7 @@ export default class TableOfContentSection extends React.Component {
           {contents.map(data => {
             return (
               <a
+                key={data}
                 href={`#${createAnchorLink(data)}`}
                 className={STYLES_EXTERNAL_LINK}
                 rel="noopener noreferrer">
