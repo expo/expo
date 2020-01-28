@@ -45,9 +45,9 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 
 - **Web**
   - This web guide was written in January 2020 (FBSDK is known to have breaking changes *very* often).
-  - Projects must be secure (using `https`) and using `localhost`. Start your project with `expo start:web --https --localhost`.
+  - Projects must be secured with `https` and using `localhost`. You can do this with Expo CLI by starting your project with `expo start:web --https --localhost`. This will start your project at `https://localhost:19006`.
   - In the Facebook Developer Console be sure to add `localhost` to the "App Domains".
-  - You'll need to whitelist `localhost` by navigating to **Settings > Basic > Add Platform** and selecting "Website". 
+  - You'll need to whitelist `localhost` by navigating to **Settings > Basic > Add Platform** and selecting "Website".
     - From here set the "Site URL" to `https://localhost:19006` for debugging. You'll want to change this to your production website URL later.
     - If you don't do this you may see the following error when attempting to log out: `"Refused to display 'https://www.facebook.com/home.php' in a frame because it set 'X-Frame-Options' to 'deny'."`
   - Define "Valid OAuth Redirect URIs" for login to work
