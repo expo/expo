@@ -6,13 +6,13 @@ if (!ExponentConstants) {
 }
 // On Android we pass the manifest in JSON form so this step is necessary
 let manifest = null;
-if (ExponentConstants && ExponentConstants.manifest) {
+if (ExponentConstants && 'manifest' in ExponentConstants) {
     manifest = ExponentConstants.manifest;
     if (typeof manifest === 'string') {
         manifest = JSON.parse(manifest);
     }
 }
-const { name, ...constants } = (ExponentConstants || {});
+const { name, ...constants } = ({ ...ExponentConstants } || {});
 export default {
     ...constants,
     manifest,
