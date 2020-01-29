@@ -72,7 +72,7 @@ async function _subscribeUserToPushAsync(): Promise<object> {
   }
   guardPermission();
 
-  const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+  const registration = await navigator.serviceWorker.getRegistration();
   await navigator.serviceWorker.ready;
 
   if (!registration.active) {
