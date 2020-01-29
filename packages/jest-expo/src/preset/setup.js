@@ -163,9 +163,9 @@ try {
     //
     // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
     // This means the mock functions will not throw validation errors the way they would in an app.
-    for (const moduleName of Object.keys(NativeModulesProxy)) {
+    for (const moduleName of Object.getOwnPropertyNames(NativeModulesProxy)) {
       const nativeModule = NativeModulesProxy[moduleName];
-      for (const propertyName of Object.keys(nativeModule)) {
+      for (const propertyName of Object.getOwnPropertyNames(nativeModule)) {
         if (typeof nativeModule[propertyName] === 'function') {
           nativeModule[propertyName] = jest.fn(async () => {});
         }
