@@ -29,6 +29,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
   protected int mStatusBarHeight = 0;
   private String mSessionId = UUID.randomUUID().toString();
   private SharedPreferences sharedPref;
+  private static final String PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences";
   private static final String UUID_KEY = "uuid";
 
   private static int convertPixelsToDp(float px, Context context) {
@@ -42,7 +43,7 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     super();
     mContext = context;
 
-    sharedPref = mContext.getSharedPreferences("host.exp.exponent.SharedPreferences", Context.MODE_PRIVATE);
+    sharedPref = mContext.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE);
 
     int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
 
