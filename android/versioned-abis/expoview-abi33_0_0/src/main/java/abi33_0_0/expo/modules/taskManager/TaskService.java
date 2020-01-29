@@ -11,12 +11,9 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.adapters.react.apploader.HeadlessAppLoaderListener;
-import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
 import org.unimodules.core.interfaces.SingletonModule;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -48,14 +45,13 @@ import abi33_0_0.expo.modules.taskManager.exceptions.TaskRegisteringFailedExcept
 // in classes like TaskJobService and TaskBroadcastReceiver, almost all properties of TaskService are static.
 // Thanks to that, we can instantiate new TaskService in those classes, that has just its own context and all other resources are shared.
 
-public class TaskService implements SingletonModule, TaskServiceInterface, HeadlessAppLoaderListener {
+public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final String TAG = "TaskService";
   private static final String SHARED_PREFERENCES_NAME = "TaskManagerModule";
   private static final int MAX_TASK_EXECUTION_TIME_MS = 15000; // 15 seconds
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
-  private HeadlessAppLoader mAppLoader;
 
   // { "<appId>": { "<taskName>": TaskInterface } }
   private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
@@ -78,14 +74,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
-    mAppLoader = AppLoaderProvider.createLoader("react-native-experience", context);
 
     if (sTasksTable == null) {
       sTasksTable = new HashMap<>();
       restoreTasks();
     }
-
-    HeadlessAppLoaderNotifier.INSTANCE.registerListener(this);
   }
 
   public String getName() {
@@ -277,7 +270,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
 
   @Override
   public boolean isStartedByHeadlessLoader(String appId) {
-    return mAppLoader.isRunning(appId);
+    return getAppLoader().isRunning(appId);
   }
 
   public void handleIntent(Intent intent) {
@@ -415,7 +408,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
     sEventsQueues.get(appId).add(body);
 
     try {
-      mAppLoader.loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appId, task.getAppUrl()), () -> {
+      getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appId, task.getAppUrl()), () -> {
       }, success -> {
         if (!success) {
           sEvents.remove(appId);
@@ -423,7 +416,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
 
           // Host unreachable? Unregister all tasks for that app.
           unregisterAllTasksForAppId(appId);
-
         }
       });
     } catch (HeadlessAppLoader.AppConfigurationError ignored) {
@@ -439,20 +431,15 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
   }
 
   //endregion
-  // region HeadlessAppLoaderNotifier
-
-  @Override
-  public void appLoaded(@NotNull String appId) {
-  }
-
-  @Override
-  public void appDestroyed(@NotNull String appId) {
-    sTaskManagers.remove(appId);
-  }
-
-
-  // endregion HeadlessAppLoaderNotifier
   //region helpers
+
+  private HeadlessAppLoader getAppLoader() {
+    if (mContextRef.get() != null) {
+      return AppLoaderProvider.getLoader("react-native-headless", mContextRef.get());
+    } else {
+      return null;
+    }
+  }
 
   private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
     Constructor<?> consumerConstructor;
@@ -658,7 +645,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface, Headl
   }
 
   private void invalidateAppRecord(String appId) {
-    if (mAppLoader.invalidateApp(appId)) {
+    if (getAppLoader().invalidateApp(appId)) {
       sHeadlessTaskManagers.remove(appId);
     }
   }
