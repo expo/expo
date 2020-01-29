@@ -25,8 +25,10 @@ export class EventEmitter {
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
-      this._nativeModule.startObserving();
+    if (!this._listenerCount && Platform.OS !== 'ios' && 'startObserving' in this._nativeModule) {
+      // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
+      // eslint-disable-next-line
+      this._nativeModule.startObserving?.();
     }
 
     this._listenerCount++;
@@ -49,8 +51,10 @@ export class EventEmitter {
       `EventEmitter must have a non-negative number of listeners`
     );
 
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
-      this._nativeModule.stopObserving();
+    if (!this._listenerCount && Platform.OS !== 'ios' && 'stopObserving' in this._nativeModule) {
+      // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
+      // eslint-disable-next-line
+      this._nativeModule.stopObserving?.();
     }
   }
 
@@ -70,8 +74,10 @@ export class EventEmitter {
     // Release closed-over references to the emitter
     subscription.remove = () => {};
 
-    if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.stopObserving) {
-      this._nativeModule.stopObserving();
+    if (!this._listenerCount && Platform.OS !== 'ios' && 'stopObserving' in this._nativeModule) {
+      // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
+      // eslint-disable-next-line
+      this._nativeModule.stopObserving?.();
     }
   }
 
