@@ -144,8 +144,11 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 async function loginWithFacebook() {
+  await Facebook.initializeAsync(
+     '<FACEBOOK_APP_ID>',
+  );
+
   const { type, token } = await Facebook.logInWithReadPermissionsAsync(
-    '<APP_ID>',
     { permissions: ['public_profile'] }
   );
 
