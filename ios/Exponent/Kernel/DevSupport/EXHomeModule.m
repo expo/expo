@@ -5,6 +5,7 @@
 #import "EXSession.h"
 #import "EXUnversioned.h"
 #import "EXClientReleaseType.h"
+#import "EXKernelDevKeyCommands.h"
 
 #import <React/RCTEventDispatcher.h>
 
@@ -29,6 +30,9 @@
     _eventFailureBlocks = [NSMutableDictionary dictionary];
     _sdkVersions = params[@"constants"][@"supportedExpoSdks"];
     _delegate = kernelServiceInstance;
+
+    // Register keyboard commands like Cmd+D for the simulator.
+    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
   }
   return self;
 }
