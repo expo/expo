@@ -48,7 +48,7 @@ function normalizeEndingSlash(p: string | null): string | null {
 export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documentDirectory);
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
+export const { bundledAssets, bundleDirectory } = { ...ExponentFileSystem };
 
 export async function getInfoAsync(
   fileUri: string,

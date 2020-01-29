@@ -16,8 +16,8 @@ it(`accepts valid byte counts`, async () => {
 });
 
 it(`falls back to an alternative native method when getRandomBytesAsync is not available`, async () => {
-  ExpoRandom.getRandomBytesAsync = null;
-  await expect(Random.getRandomBytesAsync(1024));
+  delete ExpoRandom.getRandomBytesAsync;
+  expect(await Random.getRandomBytesAsync(1024));
   expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenCalled();
 });
 

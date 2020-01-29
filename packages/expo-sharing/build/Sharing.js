@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import Sharing from './ExpoSharing';
 export async function isAvailableAsync() {
     if (Sharing) {
-        if (Sharing.isAvailableAsync) {
+        if ('isAvailableAsync' in Sharing) {
             return await Sharing.isAvailableAsync();
         }
         return true;

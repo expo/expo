@@ -12,10 +12,10 @@ function assertByteCount(value) {
 export async function getRandomBytesAsync(byteCount) {
     assertByteCount(byteCount);
     const validByteCount = Math.floor(byteCount);
-    if (ExpoRandom.getRandomBytesAsync) {
+    if ('getRandomBytesAsync' in ExpoRandom) {
         return await ExpoRandom.getRandomBytesAsync(validByteCount);
     }
-    else if (ExpoRandom.getRandomBase64StringAsync) {
+    else if ('getRandomBase64StringAsync' in ExpoRandom) {
         const base64 = await ExpoRandom.getRandomBase64StringAsync(validByteCount);
         return toByteArray(base64);
     }

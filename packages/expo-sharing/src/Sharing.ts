@@ -10,7 +10,7 @@ type ShareOptions = {
 
 export async function isAvailableAsync(): Promise<boolean> {
   if (Sharing) {
-    if (Sharing.isAvailableAsync) {
+    if ('isAvailableAsync' in Sharing) {
       return await Sharing.isAvailableAsync();
     }
     return true;

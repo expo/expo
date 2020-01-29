@@ -1,8 +1,10 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import { DeviceType } from './Device.types';
-import ExpoDevice from './ExpoDevice';
+import ExpoDeviceModule from './ExpoDevice';
 import { getIosModelName } from './ModelNames';
 export { DeviceType };
+// unwrap Proxy
+const ExpoDevice = { ...ExpoDeviceModule };
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : true;
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;

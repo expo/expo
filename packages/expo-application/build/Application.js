@@ -12,7 +12,7 @@ export const applicationName = ExpoApplication
 export const applicationId = ExpoApplication
     ? ExpoApplication.applicationId || null
     : null;
-export const androidId = ExpoApplication ? ExpoApplication.androidId || null : null;
+export const androidId = 'androidId' in ExpoApplication ? ExpoApplication.androidId || null : null;
 export async function getInstallReferrerAsync() {
     if (!ExpoApplication.getInstallReferrerAsync) {
         throw new UnavailabilityError('expo-application', 'getInstallReferrerAsync');

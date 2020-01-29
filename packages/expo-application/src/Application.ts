@@ -14,7 +14,8 @@ export const applicationName: string | null = ExpoApplication
 export const applicationId: string | null = ExpoApplication
   ? ExpoApplication.applicationId || null
   : null;
-export const androidId: string | null = ExpoApplication ? ExpoApplication.androidId || null : null;
+export const androidId: string | null =
+  'androidId' in ExpoApplication ? ExpoApplication.androidId || null : null;
 
 export async function getInstallReferrerAsync(): Promise<string> {
   if (!ExpoApplication.getInstallReferrerAsync) {

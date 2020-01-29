@@ -79,7 +79,7 @@ export async function askForPlayServicesAsync(): Promise<boolean> {
 export async function getPlayServiceAvailability(shouldAsk: boolean = false): Promise<boolean> {
   validateOwnership();
 
-  if (ExpoGoogleSignIn.arePlayServicesAvailableAsync) {
+  if ('arePlayServicesAvailableAsync' in ExpoGoogleSignIn) {
     return await ExpoGoogleSignIn.arePlayServicesAvailableAsync(shouldAsk);
   } else {
     return true;
