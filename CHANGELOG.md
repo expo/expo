@@ -13,6 +13,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🎉 New features
 
 - Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
+- `expo-task-manager` supports bare workflow. ([#4562](https://github.com/expo/expo/pull/6828) by [@mczernek](https://github.com/mczernek))
 
 ### 🐛 Bug fixes
 
