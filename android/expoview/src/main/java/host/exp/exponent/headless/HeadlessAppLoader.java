@@ -317,9 +317,12 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     }
 
     RNObject reactInstanceManager = builder.callRecursive("build");
-    RNObject devSettings = reactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
-    if (devSettings != null) {
-      devSettings.setField("exponentActivityId", mActivityId);
+    RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
+    if (devSupportManager != null) {
+      RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
+      if (devSettings != null) {
+        devSettings.setField("exponentActivityId", mActivityId);
+      }
     }
 
     reactInstanceManager.call("createReactContextInBackground");
