@@ -73,14 +73,19 @@ async function _subscribeUserToPushAsync(): Promise<object> {
   guardPermission();
 
   const registration = await navigator.serviceWorker.getRegistration();
+  if (!registration) {
+    throw new Error(
+      'Notifications might not be working because no service worker was registered.'
+    );
+  }
+  
   await navigator.serviceWorker.ready;
-
   if (!registration.active) {
     throw new Error(
       'Notifications might not be working because the service worker API is not active.'
     );
   }
-
+  
   const subscribeOptions = {
     userVisibleOnly: true,
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
