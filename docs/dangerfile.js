@@ -28,13 +28,13 @@ function warnIfOnlyOneVersionChanged() {
     if (version === 'unversioned') {
       let path = `docs/pages/versions/v${LATEST_VERSION}/${name}`;
       let url = `https://github.com/expo/expo/blob/master/${path}`;
-      return `If it makes sense to do so, please also apply this change to the latest version at [${path}](${url}).`;
+      return `Please consider copying the changes to the latest released version at [${path}](${url}) if applicable.`;
     } else if (version === `v${LATEST_VERSION}`) {
       let path = `docs/pages/versions/unversioned/${name}`;
       let url = `https://github.com/expo/expo/blob/master/${path}`;
-      return `If it makes sense to do so, please make sure this change won't be lost on the next released by changing the unversioned copy at [${path}](${url}) as well.`;
+      return `Please make sure this change won't be lost on the next SDK release by updating the \`unversioned\` copy at [${path}](${url}).`;
     } else {
-      return `You may also want to apply this change to other versions of the documentation in the [docs/pages/versions](https://github.com/expo/expo/tree/master/docs/pages/versions) directory.`;
+      return `You may also want to make these changes to other versions of the documentation, where applicable, in the [docs/pages/versions](https://github.com/expo/expo/tree/master/docs/pages/versions) directory.`;
     }
   }
 
@@ -43,7 +43,7 @@ function warnIfOnlyOneVersionChanged() {
     if (changes.length === 1) {
       let version = getVersionFromPath(changes[0]);
       warn(
-        `You modified ${name} in the "pages/${version}" directory. ${getSuggestion(version, name)}`
+        `You modified \`${name}\` in the \`${version}\` directory. ${getSuggestion(version, name)}`
       );
     }
   });
