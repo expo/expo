@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.util.SparseArray;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.soloader.SoLoader;
 
@@ -278,9 +279,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
                                       final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages) {
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
+      MANIFEST_URL_KEY, mManifestUrl,
+      LINKING_URI_KEY, linkingUri,
+      INTENT_URI_KEY, mIntentUri
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -294,6 +295,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -308,9 +310,12 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     }
 
     RNObject reactInstanceManager = builder.callRecursive("build");
-    RNObject devSettings = reactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings");
-    if (devSettings != null) {
-      devSettings.setField("exponentActivityId", mActivityId);
+    RNObject devSupportManager = reactInstanceManager.callRecursive("getDevSupportManager");
+    if (devSupportManager != null) {
+      RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
+      if (devSettings != null) {
+        devSettings.setField("exponentActivityId", mActivityId);
+      }
     }
 
     reactInstanceManager.call("createReactContextInBackground");
@@ -331,7 +336,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
         List<String> pathSegments = uri.getPathSegments();
         Uri.Builder builder = uri.buildUpon();
         builder.path(null);

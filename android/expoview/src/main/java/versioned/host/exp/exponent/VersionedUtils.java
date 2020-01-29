@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent;
 
+import android.util.Log;
+
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.common.LifecycleState;
@@ -23,8 +25,9 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.expoPackages,
                 instanceManagerBuilderProperties.exponentPackageDelegate,
                 instanceManagerBuilderProperties.singletonModules))
-        .setInitialLifecycleState(LifecycleState.RESUMED);
+        .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
+    Log.e("ReactNativeJS", "jsBundlePath: " + instanceManagerBuilderProperties.jsBundlePath + ".");
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
       builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
     }

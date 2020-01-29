@@ -22,7 +22,7 @@ public class VersionedUtils {
                 null,
                 null,
                 instanceManagerBuilderProperties.singletonModules))
-        .setInitialLifecycleState(LifecycleState.RESUMED);
+        .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
       builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
