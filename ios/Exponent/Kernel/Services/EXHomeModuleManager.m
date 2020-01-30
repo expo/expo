@@ -6,7 +6,6 @@
 #import "EXHomeModuleManager.h"
 #import "EXManifestResource.h"
 #import "EXKernel.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
@@ -17,19 +16,8 @@
 {
   if (self = [super init]) {
     [EXKernelDevMotionHandler sharedInstance];
-    [EXKernelDevKeyCommands sharedInstance];
   }
   return self;
-}
-
-- (BOOL)homeModuleShouldEnableLegacyMenuBehavior:(EXHomeModule *)module
-{
-  return [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled;
-}
-
-- (void)homeModule:(EXHomeModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled
-{
-  [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled = isEnabled;
 }
 
 - (BOOL)homeModuleShouldEnableDevtools:(__unused EXHomeModule *)module
@@ -50,16 +38,13 @@
 - (void)homeModule:(EXHomeModule *)module didSelectDevMenuItemWithKey:(NSString *)key
 {
   [[EXKernel sharedInstance].visibleApp.appManager selectDevMenuItemWithKey:key];
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController toggleMenuWithCompletion:^{}];
-    });
-  }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module
 {
   [[EXKernel sharedInstance] reloadVisibleApp];
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module
@@ -78,6 +63,7 @@
       [[EXKernel sharedInstance].browserController moveHomeToVisible];
     });
   }
+  [module requestToCloseDevMenu];
 }
 
 - (void)homeModuleDidSelectQRReader:(EXHomeModule *)module

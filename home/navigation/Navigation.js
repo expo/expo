@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createAppContainer, useTheme } from 'react-navigation';
+import { BottomTabBar, createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
@@ -131,21 +131,33 @@ if (Platform.OS === 'android') {
     };
   }
 }
+
+const ThemedTabBarComponent = props => {
+  let theme = useTheme();
+
+  return (
+    <BottomTabBar
+      {...props}
+      style={{
+        backgroundColor: Colors[theme].tabBar,
+        borderTopColor: Colors[theme].navBorderBottom,
+      }}
+    />
+  );
+};
+
 const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
         initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
+        tabBarComponent: ThemedTabBarComponent,
         tabBarOptions: {
           activeTintColor: {
             light: Colors.light.tintColor,
             dark: Colors.light.tintColor,
-          },
-          style: {
-            backgroundColor: Colors.tabBar,
-            borderTopColor: 'rgba(46, 59, 76, 0.10)',
           },
         },
       })
@@ -155,7 +167,7 @@ const TabNavigator =
         inactiveColor: Colors.tabIconDefault,
         shifting: true,
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
         barStyleLight: {
           backgroundColor: '#fff',
