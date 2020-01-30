@@ -342,15 +342,6 @@
   #endif  // __has_feature(nullability)
 #endif  // GTM_NULLABLE
 
-#if (TARGET_OS_TV \
-     || TARGET_OS_WATCH \
-     || (!TARGET_OS_IPHONE && defined(MAC_OS_X_VERSION_10_12) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12) \
-     || (TARGET_OS_IPHONE && defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0))
-#define GTMSESSION_DEPRECATE_ON_2016_SDKS(_MSG) __attribute__((deprecated("" _MSG)))
-#else
-#define GTMSESSION_DEPRECATE_ON_2016_SDKS(_MSG)
-#endif
-
 #ifndef GTM_DECLARE_GENERICS
   #if __has_feature(objc_generics)
     #define GTM_DECLARE_GENERICS 1

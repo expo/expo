@@ -26,6 +26,7 @@ public class BasePackageList {
         new expo.modules.errorrecovery.ErrorRecoveryPackage(),
         new expo.modules.facebook.FacebookPackage(),
         new expo.modules.filesystem.FileSystemPackage(),
+        new expo.modules.firebase.core.FirebaseCorePackage(),
         new expo.modules.font.FontLoaderPackage(),
         new expo.modules.gl.GLPackage(),
         new expo.modules.google.signin.GoogleSignInPackage(),

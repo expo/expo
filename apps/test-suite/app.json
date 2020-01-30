@@ -17,7 +17,11 @@
       "config": "metro.config.js"
     },
     "ios": {
-      "bundleIdentifier": "io.expo.testsuite"
+      "bundleIdentifier": "io.expo.testsuite",
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json"
     }
   }
 }
