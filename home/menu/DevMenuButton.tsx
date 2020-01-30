@@ -39,14 +39,14 @@ class DevMenuButton extends React.PureComponent<Props, any> {
     }
   };
 
-  renderButtonIcon(icon?: string) {
+  renderButtonIcon(icon: string | undefined, isEnabled: boolean) {
     if (!icon) {
       return null;
     }
 
     return (
       <View style={styles.buttonIcon}>
-        <MaterialCommunityIcons name={icon} size={20} color="#2F9BE4" />
+        <MaterialCommunityIcons name={icon} size={20} color={isEnabled ? '#2F9BE4' : '#888'} />
       </View>
     );
   }
@@ -78,7 +78,7 @@ class DevMenuButton extends React.PureComponent<Props, any> {
         style={[styles.buttonText, styles.buttonDetailsText]}
         darkColor={DARK_DISABLED_TEXT_COLOR}
         lightColor={LIGHT_DISABLED_TEXT_COLOR}>
-        {detail ? detail : 'Only available in development mode'}
+        {detail ? detail : 'Only available in development mode.'}
       </StyledText>
     );
   }
@@ -89,9 +89,9 @@ class DevMenuButton extends React.PureComponent<Props, any> {
 
     return (
       <TouchableOpacity style={styles.button} onPress={this.onPress} disabled={!isEnabled}>
-        {this.renderButtonIcon(icon)}
+        {this.renderButtonIcon(icon, !!isEnabled)}
 
-        <View style={styles.buttonColumn}>
+        <View style={styles.buttonRow}>
           {this.renderLabel(label, !!isEnabled)}
           {!isEnabled && showDetails && this.renderDetail(detail)}
         </View>
@@ -103,26 +103,27 @@ class DevMenuButton extends React.PureComponent<Props, any> {
 const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
+    paddingBottom: 20,
   },
-  buttonColumn: {
+  buttonRow: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-around',
+    alignItems: 'flex-start',
+    paddingRight: 20,
   },
   buttonIcon: {
-    marginVertical: 12,
     marginLeft: 20,
-    marginRight: 7,
-    alignSelf: 'center',
+    marginRight: 8,
+    marginTop: 2,
   },
   buttonText: {
     fontSize: 14,
     textAlign: 'left',
-    margin: 5,
     fontWeight: '700',
   },
   buttonDetailsText: {
-    marginTop: -6,
+    marginTop: 1,
     fontSize: 12,
     fontWeight: 'normal',
   },
