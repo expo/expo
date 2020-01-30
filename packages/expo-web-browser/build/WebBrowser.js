@@ -63,7 +63,7 @@ export function dismissBrowser() {
     }
     ExponentWebBrowser.dismissBrowser();
 }
-export async function openAuthSessionAsync(url, redirectUrl) {
+export async function openAuthSessionAsync(url, redirectUrl, browserParams = {}) {
     if (_authSessionIsNativelySupported()) {
         if (!ExponentWebBrowser.openAuthSessionAsync) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
@@ -71,7 +71,7 @@ export async function openAuthSessionAsync(url, redirectUrl) {
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
     }
     else {
-        return _openAuthSessionPolyfillAsync(url, redirectUrl);
+        return _openAuthSessionPolyfillAsync(url, redirectUrl, browserParams);
     }
 }
 export function dismissAuthSession() {
@@ -109,13 +109,13 @@ function _onAppStateChangeAndroid(state) {
         _onWebBrowserCloseAndroid();
     }
 }
-async function _openBrowserAndWaitAndroidAsync(startUrl) {
+async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
     let appStateChangedToActive = new Promise(resolve => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
     let result = { type: 'cancel' };
-    let { type } = await openBrowserAsync(startUrl);
+    let { type } = await openBrowserAsync(startUrl, browserParams);
     if (type === 'opened') {
         await appStateChangedToActive;
         result = { type: 'dismiss' };
@@ -124,7 +124,7 @@ async function _openBrowserAndWaitAndroidAsync(startUrl) {
     _onWebBrowserCloseAndroid = null;
     return result;
 }
-async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
+async function _openAuthSessionPolyfillAsync(startUrl, returnUrl, browserParams = {}) {
     if (_redirectHandler) {
         throw new Error(`The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`);
     }
@@ -134,12 +134,15 @@ async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
     try {
         if (Platform.OS === 'android') {
             return await Promise.race([
-                _openBrowserAndWaitAndroidAsync(startUrl),
+                _openBrowserAndWaitAndroidAsync(startUrl, browserParams),
                 _waitForRedirectAsync(returnUrl),
             ]);
         }
         else {
-            return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+            return await Promise.race([
+                openBrowserAsync(startUrl, browserParams),
+                _waitForRedirectAsync(returnUrl),
+            ]);
         }
     }
     finally {
