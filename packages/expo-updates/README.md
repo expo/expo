@@ -2,7 +2,7 @@
 
 `expo-updates` fetches and manages remotely-hosted assets and updates to your app's JS bundle.
 
-See [<ModuleName> docs](https://docs.expo.io/versions/latest/sdk/<module-docs-name>) for documentation of this universal module's API.
+See [Updates docs](https://docs.expo.io/versions/latest/sdk/updates) for documentation of this universal module's API.
 
 # Installation
 
@@ -16,22 +16,53 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-updates
 ```
 
+### Setup app.json
+
+Expo can automatically include your app's manifest and JS bundle in your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
+
+```json
+  "ios": {
+    "publishBundlePath": "ios/<your-project-name>/Supporting/shell-app.bundle",
+    "publishManifestPath": "ios/<your-project-name>/Supporting/shell-app-manifest.json"
+  },
+  "android": {
+    "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+    "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
+  },
+```
+
+Additionally, ensure that these directories (`ios/<your-project-name>/Supporting/` and `android/app/src/main/assets/`) exist. After running `expo publish` at least once, you'll need to manually add the `shell-app.bundle` and `shell-app-manifest.json` files to your Xcode project.
+
+Finally, if you have other assets (such as images or other media) that are `require`d in your application code and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
+
+```json
+  "assetBundlePatterns": ["**/*"],
+```
+
 ### Configure for iOS
 
 Run `pod install` in the ios directory after installing the npm package.
 
-- expo-config.plist
+#### `expo-config.plist`
 
-Add this to Xcode project
+Create the file `ios/<your-project-name>/Supporting/expo-config.plist` with the following contents, and add it to your Xcode project.
 
-- AppDelegate.h
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>sdkVersion</key>
+        <string>YOUR-APP-SDK-VERSION-HERE</string>
+        <key>remoteUrl</key>
+        <string>YOUR-APP-URL-HERE</string>
+</dict>
+</plist>
+```
 
-```objective-c
-diff --git a/ios/HelloWorld/AppDelegate.h b/ios/HelloWorld/AppDelegate.h
-index 78fbb4d..080b9a0 100644
---- a/ios/HelloWorld/AppDelegate.h
-+++ b/ios/HelloWorld/AppDelegate.h
-@@ -10,7 +10,9 @@
+#### `AppDelegate.h`
+
+```diff
  #import <React/RCTBridgeDelegate.h>
  #import <UMCore/UMAppDelegateWrapper.h>
 
@@ -44,14 +75,17 @@ index 78fbb4d..080b9a0 100644
  @property (nonatomic, strong) UIWindow *window;
  ```
 
-- AppDelegate.m
+#### `AppDelegate.m`
 
-```objective-c
-diff --git a/ios/HelloWorld/AppDelegate.m b/ios/HelloWorld/AppDelegate.m
-index 41042d3..81a7150 100644
---- a/ios/HelloWorld/AppDelegate.m
-+++ b/ios/HelloWorld/AppDelegate.m
-@@ -14,6 +14,12 @@
+Make the following changes to `AppDelegate.m`.
+
+If your `AppDelegate` has been customized and the diff doesn't apply cleanly, the important part is calling `[[EXUpdatesAppController sharedInstance] startAndShowLaunchScreen:self.window]` in the `application:didFinishLaunchingWithOptions` method, and moving the initialization of the `RCTBridge` to the `EXUpdatesAppControllerDelegate`.
+
+In general, iOS will only show your app's splash screen for a few seconds, after which you must provide a UI. If you use the `startAndShowLaunchScreen:` method, expo-updates will attempt to create a view from your `LaunchScreen.nib` file in order to continue showing the splash screen if the update is taking a long time to load. If you have custom logic around your splash screen and do not want this, feel free to use the `start` method instead.
+
+Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is optional, but required in order for reloading and updates events to work.
+
+```diff
  #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
  #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 
@@ -63,28 +97,48 @@ index 41042d3..81a7150 100644
 +
  @implementation AppDelegate
 
- @synthesize window = _window;
-@@ -21,15 +27,12 @@
+...
+
  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
  {
    self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
 -  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
--  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"HelloWorld" initialProperties:nil];
--  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 +  self.launchOptions = launchOptions;
-
-   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
--  UIViewController *rootViewController = [UIViewController new];
--  rootViewController.view = rootView;
--  self.window.rootViewController = rootViewController;
--  [self.window makeKeyAndVisible];
++
++  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
++#ifdef DEBUG
++  [self initializeReactNativeApp];
++#else
 +  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
 +  controller.delegate = self;
 +  [controller startAndShowLaunchScreen:self.window];
++#endif
++
++  [super application:application didFinishLaunchingWithOptions:launchOptions];
++
++  return YES;
++}
++
++- (RCTBridge *)initializeReactNativeApp
++{
++  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
+   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"YOUR-APP-NAME" initialProperties:nil];
+   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-   [super application:application didFinishLaunchingWithOptions:launchOptions];
+-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+   UIViewController *rootViewController = [UIViewController new];
+   rootViewController.view = rootView;
+   self.window.rootViewController = rootViewController;
+   [self.window makeKeyAndVisible];
 
-@@ -48,8 +51,21 @@
+-  [super application:application didFinishLaunchingWithOptions:launchOptions];
+-
+-  return YES;
++  return bridge;
+ }
+
+...
+
  #ifdef DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
  #else
@@ -95,15 +149,7 @@ index 41042d3..81a7150 100644
 
 +- (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
 +{
-+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
-+  appController.bridge = bridge;
-+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"bareUpdates1" initialProperties:nil];
-+  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-+
-+  UIViewController *rootViewController = [UIViewController new];
-+  rootViewController.view = rootView;
-+  self.window.rootViewController = rootViewController;
-+  [self.window makeKeyAndVisible];
++  appController.bridge = [self initializeReactNativeApp];
 +}
 +
  @end
@@ -111,22 +157,20 @@ index 41042d3..81a7150 100644
 
 ### Configure for Android
 
-- AndroidManifest.xml
+#### `AndroidManifest.xml`
 
-Skip this step if you're using Expo's servers to host your OTA updates (i.e. running `expo publish`).
-
-// TODO: auto-set in expo publish
+Add the following lines inside of the `MainApplication`'s `<application>` tag.
 
 ```xml
-<meta-data android:name="expo.modules.updates.EXPO_APP_URL" android:value="<url>" />
-<meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="36.0.0" />
+<meta-data android:name="expo.modules.updates.EXPO_APP_URL" android:value="YOUR-APP-URL-HERE" />
+<meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE" />
 ```
 
-- MainApplication.java
+#### `MainApplication.java`
 
-```java
-...
+Make the following changes to `MainApplication.java` (or whichever file you instantiate your `ReactNativeHost`). `UpdatesController.initialize()` expects to be given an instance of `ReactApplication`, but if not, you can also call `UpdatesController.getInstance().setReactNativeHost()` to directly set the host. Providing `UpdatesController` with a reference to the `ReactNativeHost` is optional, but required in order for reloading and updates events to work.
 
+```diff
 +import android.net.Uri;
 +import expo.modules.updates.UpdatesController;
 +import javax.annotation.Nullable;
@@ -134,7 +178,9 @@ Skip this step if you're using Expo's servers to host your OTA updates (i.e. run
  public class MainApplication extends Application implements ReactApplication {
    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
      new BasePackageList().getPackageList(),
-@@ -51,6 +55,15 @@ public class MainApplication extends Application implements ReactApplication {
+
+...
+
      protected String getJSMainModuleName() {
        return "index";
      }
@@ -158,8 +204,8 @@ Skip this step if you're using Expo's servers to host your OTA updates (i.e. run
 +    }
    };
 
-   @Override
-@@ -62,5 +75,10 @@ public class MainApplication extends Application implements ReactApplication {
+...
+
    public void onCreate() {
      super.onCreate();
      SoLoader.init(this, /* native exopackage */ false);
@@ -170,12 +216,16 @@ Skip this step if you're using Expo's servers to host your OTA updates (i.e. run
 +    }
    }
  }
- ```
+```
 
- TODO: asset bundling setup
- TODO: other initialization setup (app.json keys, etc)
+TODO: asset bundling setup
 
- ## API
+## Configuration
+
+Some build-time configuration options are available to allow your app to update automatically on launch.
+// TODO
+
+## API
 
 ```js
 import * as Updates from 'expo-updates';
