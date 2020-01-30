@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: First steps
 ---
 
 In this tutorial we are going to build an app for iOS, Android, and web that allows you to share photos with your friends! Of course there are already plenty of apps that let you share photos from your phone, you just can't do it with *your own app*. Let's remedy that.
