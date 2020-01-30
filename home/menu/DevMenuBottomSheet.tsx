@@ -1,6 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
+import { TouchableWithoutFeedback } from 'react-native';
 import { Dimensions, EventSubscription, StyleSheet, View } from 'react-native';
 
 import * as DevMenu from './DevMenuModule';
@@ -63,6 +64,11 @@ class DevMenuBottomSheet extends React.PureComponent<Props, {}> {
     return new Promise(resolve => setTimeout(resolve, 200));
   };
 
+  collapseAndClose = async () => {
+    await this.collapse();
+    await DevMenu.closeAsync();
+  };
+
   expand = () => {
     this.ref.current && this.ref.current.snapTo(1);
   };
@@ -78,11 +84,10 @@ class DevMenuBottomSheet extends React.PureComponent<Props, {}> {
     this.closeStarted = true;
   };
 
-  onCloseEnd = async () => {
+  onCloseEnd = () => {
     if (this.closeStarted) {
       this.closeStarted = false;
-      await this.collapse();
-      await DevMenu.closeAsync();
+      this.collapseAndClose();
     }
   };
 
@@ -107,9 +112,10 @@ class DevMenuBottomSheet extends React.PureComponent<Props, {}> {
     return (
       <DevMenuBottomSheetContext.Provider value={this.providedContext}>
         <View style={styles.bottomSheetContainer}>
-          <Animated.View
-            style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]}
-          />
+          <TouchableWithoutFeedback onPress={this.collapseAndClose}>
+            <Animated.View
+              style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]} />
+          </TouchableWithoutFeedback>
           <BottomSheet
             ref={this.ref}
             initialSnap={0}
