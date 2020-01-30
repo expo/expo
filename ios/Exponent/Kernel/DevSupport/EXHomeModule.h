@@ -12,12 +12,6 @@
 - (BOOL)homeModuleShouldEnableDevtools:(EXHomeModule *)module;
 
 /**
- *  Whether to enable legacy gesture/button for the Expo menu.
- */
-- (BOOL)homeModuleShouldEnableLegacyMenuBehavior:(EXHomeModule *)module;
-- (void)homeModule:(EXHomeModule *)module didSelectEnableLegacyMenuBehavior:(BOOL)isEnabled;
-
-/**
  *  Dictionary of `key` => `user facing label` items to show in the kernel JS dev menu.
  */
 - (NSDictionary <NSString *, NSString *> *)devMenuItemsForHomeModule:(EXHomeModule *)module;
@@ -40,5 +34,7 @@
                    body: (NSDictionary *)eventBody
               onSuccess: (void (^)(NSDictionary *))success
               onFailure: (void (^)(NSString *))failure;
+
+- (void)requestToCloseDevMenu;
 
 @end

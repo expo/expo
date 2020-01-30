@@ -10,7 +10,7 @@ import isIPhoneX from '../utils/isIPhoneX';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    headerShown: false,
   };
 
   state = {
