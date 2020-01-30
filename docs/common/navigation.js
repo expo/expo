@@ -16,7 +16,7 @@ const sections = [
   {
     name: 'Introduction',
     reference: [
-      'What is Expo?',
+      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
