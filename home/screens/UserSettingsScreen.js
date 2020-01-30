@@ -31,7 +31,6 @@ export default class UserSettingsScreen extends React.Component {
     return (
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingTop: 15 }}
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
         {this._renderAppearanceOptions()}
