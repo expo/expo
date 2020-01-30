@@ -822,6 +822,10 @@ jobs:
       - update_submodules
       - yarn_install:
           working_directory: docs
+      - run:
+          name: Run Danger
+          working_directory: docs
+          command: yarn danger ci
       - yarn:
           command: export
           working_directory: docs

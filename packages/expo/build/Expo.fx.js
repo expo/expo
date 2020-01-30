@@ -8,7 +8,7 @@ import Constants from 'expo-constants';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
 import DevAppContainer from './environment/DevAppContainer';
-if (typeof Constants.manifest.env === 'object') {
+if (Constants.manifest && typeof Constants.manifest.env === 'object') {
     Object.assign(process.env, Constants.manifest.env);
 }
 // add the dev app container wrapper component on ios

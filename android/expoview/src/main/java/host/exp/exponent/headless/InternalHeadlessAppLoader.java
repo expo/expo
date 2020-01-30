@@ -310,7 +310,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     }
 
     RNObject reactInstanceManager = builder.callRecursive("build");
-    RNObject devSupportManager = reactInstanceManager.callRecursive("getDevSupportManager");
+    RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
     if (devSupportManager != null) {
       RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
       if (devSettings != null) {

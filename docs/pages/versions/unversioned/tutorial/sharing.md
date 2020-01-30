@@ -95,7 +95,7 @@ Sharing didn't work here because the desktop Chrome browser doesn't yet implemen
 
 ## Working with what we have available
 
-In the next section we are going to look at how we can handle this and another import platform difference. [Continue to Handling platform differences](../../tutorial/platform-differences/).
+In the next section we are going to look at how we can handle this and another important platform difference. [Continue to "Handling platform differences"](../../tutorial/platform-differences/).
 
 
 <!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->

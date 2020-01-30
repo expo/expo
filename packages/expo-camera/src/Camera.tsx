@@ -192,7 +192,7 @@ export default class Camera extends React.Component<Props> {
     return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
   }
 
-  async getSupportedRatiosAsync(): Promise<Array<string>> {
+  async getSupportedRatiosAsync(): Promise<string[]> {
     if (!CameraManager.getSupportedRatios) {
       throw new UnavailabilityError('Camera', 'getSupportedRatiosAsync');
     }
@@ -200,7 +200,7 @@ export default class Camera extends React.Component<Props> {
     return await CameraManager.getSupportedRatios(this._cameraHandle);
   }
 
-  async getAvailablePictureSizesAsync(ratio?: string): Promise<Array<string>> {
+  async getAvailablePictureSizesAsync(ratio?: string): Promise<string[]> {
     if (!CameraManager.getAvailablePictureSizes) {
       throw new UnavailabilityError('Camera', 'getAvailablePictureSizesAsync');
     }

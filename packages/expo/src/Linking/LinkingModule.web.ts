@@ -4,7 +4,7 @@ import { URLListener, NativeURLListener } from './Linking.types';
 
 const EventTypes = ['url'];
 
-const listeners: Array<{ listener: URLListener; nativeListener: NativeURLListener }> = [];
+const listeners: { listener: URLListener; nativeListener: NativeURLListener }[] = [];
 
 function _validateURL(url: string): void {
   invariant(typeof url === 'string', `Invalid URL: should be a string. Instead found: ${url}`);

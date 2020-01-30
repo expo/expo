@@ -1,7 +1,9 @@
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {}
+  } catch (e) {
+    return null;
+  }
 }
 
 const AdMob = optionalRequire(() => require('../screens/AdMobScreen'));
@@ -39,7 +41,7 @@ const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
 
-const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
+const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
   MaskedView: BasicMaskScreen,
