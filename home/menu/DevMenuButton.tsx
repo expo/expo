@@ -17,10 +17,6 @@ type Props = {
 // When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
-const LabelNameOverrides = {
-  'Reload JS Bundle': 'Reload JS Bundle only',
-};
-
 const LIGHT_DISABLED_TEXT_COLOR = '#9ca0a6';
 const DARK_DISABLED_TEXT_COLOR = 'rgba(255, 255, 255, 0.7)';
 
@@ -52,12 +48,10 @@ class DevMenuButton extends React.PureComponent<Props, any> {
   }
 
   renderLabel(label: string, enabled: boolean) {
-    const normalizedLabel = LabelNameOverrides[label] || label;
-
     if (enabled) {
       return (
         <StyledText style={styles.buttonText} lightColor="#595c68">
-          {normalizedLabel}
+          {label}
         </StyledText>
       );
     } else {
@@ -66,7 +60,7 @@ class DevMenuButton extends React.PureComponent<Props, any> {
           style={styles.buttonText}
           lightColor={LIGHT_DISABLED_TEXT_COLOR}
           darkColor={DARK_DISABLED_TEXT_COLOR}>
-          {normalizedLabel}
+          {label}
         </StyledText>
       );
     }
