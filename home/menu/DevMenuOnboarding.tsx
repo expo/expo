@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.8,
+    opacity: 0.9,
   },
   onboardingTopMargin: {
     // Moves the actual onboarding content a little bit down.
     // This percentage value is also a percentage of screen's height.
-    height: '27%',
+    height: '20%',
   },
   onboardingHeadingRow: {
     flexDirection: 'row',
