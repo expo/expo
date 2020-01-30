@@ -103,7 +103,7 @@ class DevMenuButton extends React.PureComponent<Props, any> {
 const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
-    paddingBottom: 20,
+    paddingVertical: 10,
   },
   buttonRow: {
     flex: 1,
