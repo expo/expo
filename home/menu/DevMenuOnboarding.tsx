@@ -28,7 +28,7 @@ const ONBOARDING_MESSAGE = (() => {
   return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
 
-class DevMenuOnboarding extends React.PureComponent<Props, {}> {
+class DevMenuOnboarding extends React.PureComponent<Props, any> {
   onPress = () => {
     if (this.props.onClose) {
       this.props.onClose();

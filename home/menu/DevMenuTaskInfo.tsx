@@ -9,7 +9,7 @@ type Props = {
   task: { [key: string]: any };
 };
 
-class DevMenuTaskInfo extends React.PureComponent<Props, {}> {
+class DevMenuTaskInfo extends React.PureComponent<Props, any> {
   _maybeRenderDevServerName() {
     const { task } = this.props;
     const devServerName =

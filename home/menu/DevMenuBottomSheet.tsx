@@ -1,8 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { TouchableWithoutFeedback } from 'react-native';
-import { Dimensions, EventSubscription, StyleSheet, View } from 'react-native';
+import { Dimensions, EventSubscription, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import * as DevMenu from './DevMenuModule';
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
@@ -11,7 +10,7 @@ type Props = {
   uuid: string;
 };
 
-class DevMenuBottomSheet extends React.PureComponent<Props, {}> {
+class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   ref = React.createRef<BottomSheet>();
 
   snapPoints = [0, Math.max(BottomSheet.renumber('50%'), 600), '90%'];
