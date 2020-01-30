@@ -31,7 +31,7 @@ const sections = [
   {
     name: 'Tutorial',
     reference: [
-      'Introduction',
+      'First steps',
       'Styling text',
       'Adding an image',
       'Creating a button',
