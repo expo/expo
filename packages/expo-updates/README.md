@@ -174,3 +174,77 @@ Skip this step if you're using Expo's servers to host your OTA updates (i.e. run
 
  TODO: asset bundling setup
  TODO: other initialization setup (app.json keys, etc)
+
+ ## API
+
+```js
+import * as Updates from 'expo-updates';
+```
+
+### `Updates.reloadAsync()`
+
+Instructs the app to reload using the most recent cached version. This is useful for triggering an update of your experience if you have published and already downloaded a new version.
+
+#### Returns
+
+A `Promise` that resolves right before the reload instruction is sent to the JS runtime, or rejects if it cannot find a reference to the JS runtime.
+
+If the `Promise` is rejected, it most likely means you have installed the module incorrectly. Double check you've followed the instructions above. In particular, on iOS ensure that you set the `bridge` property on `EXUpdatesAppController` with a pointer to the `RCTBridge` you want to reload, and on Android ensure you either call `UpdatesController.initialize` with the instance of `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the proper instance of `ReactNativeHost`.
+
+### `Updates.checkForUpdateAsync()`
+
+Checks the app's remote URL to see if a new published version of your project is available. Does not actually download the update.
+
+#### Returns
+
+An `Promise` that resolves to an object with the following keys:
+
+- **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
+- **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
+
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+
+### `Updates.fetchUpdateAsync()`
+
+Downloads the most recently published version of your project from the app's remote URL to the device's local storage.
+
+#### Returns
+
+An object with the following keys:
+
+- **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
+- **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
+
+### `Updates.addListener(eventListener)`
+
+Adds a callback to be invoked when updates-related events occur (such as upon the initial app load) due to auto-update settings chosen at build-time.
+
+#### Arguments
+
+- **eventListener (_(event: [UpdateEvent](#updateevent)) => void_)** -- A function that will be invoked with an instance of [`UpdateEvent`](#updateevent) and should not return any value.
+
+#### Returns
+
+An [`EventSubscription`](#eventsubscription) object on which you can call `remove()` if you would like to unsubscribe from the listener.
+
+### Related types
+
+### `EventSubscription`
+
+An object returned from `addListener`.
+
+- **remove() (_function_)** -- Unsubscribe the listener from future updates.
+
+### `UpdateEvent`
+
+An object that is passed into each event listener when an auto-update check has occurred.
+
+- **type (_string_)** -- Type of the event (see [`EventType`](#eventtype)).
+- **manifest (_object_)** -- If `type === Updates.EventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded update. Undefined otherwise.
+- **message (_string_)** -- If `type === Updates.EventType.ERROR`, the error message. Undefined otherwise.
+
+### `EventType`
+
+- **`Updates.EventType.UPDATE_AVAILABLE`** -- A new update has finished downloading to local storage. If you would like to start using this update at any point before the user closes and restarts the app on their own, you can call `Updates.reloadAsync()` to launch this new update.
+- **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
+- **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.
