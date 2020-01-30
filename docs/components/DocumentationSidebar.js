@@ -51,15 +51,16 @@ export default class DocumentationSidebar extends React.Component {
       );
     }
 
-    const titleElement = (
-      <DocumentationSidebarTitle
-        key={info.sidebarTitle ? info.sidebarTitle : info.name}
-        info={info}
-        url={this.props.url}
-        asPath={this.props.asPath}>
-        {info.sidebarTitle ? info.sidebarTitle : info.name}
-      </DocumentationSidebarTitle>
-    );
+    const titleElement =
+      info.name === 'Introduction' ? null : (
+        <DocumentationSidebarTitle
+          key={info.sidebarTitle ? info.sidebarTitle : info.name}
+          info={info}
+          url={this.props.url}
+          asPath={this.props.asPath}>
+          {info.sidebarTitle ? info.sidebarTitle : info.name}
+        </DocumentationSidebarTitle>
+      );
 
     let postElements;
     if (info.posts) {

@@ -43,7 +43,7 @@ const generateNavLinks = (path_, arr) => {
       if (name === 'introduction') {
         let rootPath = path_.replace('./pages', '');
         // TODO: find what's eating the final slash
-        initArr.push({ name: 'What is Expo?', href: rootPath + '//' });
+        initArr.push({ name: 'Introduction', href: rootPath + '//' });
       }
 
       arr.push({
