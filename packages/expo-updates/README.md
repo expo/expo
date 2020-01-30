@@ -222,8 +222,16 @@ TODO: asset bundling setup
 
 ## Configuration
 
-Some build-time configuration options are available to allow your app to update automatically on launch.
-// TODO
+Some build-time configuration options are available to allow your app to update automatically on launch. On iOS, these properties are set as keys in `expo-config.plist` and on Android as `meta-data` tags in `AndroidManifest.xml`, adjacent to the tags added during installation.
+
+| iOS plist key | Android meta-data name | Description | Default | Required? |
+| --- | --- | --- | --- | --- |
+| `remoteUrl` | `expo.modules.updates.EXPO_APP_URL` | URL to the remotely hosted manifest where the app should check for updates | (none) | ✅ |
+| `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for expo-hosted apps. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| `runtimeVersion` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Runtime version to send under the `Expo-Runtime-Version` header in the manifest request. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Release channel to send under the `Expo-Release-Channel` header in the manifest request | `default` | ❌ |
+| `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | Condition under which expo-updates should automatically check for (and download, if one exists) an OTA update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control OTA updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wifi connection when it launches). | `ALWAYS` | ❌ |
+| `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an OTA update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible. | `0` | ❌ |
 
 ## API
 
