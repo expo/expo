@@ -110,7 +110,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)type
 {
-  return [self getPermissionUsingRequester:_requesters[type]];
+  return [self getPermissionUsingRequester:[self getPermissionRequesterForType:type]];
 }
 
 - (NSDictionary *)getPermissionUsingRequester:(id<UMPermissionsRequester>)requester
