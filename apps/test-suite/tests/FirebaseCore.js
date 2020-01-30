@@ -10,9 +10,10 @@ const SANDBOX_APP_PREFIX = '__sandbox';
 
 function getTestSuiteFirebaseOptions() {
   if (Platform.OS === 'android') {
-    const googleServicesJson = require('../google-services.json');
-    const options = FirebaseCore.FirebaseOptions.parseAndroidGoogleServices(googleServicesJson);
-    return options;
+    //const googleServicesJson = require('../google-services.json');
+    //const options = FirebaseCore.FirebaseOptions.parseAndroidGoogleServices(googleServicesJson);
+    ///return options;
+    throw new Error('TODO ANDROID');
   } else if (Platform.OS === 'ios') {
     // TODO, load PLIST using babel-loader?
     return {
@@ -40,6 +41,13 @@ function expectFirebaseOptions(expect, options1, options2) {
 }
 
 export async function test({ describe, it, xit, expect, beforeAll }) {
+  if (!FirebaseCore.DEFAULT_OPTIONS) {
+    describe(name, () => {
+      xit(`No Google Services config found`, async () => {});
+    });
+    return;
+  }
+
   const isSandboxed = Constants.appOwnership === 'expo';
   const itWhenSandboxed = isSandboxed ? it : xit;
   const itWhenNotSandboxed = isSandboxed ? xit : it;

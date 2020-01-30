@@ -35,6 +35,7 @@ UM_EXPORT_MODULE(ExpoFirebaseCore);
 - (nonnull instancetype) init
 {
   if (self = [super init]) {
+    _appName = DEFAULT_APP_NAME_IOS;
     NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
     if (path && ![FIRApp defaultApp]) {
       [FIRApp configure];
