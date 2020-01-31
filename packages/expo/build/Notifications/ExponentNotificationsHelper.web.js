@@ -51,7 +51,10 @@ async function _subscribeUserToPushAsync() {
         throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
     guardPermission();
-    const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+        throw new Error('Notifications might not be working because no service worker was registered.');
+    }
     await navigator.serviceWorker.ready;
     if (!registration.active) {
         throw new Error('Notifications might not be working because the service worker API is not active.');
