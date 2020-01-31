@@ -354,11 +354,11 @@ Extends [`GoogleAuthData`](#googleauthdata), core management of user data.
 
 ### `GoogleUser`
 
-Extends [`GoogleIdentity`](#googleidentity), manaages all data regarding an authenticated user.
+Extends [`GoogleIdentity`](#googleidentity), manages all data regarding an authenticated user.
 
 #### Variables
 
-- `auth: ?Authentication;`
+- `auth: ?GoogleAuthentication;`
 - `scopes: Array<string>;`
 - `hostedDomain: ?string;`
 - `serverAuthCode: ?string;`
