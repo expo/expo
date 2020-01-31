@@ -20,11 +20,16 @@ type Props = {
 // When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
+const KEYBOARD_CODES = {
+  ios: '\u2318D',
+  android: '\u2318M on MacOS or Ctrl+M on other platforms',
+};
+
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
   const fragment = Constants.isDevice
     ? 'you can shake your device'
-    : 'in an iOS Simulator you can press \u2318D';
+    : `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
   return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
 

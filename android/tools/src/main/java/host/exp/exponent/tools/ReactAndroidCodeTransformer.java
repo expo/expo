@@ -539,23 +539,9 @@ public class ReactAndroidCodeTransformer {
     return n;
   }
 
-
   private static Node showDevOptionsDialog(final MethodDeclaration n) {
-    return mapBlockStatement(n, new StatementMapper() {
-      @Override
-      public Statement map(Statement statement) {
-        if (statement instanceof LabeledStmt) {
-          LabeledStmt labeledStmt = (LabeledStmt) statement;
-          if ("expo_transformer_remove".equals(labeledStmt.getLabel().getIdentifier())) {
-            Statement emptyStatement = new EmptyStmt();
-            emptyStatement.setLineComment(" code removed by ReactAndroidCodeTransformer");
-            return emptyStatement;
-          }
-        }
-
-        return statement;
-      }
-    });
+    n.setBody(JavaParser.parseBlock("{\n// @tsapeta: React Native dev options shouldn't show up in Expo managed workflow.\n}\n"));
+    return n;
   }
 
   private static Node ReactDatabaseSupplier(final ClassOrInterfaceDeclaration n) {

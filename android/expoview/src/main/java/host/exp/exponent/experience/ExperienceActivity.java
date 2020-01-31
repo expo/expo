@@ -11,13 +11,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.RemoteViews;
 
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.soloader.SoLoader;
@@ -46,11 +46,13 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.notifications.ExponentNotification;
@@ -93,6 +95,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final int NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
+  private static ExperienceActivity sCurrentActivity;
+
   private ReactUnthemedRootView mNuxOverlayView;
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
@@ -111,6 +115,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  @Inject
+  DevMenuManager mDevMenuManager;
 
   private DevBundleDownloadProgressListener mDevBundleDownloadProgressListener = new DevBundleDownloadProgressListener() {
     @Override
@@ -249,6 +256,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onResume() {
     super.onResume();
 
+    sCurrentActivity = this;
+
+    // Resume home's host if needed.
+    mDevMenuManager.maybeResumeHostWithActivity(this);
+
     soloaderInit();
 
     addNotification(null);
@@ -273,6 +285,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onPause() {
     super.onPause();
 
+    if (getCurrentActivity() == this) {
+      sCurrentActivity = null;
+    }
+
     removeNotification();
     Analytics.clearTimedEvents();
   }
@@ -294,6 +310,30 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
+  /**
+   * Handles command line command `adb shell input keyevent 82` that toggles the dev menu on the current experience activity.
+   */
+  @Override
+  public boolean onKeyUp(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_MENU && mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mDevMenuManager.toggleInActivity(this);
+      return true;
+    }
+    return super.onKeyUp(keyCode, event);
+  }
+
+  /**
+   * Closes the dev menu when pressing back button when it is visible on this activity.
+   */
+  @Override
+  public void onBackPressed() {
+    if (sCurrentActivity == this && mDevMenuManager.isShownInActivity(this)) {
+      mDevMenuManager.requestToClose(this);
+      return;
+    }
+    super.onBackPressed();
+  }
+
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {
     AsyncCondition.notify(KERNEL_STARTED_RUNNING_KEY);
   }
@@ -302,6 +342,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onDoneLoading() {
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_LOADING_REACT_NATIVE);
     Analytics.sendTimedEvents(mManifestUrl);
+    maybeDisplayOnboarding();
   }
 
   /*
@@ -465,7 +506,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       showLoadingScreen(manifest);
 
       ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
-      handleExperienceOptions(kernelOptions);
     });
   }
 
@@ -579,6 +619,19 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
+  /**
+   * Shows the dev menu with onboarding view if this is the first time the user opens an experience,
+   * or he hasn't finished onboarding yet.
+   */
+  private void maybeDisplayOnboarding() {
+    boolean isOnboardingFinished = mDevMenuManager.isOnboardingFinished();
+    boolean shouldShowOnboarding = !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished;
+
+    if (shouldShowOnboarding) {
+      mDevMenuManager.showInActivity(this);
+    }
+  }
+
   /*
    *
    * Notification
@@ -655,41 +708,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     mNotificationRemoteViews = null;
     mNotificationBuilder = null;
     removeNotification(this);
-  }
-
-  private void handleExperienceOptions(JSONObject options) {
-    if (options != null) {
-      try {
-        if (options.getBoolean(KernelConstants.OPTION_LOAD_NUX_KEY) && !Constants.DISABLE_NUX) {
-          //addNuxView();
-        }
-      } catch (JSONException e) {
-        EXL.e(TAG, e.getMessage());
-      }
-    }
-  }
-
-  private void addNuxView() {
-    AsyncCondition.wait(KERNEL_STARTED_RUNNING_KEY, new AsyncCondition.AsyncConditionListener() {
-      @Override
-      public boolean isReady() {
-        return mKernel.isRunning();
-      }
-
-      @Override
-      public void execute() {
-        ReactInstanceManager kernelReactInstanceManager = mKernel.getReactInstanceManager();
-        mNuxOverlayView = new ReactUnthemedRootView(ExperienceActivity.this);
-        mNuxOverlayView.startReactApplication(
-            kernelReactInstanceManager,
-            NUX_REACT_MODULE_NAME,
-            null
-        );
-        kernelReactInstanceManager.onHostResume(ExperienceActivity.this, ExperienceActivity.this);
-        addView(mNuxOverlayView);
-        Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_SHOWN");
-      }
-    });
   }
 
   public static void removeNotification(Context context) {
@@ -792,5 +810,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   public String getExperienceId() {
     return mExperienceIdString;
+  }
+
+  /**
+   * Returns the currently active ExperienceActivity, that is the one that is currently being used by the user.
+   */
+  public static ExperienceActivity getCurrentActivity() {
+    return sCurrentActivity;
   }
 }

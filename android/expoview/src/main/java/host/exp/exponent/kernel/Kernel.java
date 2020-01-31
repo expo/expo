@@ -383,7 +383,7 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  private void openHomeActivity() {
+  public void openHomeActivity() {
     ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     for (ActivityManager.AppTask task : manager.getAppTasks()) {
       Intent baseIntent = task.getTaskInfo().baseIntent;
@@ -673,21 +673,11 @@ public class Kernel extends KernelInterface {
     task.bundleUrl = bundleUrl;
 
     manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
-    boolean isFirstRunFinished = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY);
 
-    // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
-    // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isStandaloneApp() && !KernelConfig.HIDE_NUX;
-    boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
-    opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
-    }
-
-    if (loadNux) {
-      mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY, true);
     }
 
     WritableMap params = Arguments.createMap();
@@ -1120,12 +1110,5 @@ public class Kernel extends KernelInterface {
         ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
-  }
-
-  private void goToHome() {
-    Intent startMain = new Intent(Intent.ACTION_MAIN);
-    startMain.addCategory(Intent.CATEGORY_HOME);
-    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    mContext.startActivity(startMain);
   }
 }

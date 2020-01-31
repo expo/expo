@@ -18,6 +18,7 @@ import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
@@ -76,6 +77,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
 
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
+    NativeModuleDepsProvider.getInstance().add(DevMenuManager.class, new DevMenuManager());
     Exponent.getInstance().setGCMSenderId(gcmSenderId());
     
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
