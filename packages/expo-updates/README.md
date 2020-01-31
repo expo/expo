@@ -43,6 +43,14 @@ Finally, if you have other assets (such as images or other media) that are `requ
 
 Run `pod install` in the ios directory after installing the npm package.
 
+#### Build Phases
+
+In Xcode, under the `Build Phases` tab of your main project, expand the phase entitled "Bundle React Native code and images." Optionally rename the phase to "Bundle Expo Assets," and replace the entire body of the script with the following:
+
+```
+../node_modules/expo-updates/bundle-expo-assets.sh
+```
+
 #### `expo-config.plist`
 
 Create the file `ios/<your-project-name>/Supporting/expo-config.plist` with the following contents, and add it to your Xcode project.
@@ -157,6 +165,15 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
 
 ### Configure for Android
 
+#### `app/build.gradle`
+
+Make the following change in order to bundle assets from expo-updates instead of your local metro server.
+
+```diff
+-apply from: "../../node_modules/react-native/react.gradle"
++apply from: "../../node_modules/expo-updates/expo-updates.gradle"
+```
+
 #### `AndroidManifest.xml`
 
 Add the following lines inside of the `MainApplication`'s `<application>` tag.
@@ -217,8 +234,6 @@ Make the following changes to `MainApplication.java` (or whichever file you inst
    }
  }
 ```
-
-TODO: asset bundling setup
 
 ## Configuration
 
