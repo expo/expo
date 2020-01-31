@@ -25,7 +25,7 @@ function throwIfFileDoesntExist() {
   fi
 }
 
-awk -F'"' '
+jq '.["paths"]' ../template-files/android-paths.json | awk -F'"' '
   # splits lines on `"` character which lets us detect key and value in:
   #   "fileName": "pathForFile",
   # $1"  $2    "$3"    $4     "$5
@@ -35,7 +35,7 @@ awk -F'"' '
   (length($5) > 0 && $5 != ",") { 
     printf("Failed to naively parse JSON file line %s.\n", $0) > "/dev/stderr"
     exit 1
-  }' ../template-files/android-paths.json |
+  }' |
 while read PATH_TO_CHECK
 do
   throwIfFileDoesntExist $PATH_TO_CHECK

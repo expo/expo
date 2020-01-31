@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import JsonFile from '@expo/json-file';
+import JsonFile, { JSONObject } from '@expo/json-file';
 
 import macros from './macros';
 import { Directories } from '../expotools';
@@ -136,14 +136,24 @@ async function copyTemplateFileAsync(
   }
 }
 
+type AndroidPaths = {
+  paths: {
+    [id: string]: string
+  },
+  generateOnly: {
+    [id: string]: string
+  }
+}
+
 async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
-  const templatePaths = await new JsonFile(
+  const templatePathsFile = await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
-  ).readAsync();
+  ).readAsync() as AndroidPaths;
   const promises: Promise<any>[] = [];
   const skipTemplates: Array<string> = args.skipTemplates || [];
-
+  const templatePaths = {...templatePathsFile.paths, ...templateFilesPath.generateOnly};
+  console.log(JSON.stringify(templatePaths));
   for (const [source, dest] of Object.entries(templatePaths)) {
     if (skipTemplates.includes(source)){
       console.log(
