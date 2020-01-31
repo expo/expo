@@ -258,6 +258,8 @@ import * as Updates from 'expo-updates';
 
 Instructs the app to reload using the most recent cached version. This is useful for triggering an update of your experience if you have published and already downloaded a new version.
 
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
+
 #### Returns
 
 A `Promise` that resolves right before the reload instruction is sent to the JS runtime, or rejects if it cannot find a reference to the JS runtime.
@@ -267,6 +269,8 @@ If the `Promise` is rejected, it most likely means you have installed the module
 ### `Updates.checkForUpdateAsync()`
 
 Checks the app's remote URL to see if a new published version of your project is available. Does not actually download the update.
+
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
 #### Returns
 
@@ -280,6 +284,8 @@ The `Promise` rejects if the app is in development mode, or if there is an unexp
 ### `Updates.fetchUpdateAsync()`
 
 Downloads the most recently published version of your project from the app's remote URL to the device's local storage.
+
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
 #### Returns
 
