@@ -18,6 +18,15 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+jest.mock('expo-updates', () => {
+  return {
+    localAssets: {
+      test3:
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3',
+    },
+  };
+});
+
 describe('getEmbeddedAssetUri', () => {
   it(`returns null in __DEV__`, () => {
     let uri = EmbeddedAssets.getEmbeddedAssetUri('hash', 'png');
@@ -37,6 +46,13 @@ describe('getEmbeddedAssetUri', () => {
     });
 
     it(`returns a URI when an asset is bundled`, () => {
+      let uri = EmbeddedAssets.getEmbeddedAssetUri('test3', null);
+      expect(uri).toBe(
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3'
+      );
+    });
+
+    it(`returns a URI when an asset is bundled in the legacy location`, () => {
       let uri = EmbeddedAssets.getEmbeddedAssetUri('test1', null);
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test1'
