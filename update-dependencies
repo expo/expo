@@ -20,7 +20,7 @@ bin/nix-binstubs \
   fastlane \
   git-crypt \
   git-lfs \
-  js \
+  jq \
   nodePackages.gulp-cli \
   nodejs \
   xcpretty \
