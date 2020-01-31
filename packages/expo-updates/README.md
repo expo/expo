@@ -256,7 +256,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.reloadAsync()`
 
-Instructs the app to reload using the most recent cached version. This is useful for triggering an update of your experience if you have published and already downloaded a new version.
+Instructs the app to reload using the most recently downloaded version. This is useful for triggering an update of your experience without the user needing to manually restart the app.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
@@ -264,11 +264,11 @@ This method cannot be used in development mode, and the returned `Promise` will 
 
 A `Promise` that resolves right before the reload instruction is sent to the JS runtime, or rejects if it cannot find a reference to the JS runtime.
 
-If the `Promise` is rejected, it most likely means you have installed the module incorrectly. Double check you've followed the instructions above. In particular, on iOS ensure that you set the `bridge` property on `EXUpdatesAppController` with a pointer to the `RCTBridge` you want to reload, and on Android ensure you either call `UpdatesController.initialize` with the instance of `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the proper instance of `ReactNativeHost`.
+If the `Promise` is rejected in production mode, it most likely means you have installed the module incorrectly. Double check you've followed the instructions above. In particular, on iOS ensure that you set the `bridge` property on `EXUpdatesAppController` with a pointer to the `RCTBridge` you want to reload, and on Android ensure you either call `UpdatesController.initialize` with the instance of `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the proper instance of `ReactNativeHost`.
 
 ### `Updates.checkForUpdateAsync()`
 
-Checks the app's remote URL to see if a new published version of your project is available. Does not actually download the update.
+Checks the app's remote URL to see if a newly deployed version of your project is available. Does not actually download the update.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
@@ -283,16 +283,18 @@ The `Promise` rejects if the app is in development mode, or if there is an unexp
 
 ### `Updates.fetchUpdateAsync()`
 
-Downloads the most recently published version of your project from the app's remote URL to the device's local storage.
+Downloads the most recently deployed version of your project from the app's remote URL to the device's local storage.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
 #### Returns
 
-An object with the following keys:
+An `Promise` that resolves to an object with the following keys:
 
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
+
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 
