@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "${BARE_EXPO_FIREBASE_ANDROID_GOOGLE_APP_ID}",
         "android_client_info": {
-          "package_name": "${BARE_EXPO_FIREBASE_BUNDLE_ID}"
+          "package_name": "${BARE_EXPO_FIREBASE_ANDROID_BUNDLE_ID}"
         }
       },
       "oauth_client": [],
