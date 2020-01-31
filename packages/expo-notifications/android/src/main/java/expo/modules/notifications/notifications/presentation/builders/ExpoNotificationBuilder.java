@@ -9,6 +9,12 @@ import android.provider.Settings;
 import android.util.Log;
 
 import org.json.JSONObject;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.interfaces.imageloader.ImageLoader;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
@@ -23,6 +29,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String SOUND_KEY = "sound";
   private static final String BADGE_KEY = "badge";
   private static final String BODY_KEY = "body";
+  private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
   private static final String EXTRAS_BADGE_KEY = "badge";
   private static final String EXTRAS_BODY_KEY = "body";
@@ -33,8 +40,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   private JSONObject mNotificationRequest;
 
-  public ExpoNotificationBuilder(Context context) {
+  private ImageLoader mImageLoader;
+
+  public ExpoNotificationBuilder(Context context, ModuleRegistry moduleRegistry) {
     mContext = context;
+    mImageLoader = moduleRegistry.getModule(ImageLoader.class);
   }
 
   public ExpoNotificationBuilder setNotificationRequest(JSONObject notificationRequest) {
@@ -94,6 +104,17 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     Bundle extras = builder.getExtras();
     extras.putString(EXTRAS_BODY_KEY, mNotificationRequest.optString(BODY_KEY));
     builder.setExtras(extras);
+
+    if (!mNotificationRequest.isNull(THUMBNAIL_URI_KEY)) {
+      try {
+        String thumbnailUri = mNotificationRequest.optString("thumbnailUri");
+        builder.setLargeIcon(mImageLoader.loadImageForDisplayFromURL(thumbnailUri).get(5, TimeUnit.SECONDS));
+      } catch (ExecutionException | InterruptedException e) {
+        Log.w("expo-notifications", "An exception was thrown in process of fetching a large icon.");
+      } catch (TimeoutException e) {
+        Log.w("expo-notifications", "Fetching large icon timed out. Consider using a smaller bitmap.");
+      }
+    }
 
     return builder;
   }
