@@ -1,7 +1,7 @@
 # Contributing to the Expo SDK
 
 - [📦 Download and Setup](#-download-and-setup)
-- [✍️ Editing SDK Packages](#-editing-sdk-packages)
+- [✍️ Editing SDK Packages](#%EF%B8%8F-editing-sdk-packages)
   - [Style](#style)
   - [Extra Credit](#extra-credit)
 - [⏱ Testing Your Changes](#-testing-your-changes)
