@@ -1,6 +1,6 @@
 # expo-updates
 
-`expo-updates` fetches and manages remotely-hosted assets and updates to your app's JS bundle.
+`expo-updates` fetches and manages updates to your app stored on a remote server.
 
 See [Updates docs](https://docs.expo.io/versions/latest/sdk/updates) for documentation of this universal module's API.
 
@@ -18,7 +18,7 @@ expo install expo-updates
 
 ### Setup app.json
 
-Expo can automatically include your app's manifest and JS bundle in your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
+Expo can automatically bundle your most recent update into your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
 
 ```json
   "ios": {
@@ -241,12 +241,12 @@ Some build-time configuration options are available to allow your app to update 
 
 | iOS plist key | Android meta-data name | Description | Default | Required? |
 | --- | --- | --- | --- | --- |
-| `remoteUrl` | `expo.modules.updates.EXPO_APP_URL` | URL to the remotely hosted manifest where the app should check for updates | (none) | ✅ |
-| `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for expo-hosted apps. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| `remoteUrl` | `expo.modules.updates.EXPO_APP_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
+| `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `runtimeVersion` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Runtime version to send under the `Expo-Runtime-Version` header in the manifest request. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Release channel to send under the `Expo-Release-Channel` header in the manifest request | `default` | ❌ |
-| `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | Condition under which expo-updates should automatically check for (and download, if one exists) an OTA update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control OTA updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wifi connection when it launches). | `ALWAYS` | ❌ |
-| `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an OTA update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible. | `0` | ❌ |
+| `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | Condition under which expo-updates should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wifi connection when it launches). | `ALWAYS` | ❌ |
+| `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible. | `0` | ❌ |
 
 ## API
 
@@ -256,7 +256,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.reloadAsync()`
 
-Instructs the app to reload using the most recently downloaded version. This is useful for triggering an update of your experience without the user needing to manually restart the app.
+Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
@@ -268,7 +268,7 @@ If the `Promise` is rejected in production mode, it most likely means you have i
 
 ### `Updates.checkForUpdateAsync()`
 
-Checks the app's remote URL to see if a newly deployed version of your project is available. Does not actually download the update.
+Checks the server at the provided remote URL to see if a newly deployed version of your project is available. Does not actually download the update.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
@@ -283,7 +283,7 @@ The `Promise` rejects if the app is in development mode, or if there is an unexp
 
 ### `Updates.fetchUpdateAsync()`
 
-Downloads the most recently deployed version of your project from the app's remote URL to the device's local storage.
+Downloads the most recently deployed version of your project from server to the device's local storage.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
