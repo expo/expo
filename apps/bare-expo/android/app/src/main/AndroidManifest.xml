@@ -33,6 +33,13 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="true">
+
+      <!-- [Custom] Expo Facebook -->
+      <meta-data
+          android:name="com.facebook.sdk.ApplicationId"
+          android:value="@string/facebook_app_id" />
+      <!-- [Custom] End Expo Facebook -->
+
       <activity
         android:launchMode="singleTask"
         android:name=".MainActivity"
