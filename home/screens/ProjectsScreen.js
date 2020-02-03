@@ -62,7 +62,7 @@ export default class ProjectsScreen extends React.Component {
     title: 'Projects',
     ...Platform.select({
       ios: {
-        headerRight: Constants.isDevice ? null : <OpenProjectByURLButton />,
+        headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
       },
     }),
   };

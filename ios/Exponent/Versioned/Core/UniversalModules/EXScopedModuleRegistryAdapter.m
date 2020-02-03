@@ -19,7 +19,6 @@
 #import "EXScopedFacebook.h"
 
 #import "EXScopedReactNativeAdapter.h"
-#import "EXModuleRegistryBinding.h"
 #import "EXExpoUserNotificationCenterProxy.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
@@ -109,18 +108,13 @@
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
-
+  
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
   EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:errorRecovery];
 #endif
   
   return moduleRegistry;
-}
-
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  return [[super extraModulesForModuleRegistry:moduleRegistry] arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
 }
 
 @end

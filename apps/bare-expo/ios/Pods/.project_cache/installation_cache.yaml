@@ -462,6 +462,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXLocalization
     SPECS:
       - EXLocalization (8.0.0)
+  EXLocation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXLocation: 2cdf527b8fd9660760dea76fb7930f4a
+    CHECKSUM: 3c75d012ca92eed94d4338778d79c49d1252393a
+    FILES:
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
+    PROJECT_NAME: EXLocation
+    SPECS:
+      - EXLocation (8.0.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer: dde34d492aa6e58f5e36c7f4824e2b42
@@ -553,6 +571,22 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 605d41100602a3265d74a60e6ef76c6d
+    CHECKSUM: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+    FILES:
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 10a623412aef75951df791abc0f7f5ba
@@ -746,12 +780,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4f3b492314be25511fc624cd59a74e58
-      Release: 4f3b492314be25511fc624cd59a74e58
+      Debug: d083730335173076543b2da6a2004d6b
+      Release: d083730335173076543b2da6a2004d6b
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c3d11a324dda32bc134e82f70e398458
-      Release: c3d11a324dda32bc134e82f70e398458
+      Debug: 426ac26dfce3cc0ce3eefa07146b91ad
+      Release: 426ac26dfce3cc0ce3eefa07146b91ad
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1278,6 +1312,22 @@ CACHE_KEYS:
     PROJECT_NAME: React-jsinspector
     SPECS:
       - React-jsinspector (0.61.4)
+  react-native-appearance:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-appearance: 7404d29f4c015c0c51680f1bce6a4d8f
+    CHECKSUM: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
+    FILES:
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
+      - "../../node_modules/react-native-appearance/LICENSE"
+      - "../../node_modules/react-native-appearance/README.md"
+    PROJECT_NAME: react-native-appearance
+    SPECS:
+      - react-native-appearance (0.3.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
@@ -1725,6 +1775,8 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.h"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"
@@ -1748,6 +1800,19 @@ CACHE_KEYS:
     PROJECT_NAME: UMSensorsInterface
     SPECS:
       - UMSensorsInterface (5.0.0)
+  UMTaskManagerInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMTaskManagerInterface: 7659aca9cac609731d0f1bd954e77065
+    CHECKSUM: a98e37a576a5220bf43b8faf33cfdc129d2f441d
+    FILES:
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskLaunchReason.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskManagerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskServiceInterface.h"
+    PROJECT_NAME: UMTaskManagerInterface
+    SPECS:
+      - UMTaskManagerInterface (5.0.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 1c1562cda00c80e209af7feb55d5f6dd

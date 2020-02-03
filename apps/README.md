@@ -7,7 +7,6 @@ This directory contains the apps we use for testing Expo. **Do not add new apps 
 - Home (not in this directory): the UI for the development client
 - Sandbox: a project excluded from Git where you can try out things locally
 - jest-expo Mock Generator: an app that uses reflection to generate Jest mocks for native modules. Eventually we can remove the need for this once we have a JSON schema for each module definition (Turbomodules) and generate the Jest mock from the JSON schema.
-- bare-expo: a project that uses the bare workflow and can load the Test Suite and Native Component List's JS
-- standalone-ncl: a standalone app that loads Native Component List. Eventually we should replace this with bare-expo and NCL.
+- bare-expo: a project that uses the bare workflow and can load the Test Suite and Native Component List's JS.
 
 Ideally, we'd just have one directory with a customized project with Xcode and Android Studio projects. The project would have different build targets and include different native modules. We'd have a build target each for the Expo Client, Test Suite (customized, with support for APIs like payments), and Native Component List (customized). These would be the only apps in the repository.

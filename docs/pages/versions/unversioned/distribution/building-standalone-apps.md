@@ -34,19 +34,22 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
     "slug": "your-app-slug",
     "sdkVersion": "XX.0.0",
     "ios": {
-      "bundleIdentifier": "com.yourcompany.yourappname"
+      "bundleIdentifier": "com.yourcompany.yourappname",
+      "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.yourcompany.yourappname"
+      "package": "com.yourcompany.yourappname",
+      "versionCode": 1
     }
    }
  }
 ```
 
-* The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
-* You're probably not surprised that `name`, `icon` and `version` are required.
-* `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
-* The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
+- The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
+- You're probably not surprised that `name`, `icon` and `version` are required.
+- `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
+- The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
+- The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and
@@ -149,6 +152,7 @@ When one of our building machines will be free, it'll start building your app. Y
 If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for your project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `Expo-Signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
 
 We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
+
 - `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
 - `id` - the unique ID of your build
 - `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
@@ -156,6 +160,7 @@ We call your webhook using an HTTP POST request and we pass data in the request 
 Additionally, we send an `Expo-Signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
 This is how you can implement your server:
+
 ```javascript
 import crypto from 'crypto';
 import express from 'express';
@@ -186,10 +191,10 @@ You can always change your webhook URL and/or webhook secret using the same comm
 
 ## 5. Test it on your device or simulator
 
-* You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
-* **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
-* **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `expo build:ios -t simulator`, then download the tarball with the link given upon completion when running `expo build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
-* **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`.
+- You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
+- **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
+- **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `expo build:ios -t simulator`, then download the tarball with the link given upon completion when running `expo build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
+- **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`.
 
 > **Note:** You will not see your build here just yet! You will need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
@@ -201,9 +206,11 @@ Read the guide on [Uploading Apps to the Apple App Store and Google Play](../upl
 
 For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
-* If you want to change native metadata like the app's name or icon
-* If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
+- If you want to change native metadata like the app's name or icon
+- If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
 
-To keep track of this, you can also update the binary's [versionCode](../../workflow/configuration/#versioncode) and [buildNumber](../../workflow/configuration/#buildnumber). It is a good idea to glance through the [app.json documentation](../../workflow/configuration/) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
+To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../../distribution/app-stores/#versioning-your-app) for details).
+
+It is a good idea to glance through the [app.json documentation](../../workflow/configuration/) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.io/) and let us know if you have any questions.
