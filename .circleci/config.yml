@@ -815,17 +815,13 @@ jobs:
   docs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
-    steps:
+    s:
       - setup
       - halt_if_unchanged:
           requireOneOf: 'docs'
       - update_submodules
       - yarn_install:
           working_directory: docs
-      - run:
-          name: Run Danger
-          working_directory: docs
-          command: yarn danger ci
       - yarn:
           command: export
           working_directory: docs

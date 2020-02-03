@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
+    "danger": "^9.2.10",
     "eslint": "^6.6.0",
     "eslint-config-universe": "^2.0.0",
     "expo-cli": "^3.11.1",
