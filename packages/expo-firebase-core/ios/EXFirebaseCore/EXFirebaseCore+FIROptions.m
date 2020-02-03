@@ -30,7 +30,7 @@
 {
   NSMutableDictionary* json = [NSMutableDictionary dictionary];
   
-  if (options.androidClientID) [json setValue:options.androidClientID forKey:@"androidClientID"];
+  if (options.androidClientID) [json setValue:options.androidClientID forKey:@"androidClientId"];
   if (options.APIKey) [json setValue:options.APIKey forKey:@"apiKey"];
   if (options.googleAppID) [json setValue:options.googleAppID forKey:@"appId"];
   if (options.clientID) [json setValue:options.clientID forKey:@"clientId"];
@@ -40,6 +40,7 @@
   if (options.projectID) [json setValue:options.projectID forKey:@"projectId"];
   if (options.storageBucket) [json setValue:options.storageBucket forKey:@"storageBucket"];
   if (options.trackingID) [json setValue:options.trackingID forKey:@"trackingId"];
+  if (options.appGroupID) [json setValue:options.trackingID forKey:@"appGroupId"];
 
   return json;
 }
@@ -58,6 +59,8 @@
     firOptions.storageBucket = json[@"storageBucket"];
     firOptions.androidClientID = json[@"androidClientId"];
     firOptions.deepLinkURLScheme = json[@"deepLinkURLScheme"];
+    firOptions.androidClientID = json[@"androidClientId"];
+    firOptions.appGroupID = json[@"appGroupId"];
     
     return firOptions;
 }

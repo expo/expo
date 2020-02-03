@@ -86,13 +86,15 @@
   FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:plist[@"GOOGLE_APP_ID"] GCMSenderID:plist[@"GCM_SENDER_ID"]];
          
   firOptions.APIKey = plist[@"API_KEY"];
-  firOptions.projectID = plist[@"PROJECT_ID"];
+  firOptions.bundleID = plist[@"BUNDLE_ID"]; // TODO?
   firOptions.clientID = plist[@"CLIENT_ID"];
+  firOptions.trackingID = plist[@"TRACKING_ID"];
+  firOptions.projectID = plist[@"PROJECT_ID"];
+  firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   firOptions.databaseURL = plist[@"DATABASE_URL"];
-  firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
-  //firOptions.trackingID = plist[@"trackingId"];
-  //firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   //firOptions.deepLinkURLScheme = plist[@"DEEP_LINK_URL_SCHEMA"];
+  firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
+  //firOptions.appGroupID = plist[@"APP_GROUP_ID"];
   
   return firOptions;
 }
