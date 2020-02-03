@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
@@ -21,6 +20,7 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -38,7 +38,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class UIManagerModuleWrapper implements
@@ -206,6 +209,40 @@ public class UIManagerModuleWrapper implements
 
   public long getJavaScriptContextRef() {
     return mReactContext.getJavaScriptContextHolder().get();
+  }
+
+  @Override
+  public Future<Bitmap> loadImageForDisplayFromURL(@NonNull String url) {
+    final SimpleSettableFuture<Bitmap> future = new SimpleSettableFuture<>();
+    loadImageForDisplayFromURL(url, new ResultListener() {
+      @Override
+      public void onSuccess(@NonNull Bitmap bitmap) {
+        future.set(bitmap);
+      }
+
+      @Override
+      public void onFailure(@Nullable Throwable cause) {
+        future.setException(new ExecutionException(cause));
+      }
+    });
+    return future;
+  }
+
+  @Override
+  public Future<Bitmap> loadImageForManipulationFromURL(@NonNull String url) {
+    final SimpleSettableFuture<Bitmap> future = new SimpleSettableFuture<>();
+    loadImageForManipulationFromURL(url, new ResultListener() {
+      @Override
+      public void onSuccess(@NonNull Bitmap bitmap) {
+        future.set(bitmap);
+      }
+
+      @Override
+      public void onFailure(@Nullable Throwable cause) {
+        future.setException(new ExecutionException(cause));
+      }
+    });
+    return future;
   }
 
   @Override
