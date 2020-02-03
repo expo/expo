@@ -87,7 +87,7 @@
   FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:plist[@"GOOGLE_APP_ID"] GCMSenderID:plist[@"GCM_SENDER_ID"]];
          
   firOptions.APIKey = plist[@"API_KEY"];
-  firOptions.bundleID = plist[@"BUNDLE_ID"]; // TODO?
+  firOptions.bundleID = plist[@"BUNDLE_ID"];
   firOptions.clientID = plist[@"CLIENT_ID"];
   firOptions.trackingID = plist[@"TRACKING_ID"];
   firOptions.projectID = plist[@"PROJECT_ID"];

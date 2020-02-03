@@ -1,7 +1,7 @@
 {
   "name": "expo-firebase-core",
   "version": "1.0.0",
-  "description": "ExpoFirebaseCore standalone module",
+  "description": "Core support for Google Firebase",
   "main": "build/FirebaseCore.js",
   "types": "build/FirebaseCore.d.ts",
   "scripts": {
