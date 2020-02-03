@@ -76,6 +76,7 @@
   NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
   NSError* error;
   NSDictionary* plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
+  if (error) NSLog(@"Invalid googleServicesFile: %@", error);
   return plist;
 }
 
