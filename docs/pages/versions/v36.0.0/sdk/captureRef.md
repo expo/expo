@@ -1,17 +1,17 @@
 ---
-title: takeSnapshotAsync
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/takeSnapshotAsync"
+title: captureRef
+sourceCodeUrl: 'https://github.com/gre/react-native-view-shot'
 ---
 
-Given a view, `takeSnapshotAsync` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
+Given a view, `captureRef` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](../gl-view/#takesnapshotasync) instead.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ❌  |
 
 ## Installation
 
@@ -20,10 +20,10 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-import { takeSnapshotAsync } from 'expo';
+import { captureRef } from 'react-native-view-shot';
 ```
 
-### `takeSnapshotAsync(view, options)`
+### `captureRef(view, options)`
 
 Snapshots the given view.
 
@@ -60,7 +60,7 @@ const pixelRatio = PixelRatio.get(); // The pixel ratio of the device
 // pixels * pixelratio = targetPixelCount, so pixels = targetPixelCount / pixelRatio
 const pixels = targetPixelCount / pixelRatio;
 
-const result = await takeSnapshotAsync(this.imageContainer, {
+const result = await captureRef(this.imageContainer, {
   result: 'tmpfile',
   height: pixels,
   width: pixels,
