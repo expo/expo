@@ -54,6 +54,7 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
     - Navigate to **Facebook Login > Settings** and paste the URL of your OAuth redirect.
     - A simple way to set this up is by creating a JS Firebase app and enabling Facebook auth, this will automatically create an OAuth redirect for you.
     - Attempting to login without this will present an error in the external browser window opened by the FBSDK.
+  - This API will also allow for adding the Facebook script tag to your `index.html` manually. If you've included the script tag, then running `Facebook.initializeAsync()` will just resolve.
 
 ## API
 
