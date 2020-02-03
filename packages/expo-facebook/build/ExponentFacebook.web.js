@@ -43,6 +43,11 @@ export default {
         if (!appId) {
             throw new CodedError('ERR_FB_CONF', `Failed to initialize app because the appId wasn't provided.`);
         }
+        // Account for the script tag being added manually.
+        if (window && window.FB) {
+            return window.FB;
+        }
+        // Prevent concurrent tasks
         if (loadingFBSDKPromise) {
             return loadingFBSDKPromise;
         }
