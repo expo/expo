@@ -104,7 +104,7 @@ async function checkMultiPermissions() {
     Permissions.CONTACTS
   );
   if (status !== 'granted') {
-    alert('Hey! You heve not enabled selected permissions');
+    alert('Hey! You have not enabled selected permissions');
   }
 }
 ```
