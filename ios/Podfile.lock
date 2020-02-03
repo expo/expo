@@ -1292,6 +1292,9 @@ PODS:
   - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXFirebaseCore (1.0.0):
+    - Firebase/Core (= 6.14.0)
+    - UMCore
   - EXFont (8.0.0):
     - UMCore
     - UMFontInterface
@@ -2260,6 +2263,7 @@ DEPENDENCIES:
   - EXFacebook (from `../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
+  - EXFirebaseCore (from `../packages/expo-firebase-core/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
@@ -3045,6 +3049,9 @@ EXTERNAL SOURCES:
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../packages/expo-file-system/ios"
+  EXFirebaseCore:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-firebase-core/ios"
   EXFont:
     :path: !ruby/object:Pathname
     path: "../packages/expo-font/ios"
@@ -3543,6 +3550,7 @@ SPEC CHECKSUMS:
   EXFacebook: c10f77ea97b3003c29b4f0a49942acc1ba8330b5
   EXFaceDetector: 0140a1958708b0cb65e9102962dbebd7d9e061b2
   EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
+  EXFirebaseCore: 47ac8651a065a31c643373ec72591c329a000ef6
   EXFont: 6187b5ab46ee578d5f8e7f2ea092752e78772235
   EXGL: 3add8ba2c89377285f57cda493d4bc50939b5300
   EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
