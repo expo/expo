@@ -10,4 +10,6 @@
 
 - (BOOL) isAppAccessible:(nonnull NSString*)name;
 
+- (nullable FIRApp *)defaultApp;
+
 @end

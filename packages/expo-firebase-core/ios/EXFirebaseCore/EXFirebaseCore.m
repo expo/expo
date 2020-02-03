@@ -87,6 +87,11 @@ UM_EXPORT_MODULE(ExpoFirebaseCore);
   return YES;
 }
 
+- (nullable FIRApp *)defaultApp
+{
+  return [FIRApp appNamed:_appName];
+}
+
 + (void) updateAppWithOptions:(nullable FIROptions*)options name:(nonnull NSString*)name completion:(nonnull FIRAppVoidBoolCallback)completion
 {
   FIRApp* app = [FIRApp appNamed:name];

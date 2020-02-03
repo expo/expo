@@ -68,6 +68,10 @@ public class FirebaseCoreModule extends ExportedModule implements RegistryLifecy
     return true;
   }
 
+  public FirebaseApp getDefaultApp() {
+    return getFirebaseApp(getAppName());
+  }
+
   public FirebaseApp updateFirebaseApp(final FirebaseOptions options, final String name) {
     FirebaseApp app = getFirebaseApp(name);
     if (app != null) {
