@@ -3,7 +3,6 @@
 package host.exp.exponent.experience;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -24,7 +23,6 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import expo.modules.analytics.amplitude.AmplitudePackage;
-import expo.modules.av.AVPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;

@@ -28,6 +28,7 @@ import java.util.Set;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
 import versioned.host.exp.exponent.modules.internal.DevMenuModule;
 import host.exp.exponent.kernel.ExperienceId;
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -191,7 +192,15 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
-        nativeModules.add(new ExpoAppearanceModule(reactContext));
+
+        // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
+        // when home's setting is set to automatic and the system theme is different
+        // than this supported by the experience in which we opened the dev menu.
+        if (mIsKernel) {
+          nativeModules.add(new RNCAppearanceModule(reactContext));
+        } else {
+          nativeModules.add(new ExpoAppearanceModule(reactContext));
+        }
 
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
