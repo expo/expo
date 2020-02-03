@@ -82,12 +82,19 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
         try {
           const { DEFAULT_APP_OPTIONS } = FirebaseCore;
           expect(DEFAULT_APP_OPTIONS.appId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.appId.indexOf(':ios:')).toBeGreaterThan(0);
           expect(DEFAULT_APP_OPTIONS.messagingSenderId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.messagingSenderId.length).toBeGreaterThan(10);
           expect(DEFAULT_APP_OPTIONS.apiKey).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.apiKey.length).toBeGreaterThan(30);
           expect(DEFAULT_APP_OPTIONS.projectId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.projectId.length).toBeGreaterThan(2);
           expect(DEFAULT_APP_OPTIONS.clientId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.clientId.indexOf('googleusercontent.com')).toBeGreaterThan(0);
           expect(DEFAULT_APP_OPTIONS.storageBucket).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.storageBucket.indexOf('appspot.com')).toBeGreaterThan(0);
           expect(DEFAULT_APP_OPTIONS.databaseURL).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.databaseURL.indexOf('firebaseio.com')).toBeGreaterThan(0);
         } catch (e) {
           error = e;
         }
