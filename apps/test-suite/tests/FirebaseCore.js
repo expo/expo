@@ -8,6 +8,7 @@ const SYSTEM_APP_NAME = '[DEFAULT]';
 
 const SANDBOX_APP_PREFIX = '__sandbox';
 
+/*
 function getTestSuiteFirebaseAppOptions() {
   if (Platform.OS === 'android') {
     //const googleServicesJson = require('../google-services.json');
@@ -38,12 +39,19 @@ function expectFirebaseOptions(expect, options1, options2) {
   expect(options1.clientId).toBe(options2.clientId);
   expect(options1.storageBucket).toBe(options2.storageBucket);
   expect(options1.databaseURL).toBe(options2.databaseURL);
-}
+}*/
 
 export async function test({ describe, it, xit, expect, beforeAll }) {
   if (!FirebaseCore.DEFAULT_APP_OPTIONS) {
     describe(name, () => {
-      xit(`No Google Services config found`, async () => {});
+      xit(
+        Platform.select({
+          ios: `No Google services configuration found. In order to run this test, set the 'ios.googleServicesFile' field in 'app.json'. When you are running a bare project, add 'GoogleService-Info.plist' to your XCode project.`,
+          android: `No Google services configuration found. In order to run this test, set the 'android.googleServicesFile' field in 'app.json'. When you are running a bare project, add 'google-services.json' to 'android/app'`,
+          web: `The web platform is currently not supported for this test`,
+        }),
+        async () => {}
+      );
     });
     return;
   }
@@ -105,7 +113,7 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
         }
         expect(error).toBeNull();
       });
-      itWhenSandboxed(`returns the firebase options from the test-suite`, async () => {
+      /*itWhenSandboxed(`returns the firebase options from the test-suite`, async () => {
         let error = null;
         try {
           const { DEFAULT_APP_OPTIONS } = FirebaseCore;
@@ -114,7 +122,7 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
           error = e;
         }
         expect(error).toBeNull();
-      });
+      });*/
     });
   });
 }
