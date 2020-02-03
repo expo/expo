@@ -1,4 +1,4 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentFacebook from './ExponentFacebook';
 export async function logInWithReadPermissionsAsync(options) {
     if (!ExponentFacebook.logInWithReadPermissionsAsync) {
@@ -10,7 +10,9 @@ export async function logInWithReadPermissionsAsync(options) {
     return ExponentFacebook.logInWithReadPermissionsAsync(options);
 }
 /**
+ * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
  *
+ * You can use this method to check if the user should sign-in or not.
  */
 export async function getAccessTokenAsync() {
     if (!ExponentFacebook.getAccessTokenAsync) {
@@ -19,7 +21,9 @@ export async function getAccessTokenAsync() {
     return await ExponentFacebook.getAccessTokenAsync();
 }
 /**
+ * Logs out of the currently authenticated session.
  *
+ * - [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout) can be unstable and may require reloading the page before `Facebook.getAccessTokenAsync()` returns `null` again.
  */
 export async function logOutAsync() {
     if (!ExponentFacebook.logOutAsync) {
@@ -114,21 +118,5 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled) {
         throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
     }
     return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
-}
-export async function getUserAsync() {
-    return await requestAsync({ path: 'me' });
-}
-export async function requestAsync({ token, path, }) {
-    let resolvedToken = token;
-    if (!token) {
-        const auth = await getAccessTokenAsync();
-        if (!auth) {
-            throw new CodedError('ERR_FB_AUTH', 'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.');
-        }
-        resolvedToken = auth.token;
-    }
-    const response = await fetch(`https://graph.facebook.com/${path}?access_token=${resolvedToken}`);
-    const body = await response.json();
-    return body;
 }
 //# sourceMappingURL=Facebook.js.map

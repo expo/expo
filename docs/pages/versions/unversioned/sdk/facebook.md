@@ -87,25 +87,6 @@ A map of options:
   - **isCustomerSupportChatEnabled (_boolean_)** Web only: Enables the [customer chat plugin](https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin/sdk/). Defaults to `false`.
   - **xfbml (_boolean_)** Web only: With xfbml set to true, the SDK will parse your page's DOM to find and initialize any social plugins that have been added using XFBML. If you're not using social plugins on the page, setting `xfbml` to `false` will improve page load times. You can find out more about this by looking at [Social Plugins](https://developers.facebook.com/docs/plugins/). Defaults to `true`
 
-
-### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
-
-Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg. fetching app settings from Facebook or a profile of the logged in user. In some cases, you may want to disable or delay the SDK initialization, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods. Even though calling this method with `enabled == true` initializes the Facebook SDK on iOS, it does not on Android and we recommend always calling `initializeAsync` before performing any actions with effects that should be visible to the user (like `loginWithPermissions`).
-
-In Expo, by default, autoinitialization of the Facebook SDK is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
-
-### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
-
-Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
-
-In Expo, by default, automatic logging app events is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
-
-### `Facebook.setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>`
-
-Sets whether Facebook SDK should collect and attach `advertiser-id` to sent events. `advertiser-id` let you identify and target specific customers. To learn more visit [Facebook documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids) describing that topic. In some cases, you may want to disable or delay the collection of `advertiser-id`, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-advertiser-id) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK methods.
-
-In Expo, by default, collecting those IDs is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
-
 ### `Facebook.logInWithReadPermissionsAsync(options)`
 
 Prompts the user to log into Facebook and grants your app permission
@@ -137,6 +118,25 @@ Otherwise, returns `{ type: 'success' } & FacebookAuth`.
   - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
   - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
   - **graphDomain (_string | undefined_)** A website domain within the Graph API.
+
+### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
+
+Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg. fetching app settings from Facebook or a profile of the logged in user. In some cases, you may want to disable or delay the SDK initialization, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods. Even though calling this method with `enabled == true` initializes the Facebook SDK on iOS, it does not on Android and we recommend always calling `initializeAsync` before performing any actions with effects that should be visible to the user (like `loginWithPermissions`).
+
+In Expo, by default, autoinitialization of the Facebook SDK is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+
+### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
+
+Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
+
+In Expo, by default, automatic logging app events is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+
+### `Facebook.setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>`
+
+Sets whether Facebook SDK should collect and attach `advertiser-id` to sent events. `advertiser-id` let you identify and target specific customers. To learn more visit [Facebook documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids) describing that topic. In some cases, you may want to disable or delay the collection of `advertiser-id`, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-advertiser-id) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK methods.
+
+In Expo, by default, collecting those IDs is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+
 
 #### Example
 
@@ -227,3 +227,33 @@ Failed to initialize the FBSDK app because the `appId` option wasn't provided an
 ### `ERR_FB_LOGIN`
 
 An error occurred while trying to log in to Facebook.
+
+## Guide
+
+You can use the `fetch` API to get info about the user from the [Facebook Graph API](https://developers.facebook.com/docs/graph-api/using-graph-api/). Here are some helper methods you can use to make data access easier.
+
+```ts
+// Get default info about the currently authenticated user.
+async function getUserAsync() {
+  const { name } = await requestAsync({ path: 'me' });
+  console.log(`Hello ${name} 👋`)
+}
+
+// Request data from the Facebook Graph API.
+// Learn more https://developers.facebook.com/docs/graph-api/using-graph-api/
+async function requestAsync(path: string, token?: string): Promise<any> {
+  let resolvedToken = token;
+  if (!token) {
+    const auth = await Facebook.getAccessTokenAsync();
+    if (!auth) {
+      throw new Error(
+        'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'
+      );
+    }
+    resolvedToken = auth.token;
+  }
+  const response = await fetch(`https://graph.facebook.com/${path}?access_token=${resolvedToken}`);
+  const body = await response.json();
+  return body;
+}
+```

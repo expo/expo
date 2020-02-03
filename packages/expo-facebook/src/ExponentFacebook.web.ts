@@ -165,7 +165,6 @@ export default {
 
     return { type: 'cancel' };
   },
-
   async getAccessTokenAsync(): Promise<FacebookAuth | null> {
     throwIfUninitialized();
 

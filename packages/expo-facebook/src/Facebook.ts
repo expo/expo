@@ -20,7 +20,9 @@ export async function logInWithReadPermissionsAsync(
 }
 
 /**
+ * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
  *
+ * You can use this method to check if the user should sign-in or not.
  */
 export async function getAccessTokenAsync(): Promise<FacebookAuth | null> {
   if (!ExponentFacebook.getAccessTokenAsync) {
@@ -31,7 +33,9 @@ export async function getAccessTokenAsync(): Promise<FacebookAuth | null> {
 }
 
 /**
+ * Logs out of the currently authenticated session.
  *
+ * - [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout) can be unstable and may require reloading the page before `Facebook.getAccessTokenAsync()` returns `null` again.
  */
 export async function logOutAsync() {
   if (!ExponentFacebook.logOutAsync) {
@@ -135,31 +139,4 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled: boolean) {
     throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
   }
   return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
-}
-
-export async function getUserAsync(): Promise<any> {
-  return await requestAsync({ path: 'me' });
-}
-
-export async function requestAsync({
-  token,
-  path,
-}: {
-  token?: string;
-  path: string;
-}): Promise<any> {
-  let resolvedToken = token;
-  if (!token) {
-    const auth = await getAccessTokenAsync();
-    if (!auth) {
-      throw new CodedError(
-        'ERR_FB_AUTH',
-        'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'
-      );
-    }
-    resolvedToken = auth.token;
-  }
-  const response = await fetch(`https://graph.facebook.com/${path}?access_token=${resolvedToken}`);
-  const body = await response.json();
-  return body;
 }

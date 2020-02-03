@@ -2,11 +2,15 @@ import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from 
 export { FacebookLoginResult, FacebookOptions, FacebookAuth };
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
+ * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
  *
+ * You can use this method to check if the user should sign-in or not.
  */
 export declare function getAccessTokenAsync(): Promise<FacebookAuth | null>;
 /**
+ * Logs out of the currently authenticated session.
  *
+ * - [Web Functionality](https://developers.facebook.com/docs/reference/javascript/FB.logout) can be unstable and may require reloading the page before `Facebook.getAccessTokenAsync()` returns `null` again.
  */
 export declare function logOutAsync(): Promise<any>;
 /**
@@ -68,8 +72,3 @@ export declare function initializeAsync(optionsOrAppId: InitOptions | string, ap
  * @param enabled Whether `advertiser-id` should be collected
  */
 export declare function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<any>;
-export declare function getUserAsync(): Promise<any>;
-export declare function requestAsync({ token, path, }: {
-    token?: string;
-    path: string;
-}): Promise<any>;
