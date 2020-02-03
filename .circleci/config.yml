@@ -815,7 +815,7 @@ jobs:
   docs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
-    s:
+    steps:
       - setup
       - halt_if_unchanged:
           requireOneOf: 'docs'
