@@ -2,12 +2,11 @@
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <EXPermissions/EXPermissions.h>
-#import <EXPermissions/EXUserNotificationPermissionRequester.h>
 
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName;
 
 @interface EXRemoteNotificationPermissionRequester : NSObject<UMPermissionsRequester>
 
-- (instancetype)initWithUserNotificationPermissionRequester:(EXUserNotificationPermissionRequester *)userNotificationPermissionRequester
+- (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
                                             withMethodQueue:(dispatch_queue_t)methodQueue;
 @end
