@@ -1,26 +1,26 @@
 import * as Facebook from 'expo-facebook';
 import { Platform } from 'react-native';
-
 import { isInteractive } from '../utils/Environment';
 
 export const name = 'Facebook';
 
-const longerTimeout = 15000 * 3;
+const interactiveTimeout = 15000 * 3;
 
 export async function test(
   { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
   { setPortalChild, cleanupPortal }
 ) {
-  let originalTimeout;
+  if (isInteractive()) {
+    let originalTimeout;
+    beforeEach(() => {
+      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = interactiveTimeout;
+    });
 
-  beforeEach(() => {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = longerTimeout;
-  });
-
-  afterEach(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-  });
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    });
+  }
 
   describe(name, () => {
     beforeAll(async () => {
