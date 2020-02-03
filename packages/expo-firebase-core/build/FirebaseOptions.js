@@ -15,12 +15,11 @@ export class FirebaseOptions {
             ? analyticsService.analytics_property.tracking_id
             : undefined;
         const apiKey = client.api_key[0].current_key;
-        const authDomain = `${projectId}.firebaseapp.com`;
+        //const authDomain = `${projectId}.firebaseapp.com`;
         return {
             appId,
             trackingId,
             apiKey,
-            authDomain,
             projectId,
             messagingSenderId,
             databaseURL,

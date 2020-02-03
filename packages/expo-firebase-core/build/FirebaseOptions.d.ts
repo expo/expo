@@ -6,7 +6,6 @@ export interface IFirebaseOptions {
     messagingSenderId: string;
     storageBucket: string;
     projectId: string;
-    authDomain: string;
 }
 export declare class FirebaseOptions {
     static parseAndroidGoogleServices(json: any): IFirebaseOptions;

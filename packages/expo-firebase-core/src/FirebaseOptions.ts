@@ -9,7 +9,7 @@ export interface IFirebaseOptions {
   messagingSenderId: string;
   storageBucket: string;
   projectId: string;
-  authDomain: string;
+  //authDomain: string;
 }
 
 export class FirebaseOptions {
@@ -27,16 +27,16 @@ export class FirebaseOptions {
       ? analyticsService.analytics_property.tracking_id
       : undefined;
     const apiKey = client.api_key[0].current_key;
-    const authDomain = `${projectId}.firebaseapp.com`;
+    //const authDomain = `${projectId}.firebaseapp.com`;
     return {
       appId,
       trackingId,
       apiKey,
-      authDomain,
       projectId,
       messagingSenderId,
       databaseURL,
       storageBucket,
+      //authDomain,
     };
   }
 }
