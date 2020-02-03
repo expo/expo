@@ -16,14 +16,14 @@ public class FirebaseCoreOptions {
       builder.setApiKey(json.get("apiKey"));
     if (json.containsKey("appId"))
       builder.setApplicationId(json.get("appId"));
-    if (json.containsKey("projectId"))
-      builder.setProjectId(json.get("projectId"));
     if (json.containsKey("databaseURL"))
       builder.setDatabaseUrl(json.get("databaseURL"));
-    if (json.containsKey("storageBucket"))
-      builder.setStorageBucket(json.get("storageBucket"));
     if (json.containsKey("messagingSenderId"))
       builder.setGcmSenderId(json.get("messagingSenderId"));
+    if (json.containsKey("projectId"))
+      builder.setProjectId(json.get("projectId"));
+    if (json.containsKey("storageBucket"))
+      builder.setStorageBucket(json.get("storageBucket"));
     if (json.containsKey("trackingId"))
       builder.setGaTrackingId(json.get("trackingId"));
 
@@ -40,7 +40,8 @@ public class FirebaseCoreOptions {
     result.put("messagingSenderId", options.getGcmSenderId());
     result.put("projectId", options.getProjectId());
     result.put("storageBucket", options.getStorageBucket());
-    result.put("trackingId", options.getGaTrackingId());
+    if (options.getGaTrackingId() != null)
+      result.put("trackingId", options.getGaTrackingId());
 
     return result;
   }
