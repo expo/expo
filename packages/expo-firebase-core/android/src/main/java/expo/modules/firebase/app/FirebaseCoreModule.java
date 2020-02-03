@@ -40,7 +40,7 @@ public class FirebaseCoreModule extends ExportedModule implements RegistryLifecy
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
 
-    constants.put("DEFAULT_NAME", getAppName());
+    constants.put("DEFAULT_APP_NAME", getAppName());
 
     if (mDefaultOptions == null) {
       FirebaseOptions options = getAppOptions();
@@ -48,7 +48,7 @@ public class FirebaseCoreModule extends ExportedModule implements RegistryLifecy
     }
 
     if (mDefaultOptions != null) {
-      constants.put("DEFAULT_OPTIONS", mDefaultOptions);
+      constants.put("DEFAULT_APP_OPTIONS", mDefaultOptions);
     }
 
     return constants;

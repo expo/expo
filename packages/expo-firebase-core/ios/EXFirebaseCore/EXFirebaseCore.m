@@ -72,11 +72,11 @@ UM_EXPORT_MODULE(ExpoFirebaseCore);
 - (NSDictionary *)constantsToExport
 {
   NSMutableDictionary* constants = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"DEFAULT_NAME": [self.class toUniversalAppName:_appName]
+    @"DEFAULT_APP_NAME": [self.class toUniversalAppName:_appName]
   }];
   
   if (_appOptions) {
-    [constants setObject:[self.class firOptionsToJSON:_appOptions] forKey:@"DEFAULT_OPTIONS"];
+    [constants setObject:[self.class firOptionsToJSON:_appOptions] forKey:@"DEFAULT_APP_OPTIONS"];
   }
   
   return constants;

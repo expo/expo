@@ -8,7 +8,7 @@ const SYSTEM_APP_NAME = '[DEFAULT]';
 
 const SANDBOX_APP_PREFIX = '__sandbox';
 
-function getTestSuiteFirebaseOptions() {
+function getTestSuiteFirebaseAppOptions() {
   if (Platform.OS === 'android') {
     //const googleServicesJson = require('../google-services.json');
     //const options = FirebaseCore.FirebaseOptions.parseAndroidGoogleServices(googleServicesJson);
@@ -41,7 +41,7 @@ function expectFirebaseOptions(expect, options1, options2) {
 }
 
 export async function test({ describe, it, xit, expect, beforeAll }) {
-  if (!FirebaseCore.DEFAULT_OPTIONS) {
+  if (!FirebaseCore.DEFAULT_APP_OPTIONS) {
     describe(name, () => {
       xit(`No Google Services config found`, async () => {});
     });
@@ -53,12 +53,12 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
   const itWhenNotSandboxed = isSandboxed ? xit : it;
 
   describe(name, () => {
-    describe('DEFAULT_NAME', async () => {
+    describe('DEFAULT_APP_NAME', async () => {
       itWhenSandboxed(`returns a sandboxed app name`, async () => {
         let error = null;
         try {
-          const { DEFAULT_NAME } = FirebaseCore;
-          expect(DEFAULT_NAME.substring(0, SANDBOX_APP_PREFIX.length)).toBe(SANDBOX_APP_PREFIX);
+          const { DEFAULT_APP_NAME } = FirebaseCore;
+          expect(DEFAULT_APP_NAME.substring(0, SANDBOX_APP_PREFIX.length)).toBe(SANDBOX_APP_PREFIX);
         } catch (e) {
           error = e;
         }
@@ -67,8 +67,8 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
       itWhenNotSandboxed(`returns the default app name`, async () => {
         let error = null;
         try {
-          const { DEFAULT_NAME } = FirebaseCore;
-          expect(DEFAULT_NAME).toBe(SYSTEM_APP_NAME);
+          const { DEFAULT_APP_NAME } = FirebaseCore;
+          expect(DEFAULT_APP_NAME).toBe(SYSTEM_APP_NAME);
         } catch (e) {
           error = e;
         }
@@ -76,18 +76,18 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
       });
     });
 
-    describe('DEFAULT_OPTIONS', async () => {
+    describe('DEFAULT_APP_OPTIONS', async () => {
       it(`returns valid firebase options`, async () => {
         let error = null;
         try {
-          const { DEFAULT_OPTIONS } = FirebaseCore;
-          expect(DEFAULT_OPTIONS.appId).not.toBeNull();
-          expect(DEFAULT_OPTIONS.messagingSenderId).not.toBeNull();
-          expect(DEFAULT_OPTIONS.apiKey).not.toBeNull();
-          expect(DEFAULT_OPTIONS.projectId).not.toBeNull();
-          expect(DEFAULT_OPTIONS.clientId).not.toBeNull();
-          expect(DEFAULT_OPTIONS.storageBucket).not.toBeNull();
-          expect(DEFAULT_OPTIONS.databaseURL).not.toBeNull();
+          const { DEFAULT_APP_OPTIONS } = FirebaseCore;
+          expect(DEFAULT_APP_OPTIONS.appId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.messagingSenderId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.apiKey).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.projectId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.clientId).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.storageBucket).not.toBeNull();
+          expect(DEFAULT_APP_OPTIONS.databaseURL).not.toBeNull();
         } catch (e) {
           error = e;
         }
@@ -96,8 +96,8 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
       itWhenSandboxed(`returns the firebase options from the test-suite`, async () => {
         let error = null;
         try {
-          const { DEFAULT_OPTIONS } = FirebaseCore;
-          expectFirebaseOptions(expect, DEFAULT_OPTIONS, getTestSuiteFirebaseOptions());
+          const { DEFAULT_APP_OPTIONS } = FirebaseCore;
+          expectFirebaseOptions(expect, DEFAULT_APP_OPTIONS, getTestSuiteFirebaseAppOptions());
         } catch (e) {
           error = e;
         }
