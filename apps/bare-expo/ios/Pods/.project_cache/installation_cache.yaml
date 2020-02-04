@@ -275,6 +275,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXErrorRecovery
     SPECS:
       - EXErrorRecovery (1.0.0)
+  EXFacebook:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFacebook: dc1658cf687deeaa14cc9e39f36d7cac
+    CHECKSUM: c10f77ea97b3003c29b4f0a49942acc1ba8330b5
+    FILES:
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.h"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m"
+    PROJECT_NAME: EXFacebook
+    SPECS:
+      - EXFacebook (8.0.0)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem: 384bbcee0771bf79893a232d6cd6c5e2
@@ -656,8 +668,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -711,6 +723,23 @@ CACHE_KEYS:
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.61.4)
+  FBSDKCoreKit:
+    BUILD_SETTINGS_CHECKSUM:
+      FBSDKCoreKit: 60d69dde3e50d94f5f39949c424b03c5
+    CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+    PROJECT_NAME: FBSDKCoreKit
+    SPECS:
+      - FBSDKCoreKit (5.8.0)
+      - FBSDKCoreKit/Basics (5.8.0)
+      - FBSDKCoreKit/Core (5.8.0)
+  FBSDKLoginKit:
+    BUILD_SETTINGS_CHECKSUM:
+      FBSDKLoginKit: 0df82783c4955cafdce54ee3f9243823
+    CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
+    PROJECT_NAME: FBSDKLoginKit
+    SPECS:
+      - FBSDKLoginKit (5.8.0)
+      - FBSDKLoginKit/Login (5.8.0)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -751,12 +780,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d083730335173076543b2da6a2004d6b
-      Release: d083730335173076543b2da6a2004d6b
+      Debug: eecf7d1263b3ce3378ec9d3446115311
+      Release: eecf7d1263b3ce3378ec9d3446115311
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 426ac26dfce3cc0ce3eefa07146b91ad
-      Release: 426ac26dfce3cc0ce3eefa07146b91ad
+      Debug: afa3e21077b9551248ae89a97600b432
+      Release: afa3e21077b9551248ae89a97600b432
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

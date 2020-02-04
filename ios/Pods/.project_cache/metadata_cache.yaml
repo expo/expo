@@ -1246,6 +1246,10 @@ EXHaptics:
   LABEL: EXHaptics
   PROJECT_PATH: EXHaptics.xcodeproj
   UUID: 458E4E0DEA9D752CC28F1A42E4B306AC
+EXImageLoader:
+  LABEL: EXImageLoader
+  PROJECT_PATH: EXImageLoader.xcodeproj
+  UUID: E9B8755E94C7C9AA493F2BF95AB61410
 EXImageManipulator:
   LABEL: EXImageManipulator
   PROJECT_PATH: EXImageManipulator.xcodeproj
@@ -1442,10 +1446,6 @@ GoogleMaps:
   LABEL: GoogleMaps
   PROJECT_PATH: GoogleMaps.xcodeproj
   UUID: BF08434370CEBD287CA17CA7862D7C59
-GoogleMobileVision:
-  LABEL: GoogleMobileVision
-  PROJECT_PATH: GoogleMobileVision.xcodeproj
-  UUID: 2708175A425F1F6674D0854CB8EA85C4
 GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj
@@ -1622,10 +1622,6 @@ UMReactNativeAdapter:
   LABEL: UMReactNativeAdapter
   PROJECT_PATH: UMReactNativeAdapter.xcodeproj
   UUID: E0F5743D6C158230DA447A63190DF2E9
-UMScreenOrientationInterface:
-  LABEL: UMScreenOrientationInterface
-  PROJECT_PATH: UMScreenOrientationInterface.xcodeproj
-  UUID: 91FB6292CB563494F14BEE1052C014AD
 UMSensorsInterface:
   LABEL: UMSensorsInterface
   PROJECT_PATH: UMSensorsInterface.xcodeproj
