@@ -2,6 +2,11 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
+firebase_sdk_version = '6.14.0'
+if defined? $FirebaseSDKVersion
+  firebase_sdk_version = $FirebaseSDKVersion
+end
+
 Pod::Spec.new do |s|
   s.name           = 'EXFirebaseAnalytics'
   s.version        = package['version']
@@ -17,5 +22,5 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
-  s.dependency 'Firebase/Core', '~> 6.13.0'
+  s.dependency 'Firebase/Core', firebase_sdk_version
 end
