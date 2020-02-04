@@ -19,6 +19,7 @@ import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.DevMenuModuleInterface
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.utils.JSONBundleConverter
+import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -79,38 +80,38 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val perfMap = Bundle()
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
-      inspectorMap.putString("label", if (devSettings.isElementInspectorEnabled) "Hide Element Inspector" else "Show Element Inspector")
+      inspectorMap.putString("label", getString(if (devSettings.isElementInspectorEnabled) R.string.devmenu_hide_element_inspector else R.string.devmenu_show_element_inspector))
       inspectorMap.putBoolean("isEnabled", true)
     } else {
-      inspectorMap.putString("label", "Element Inspector Unavailable")
+      inspectorMap.putString("label", getString(R.string.devmenu_element_inspector_unavailable))
       inspectorMap.putBoolean("isEnabled", false)
     }
     items.putBundle("dev-inspector", inspectorMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
-      debuggerMap.putString("label", if (devSettings.isRemoteJSDebugEnabled) "Stop Remote Debugging" else "Debug Remote JS")
+      debuggerMap.putString("label", getString(if (devSettings.isRemoteJSDebugEnabled) R.string.devmenu_stop_remote_debugging else R.string.devmenu_start_remote_debugging))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
     } else {
-      debuggerMap.putString("label", "Remote Debugger Unavailable")
+      debuggerMap.putString("label", getString(R.string.devmenu_remote_debugger_unavailable))
       debuggerMap.putBoolean("isEnabled", false)
     }
     items.putBundle("dev-remote-debug", debuggerMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
-      hmrMap.putString("label", if (devSettings.isHotModuleReplacementEnabled) "Disable Fast Refresh" else "Enable Fast Refresh")
+      hmrMap.putString("label", getString(if (devSettings.isHotModuleReplacementEnabled) R.string.devmenu_disable_fast_refresh else R.string.devmenu_enable_fast_refresh))
       hmrMap.putBoolean("isEnabled", true)
     } else {
-      hmrMap.putString("label", "Fast Refresh Unavailable")
-      hmrMap.putString("detail", "Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh.")
+      hmrMap.putString("label", getString(R.string.devmenu_fast_refresh_unavailable))
+      hmrMap.putString("detail", getString(R.string.devmenu_fast_refresh_unavailable_details))
       hmrMap.putBoolean("isEnabled", false)
     }
     items.putBundle("dev-hmr", hmrMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled) {
-      perfMap.putString("label", if (devSettings.isFpsDebugEnabled) "Hide Performance Monitor" else "Show Performance Monitor")
+      perfMap.putString("label", getString(if (devSettings.isFpsDebugEnabled) R.string.devmenu_hide_performance_monitor else R.string.devmenu_show_performance_monitor))
       perfMap.putBoolean("isEnabled", true)
     } else {
-      perfMap.putString("label", "Performance Monitor Unavailable")
+      perfMap.putString("label", getString(R.string.devmenu_performance_monitor_unavailable))
       perfMap.putBoolean("isEnabled", false)
     }
     items.putBundle("dev-perf-monitor", perfMap)
@@ -218,6 +219,13 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
         }
       }
     }
+  }
+
+  /**
+   * Helper for getting localized [String] from `strings.xml` file.
+   */
+  private fun getString(ref: Int): String {
+    return reactApplicationContext.resources.getString(ref)
   }
 
   //endregion internals

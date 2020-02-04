@@ -1,12 +1,12 @@
 package host.exp.exponent.kernel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
@@ -64,6 +64,7 @@ class DevMenuManager {
   /**
    * Shows dev menu in given experience activity. Ensures it never happens in standalone apps and is run on the UI thread.
    */
+  @SuppressLint("SourceLockedOrientationActivity")
   fun showInActivity(activity: ExperienceActivity) {
     if (Constants.isStandaloneApp()) {
       return
@@ -79,6 +80,9 @@ class DevMenuManager {
       activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
       activity.addView(devMenuView)
+
+      // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
+      // Otherwise, touches and other gestures may not work correctly.
       kernel?.reactInstanceManager?.onHostResume(activity)
     }
   }
@@ -93,7 +97,7 @@ class DevMenuManager {
 
     UiThreadUtil.runOnUiThread {
       reactRootView?.let {
-        val parentView = it.parent as FrameLayout?
+        val parentView = it.parent as ViewGroup?
 
         // Restore the original orientation that had been set before the dev menu was displayed.
         activity.requestedOrientation = orientationBeforeShowingDevMenu
