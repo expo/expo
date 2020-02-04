@@ -325,7 +325,9 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       }
     }
 
-    reactInstanceManager.call("createReactContextInBackground");
+    if (reactInstanceManager != null) {
+      reactInstanceManager.call("createReactContextInBackground");
+    }
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
     mAppRecord.setReactInstanceManager(reactInstanceManager);
