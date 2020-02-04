@@ -102,6 +102,11 @@ public class LocalAuthenticationModule extends ExportedModule {
       return;
     }
 
+    if (getCurrentActivity() == null) {
+      promise.reject("E_NOT_FOREGROUND", "Cannot display biometric prompt when the app is not in the foreground");
+      return;
+    }
+
     if (getKeyguardManager().isDeviceSecure() == false) {
       Bundle errorResult = new Bundle();
       errorResult.putBoolean("success", false);
