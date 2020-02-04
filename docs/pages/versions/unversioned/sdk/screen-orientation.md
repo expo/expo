@@ -259,20 +259,20 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 ### `ScreenOrientation.PlatformOrientationInfo`
 
-    - screenOrientationConstantAndroid (_integer_): A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (Android only)
-    - screenOrientationArrayIOS (Array[Orientation]): An array of orientations to allow on the iOS platform (iOS only)
-    - screenOrientationLockWebOrientation (_WebOrientationLock_): A web orientation lock to apply in the browser (web only)
+- **screenOrientationConstantAndroid (_integer_)**: A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (**Android only**)
+- **screenOrientationArrayIOS (Array[Orientation])**: An array of orientations to allow on the iOS platform (**iOS only**)
+- **screenOrientationLockWebOrientation (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
 
 ### `ScreenOrientation.OrientationInfo`
 
-    - orientation (_Orientation_): The current orientation of the device
-    - verticalSizeClass (_SizeClassIOS_): The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
-    - horizontalSizeClass (_SizeClassIOS_): The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
+- **orientation (_Orientation_)**: The current orientation of the device
+- **verticalSizeClass (_SizeClassIOS_)**: The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (**iOS only**)
+- **horizontalSizeClass (_SizeClassIOS_)**: The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (**iOS only**)
 
 ### `ScreenOrientation.OrientationChangeEvent`
 
-    - orientationLock (_OrientationLock_): The current OrientationLock of the device.
-    - orientationInfo (_OrientationInfo_): The current OrientationInfo of the device.
+- **orientationLock (_OrientationLock_)**: The current OrientationLock of the device.
+- **orientationInfo (_OrientationInfo_)**: The current OrientationInfo of the device.
 
 ### `Subscription`
 
@@ -284,7 +284,7 @@ A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-r
 
 #### Args
 
-    - event (_OrientationChangeEvent_): An update with the most recent OrientationChangeEvent.
+- **event (_OrientationChangeEvent_)**: An update with the most recent OrientationChangeEvent.
 
 #### Returns
 
