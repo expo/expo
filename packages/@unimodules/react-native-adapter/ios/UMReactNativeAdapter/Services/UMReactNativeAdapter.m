@@ -6,7 +6,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
@@ -36,7 +35,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider), @protocol(UMImageLoaderInterface)];
+  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider)];
 }
 
 # pragma mark - Lifecycle methods
@@ -178,17 +177,6 @@ UM_REGISTER_MODULE();
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
   }
   return nil;
-}
-
-# pragma mark - UMImageLoader
-
-- (void)loadImageForURL:(NSURL *)imageURL
-      completionHandler:(UMImageLoaderCompletionBlock)completionHandler
-{
-    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                                                    callback:^(NSError *error, UIImage *loadedImage) {
-        completionHandler(error, loadedImage);
-    }];
 }
 
 # pragma mark - App state observing
