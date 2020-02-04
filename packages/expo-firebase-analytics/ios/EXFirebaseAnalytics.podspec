@@ -23,4 +23,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'Firebase/Core', firebase_sdk_version
+  s.dependency 'EXFirebaseCore'
 end

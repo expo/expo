@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 
-import parseConfig from './parseConfig';
+// import parseConfig from './parseConfig';
 
 if (!ExpoFirebaseAnalytics) {
   console.warn(
@@ -27,7 +27,7 @@ export function getBundledGoogleServicesConfig(): null | GoogleServicesConfig {
  *
  * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
  */
-export async function initializeAppDangerously(
+/*export async function initializeAppDangerously(
   googleServices: GoogleServicesConfig
 ): Promise<void> {
   // @ts-ignore
@@ -38,17 +38,17 @@ export async function initializeAppDangerously(
     throw new UnavailabilityError('expo-firebase-analytics', 'initializeAppDangerously');
   }
   return await ExpoFirebaseAnalytics.initializeAppDangerously(parseConfig(googleServices));
-}
+}*/
 
 /**
  * Delete the default Firebase app instance. If no default app is running then nothing happens.
  */
-export async function deleteDefaultApp(): Promise<void> {
+/*export async function deleteDefaultApp(): Promise<void> {
   if (!ExpoFirebaseAnalytics.deleteApp) {
     throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
   }
   return await ExpoFirebaseAnalytics.deleteApp();
-}
+}*/
 
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have

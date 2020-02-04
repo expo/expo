@@ -1,10 +1,21 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <UMCore/UMUtilities.h>
+#import <EXFirebaseCore/UMFirebaseCoreInterface.h>
 #import <EXFirebaseAnalytics/EXFirebaseAnalytics.h>
-#import <EXFirebaseAnalytics/EXFirebaseAnalytics+JSON.h>
 #import <UIKit/UIKit.h>
 #import <Firebase/Firebase.h>
+
+@interface NSObject (Private)
+- (NSString*)_methodDescription;
+@end
+
+@interface EXFirebaseAnalytics ()
+
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMFirebaseCoreInterface> firebaseCore;
+
+@end
 
 @implementation EXFirebaseAnalytics
 
@@ -23,10 +34,51 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   reject(exception.name, exception.reason, error);
 }
 
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
+  _firebaseCore = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFirebaseCoreInterface)];
+  //_firebaseCore = (EXFirebaseCore*) [moduleRegistry getExportedModuleOfClass:[EXFirebaseCore class]];
+
+
+  NSLog(@"%@", [[FIRConfiguration sharedInstance] performSelector:@selector(_methodDescription)]);
+  
+  Class firAnalyticsClass = NSClassFromString(@"FIRAnalytics");
+  if (firAnalyticsClass) {
+    NSLog(@"%@", [firAnalyticsClass performSelector:@selector(_methodDescription)]);
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wundeclared-selector"
+    SEL startWithConfigurationSelector = @selector(startWithConfiguration:options:);
+    SEL analyticsConfigurationSelector = @selector(analyticsConfiguration);
+    //SEL addLogEventListenerSelector = @selector(addLogEventListener:);
+  #pragma clang diagnostic pop
+    //if ([firAnalyticsClass respondsToSelector:addLogEventListenerSelector]) {
+    if ([firAnalyticsClass respondsToSelector:startWithConfigurationSelector]) {
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      [firAnalyticsClass performSelector:startWithConfigurationSelector
+                              withObject:[[FIRConfiguration sharedInstance] performSelector:analyticsConfigurationSelector]
+                              withObject:_firebaseCore.defaultApp.options];
+    /*[firAnalyticsClass performSelector:addLogEventListenerSelector
+                            withObject:^(NSObject* arg) {
+      NSLog(@"log: %@", arg, nil);
+    }];*/
+      
+  #pragma clang diagnostic pop
+    }
+  }
+  
+  //[firAnalyticsClass performSelector:@selector(addLogEventListener)]
+  //+ (id) addLogEventListener:(^block)arg1; (0x10615b593)
+  
+}
+
+
 # pragma mark - Firebase App methods
 
 
-UM_EXPORT_METHOD_AS(initializeAppDangerously,
+/*UM_EXPORT_METHOD_AS(initializeAppDangerously,
                     initializeAppDangerously:(NSDictionary *)config
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -42,9 +94,9 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
       [self initApp:config resolver:resolve rejecter:reject];
     }
   }];
-}
+}*/
 
-- (void)initApp:(NSDictionary *)options
+/*- (void)initApp:(NSDictionary *)options
        resolver:(UMPromiseResolveBlock)resolve
        rejecter:(UMPromiseRejectBlock)reject
 {
@@ -65,33 +117,27 @@ UM_EXPORT_METHOD_AS(initializeAppDangerously,
     
     resolve(@{@"result": @"success"});
   }];
-}
-
-UM_EXPORT_METHOD_AS(deleteApp,
-                    deleteApp:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
-  FIRApp *existingApp = [FIRApp defaultApp];
-  
-  if (!existingApp) {
-    resolve([NSNull null]);
-    return;
-  }
-  
-  [existingApp deleteApp:^(BOOL success) {
-    if (success) {
-      resolve([NSNull null]);
-    } else {
-      reject(@"ERR_FIREBASE_ANALYTICS", @"Failed to delete the Firebase app.", nil);
-    }
-  }];
-}
+}*/
 
 - (nullable FIRApp *)getAppOrReject:(UMPromiseRejectBlock)reject
 {
-  FIRApp *app = [FIRApp defaultApp];
-  if (app != nil) return app;
-  reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled and your project has react-native-unimodules installed. Optionally in the Expo client you can initialized the default app with initializeAppDangerously().", nil);
-  return nil;
+  if (!_firebaseCore) {
+    reject(@"ERR_FIREBASE_ANALYTICS", @"EXFirebaseCore could not be found. Ensure that your app has correctly linked 'expo-firebase-core' and your project has react-native-unimodules installed.", nil);
+    return nil;
+  }
+  FIRApp* defaultApp = [_firebaseCore defaultApp];
+  FIRApp* systemApp = [FIRApp defaultApp];
+  if (!defaultApp || !systemApp) {
+    // TODO - add error message for Expo client
+    reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled.", nil);
+    return nil;
+  }
+  NSString* trackingId = defaultApp.options.trackingID;
+  /*if (!trackingId || ![trackingId isEqualToString:systemApp.options.trackingID]) {
+    reject(@"ERR_FIREBASE_ANALYTICS", @"No 'TRACKING_ID' has been configured in GoogleService-Info.plist. Ensure that analytics is setup correctly for your Firebase project.", nil);
+    return nil;
+  }*/
+  return defaultApp;
 }
 
 # pragma mark - Firebase Analytics methods
@@ -183,18 +229,6 @@ UM_EXPORT_METHOD_AS(resetAnalyticsData,
     [self reject:reject withException:exception];
     return;
   }
-}
-
-- (NSDictionary *)constantsToExport
-{
-  NSMutableDictionary *constants = [NSMutableDictionary new];
-
-  FIROptions *defaultOptions = [FIROptions defaultOptions];
-  if (defaultOptions != nil) {
-    constants[@"app"] = [EXFirebaseAnalytics firOptionsNativeToJSON:defaultOptions];
-  }
-
-  return constants;
 }
 
 @end
