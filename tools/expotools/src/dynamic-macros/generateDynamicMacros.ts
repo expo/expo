@@ -153,7 +153,6 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   const promises: Promise<any>[] = [];
   const skipTemplates: Array<string> = args.skipTemplates || [];
   const templatePaths = { ...templatePathsFile.paths, ...templateFilesPath.generateOnly };
-  console.log(JSON.stringify(templatePaths));
   for (const [source, dest] of Object.entries(templatePaths)) {
     if (skipTemplates.includes(source)){
       console.log(
