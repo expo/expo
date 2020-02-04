@@ -1,4 +1,4 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
 import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
