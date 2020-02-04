@@ -16,6 +16,18 @@
   FIROptions* _appOptions;
 }
 
+UM_REGISTER_MODULE();
+
++ (const NSString *)exportedModuleName
+{
+  return @"ExpoFirebaseCore";
+}
+
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(UMFirebaseCoreInterface)];
+}
+
 + (NSString*) toUniversalAppName:(NSString*)name
 {
   return [name isEqualToString:DEFAULT_APP_NAME_IOS]
@@ -30,7 +42,6 @@
     : name;
 }
 
-UM_EXPORT_MODULE(ExpoFirebaseCore);
 
 - (nonnull instancetype) init
 {

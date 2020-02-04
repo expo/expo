@@ -1,9 +1,10 @@
 //  Copyright © 2020 650 Industries. All rights reserved.
 
 #import <UMCore/UMExportedModule.h>
+#import "./UMFirebaseCoreInterface.h"
 #import <Firebase/Firebase.h>
 
-@interface EXFirebaseCore : UMExportedModule
+@interface EXFirebaseCore : UMExportedModule<UMFirebaseCoreInterface>
 
 - (nonnull instancetype) init;
 - (nonnull instancetype) initWithAppName:(nonnull NSString*)name options:(nullable FIROptions*)options;
