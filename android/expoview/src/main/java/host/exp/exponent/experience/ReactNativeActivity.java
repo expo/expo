@@ -453,6 +453,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       builder.call("setCurrentActivity", this);
     }
 
+    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
     builder.call("setInitialLifecycleState", LifecycleState.RESUMED);
 
     if (extraNativeModules != null) {

@@ -130,7 +130,7 @@ public class TaskManagerModule extends ExportedModule {
 
   private boolean checkTaskService(final Promise promise) {
     if (mTaskService == null) {
-      promise.reject(TaskManagerInterface.E_TASK_SERVICE_NOT_FOUND, "Unable to find TaskService singleton module in module registry.");
+      promise.reject(TaskManagerInterface.ERR_TASK_SERVICE_NOT_FOUND, "Unable to find TaskService singleton module in module registry.");
       return false;
     }
     return true;

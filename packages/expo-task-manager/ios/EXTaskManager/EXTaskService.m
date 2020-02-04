@@ -407,8 +407,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   
   [tasks setObject:taskDict forKey:task.name];
   [appDict setObject:tasks forKey:@"tasks"];
-  if(task.appUrl)
-  {
+  if (task.appUrl) {
     [appDict setObject:task.appUrl forKey:@"appUrl"];
   }
   [dict setObject:appDict forKey:task.appId];
