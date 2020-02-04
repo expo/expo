@@ -136,7 +136,7 @@ async function copyTemplateFileAsync(
   }
 }
 
-type AndroidPaths = {
+interface AndroidPaths {
   paths: {
     [id: string]: string
   },
@@ -149,7 +149,7 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
   const templatePathsFile = await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
-  ).readAsync() as AndroidPaths;
+  ).readAsync() as unknown as AndroidPaths;
   const promises: Promise<any>[] = [];
   const skipTemplates: Array<string> = args.skipTemplates || [];
   const templatePaths = { ...templatePathsFile.paths, ...templateFilesPath.generateOnly };
