@@ -11,7 +11,7 @@ it(`uses options on iOS`, async () => {
     promptMessage: 'Authentication is required',
     cancelLabel: 'Abort',
     fallbackLabel: 'Use passcode',
-    disableSystemPasscodeAsFallback: false,
+    disableDeviceFallback: false,
   };
   await LocalAuthentication.authenticateAsync(options);
 

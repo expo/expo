@@ -70,7 +70,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
   NSString *reason = options[@"promptMessage"];
   NSString *cancelLabel = options[@"cancelLabel"];
   NSString *fallbackLabel = options[@"fallbackLabel"];
-  NSString *disableSystemPasscodeAsFallback = options[@"disableSystemPasscodeAsFallback"];
+  NSString *disableDeviceFallback = options[@"disableDeviceFallback"];
 
   if ([[self class] isFaceIdDevice]) {
     NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
@@ -94,7 +94,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
     context.interactionNotAllowed = false;
   }
 
-  if (disableSystemPasscodeAsFallback) {
+  if (disableDeviceFallback) {
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {
