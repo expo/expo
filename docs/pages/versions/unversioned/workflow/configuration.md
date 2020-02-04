@@ -39,7 +39,7 @@ A short description of what your app is and why it is great.
 
 ### `"backgroundColor"`
 
-The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff`.
+The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff'`.
 
 ### `"owner"`
 
