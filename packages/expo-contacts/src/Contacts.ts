@@ -281,7 +281,7 @@ export async function getPagedContactsAsync(
 
 export async function getContactByIdAsync(
   id: string,
-  fields?: FieldType
+  fields?: FieldType[]
 ): Promise<Contact | undefined> {
   if (!ExpoContacts.getContactsAsync) {
     throw new UnavailabilityError('Contacts', 'getContactsAsync');
