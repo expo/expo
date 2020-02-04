@@ -28,8 +28,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
-  "dependencies": {
+  "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-core",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
     "expo-module-scripts": "^1.1.1"
   },
   "jest": {
