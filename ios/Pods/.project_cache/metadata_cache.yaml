@@ -1246,6 +1246,10 @@ EXHaptics:
   LABEL: EXHaptics
   PROJECT_PATH: EXHaptics.xcodeproj
   UUID: 458E4E0DEA9D752CC28F1A42E4B306AC
+EXImageLoader:
+  LABEL: EXImageLoader
+  PROJECT_PATH: EXImageLoader.xcodeproj
+  UUID: E9B8755E94C7C9AA493F2BF95AB61410
 EXImageManipulator:
   LABEL: EXImageManipulator
   PROJECT_PATH: EXImageManipulator.xcodeproj

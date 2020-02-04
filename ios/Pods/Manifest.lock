@@ -1308,6 +1308,10 @@ PODS:
     - UMCore
   - EXHaptics (8.0.0):
     - UMCore
+  - EXImageLoader (1.0.0):
+    - React-Core
+    - UMCore
+    - UMImageLoaderInterface
   - EXImageManipulator (8.0.0):
     - UMCore
     - UMFileSystemInterface
@@ -2261,6 +2265,7 @@ DEPENDENCIES:
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../packages/expo-haptics/ios`)
+  - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
@@ -3055,6 +3060,9 @@ EXTERNAL SOURCES:
   EXHaptics:
     :path: !ruby/object:Pathname
     path: "../packages/expo-haptics/ios"
+  EXImageLoader:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-image-loader/ios"
   EXImageManipulator:
     :path: !ruby/object:Pathname
     path: "../packages/expo-image-manipulator/ios"
@@ -3540,6 +3548,7 @@ SPEC CHECKSUMS:
   EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
   EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
   EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
+  EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
   EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
   EXImagePicker: aecd617c31562f41e85a0770bfce51a8b9d58bd1
   EXKeepAwake: 66e9f80b6d129633725a0e42f8d285c229876811
