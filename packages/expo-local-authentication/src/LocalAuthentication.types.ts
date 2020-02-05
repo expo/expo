@@ -8,5 +8,7 @@ export enum AuthenticationType {
 export type AuthOptions = {
   // iOS only
   promptMessage?: string;
+  cancelLabel?: string;
   fallbackLabel?: string;
+  disableDeviceFallback?: boolean;
 };
