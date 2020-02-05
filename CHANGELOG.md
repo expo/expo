@@ -26,6 +26,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed `Camera.takePictureAsync()` not saving metadata on iOS. ([#6428](https://github.com/expo/expo/pull/6428) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `KeyboardAvoidingView` in standalone Android builds. ([#6506](https://github.com/expo/expo/pull/6506) [@bbarthec](https://github.com/bbarthec))
 - Fixed `FileSystem.downloadAsync()` throwing `NullPointerException` in rare failures on Android. ([#6819](https://github.com/expo/expo/pull/6819) by [@jsamr](https://github.com/jsamr/))
+- Fixed `FileSystem.getTotalDiskCapacityAsync()` incorrectly returning `2^53 - 1` instead of the actual total disk capacity. ([#6978](https://github.com/expo/expo/pull/6978) by [@cruzach](https://github.com/cruzach/))
 
 ## 36.0.0
 
