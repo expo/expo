@@ -1,7 +1,7 @@
 import React from 'react';
 import { NativeModules, StyleSheet, Text, View } from 'react-native';
 
-import { getAppLoadingLifecycleEmitter } from './AppLoading';
+import { getAppLoadingLifecycleEmitter } from 'expo-splash-screen';
 
 const { ExponentAppLoadingManager } = NativeModules;
 

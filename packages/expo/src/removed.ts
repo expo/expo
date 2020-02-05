@@ -47,6 +47,16 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  AppLoading: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { AppLoading } from 'expo' -> import { AppLoading } from 'expo-splash-screen'`,
+        'AppLoading',
+        'expo-splash-screen'
+      );
+    },
+  },
   Easing: {
     enumerable: true,
     get() {
@@ -655,6 +665,17 @@ Object.defineProperties(module.exports, {
         `import { Speech } from 'expo' -> import * as Speech from 'expo-speech'`,
         'Speech',
         'expo-speech'
+      );
+    },
+  },
+
+  SplashScreen: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { SplashScreen } from 'expo' -> import * as SplashScreen from 'expo-splash-screen'`,
+        'SplashScreen',
+        'expo-splash-screen'
       );
     },
   },
