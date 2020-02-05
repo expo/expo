@@ -1,5 +1,5 @@
-import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
+import { AppLoading } from 'expo-splash-screen';
 import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
