@@ -978,12 +978,8 @@ public class Kernel extends KernelInterface {
           // Already loading. Don't need to do anything.
           return true;
         } else {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              weakActivity.showLoadingScreen(null);
-            }
-          });
+          // TODO: SplashScreen: check this code path
+          Exponent.getInstance().runOnUiThread(() -> weakActivity.startLoading(null));
           break;
         }
       }
