@@ -195,8 +195,8 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * or null if no activity is currently attached to react context.
    */
   private fun getDevSupportManager(): DevSupportManagerImpl? {
-    val activity = currentActivity as ReactNativeActivity?
-    return activity?.devSupportManager?.get() as DevSupportManagerImpl?
+    val activity = currentActivity as? ReactNativeActivity?
+    return activity?.devSupportManager?.get() as? DevSupportManagerImpl?
   }
 
   /**
