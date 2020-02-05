@@ -69,4 +69,4 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 
 ### `LocalAuthentication.cancelAuthenticate()`
 
-**(Android Only)** Cancels the fingerprint authentication flow.
+**(Android Only)** Cancels authentication flow.
