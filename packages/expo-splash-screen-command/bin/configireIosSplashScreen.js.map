@@ -1,0 +1,1 @@
+{"version":3,"file":"configireIosSplashScreen.js","sourceRoot":"","sources":["../src/configireIosSplashScreen.ts"],"names":[],"mappings":";;AACe,KAAK,UAAU,wBAAwB,CAAC,SAAiB,EAAE,OAAa,IAAG,CAAC;AAA3F,2CAA2F","sourcesContent":["\nexport default async function configureIosSplashScreen(imagePath: string, command: Mode) {}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"configurreAndroidSplashScreen.js","sourceRoot":"","sources":["../src/configurreAndroidSplashScreen.ts"],"names":[],"mappings":";;AAAe,KAAK,UAAU,4BAA4B,CAAC,SAAiB,EAAE,OAAa;IACvF,MAAM,SAAS,CAAA;AACjB,CAAC;AAFH,+CAEG","sourcesContent":["export default async function configureAndroidSplashScreen(imagePath: string, command: Mode) {\n    await configure\n  }"]}
