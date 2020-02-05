@@ -4,4 +4,5 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 
 @interface EXSplashScreenModule : UMExportedModule <UMModuleRegistryConsumer>
+
 @end

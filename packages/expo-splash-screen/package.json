@@ -2,8 +2,8 @@
   "name": "expo-splash-screen",
   "version": "1.0.0",
   "description": "ExpoSplashScreen standalone module",
-  "main": "build/SplashScreen.js",
-  "types": "build/SplashScreen.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -29,6 +29,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
   "dependencies": {
     "expo-module-scripts": "^1.2.0"
   },
