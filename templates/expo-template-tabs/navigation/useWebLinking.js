@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Platform } from 'react-native';
 import { useLinking } from '@react-navigation/native';
 
@@ -27,7 +26,6 @@ export default function useWebLinking(containerRef) {
         },
       },
     });
-
-    return useMemo(getInitialState, [getInitialState]);
+    return getInitialState();
   }
 }

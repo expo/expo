@@ -4,7 +4,7 @@ import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationNativeContainer } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import MainTabNavigator from './navigation/MainTabNavigator';
 import useWebLinking from './navigation/useWebLinking';
 
@@ -27,9 +27,9 @@ export default function App(props) {
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <NavigationNativeContainer ref={containerRef} initialState={initialState}>
+        <NavigationContainer ref={containerRef} initialState={initialState}>
           <MainTabNavigator />
-        </NavigationNativeContainer>
+        </NavigationContainer>
       </View>
     );
   }

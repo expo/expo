@@ -1177,12 +1177,23 @@
     shortid "^2.2.15"
     use-subscription "^1.3.0"
 
-"@react-navigation/native@5.0.0-alpha.33":
-  version "5.0.0-alpha.33"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-5.0.0-alpha.33.tgz#92d6d62b9946b7b613bb019274fe530b6719d84d"
-  integrity sha512-zunTJXzIEp/jW9v9Zx4gabnolqS3YeH2Fq5DFMjCgb8qH6tOwniHdeDv9SzdjCugJ9ym2EjRKtJu1CH/5mnTYg==
+"@react-navigation/core@^5.0.0-alpha.43":
+  version "5.0.0-alpha.43"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-5.0.0-alpha.43.tgz#f6e928ca845bf4faa03adc5c462b183cae3d5d4a"
+  integrity sha512-2CO5dFJW7CQFXX2y1Y1HVOGPQi4/8+5sPJWOZPCkhIVgjseeEqWJC+nJ6bbRVEE+Jxkc1ya6A8p+oBZ/GxF34g==
   dependencies:
-    "@react-navigation/core" "^5.0.0-alpha.41"
+    escape-string-regexp "^2.0.0"
+    query-string "^6.9.0"
+    react-is "^16.12.0"
+    shortid "^2.2.15"
+    use-subscription "^1.3.0"
+
+"@react-navigation/native@5.0.0-alpha.35":
+  version "5.0.0-alpha.35"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-5.0.0-alpha.35.tgz#02582e538b16d78a045076bbef3e7070702f6883"
+  integrity sha512-pMLINvj9L9CT2pb/RKnvdVi9QGl5jktgoG1ZSTAzF2SK/MFW3nGZigKyFPS2NafVYXTegdu2HTVmBk8gqtFXfg==
+  dependencies:
+    "@react-navigation/core" "^5.0.0-alpha.43"
 
 "@react-navigation/routers@^5.0.0-alpha.31":
   version "5.0.0-alpha.31"
@@ -5538,11 +5549,6 @@ react-native-platform-touchable@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-platform-touchable/-/react-native-platform-touchable-1.1.1.tgz#fde4acc65eea585d28b164d0c3716a42129a68e4"
   integrity sha1-/eSsxl7qWF0osWTQw3FqQhKaaOQ=
-
-react-native-reanimated@~1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.4.0.tgz#7f1acbf9be08492d834f512700570978052be2f9"
-  integrity sha512-tO7nSNNP+iRLVbkcSS5GXyDBb7tSI02+XuRL3/S39EAr35rnvUy2JfeLUQG+fWSObJjnMVhasUDEUwlENk8IXw==
 
 react-native-safe-area-context@~0.6.4:
   version "0.6.4"

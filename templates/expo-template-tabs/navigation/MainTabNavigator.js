@@ -7,15 +7,32 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
-const TabNavigator = createBottomTabNavigator();
+const BottomTab = createBottomTabNavigator();
 
 const Stack = createStackNavigator();
 
+function stackWrapperFactory(name, component) {
+  return function() {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name={name} component={component} />
+      </Stack.Navigator>
+    );
+  };
+}
+
+const HomeStack = stackWrapperFactory('Home', HomeScreen);
+
+const LinksStack = stackWrapperFactory('Links', LinksScreen);
+
+const SettingsStack = stackWrapperFactory('Settings', SettingsScreen);
+
 export default function MainTabNavigator() {
   return (
-    <TabNavigator.Navigator>
-      <TabNavigator.Screen
+    <BottomTab.Navigator>
+      <BottomTab.Screen
         name="HomeStack"
+        component={HomeStack}
         options={{
           title: 'Home',
           tabBarIcon: ({ focused }) => (
@@ -28,29 +45,21 @@ export default function MainTabNavigator() {
               }
             />
           ),
-        }}>
-        {() => (
-          <Stack.Navigator>
-            <Stack.Screen name="Home" component={HomeScreen} />
-          </Stack.Navigator>
-        )}
-      </TabNavigator.Screen>
-      <TabNavigator.Screen
+        }}
+      />
+      <BottomTab.Screen
         name="LinksStack"
+        component={LinksStack}
         options={{
           title: 'Links',
           tabBarIcon: ({ focused }) => (
             <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
           ),
-        }}>
-        {() => (
-          <Stack.Navigator>
-            <Stack.Screen name="Links" component={LinksScreen} />
-          </Stack.Navigator>
-        )}
-      </TabNavigator.Screen>
-      <TabNavigator.Screen
+        }}
+      />
+      <BottomTab.Screen
         name="SettingsStack"
+        component={SettingsStack}
         options={{
           title: 'Settings',
           tabBarIcon: ({ focused }) => (
@@ -59,13 +68,8 @@ export default function MainTabNavigator() {
               name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
             />
           ),
-        }}>
-        {() => (
-          <Stack.Navigator>
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-          </Stack.Navigator>
-        )}
-      </TabNavigator.Screen>
-    </TabNavigator.Navigator>
+        }}
+      />
+    </BottomTab.Navigator>
   );
 }
