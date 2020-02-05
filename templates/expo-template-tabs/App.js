@@ -5,15 +5,19 @@ import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import MainTabNavigator from './navigation/MainTabNavigator';
-import useWebLinking from './navigation/useWebLinking';
+import useLinking from './navigation/useLinking';
+
+const Stack = createStackNavigator();
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   const containerRef = React.useRef();
 
-  const initialState = useWebLinking(containerRef);
+  const initialState = useLinking(containerRef);
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
@@ -28,7 +32,13 @@ export default function App(props) {
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <NavigationContainer ref={containerRef} initialState={initialState}>
-          <MainTabNavigator />
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Root"
+              component={MainTabNavigator}
+              options={{ headerTitle: 'Example app' }}
+            />
+          </Stack.Navigator>
         </NavigationContainer>
       </View>
     );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
@@ -9,30 +8,12 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 const BottomTab = createBottomTabNavigator();
 
-const Stack = createStackNavigator();
-
-function stackWrapperFactory(name, component) {
-  return function() {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name={name} component={component} />
-      </Stack.Navigator>
-    );
-  };
-}
-
-const HomeStack = stackWrapperFactory('Home', HomeScreen);
-
-const LinksStack = stackWrapperFactory('Links', LinksScreen);
-
-const SettingsStack = stackWrapperFactory('Settings', SettingsScreen);
-
 export default function MainTabNavigator() {
   return (
     <BottomTab.Navigator>
       <BottomTab.Screen
-        name="HomeStack"
-        component={HomeStack}
+        name="Home"
+        component={HomeScreen}
         options={{
           title: 'Home',
           tabBarIcon: ({ focused }) => (
@@ -48,8 +29,8 @@ export default function MainTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="LinksStack"
-        component={LinksStack}
+        name="Links"
+        component={LinksScreen}
         options={{
           title: 'Links',
           tabBarIcon: ({ focused }) => (
@@ -58,8 +39,8 @@ export default function MainTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="SettingsStack"
-        component={SettingsStack}
+        name="Settings"
+        component={SettingsScreen}
         options={{
           title: 'Settings',
           tabBarIcon: ({ focused }) => (
