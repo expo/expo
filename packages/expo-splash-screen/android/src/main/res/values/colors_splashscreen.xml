@@ -1,0 +1,8 @@
+<!--
+
+    THIS FILE IS JUST A DEFAULT FILE THAT IS OVERRIDDEN BY 'expo-splash-screen' COMMAND
+
+-->
+<resources>
+  <color name="splashscreen_background">#FFFFFF</color>
+</resources>

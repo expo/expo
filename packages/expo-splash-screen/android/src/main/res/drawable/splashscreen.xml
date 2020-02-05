@@ -1,0 +1,15 @@
+<!--
+
+    THIS FILE IS JUST A DEFAULT FILE THAT IS OVERRIDDEN BY 'expo-splash-screen' COMMAND
+
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/splashscreen_background"/>
+
+  <item>
+    <bitmap
+      android:gravity="center"
+      android:src="@drawable/splashscreen_image"
+    />
+  </item>
+</layer-list>

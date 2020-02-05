@@ -1,0 +1,41 @@
+{
+  "name": "expo-splash-screen",
+  "version": "1.0.0",
+  "description": "ExpoSplashScreen standalone module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-splash-screen"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-splash-screen"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "dependencies": {
+    "expo-module-scripts": "^1.1.1"
+  },
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  }
+}
