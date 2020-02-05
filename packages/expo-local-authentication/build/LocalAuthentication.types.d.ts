@@ -10,5 +10,7 @@ export declare enum AuthenticationType {
 }
 export declare type AuthOptions = {
     promptMessage?: string;
+    cancelLabel?: string;
     fallbackLabel?: string;
+    disableDeviceFallback?: boolean;
 };
