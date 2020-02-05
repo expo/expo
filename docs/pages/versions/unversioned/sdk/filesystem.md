@@ -419,7 +419,7 @@ FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
 
 #### Returns
 
-Returns a Promise that resolves to the number of bytes available on the internal disk.
+Returns a Promise that resolves to the number of bytes available on the internal disk, or Javascript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 ### `FileSystem.getTotalDiskCapacityAsync()`
 
@@ -436,6 +436,6 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 #### Returns
 
-Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or Javascript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
 #
