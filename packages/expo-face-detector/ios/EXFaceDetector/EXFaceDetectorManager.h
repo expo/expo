@@ -12,6 +12,8 @@
 
 @interface EXFaceDetectorManager : NSObject <UMFaceDetectorManager>
 
+- (instancetype)initWithOptions:(NSDictionary*)options appName:(nullable NSString *)appName;
+
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
 
 - (void)setIsEnabled:(BOOL)enabled;

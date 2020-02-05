@@ -14,6 +14,7 @@
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
 #import <Firebase/Firebase.h>
+#import <EXFirebaseCore/UMFirebaseCoreInterface.h>
 
 @interface EXFaceDetectorModule ()
 
@@ -50,10 +51,16 @@ UM_EXPORT_MODULE(ExpoFaceDetector);
 
 UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![FIRApp defaultApp]) {
+  id<UMFirebaseCoreInterface> firebaseCore = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFirebaseCoreInterface)];
+  if (!firebaseCore) {
+    reject(@"E_MODULE_UNAVAILABLE", @"No firebase core module", nil);
+    return;
+  }
+  if (![firebaseCore defaultApp]) {
     reject(@"E_FACE_DETECTION_FAILED", @"Firebase is not configured", nil);
     return;
   }
+  
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
@@ -88,7 +95,7 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
     
     UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
-    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options]];
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options] appName:[firebaseCore defaultApp].name];
     [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
       NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
       

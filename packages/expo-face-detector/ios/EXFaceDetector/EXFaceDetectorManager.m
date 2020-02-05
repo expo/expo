@@ -28,6 +28,7 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 @property (nonatomic, assign, getter=isDetectingFaceEnabled) BOOL faceDetectionEnabled;
 @property (nonatomic, assign, getter=isFaceDetecionRunning) BOOL faceDetectionRunning;
 @property (nonatomic, strong) FIRVisionFaceDetectorOptions* faceDetectorOptions;
+@property (nonatomic, strong) NSString* appName;
 @property (atomic, assign) NSInteger lastFrameCapturedTimeMilis;
 @property (atomic) NSDate *startDetect;
 @property (atomic) BOOL faceDetectionProcessing;
@@ -38,14 +39,10 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 
 @implementation EXFaceDetectorManager
 
-- (instancetype)init
-{
-  return [self initWithOptions:[EXFaceDetectorUtils defaultFaceDetectorOptions]];
-}
-
-- (instancetype)initWithOptions:(NSDictionary*)options
+- (instancetype)initWithOptions:(NSDictionary*)options appName:(nullable NSString *)appName
 {
   if (self = [super init]) {
+    _appName = appName;
     _faceDetectionProcessing = NO;
     _lastFrameCapturedTimeMilis = 0;
     _previousFacesCount = -1;
@@ -133,7 +130,7 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
   
   if ([self isDetectingFaceEnabled]) {
     @try {
-      self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions];
+      self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions appName:_appName];
       AVCaptureVideoDataOutput* output = [[AVCaptureVideoDataOutput alloc] init];
       output.alwaysDiscardsLateVideoFrames = YES;
       [output setSampleBufferDelegate:self queue:_sessionQueue];

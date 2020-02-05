@@ -13,10 +13,10 @@
   FIRVisionFaceDetector *detector;
 }
 
--(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions *)options
+-(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions *)options appName:(nullable NSString*)appName
 {
   self = [super init];
-  detector = [EXFaceDetector detectorForOptions:options];
+  detector = [EXFaceDetector detectorForOptions:options appName:appName];
   return self;
 }
 
@@ -74,8 +74,10 @@
   }
 }
 
-+ (FIRVisionFaceDetector *)detectorForOptions:(FIRVisionFaceDetectorOptions *)options
++ (FIRVisionFaceDetector *)detectorForOptions:(FIRVisionFaceDetectorOptions *)options appName:(nullable NSString*)appName
 {
-  return [[FIRVision vision] faceDetectorWithOptions:options];
+  return appName
+    ? [[FIRVision vision] faceDetectorWithOptions:options]
+    : [[FIRVision visionForApp:[FIRApp appNamed:appName]] faceDetectorWithOptions:options];
 }
 @end
