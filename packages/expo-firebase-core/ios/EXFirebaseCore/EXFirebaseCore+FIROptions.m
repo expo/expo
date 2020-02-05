@@ -4,14 +4,16 @@
 
 @implementation EXFirebaseCore (FIROptions)
 
-+ (BOOL) compareString:(NSString*) str1 str2:(NSString*) str2 {
++ (BOOL) compareString:(nullable NSString*) str1 str2:(nullable NSString*) str2 {
   if (str1 == str2) return YES;
   if (!str1 || !str2) return NO;
-  return [str2 isEqualToString:str2];
+  return [str1 isEqualToString:str2];
 }
 
-+ (BOOL) firOptionsIsEqualTo:(nonnull FIROptions*)options1 compareTo:(nonnull FIROptions*)options2
++ (BOOL) firOptionsIsEqualTo:(nullable FIROptions*)options1 compareTo:(nullable FIROptions*)options2
 {
+  if (!options1 && !options2) return YES;
+  if ((options1 && !options2) || (!options1 && options2)) return NO;
   return [self.class compareString:options1.androidClientID str2:options2.androidClientID]
     && [self.class compareString:options1.APIKey str2:options2.APIKey]
     && [self.class compareString:options1.appGroupID str2:options2.appGroupID]

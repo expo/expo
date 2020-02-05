@@ -8,6 +8,6 @@
 
 + (nonnull NSDictionary *)firOptionsToJSON:(nonnull FIROptions *)options;
 + (nullable FIROptions *)firOptionsWithJSON:(nullable NSDictionary *)json;
-+ (BOOL) firOptionsIsEqualTo:(nonnull FIROptions*)firebaseOptions compareTo:(nonnull FIROptions*)compareTo;
++ (BOOL) firOptionsIsEqualTo:(nullable FIROptions*)firebaseOptions compareTo:(nullable FIROptions*)compareTo;
 
 @end
