@@ -77,7 +77,7 @@
 + (FIRVisionFaceDetector *)detectorForOptions:(FIRVisionFaceDetectorOptions *)options appName:(nullable NSString*)appName
 {
   return appName
-    ? [[FIRVision vision] faceDetectorWithOptions:options]
-    : [[FIRVision visionForApp:[FIRApp appNamed:appName]] faceDetectorWithOptions:options];
+    ? [[FIRVision visionForApp:[FIRApp appNamed:appName]] faceDetectorWithOptions:options]
+    : [[FIRVision vision] faceDetectorWithOptions:options];
 }
 @end

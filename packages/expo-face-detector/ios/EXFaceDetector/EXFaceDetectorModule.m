@@ -56,8 +56,16 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     reject(@"E_MODULE_UNAVAILABLE", @"No firebase core module", nil);
     return;
   }
-  if (![firebaseCore defaultApp]) {
-    reject(@"E_FACE_DETECTION_FAILED", @"Firebase is not configured", nil);
+  
+  // The following line has been disabled for the time being. The face-detector module currently always uses the
+  // default firebase-app, even on the Expo client. This means that the Expo firebase project gets hit when
+  // performing face-detection. We might want to change this in the future so that it uses the Firebase project as configured
+  // using 'googleServicesFile' in app.json. This would cause the customer Firebase project to be hit, allowing them
+  // to verify that they have set-up face-detection correctly.
+  //FIRApp* app = [firebaseCore defaultApp];
+  FIRApp* app = [FIRApp defaultApp];
+  if (!app) {
+    reject(@"E_FACE_DETECTION_FAILED", @"Firebase is not configured. Ensure that you have configured a 'GoogleService-Info.plist' in your project.", nil);
     return;
   }
   
@@ -95,7 +103,7 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
     
     UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
-    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options] appName:[firebaseCore defaultApp].name];
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options] appName:app.name];
     [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
       NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
       
