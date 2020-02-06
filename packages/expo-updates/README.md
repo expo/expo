@@ -179,7 +179,7 @@ Make the following change in order to bundle assets from expo-updates instead of
 Add the following lines inside of the `MainApplication`'s `<application>` tag.
 
 ```xml
-<meta-data android:name="expo.modules.updates.EXPO_APP_URL" android:value="YOUR-APP-URL-HERE" />
+<meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE" />
 <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE" />
 ```
 
@@ -241,7 +241,7 @@ Some build-time configuration options are available to allow your app to update 
 
 | iOS plist key | Android meta-data name | Description | Default | Required? |
 | --- | --- | --- | --- | --- |
-| `remoteUrl` | `expo.modules.updates.EXPO_APP_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
+| `remoteUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
 | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `runtimeVersion` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Runtime version to send under the `Expo-Runtime-Version` header in the manifest request. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Release channel to send under the `Expo-Release-Channel` header in the manifest request | `default` | ❌ |
