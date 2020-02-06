@@ -21,6 +21,9 @@
     ],
     "Firebase/Core": [
       "6.14.0"
+    ],
+    "EXFirebaseCore": [
+
     ]
   }
 }
