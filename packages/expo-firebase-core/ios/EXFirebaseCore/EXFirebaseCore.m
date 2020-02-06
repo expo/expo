@@ -42,7 +42,6 @@ UM_REGISTER_MODULE();
     : name;
 }
 
-
 - (nonnull instancetype) init
 {
   if (self = [super init]) {
