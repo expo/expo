@@ -1,12 +1,10 @@
-import Constants from 'expo-constants';
 import qs from 'qs';
 
 import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 
-import { makeSessionUrl } from './SessionUrlProvider';
+import { getDefaultReturnUrl, getStartUrl, getRedirectUrl } from './SessionUrlProvider';
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
 
-const BASE_URL = `https://auth.expo.io`;
 let _authLock = false;
 
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
@@ -71,26 +69,7 @@ export function dismiss() {
   dismissAuthSession();
 }
 
-export function getStartUrl(authUrl: string, returnUrl: string): string {
-  let queryString = qs.stringify({
-    authUrl,
-    returnUrl,
-  });
-
-  return `${getRedirectUrl()}/start?${queryString}`;
-}
-
-export function getRedirectUrl(): string {
-  const redirectUrl = `${BASE_URL}/${Constants.manifest.id}`;
-  if (__DEV__) {
-    _warnIfAnonymous(Constants.manifest.id, redirectUrl);
-  }
-  return redirectUrl;
-}
-
-export function getDefaultReturnUrl(): string {
-  return makeSessionUrl('expo-auth-session');
-}
+export { getDefaultReturnUrl, getRedirectUrl };
 
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
@@ -131,12 +110,4 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
     errorCode,
     params,
   };
-}
-
-function _warnIfAnonymous(id, url): void {
-  if (id.startsWith('@anonymous/')) {
-    console.warn(
-      `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires whitelisting redirect URLs, we recommend that you do not whitelist this URL -- instead, you should sign in to Expo to acquired a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`
-    );
-  }
 }
