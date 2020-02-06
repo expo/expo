@@ -21,8 +21,10 @@ jest.mock('expo-file-system', () => {
 jest.mock('expo-updates', () => {
   return {
     localAssets: {
-      test3:
-        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3',
+      'test3.png':
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3.png',
+      'test4.':
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test4',
     },
   };
 });
@@ -46,9 +48,16 @@ describe('getEmbeddedAssetUri', () => {
     });
 
     it(`returns a URI when an asset is bundled`, () => {
-      let uri = EmbeddedAssets.getEmbeddedAssetUri('test3', null);
+      let uri = EmbeddedAssets.getEmbeddedAssetUri('test3', 'png');
       expect(uri).toBe(
-        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3'
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3.png'
+      );
+    });
+
+    it(`returns a URI when an asset is bundled with a hash and no file extension`, () => {
+      let uri = EmbeddedAssets.getEmbeddedAssetUri('test4', null);
+      expect(uri).toBe(
+        'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test4'
       );
     });
 

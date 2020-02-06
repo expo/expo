@@ -12,7 +12,7 @@ export function getEmbeddedAssetUri(hash, type) {
     if (__DEV__) {
         return null;
     }
-    const localAssetsKey = `${hash}.${type}`;
+    const localAssetsKey = `${hash}.${type || ''}`;
     if (!localAssets.hasOwnProperty(localAssetsKey)) {
         // check legacy location in case we're in Expo client/managed workflow
         // TODO(eric): remove this once bundledAssets is no longer exported from FileSystem
