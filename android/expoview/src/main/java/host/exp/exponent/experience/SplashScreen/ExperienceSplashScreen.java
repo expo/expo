@@ -32,7 +32,7 @@ public class ExperienceSplashScreen {
 
     SplashScreen.show(
       activity,
-      mSplashScreenConfig.getMode(),
+      mSplashScreenConfig.getResizeMode(),
       rootViewClass,
       splashScreenConfigurator
     );

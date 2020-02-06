@@ -15,7 +15,7 @@ interface SplashScreenConfigurator {
   /**
    * Purpose of this method is to provide source for imageView. Additionally you can modify imageView behaviour.
    */
-  fun configureImageView(context: Context, imageView: ImageView, mode: SplashScreenMode)
+  fun configureImageView(context: Context, imageView: ImageView, resizeMode: SplashScreenImageResizeMode)
   
   /**
    * Optional configuration for whole SplashScreen.

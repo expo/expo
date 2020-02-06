@@ -10,13 +10,13 @@ const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
 class SplashScreenController(
   activity: Activity,
-  mode: SplashScreenMode,
+  resizeMode: SplashScreenImageResizeMode,
   private val rootViewClass: Class<*>,
   splashScreenConfigurator: SplashScreenConfigurator
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content) ?: throw NoContentViewException()
-  private var splashScreenView: View = SplashScreenView(activity, mode, splashScreenConfigurator)
+  private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenConfigurator)
   private val handler = Handler()
 
   private var state = State.NO_ROOT_VIEW
@@ -27,7 +27,7 @@ class SplashScreenController(
 
   // region public lifecycle
 
-  fun showSplashScreen(successCallback: () -> Unit, failureCallback: (reason: String) -> Unit) {
+  fun showSplashScreen(successCallback: () -> Unit) {
     weakActivity.get()!!.runOnUiThread {
       contentView.addView(splashScreenView)
       splashScreenShown = true

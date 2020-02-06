@@ -2,6 +2,7 @@ package expo.modules.splashscreen
 
 import android.content.Context
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 
 /**
  * Default implementation that bases on native resources.
@@ -9,16 +10,16 @@ import android.widget.ImageView
 class ResourcesBasedSplashScreenConfigurator : SplashScreenConfigurator {
 
   override fun getBackgroundColor(context: Context): Int {
-    return context.resources.getColor(R.color.splashscreen_background)
+    return ContextCompat.getColor(context, R.color.splashscreen_background);
   }
 
-  override fun configureImageView(context: Context, imageView: ImageView, mode: SplashScreenMode) {
-    when (mode) {
-      SplashScreenMode.NATIVE -> {
+  override fun configureImageView(context: Context, imageView: ImageView, resizeMode: SplashScreenImageResizeMode) {
+    when (resizeMode) {
+      SplashScreenImageResizeMode.NATIVE -> {
         imageView.setImageResource(R.drawable.splashscreen)
       }
-      SplashScreenMode.COVER,
-      SplashScreenMode.CONTAIN -> {
+      SplashScreenImageResizeMode.COVER,
+      SplashScreenImageResizeMode.CONTAIN -> {
         imageView.setImageResource(R.drawable.splashscreen_image)
       }
     }

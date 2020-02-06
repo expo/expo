@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Mode;
-(function (Mode) {
-    Mode["CONTAIN"] = "contain";
-    Mode["COVER"] = "cover";
-    Mode["NATIVE"] = "native";
-})(Mode = exports.Mode || (exports.Mode = {}));
+var ResizeMode;
+(function (ResizeMode) {
+    ResizeMode["CONTAIN"] = "contain";
+    ResizeMode["COVER"] = "cover";
+    ResizeMode["NATIVE"] = "native";
+})(ResizeMode = exports.ResizeMode || (exports.ResizeMode = {}));
 var Platform;
 (function (Platform) {
     Platform["ANDROID"] = "android";

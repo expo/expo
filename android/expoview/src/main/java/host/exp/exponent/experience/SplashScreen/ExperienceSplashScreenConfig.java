@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import host.exp.exponent.utils.ColorParser;
-import expo.modules.splashscreen.SplashScreenMode;
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 import static host.exp.exponent.ExponentManifest.MANIFEST_ANDROID_INFO_KEY;
 import static host.exp.exponent.ExponentManifest.MANIFEST_SPLASH_BACKGROUND_COLOR;
@@ -18,7 +18,7 @@ import static host.exp.exponent.ExponentManifest.MANIFEST_SPLASH_RESIZE_MODE;
 public class ExperienceSplashScreenConfig {
 
   @NonNull
-  private SplashScreenMode mode = SplashScreenMode.CONTAIN;
+  private SplashScreenImageResizeMode resizeMode = SplashScreenImageResizeMode.CONTAIN;
   @NonNull
   private Integer backgroundColor = Color.parseColor("#ffffff");
   @Nullable
@@ -29,8 +29,8 @@ public class ExperienceSplashScreenConfig {
   }
 
   @NonNull
-  public SplashScreenMode getMode() {
-    return mode;
+  public SplashScreenImageResizeMode getResizeMode() {
+    return resizeMode;
   }
 
   @Nullable
@@ -41,14 +41,14 @@ public class ExperienceSplashScreenConfig {
   private ExperienceSplashScreenConfig() {}
 
   static @NonNull ExperienceSplashScreenConfig parseManifest(@Nullable JSONObject manifest) {
-    SplashScreenMode mode = parseResizeMode(manifest);
+    SplashScreenImageResizeMode resizeMode = parseResizeMode(manifest);
     Integer backgroundColor = parseBackgroundColor(manifest);
     String imageUrl = parseImageUrl(manifest);
 
     ExperienceSplashScreenConfig config = new ExperienceSplashScreenConfig();
 
-    if (mode != null) {
-      config.mode = mode;
+    if (resizeMode != null) {
+      config.resizeMode = resizeMode;
     }
     if (backgroundColor != null) {
       config.backgroundColor = backgroundColor;
@@ -60,13 +60,13 @@ public class ExperienceSplashScreenConfig {
     return config;
   }
 
-  @Nullable private static SplashScreenMode parseResizeMode(@Nullable JSONObject manifest) {
+  @Nullable private static SplashScreenImageResizeMode parseResizeMode(@Nullable JSONObject manifest) {
     String resizeMode = getStringFromManifest(
       manifest,
       new String[] { MANIFEST_ANDROID_INFO_KEY, MANIFEST_SPLASH_INFO_KEY, MANIFEST_SPLASH_RESIZE_MODE },
       new String[] { MANIFEST_SPLASH_INFO_KEY, MANIFEST_SPLASH_RESIZE_MODE }
     );
-    return SplashScreenMode.fromString(resizeMode);
+    return SplashScreenImageResizeMode.fromString(resizeMode);
   }
 
   @Nullable private static Integer parseBackgroundColor(@Nullable JSONObject manifest) {

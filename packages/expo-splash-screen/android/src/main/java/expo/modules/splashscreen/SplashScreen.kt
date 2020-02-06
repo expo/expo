@@ -17,7 +17,7 @@ object SplashScreen: SingletonModule {
   /**
    * Show SplashScreen by mounting it in ContentView.
    * @param activity                 Target Activity for SplashScreen to be mounted in.
-   * @param mode                     SplashScreen imageView mode.
+   * @param resizeMode               SplashScreen imageView resizeMode.
    * @param rootViewClass            Class of View that would be monitored for children occurence (autohiding feature).
    * @param splashScreenConfigurator
    * @param successCallback          Callback to be called once SplashScreen is mounted in view hierarchy.
@@ -28,7 +28,7 @@ object SplashScreen: SingletonModule {
   @JvmOverloads
   fun show(
     activity: Activity,
-    mode: SplashScreenMode,
+    resizeMode: SplashScreenImageResizeMode,
     rootViewClass: Class<*>,
     splashScreenConfigurator: SplashScreenConfigurator = ResourcesBasedSplashScreenConfigurator(),
     successCallback: () -> Unit = {},
@@ -39,8 +39,8 @@ object SplashScreen: SingletonModule {
       return failureCallback("'SplashScreen.show' has already been called for this activity.")
     }
 
-    controllers[activity] = SplashScreenController(activity, mode, rootViewClass, splashScreenConfigurator)
-    controllers[activity]!!.showSplashScreen(successCallback, failureCallback)
+    controllers[activity] = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenConfigurator)
+    controllers[activity]!!.showSplashScreen(successCallback)
   }
 
   /**

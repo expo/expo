@@ -1,11 +1,11 @@
-import { Mode } from './constants';
+import { ResizeMode } from './constants';
 
 export default async function configureIosSplashScreen({
   imagePath,
-  mode,
+  resizeMode,
   backgroundColor,
 }: {
   imagePath?: string;
-  mode: Mode;
+  resizeMode: ResizeMode;
   backgroundColor: string;
 }) {}

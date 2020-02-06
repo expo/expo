@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import colorString from 'color-string';
 
-import { Mode, Platform } from './constants';
+import { ResizeMode, Platform } from './constants';
 import configureAndroidSplashScreen from './configureAndroidSplashScreen';
 import configureIosSplashScreen from './configureIosSplashScreen';
 
@@ -22,7 +22,7 @@ interface Params {
  * These are parameters that might be optionally provided by the user. There are default values for them.
  */
 interface Options {
-  mode: Mode;
+  resizeMode: ResizeMode;
   platform: Platform;
 }
 
@@ -58,16 +58,16 @@ function getAvailableOptions(o: object) {
 async function validateConfiguration(
   configuration: Options & Params
 ): never | Promise<Options & Params> {
-  const { mode, imagePath: imagePathString, platform } = configuration;
+  const { resizeMode, imagePath: imagePathString, platform } = configuration;
 
   // check for `native` mode being selected only for `android` platform
-  if (mode === Mode.NATIVE && platform !== Platform.ANDROID) {
+  if (resizeMode === ResizeMode.NATIVE && platform !== Platform.ANDROID) {
     console.log(
       chalk.red(
         `\nInvalid ${chalk.magenta('platform')} ${chalk.yellow(
           platform
         )} selected for ${chalk.magenta('mode')} ${chalk.yellow(
-          mode
+          resizeMode
         )}. See below for the valid options configuration.\n`
       )
     );
@@ -119,12 +119,12 @@ async function runAsync() {
   program
     .arguments('<backgroundColor> [imagePath]')
     .option(
-      '-m, --mode [mode]',
-      `Mode to be used for native splash screen image. Available values: ${getAvailableOptions(
-        Mode
+      '-r, --resizeMode [resizeMode]',
+      `Resize mode to be used for native splash screen image. Available values: ${getAvailableOptions(
+        ResizeMode
       )} (${chalk.yellow.dim(`only available for ${chalk.cyan.dim('android')} platform)`)}).`,
       userInput => {
-        if (!Object.values(Mode).includes(userInput)) {
+        if (!Object.values(ResizeMode).includes(userInput)) {
           console.log(
             chalk.red(
               `\nUnknown value ${chalk.yellow(userInput)} for option ${chalk.magenta(
@@ -136,7 +136,7 @@ async function runAsync() {
         }
         return userInput;
       },
-      Mode.CONTAIN
+      ResizeMode.CONTAIN
     )
     .option(
       '-p, --platform [platform]',
@@ -170,9 +170,9 @@ async function runAsync() {
       async (
         backgroundColor: string,
         imagePath: string | undefined,
-        { mode, platform }: program.Command & Options
+        { resizeMode, platform }: program.Command & Options
       ) => {
-        const configuration = { imagePath, backgroundColor, mode, platform };
+        const configuration = { imagePath, backgroundColor, resizeMode, platform };
         const validatedConfiguration = await validateConfiguration(configuration);
         await action(validatedConfiguration);
       }

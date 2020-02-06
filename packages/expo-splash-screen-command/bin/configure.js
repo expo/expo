@@ -40,10 +40,10 @@ function getAvailableOptions(o) {
  * @param configuration.backgroundColor is valid hex #RGB/#RGBA color
  */
 async function validateConfiguration(configuration) {
-    const { mode, imagePath: imagePathString, platform } = configuration;
+    const { resizeMode, imagePath: imagePathString, platform } = configuration;
     // check for `native` mode being selected only for `android` platform
-    if (mode === constants_1.Mode.NATIVE && platform !== constants_1.Platform.ANDROID) {
-        console.log(chalk_1.default.red(`\nInvalid ${chalk_1.default.magenta('platform')} ${chalk_1.default.yellow(platform)} selected for ${chalk_1.default.magenta('mode')} ${chalk_1.default.yellow(mode)}. See below for the valid options configuration.\n`));
+    if (resizeMode === constants_1.ResizeMode.NATIVE && platform !== constants_1.Platform.ANDROID) {
+        console.log(chalk_1.default.red(`\nInvalid ${chalk_1.default.magenta('platform')} ${chalk_1.default.yellow(platform)} selected for ${chalk_1.default.magenta('mode')} ${chalk_1.default.yellow(resizeMode)}. See below for the valid options configuration.\n`));
         commander_1.default.help();
     }
     if (imagePathString) {
@@ -72,13 +72,13 @@ async function validateConfiguration(configuration) {
 async function runAsync() {
     commander_1.default
         .arguments('<backgroundColor> [imagePath]')
-        .option('-m, --mode [mode]', `Mode to be used for native splash screen image. Available values: ${getAvailableOptions(constants_1.Mode)} (${chalk_1.default.yellow.dim(`only available for ${chalk_1.default.cyan.dim('android')} platform)`)}).`, userInput => {
-        if (!Object.values(constants_1.Mode).includes(userInput)) {
+        .option('-r, --resizeMode [resizeMode]', `Resize mode to be used for native splash screen image. Available values: ${getAvailableOptions(constants_1.ResizeMode)} (${chalk_1.default.yellow.dim(`only available for ${chalk_1.default.cyan.dim('android')} platform)`)}).`, userInput => {
+        if (!Object.values(constants_1.ResizeMode).includes(userInput)) {
             console.log(chalk_1.default.red(`\nUnknown value ${chalk_1.default.yellow(userInput)} for option ${chalk_1.default.magenta('mode')}. See below for the available values for this option.\n`));
             commander_1.default.help();
         }
         return userInput;
-    }, constants_1.Mode.CONTAIN)
+    }, constants_1.ResizeMode.CONTAIN)
         .option('-p, --platform [platform]', `Selected platform to configure. Available values: ${getAvailableOptions(constants_1.Platform)}.`, userInput => {
         if (!Object.values(constants_1.Platform).includes(userInput)) {
             console.log(chalk_1.default.red(`\nUnknown value ${chalk_1.default.yellow(userInput)} for option ${chalk_1.default.magenta('platform')}. See below for the available values for this option.\n`));
@@ -91,8 +91,8 @@ async function runAsync() {
         backgroundColor: `(${chalk_1.default.dim.red('required')}) Valid css-formatted color (hex (#RRGGBB[AA]), rgb[a], hsl[a], named color (https://drafts.csswg.org/css-color/#named-colors)) that would be used as background color for native splash screen view.`,
         imagePath: `(${chalk_1.default.dim.yellow('optional')}) Path to a valid .png image.`,
     })
-        .asyncAction(async (backgroundColor, imagePath, { mode, platform }) => {
-        const configuration = { imagePath, backgroundColor, mode, platform };
+        .asyncAction(async (backgroundColor, imagePath, { resizeMode, platform }) => {
+        const configuration = { imagePath, backgroundColor, resizeMode, platform };
         const validatedConfiguration = await validateConfiguration(configuration);
         await action(validatedConfiguration);
     });

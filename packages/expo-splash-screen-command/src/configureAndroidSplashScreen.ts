@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { projectConfig } from '@react-native-community/cli-platform-android';
 
-import { Mode } from './constants';
+import { ResizeMode } from './constants';
 
 const DRAWABLES_CONFIGS = {
   drawable: {
@@ -234,9 +234,9 @@ async function configureColorsXML(androidMainResPath: string, splashScreenBackgr
   });
 }
 
-async function configureDrawableXML(androidMainResPath: string, mode: Mode) {
+async function configureDrawableXML(androidMainResPath: string, resizeMode: ResizeMode) {
   const nativeSplashScreen: string =
-    mode !== Mode.NATIVE
+    resizeMode !== ResizeMode.NATIVE
       ? ''
       : `
 
@@ -326,13 +326,13 @@ async function configureAndroidManifestXML(androidMainPath: string) {
  */
 async function configureSplashScreenXMLs(
   androidMainPath: string,
-  mode: Mode,
+  resizeMode: ResizeMode,
   splashScreenBackgroundColor: string
 ) {
   const androidMainResPath = path.resolve(androidMainPath, 'res');
   await Promise.all([
     configureColorsXML(androidMainResPath, splashScreenBackgroundColor),
-    configureDrawableXML(androidMainResPath, mode),
+    configureDrawableXML(androidMainResPath, resizeMode),
     configureStylesXML(androidMainResPath),
     configureAndroidManifestXML(androidMainPath),
   ]);
@@ -341,7 +341,7 @@ async function configureSplashScreenXMLs(
 /**
  * Injects specific code to MainApplication that would trigger SplashScreen mounting process.
  */
-async function configureShowingSplashScreen(projectRootPath: string, mode: Mode) {
+async function configureShowingSplashScreen(projectRootPath: string, resizeMode: ResizeMode) {
   // eslint-disable-next-line
   const mainApplicationPath = projectConfig(projectRootPath)?.mainFilePath;
 
@@ -359,10 +359,10 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
   if (isJava) {
     // handle imports
     await replaceOrInsertInFile(mainActivityPathJava, {
-      replacePattern: /^import expo\.modules\.splashscreen\.SplashScreen;.*?\nimport expo\.modules\.splashscreen\.SplashScreenMode;.*?$/m,
-      replaceContent: `import expo.modules.splashscreen.SplashScreen;\nimport expo.modules.splashscreen.SplashScreenMode;`,
+      replacePattern: /^import expo\.modules\.splashscreen\.SplashScreen;.*?\nimport expo\.modules\.splashscreen\.SplashScreenImageResizeMode;.*?$/m,
+      replaceContent: `import expo.modules.splashscreen.SplashScreen;\nimport expo.modules.splashscreen.SplashScreenImageResizeMode;`,
       insertPattern: /(?=public class .* extends .* {.*$)/m,
-      insertContent: `import expo.modules.splashscreen.SplashScreen;\nimport expo.modules.splashscreen.SplashScreenMode;\n\n`,
+      insertContent: `import expo.modules.splashscreen.SplashScreen;\nimport expo.modules.splashscreen.SplashScreenImageResizeMode;\n\n`,
     });
     await replaceOrInsertInFile(mainActivityPathJava, {
       replacePattern: /^import com\.facebook\.react\.ReactRootView;.*?$/m,
@@ -373,12 +373,12 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
 
     // handle onCreate
     const r = await replaceOrInsertInFile(mainActivityPathJava, {
-      replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenMode\..*\);.*$/m, // super.onCreate has to be called first
-      replaceContent: `SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView.class); ${
+      replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\);.*$/m, // super.onCreate has to be called first
+      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
         TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
       }`,
       insertPattern: /(?<=^.*super\.onCreate.*$)/m, // insert just below super.onCreate
-      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView.class); ${
+      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
         TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
       }`,
     });
@@ -394,7 +394,7 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // SplashScreen.show(...) has to called after super.onCreate(...)
-    SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView.class); ${
+    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
           TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
         }
   }\n`,
@@ -418,7 +418,7 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
       });
       // insert method call - just below SplashScreen.show(...)
       await insertToFile(mainActivityPathJava, {
-        insertPattern: /(?<=SplashScreen\.show\(this, SplashScreenMode\..*\);.*$)/m,
+        insertPattern: /(?<=SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\);.*$)/m,
         insertContent: `\n    // StatusBar transparency & translucency that would work with RN has to be pragmatically configured.\n    this.allowDrawingBeneathStatusBar();`,
       });
       // insert method body as the last method in class
@@ -447,10 +447,10 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
   if (isKotlin) {
     // handle imports
     await replaceOrInsertInFile(mainActivityPathKotlin, {
-      replacePattern: /^import expo\.modules\.splashscreen\.SplashScreen.*?\nimport expo\.modules\.splashscreen\.SplashScreenMode.*?$/m,
-      replaceContent: `import expo.modules.splashscreen.SplashScreen\nimport expo.modules.splashscreen.SplashScreenMode`,
+      replacePattern: /^import expo\.modules\.splashscreen\.SplashScreen.*?\nimport expo\.modules\.splashscreen\.SplashScreenImageResizeMode.*?$/m,
+      replaceContent: `import expo.modules.splashscreen.SplashScreen\nimport expo.modules.splashscreen.SplashScreenImageResizeMode`,
       insertPattern: /(?=class .* : .* {.*$)/m,
-      insertContent: `import expo.modules.splashscreen.SplashScreen\nimport expo.modules.splashscreen.SplashScreenMode\n\n`,
+      insertContent: `import expo.modules.splashscreen.SplashScreen\nimport expo.modules.splashscreen.SplashScreenImageResizeMode\n\n`,
     });
     await replaceOrInsertInFile(mainActivityPathKotlin, {
       replacePattern: /^import com\.facebook\.react\.ReactRootView.*?$/m,
@@ -461,12 +461,12 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
 
     // handle onCreate
     const r = await replaceOrInsertInFile(mainActivityPathKotlin, {
-      replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenMode\..*\).*$/m, // super.onCreate has to be called first
-      replaceContent: `SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView::class.java) ${
+      replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\).*$/m, // super.onCreate has to be called first
+      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
         TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
       }`,
       insertPattern: /(?<=^.*super\.onCreate.*$)/m, // insert just below super.onCreate
-      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView::class.java) ${
+      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
         TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
       }`,
     });
@@ -481,7 +481,7 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     // SplashScreen.show(...) has to called after super.onCreate(...)
-    SplashScreen.show(this, SplashScreenMode.${mode.toUpperCase()}, ReactRootView::class.java) ${
+    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
           TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
         }
   }\n`,
@@ -500,7 +500,7 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
     if (r.inserted || onCreateInserted) {
       // insert method call - just below SplashScreen.show(...)
       await insertToFile(mainActivityPathKotlin, {
-        insertPattern: /(?<=SplashScreen\.show\(this, SplashScreenMode\..*\).*$)/m,
+        insertPattern: /(?<=SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\).*$)/m,
         insertContent: `\n    // StatusBar transparency & translucency that would work with RN has to be pragmatically configured.\n    this.allowDrawingBeneathStatusBar()`,
       });
       // insert method body as the last method in class
@@ -532,11 +532,11 @@ async function configureShowingSplashScreen(projectRootPath: string, mode: Mode)
 
 export default async function configureAndroidSplashScreen({
   imagePath,
-  mode,
+  resizeMode,
   backgroundColor,
 }: {
   imagePath?: string;
-  mode: Mode;
+  resizeMode: ResizeMode;
   backgroundColor: string;
 }) {
   const projectRootPath = path.resolve();
@@ -544,7 +544,7 @@ export default async function configureAndroidSplashScreen({
 
   return Promise.all([
     await configureSplashScreenDrawables(path.resolve(androidMainPath, 'res'), imagePath),
-    await configureSplashScreenXMLs(androidMainPath, mode, backgroundColor),
-    await configureShowingSplashScreen(projectRootPath, mode),
+    await configureSplashScreenXMLs(androidMainPath, resizeMode, backgroundColor),
+    await configureShowingSplashScreen(projectRootPath, resizeMode),
   ]).then(() => {});
 }

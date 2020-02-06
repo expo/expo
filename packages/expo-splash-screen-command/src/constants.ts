@@ -1,4 +1,4 @@
-export enum Mode {
+export enum ResizeMode {
   CONTAIN = 'contain',
   COVER = 'cover',
   NATIVE = 'native',

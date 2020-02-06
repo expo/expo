@@ -9,7 +9,7 @@ import android.widget.RelativeLayout
 @SuppressLint("ViewConstructor")
 class SplashScreenView(
   context: Context,
-  mode: SplashScreenMode,
+  resizeMode: SplashScreenImageResizeMode,
   splashScreenConfigurator: SplashScreenConfigurator
 ) : RelativeLayout(context) {
   val imageView: ImageView
@@ -17,8 +17,8 @@ class SplashScreenView(
   init {
     imageView = ImageView(context).also { view ->
       view.layoutParams = LayoutParams(
-        LayoutParams.FILL_PARENT,
-        LayoutParams.FILL_PARENT
+        LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT
       ).also { layoutParams ->
         layoutParams.addRule(CENTER_IN_PARENT, TRUE)
       }
@@ -28,13 +28,13 @@ class SplashScreenView(
     setBackgroundColor(splashScreenConfigurator.getBackgroundColor(context))
     addView(imageView)
 
-    imageView.scaleType = mode.scaleType
-    when (mode) {
-      SplashScreenMode.NATIVE -> {}
-      SplashScreenMode.CONTAIN -> { imageView.adjustViewBounds = true }
-      SplashScreenMode.COVER -> {}
+    imageView.scaleType = resizeMode.scaleType
+    when (resizeMode) {
+      SplashScreenImageResizeMode.NATIVE -> {}
+      SplashScreenImageResizeMode.CONTAIN -> { imageView.adjustViewBounds = true }
+      SplashScreenImageResizeMode.COVER -> {}
     }
-    splashScreenConfigurator.configureImageView(context, imageView, mode)
+    splashScreenConfigurator.configureImageView(context, imageView, resizeMode)
     splashScreenConfigurator.configureSplashScreen(context, this)
   }
 }

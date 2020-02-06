@@ -15,7 +15,7 @@ import com.squareup.picasso.Picasso;
 import androidx.annotation.NonNull;
 import expo.modules.splashscreen.SplashScreenView;
 import host.exp.exponent.analytics.EXL;
-import expo.modules.splashscreen.SplashScreenMode;
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import expo.modules.splashscreen.SplashScreenConfigurator;
 import host.exp.expoview.R;
 
@@ -36,7 +36,7 @@ class ExperienceSplashScreenConfigurator implements SplashScreenConfigurator {
   }
 
   @Override
-  public void configureImageView(@NonNull Context context, @NonNull ImageView imageView, @NonNull SplashScreenMode mode) {
+  public void configureImageView(@NonNull Context context, @NonNull ImageView imageView, @NonNull SplashScreenImageResizeMode resizeMode) {
     if (mSplashScreenConfig.getImageUrl() != null) {
       imageView.setVisibility(View.GONE);
       Picasso.with(context).load(mSplashScreenConfig.getImageUrl()).into(imageView, new Callback() {

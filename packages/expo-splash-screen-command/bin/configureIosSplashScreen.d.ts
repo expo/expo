@@ -1,6 +1,6 @@
-import { Mode } from './constants';
-export default function configureIosSplashScreen({ imagePath, mode, backgroundColor, }: {
+import { ResizeMode } from './constants';
+export default function configureIosSplashScreen({ imagePath, resizeMode, backgroundColor, }: {
     imagePath?: string;
-    mode: Mode;
+    resizeMode: ResizeMode;
     backgroundColor: string;
 }): Promise<void>;

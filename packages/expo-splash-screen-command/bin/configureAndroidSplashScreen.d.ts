@@ -1,7 +1,7 @@
 import 'core-js/es/string/match-all';
-import { Mode } from './constants';
-export default function configureAndroidSplashScreen({ imagePath, mode, backgroundColor, }: {
+import { ResizeMode } from './constants';
+export default function configureAndroidSplashScreen({ imagePath, resizeMode, backgroundColor, }: {
     imagePath?: string;
-    mode: Mode;
+    resizeMode: ResizeMode;
     backgroundColor: string;
 }): Promise<void>;
