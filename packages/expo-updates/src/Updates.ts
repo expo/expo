@@ -43,14 +43,12 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   const result = await ExpoUpdates.checkForUpdateAsync();
-  if (!result) {
-    return { isAvailable: false };
+  if (result.manifestString) {
+    result.manifest = JSON.parse(result.manifestString);
+    delete result.manifestString;
   }
 
-  return {
-    isAvailable: true,
-    manifest: typeof result === 'string' ? JSON.parse(result) : result,
-  };
+  return result;
 }
 
 export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
@@ -59,14 +57,12 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   }
 
   const result = await ExpoUpdates.fetchUpdateAsync();
-  if (!result) {
-    return { isNew: false };
+  if (result.manifestString) {
+    result.manifest = JSON.parse(result.manifestString);
+    delete result.manifestString;
   }
 
-  return {
-    isNew: true,
-    manifest: typeof result === 'string' ? JSON.parse(result) : result,
-  };
+  return result;
 }
 
 let _emitter: EventEmitter | null;
