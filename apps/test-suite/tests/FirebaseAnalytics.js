@@ -1,9 +1,14 @@
+import * as FirebaseCore from 'expo-firebase-core';
 import * as Analytics from 'expo-firebase-analytics';
 import { Platform } from 'react-native';
 
 export const name = 'FirebaseAnalytics';
 
-export async function test({ describe, beforeAll, afterAll, it, expect }) {
+export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
+  const isConfigured = !!FirebaseCore.DEFAULT_APP_OPTIONS;
+  const itWhenConfigured = isConfigured ? it : xit;
+  const itWhenNotConfigured = isConfigured ? xit : it;
+
   describe(name, () => {
     /*
     const googleServices = Platform.select({
@@ -15,7 +20,7 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
     Analytics.initializeAppDangerously(googleServices);
     */
 
-    beforeAll(async () => {
+    /*beforeAll(async () => {
       await Analytics.deleteDefaultApp();
 
       await Analytics.initializeAppDangerously(
@@ -48,10 +53,10 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
 
     afterAll(async () => {
       await Analytics.deleteDefaultApp();
-    });
+    });*/
 
     describe('logEvent()', async () => {
-      it(`runs`, async () => {
+      itWhenConfigured(`runs`, async () => {
         let error = null;
         try {
           await Analytics.logEvent('event_name', { foo: 'bar' });
@@ -60,9 +65,18 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
         }
         expect(error).toBeNull();
       });
+      itWhenNotConfigured('fails when not configured', async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('event_name', { foo: 'bar' });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
     });
     describe('setCurrentScreen()', async () => {
-      it(`runs`, async () => {
+      itWhenConfigured(`runs`, async () => {
         let error = null;
         try {
           await Analytics.setCurrentScreen('test-screen');
@@ -71,27 +85,48 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
         }
         expect(error).toBeNull();
       });
+      itWhenNotConfigured(`fails when not configured`, async () => {
+        let error = null;
+        try {
+          await Analytics.setCurrentScreen('test-screen');
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
     });
     describe('setSessionTimeoutDuration()', async () => {
-      it(Platform.select({ android: 'runs', default: 'throws unavailable' }), async () => {
+      itWhenConfigured(
+        Platform.select({ android: 'runs', default: 'throws unavailable' }),
+        async () => {
+          let error = null;
+          try {
+            await Analytics.setSessionTimeoutDuration(190000);
+          } catch (e) {
+            error = e;
+          }
+          if (Platform.OS === 'android') {
+            expect(error).toBeNull();
+          } else {
+            expect(error).not.toBeNull();
+          }
+        }
+      );
+      itWhenNotConfigured(`fails when not configured`, async () => {
         let error = null;
         try {
           await Analytics.setSessionTimeoutDuration(190000);
         } catch (e) {
           error = e;
         }
-        if (Platform.OS === 'android') {
-          expect(error).toBeNull();
-        } else {
-          expect(error).not.toBeNull();
-        }
+        expect(error).not.toBeNull();
       });
     });
     describe('setUserId()', async () => {
       afterAll(async () => {
         await Analytics.setUserId(null);
       });
-      it(`runs`, async () => {
+      itWhenConfigured(`runs`, async () => {
         let error = null;
         try {
           await Analytics.setUserId('abcuserid');
@@ -100,9 +135,18 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
         }
         expect(error).toBeNull();
       });
+      itWhenNotConfigured(`fails when not configured`, async () => {
+        let error = null;
+        try {
+          await Analytics.setUserId('abcuserid');
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
     });
     describe('setUserProperty()', async () => {
-      it(`runs`, async () => {
+      itWhenConfigured(`runs`, async () => {
         let error = null;
         try {
           await Analytics.setUserProperty('likes_tests', 'true');
@@ -111,12 +155,41 @@ export async function test({ describe, beforeAll, afterAll, it, expect }) {
         }
         expect(error).toBeNull();
       });
+      itWhenNotConfigured(`fails when not configured`, async () => {
+        let error = null;
+        try {
+          await Analytics.setUserProperty('likes_tests', 'true');
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
     });
     describe('setUserProperties()', async () => {
-      it(`runs`, async () => {
+      itWhenConfigured(`runs`, async () => {
         let error = null;
         try {
           await Analytics.setUserProperties({ likes_tests: 'true' });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeNull();
+      });
+      itWhenNotConfigured(`fails when not configured`, async () => {
+        let error = null;
+        try {
+          await Analytics.setUserProperties({ likes_tests: 'true' });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
+    });
+    describe('setUnavailabilityLogging()', async () => {
+      it(`runs`, () => {
+        let error = null;
+        try {
+          Analytics.setUnavailabilityLogging(false);
         } catch (e) {
           error = e;
         }
