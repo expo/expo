@@ -40,51 +40,6 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   _firebaseCore = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFirebaseCoreInterface)];
 }
 
-
-# pragma mark - Firebase App methods
-
-
-/*UM_EXPORT_METHOD_AS(initializeAppDangerously,
-                    initializeAppDangerously:(NSDictionary *)config
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    FIRApp *existingApp = [FIRApp defaultApp];
-    if (existingApp && (![config[@"apiKey"] isEqualToString:existingApp.options.APIKey] ||
-                        ![config[@"appId"] isEqualToString:existingApp.options.googleAppID])) {
-      [existingApp deleteApp:^(BOOL success) {
-        [self initApp:config resolver:resolve rejecter:reject];
-      }];
-      
-    } else {
-      [self initApp:config resolver:resolve rejecter:reject];
-    }
-  }];
-}*/
-
-/*- (void)initApp:(NSDictionary *)options
-       resolver:(UMPromiseResolveBlock)resolve
-       rejecter:(UMPromiseRejectBlock)reject
-{
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    FIRApp *existingApp = [FIRApp defaultApp];
-    
-    if (!existingApp) {
-      FIROptions *firOptions = [EXFirebaseAnalytics firOptionsJSONToNative:options];
-      if (firOptions == nil) {
-          reject(@"ERR_FIREBASE_ANALYTICS", @"Failed to convert nil options to FIROptions.", nil);
-          return;
-      }
-      
-      firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-           
-      [FIRApp configureWithOptions:firOptions];
-    }
-    
-    resolve(@{@"result": @"success"});
-  }];
-}*/
-
 - (nullable FIRApp *)getAppOrReject:(UMPromiseRejectBlock)reject
 {
   if (!_firebaseCore) {
@@ -92,10 +47,13 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
     return nil;
   }
   FIRApp* defaultApp = [_firebaseCore defaultApp];
+  if (!defaultApp) {
+    reject(@"ERR_FIREBASE_ANALYTICS", @"Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled.", nil);
+    return nil;
+  }
   FIRApp* systemApp = [FIRApp defaultApp];
-  if (!defaultApp && !systemApp) {
-    // TODO - add error message for Expo client
-    reject(@"ERR_FIREBASE_ANALYTICS", @"The 'default' Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled.", nil);
+  if (!systemApp || ![systemApp.name isEqualToString:defaultApp.name]) {
+    reject(@"ERR_FIREBASE_ANALYTICS", @"Analytics events can only be logged for the default app.", nil);
     return nil;
   }
   return defaultApp;
