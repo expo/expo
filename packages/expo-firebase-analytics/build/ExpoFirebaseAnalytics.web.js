@@ -23,12 +23,6 @@ export default {
     get name() {
         return 'ExpoFirebaseAnalytics';
     },
-    async initializeAppDangerously(config) {
-        getFirebaseModule().initializeApp(config);
-    },
-    async deleteApp(config) {
-        getFirebaseModule().deleteApp(config);
-    },
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
      */
@@ -58,6 +52,12 @@ export default {
      */
     async setUserProperties(properties) {
         getAnalyticsModule().setUserProperties(properties);
+    },
+    /**
+     * No implementation on web
+     */
+    setUnavailabilityLogging(isEnabled) {
+        // nop
     },
 };
 //# sourceMappingURL=ExpoFirebaseAnalytics.web.js.map

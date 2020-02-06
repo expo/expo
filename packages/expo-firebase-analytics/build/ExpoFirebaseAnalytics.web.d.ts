@@ -1,11 +1,5 @@
 declare const _default: {
     readonly name: string;
-    initializeAppDangerously(config: {
-        [key: string]: any;
-    }): Promise<void>;
-    deleteApp(config: {
-        [key: string]: any;
-    }): Promise<void>;
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
      */
@@ -19,16 +13,20 @@ declare const _default: {
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
      */
-    setCurrentScreen(screenName: string, screenClassOverride?: string | undefined): Promise<void>;
+    setCurrentScreen(screenName?: string | undefined, screenClassOverride?: string | undefined): Promise<void>;
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
-    setUserId(userId: string): Promise<void>;
+    setUserId(userId: string | null): Promise<void>;
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-properties
      */
     setUserProperties(properties: {
         [key: string]: any;
     }): Promise<void>;
+    /**
+     * No implementation on web
+     */
+    setUnavailabilityLogging(isEnabled: boolean): void;
 };
 export default _default;

@@ -1,54 +1,11 @@
 import { UnavailabilityError } from '@unimodules/core';
-
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
-
-// import parseConfig from './parseConfig';
 
 if (!ExpoFirebaseAnalytics) {
   console.warn(
     "No native ExpoFirebaseAnalytics module found, are you sure the expo-firebase-analytics's module is linked properly?"
   );
 }
-
-type GoogleServicesConfig = { [key: string]: any };
-
-/**
- * Get the bundled Google Services config file.
- * This is useful for debugging if your app was built properly.
- */
-export function getBundledGoogleServicesConfig(): null | GoogleServicesConfig {
-  return ExpoFirebaseAnalytics.app || null;
-}
-
-/**
- * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
- * This can be used to test the native iOS Firebase app in the Expo client.
- * This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
- *
- * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
- */
-/*export async function initializeAppDangerously(
-  googleServices: GoogleServicesConfig
-): Promise<void> {
-  // @ts-ignore
-  if (global.__DEV__ !== true) {
-    console.warn('initializeAppDangerously should only be used in dev mode');
-  }
-  if (!ExpoFirebaseAnalytics.initializeAppDangerously) {
-    throw new UnavailabilityError('expo-firebase-analytics', 'initializeAppDangerously');
-  }
-  return await ExpoFirebaseAnalytics.initializeAppDangerously(parseConfig(googleServices));
-}*/
-
-/**
- * Delete the default Firebase app instance. If no default app is running then nothing happens.
- */
-/*export async function deleteDefaultApp(): Promise<void> {
-  if (!ExpoFirebaseAnalytics.deleteApp) {
-    throw new UnavailabilityError('expo-firebase-analytics', 'deleteApp');
-  }
-  return await ExpoFirebaseAnalytics.deleteApp();
-}*/
 
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
@@ -157,6 +114,7 @@ export async function setUserId(userId: string | null): Promise<void> {
   }
   return await ExpoFirebaseAnalytics.setUserId(userId);
 }
+
 /**
  * Sets a user property to a given value. Up to 25 user property names are supported. Once set,
  * user property values persist throughout the app life-cycle and across sessions.
@@ -176,6 +134,7 @@ export async function setUserId(userId: string | null): Promise<void> {
 export async function setUserProperty(name: string, value: string): Promise<void> {
   return await setUserProperties({ [name]: value });
 }
+
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
@@ -196,4 +155,22 @@ export async function setUserProperties(properties: { [key: string]: string }): 
     throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperties');
   }
   return await ExpoFirebaseAnalytics.setUserProperties(properties);
+}
+
+/**
+ * Enables or disables the warning and log messages when using
+ * Firebase Analytics on the Expo client.
+ *
+ * Firebase Analytics is not available on the Expo client and therefore
+ * logs the requests to the console for development purposes. To test
+ * Firebase Analytics, create a stand-alone build or custom client.
+ * Use this function to suppress the warning and log messages.
+ *
+ * @param properties key/value set of user properties
+ */
+export function setUnavailabilityLogging(isEnabled: boolean): void {
+  if (!ExpoFirebaseAnalytics.setUnavailabilityLogging) {
+    throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
+  }
+  return ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
 }

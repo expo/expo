@@ -23,12 +23,6 @@ export default {
   get name(): string {
     return 'ExpoFirebaseAnalytics';
   },
-  async initializeAppDangerously(config: { [key: string]: any }): Promise<void> {
-    getFirebaseModule().initializeApp(config);
-  },
-  async deleteApp(config: { [key: string]: any }): Promise<void> {
-    getFirebaseModule().deleteApp(config);
-  },
   /**
    * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#log-event
    */
@@ -44,13 +38,13 @@ export default {
   /**
    * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
    */
-  async setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void> {
+  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
     getAnalyticsModule().setCurrentScreen(screenName, screenClassOverride);
   },
   /**
    * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
    */
-  async setUserId(userId: string): Promise<void> {
+  async setUserId(userId: string | null): Promise<void> {
     getAnalyticsModule().setUserId(userId);
   },
   /**
@@ -58,5 +52,11 @@ export default {
    */
   async setUserProperties(properties: { [key: string]: any }): Promise<void> {
     getAnalyticsModule().setUserProperties(properties);
+  },
+  /**
+   * No implementation on web
+   */
+  setUnavailabilityLogging(isEnabled: boolean): void {
+    // nop
   },
 };

@@ -1,23 +1,3 @@
-declare type GoogleServicesConfig = {
-    [key: string]: any;
-};
-/**
- * Get the bundled Google Services config file.
- * This is useful for debugging if your app was built properly.
- */
-export declare function getBundledGoogleServicesConfig(): null | GoogleServicesConfig;
-/**
- * Similar to `firebase.initializeApp()` on web but works to start a native Firebase app while the app is running.
- * This can be used to test the native iOS Firebase app in the Expo client.
- * This method should not be used in production, instead the app should be bundled with the native Google Services files via the `app.json`.
- *
- * @param googleServices Platform specific Google Services file for starting a Firebase app during runtime
- */
-export declare function initializeAppDangerously(googleServices: GoogleServicesConfig): Promise<void>;
-/**
- * Delete the default Firebase app instance. If no default app is running then nothing happens.
- */
-export declare function deleteDefaultApp(): Promise<void>;
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
  * the same parameters. Up to 500 event names are supported. Using predefined events and/or
@@ -124,4 +104,15 @@ export declare function resetAnalyticsData(): Promise<void>;
 export declare function setUserProperties(properties: {
     [key: string]: string;
 }): Promise<void>;
-export {};
+/**
+ * Enables or disables the warning and log messages when using
+ * Firebase Analytics on the Expo client.
+ *
+ * Firebase Analytics is not available on the Expo client and therefore
+ * logs the requests to the console for development purposes. To test
+ * Firebase Analytics, create a stand-alone build or custom client.
+ * Use this function to suppress the warning and log messages.
+ *
+ * @param properties key/value set of user properties
+ */
+export declare function setUnavailabilityLogging(isEnabled: boolean): void;
