@@ -1292,6 +1292,10 @@ PODS:
   - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXFirebaseAnalytics (3.0.0):
+    - EXFirebaseCore
+    - Firebase/Core (= 6.14.0)
+    - UMCore
   - EXFirebaseCore (1.0.0):
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -2263,6 +2267,7 @@ DEPENDENCIES:
   - EXFacebook (from `../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
+  - EXFirebaseAnalytics (from `../packages/expo-firebase-analytics/ios`)
   - EXFirebaseCore (from `../packages/expo-firebase-core/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
@@ -3049,6 +3054,9 @@ EXTERNAL SOURCES:
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../packages/expo-file-system/ios"
+  EXFirebaseAnalytics:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-firebase-analytics/ios"
   EXFirebaseCore:
     :path: !ruby/object:Pathname
     path: "../packages/expo-firebase-core/ios"
