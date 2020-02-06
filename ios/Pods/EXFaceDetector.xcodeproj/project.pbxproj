@@ -7,94 +7,98 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00C7AE5904559C9BE3A1C8D762A6ACF3 /* EXFaceEncoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C4A802B731800DDBA25BDA7644FA341 /* EXFaceEncoder.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1CA886B3B4CFEE628A5D1F58519C7A0F /* EXFaceDetectorUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1184F7430C3361F035B10CD4BB8B25EC /* EXFaceDetectorUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		264CF6A5CDB43888BB5510E990AF0135 /* EXFaceDetectorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFDC1BDD7D192CA8CF90F7452A4890F /* EXFaceDetectorUtils.m */; };
-		481AE2EF79FF9522BFC57A321E066EBC /* EXFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C2ECEB87280E052805C55761D623CBB5 /* EXFaceDetectorModule.m */; };
-		4A71B17DE9E1495F890F9EB10C8DE623 /* EXFaceDetectorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A3D61145C221F768007DD276279BE2EB /* EXFaceDetectorManager.m */; };
-		523F43708BBA67768558A5B51851926F /* EXFaceEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C58AD94B2CA4F8D70DF3D1935BB12B2B /* EXFaceEncoder.m */; };
-		713160E27A08024D75A4B8F7B4FD13BC /* EXFaceDetectorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A3A41A74C180B4D656188E9F473F3A2C /* EXFaceDetectorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7DD50972855E33A7AD9E662A8A2D5539 /* EXFaceDetector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 83593F879680D09C8D7E5A8715CE7580 /* EXFaceDetector-dummy.m */; };
-		8A6379E49F49B567EFD63FC6658D1CE9 /* EXFaceDetector.h in Headers */ = {isa = PBXBuildFile; fileRef = 423B1BF448869B7DEA8AA2F542C7CCC9 /* EXFaceDetector.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		952A63B5D4E540D1559DE36C8E86A578 /* EXCSBufferOrientationCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = F80CD101589F4094411BF181B564A70B /* EXCSBufferOrientationCalculator.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		955C0F942288C7103EEDDA1DFC7B8C89 /* EXFaceDetectorAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E4900B6962AEDB17F7FB77EDC110E664 /* EXFaceDetectorAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9F2FF7A4F05A6F8C116AA47B470C7682 /* EXFaceDetectorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ED878AED471AA6B1FB72F866FE51823A /* EXFaceDetectorManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AEFE413BECA27567B7CCF66A54B07DF5 /* EXCSBufferOrientationCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = CBAE1D4AE37E0DB4E57F37FEF024B886 /* EXCSBufferOrientationCalculator.m */; };
-		C0E8B6548B8EE3B849E50DA565BF138B /* EXFaceDetectorManagerProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EAB7F1504F5137934B5E67629AB64A /* EXFaceDetectorManagerProvider.m */; };
-		DEAD2C144B87588C57CB2103A5D88C86 /* EXFaceDetectorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB2DEECC9A5DB48FE7482F6FC407FC3 /* EXFaceDetectorAppDelegate.m */; };
-		E65CE9CCA916CFD341DBB500C9757125 /* EXFaceDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 6ECC5CB9CDD59DFE4A41A3C4CB0514C9 /* EXFaceDetector.m */; };
-		EA32F3B650936F547B05F8C509AD2FAB /* EXFaceDetectorManagerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 8890DCF13BC8A46187D87C078A455583 /* EXFaceDetectorManagerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1F03F5B19243A754B26E5E8C20950723 /* EXFaceDetectorManagerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 330C17E491F6357C01A174253A2955AF /* EXFaceDetectorManagerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3BC732523F561FF18ED777B4B8CB127C /* EXFaceDetectorUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D86932AD0AA3CFE5AABACE74D5490D0E /* EXFaceDetectorUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3C016712237B50B468D0C68887F2B1E6 /* EXFaceDetector.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A75B57C380C483D6D09F70B99CA8E7 /* EXFaceDetector.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3EB856AA761EBF297386A80303506937 /* EXFaceDetectorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E628DD899CEFC71B39CEA3A8295BC29B /* EXFaceDetectorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3FF43261045D7609F6B9D1BE3D53CC4B /* EXFaceDetectorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CD2F5EBAE76D3A2A16B0783934E693 /* EXFaceDetectorManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		69970E0E071C4722EB7094D1BF0DB413 /* EXFaceDetectorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 407DE72E723AB39C4EE96AF03BA79BD7 /* EXFaceDetectorManager.m */; };
+		70C5845EBD9D67A715CD0504DE691188 /* EXFaceEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C765B68813501FE029B54EEE433B2B9 /* EXFaceEncoder.m */; };
+		7B8C0A03586B9F8ED1E37AAA6FE1BDF2 /* EXCSBufferOrientationCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D2C885B136A7A77EECFBF6FD6A823AE /* EXCSBufferOrientationCalculator.m */; };
+		9597F06BFF95E9EAB5AA66BDFD31C3C0 /* EXFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 657CD7B0BC4A645129BCE37625A648C4 /* EXFaceDetectorModule.m */; };
+		B384DED49D63FC7702A4F81C44F9E27B /* EXFaceDetector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E2CF3BF77DED2CF70C05108734CB5F2B /* EXFaceDetector-dummy.m */; };
+		C88115557A20BED6814DAE45E31CC49B /* EXFaceDetectorManagerProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE9E247009054856FB022A1B68DC2D1 /* EXFaceDetectorManagerProvider.m */; };
+		CC9CFEA1110D0489EFAA73B78BC1FC4D /* EXFaceEncoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 05943859C7C7F73E039AFCEB7329E1F3 /* EXFaceEncoder.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D445A9A0148C4EAA16EEB4D96C56147C /* EXCSBufferOrientationCalculator.h in Headers */ = {isa = PBXBuildFile; fileRef = FFA265130EF0BF5854DAF5ACCA409EA9 /* EXCSBufferOrientationCalculator.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DD5E5AA152A3BE001BEDEC67A1AC7B34 /* EXFaceDetectorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 442E62AF530F0DF403A6DDD9750DBD10 /* EXFaceDetectorUtils.m */; };
+		FD69A49713BD692CE12FDE713A63D7D1 /* EXFaceDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 846F1F8909078FDF8439CE208CBD9779 /* EXFaceDetector.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2D768B785F5A8DB55D8966D9BABAEF02 /* PBXContainerItemProxy */ = {
+		288C3EE99EDDAA4C49B3429C4536D21B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 083CA27B96D70E132CC9219176FB2C9D /* FirebaseMLVision.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 3D5358053745F186EF3299093007AD97;
-			remoteInfo = FirebaseMLVision;
-		};
-		58357724AF8AA0FA96D98C7F6963EC9A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84B742F4DABFC78F3291D2649D45277E /* Firebase.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
-			remoteInfo = Firebase;
-		};
-		600BE7A3B143305597777719129F406C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B52F57B9DDCBCE846632282A88BE333D /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		64A129AB1C1CB12859E7A502EC975DE8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C2422772C73A1B81427C1B4F99C72A48 /* UMFaceDetectorInterface.xcodeproj */;
+			containerPortal = FC74101B276CD38070D29D384304EB23 /* UMFaceDetectorInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
 			remoteInfo = UMFaceDetectorInterface;
 		};
-		8AD5EB01C83C51D448A7343FF533D057 /* PBXContainerItemProxy */ = {
+		397C5FFF5AC42ECAF6A9AD868C4E7F88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 52D3219EDDF2FBA51F101CAAAE223E51 /* FirebaseMLCommon.xcodeproj */;
+			containerPortal = B7382553163E82E265C3D16A94761FB4 /* FirebaseMLCommon.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 655B4D5DC1C1034B3458073E51ECD859;
 			remoteInfo = FirebaseMLCommon;
 		};
+		6785D72768DE4716892A48E2811C4ADF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23F2C1A7C266A41DE3A8C5AAF13F48BC /* FirebaseMLVision.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D5358053745F186EF3299093007AD97;
+			remoteInfo = FirebaseMLVision;
+		};
+		92E75DB263C34094B30AB487AA8FDB86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9DBB9545ACA86A8B1BCFA72F449A8115 /* Firebase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
+			remoteInfo = Firebase;
+		};
+		9A1E187EC370EBF359656E0A127CC28E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34DFDD36CD16F040D8AD52EECC904AE1 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		D39CC801966C6B615307CE5A83E1F558 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 71A01B0E448006E0B21584087541A50E /* EXFirebaseCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DCC8E69A56EE37BAFC3269F2C48FBBF8;
+			remoteInfo = EXFirebaseCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		083CA27B96D70E132CC9219176FB2C9D /* FirebaseMLVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVision; path = FirebaseMLVision.xcodeproj; sourceTree = "<group>"; };
-		0E2B41A26648A1F5C23334728DED16E0 /* EXFaceDetector-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFaceDetector-prefix.pch"; sourceTree = "<group>"; };
-		0EFDC1BDD7D192CA8CF90F7452A4890F /* EXFaceDetectorUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXFaceDetectorUtils.m; sourceTree = "<group>"; };
-		1184F7430C3361F035B10CD4BB8B25EC /* EXFaceDetectorUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXFaceDetectorUtils.h; sourceTree = "<group>"; };
-		13D0F9E103750C6A18A54FBE07225491 /* EXFaceDetector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFaceDetector.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		423B1BF448869B7DEA8AA2F542C7CCC9 /* EXFaceDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetector.h; path = EXFaceDetector/EXFaceDetector.h; sourceTree = "<group>"; };
-		4C4A802B731800DDBA25BDA7644FA341 /* EXFaceEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceEncoder.h; path = EXFaceDetector/EXFaceEncoder.h; sourceTree = "<group>"; };
-		52D3219EDDF2FBA51F101CAAAE223E51 /* FirebaseMLCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLCommon; path = FirebaseMLCommon.xcodeproj; sourceTree = "<group>"; };
-		6ECC5CB9CDD59DFE4A41A3C4CB0514C9 /* EXFaceDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetector.m; path = EXFaceDetector/EXFaceDetector.m; sourceTree = "<group>"; };
-		83593F879680D09C8D7E5A8715CE7580 /* EXFaceDetector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFaceDetector-dummy.m"; sourceTree = "<group>"; };
-		84B742F4DABFC78F3291D2649D45277E /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
-		87EAB7F1504F5137934B5E67629AB64A /* EXFaceDetectorManagerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorManagerProvider.m; path = EXFaceDetector/EXFaceDetectorManagerProvider.m; sourceTree = "<group>"; };
-		8890DCF13BC8A46187D87C078A455583 /* EXFaceDetectorManagerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorManagerProvider.h; path = EXFaceDetector/EXFaceDetectorManagerProvider.h; sourceTree = "<group>"; };
-		A3A41A74C180B4D656188E9F473F3A2C /* EXFaceDetectorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorModule.h; path = EXFaceDetector/EXFaceDetectorModule.h; sourceTree = "<group>"; };
-		A3D61145C221F768007DD276279BE2EB /* EXFaceDetectorManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorManager.m; path = EXFaceDetector/EXFaceDetectorManager.m; sourceTree = "<group>"; };
-		B419D132FC90286B5F480C398D9B3389 /* EXFaceDetector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFaceDetector.xcconfig; sourceTree = "<group>"; };
-		B52F57B9DDCBCE846632282A88BE333D /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		C2422772C73A1B81427C1B4F99C72A48 /* UMFaceDetectorInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFaceDetectorInterface; path = UMFaceDetectorInterface.xcodeproj; sourceTree = "<group>"; };
-		C2ECEB87280E052805C55761D623CBB5 /* EXFaceDetectorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorModule.m; path = EXFaceDetector/EXFaceDetectorModule.m; sourceTree = "<group>"; };
-		C58AD94B2CA4F8D70DF3D1935BB12B2B /* EXFaceEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceEncoder.m; path = EXFaceDetector/EXFaceEncoder.m; sourceTree = "<group>"; };
+		05943859C7C7F73E039AFCEB7329E1F3 /* EXFaceEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceEncoder.h; path = EXFaceDetector/EXFaceEncoder.h; sourceTree = "<group>"; };
+		23F2C1A7C266A41DE3A8C5AAF13F48BC /* FirebaseMLVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLVision; path = FirebaseMLVision.xcodeproj; sourceTree = "<group>"; };
+		330C17E491F6357C01A174253A2955AF /* EXFaceDetectorManagerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorManagerProvider.h; path = EXFaceDetector/EXFaceDetectorManagerProvider.h; sourceTree = "<group>"; };
+		34DFDD36CD16F040D8AD52EECC904AE1 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		407DE72E723AB39C4EE96AF03BA79BD7 /* EXFaceDetectorManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorManager.m; path = EXFaceDetector/EXFaceDetectorManager.m; sourceTree = "<group>"; };
+		442E62AF530F0DF403A6DDD9750DBD10 /* EXFaceDetectorUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXFaceDetectorUtils.m; sourceTree = "<group>"; };
+		4D2C885B136A7A77EECFBF6FD6A823AE /* EXCSBufferOrientationCalculator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCSBufferOrientationCalculator.m; path = EXFaceDetector/EXCSBufferOrientationCalculator.m; sourceTree = "<group>"; };
+		50A75B57C380C483D6D09F70B99CA8E7 /* EXFaceDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetector.h; path = EXFaceDetector/EXFaceDetector.h; sourceTree = "<group>"; };
+		53CD2F5EBAE76D3A2A16B0783934E693 /* EXFaceDetectorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorManager.h; path = EXFaceDetector/EXFaceDetectorManager.h; sourceTree = "<group>"; };
+		657CD7B0BC4A645129BCE37625A648C4 /* EXFaceDetectorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorModule.m; path = EXFaceDetector/EXFaceDetectorModule.m; sourceTree = "<group>"; };
+		71A01B0E448006E0B21584087541A50E /* EXFirebaseCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFirebaseCore; path = EXFirebaseCore.xcodeproj; sourceTree = "<group>"; };
+		8249AA5E3925DEE4F3A9E77D0172D9EE /* EXFaceDetector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFaceDetector.xcconfig; sourceTree = "<group>"; };
+		846F1F8909078FDF8439CE208CBD9779 /* EXFaceDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetector.m; path = EXFaceDetector/EXFaceDetector.m; sourceTree = "<group>"; };
+		8C765B68813501FE029B54EEE433B2B9 /* EXFaceEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceEncoder.m; path = EXFaceDetector/EXFaceEncoder.m; sourceTree = "<group>"; };
+		9149D3397FEAE12FA55A2431DBE2F37F /* EXFaceDetector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFaceDetector.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9DBB9545ACA86A8B1BCFA72F449A8115 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
+		B41E326331F314638C4D1FAB7CE71BF3 /* EXFaceDetector-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFaceDetector-prefix.pch"; sourceTree = "<group>"; };
+		B7382553163E82E265C3D16A94761FB4 /* FirebaseMLCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FirebaseMLCommon; path = FirebaseMLCommon.xcodeproj; sourceTree = "<group>"; };
 		C601928862152376D8099129842998BB /* libEXFaceDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFaceDetector.a; path = libEXFaceDetector.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		CBAE1D4AE37E0DB4E57F37FEF024B886 /* EXCSBufferOrientationCalculator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCSBufferOrientationCalculator.m; path = EXFaceDetector/EXCSBufferOrientationCalculator.m; sourceTree = "<group>"; };
-		DAB2DEECC9A5DB48FE7482F6FC407FC3 /* EXFaceDetectorAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorAppDelegate.m; path = EXFaceDetector/EXFaceDetectorAppDelegate.m; sourceTree = "<group>"; };
-		E4900B6962AEDB17F7FB77EDC110E664 /* EXFaceDetectorAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorAppDelegate.h; path = EXFaceDetector/EXFaceDetectorAppDelegate.h; sourceTree = "<group>"; };
-		ED878AED471AA6B1FB72F866FE51823A /* EXFaceDetectorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorManager.h; path = EXFaceDetector/EXFaceDetectorManager.h; sourceTree = "<group>"; };
-		F80CD101589F4094411BF181B564A70B /* EXCSBufferOrientationCalculator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCSBufferOrientationCalculator.h; path = EXFaceDetector/EXCSBufferOrientationCalculator.h; sourceTree = "<group>"; };
+		D86932AD0AA3CFE5AABACE74D5490D0E /* EXFaceDetectorUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXFaceDetectorUtils.h; sourceTree = "<group>"; };
+		E2CF3BF77DED2CF70C05108734CB5F2B /* EXFaceDetector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFaceDetector-dummy.m"; sourceTree = "<group>"; };
+		E628DD899CEFC71B39CEA3A8295BC29B /* EXFaceDetectorModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFaceDetectorModule.h; path = EXFaceDetector/EXFaceDetectorModule.h; sourceTree = "<group>"; };
+		FC74101B276CD38070D29D384304EB23 /* UMFaceDetectorInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFaceDetectorInterface; path = UMFaceDetectorInterface.xcodeproj; sourceTree = "<group>"; };
+		FFA265130EF0BF5854DAF5ACCA409EA9 /* EXCSBufferOrientationCalculator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCSBufferOrientationCalculator.h; path = EXFaceDetector/EXCSBufferOrientationCalculator.h; sourceTree = "<group>"; };
+		FFE9E247009054856FB022A1B68DC2D1 /* EXFaceDetectorManagerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFaceDetectorManagerProvider.m; path = EXFaceDetector/EXFaceDetectorManagerProvider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D37DA65C759B3C37C49CDE9CE189C5FD /* Frameworks */ = {
+		A1777EE04BAA324BF8C036EAEC841019 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -104,15 +108,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		09736613EDB8ED745535C42AC38A9F73 /* Support Files */ = {
+		0442905404CCCE5B2C3D54D8F5771655 /* EXFaceDetector */ = {
 			isa = PBXGroup;
 			children = (
-				B419D132FC90286B5F480C398D9B3389 /* EXFaceDetector.xcconfig */,
-				83593F879680D09C8D7E5A8715CE7580 /* EXFaceDetector-dummy.m */,
-				0E2B41A26648A1F5C23334728DED16E0 /* EXFaceDetector-prefix.pch */,
+				FFA265130EF0BF5854DAF5ACCA409EA9 /* EXCSBufferOrientationCalculator.h */,
+				4D2C885B136A7A77EECFBF6FD6A823AE /* EXCSBufferOrientationCalculator.m */,
+				50A75B57C380C483D6D09F70B99CA8E7 /* EXFaceDetector.h */,
+				846F1F8909078FDF8439CE208CBD9779 /* EXFaceDetector.m */,
+				53CD2F5EBAE76D3A2A16B0783934E693 /* EXFaceDetectorManager.h */,
+				407DE72E723AB39C4EE96AF03BA79BD7 /* EXFaceDetectorManager.m */,
+				330C17E491F6357C01A174253A2955AF /* EXFaceDetectorManagerProvider.h */,
+				FFE9E247009054856FB022A1B68DC2D1 /* EXFaceDetectorManagerProvider.m */,
+				E628DD899CEFC71B39CEA3A8295BC29B /* EXFaceDetectorModule.h */,
+				657CD7B0BC4A645129BCE37625A648C4 /* EXFaceDetectorModule.m */,
+				05943859C7C7F73E039AFCEB7329E1F3 /* EXFaceEncoder.h */,
+				8C765B68813501FE029B54EEE433B2B9 /* EXFaceEncoder.m */,
+				BC4356F8BFC13E17A1224CA3439B83A6 /* Pod */,
+				B0D42108D4A87F185F8ABBBB49EDDB02 /* Support Files */,
+				669311B450E4E189029997F6D141F35B /* Utilities */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXFaceDetector";
+			name = EXFaceDetector;
+			path = "../../packages/expo-face-detector/ios";
 			sourceTree = "<group>";
 		};
 		2F7F497DF4C47AB9E9236B074CC589AE /* Frameworks */ = {
@@ -122,14 +138,46 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		ACA368623EA5EBFAE49F06853BEDE45E /* Utilities */ = {
+		669311B450E4E189029997F6D141F35B /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				1184F7430C3361F035B10CD4BB8B25EC /* EXFaceDetectorUtils.h */,
-				0EFDC1BDD7D192CA8CF90F7452A4890F /* EXFaceDetectorUtils.m */,
+				D86932AD0AA3CFE5AABACE74D5490D0E /* EXFaceDetectorUtils.h */,
+				442E62AF530F0DF403A6DDD9750DBD10 /* EXFaceDetectorUtils.m */,
 			);
 			name = Utilities;
 			path = EXFaceDetector/Utilities;
+			sourceTree = "<group>";
+		};
+		89C07DB2F182B793411E40536A82DD49 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				71A01B0E448006E0B21584087541A50E /* EXFirebaseCore */,
+				9DBB9545ACA86A8B1BCFA72F449A8115 /* Firebase */,
+				B7382553163E82E265C3D16A94761FB4 /* FirebaseMLCommon */,
+				23F2C1A7C266A41DE3A8C5AAF13F48BC /* FirebaseMLVision */,
+				34DFDD36CD16F040D8AD52EECC904AE1 /* UMCore */,
+				FC74101B276CD38070D29D384304EB23 /* UMFaceDetectorInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		B0D42108D4A87F185F8ABBBB49EDDB02 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				8249AA5E3925DEE4F3A9E77D0172D9EE /* EXFaceDetector.xcconfig */,
+				E2CF3BF77DED2CF70C05108734CB5F2B /* EXFaceDetector-dummy.m */,
+				B41E326331F314638C4D1FAB7CE71BF3 /* EXFaceDetector-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXFaceDetector";
+			sourceTree = "<group>";
+		};
+		BC4356F8BFC13E17A1224CA3439B83A6 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				9149D3397FEAE12FA55A2431DBE2F37F /* EXFaceDetector.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		C0E6F06737EF3B00032E7E51BACA0649 /* Products */ = {
@@ -140,56 +188,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C7979B0BE87580AD3B36C154858F73FB /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				84B742F4DABFC78F3291D2649D45277E /* Firebase */,
-				52D3219EDDF2FBA51F101CAAAE223E51 /* FirebaseMLCommon */,
-				083CA27B96D70E132CC9219176FB2C9D /* FirebaseMLVision */,
-				B52F57B9DDCBCE846632282A88BE333D /* UMCore */,
-				C2422772C73A1B81427C1B4F99C72A48 /* UMFaceDetectorInterface */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
-		CA4123F610E588337A137CDE56DD8A91 /* EXFaceDetector */ = {
-			isa = PBXGroup;
-			children = (
-				F80CD101589F4094411BF181B564A70B /* EXCSBufferOrientationCalculator.h */,
-				CBAE1D4AE37E0DB4E57F37FEF024B886 /* EXCSBufferOrientationCalculator.m */,
-				423B1BF448869B7DEA8AA2F542C7CCC9 /* EXFaceDetector.h */,
-				6ECC5CB9CDD59DFE4A41A3C4CB0514C9 /* EXFaceDetector.m */,
-				E4900B6962AEDB17F7FB77EDC110E664 /* EXFaceDetectorAppDelegate.h */,
-				DAB2DEECC9A5DB48FE7482F6FC407FC3 /* EXFaceDetectorAppDelegate.m */,
-				ED878AED471AA6B1FB72F866FE51823A /* EXFaceDetectorManager.h */,
-				A3D61145C221F768007DD276279BE2EB /* EXFaceDetectorManager.m */,
-				8890DCF13BC8A46187D87C078A455583 /* EXFaceDetectorManagerProvider.h */,
-				87EAB7F1504F5137934B5E67629AB64A /* EXFaceDetectorManagerProvider.m */,
-				A3A41A74C180B4D656188E9F473F3A2C /* EXFaceDetectorModule.h */,
-				C2ECEB87280E052805C55761D623CBB5 /* EXFaceDetectorModule.m */,
-				4C4A802B731800DDBA25BDA7644FA341 /* EXFaceEncoder.h */,
-				C58AD94B2CA4F8D70DF3D1935BB12B2B /* EXFaceEncoder.m */,
-				F0C26ED8AD5956F636681E8A5C1243FD /* Pod */,
-				09736613EDB8ED745535C42AC38A9F73 /* Support Files */,
-				ACA368623EA5EBFAE49F06853BEDE45E /* Utilities */,
-			);
-			name = EXFaceDetector;
-			path = "../../packages/expo-face-detector/ios";
-			sourceTree = "<group>";
-		};
-		F0C26ED8AD5956F636681E8A5C1243FD /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				13D0F9E103750C6A18A54FBE07225491 /* EXFaceDetector.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		FAD84AA731521F916A8D1DA7A146545E = {
 			isa = PBXGroup;
 			children = (
-				C7979B0BE87580AD3B36C154858F73FB /* Dependencies */,
-				CA4123F610E588337A137CDE56DD8A91 /* EXFaceDetector */,
+				89C07DB2F182B793411E40536A82DD49 /* Dependencies */,
+				0442905404CCCE5B2C3D54D8F5771655 /* EXFaceDetector */,
 				2F7F497DF4C47AB9E9236B074CC589AE /* Frameworks */,
 				C0E6F06737EF3B00032E7E51BACA0649 /* Products */,
 			);
@@ -198,18 +201,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		BB3E1D1F98E6B2381BF13EE1AB5685C7 /* Headers */ = {
+		FB98B69633D2A09E33A61E24BA212969 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				952A63B5D4E540D1559DE36C8E86A578 /* EXCSBufferOrientationCalculator.h in Headers */,
-				8A6379E49F49B567EFD63FC6658D1CE9 /* EXFaceDetector.h in Headers */,
-				955C0F942288C7103EEDDA1DFC7B8C89 /* EXFaceDetectorAppDelegate.h in Headers */,
-				9F2FF7A4F05A6F8C116AA47B470C7682 /* EXFaceDetectorManager.h in Headers */,
-				EA32F3B650936F547B05F8C509AD2FAB /* EXFaceDetectorManagerProvider.h in Headers */,
-				713160E27A08024D75A4B8F7B4FD13BC /* EXFaceDetectorModule.h in Headers */,
-				1CA886B3B4CFEE628A5D1F58519C7A0F /* EXFaceDetectorUtils.h in Headers */,
-				00C7AE5904559C9BE3A1C8D762A6ACF3 /* EXFaceEncoder.h in Headers */,
+				D445A9A0148C4EAA16EEB4D96C56147C /* EXCSBufferOrientationCalculator.h in Headers */,
+				3C016712237B50B468D0C68887F2B1E6 /* EXFaceDetector.h in Headers */,
+				3FF43261045D7609F6B9D1BE3D53CC4B /* EXFaceDetectorManager.h in Headers */,
+				1F03F5B19243A754B26E5E8C20950723 /* EXFaceDetectorManagerProvider.h in Headers */,
+				3EB856AA761EBF297386A80303506937 /* EXFaceDetectorModule.h in Headers */,
+				3BC732523F561FF18ED777B4B8CB127C /* EXFaceDetectorUtils.h in Headers */,
+				CC9CFEA1110D0489EFAA73B78BC1FC4D /* EXFaceEncoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,20 +220,21 @@
 /* Begin PBXNativeTarget section */
 		E3D1D7C85F27952DD8B1371AFE371A98 /* EXFaceDetector */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B8633B78C362DBF8114006B1B4F5C4D9 /* Build configuration list for PBXNativeTarget "EXFaceDetector" */;
+			buildConfigurationList = 579E8FD150C5C4A580397D334E440999 /* Build configuration list for PBXNativeTarget "EXFaceDetector" */;
 			buildPhases = (
-				BB3E1D1F98E6B2381BF13EE1AB5685C7 /* Headers */,
-				8E4C283DF705202B83E18B2C6DFBEB75 /* Sources */,
-				D37DA65C759B3C37C49CDE9CE189C5FD /* Frameworks */,
+				FB98B69633D2A09E33A61E24BA212969 /* Headers */,
+				11DB496CB6F28236FA74230A5C94B3BE /* Sources */,
+				A1777EE04BAA324BF8C036EAEC841019 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				120376F2250464914FBD67BB4896B5D0 /* PBXTargetDependency */,
-				8470A2D05267CBD1B691AB7F0457B956 /* PBXTargetDependency */,
-				662D858000F0E2802FBC380A2C483721 /* PBXTargetDependency */,
-				2F02832081DCC286DDC234FBED3F9939 /* PBXTargetDependency */,
-				A961E70F4586EB8574290A653F3CBC34 /* PBXTargetDependency */,
+				11A3BA06620A1FA5287465BEF1C8A3C2 /* PBXTargetDependency */,
+				27A2F5A42E81776819FE38AE7297C09F /* PBXTargetDependency */,
+				9EFAD48887B8D56F7AC4E8EED6E5C8E1 /* PBXTargetDependency */,
+				BB7E0396A375A860DEAA45BBE6E0DCBF /* PBXTargetDependency */,
+				AFBBC0424EF3851FBE41B344E2472E6D /* PBXTargetDependency */,
+				116253A6AF7D702CBC5BBB5B9183EF7A /* PBXTargetDependency */,
 			);
 			name = EXFaceDetector;
 			productName = EXFaceDetector;
@@ -260,19 +263,22 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = B52F57B9DDCBCE846632282A88BE333D /* UMCore */;
+					ProjectRef = 34DFDD36CD16F040D8AD52EECC904AE1 /* UMCore */;
 				},
 				{
-					ProjectRef = C2422772C73A1B81427C1B4F99C72A48 /* UMFaceDetectorInterface */;
+					ProjectRef = FC74101B276CD38070D29D384304EB23 /* UMFaceDetectorInterface */;
 				},
 				{
-					ProjectRef = 84B742F4DABFC78F3291D2649D45277E /* Firebase */;
+					ProjectRef = 9DBB9545ACA86A8B1BCFA72F449A8115 /* Firebase */;
 				},
 				{
-					ProjectRef = 083CA27B96D70E132CC9219176FB2C9D /* FirebaseMLVision */;
+					ProjectRef = 23F2C1A7C266A41DE3A8C5AAF13F48BC /* FirebaseMLVision */;
 				},
 				{
-					ProjectRef = 52D3219EDDF2FBA51F101CAAAE223E51 /* FirebaseMLCommon */;
+					ProjectRef = B7382553163E82E265C3D16A94761FB4 /* FirebaseMLCommon */;
+				},
+				{
+					ProjectRef = 71A01B0E448006E0B21584087541A50E /* EXFirebaseCore */;
 				},
 			);
 			projectRoot = "";
@@ -283,49 +289,53 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8E4C283DF705202B83E18B2C6DFBEB75 /* Sources */ = {
+		11DB496CB6F28236FA74230A5C94B3BE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AEFE413BECA27567B7CCF66A54B07DF5 /* EXCSBufferOrientationCalculator.m in Sources */,
-				7DD50972855E33A7AD9E662A8A2D5539 /* EXFaceDetector-dummy.m in Sources */,
-				E65CE9CCA916CFD341DBB500C9757125 /* EXFaceDetector.m in Sources */,
-				DEAD2C144B87588C57CB2103A5D88C86 /* EXFaceDetectorAppDelegate.m in Sources */,
-				4A71B17DE9E1495F890F9EB10C8DE623 /* EXFaceDetectorManager.m in Sources */,
-				C0E8B6548B8EE3B849E50DA565BF138B /* EXFaceDetectorManagerProvider.m in Sources */,
-				481AE2EF79FF9522BFC57A321E066EBC /* EXFaceDetectorModule.m in Sources */,
-				264CF6A5CDB43888BB5510E990AF0135 /* EXFaceDetectorUtils.m in Sources */,
-				523F43708BBA67768558A5B51851926F /* EXFaceEncoder.m in Sources */,
+				7B8C0A03586B9F8ED1E37AAA6FE1BDF2 /* EXCSBufferOrientationCalculator.m in Sources */,
+				B384DED49D63FC7702A4F81C44F9E27B /* EXFaceDetector-dummy.m in Sources */,
+				FD69A49713BD692CE12FDE713A63D7D1 /* EXFaceDetector.m in Sources */,
+				69970E0E071C4722EB7094D1BF0DB413 /* EXFaceDetectorManager.m in Sources */,
+				C88115557A20BED6814DAE45E31CC49B /* EXFaceDetectorManagerProvider.m in Sources */,
+				9597F06BFF95E9EAB5AA66BDFD31C3C0 /* EXFaceDetectorModule.m in Sources */,
+				DD5E5AA152A3BE001BEDEC67A1AC7B34 /* EXFaceDetectorUtils.m in Sources */,
+				70C5845EBD9D67A715CD0504DE691188 /* EXFaceEncoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		120376F2250464914FBD67BB4896B5D0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firebase;
-			targetProxy = 58357724AF8AA0FA96D98C7F6963EC9A /* PBXContainerItemProxy */;
-		};
-		2F02832081DCC286DDC234FBED3F9939 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 600BE7A3B143305597777719129F406C /* PBXContainerItemProxy */;
-		};
-		662D858000F0E2802FBC380A2C483721 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseMLVision;
-			targetProxy = 2D768B785F5A8DB55D8966D9BABAEF02 /* PBXContainerItemProxy */;
-		};
-		8470A2D05267CBD1B691AB7F0457B956 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FirebaseMLCommon;
-			targetProxy = 8AD5EB01C83C51D448A7343FF533D057 /* PBXContainerItemProxy */;
-		};
-		A961E70F4586EB8574290A653F3CBC34 /* PBXTargetDependency */ = {
+		116253A6AF7D702CBC5BBB5B9183EF7A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFaceDetectorInterface;
-			targetProxy = 64A129AB1C1CB12859E7A502EC975DE8 /* PBXContainerItemProxy */;
+			targetProxy = 288C3EE99EDDAA4C49B3429C4536D21B /* PBXContainerItemProxy */;
+		};
+		11A3BA06620A1FA5287465BEF1C8A3C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXFirebaseCore;
+			targetProxy = D39CC801966C6B615307CE5A83E1F558 /* PBXContainerItemProxy */;
+		};
+		27A2F5A42E81776819FE38AE7297C09F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Firebase;
+			targetProxy = 92E75DB263C34094B30AB487AA8FDB86 /* PBXContainerItemProxy */;
+		};
+		9EFAD48887B8D56F7AC4E8EED6E5C8E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseMLCommon;
+			targetProxy = 397C5FFF5AC42ECAF6A9AD868C4E7F88 /* PBXContainerItemProxy */;
+		};
+		AFBBC0424EF3851FBE41B344E2472E6D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 9A1E187EC370EBF359656E0A127CC28E /* PBXContainerItemProxy */;
+		};
+		BB7E0396A375A860DEAA45BBE6E0DCBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FirebaseMLVision;
+			targetProxy = 6785D72768DE4716892A48E2811C4ADF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -394,9 +404,33 @@
 			};
 			name = Debug;
 		};
-		4576D8F34910B544DCB13A9A0222E0D9 /* Release */ = {
+		51BD1B483C38FF4DF3051C6F0D8E661D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B419D132FC90286B5F480C398D9B3389 /* EXFaceDetector.xcconfig */;
+			baseConfigurationReference = 8249AA5E3925DEE4F3A9E77D0172D9EE /* EXFaceDetector.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFaceDetector/EXFaceDetector-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFaceDetector;
+				PRODUCT_NAME = EXFaceDetector;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		85BF147A60FC7B2463FE65D62F2EFF2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8249AA5E3925DEE4F3A9E77D0172D9EE /* EXFaceDetector.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -479,38 +513,14 @@
 			};
 			name = Release;
 		};
-		B6F1C70AD646BDF2BFF9503DCDDCF7C9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B419D132FC90286B5F480C398D9B3389 /* EXFaceDetector.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFaceDetector/EXFaceDetector-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFaceDetector;
-				PRODUCT_NAME = EXFaceDetector;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B8633B78C362DBF8114006B1B4F5C4D9 /* Build configuration list for PBXNativeTarget "EXFaceDetector" */ = {
+		579E8FD150C5C4A580397D334E440999 /* Build configuration list for PBXNativeTarget "EXFaceDetector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B6F1C70AD646BDF2BFF9503DCDDCF7C9 /* Debug */,
-				4576D8F34910B544DCB13A9A0222E0D9 /* Release */,
+				51BD1B483C38FF4DF3051C6F0D8E661D /* Debug */,
+				85BF147A60FC7B2463FE65D62F2EFF2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
