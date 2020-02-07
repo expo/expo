@@ -1,3 +1,3 @@
-import { ComponentType } from 'react';
+import React from 'react';
 import { TextProps } from '../primitives/Text';
-export declare const A: ComponentType<TextProps>;
+export declare const A: React.ComponentType<TextProps>;

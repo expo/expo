@@ -109,6 +109,20 @@ function App() {
 }
 ```
 
+## Text
+
+### P
+
+Renders a `Text` everywhere. Style is slightly modified to match web.
+
+```tsx
+import { P } from '@expo/html-elements';
+
+function App() {
+    return <P>Hello</P>
+}
+```
+
 # TODO
 
 - Support more HTML elements.

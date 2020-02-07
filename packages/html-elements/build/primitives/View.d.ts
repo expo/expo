@@ -1,6 +1,6 @@
-import { ComponentProps, ComponentType } from 'react';
-import { View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
-declare type NativeViewProps = ComponentProps<typeof NativeView> & React.ClassAttributes<typeof NativeView>;
+import { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import { View as NativeView, RegisteredStyle, RecursiveArray, ViewStyle as NativeViewStyle } from 'react-native';
+declare type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view
  */
@@ -112,9 +112,9 @@ export interface WebViewStyle {
 }
 export declare type ViewStyle = NativeViewStyle & WebViewStyle;
 export declare type WebViewProps = {
-    style?: ViewStyle;
+    style?: false | ViewStyle | RegisteredStyle<ViewStyle> | RecursiveArray<false | ViewStyle | RegisteredStyle<ViewStyle> | null | undefined> | null;
     accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
 };
-export declare type ViewProps = WebViewProps & Omit<NativeViewProps, 'accessibilityRole'>;
+export declare type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
 declare const View: ComponentType<ViewProps>;
 export default View;

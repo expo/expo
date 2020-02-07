@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders P 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+    }
+  }
+>
+  demo
+</div>
+`;

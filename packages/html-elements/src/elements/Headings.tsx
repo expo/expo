@@ -11,7 +11,7 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
     },
     default: {},
   });
-  return forwardRef((props: TextProps, ref?: ClassAttributes<typeof Text>['ref']) => {
+  return forwardRef((props: TextProps, ref) => {
     return (
       <Text
         {...nativeProps}
@@ -21,7 +21,7 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
         ref={ref}
       />
     );
-  });
+  }) as ComponentType<TextProps>;
 }
 
 export const H1 = createHeadingComponent(1);
