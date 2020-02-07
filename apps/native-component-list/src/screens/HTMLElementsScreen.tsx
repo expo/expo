@@ -13,11 +13,37 @@ import {
   I,
   Main,
   P,
-  Section,
   S,
+  Section,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  Caption,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
+
+function TableComponent() {
+  return (
+    <Table>
+      <Caption>Caption</Caption>
+      <Thead>
+        <Tr>
+          <Th colSpan={2}>The table header</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        <Tr>
+          <Td>The table body</Td>
+          <Td>with two columns</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+}
 
 export default class HTMLScreen extends React.Component {
   static navigationOptions = {
@@ -43,6 +69,7 @@ export default class HTMLScreen extends React.Component {
           <I>Italic in Main</I>
         </Main>
         <Article>
+          <TableComponent />
           <A href="https://expo.io/" target="_blank">
             Anchor in Article
           </A>

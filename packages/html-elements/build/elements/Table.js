@@ -1,0 +1,47 @@
+import React, { forwardRef } from 'react';
+import { StyleSheet } from 'react-native';
+import View from '../primitives/View';
+import Text from '../primitives/Text';
+import { TableText } from '../primitives/Table';
+import { em } from '../css/units';
+export const Table = forwardRef((props, ref) => {
+    return <View {...props} ref={ref}/>;
+});
+export const Thead = forwardRef((props, ref) => {
+    return <View {...props} ref={ref}/>;
+});
+export const Tbody = forwardRef((props, ref) => {
+    return <View {...props} ref={ref}/>;
+});
+export const Th = forwardRef((props, ref) => {
+    return <TableText {...props} style={[styles.th, props.style]} ref={ref}/>;
+});
+export const Tr = forwardRef((props, ref) => {
+    return <View {...props} style={[styles.tr, props.style]} ref={ref}/>;
+});
+export const Td = forwardRef((props, ref) => {
+    return <TableText {...props} style={[styles.td, props.style]} ref={ref}/>;
+});
+export const Caption = forwardRef((props, ref) => {
+    return <Text {...props} style={[styles.caption, props.style]} ref={ref}/>;
+});
+const styles = StyleSheet.create({
+    caption: {
+        textAlign: 'center',
+        fontSize: em(1),
+    },
+    th: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        flex: 1,
+        fontSize: em(1),
+    },
+    tr: {
+        flexDirection: 'row',
+    },
+    td: {
+        flex: 1,
+        fontSize: em(1),
+    },
+});
+//# sourceMappingURL=Table.js.map

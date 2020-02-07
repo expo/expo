@@ -1,0 +1,11 @@
+import { ComponentType } from 'react';
+import { TableTextProps } from '../primitives/Table';
+import { ViewProps } from '../primitives/View';
+import { TextProps } from '../primitives/Text';
+export declare const Table: ComponentType<ViewProps>;
+export declare const Thead: ComponentType<ViewProps>;
+export declare const Tbody: ComponentType<ViewProps>;
+export declare const Th: ComponentType<TableTextProps>;
+export declare const Tr: ComponentType<ViewProps>;
+export declare const Td: ComponentType<TableTextProps>;
+export declare const Caption: ComponentType<TextProps>;

@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Caption 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 32,
+      "textAlign": "center",
+    }
+  }
+>
+  Caption
+</Text>
+`;
+
+exports[`renders Table 1`] = `<View />`;
+
+exports[`renders Tbody 1`] = `<View />`;
+
+exports[`renders Td 1`] = `
+<Text
+  style={
+    Object {
+      "flex": 1,
+      "fontSize": 32,
+    }
+  }
+>
+  Column
+</Text>
+`;
+
+exports[`renders Th 1`] = `
+<Text
+  style={
+    Object {
+      "flex": 1,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "textAlign": "center",
+    }
+  }
+>
+  Header
+</Text>
+`;
+
+exports[`renders Thead 1`] = `<View />`;
+
+exports[`renders Tr 1`] = `
+<View
+  style={
+    Object {
+      "flexDirection": "row",
+    }
+  }
+/>
+`;

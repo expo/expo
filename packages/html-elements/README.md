@@ -131,6 +131,13 @@ function App() {
 }
 ```
 
+Alternative elements:
+
+```tsx
+import { Strong, Strike, Em } from '@expo/html-elements';
+```
+
+
 ## Rules
 
 ### Hr
@@ -149,10 +156,33 @@ function App() {
 }
 ```
 
-Alternative elements:
+## Tables
+
+Create tables universally. `colSpan` and `rowSpan` are currently web-only. Each element renders to the expected type on web.
+- `padding` is removed from all table elements.
+- Text can only be rendered in `Th` and `Td` on mobile.
 
 ```tsx
-import { Strong, Strike, Em } from '@expo/html-elements';
+import { Table, Thead, Th, Tbody, Tr, Td, Caption } from '@expo/html-elements';
+
+function App() {
+    return (
+       <Table>
+            <Caption>Caption</Caption>
+            <Thead>
+                <Tr>
+                    <Th colSpan="2">The table header</Th>
+                </Tr>
+            </Thead>
+            <Tbody>
+                <Tr>
+                    <Td>The table body</Td>
+                    <Td>with two columns</Td>
+                </Tr>
+            </Tbody>
+        </Table>
+    )
+}
 ```
 
 # TODO

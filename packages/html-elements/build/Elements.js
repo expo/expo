@@ -7,4 +7,5 @@ export * from './elements/Section';
 export * from './elements/Footer';
 export * from './elements/Text';
 export * from './elements/Rules';
+export * from './elements/Table';
 //# sourceMappingURL=Elements.js.map
