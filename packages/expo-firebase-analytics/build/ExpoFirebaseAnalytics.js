@@ -31,7 +31,7 @@ function callAnalyticsModule(funcName, ...args) {
         return;
     }
     // Make the call
-    return ExpoFirebaseAnalytics[funcName].apply(ExpoFirebaseAnalytics, ...args);
+    return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
 }
 export default {
     get name() {
