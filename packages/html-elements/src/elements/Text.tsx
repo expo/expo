@@ -12,12 +12,17 @@ export const B = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.b, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Strike = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.strike, style]} ref={ref} />;
+export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <P {...props} style={[styles.s, style]} ref={ref} />;
+}) as ComponentType<TextProps>;
+
+export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const Strong = B;
-export const S = Strike;
+export const Strike = S;
+export const Em = I;
 
 const styles = StyleSheet.create({
   p: {
@@ -27,8 +32,11 @@ const styles = StyleSheet.create({
   b: {
     fontWeight: 'bold',
   },
-  strike: {
+  s: {
     textDecorationLine: 'line-through',
     textDecorationStyle: 'solid',
+  },
+  i: {
+    fontStyle: 'italic',
   },
 });

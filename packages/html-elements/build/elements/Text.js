@@ -8,11 +8,15 @@ export const P = forwardRef(({ style, ...props }, ref) => {
 export const B = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.b, style]} ref={ref}/>;
 });
-export const Strike = forwardRef(({ style, ...props }, ref) => {
-    return <P {...props} style={[styles.strike, style]} ref={ref}/>;
+export const S = forwardRef(({ style, ...props }, ref) => {
+    return <P {...props} style={[styles.s, style]} ref={ref}/>;
+});
+export const I = forwardRef(({ style, ...props }, ref) => {
+    return <P {...props} style={[styles.i, style]} ref={ref}/>;
 });
 export const Strong = B;
-export const S = Strike;
+export const Strike = S;
+export const Em = I;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),
@@ -21,9 +25,12 @@ const styles = StyleSheet.create({
     b: {
         fontWeight: 'bold',
     },
-    strike: {
+    s: {
         textDecorationLine: 'line-through',
         textDecorationStyle: 'solid',
+    },
+    i: {
+        fontStyle: 'italic',
     },
 });
 //# sourceMappingURL=Text.js.map

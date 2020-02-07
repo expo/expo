@@ -10,10 +10,11 @@ import {
   H5,
   H6,
   Header,
+  I,
   Main,
   P,
   Section,
-  Strike,
+  S,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
@@ -38,14 +39,16 @@ export default class HTMLScreen extends React.Component {
         <Section>
           <B>Bold in Section</B>
         </Section>
-        <Main />
+        <Main>
+          <I>Italic in Main</I>
+        </Main>
         <Article>
           <A href="https://expo.io/" target="_blank">
             Anchor in Article
           </A>
         </Article>
         <Footer>
-          <Strike>Strike in Footer</Strike>
+          <S>Strike in Footer</S>
         </Footer>
       </View>
     );

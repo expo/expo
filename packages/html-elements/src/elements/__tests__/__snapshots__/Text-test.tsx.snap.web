@@ -17,6 +17,23 @@ exports[`renders B 1`] = `
 </div>
 `;
 
+exports[`renders I 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "fontSize": "1em",
+      "fontStyle": "italic",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+    }
+  }
+>
+  demo
+</div>
+`;
+
 exports[`renders P 1`] = `
 <div
   className="css-text-901oao"
@@ -26,6 +43,25 @@ exports[`renders P 1`] = `
       "fontSize": "1em",
       "marginBottom": "1em",
       "marginTop": "1em",
+    }
+  }
+>
+  demo
+</div>
+`;
+
+exports[`renders S 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "WebkitTextDecorationStyle": "solid",
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+      "textDecoration": "line-through",
+      "textDecorationStyle": "solid",
     }
   }
 >
