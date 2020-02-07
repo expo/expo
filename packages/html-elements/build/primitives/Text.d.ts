@@ -18,12 +18,16 @@ export interface WebTextStyle {
     wordWrap?: string;
 }
 export declare type TextStyle = NativeTextStyle & WebTextStyle;
-export interface WebTextProps {
+export declare type WebTextProps = {
     /** @platform web */
     tabIndex?: number;
     /** @platform web */
     style?: TextStyle;
-}
-export declare type TextProps = NativeTextProps & WebTextProps;
+    /** @platform web */
+    href?: string;
+    /** @platform web */
+    target?: string;
+};
+export declare type TextProps = WebTextProps & NativeTextProps;
 declare const Text: ComponentType<TextProps>;
 export default Text;

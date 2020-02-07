@@ -24,14 +24,18 @@ export interface WebTextStyle {
 
 export type TextStyle = NativeTextStyle & WebTextStyle;
 
-export interface WebTextProps {
+export type WebTextProps = {
   /** @platform web */
   tabIndex?: number;
   /** @platform web */
   style?: TextStyle;
-}
+  /** @platform web */
+  href?: string;
+  /** @platform web */
+  target?: string;
+};
 
-export type TextProps = NativeTextProps & WebTextProps;
+export type TextProps = WebTextProps & NativeTextProps;
 
 const Text = NativeText as ComponentType<TextProps>;
 

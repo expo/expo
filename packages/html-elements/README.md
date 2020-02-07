@@ -8,6 +8,7 @@ For instance rendering an HTML `<footer />` element requires platform specific c
 - Every component excepts styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no need to monkey patching types.
 - This package is completely side-effect free!
+- Components are tested with `jest-expo-enzyme`.
 
 ## Setup
 
@@ -31,6 +32,18 @@ Header elements will use the expected font size and margins from web universally
 
 ```tsx
 import { H1, H2, H3, H4, H5, H6 } from '@expo/html-elements';
+```
+
+## Link
+
+You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`. The style is fully normalized with no special modifications made to it.
+
+```tsx
+import { A } from '@expo/html-elements';
+
+function App() {
+    return <A href="#" target="_blank" />
+}
 ```
 
 # TODO
