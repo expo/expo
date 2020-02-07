@@ -6588,13 +6588,13 @@ CACHE_KEYS:
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
       EXImageLoader: ff130239ac953a821bd3d528b6f13828
-    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    CHECKSUM: a51959b71e533a9692ea1e0be0a035a18909255d
     FILES:
       - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
     PROJECT_NAME: EXImageLoader
     SPECS:
-      - EXImageLoader (1.0.0)
+      - EXImageLoader (1.0.0-rc.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 5d68aa0d6f2a7fdd838a8783136b6a40
