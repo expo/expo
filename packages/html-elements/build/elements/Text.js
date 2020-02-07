@@ -8,6 +8,7 @@ export const P = forwardRef(({ style, ...props }, ref) => {
 export const B = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.b, style]} ref={ref}/>;
 });
+export const Strong = B;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),

@@ -12,6 +12,8 @@ export const B = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.b, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
+export const Strong = B;
+
 const styles = StyleSheet.create({
   p: {
     marginVertical: em(1),
