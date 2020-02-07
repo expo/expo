@@ -113,7 +113,7 @@ export interface WebViewStyle {
 export declare type ViewStyle = NativeViewStyle & WebViewStyle;
 export declare type WebViewProps = {
     style?: ViewStyle;
-    accessibilityRole?: 'article' | 'banner' | NativeViewProps['accessibilityRole'];
+    accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
 };
 export declare type ViewProps = WebViewProps & Omit<NativeViewProps, 'accessibilityRole'>;
 declare const View: ComponentType<ViewProps>;

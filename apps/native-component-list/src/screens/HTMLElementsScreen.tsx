@@ -1,4 +1,4 @@
-import { A, Article, H1, H2, H3, H4, H5, H6, Header } from '@expo/html-elements';
+import { A, Article, H1, H2, H3, H4, H5, H6, Header, Main } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -17,6 +17,7 @@ export default class HTMLScreen extends React.Component {
         <H5>Header 5</H5>
         <H6>Header 6</H6>
         <Header />
+        <Main />
         <Article>
           <A href="https://expo.io/" target="_blank">
             Anchor in Article

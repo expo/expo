@@ -61,6 +61,18 @@ function App() {
 }
 ```
 
+### Main
+
+Renders a `<main />` on web with aria set to `main` and a `View` with no aria set on mobile. This requires a non-universal `accessibilityRole` internally.
+
+```tsx
+import { Main } from '@expo/html-elements';
+
+function App() {
+    return <Main />
+}
+```
+
 ### Article
 
 Renders an `<article />` on web and a `View` everywhere else. This requires a non-universal `accessibilityRole` internally.

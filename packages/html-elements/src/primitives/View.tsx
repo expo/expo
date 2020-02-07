@@ -119,7 +119,7 @@ export type ViewStyle = NativeViewStyle & WebViewStyle;
 
 export type WebViewProps = {
   style?: ViewStyle;
-  accessibilityRole?: 'article' | 'banner' | NativeViewProps['accessibilityRole'];
+  accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
 };
 
 export type ViewProps = WebViewProps & Omit<NativeViewProps, 'accessibilityRole'>;
