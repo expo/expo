@@ -20,12 +20,13 @@ export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Br = forwardRef((props: TextProps, ref) => {
-  return <Text children="\n" {...props} ref={ref} />;
+export const Br = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <Text {...props} style={[styles.br, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Code = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.code, style]} ref={ref} />;
+// TODO: Lazy load mono font on native
+export const Code = forwardRef((props: TextProps, ref) => {
+  return <Text {...props} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const Strong = B;
@@ -33,19 +34,16 @@ export const Strike = S;
 export const Em = I;
 
 const styles = StyleSheet.create({
-  code: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 4,
-    backgroundColor: '#f5f5f5',
-  },
   p: {
     marginVertical: em(1),
     fontSize: em(1),
   },
   b: {
     fontWeight: 'bold',
+  },
+  br: {
+    width: 0,
+    height: 8,
   },
   s: {
     textDecorationLine: 'line-through',

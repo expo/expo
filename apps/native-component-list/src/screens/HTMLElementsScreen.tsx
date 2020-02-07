@@ -2,6 +2,8 @@ import {
   A,
   Article,
   B,
+  Br,
+  Code,
   Footer,
   H1,
   H2,
@@ -74,6 +76,8 @@ export default class HTMLScreen extends React.Component {
             Anchor in Article
           </A>
         </Article>
+        <Br />
+        <Code>const value = true</Code>
         <Footer>
           <S>Strike in Footer</S>
         </Footer>
