@@ -21,6 +21,8 @@ function _maybeInitEmitter() {
   }
 }
 
+export { default as NotificationType } from './Notifications.types';
+
 export function emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
