@@ -68,6 +68,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  unimodule 'expo-firebase-core'
   api platform("com.google.firebase:firebase-bom:24.1.0")
   api 'com.google.firebase:firebase-core'
   api 'com.google.firebase:firebase-common'

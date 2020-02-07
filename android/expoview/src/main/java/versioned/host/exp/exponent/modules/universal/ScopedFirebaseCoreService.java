@@ -13,7 +13,7 @@ import com.google.firebase.FirebaseOptions;
 
 import org.unimodules.core.ModuleRegistry;
 
-import expo.modules.firebase.core.FirebaseCoreModule;
+import expo.modules.firebase.core.FirebaseCoreService;
 import expo.modules.firebase.core.FirebaseCoreOptions;
 
 import java.util.HashMap;
@@ -22,14 +22,14 @@ import java.util.List;
 
 import java.io.UnsupportedEncodingException;
 
-public class ScopedFirebaseCoreModule extends FirebaseCoreModule {
+public class ScopedFirebaseCoreService extends FirebaseCoreService {
 
   private ModuleRegistry mModuleRegistry;
   private String mProtectedAppName;
   private String mAppName;
   private FirebaseOptions mAppOptions;
 
-  public ScopedFirebaseCoreModule(Context context, JSONObject manifest, ExperienceId experienceId) {
+  public ScopedFirebaseCoreService(Context context, JSONObject manifest, ExperienceId experienceId) {
     super(context);
 
     // Get the default firebase app name
@@ -67,6 +67,8 @@ public class ScopedFirebaseCoreModule extends FirebaseCoreModule {
     }
   }
 
+  // Overriden
+
   @Override
   public String getAppName() {
     return mAppName;
@@ -84,6 +86,8 @@ public class ScopedFirebaseCoreModule extends FirebaseCoreModule {
     }
     return super.isAppAccessible(name);
   }
+
+  // google-services.json loading
 
   private static String getJSONStringByPath(JSONObject json, String path) {
     if (json == null)

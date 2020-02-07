@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import expo.modules.firebase.core.FirebaseCoreInterface;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -15,7 +16,6 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +25,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   private static final String NAME = "ExpoFirebaseAnalytics";
 
   private Activity mActivity;
+  private ModuleRegistry mModuleRegistry;
 
   public FirebaseAnalyticsModule(Context context) {
     super(context);
@@ -39,88 +40,48 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   public void onCreate(ModuleRegistry moduleRegistry) {
     ActivityProvider mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();
+    mModuleRegistry = moduleRegistry;
+
   }
 
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-
-    FirebaseApp firebaseApp = getDefaultApp();
-    if (firebaseApp != null) {
-      FirebaseOptions appOptions = firebaseApp.getOptions();
-      Map<String, Object> options = new HashMap<>();
-
-      options.put("apiKey", appOptions.getApiKey());
-      options.put("appId", appOptions.getApplicationId());
-      options.put("databaseURL", appOptions.getDatabaseUrl());
-      options.put("messagingSenderId", appOptions.getGcmSenderId());
-      options.put("name", firebaseApp.getName());
-      options.put("projectId", appOptions.getProjectId());
-      options.put("storageBucket", appOptions.getStorageBucket());
-
-      constants.put("app", options);
+  private FirebaseAnalytics getFirebaseAnalyticsOrReject(final Promise promise) {
+    FirebaseCoreInterface firebaseCore = mModuleRegistry.getModule(FirebaseCoreInterface.class);
+    if (firebaseCore == null) {
+      promise.reject("ERR_FIREBASE_ANALYTICS",
+              "FirebaseCore could not be found. Ensure that your app has correctly linked 'expo-firebase-core' and your project has react-native-unimodules installed.");
+      return null;
     }
-
-    return constants;
-  }
-
-  @ExpoMethod
-  public void initializeAppDangerously(final Map<String, String> options, Promise promise) {
+    FirebaseApp defaultApp = firebaseCore.getDefaultApp();
+    if (defaultApp == null) {
+      promise.reject("ERR_FIREBASE_ANALYTICS",
+              "Firebase app is not initialized. Ensure your app has a valid google-services.json bundled.");
+      return null;
+    }
+    FirebaseApp systemApp = null;
     try {
-      FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
-
-      builder.setApiKey(options.get("apiKey"));
-      builder.setApplicationId(options.get("appId"));
-      builder.setProjectId(options.get("projectId"));
-      builder.setDatabaseUrl(options.get("databaseURL"));
-      builder.setStorageBucket(options.get("storageBucket"));
-      builder.setGcmSenderId(options.get("messagingSenderId"));
-      builder.setGaTrackingId(options.get("trackingId"));
-
-      FirebaseApp firebaseApp = getDefaultApp();
-      if (firebaseApp != null) {
-        FirebaseOptions currentOptions = firebaseApp.getOptions();
-        if (!currentOptions.getApiKey().equals(options.get("apiKey")) ||
-                !currentOptions.getApplicationId().equals(options.get("appId"))) {
-          firebaseApp.delete();
-        } else {
-          promise.resolve(null);
-          return;
-        }
-      }
-      FirebaseApp.initializeApp(mActivity.getApplicationContext(), builder.build());
-      promise.resolve(null);
+      systemApp = FirebaseApp.getInstance();
     } catch (Exception e) {
-      promise.reject(e);
+      // nop
     }
-  }
-
-  private @Nullable FirebaseApp getDefaultApp() {
-    try {
-      return FirebaseApp.getInstance();
-    } catch (Exception ignored) {
-      // do nothing
+    if ((systemApp == null) || !defaultApp.getName().equals(systemApp.getName())) {
+      promise.reject("ERR_FIREBASE_ANALYTICS", "Analytics events can only be logged for the default app.");
+      return null;
     }
-    return null;
-  }
-
-  @ExpoMethod
-  public void deleteApp(Promise promise) {
-    try {
-      FirebaseApp firebaseApp = getDefaultApp();
-      if (firebaseApp != null) {
-        firebaseApp.delete();
-      }
-      promise.resolve(null);
-    } catch (Exception e) {
-      promise.reject(e);
+    FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(mActivity.getApplicationContext());
+    if (analytics == null) {
+      promise.reject("ERR_FIREBASE_ANALYTICS", "Failed to obtain Analytics instance");
+      return null;
     }
+    return analytics;
   }
 
   @ExpoMethod
   public void logEvent(final String name, @Nullable Map<String, Object> params, Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).logEvent(name, new MapArguments(params).toBundle());
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
+      analytics.logEvent(name, new MapArguments(params).toBundle());
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -130,7 +91,10 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void setAnalyticsCollectionEnabled(final Boolean enabled, Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setAnalyticsCollectionEnabled(enabled);
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
+      analytics.setAnalyticsCollectionEnabled(enabled);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -140,12 +104,17 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
     // This is the only method that runs on the main thread.
-    mActivity.runOnUiThread(() -> {
-      try {
-        FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setCurrentScreen(mActivity, screenName, screenClassOverride);
-        promise.resolve(null);
-      } catch (Exception e) {
-        promise.reject(e);
+    mActivity.runOnUiThread(new Runnable() {
+      public void run() {
+        try {
+          FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+          if (analytics == null)
+            return;
+          analytics.setCurrentScreen(mActivity, screenName, screenClassOverride);
+          promise.resolve(null);
+        } catch (Exception e) {
+          promise.reject(e);
+        }
       }
     });
   }
@@ -153,7 +122,10 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void setSessionTimeoutDuration(final double milliseconds, Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setSessionTimeoutDuration((long) milliseconds);
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
+      analytics.setSessionTimeoutDuration((long) milliseconds);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -163,7 +135,10 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void setUserId(final String id, Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserId(id);
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
+      analytics.setUserId(id);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -173,9 +148,12 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void setUserProperties(@Nullable Map<String, Object> properties, Promise promise) {
     try {
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
       Set<String> keys = properties.keySet();
       for (String key : keys) {
-        FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).setUserProperty(key, (String) properties.get(key));
+        analytics.setUserProperty(key, (String) properties.get(key));
       }
       promise.resolve(null);
     } catch (Exception e) {
@@ -186,11 +164,13 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   @ExpoMethod
   public void resetAnalyticsData(Promise promise) {
     try {
-      FirebaseAnalytics.getInstance(mActivity.getApplicationContext()).resetAnalyticsData();
+      FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
+      if (analytics == null)
+        return;
+      analytics.resetAnalyticsData();
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
   }
 }
-

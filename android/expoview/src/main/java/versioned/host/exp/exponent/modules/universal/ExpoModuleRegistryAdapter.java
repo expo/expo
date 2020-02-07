@@ -29,10 +29,12 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId,
+      Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
-    // Overriding sensor services from expo-sensors for scoped implementations using kernel services
+    // Overriding sensor services from expo-sensors for scoped implementations using
+    // kernel services
     moduleRegistry.registerInternalModule(new ScopedAccelerometerService(experienceId));
     moduleRegistry.registerInternalModule(new ScopedGravitySensorService(experienceId));
     moduleRegistry.registerInternalModule(new ScopedGyroscopeService(experienceId));
@@ -42,7 +44,8 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceId));
     moduleRegistry.registerInternalModule(new SharedCookiesDataSourceFactoryProvider());
 
-    // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
+    // Overriding expo-constants/ConstantsService -- binding provides manifest and
+    // other expo-related constants
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
     // Overriding expo-file-system FilePermissionModule
@@ -64,7 +67,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
 
     // Overriding expo-firebase-core
-    moduleRegistry.registerExportedModule(new ScopedFirebaseCoreModule(scopedContext, manifest, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
@@ -88,6 +91,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    throw new RuntimeException("Use createNativeModules(ReactApplicationContext, ExperienceId, JSONObject, List<NativeModule>) to get a list of native modules.");
+    throw new RuntimeException(
+        "Use createNativeModules(ReactApplicationContext, ExperienceId, JSONObject, List<NativeModule>) to get a list of native modules.");
   }
 }
