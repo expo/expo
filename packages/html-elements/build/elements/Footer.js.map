@@ -1,1 +1,1 @@
-{"version":3,"file":"Footer.js","sourceRoot":"","sources":["../../src/elements/Footer.tsx"],"names":[],"mappings":"","sourcesContent":[""]}
+{"version":3,"file":"Footer.js","sourceRoot":"","sources":["../../src/elements/Footer.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,MAAM,EAAE,MAAM,oBAAoB,CAAC","sourcesContent":["export { default as Footer } from '../primitives/View';\n"]}
