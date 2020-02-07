@@ -1,3 +1,6 @@
-export declare const getDefaultReturnUrl: () => string;
-export declare const getStartUrl: (authUrl: string, returnUrl: string) => string;
-export declare const getRedirectUrl: () => string;
+export interface SessionUrlProvider {
+    getDefaultReturnUrl: () => string;
+    getStartUrl: (authUrl: string, returnUrl: string) => string;
+    getRedirectUrl: () => string;
+}
+export declare function getSessionUrlProvider(): SessionUrlProvider;

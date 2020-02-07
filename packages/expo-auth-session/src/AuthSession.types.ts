@@ -1,3 +1,8 @@
+declare global {
+  // eslint-disable-next-line no-redeclare
+  const __DEV__: boolean;
+}
+
 export type AuthSessionOptions = {
   authUrl: string;
   returnUrl?: string;

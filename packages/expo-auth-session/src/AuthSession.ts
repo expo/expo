@@ -2,15 +2,16 @@ import qs from 'qs';
 
 import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 
-import { getDefaultReturnUrl, getStartUrl, getRedirectUrl } from './SessionUrlProvider';
+import { getSessionUrlProvider } from './SessionUrlProvider';
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
 
 let _authLock = false;
+const sessionUrlProvider = getSessionUrlProvider();
 
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
-  const returnUrl = options.returnUrl || getDefaultReturnUrl();
+  const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
   const authUrl = options.authUrl;
-  const startUrl = getStartUrl(authUrl, returnUrl);
+  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
   const showInRecents = options.showInRecents || false;
 
   // Prevent accidentally starting to an empty url
@@ -69,9 +70,15 @@ export function dismiss() {
   dismissAuthSession();
 }
 
-export { getDefaultReturnUrl, getRedirectUrl };
+export function getDefaultReturnUrl(): string {
+  return sessionUrlProvider.getDefaultReturnUrl();
+}
 
-async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
+export function getRedirectUrl(): string {
+  return sessionUrlProvider.getRedirectUrl();
+}
+
+async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
   let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
   if (result.type === 'cancel' || result.type === 'dismiss') {

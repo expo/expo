@@ -1,3 +1,6 @@
+declare global {
+    const __DEV__: boolean;
+}
 export declare type AuthSessionOptions = {
     authUrl: string;
     returnUrl?: string;

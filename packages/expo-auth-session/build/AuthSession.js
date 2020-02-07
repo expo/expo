@@ -1,11 +1,12 @@
 import qs from 'qs';
 import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
-import { getDefaultReturnUrl, getStartUrl, getRedirectUrl } from './SessionUrlProvider';
+import { getSessionUrlProvider } from './SessionUrlProvider';
 let _authLock = false;
+const sessionUrlProvider = getSessionUrlProvider();
 export async function startAsync(options) {
-    const returnUrl = options.returnUrl || getDefaultReturnUrl();
+    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
     const authUrl = options.authUrl;
-    const startUrl = getStartUrl(authUrl, returnUrl);
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
     const showInRecents = options.showInRecents || false;
     // Prevent accidentally starting to an empty url
     if (!authUrl) {
@@ -52,7 +53,12 @@ export async function startAsync(options) {
 export function dismiss() {
     dismissAuthSession();
 }
-export { getDefaultReturnUrl, getRedirectUrl };
+export function getDefaultReturnUrl() {
+    return sessionUrlProvider.getDefaultReturnUrl();
+}
+export function getRedirectUrl() {
+    return sessionUrlProvider.getRedirectUrl();
+}
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
     let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
