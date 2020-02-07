@@ -8,6 +8,7 @@ import {
   H4,
   H5,
   H6,
+  B,
   P,
   Header,
   Main,
@@ -33,7 +34,9 @@ export default class HTMLScreen extends React.Component {
         <Header>
           <P>P in Header</P>
         </Header>
-        <Section />
+        <Section>
+          <B>Bold in Section</B>
+        </Section>
         <Main />
         <Article>
           <A href="https://expo.io/" target="_blank">

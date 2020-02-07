@@ -5,10 +5,16 @@ import Text from '../primitives/Text';
 export const P = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.p, style]} ref={ref}/>;
 });
+export const B = forwardRef(({ style, ...props }, ref) => {
+    return <P {...props} style={[styles.b, style]} ref={ref}/>;
+});
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),
         fontSize: em(1),
+    },
+    b: {
+        fontWeight: 'bold',
     },
 });
 //# sourceMappingURL=Text.js.map
