@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
-import Text from '../primitives/Text';
+import React, { forwardRef } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import { em } from '../css/units';
+import Text from '../primitives/Text';
 function createHeadingComponent(level) {
     const nativeProps = Platform.select({
         web: {
@@ -9,7 +9,7 @@ function createHeadingComponent(level) {
         },
         default: {},
     });
-    return React.forwardRef((props, ref) => {
+    return forwardRef((props, ref) => {
         return (<Text {...nativeProps} accessibilityRole="header" {...props} style={[styles[`h${level}`], props.style]} ref={ref}/>);
     });
 }

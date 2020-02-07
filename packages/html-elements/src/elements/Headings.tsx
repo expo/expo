@@ -1,18 +1,17 @@
-import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
-
-import Text, { TextProps } from '../primitives/Text';
+import React, { ClassAttributes, ComponentType, forwardRef } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
+import Text, { TextProps } from '../primitives/Text';
 
-function createHeadingComponent(level: number): React.ComponentType<TextProps> {
+function createHeadingComponent(level: number): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
       'aria-level': `${level}`,
     },
     default: {},
   });
-  return React.forwardRef((props: TextProps, ref: React.ClassAttributes<Text>['ref']) => {
+  return forwardRef((props: TextProps, ref?: ClassAttributes<typeof Text>['ref']) => {
     return (
       <Text
         {...nativeProps}

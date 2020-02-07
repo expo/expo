@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ClassAttributes, ComponentType, forwardRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import Text, { TextProps } from '../primitives/Text';
 
-export const A: React.ComponentType<TextProps> = React.forwardRef(
-  ({ href, ...props }: TextProps, ref: React.ClassAttributes<Text>['ref']) => {
+export const A: ComponentType<TextProps> = forwardRef(
+  ({ href, ...props }: TextProps, ref?: ClassAttributes<typeof Text>['ref']) => {
     const nativeProps = Platform.select({
       web: {
         href,

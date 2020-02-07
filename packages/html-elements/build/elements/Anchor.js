@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Linking, Platform } from 'react-native';
 import Text from '../primitives/Text';
-export const A = React.forwardRef(({ href, ...props }, ref) => {
+export const A = forwardRef(({ href, ...props }, ref) => {
     const nativeProps = Platform.select({
         web: {
             href,

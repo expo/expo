@@ -4,6 +4,7 @@ Universal semantic HTML React components for iOS, Android, web, and desktop. We 
 For instance rendering an HTML `<footer />` element requires platform specific code in your app for every platform you want to support, this can quickly become a huge burden. So that's where `@expo/html-elements` comes in!
 
 - Using these components will optimize for accessibility and SEO.
+  - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
   - The `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component excepts styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no need to monkey patching types.
@@ -43,6 +44,20 @@ import { A } from '@expo/html-elements';
 
 function App() {
     return <A href="#" target="_blank" />
+}
+```
+
+## Structure
+
+### Article
+
+Renders an `<article />` on web and a `View` everywhere else. This requires a non-universal `accessibilityRole` internally.
+
+```tsx
+import { Article } from '@expo/html-elements';
+
+function App() {
+    return <Article />
 }
 ```
 

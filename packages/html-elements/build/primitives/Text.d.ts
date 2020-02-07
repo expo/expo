@@ -19,10 +19,9 @@ export interface WebTextStyle {
 }
 export declare type TextStyle = NativeTextStyle & WebTextStyle;
 export declare type WebTextProps = {
+    style?: TextStyle;
     /** @platform web */
     tabIndex?: number;
-    /** @platform web */
-    style?: TextStyle;
     /** @platform web */
     href?: string;
     /** @platform web */
