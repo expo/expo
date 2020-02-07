@@ -20,6 +20,10 @@ export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
+export const Br = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <Text children="\n" {...props} ref={ref} />;
+}) as ComponentType<TextProps>;
+
 export const Strong = B;
 export const Strike = S;
 export const Em = I;

@@ -14,6 +14,12 @@ exports[`renders B 1`] = `
 </Text>
 `;
 
+exports[`renders Br 1`] = `
+<Text>
+  \\n
+</Text>
+`;
+
 exports[`renders I 1`] = `
 <Text
   style={
@@ -42,21 +48,6 @@ exports[`renders P 1`] = `
 `;
 
 exports[`renders S 1`] = `
-<Text
-  style={
-    Object {
-      "fontSize": 32,
-      "marginVertical": 32,
-      "textDecorationLine": "line-through",
-      "textDecorationStyle": "solid",
-    }
-  }
->
-  demo
-</Text>
-`;
-
-exports[`renders Strike 1`] = `
 <Text
   style={
     Object {

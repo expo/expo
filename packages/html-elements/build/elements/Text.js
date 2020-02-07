@@ -14,6 +14,9 @@ export const S = forwardRef(({ style, ...props }, ref) => {
 export const I = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.i, style]} ref={ref}/>;
 });
+export const Br = forwardRef(({ style, ...props }, ref) => {
+    return <Text children="\n" {...props} ref={ref}/>;
+});
 export const Strong = B;
 export const Strike = S;
 export const Em = I;

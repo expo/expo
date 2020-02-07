@@ -17,6 +17,15 @@ exports[`renders B 1`] = `
 </div>
 `;
 
+exports[`renders Br 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+>
+  \\n
+</div>
+`;
+
 exports[`renders I 1`] = `
 <div
   className="css-text-901oao"
@@ -51,25 +60,6 @@ exports[`renders P 1`] = `
 `;
 
 exports[`renders S 1`] = `
-<div
-  className="css-text-901oao"
-  dir="auto"
-  style={
-    Object {
-      "WebkitTextDecorationStyle": "solid",
-      "fontSize": "1em",
-      "marginBottom": "1em",
-      "marginTop": "1em",
-      "textDecoration": "line-through",
-      "textDecorationStyle": "solid",
-    }
-  }
->
-  demo
-</div>
-`;
-
-exports[`renders Strike 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"

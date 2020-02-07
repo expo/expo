@@ -3,7 +3,7 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { P, B, I, S } from '../Text';
+import { P, Br, B, I, S } from '../Text';
 
 it(`renders P`, () => {
   const tree = renderer.create(<P>demo</P>);
@@ -19,5 +19,10 @@ it(`renders S`, () => {
 });
 it(`renders I`, () => {
   const tree = renderer.create(<I>demo</I>);
+  expect(tree).toMatchSnapshot();
+});
+
+it(`renders Br`, () => {
+  const tree = renderer.create(<Br />);
   expect(tree).toMatchSnapshot();
 });

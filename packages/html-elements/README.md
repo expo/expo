@@ -116,13 +116,14 @@ function App() {
 Renders a `Text` everywhere. Style is slightly modified to match web.
 
 ```tsx
-import { P, B, S, I } from '@expo/html-elements';
+import { P, B, S, I, Br } from '@expo/html-elements';
 
 function App() {
     return (
         <>
             <P>Hello<B>World (in bold)</B></P>
             <S>strike text</S>
+            <Br />
             <I>Italic</I>
         </>
     )
