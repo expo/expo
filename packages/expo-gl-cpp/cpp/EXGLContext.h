@@ -1,20 +1,20 @@
-#include "UEXGL.h"
 #include "EXJSUtils.h"
+#include "UEXGL.h"
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #endif
 #ifdef __APPLE__
+#include <OpenGLES/EAGL.h>
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
-#include <OpenGLES/EAGL.h>
 #endif
 
-#include <future>
-#include <unordered_map>
 #include <exception>
+#include <future>
 #include <sstream>
+#include <unordered_map>
 #include <vector>
 
 #include <jsi/jsi.h>
@@ -49,7 +49,7 @@ class EXGLContext {
   // By not saving the JS{Global,}Context as a member variable we ensure that no
   // JS work is done on the GL thread
 
-private:
+ private:
   // The smallest unit of work
   using Op = std::function<void(void)>;
 
@@ -73,14 +73,14 @@ private:
 
   // [JS thread] Add an Op to the 'next' batch -- the arguments are any form of
   // constructor arguments for Op
-  template<typename... Args>
-  inline void addToNextBatch(Args &&...args) noexcept {
+  template <typename... Args>
+  inline void addToNextBatch(Args &&... args) noexcept {
     nextBatch.emplace_back(std::forward<Args>(args)...);
   }
 
   // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
   // queued function to run before returning
-  template<typename F>
+  template <typename F>
   inline void addBlockingToNextBatch(F &&f) noexcept {
 #ifdef __ANDROID__
     // std::packaged_task + std::future segfaults on Android... :|
@@ -123,8 +123,8 @@ private:
   // 'future' return value is encountered: its value won't immediately matter
   // and is only needed when method calls after it ask for the value, and those
   // are queued for even later.
-  template<typename F>
-  inline jsi::Value addFutureToNextBatch(jsi::Runtime& runtime, F &&f) noexcept {
+  template <typename F>
+  inline jsi::Value addFutureToNextBatch(jsi::Runtime &runtime, F &&f) noexcept {
     auto exglObjId = createObject();
     addToNextBatch([=] {
       assert(objects.find(exglObjId) == objects.end());
@@ -133,9 +133,9 @@ private:
     return static_cast<double>(exglObjId);
   }
 
-public:
+ public:
   // function that calls flush on GL thread - on Android it is passed by JNI
-  std::function<void(void)> flushOnGLThread = [&]{};
+  std::function<void(void)> flushOnGLThread = [&] {};
 
   // [GL thread] Do all the remaining work we can do on the GL thread
   void flush(void) noexcept {
@@ -152,7 +152,6 @@ public:
     }
   }
 
-
   // --- Object mapping --------------------------------------------------------
 
   // We err on the side of performance and hope that a global incrementing atomic
@@ -161,11 +160,11 @@ public:
   // set and read on the GL thread, this prevents us from having to maintain a
   // mutex on the mapping.
 
-private:
+ private:
   std::unordered_map<UEXGLObjectId, GLuint> objects;
   static std::atomic_uint nextObjectId;
 
-public:
+ public:
   inline UEXGLObjectId createObject(void) noexcept {
     return nextObjectId++;
   }
@@ -183,34 +182,31 @@ public:
     return iter == objects.end() ? 0 : iter->second;
   }
 
-
   // --- Init/destroy and JS object binding ------------------------------------
-private:
+ private:
   bool supportsWebGL2 = false;
 
-public:
-  EXGLContext(jsi::Runtime& runtime, UEXGLContextId exglCtxId) {
+ public:
+  EXGLContext(jsi::Runtime &runtime, UEXGLContextId exglCtxId) {
     jsi::Object jsGl(runtime);
-    jsGl.setProperty(runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
+    jsGl.setProperty(
+        runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
     installMethods(runtime, jsGl);
     installConstants(runtime, jsGl);
 
     // Save JavaScript object
     jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
     if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
-        runtime
-          .global()
-          .setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
+      runtime.global().setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
     }
-    runtime
-      .global()
-      .getProperty(runtime, "__EXGLContexts")
-      .asObject(runtime)
-      .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
+    runtime.global()
+        .getProperty(runtime, "__EXGLContexts")
+        .asObject(runtime)
+        .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
 
     // Clear everything to initial values
     addToNextBatch([this] {
-      std::string version = (char *) glGetString(GL_VERSION);
+      std::string version = (char *)glGetString(GL_VERSION);
       double glesVersion = strtod(version.substr(10).c_str(), 0);
       this->supportsWebGL2 = glesVersion >= 3.0;
 
@@ -233,16 +229,16 @@ public:
     });
   }
 
-  static EXGLContext* ContextGet(UEXGLContextId exglCtxId);
-  static UEXGLContextId ContextCreate(jsi::Runtime& runtime);
+  static EXGLContext *ContextGet(UEXGLContextId exglCtxId);
+  static UEXGLContextId ContextCreate(jsi::Runtime &runtime);
   static void ContextDestroy(UEXGLContextId exglCtxId);
 
   // --- GL state --------------------------------------------------------------
-private:
+ private:
   GLint defaultFramebuffer = 0;
   bool unpackFLipY = false;
 
-public:
+ public:
   bool needsRedraw = false;
 
   void setDefaultFramebuffer(GLint framebuffer) {
@@ -253,20 +249,16 @@ public:
     this->needsRedraw = needsRedraw;
   }
 
+ private:
+  void installMethods(jsi::Runtime &runtime, jsi::Object &jsGl);
+  void installConstants(jsi::Runtime &runtime, jsi::Object &jsGl);
 
-private:
-  void installMethods(jsi::Runtime& runtime, jsi::Object& jsGl);
-  void installConstants(jsi::Runtime& runtime, jsi::Object& jsGl);
+  template <typename F>
+  inline jsi::Value
+  getActiveInfo(jsi::Runtime &runtime, const jsi::Value *jsArgv, GLenum lengthParam, F &&glFunc);
 
-  template<typename F>
-  inline jsi::Value getActiveInfo(
-          jsi::Runtime& runtime,
-          const jsi::Value* jsArgv,
-          GLenum lengthParam,
-          F &&glFunc);
-
-  template<typename T>
-  std::vector<T> jsArrayToVector(jsi::Runtime& runtime, const jsi::Array& jsArray) {
+  template <typename T>
+  std::vector<T> jsArrayToVector(jsi::Runtime &runtime, const jsi::Array &jsArray) {
     int length = jsArray.length(runtime);
     std::vector<T> values(length);
 
@@ -276,8 +268,8 @@ private:
     return values;
   }
 
-  template<>
-  std::vector<std::string> jsArrayToVector(jsi::Runtime& runtime, const jsi::Array& jsArray) {
+  template <>
+  std::vector<std::string> jsArrayToVector(jsi::Runtime &runtime, const jsi::Array &jsArray) {
     int length = jsArray.length(runtime);
     std::vector<std::string> strings(length);
 
@@ -287,7 +279,7 @@ private:
     return strings;
   }
 
-  std::vector<uint8_t> rawArrayBuffer(jsi::Runtime& runtime, const jsi::Object& arr) {
+  std::vector<uint8_t> rawArrayBuffer(jsi::Runtime &runtime, const jsi::Object &arr) {
     if (arr.isArrayBuffer(runtime)) {
       auto buffer = arr.getArrayBuffer(runtime);
       return buffer.data(runtime);
@@ -298,14 +290,14 @@ private:
     throw std::runtime_error("Object is not an ArrayBuffer nor a TypedArray");
   }
 
-  bool jsValueToBool(jsi::Runtime& runtime, const jsi::Value& jsValue) {
-    return jsValue.isBool()
-      ? jsValue.getBool()
-      : throw std::runtime_error(jsValue.toString(runtime).utf8(runtime) + " is not a bool value");
+  bool jsValueToBool(jsi::Runtime &runtime, const jsi::Value &jsValue) {
+    return jsValue.isBool() ? jsValue.getBool()
+                            : throw std::runtime_error(
+                                  jsValue.toString(runtime).utf8(runtime) + " is not a bool value");
   }
 
   static inline void *bufferOffset(GLint offset) noexcept {
-    return (char *) 0 + offset;
+    return (char *)0 + offset;
   }
 
   static inline GLuint bytesPerPixel(GLenum type, GLenum format) {
@@ -351,49 +343,57 @@ private:
 
     for (GLuint rowTop = 0, rowBottom = (GLuint)rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
       // Swap in packs of sizeof(GLuint) bytes
-      GLuint *iTop = (GLuint *) (pixels + rowTop * bytesPerRow);
-      GLuint *iBottom = (GLuint *) (pixels + rowBottom * bytesPerRow);
+      GLuint *iTop = (GLuint *)(pixels + rowTop * bytesPerRow);
+      GLuint *iBottom = (GLuint *)(pixels + rowBottom * bytesPerRow);
       GLuint iTmp;
       GLuint n = intsPerRow;
       do {
         iTmp = *iTop;
         *iTop++ = *iBottom;
         *iBottom++ = iTmp;
-      } while(--n > 0);
+      } while (--n > 0);
 
       // Swap remainder bytes
-      GLubyte *bTop = (GLubyte *) iTop;
-      GLubyte *bBottom = (GLubyte *) iBottom;
+      GLubyte *bTop = (GLubyte *)iTop;
+      GLubyte *bBottom = (GLubyte *)iBottom;
       GLubyte bTmp;
       switch (remainingBytes) {
-        case 3: bTmp = *bTop; *bTop++ = *bBottom; *bBottom++ = bTmp;
-        case 2: bTmp = *bTop; *bTop++ = *bBottom; *bBottom++ = bTmp;
-        case 1: bTmp = *bTop; *bTop = *bBottom; *bBottom = bTmp;
+        case 3:
+          bTmp = *bTop;
+          *bTop++ = *bBottom;
+          *bBottom++ = bTmp;
+        case 2:
+          bTmp = *bTop;
+          *bTop++ = *bBottom;
+          *bBottom++ = bTmp;
+        case 1:
+          bTmp = *bTop;
+          *bTop = *bBottom;
+          *bBottom = bTmp;
       }
     }
   }
 
   // Load image data from an object with a `.localUri` member
   std::shared_ptr<uint8_t> loadImage(
-          jsi::Runtime& runtime,
-          const jsi::Value& object,
-          int *fileWidth,
-          int *fileHeight,
-          int *fileComp);
-
-
-
+      jsi::Runtime &runtime,
+      const jsi::Value &object,
+      int *fileWidth,
+      int *fileHeight,
+      int *fileComp);
 
 // Standard method wrapper, run on JS thread, return a value
-#define _WRAP_METHOD_DECLARATION(name)                                                              \
-  static jsi::Value exglNativeStatic_##name(jsi::Runtime& runtime,                                  \
-                                            const jsi::Value& jsThis,                               \
-                                            const jsi::Value* jsArgv,                               \
-                                            unsigned int argc);                                     \
-  inline jsi::Value exglNativeInstance_##name(jsi::Runtime& runtime,                                \
-                                              const jsi::Value& jsThis,                             \
-                                              const jsi::Value* jsArgv,                             \
-                                              unsigned int argc)
+#define _WRAP_METHOD_DECLARATION(name)         \
+  static jsi::Value exglNativeStatic_##name(   \
+      jsi::Runtime &runtime,                   \
+      const jsi::Value &jsThis,                \
+      const jsi::Value *jsArgv,                \
+      unsigned int argc);                      \
+  inline jsi::Value exglNativeInstance_##name( \
+      jsi::Runtime &runtime,                   \
+      const jsi::Value &jsThis,                \
+      const jsi::Value *jsArgv,                \
+      unsigned int argc)
 
   // This listing follows the order in
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext

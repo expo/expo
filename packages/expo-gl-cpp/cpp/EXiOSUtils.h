@@ -12,4 +12,3 @@ typedef struct {
 EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion(void);
 
 #endif
-

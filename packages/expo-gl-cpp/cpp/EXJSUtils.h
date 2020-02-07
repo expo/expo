@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 #include <jsi/jsi.h>
+#include <stdint.h>
 
 #ifdef __APPLE__
 #include <EXGL_CPP/EXiOSUtils.h>
@@ -11,9 +11,9 @@
 #include <android/log.h>
 #endif
 
-void EXJSConsoleLog(facebook::jsi::Runtime& runtime, const std::string& msg);
+void EXJSConsoleLog(facebook::jsi::Runtime &runtime, const std::string &msg);
 
-#define EXGL_DEBUG     // Whether debugging is on
+#define EXGL_DEBUG // Whether debugging is on
 
 #ifdef EXGL_DEBUG
 #ifdef __ANDROID__

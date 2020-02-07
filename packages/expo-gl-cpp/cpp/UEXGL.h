@@ -1,7 +1,6 @@
 #ifndef __UEXGL_H__
 #define __UEXGL_H__
 
-
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
 #endif
@@ -20,7 +19,6 @@
 //       referenced in versioned Objective-C code. The EXGL C/C++ library is not versioned
 //       and there is only one copy of its code in the binary form of the Expo application.
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,7 +34,7 @@ typedef unsigned int UEXGLObjectId;
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-UEXGLContextId UEXGLContextCreate(void* runtime);
+UEXGLContextId UEXGLContextCreate(void *runtime);
 
 #ifdef __cplusplus
 // [JS thread] Pass function to cpp that will run GL operations on GL thread
@@ -45,7 +43,7 @@ void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(voi
 
 #ifdef __APPLE__
 // Objective-C wrapper for UEXGLContextSetFlushMethod
-typedef void(^UEXGLFlushMethodBlock)(void);
+typedef void (^UEXGLFlushMethodBlock)(void);
 void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod);
 #endif
 
@@ -81,6 +79,5 @@ GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

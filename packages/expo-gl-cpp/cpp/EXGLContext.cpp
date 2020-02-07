@@ -7,7 +7,7 @@ static std::unordered_map<UEXGLContextId, EXGLContext *> EXGLContextMap;
 static std::mutex EXGLContextMapMutex;
 static UEXGLContextId EXGLContextNextId = 1;
 
-std::atomic_uint EXGLContext::nextObjectId { 1 };
+std::atomic_uint EXGLContext::nextObjectId{1};
 
 EXGLContext *EXGLContext::ContextGet(UEXGLContextId exglCtxId) {
   std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
@@ -18,7 +18,7 @@ EXGLContext *EXGLContext::ContextGet(UEXGLContextId exglCtxId) {
   return nullptr;
 }
 
-UEXGLContextId EXGLContext::ContextCreate(jsi::Runtime& runtime) {
+UEXGLContextId EXGLContext::ContextCreate(jsi::Runtime &runtime) {
   // Out of ids?
   if (EXGLContextNextId >= std::numeric_limits<UEXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
@@ -56,9 +56,7 @@ void EXGLContext::ContextDestroy(UEXGLContextId exglCtxId) {
 void decodeURI(char *dst, const char *src) {
   char a, b;
   while (*src) {
-    if ((*src == '%') &&
-        ((a = src[1]) && (b = src[2])) &&
-        (isxdigit(a) && isxdigit(b))) {
+    if ((*src == '%') && ((a = src[1]) && (b = src[2])) && (isxdigit(a) && isxdigit(b))) {
       if (a >= 'a') {
         a -= 'a' - 'A';
       }
@@ -87,14 +85,14 @@ void decodeURI(char *dst, const char *src) {
   *dst++ = '\0';
 }
 
-// TODO(wkozyra95) needs to be moved (for now it's here because it requires access to EXGLContext and needs to be in cpp file
-// Load image data from an object with a `.localUri` member
+// TODO(wkozyra95) needs to be moved (for now it's here because it requires access to EXGLContext
+// and needs to be in cpp file Load image data from an object with a `.localUri` member
 std::shared_ptr<uint8_t> EXGLContext::loadImage(
-        jsi::Runtime& runtime,
-        const jsi::Value& jsPixels,
-        int *fileWidth,
-        int *fileHeight,
-        int *fileComp) {
+    jsi::Runtime &runtime,
+    const jsi::Value &jsPixels,
+    int *fileWidth,
+    int *fileHeight,
+    int *fileComp) {
   auto localUriProp = jsPixels.asObject(runtime).getProperty(runtime, "localUri");
   if (localUriProp.isString()) {
     auto localUri = localUriProp.asString(runtime).utf8(runtime);
@@ -105,15 +103,10 @@ std::shared_ptr<uint8_t> EXGLContext::loadImage(
     decodeURI(localPath, localUri.c_str() + 7);
 
     return std::shared_ptr<uint8_t>(
-            stbi_load(
-                localPath,
-                fileWidth,
-                fileHeight,
-                fileComp,
-                STBI_rgb_alpha),
-            [](void* data) {
-                stbi_image_free(data);;
-            });
+        stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha), [](void *data) {
+          stbi_image_free(data);
+          ;
+        });
   }
   return std::shared_ptr<uint8_t>(nullptr);
 }
