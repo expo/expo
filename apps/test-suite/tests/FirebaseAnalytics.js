@@ -55,6 +55,18 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
       await Analytics.deleteDefaultApp();
     });*/
 
+    afterAll(async () => {
+      if (isConfigured) {
+        // Force sending (flushing) the event(s) to the cloud back-end by triggering
+        // a conversion event.
+        // https://firebase.googleblog.com/2016/11/how-long-does-it-take-for-my-firebase-analytics-data-to-show-up.html
+        await Analytics.logEvent('ecommerce_purchase', {
+          currency: 'USD',
+          value: 1,
+        });
+      }
+    });
+
     describe('logEvent()', async () => {
       itWhenConfigured(`runs`, async () => {
         let error = null;
