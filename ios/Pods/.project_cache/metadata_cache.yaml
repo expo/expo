@@ -1226,6 +1226,10 @@ EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
   UUID: 5232535845650ADAE59870B722468D8A
+EXFirebaseAnalytics:
+  LABEL: EXFirebaseAnalytics
+  PROJECT_PATH: EXFirebaseAnalytics.xcodeproj
+  UUID: FABBE34C5533203C60B1FB31DA23FC99
 EXFirebaseCore:
   LABEL: EXFirebaseCore
   PROJECT_PATH: EXFirebaseCore.xcodeproj
