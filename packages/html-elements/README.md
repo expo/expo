@@ -130,6 +130,24 @@ function App() {
 }
 ```
 
+## Rules
+
+### Hr
+
+Renders a `<View>` everywhere. Style is modified to match web.
+
+```tsx
+import { Hr } from '@expo/html-elements';
+
+function App() {
+    return (
+        <>
+            <Hr />
+        </>
+    )
+}
+```
+
 Alternative elements:
 
 ```tsx
