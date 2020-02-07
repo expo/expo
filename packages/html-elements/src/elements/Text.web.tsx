@@ -1,7 +1,7 @@
-import React, { ComponentType, forwardRef } from 'react';
+import { ComponentType, forwardRef } from 'react';
 import { createElement, StyleSheet } from 'react-native';
 
-import Text, { TextProps } from '../primitives/Text';
+import { TextProps } from '../primitives/Text';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('p', { ...props, style: [styles.reset, style], ref });

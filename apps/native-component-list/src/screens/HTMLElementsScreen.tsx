@@ -3,6 +3,7 @@ import {
   Article,
   B,
   Br,
+  Nav,
   Caption,
   Code,
   Footer,
@@ -62,6 +63,9 @@ export default class HTMLScreen extends React.Component {
         <H4>Header 4</H4>
         <H5>Header 5</H5>
         <H6>Header 6</H6>
+        <Nav>
+          <P>P in Nav</P>
+        </Nav>
         <Header>
           <P>P in Header</P>
         </Header>

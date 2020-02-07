@@ -49,6 +49,18 @@ function App() {
 
 ## Structure
 
+### Nav
+
+Renders a `<nav />` on web and a `View` on mobile.
+
+```tsx
+import { Nav } from '@expo/html-elements';
+
+function App() {
+    return <Nav />
+}
+```
+
 ### Header
 
 Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile. This required a non-universal `accessibilityRole` internally.

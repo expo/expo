@@ -1,0 +1,1 @@
+{"version":3,"file":"Nav.js","sourceRoot":"","sources":["../../src/elements/Nav.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,GAAG,EAAE,MAAM,oBAAoB,CAAC","sourcesContent":["export { default as Nav } from '../primitives/View';\n"]}
