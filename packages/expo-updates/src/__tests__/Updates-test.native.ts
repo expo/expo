@@ -7,9 +7,10 @@ const fakeManifest = {
 };
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifest is returned', async () => {
-  const mock = jest.fn();
-  ExpoUpdates.checkForUpdateAsync = mock;
-  mock.mockReturnValueOnce({ isAvailable: true, manifest: fakeManifest });
+  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+    isAvailable: true,
+    manifest: fakeManifest,
+  });
 
   const actual = await Updates.checkForUpdateAsync();
   const expected = { isAvailable: true, manifest: fakeManifest };
@@ -17,9 +18,10 @@ it('returns the proper object in checkForUpdateAsync if an update is available a
 });
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifestString is returned', async () => {
-  const mock = jest.fn();
-  ExpoUpdates.checkForUpdateAsync = mock;
-  mock.mockReturnValueOnce({ isAvailable: true, manifestString: JSON.stringify(fakeManifest) });
+  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+    isAvailable: true,
+    manifestString: JSON.stringify(fakeManifest),
+  });
 
   const actual = await Updates.checkForUpdateAsync();
   const expected = { isAvailable: true, manifest: fakeManifest };
@@ -27,9 +29,7 @@ it('returns the proper object in checkForUpdateAsync if an update is available a
 });
 
 it('returns the proper object in fetchUpdateAsync if an update is available and manifest is returned', async () => {
-  const mock = jest.fn();
-  ExpoUpdates.fetchUpdateAsync = mock;
-  mock.mockReturnValueOnce({ isNew: true, manifest: fakeManifest });
+  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({ isNew: true, manifest: fakeManifest });
 
   const actual = await Updates.fetchUpdateAsync();
   const expected = { isNew: true, manifest: fakeManifest };
@@ -37,9 +37,10 @@ it('returns the proper object in fetchUpdateAsync if an update is available and 
 });
 
 it('returns the proper object in fetchUpdateAsync if an update is available and manifestString is returned', async () => {
-  const mock = jest.fn();
-  ExpoUpdates.fetchUpdateAsync = mock;
-  mock.mockReturnValueOnce({ isNew: true, manifestString: JSON.stringify(fakeManifest) });
+  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
+    isNew: true,
+    manifestString: JSON.stringify(fakeManifest),
+  });
 
   const actual = await Updates.fetchUpdateAsync();
   const expected = { isNew: true, manifest: fakeManifest };
