@@ -16,6 +16,7 @@
   "keywords": [
     "react-native",
     "expo",
+    "firebase",
     "expo-firebase-core"
   ],
   "repository": {

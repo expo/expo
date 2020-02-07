@@ -34,3 +34,54 @@
 | performance   | ✅       | ✅   | ✅   | ✅       | S               |                                                                                                                                  |
 | remoteconfig  | 💥*     | ✅   | ✅   | ✅       | M               | * requires IndexedDB                                                                                                             |
 | storage       | ✅       | ✅   | ✅   | ✅       | M               |                                                                                                                                  |
+
+
+# TODO
+
+- [ ] Web
+- [ ] Android
+- [ ] Face-detector test
+- [ ] Docs
+- [ ] Test-suite credentials
+- [ ] Verify that bundle-id matches
+
+
+
+- [ ] Core (UM interface & init default app & sandboxed app)
+  - [ ] iOS 
+  - [ ] Android
+  - [ ] Verify that loaded google-services file is valid
+
+- [ ] Face detector
+  - [X] Update iOS code
+  - [ ] Update Android code
+  - [ ] Test iOS
+  - [ ] Test Android
+  - [ ] Solve curious case on iOS where Expo Firebase project is used for face detection
+
+
+- [ ] Analytics
+  - [X] Update iOS code to use firebase-core
+  - [ ] iOS Start/stop analytics when swithching project in Expo client
+  - [ ] Update Android code to use firebase-core
+  - [ ] 
+
+- [ ] Face detector
+  - [X] Update iOS code
+  - [ ] Update Android code
+  - [ ] Test iOS
+  - [ ] Test Android
+  - [ ] Solve curious case on iOS where Expo Firebase project is used for face detection
+
+
+# Questions
+
+- Is the Analytics part of Firebase used?
+  - Causing changing Analytics would stop that
+
+
+
+# Conclustions
+
+- Works when initializing DEFAULT app the first time with the loaded project options
+- 
