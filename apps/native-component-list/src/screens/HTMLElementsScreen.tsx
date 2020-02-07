@@ -3,6 +3,7 @@ import {
   Article,
   B,
   Br,
+  Caption,
   Code,
   Footer,
   H1,
@@ -12,6 +13,7 @@ import {
   H5,
   H6,
   Header,
+  Hr,
   I,
   Main,
   P,
@@ -23,7 +25,6 @@ import {
   Th,
   Thead,
   Tr,
-  Caption,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
@@ -66,6 +67,7 @@ export default class HTMLScreen extends React.Component {
         </Header>
         <Section>
           <B>Bold in Section</B>
+          <Hr />
         </Section>
         <Main>
           <I>Italic in Main</I>

@@ -1,13 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders Hr 1`] = `
-<div
-  className="css-view-1dbjc4n"
-  style={
-    Object {
-      "backgroundColor": "rgba(0,0,0,1.00)",
-      "height": "1px",
-    }
-  }
-/>
-`;
+exports[`renders Hr 1`] = `<hr />`;

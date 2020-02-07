@@ -8,7 +8,10 @@ export const Hr = forwardRef((props: ViewProps, ref) => {
 
 const styles = StyleSheet.create({
   hr: {
-    height: 1,
-    backgroundColor: '#000000',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#9A9A9A',
+    borderBottomColor: '#EEEEEE',
+    marginVertical: 8,
   },
 });

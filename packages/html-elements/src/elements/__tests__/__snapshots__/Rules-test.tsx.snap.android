@@ -4,8 +4,11 @@ exports[`renders Hr 1`] = `
 <View
   style={
     Object {
-      "backgroundColor": "#000000",
-      "height": 1,
+      "borderBottomColor": "#EEEEEE",
+      "borderBottomWidth": 0.5,
+      "borderTopColor": "#9A9A9A",
+      "borderTopWidth": 0.5,
+      "marginVertical": 8,
     }
   }
 />
