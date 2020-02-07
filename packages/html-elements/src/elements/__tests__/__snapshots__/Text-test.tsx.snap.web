@@ -32,3 +32,22 @@ exports[`renders P 1`] = `
   demo
 </div>
 `;
+
+exports[`renders Strike 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "WebkitTextDecorationStyle": "solid",
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+      "textDecoration": "line-through",
+      "textDecorationStyle": "solid",
+    }
+  }
+>
+  demo
+</div>
+`;

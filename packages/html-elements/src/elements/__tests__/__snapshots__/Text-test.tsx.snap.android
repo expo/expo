@@ -1,11 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders B 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "marginVertical": 32,
+    }
+  }
+>
+  demo
+</Text>
+`;
+
 exports[`renders P 1`] = `
 <Text
   style={
     Object {
       "fontSize": 32,
       "marginVertical": 32,
+    }
+  }
+>
+  demo
+</Text>
+`;
+
+exports[`renders Strike 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 32,
+      "marginVertical": 32,
+      "textDecorationLine": "line-through",
+      "textDecorationStyle": "solid",
     }
   }
 >

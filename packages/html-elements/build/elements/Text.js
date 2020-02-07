@@ -8,7 +8,11 @@ export const P = forwardRef(({ style, ...props }, ref) => {
 export const B = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.b, style]} ref={ref}/>;
 });
+export const Strike = forwardRef(({ style, ...props }, ref) => {
+    return <P {...props} style={[styles.strike, style]} ref={ref}/>;
+});
 export const Strong = B;
+export const S = Strike;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),
@@ -16,6 +20,10 @@ const styles = StyleSheet.create({
     },
     b: {
         fontWeight: 'bold',
+    },
+    strike: {
+        textDecorationLine: 'line-through',
+        textDecorationStyle: 'solid',
     },
 });
 //# sourceMappingURL=Text.js.map
