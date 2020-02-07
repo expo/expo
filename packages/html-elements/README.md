@@ -73,6 +73,18 @@ function App() {
 }
 ```
 
+### Section
+
+Renders a `<section />` on web with aria set to `region` and a `View` with aria set to `summary` on mobile.
+
+```tsx
+import { Section } from '@expo/html-elements';
+
+function App() {
+    return <Section />
+}
+```
+
 ### Article
 
 Renders an `<article />` on web and a `View` everywhere else. This requires a non-universal `accessibilityRole` internally.
