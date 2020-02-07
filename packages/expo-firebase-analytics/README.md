@@ -50,6 +50,36 @@ To enable the AdSupport framework:
 
 [Add the Android `google-services.json` to your `android/app` folder](https://firebase.google.com/docs/android/setup#add-config-file)
 
+### Configure for Web
+
+Install the Firebase JavaScript SDK as a dependency:
+
+```
+expo install firebase
+```
+
+And create a firebase init file (with the `.web` extension), that initializes the firebase app.
+
+
+```ts
+// initFirebase.web.js
+import * as firebase from 'firebase/app';
+import 'firebase/analytics';
+
+firebase.initializeApp({
+  apiKey: "api-key",
+  authDomain: "project-id.firebaseapp.com",
+  databaseURL: "https://project-id.firebaseio.com",
+  projectId: "project-id",
+  storageBucket: "project-id.appspot.com",
+  messagingSenderId: "sender-id",
+  appId: "app-id",
+  measurementId: "G-measurement-id",
+});
+```
+
+[Learn more in the Firebase Docs](https://firebase.google.com/docs/web/setup)
+
 
 # Contributing
 
