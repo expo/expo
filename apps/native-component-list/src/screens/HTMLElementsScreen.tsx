@@ -23,6 +23,7 @@ import {
   Table,
   Tbody,
   Td,
+  Small,
   Th,
   Thead,
   Tr,
@@ -75,6 +76,7 @@ export default class HTMLScreen extends React.Component {
         </Section>
         <Main>
           <I>Italic in Main</I>
+          <Small>Small in main</Small>
         </Main>
         <Article>
           <TableComponent />

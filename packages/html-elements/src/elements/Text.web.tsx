@@ -33,6 +33,10 @@ export const Br = forwardRef((props: TextProps, ref) => {
   return createElement('br', { ...props, ref });
 }) as ComponentType<TextProps>;
 
+export const Small = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return createElement('small', { ...props, style: [styles.reset, style], ref });
+}) as ComponentType<TextProps>;
+
 export const Code = forwardRef((props: TextProps, ref) => {
   return createElement('code', { ...props, ref });
 }) as ComponentType<TextProps>;

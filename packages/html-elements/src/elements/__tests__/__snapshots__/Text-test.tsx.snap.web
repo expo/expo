@@ -64,6 +64,16 @@ exports[`renders S 1`] = `
 </s>
 `;
 
+exports[`renders Small 1`] = `
+<small
+  style={
+    Object {
+      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+    }
+  }
+/>
+`;
+
 exports[`renders Strike 1`] = `
 <s
   style={

@@ -8,4 +8,5 @@ export declare const Strong: ComponentType<TextProps>;
 export declare const I: ComponentType<TextProps>;
 export declare const Em: ComponentType<TextProps>;
 export declare const Br: ComponentType<TextProps>;
+export declare const Small: ComponentType<TextProps>;
 export declare const Code: ComponentType<TextProps>;
