@@ -20,6 +20,20 @@ exports[`renders Br 1`] = `
 </Text>
 `;
 
+exports[`renders Code 1`] = `
+<Text
+  style={
+    Object {
+      "backgroundColor": "#f5f5f5",
+      "borderColor": "#ccc",
+      "borderRadius": 4,
+      "borderWidth": 1,
+      "padding": 10,
+    }
+  }
+/>
+`;
+
 exports[`renders I 1`] = `
 <Text
   style={

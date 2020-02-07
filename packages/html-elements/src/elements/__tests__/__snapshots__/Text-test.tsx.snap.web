@@ -26,6 +26,34 @@ exports[`renders Br 1`] = `
 </div>
 `;
 
+exports[`renders Code 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "backgroundColor": "rgba(245,245,245,1.00)",
+      "borderBottomColor": "rgba(204,204,204,1.00)",
+      "borderBottomLeftRadius": "4px",
+      "borderBottomRightRadius": "4px",
+      "borderBottomWidth": "1px",
+      "borderLeftColor": "rgba(204,204,204,1.00)",
+      "borderLeftWidth": "1px",
+      "borderRightColor": "rgba(204,204,204,1.00)",
+      "borderRightWidth": "1px",
+      "borderTopColor": "rgba(204,204,204,1.00)",
+      "borderTopLeftRadius": "4px",
+      "borderTopRightRadius": "4px",
+      "borderTopWidth": "1px",
+      "paddingBottom": "10px",
+      "paddingLeft": "10px",
+      "paddingRight": "10px",
+      "paddingTop": "10px",
+    }
+  }
+/>
+`;
+
 exports[`renders I 1`] = `
 <div
   className="css-text-901oao"
