@@ -1,23 +1,22 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
-    classpath 'de.undercouch:gradle-download-task:2.0.0'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '8.0.0'
 
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("de.undercouch:gradle-download-task:${safeExtGet("gradleDownloadTaskVersion", "3.4.3")}")
+  }
 }
 
 import de.undercouch.gradle.tasks.download.Download
