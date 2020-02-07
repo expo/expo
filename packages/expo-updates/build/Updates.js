@@ -1,14 +1,14 @@
 import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
-export var EventType;
-(function (EventType) {
-    EventType["UPDATE_AVAILABLE"] = "updateAvailable";
-    EventType["NO_UPDATE_AVAILABLE"] = "noUpdateAvailable";
-    EventType["ERROR"] = "error";
-})(EventType || (EventType = {}));
-export const localAssets = ExpoUpdates.localAssets || {};
-export const manifest = ExpoUpdates.manifest || {};
+export var UpdateEventType;
+(function (UpdateEventType) {
+    UpdateEventType["UPDATE_AVAILABLE"] = "updateAvailable";
+    UpdateEventType["NO_UPDATE_AVAILABLE"] = "noUpdateAvailable";
+    UpdateEventType["ERROR"] = "error";
+})(UpdateEventType || (UpdateEventType = {}));
+export const localAssets = ExpoUpdates.localAssets ?? {};
+export const manifest = ExpoUpdates.manifest ?? {};
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 export async function reloadAsync() {
     if (!ExpoUpdates.reload) {

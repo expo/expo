@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { EventSubscription } from 'fbemitter';
-export declare enum EventType {
+export declare enum UpdateEventType {
     UPDATE_AVAILABLE = "updateAvailable",
     NO_UPDATE_AVAILABLE = "noUpdateAvailable",
     ERROR = "error"
@@ -20,12 +20,12 @@ declare type UpdateFetchResult = {
 };
 declare type Listener<E> = (event: E) => void;
 declare type UpdateEvent = {
-    type: EventType.NO_UPDATE_AVAILABLE;
+    type: UpdateEventType.NO_UPDATE_AVAILABLE;
 } | {
-    type: EventType.UPDATE_AVAILABLE;
+    type: UpdateEventType.UPDATE_AVAILABLE;
     manifest: Manifest;
 } | {
-    type: EventType.ERROR;
+    type: UpdateEventType.ERROR;
     message: string;
 };
 declare type LocalAssets = {

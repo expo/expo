@@ -4,7 +4,7 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';
 
-export enum EventType {
+export enum UpdateEventType {
   UPDATE_AVAILABLE = 'updateAvailable',
   NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
   ERROR = 'error',
@@ -20,14 +20,14 @@ type UpdateFetchResult = { isNew: false } | { isNew: true; manifest: Manifest };
 type Listener<E> = (event: E) => void;
 
 type UpdateEvent =
-  | { type: EventType.NO_UPDATE_AVAILABLE }
-  | { type: EventType.UPDATE_AVAILABLE; manifest: Manifest }
-  | { type: EventType.ERROR; message: string };
+  | { type: UpdateEventType.NO_UPDATE_AVAILABLE }
+  | { type: UpdateEventType.UPDATE_AVAILABLE; manifest: Manifest }
+  | { type: UpdateEventType.ERROR; message: string };
 
 type LocalAssets = { [remoteUrl: string]: string };
 
-export const localAssets: LocalAssets = ExpoUpdates.localAssets || {};
-export const manifest: Manifest | object = ExpoUpdates.manifest || {};
+export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
+export const manifest: Manifest | object = ExpoUpdates.manifest ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
 export async function reloadAsync(): Promise<void> {
