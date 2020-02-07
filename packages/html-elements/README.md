@@ -49,6 +49,18 @@ function App() {
 
 ## Structure
 
+### Header
+
+Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile. This requires a non-universal `accessibilityRole` internally.
+
+```tsx
+import { Header } from '@expo/html-elements';
+
+function App() {
+    return <Header />
+}
+```
+
 ### Article
 
 Renders an `<article />` on web and a `View` everywhere else. This requires a non-universal `accessibilityRole` internally.

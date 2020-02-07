@@ -1,6 +1,6 @@
+import { A, Article, H1, H2, H3, H4, H5, H6, Header } from '@expo/html-elements';
 import React from 'react';
-import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { H1, H2, H3, H4, H5, H6, A, Article } from '@expo/html-elements';
+import { View } from 'react-native';
 
 export default class HTMLScreen extends React.Component {
   static navigationOptions = {
@@ -16,6 +16,7 @@ export default class HTMLScreen extends React.Component {
         <H4>Header 4</H4>
         <H5>Header 5</H5>
         <H6>Header 6</H6>
+        <Header />
         <Article>
           <A href="https://expo.io/" target="_blank">
             Anchor in Article
