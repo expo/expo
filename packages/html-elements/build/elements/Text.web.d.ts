@@ -6,7 +6,7 @@ export declare const S: ComponentType<TextProps>;
 export declare const Del: ComponentType<TextProps>;
 export declare const Strong: ComponentType<TextProps>;
 export declare const I: ComponentType<TextProps>;
-export declare const Em: ComponentType<TextProps>;
+export declare const EM: ComponentType<TextProps>;
 export declare const BR: ComponentType<TextProps>;
 export declare const Small: ComponentType<TextProps>;
 export declare const Mark: ComponentType<TextProps>;

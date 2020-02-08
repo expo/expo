@@ -60,7 +60,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<del />` => `<Del />`
 - [x] `<strong />` => `<Strong />`
 - [x] `<i />` => `<I />`
-- [x] `<em />` => `<Em />`
+- [x] `<em />` => `<EM />`
 - [x] `<br />` => `<BR />`
 - [x] `<small />` => `<Small />`
 - [x] `<mark />` => `<Mark />`
@@ -328,7 +328,7 @@ Alternate strike through text, renders an `<del/>` on web: <del>example</del>
 
 Italic text: _example_
 
-### Em
+### EM
 
 Alternate italic text: _example_
 

@@ -10,4 +10,4 @@ export declare const Mark: React.ComponentType<TextProps>;
 export declare const Code: React.ComponentType<TextProps>;
 export declare const Strong: React.ComponentType<TextProps>;
 export declare const Del: React.ComponentType<TextProps>;
-export declare const Em: React.ComponentType<TextProps>;
+export declare const EM: React.ComponentType<TextProps>;

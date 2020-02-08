@@ -28,7 +28,7 @@ exports[`renders Del 1`] = `
 </del>
 `;
 
-exports[`renders Em 1`] = `
+exports[`renders EM 1`] = `
 <em
   style={
     Object {

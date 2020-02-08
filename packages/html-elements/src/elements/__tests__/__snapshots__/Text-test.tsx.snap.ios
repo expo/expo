@@ -42,7 +42,7 @@ exports[`renders Del 1`] = `
 </Text>
 `;
 
-exports[`renders Em 1`] = `
+exports[`renders EM 1`] = `
 <Text
   style={
     Object {

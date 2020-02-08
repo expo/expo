@@ -29,7 +29,7 @@ export const Code = forwardRef((props, ref) => {
 });
 export const Strong = B;
 export const Del = S;
-export const Em = I;
+export const EM = I;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),

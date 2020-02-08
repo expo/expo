@@ -39,7 +39,7 @@ export const Code = forwardRef((props: TextProps, ref) => {
 
 export const Strong = B;
 export const Del = S;
-export const Em = I;
+export const EM = I;
 
 const styles = StyleSheet.create({
   p: {
