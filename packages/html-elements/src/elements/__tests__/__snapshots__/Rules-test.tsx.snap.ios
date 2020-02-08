@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders Hr 1`] = `
+exports[`renders HR 1`] = `
 <View
   style={
     Object {

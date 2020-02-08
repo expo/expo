@@ -65,7 +65,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<small />` => `<Small />`
 - [x] `<mark />` => `<Mark />`
 - [x] `<code />` => `<Code />`
-- [x] `<hr />` => `<Hr />`
+- [x] `<hr />` => `<HR />`
 - [x] `<table />` => `<Table />`
 - [x] `<thead />` => `<Thead />`
 - [x] `<tbody />` => `<Tbody />`
@@ -412,17 +412,17 @@ Create a standard list item `<li />` on web and a native view on mobile which ca
 
 ## Rules
 
-### Hr
+### HR
 
 Renders a `<View>` everywhere. Style is modified to match web.
 
 ```tsx
-import { Hr } from '@expo/html-elements';
+import { HR } from '@expo/html-elements';
 
 function App() {
     return (
         <>
-            <Hr />
+            <HR />
         </>
     )
 }

@@ -3,9 +3,9 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { Hr } from '../Rules';
+import { HR } from '../Rules';
 
-it(`renders Hr`, () => {
-  const tree = renderer.create(<Hr />);
+it(`renders HR`, () => {
+  const tree = renderer.create(<HR />);
   expect(tree).toMatchSnapshot();
 });

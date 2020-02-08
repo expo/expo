@@ -1,3 +1,3 @@
 import React from 'react';
 import { ViewProps } from '../primitives/View';
-export declare const Hr: React.ComponentType<ViewProps>;
+export declare const HR: React.ComponentType<ViewProps>;
