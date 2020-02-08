@@ -22,18 +22,6 @@ For instance rendering an HTML `<footer />` element requires platform specific c
 - This package is completely side-effect free!
 - Components are tested with `jest-expo-enzyme`.
 
-**What you do not get**
-
-There are some HTML elements that overlap a lot with universal elements, you should always use the universal elements whenever possible:
-
-- `div` => Use `View` from `react-native`
-- `video` => Use `Video` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/).
-- `img` => Use `Image` from `react-native`
-- `canvas` => Use [`expo-gl`](https://docs.expo.io/versions/v36.0.0/sdk/gl-view/)
-- `input` => `TextView` when possible
-- `ul` => `FlatList` if possible, this package does have `<ul />` support
-- `iframe` => `WebView` this package is not maintained by Expo and doesn't have web support.
-
 ## Setup
 
 Install:
@@ -50,7 +38,51 @@ import { H1 } from '@expo/html-elements';
 
 # Components
 
-Not all HTML elements are supported.
+Not all HTML elements are supported. There are some HTML elements that mostly overlap with some universal modules, you should always try to use the universal modules whenever possible. All supported components are a capitalized variation of the semantic HTML they implement/emulate.
+
+- [x] `<h1 />` => `<H1 />`
+- [x] `<h2 />` => `<H2 />`
+- [x] `<h3 />` => `<H3 />`
+- [x] `<h4 />` => `<H4 />`
+- [x] `<h5 />` => `<H5 />`
+- [x] `<h6 />` => `<H6 />`
+- [x] `<a />` => `<A />`
+- [x] `<article />` => `<Article />`
+- [x] `<header />` => `<Header />`
+- [x] `<main />` => `<Main />`
+- [x] `<section />` => `<Section />`
+- [x] `<nav />` => `<Nav />`
+- [x] `<footer />` => `<Footer />`
+- [x] `<p />` => `<P />`
+- [x] `<b />` => `<B />`
+- [x] `<s />` => `<S />`
+- [x] `<strike />` => `<Strike />`
+- [x] `<strong />` => `<Strong />`
+- [x] `<i />` => `<I />`
+- [x] `<em />` => `<Em />`
+- [x] `<br />` => `<Br />`
+- [x] `<small />` => `<Small />`
+- [x] `<mark />` => `<Mark />`
+- [x] `<code />` => `<Code />`
+- [x] `<hr />` => `<Hr />`
+- [x] `<table />` => `<Table />`
+- [x] `<thead />` => `<Thead />`
+- [x] `<tbody />` => `<Tbody />`
+- [x] `<tfoot />` => `<Tfoot />`
+- [x] `<th />` => `<Th />`
+- [x] `<tr />` => `<Tr />`
+- [x] `<td />` => `<Td />`
+- [x] `<caption />` => `<Caption />`
+- [x] `<ul />` => `<Ul />`
+- [x] `<ol />` => `<Ol />`
+- [x] `<li />` => `<Li />` or `<FlatList />` from `react-native-web`
+- [ ] `<div />` => `<View />` from `react-native-web`
+- [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/).
+- [ ] `<img />` => Use `<Image />` from `react-native-web`
+- [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/)
+- [ ] `<input type="text" />` => Use `<TextView />`
+- [ ] `<input type="file" />` => Use [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/) and [`expo-document-picker`](https://docs.expo.io/versions/latest/sdk/document-picker/)
+- [ ] `<iframe />` => On native use `<WebView />` from `@react-native-community/web-view`, this package is not maintained by Expo and doesn't have web support.
 
 ## Headings
 
@@ -60,9 +92,86 @@ Header elements will use the expected font size and margins from web universally
 import { H1, H2, H3, H4, H5, H6 } from '@expo/html-elements';
 ```
 
+### H1
+
+```tsx
+import { H1 } from '@expo/html-elements';
+export default () => <h6>Example<H1/>
+```
+
+**Output:**
+
+<h1>Example</h1>
+
+
+### H2
+
+```tsx
+import { H2 } from '@expo/html-elements';
+export default () => <H2>Example<H2/>
+```
+
+**Output:**
+
+<h2>Example</h2>
+
+
+### H3
+
+```tsx
+import { H3 } from '@expo/html-elements';
+export default () => <H3>Example<H3/>
+```
+
+**Output:**
+
+<h3>Example</h3>
+
+
+### H4
+
+```tsx
+import { H4 } from '@expo/html-elements';
+export default () => <H4>Example<H4/>
+```
+
+**Output:**
+
+<h4>Example</h4>
+
+
+### H5
+
+```tsx
+import { H5 } from '@expo/html-elements';
+export default () => <H5>Example<H5/>
+```
+
+**Output:**
+
+<h5>Example</h5>
+
+
+### H6
+
+```tsx
+import { H6 } from '@expo/html-elements';
+export default () => <H6>Example<H6/>
+```
+
+**Output:**
+
+<h6>Example</h6>
+
+
 ## Link
 
-You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`. The style is fully normalized with no special modifications made to it.
+### A
+
+You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`.
+
+- The CSS style is fully normalized to match `<Text />`
+- For pseudo-class effects check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.io/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
 
 ```tsx
 import { A } from '@expo/html-elements';
@@ -70,6 +179,31 @@ import { A } from '@expo/html-elements';
 function App() {
     return <A href="#" target="_blank" />
 }
+```
+
+↓ ↓ ↓ ↓ ↓ ↓
+
+#### A output: web
+
+```html
+<a
+  className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+  data-focusable={true}
+  dir="auto"
+  href="#"
+  role="link"
+  target="_blank"
+/>
+```
+
+#### A output: native
+
+```tsx
+<Text
+  accessibilityRole="link"
+  onPress={[Function]}
+  target="_parent"
+/>
 ```
 
 ## Structure
@@ -306,10 +440,10 @@ Create tables universally.
 - Each element renders to the expected type on web.
 - `padding` is removed from all table elements.
 - Text **can only** be rendered in `Th` and `Td` on mobile.
-- `colSpan` and `rowSpan` are currently web-only.
+- `colSpan` and `rowSpan` are currently web-only (PRs welcome).
 
 ```tsx
-import { Table, Thead, Th, Tbody, Tr, Td, Caption } from '@expo/html-elements';
+import { Table, Thead, Th, Tbody, Tfoot, Tr, Td, Caption } from '@expo/html-elements';
 
 function App() {
     return (
@@ -331,7 +465,7 @@ function App() {
 }
 ```
 
-** Renders: **
+#### Table Example
 
 <table>
     <caption>Caption</caption>
