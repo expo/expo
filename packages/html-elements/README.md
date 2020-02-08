@@ -188,7 +188,6 @@ function App() {
 
 ```html
 <a
-  className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
   data-focusable={true}
   dir="auto"
   href="#"
@@ -203,7 +202,6 @@ function App() {
 <Text
   accessibilityRole="link"
   onPress={[Function]}
-  target="_parent"
 />
 ```
 

@@ -4,10 +4,11 @@ import { Linking, Platform } from 'react-native';
 import Text, { TextProps } from '../primitives/Text';
 
 export const A = forwardRef(
-  ({ href, ...props }: TextProps, ref?: ClassAttributes<typeof Text>['ref']) => {
+  ({ href, target, ...props }: TextProps, ref?: ClassAttributes<typeof Text>['ref']) => {
     const nativeProps = Platform.select({
       web: {
         href,
+        target,
       },
       default: {
         // @ts-ignore

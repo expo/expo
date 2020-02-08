@@ -4,6 +4,5 @@ exports[`renders A 1`] = `
 <Text
   accessibilityRole="link"
   onPress={[Function]}
-  target="_parent"
 />
 `;
