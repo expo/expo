@@ -16,6 +16,9 @@ import {
   Header,
   Hr,
   I,
+  Ul,
+  Ol,
+  Li,
   Main,
   P,
   S,
@@ -29,7 +32,7 @@ import {
   Tr,
 } from '@expo/html-elements';
 import React from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 
 function TableComponent() {
   return (
@@ -57,7 +60,7 @@ export default class HTMLScreen extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         <H1>Header 1</H1>
         <H2>Header 2</H2>
         <H3>Header 3</H3>
@@ -73,6 +76,26 @@ export default class HTMLScreen extends React.Component {
         <Section>
           <B>Bold in Section</B>
           <Hr />
+          <Ol>
+            <Li>Grow a long, majestic beard.</Li>
+            <Li>Wear a tall, pointed hat.</Li>
+            <Ul>
+              <Li>Grow a long, majestic beard.</Li>
+              <Li>Wear a tall, pointed hat.</Li>
+              <Li>Have I mentioned the beard?</Li>
+            </Ul>
+            <Li>Have I mentioned the beard?</Li>
+          </Ol>
+          <Ul>
+            <Li>Grow a long, majestic beard.</Li>
+            <Li>Wear a tall, pointed hat.</Li>
+            <Ol>
+              <Li>Grow a long, majestic beard.</Li>
+              <Li>Wear a tall, pointed hat.</Li>
+              <Li>Have I mentioned the beard?</Li>
+            </Ol>
+            <Li>Have I mentioned the beard?</Li>
+          </Ul>
         </Section>
         <Main>
           <I>Italic in Main</I>
@@ -89,7 +112,7 @@ export default class HTMLScreen extends React.Component {
         <Footer>
           <S>Strike in Footer</S>
         </Footer>
-      </View>
+      </ScrollView>
     );
   }
 }

@@ -150,6 +150,96 @@ Alternative elements:
 import { Strong, Strike, Em } from '@expo/html-elements';
 ```
 
+## Lists
+
+You should try and use agnostic `FlatList` or `SectionList`s instead of these whenever possible.
+
+### Ul
+
+Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />` on native.
+
+- [x] Resets font styles everywhere.
+- [ ] Supports i18n by reversing format on iOS and Android
+- [ ] Supports custom bullets
+
+```tsx
+import { Ul, Li } from '@expo/html-elements';
+
+function App() {
+    return (
+        <>
+            <Ul>
+                <Li>oranges</Li>
+                <Li>apples</Li>
+                <Ul>
+                    <Li>green</Li>
+                    <Li>red</Li>
+                </Ul>
+            </Ul>
+        </>
+    )
+}
+```
+
+### Ol
+
+Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` on native.
+
+- [x] Resets font styles everywhere.
+- [ ] Supports i18n by reversing format on iOS and Android
+- [ ] Supports i18n bullets on iOS and Android
+- [ ] Supports custom bullets
+
+```tsx
+import { Ul, Li } from '@expo/html-elements';
+
+function App() {
+    return (
+        <>
+            <Ol>
+                <Li>oranges</Li>
+                <Li>apples</Li>
+                <Ol>
+                    <Li>green</Li>
+                    <Li>red</Li>
+                </Ol>
+            </Ol>
+        </>
+    )
+}
+```
+
+### Li
+
+Create a standard list item `<li />` on web and a native view on mobile which can render text or views inside it.
+
+### P
+
+Renders a `Text` everywhere. Style is slightly modified to match web.
+
+```tsx
+import { P, B, S, I, Br, Small, Code } from '@expo/html-elements';
+
+function App() {
+    return (
+        <>
+            <P>Hello<B>World (in bold)</B></P>
+            <S>strike text</S>
+            <Br />
+            <I>Italic</I>
+            <Code>const foo = true</Code>
+            <Small>Small text</Small>
+        </>
+    )
+}
+```
+
+Alternative elements:
+
+```tsx
+import { Strong, Strike, Em } from '@expo/html-elements';
+```
+
 
 ## Rules
 
