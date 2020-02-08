@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { View as NativeView, RegisteredStyle, RecursiveArray, ViewStyle as NativeViewStyle } from 'react-native';
+import { RecursiveArray, RegisteredStyle, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 declare type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view

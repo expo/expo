@@ -1,27 +1,28 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React, { PropsWithChildren, ComponentType, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import View, { ViewProps } from '../primitives/View';
 import Text, { TextProps } from '../primitives/Text';
 import { em } from '../css/units';
 
-export const Ul = forwardRef((props: ViewProps, ref) => {
-  // @ts-ignore
+export const Ul = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
 
-  const elements = React.Children.toArray(children).map(element =>
-    React.cloneElement(element, { bullet: '\u00B7' })
-  );
+  const elements = React.Children.toArray(children).map(element => {
+    if (React.isValidElement(element)) return React.cloneElement(element, { bullet: '\u00B7' });
+    return element;
+  });
 
   return <View {...props} style={[styles.ul, props.style]} children={elements} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Ol = forwardRef((props: ViewProps, ref) => {
-  // @ts-ignore
+export const Ol = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
 
-  const elements = React.Children.toArray(children).map((element, index) =>
-    React.cloneElement(element, { bullet: `${index + 1}.` })
-  );
+  const elements = React.Children.toArray(children).map((element, index) => {
+    if (React.isValidElement(element))
+      return React.cloneElement(element, { bullet: `${index + 1}.` });
+    return element;
+  });
 
   return <View {...props} style={[styles.ol, props.style]} children={elements} ref={ref} />;
 }) as ComponentType<ViewProps>;
@@ -31,8 +32,9 @@ function isTextProps(props: any): props is TextProps {
   return typeof props.children === 'string';
 }
 
-export const Li = forwardRef((props: TextProps | ViewProps, ref: any) => {
-  // @ts-ignore
+type LiProps = (TextProps | ViewProps) & { bullet?: string };
+
+export const Li = forwardRef((props: PropsWithChildren<LiProps>, ref: any) => {
   const { bullet, children } = props;
 
   if (isTextProps(props)) {
@@ -48,7 +50,7 @@ export const Li = forwardRef((props: TextProps | ViewProps, ref: any) => {
       {children}
     </View>
   );
-}) as ComponentType<TextProps> | ComponentType<ViewProps>;
+}) as ComponentType<LiProps>;
 
 const styles = StyleSheet.create({
   caption: {

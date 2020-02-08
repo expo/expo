@@ -1,8 +1,8 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
 import {
-  View as NativeView,
-  RegisteredStyle,
   RecursiveArray,
+  RegisteredStyle,
+  View as NativeView,
   ViewStyle as NativeViewStyle,
 } from 'react-native';
 

@@ -4,15 +4,21 @@ import View from '../primitives/View';
 import Text from '../primitives/Text';
 import { em } from '../css/units';
 export const Ul = forwardRef((props, ref) => {
-    // @ts-ignore
     const { children } = props;
-    const elements = React.Children.toArray(children).map(element => React.cloneElement(element, { bullet: '\u00B7' }));
+    const elements = React.Children.toArray(children).map(element => {
+        if (React.isValidElement(element))
+            return React.cloneElement(element, { bullet: '\u00B7' });
+        return element;
+    });
     return <View {...props} style={[styles.ul, props.style]} children={elements} ref={ref}/>;
 });
 export const Ol = forwardRef((props, ref) => {
-    // @ts-ignore
     const { children } = props;
-    const elements = React.Children.toArray(children).map((element, index) => React.cloneElement(element, { bullet: `${index + 1}.` }));
+    const elements = React.Children.toArray(children).map((element, index) => {
+        if (React.isValidElement(element))
+            return React.cloneElement(element, { bullet: `${index + 1}.` });
+        return element;
+    });
     return <View {...props} style={[styles.ol, props.style]} children={elements} ref={ref}/>;
 });
 function isTextProps(props) {
@@ -20,7 +26,6 @@ function isTextProps(props) {
     return typeof props.children === 'string';
 }
 export const Li = forwardRef((props, ref) => {
-    // @ts-ignore
     const { bullet, children } = props;
     if (isTextProps(props)) {
         return (<Text {...props} style={props.style} ref={ref}>

@@ -8,7 +8,6 @@ export const A = forwardRef(({ href, target, ...props }, ref) => {
             target,
         },
         default: {
-            // @ts-ignore
             onPress: event => {
                 props.onPress && props.onPress(event);
                 if (Platform.OS !== 'web' && href !== undefined) {
