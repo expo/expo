@@ -2,8 +2,7 @@ import {
   A,
   Article,
   B,
-  Br,
-  Nav,
+  BR,
   Caption,
   Code,
   Footer,
@@ -14,41 +13,42 @@ import {
   H5,
   H6,
   Header,
-  Hr,
+  HR,
   I,
-  Ul,
-  Ol,
-  Li,
+  LI,
   Main,
+  Nav,
+  OL,
   P,
   S,
   Section,
-  Table,
-  Tbody,
-  Td,
   Small,
-  Th,
-  Thead,
-  Tr,
+  Table,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  UL,
 } from '@expo/html-elements';
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 function TableComponent() {
   return (
     <Table>
       <Caption>Caption</Caption>
-      <Thead>
-        <Tr>
-          <Th colSpan={2}>The table header</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        <Tr>
-          <Td>The table body</Td>
-          <Td>with two columns</Td>
-        </Tr>
-      </Tbody>
+      <THead>
+        <TR>
+          <TH colSpan={2}>The table header</TH>
+        </TR>
+      </THead>
+      <TBody>
+        <TR>
+          <TD>The table body</TD>
+          <TD>with two columns</TD>
+        </TR>
+      </TBody>
     </Table>
   );
 }
@@ -75,27 +75,27 @@ export default class HTMLScreen extends React.Component {
         </Header>
         <Section>
           <B>Bold in Section</B>
-          <Hr />
-          <Ol>
-            <Li>Grow a long, majestic beard.</Li>
-            <Li>Wear a tall, pointed hat.</Li>
-            <Ul>
-              <Li>Grow a long, majestic beard.</Li>
-              <Li>Wear a tall, pointed hat.</Li>
-              <Li>Have I mentioned the beard?</Li>
-            </Ul>
-            <Li>Have I mentioned the beard?</Li>
-          </Ol>
-          <Ul>
-            <Li>Grow a long, majestic beard.</Li>
-            <Li>Wear a tall, pointed hat.</Li>
-            <Ol>
-              <Li>Grow a long, majestic beard.</Li>
-              <Li>Wear a tall, pointed hat.</Li>
-              <Li>Have I mentioned the beard?</Li>
-            </Ol>
-            <Li>Have I mentioned the beard?</Li>
-          </Ul>
+          <HR />
+          <OL>
+            <LI>Grow a long, majestic beard.</LI>
+            <LI>Wear a tall, pointed hat.</LI>
+            <UL>
+              <LI>Grow a long, majestic beard.</LI>
+              <LI>Wear a tall, pointed hat.</LI>
+              <LI>Have I mentioned the beard?</LI>
+            </UL>
+            <LI>Have I mentioned the beard?</LI>
+          </OL>
+          <UL>
+            <LI>Grow a long, majestic beard.</LI>
+            <LI>Wear a tall, pointed hat.</LI>
+            <OL>
+              <LI>Grow a long, majestic beard.</LI>
+              <LI>Wear a tall, pointed hat.</LI>
+              <LI>Have I mentioned the beard?</LI>
+            </OL>
+            <LI>Have I mentioned the beard?</LI>
+          </UL>
         </Section>
         <Main>
           <I>Italic in Main</I>
@@ -107,7 +107,7 @@ export default class HTMLScreen extends React.Component {
             Anchor in Article
           </A>
         </Article>
-        <Br />
+        <BR />
         <Code>const value = true</Code>
         <Footer>
           <S>Strike in Footer</S>
