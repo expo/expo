@@ -78,12 +78,12 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<ol />` => `<Ol />`
 - [x] `<li />` => `<Li />` or `<FlatList />` from `react-native-web`
 - [ ] `<div />` => `<View />` from `react-native-web`
-- [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/).
+- [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
 - [ ] `<img />` => Use `<Image />` from `react-native-web`
-- [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/)
+- [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/) and the [Expo Canvas API](https://github.com/expo/expo-2d-context)
 - [ ] `<input type="text" />` => Use `<TextView />`
 - [ ] `<input type="file" />` => Use [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/) and [`expo-document-picker`](https://docs.expo.io/versions/latest/sdk/document-picker/)
-- [ ] `<iframe />` => On native use `<WebView />` from `@react-native-community/web-view`, this package is not maintained by Expo and doesn't have web support.
+- [ ] `<iframe />` => On native use [`<WebView />`](https://docs.expo.io/versions/latest/sdk/webview/). Notice: `@react-native-community/web-view` is not maintained by Expo and doesn't have web support
 
 ## Headings
 
