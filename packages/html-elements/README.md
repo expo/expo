@@ -9,8 +9,9 @@
   <img alt="Supports Expo Web" longdesc="Supports Expo Web" src="https://img.shields.io/badge/web-4630EB.svg?style=flat-square&logo=GOOGLE-CHROME&labelColor=4285F4&logoColor=fff" />
 </p>
 
-Universal semantic HTML React components for iOS, Android, web, and desktop. We recommended using platform agnostic primitives like `View`, `Image`, and `Text` wherever possible but sometimes that's not always an option.
-For instance rendering an HTML `<footer />` element requires platform specific code in your app for every platform you want to support, this can quickly become a huge burden (especially for TypeScript users). This is where `@expo/html-elements` comes in!
+Simple, light-weight, and well tested, universal semantic HTML elements as React components for iOS, Android, web, and desktop!
+
+We at Expo recommended using platform agnostic primitives like `View`, `Image`, and `Text` whenever possible but sometimes that's not easy! This package aims to solve that while still being an optimal UI package for iOS, and Android.
 
 **What you get**
 
@@ -18,9 +19,9 @@ For instance rendering an HTML `<footer />` element requires platform specific c
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
   - The `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component excepts styles from the `StyleSheet` API.
-- TypeScript works for iOS, Android, and web, no need to monkey patching types.
+- TypeScript works for iOS, Android, and web, no need to monkey patch types.
 - This package is completely side-effect free!
-- Components are tested with `jest-expo-enzyme`.
+- Every component is tested with `jest-expo-enzyme`.
 
 ## Setup
 
