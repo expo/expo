@@ -18,7 +18,7 @@ We at Expo recommended using platform agnostic primitives like `View`, `Image`, 
 - Using these components will optimize for accessibility and SEO.
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
   - The `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
-- Every component excepts styles from the `StyleSheet` API.
+- Every component accepts styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no need to monkey patch types.
 - This package is completely side-effect free!
 - Every component is tested universally for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme).
