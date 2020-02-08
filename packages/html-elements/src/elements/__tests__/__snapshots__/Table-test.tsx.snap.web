@@ -104,7 +104,7 @@ exports[`renders THead 1`] = `
 />
 `;
 
-exports[`renders Tr 1`] = `
+exports[`renders TR 1`] = `
 <tr
   style={
     Object {

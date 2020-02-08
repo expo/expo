@@ -15,7 +15,7 @@ export const TFoot = forwardRef((props, ref) => {
 export const Th = forwardRef((props, ref) => {
     return createElement('th', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Tr = forwardRef((props, ref) => {
+export const TR = forwardRef((props, ref) => {
     return createElement('tr', { ...props, style: [styles.reset, props.style], ref });
 });
 export const TD = forwardRef((props, ref) => {

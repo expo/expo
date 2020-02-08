@@ -3,7 +3,7 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { Table, THead, TBody, TFoot, Tr, Th, TD, Caption } from '../Table';
+import { Table, THead, TBody, TFoot, TR, Th, TD, Caption } from '../Table';
 
 it(`renders Table`, () => {
   const tree = renderer.create(<Table />);
@@ -25,8 +25,8 @@ it(`renders Th`, () => {
   const tree = renderer.create(<Th>Header</Th>);
   expect(tree).toMatchSnapshot();
 });
-it(`renders Tr`, () => {
-  const tree = renderer.create(<Tr />);
+it(`renders TR`, () => {
+  const tree = renderer.create(<TR />);
   expect(tree).toMatchSnapshot();
 });
 it(`renders TD`, () => {

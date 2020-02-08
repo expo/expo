@@ -19,7 +19,7 @@ export const TFoot = forwardRef((props, ref) => {
 export const Th = forwardRef((props, ref) => {
     return <TableText {...props} style={[styles.th, props.style]} ref={ref}/>;
 });
-export const Tr = forwardRef((props, ref) => {
+export const TR = forwardRef((props, ref) => {
     return <View {...props} style={[styles.tr, props.style]} ref={ref}/>;
 });
 export const TD = forwardRef((props, ref) => {

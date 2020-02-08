@@ -7,6 +7,6 @@ export declare const THead: React.ComponentType<ViewProps>;
 export declare const TBody: React.ComponentType<ViewProps>;
 export declare const TFoot: React.ComponentType<ViewProps>;
 export declare const Th: React.ComponentType<TableTextProps>;
-export declare const Tr: React.ComponentType<ViewProps>;
+export declare const TR: React.ComponentType<ViewProps>;
 export declare const TD: React.ComponentType<TableTextProps>;
 export declare const Caption: React.ComponentType<TextProps>;

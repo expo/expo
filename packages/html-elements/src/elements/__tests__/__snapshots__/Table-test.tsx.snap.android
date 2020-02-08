@@ -49,7 +49,7 @@ exports[`renders Th 1`] = `
 
 exports[`renders THead 1`] = `<View />`;
 
-exports[`renders Tr 1`] = `
+exports[`renders TR 1`] = `
 <View
   style={
     Object {
