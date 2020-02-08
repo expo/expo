@@ -32,9 +32,9 @@ function isTextProps(props: any): props is TextProps {
   return typeof props.children === 'string';
 }
 
-type LiProps = (TextProps | ViewProps) & { bullet?: string };
+type LIProps = (TextProps | ViewProps) & { bullet?: string };
 
-export const Li = forwardRef((props: PropsWithChildren<LiProps>, ref: any) => {
+export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
   const { bullet, children } = props;
 
   if (isTextProps(props)) {
@@ -50,7 +50,7 @@ export const Li = forwardRef((props: PropsWithChildren<LiProps>, ref: any) => {
       {children}
     </View>
   );
-}) as ComponentType<LiProps>;
+}) as ComponentType<LIProps>;
 
 const styles = StyleSheet.create({
   caption: {

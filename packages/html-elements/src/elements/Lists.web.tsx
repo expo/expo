@@ -12,7 +12,7 @@ export const OL = forwardRef((props: ViewProps, ref) => {
   return createElement('ol', { ...props, style: [props.style], ref });
 }) as ComponentType<ViewProps>;
 
-export const Li = forwardRef((props: TextProps, ref) => {
+export const LI = forwardRef((props: TextProps, ref) => {
   return createElement('li', {
     ...props,
     style: [styles.reset, { listStyleType: 'inherit' }, props.style],

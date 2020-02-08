@@ -6,7 +6,7 @@ export const UL = forwardRef((props, ref) => {
 export const OL = forwardRef((props, ref) => {
     return createElement('ol', { ...props, style: [props.style], ref });
 });
-export const Li = forwardRef((props, ref) => {
+export const LI = forwardRef((props, ref) => {
     return createElement('li', {
         ...props,
         style: [styles.reset, { listStyleType: 'inherit' }, props.style],

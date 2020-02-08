@@ -25,7 +25,7 @@ function isTextProps(props) {
     // Treat <li></li> as a Text element.
     return typeof props.children === 'string';
 }
-export const Li = forwardRef((props, ref) => {
+export const LI = forwardRef((props, ref) => {
     const { bullet, children } = props;
     if (isTextProps(props)) {
         return (<Text {...props} style={props.style} ref={ref}>

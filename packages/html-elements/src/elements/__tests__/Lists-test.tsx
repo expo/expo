@@ -3,14 +3,14 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { OL, Li, UL } from '../Lists';
+import { OL, LI, UL } from '../Lists';
 
 it(`renders UL nested in OL`, () => {
   const tree = renderer.create(
     <OL>
-      <Li>item</Li>
+      <LI>item</LI>
       <UL>
-        <Li>item</Li>
+        <LI>item</LI>
       </UL>
     </OL>
   );
@@ -19,9 +19,9 @@ it(`renders UL nested in OL`, () => {
 it(`renders OL nested in UL`, () => {
   const tree = renderer.create(
     <UL>
-      <Li>item</Li>
+      <LI>item</LI>
       <OL>
-        <Li>item</Li>
+        <LI>item</LI>
       </OL>
     </UL>
   );

@@ -3,4 +3,4 @@ import { TextProps } from '../primitives/Text';
 import { ViewProps } from '../primitives/View';
 export declare const UL: ComponentType<ViewProps>;
 export declare const OL: ComponentType<ViewProps>;
-export declare const Li: ComponentType<TextProps>;
+export declare const LI: ComponentType<TextProps>;

@@ -76,7 +76,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<caption />` => `<Caption />`
 - [x] `<ul />` => `<UL />`
 - [x] `<ol />` => `<OL />`
-- [x] `<li />` => `<Li />` or `<FlatList />` from `react-native-web`
+- [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
 - [ ] `<div />` => `<View />` from `react-native-web`
 - [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
 - [ ] `<img />` => Use `<Image />` from `react-native-web`
@@ -360,17 +360,17 @@ Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />
 - [ ] Supports custom bullets
 
 ```tsx
-import { UL, Li } from '@expo/html-elements';
+import { UL, LI } from '@expo/html-elements';
 
 function App() {
     return (
         <>
             <UL>
-                <Li>oranges</Li>
-                <Li>apples</Li>
+                <LI>oranges</LI>
+                <LI>apples</LI>
                 <UL>
-                    <Li>green</Li>
-                    <Li>red</Li>
+                    <LI>green</LI>
+                    <LI>red</LI>
                 </UL>
             </UL>
         </>
@@ -388,17 +388,17 @@ Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` 
 - [ ] Supports custom bullets
 
 ```tsx
-import { UL, Li } from '@expo/html-elements';
+import { UL, LI } from '@expo/html-elements';
 
 function App() {
     return (
         <>
             <OL>
-                <Li>oranges</Li>
-                <Li>apples</Li>
+                <LI>oranges</LI>
+                <LI>apples</LI>
                 <OL>
-                    <Li>green</Li>
-                    <Li>red</Li>
+                    <LI>green</LI>
+                    <LI>red</LI>
                 </OL>
             </OL>
         </>
@@ -406,7 +406,7 @@ function App() {
 }
 ```
 
-### Li
+### LI
 
 Create a standard list item `<li />` on web and a native view on mobile which can render text or views inside it.
 
