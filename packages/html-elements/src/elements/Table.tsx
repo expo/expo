@@ -13,7 +13,7 @@ export const THead = forwardRef((props: ViewProps, ref) => {
   return <View {...props} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Tbody = forwardRef((props: ViewProps, ref) => {
+export const TBody = forwardRef((props: ViewProps, ref) => {
   return <View {...props} ref={ref} />;
 }) as ComponentType<ViewProps>;
 

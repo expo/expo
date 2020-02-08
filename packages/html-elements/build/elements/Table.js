@@ -10,7 +10,7 @@ export const Table = forwardRef((props, ref) => {
 export const THead = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
-export const Tbody = forwardRef((props, ref) => {
+export const TBody = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
 export const Tfoot = forwardRef((props, ref) => {

@@ -13,7 +13,7 @@ export const THead = forwardRef((props: ViewProps, ref) => {
   return createElement('thead', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<ViewProps>;
 
-export const Tbody = forwardRef((props: ViewProps, ref) => {
+export const TBody = forwardRef((props: ViewProps, ref) => {
   return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<ViewProps>;
 

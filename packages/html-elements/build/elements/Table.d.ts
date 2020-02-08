@@ -4,7 +4,7 @@ import { TextProps } from '../primitives/Text';
 import { TableTextProps } from '../primitives/Table';
 export declare const Table: React.ComponentType<ViewProps>;
 export declare const THead: React.ComponentType<ViewProps>;
-export declare const Tbody: React.ComponentType<ViewProps>;
+export declare const TBody: React.ComponentType<ViewProps>;
 export declare const Tfoot: React.ComponentType<ViewProps>;
 export declare const Th: React.ComponentType<TableTextProps>;
 export declare const Tr: React.ComponentType<ViewProps>;

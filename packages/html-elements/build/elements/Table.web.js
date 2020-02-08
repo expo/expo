@@ -3,10 +3,10 @@ import { StyleSheet, createElement } from 'react-native';
 export const Table = forwardRef((props, ref) => {
     return createElement('table', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Thead = forwardRef((props, ref) => {
+export const THead = forwardRef((props, ref) => {
     return createElement('thead', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Tbody = forwardRef((props, ref) => {
+export const TBody = forwardRef((props, ref) => {
     return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
 });
 export const Tfoot = forwardRef((props, ref) => {

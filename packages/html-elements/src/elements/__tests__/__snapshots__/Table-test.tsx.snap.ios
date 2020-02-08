@@ -15,7 +15,7 @@ exports[`renders Caption 1`] = `
 
 exports[`renders Table 1`] = `<View />`;
 
-exports[`renders Tbody 1`] = `<View />`;
+exports[`renders TBody 1`] = `<View />`;
 
 exports[`renders Td 1`] = `
 <Text

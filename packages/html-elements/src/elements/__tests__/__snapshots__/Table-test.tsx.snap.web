@@ -30,7 +30,7 @@ exports[`renders Table 1`] = `
 />
 `;
 
-exports[`renders Tbody 1`] = `
+exports[`renders TBody 1`] = `
 <tbody
   style={
     Object {
