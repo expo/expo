@@ -30,7 +30,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 <SnackInline>
 
-```js
+```tsx
 import React, { useEffect, useState } from 'react';
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 import * as AppAuth from 'expo-app-auth';
@@ -50,7 +50,6 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>Expo AppAuth Example</Text>
-      <Text></Text>
       <Button
         title="Sign In with Google "
         onPress={async () => {
@@ -65,7 +64,7 @@ export default function App() {
           setAuthState(null);
         }}
       />
-      <Text>{JSON.stringify(authState)}</Text>
+      <Text>{JSON.stringify(authState, null, 2)}</Text>
     </View>
   );
 }
