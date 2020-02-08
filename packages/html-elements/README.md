@@ -123,9 +123,11 @@ function App() {
 
 ## Text
 
-### P
+Wraps the primitive `Text` element on native and renders the expected HTML on web.
 
-Renders a `Text` everywhere. Style is slightly modified to match web.
+- Style is slightly modified to match web.
+- All font styles are reset.
+- All elements except styles from `StyleSheet` API.
 
 ```tsx
 import { P, B, S, I, Br, Small, Code } from '@expo/html-elements';
@@ -144,11 +146,48 @@ function App() {
 }
 ```
 
-Alternative elements:
+### P
 
-```tsx
-import { Strong, Strike, Em } from '@expo/html-elements';
-```
+Standard paragraph: <p>example</p>
+
+### B
+
+Bold text: <b>example</b>
+
+### Strong
+
+Alternate Bold text: <strong>example</strong>
+
+### S
+
+Strike through text: <s>example</s>
+
+### Strike
+
+Alternate strike through text, renders an `<s/>` on web: <s>example</s>
+
+### I
+
+Italic text: _example_
+
+### Em
+
+Alternate italic text: _example_
+
+### Small
+
+Smaller than default text: <small>example</small>
+
+### Code
+
+Inline code block: <code>example</code>
+
+- [ ] Support lazy loading mono font on mobile.
+
+### Mark
+
+Highlight text: <mark>example</mark>
+
 
 ## Lists
 
@@ -213,34 +252,6 @@ function App() {
 
 Create a standard list item `<li />` on web and a native view on mobile which can render text or views inside it.
 
-### P
-
-Renders a `Text` everywhere. Style is slightly modified to match web.
-
-```tsx
-import { P, B, S, I, Br, Small, Code } from '@expo/html-elements';
-
-function App() {
-    return (
-        <>
-            <P>Hello<B>World (in bold)</B></P>
-            <S>strike text</S>
-            <Br />
-            <I>Italic</I>
-            <Code>const foo = true</Code>
-            <Small>Small text</Small>
-        </>
-    )
-}
-```
-
-Alternative elements:
-
-```tsx
-import { Strong, Strike, Em } from '@expo/html-elements';
-```
-
-
 ## Rules
 
 ### Hr
@@ -258,6 +269,10 @@ function App() {
     )
 }
 ```
+
+### Br
+
+Line break: <br />
 
 ## Tables
 

@@ -28,6 +28,10 @@ export const Small = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.small, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
+export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <Text {...props} style={[styles.mark, style]} ref={ref} />;
+}) as ComponentType<TextProps>;
+
 // TODO: Lazy load mono font on native
 export const Code = forwardRef((props: TextProps, ref) => {
   return <Text {...props} ref={ref} />;
@@ -55,6 +59,10 @@ const styles = StyleSheet.create({
   s: {
     textDecorationLine: 'line-through',
     textDecorationStyle: 'solid',
+  },
+  mark: {
+    backgroundColor: 'yellow',
+    color: 'black',
   },
   i: {
     fontStyle: 'italic',

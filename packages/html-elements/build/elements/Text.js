@@ -20,6 +20,9 @@ export const Br = forwardRef(({ style, ...props }, ref) => {
 export const Small = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.small, style]} ref={ref}/>;
 });
+export const Mark = forwardRef(({ style, ...props }, ref) => {
+    return <Text {...props} style={[styles.mark, style]} ref={ref}/>;
+});
 // TODO: Lazy load mono font on native
 export const Code = forwardRef((props, ref) => {
     return <Text {...props} ref={ref}/>;
@@ -45,6 +48,10 @@ const styles = StyleSheet.create({
     s: {
         textDecorationLine: 'line-through',
         textDecorationStyle: 'solid',
+    },
+    mark: {
+        backgroundColor: 'yellow',
+        color: 'black',
     },
     i: {
         fontStyle: 'italic',
