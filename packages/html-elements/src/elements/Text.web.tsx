@@ -31,7 +31,7 @@ export const Em = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('em', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TextProps>;
 
-export const Br = forwardRef((props: TextProps, ref) => {
+export const BR = forwardRef((props: TextProps, ref) => {
   return createElement('br', { ...props, ref });
 }) as ComponentType<TextProps>;
 

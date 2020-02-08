@@ -12,7 +12,7 @@ exports[`renders B 1`] = `
 </b>
 `;
 
-exports[`renders Br 1`] = `<br />`;
+exports[`renders BR 1`] = `<br />`;
 
 exports[`renders Code 1`] = `<code />`;
 

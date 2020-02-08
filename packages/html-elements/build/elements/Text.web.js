@@ -21,7 +21,7 @@ export const I = forwardRef(({ style, ...props }, ref) => {
 export const Em = forwardRef(({ style, ...props }, ref) => {
     return createElement('em', { ...props, style: [styles.reset, style], ref });
 });
-export const Br = forwardRef((props, ref) => {
+export const BR = forwardRef((props, ref) => {
     return createElement('br', { ...props, ref });
 });
 export const Small = forwardRef(({ style, ...props }, ref) => {

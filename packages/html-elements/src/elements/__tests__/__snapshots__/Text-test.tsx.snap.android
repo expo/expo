@@ -14,7 +14,7 @@ exports[`renders B 1`] = `
 </Text>
 `;
 
-exports[`renders Br 1`] = `
+exports[`renders BR 1`] = `
 <Text
   style={
     Object {

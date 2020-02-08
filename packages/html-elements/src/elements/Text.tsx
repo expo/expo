@@ -20,7 +20,7 @@ export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Br = forwardRef(({ style, ...props }: TextProps, ref) => {
+export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.br, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 

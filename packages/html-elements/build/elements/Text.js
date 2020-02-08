@@ -14,7 +14,7 @@ export const S = forwardRef(({ style, ...props }, ref) => {
 export const I = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.i, style]} ref={ref}/>;
 });
-export const Br = forwardRef(({ style, ...props }, ref) => {
+export const BR = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.br, style]} ref={ref}/>;
 });
 export const Small = forwardRef(({ style, ...props }, ref) => {

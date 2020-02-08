@@ -61,7 +61,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<strong />` => `<Strong />`
 - [x] `<i />` => `<I />`
 - [x] `<em />` => `<Em />`
-- [x] `<br />` => `<Br />`
+- [x] `<br />` => `<BR />`
 - [x] `<small />` => `<Small />`
 - [x] `<mark />` => `<Mark />`
 - [x] `<code />` => `<Code />`
@@ -288,14 +288,14 @@ Wraps the primitive `Text` element on native and renders the expected HTML on we
 - All elements except styles from `StyleSheet` API.
 
 ```tsx
-import { P, B, S, I, Br, Small, Code } from '@expo/html-elements';
+import { P, B, S, I, BR, Small, Code } from '@expo/html-elements';
 
 function App() {
     return (
         <>
             <P>Hello<B>World (in bold)</B></P>
             <S>strike text</S>
-            <Br />
+            <BR />
             <I>Italic</I>
             <Code>const foo = true</Code>
             <Small>Small text</Small>
@@ -428,7 +428,7 @@ function App() {
 }
 ```
 
-### Br
+### BR
 
 Line break: <br />
 
