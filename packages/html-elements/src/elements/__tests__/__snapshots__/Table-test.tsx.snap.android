@@ -17,7 +17,7 @@ exports[`renders Table 1`] = `<View />`;
 
 exports[`renders TBody 1`] = `<View />`;
 
-exports[`renders Td 1`] = `
+exports[`renders TD 1`] = `
 <Text
   style={
     Object {

@@ -29,7 +29,7 @@ export const Tr = forwardRef((props: ViewProps, ref) => {
   return createElement('tr', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<ViewProps>;
 
-export const Td = forwardRef((props: TableTextProps, ref) => {
+export const TD = forwardRef((props: TableTextProps, ref) => {
   return createElement('td', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<TableTextProps>;
 

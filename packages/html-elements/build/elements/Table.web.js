@@ -18,7 +18,7 @@ export const Th = forwardRef((props, ref) => {
 export const Tr = forwardRef((props, ref) => {
     return createElement('tr', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Td = forwardRef((props, ref) => {
+export const TD = forwardRef((props, ref) => {
     return createElement('td', { ...props, style: [styles.reset, props.style], ref });
 });
 export const Caption = forwardRef((props, ref) => {

@@ -29,7 +29,7 @@ export const Tr = forwardRef((props: ViewProps, ref) => {
   return <View {...props} style={[styles.tr, props.style]} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Td = forwardRef((props: TableTextProps, ref: any) => {
+export const TD = forwardRef((props: TableTextProps, ref: any) => {
   return <TableText {...props} style={[styles.td, props.style]} ref={ref} />;
 }) as ComponentType<TableTextProps>;
 

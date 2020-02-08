@@ -8,5 +8,5 @@ export declare const TBody: React.ComponentType<ViewProps>;
 export declare const TFoot: React.ComponentType<ViewProps>;
 export declare const Th: React.ComponentType<TableTextProps>;
 export declare const Tr: React.ComponentType<ViewProps>;
-export declare const Td: React.ComponentType<TableTextProps>;
+export declare const TD: React.ComponentType<TableTextProps>;
 export declare const Caption: React.ComponentType<TextProps>;

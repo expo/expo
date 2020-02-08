@@ -44,7 +44,7 @@ exports[`renders TBody 1`] = `
 />
 `;
 
-exports[`renders Td 1`] = `
+exports[`renders TD 1`] = `
 <td
   style={
     Object {

@@ -22,7 +22,7 @@ export const Th = forwardRef((props, ref) => {
 export const Tr = forwardRef((props, ref) => {
     return <View {...props} style={[styles.tr, props.style]} ref={ref}/>;
 });
-export const Td = forwardRef((props, ref) => {
+export const TD = forwardRef((props, ref) => {
     return <TableText {...props} style={[styles.td, props.style]} ref={ref}/>;
 });
 export const Caption = forwardRef((props, ref) => {
