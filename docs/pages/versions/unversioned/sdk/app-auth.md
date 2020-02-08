@@ -12,7 +12,7 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
 
-For now, this module only works on Anroid and iOS, but web support is possible is planned to be added.
+Currently, this module only supports on Android, and iOS. Web support is planned to be added. Track it here: [Web support in expo-app-auth](https://github.com/expo/expo/issues/6883).
 
 #### Platform Compatibility
 
