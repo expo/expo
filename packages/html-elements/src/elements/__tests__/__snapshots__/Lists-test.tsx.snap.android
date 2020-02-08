@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders Ol nested in UL 1`] = `
+exports[`renders OL nested in UL 1`] = `
 <View
   style={
     Object {
@@ -34,7 +34,7 @@ exports[`renders Ol nested in UL 1`] = `
 </View>
 `;
 
-exports[`renders UL nested in Ol 1`] = `
+exports[`renders UL nested in OL 1`] = `
 <View
   style={
     Object {

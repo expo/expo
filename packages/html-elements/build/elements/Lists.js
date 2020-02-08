@@ -12,7 +12,7 @@ export const UL = forwardRef((props, ref) => {
     });
     return <View {...props} style={[styles.ul, props.style]} children={elements} ref={ref}/>;
 });
-export const Ol = forwardRef((props, ref) => {
+export const OL = forwardRef((props, ref) => {
     const { children } = props;
     const elements = React.Children.toArray(children).map((element, index) => {
         if (React.isValidElement(element))

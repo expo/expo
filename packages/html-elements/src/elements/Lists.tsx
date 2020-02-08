@@ -15,7 +15,7 @@ export const UL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   return <View {...props} style={[styles.ul, props.style]} children={elements} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Ol = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
+export const OL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
 
   const elements = React.Children.toArray(children).map((element, index) => {

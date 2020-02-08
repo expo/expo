@@ -3,7 +3,7 @@ import { createElement, StyleSheet } from 'react-native';
 export const UL = forwardRef((props, ref) => {
     return createElement('ul', { ...props, style: [{ listStyleType: 'initial' }, props.style], ref });
 });
-export const Ol = forwardRef((props, ref) => {
+export const OL = forwardRef((props, ref) => {
     return createElement('ol', { ...props, style: [props.style], ref });
 });
 export const Li = forwardRef((props, ref) => {

@@ -3,26 +3,26 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { Ol, Li, UL } from '../Lists';
+import { OL, Li, UL } from '../Lists';
 
-it(`renders UL nested in Ol`, () => {
+it(`renders UL nested in OL`, () => {
   const tree = renderer.create(
-    <Ol>
+    <OL>
       <Li>item</Li>
       <UL>
         <Li>item</Li>
       </UL>
-    </Ol>
+    </OL>
   );
   expect(tree).toMatchSnapshot();
 });
-it(`renders Ol nested in UL`, () => {
+it(`renders OL nested in UL`, () => {
   const tree = renderer.create(
     <UL>
       <Li>item</Li>
-      <Ol>
+      <OL>
         <Li>item</Li>
-      </Ol>
+      </OL>
     </UL>
   );
   expect(tree).toMatchSnapshot();

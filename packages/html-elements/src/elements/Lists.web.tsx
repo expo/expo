@@ -8,7 +8,7 @@ export const UL = forwardRef((props: ViewProps, ref) => {
   return createElement('ul', { ...props, style: [{ listStyleType: 'initial' }, props.style], ref });
 }) as ComponentType<ViewProps>;
 
-export const Ol = forwardRef((props: ViewProps, ref) => {
+export const OL = forwardRef((props: ViewProps, ref) => {
   return createElement('ol', { ...props, style: [props.style], ref });
 }) as ComponentType<ViewProps>;
 

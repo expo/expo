@@ -75,7 +75,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<td />` => `<Td />`
 - [x] `<caption />` => `<Caption />`
 - [x] `<ul />` => `<UL />`
-- [x] `<ol />` => `<Ol />`
+- [x] `<ol />` => `<OL />`
 - [x] `<li />` => `<Li />` or `<FlatList />` from `react-native-web`
 - [ ] `<div />` => `<View />` from `react-native-web`
 - [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
@@ -378,7 +378,7 @@ function App() {
 }
 ```
 
-### Ol
+### OL
 
 Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` on native.
 
@@ -393,14 +393,14 @@ import { UL, Li } from '@expo/html-elements';
 function App() {
     return (
         <>
-            <Ol>
+            <OL>
                 <Li>oranges</Li>
                 <Li>apples</Li>
-                <Ol>
+                <OL>
                     <Li>green</Li>
                     <Li>red</Li>
-                </Ol>
-            </Ol>
+                </OL>
+            </OL>
         </>
     )
 }
