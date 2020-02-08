@@ -31,7 +31,7 @@ export const H4 = createHeadingComponent(4);
 export const H5 = createHeadingComponent(5);
 export const H6 = createHeadingComponent(6);
 
-// Default web styles: https://www.w3schools.com/tags/tag_hn.asp
+// Default web styles: http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css
 const styles = StyleSheet.create({
   h1: {
     fontSize: em(2),

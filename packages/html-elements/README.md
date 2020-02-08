@@ -87,7 +87,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 
 ## Headings
 
-Header elements will use the expected font size and margins from web universally.
+Header elements will use the expected [font size and margins from web](http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css) universally. You can see how the native CSS units (rem, and em) are transformed here: [css/units](src/css/units.ts).
 
 ```tsx
 import { H1, H2, H3, H4, H5, H6 } from '@expo/html-elements';
