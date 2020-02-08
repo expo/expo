@@ -26,7 +26,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth Sign-In provider.
+ Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 
 <SnackInline>
 
