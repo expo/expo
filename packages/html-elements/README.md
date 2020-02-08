@@ -7,21 +7,24 @@
   <img alt="Supports Expo Android" longdesc="Supports Expo Android" src="https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff" />
   <!-- Web -->
   <img alt="Supports Expo Web" longdesc="Supports Expo Web" src="https://img.shields.io/badge/web-4630EB.svg?style=flat-square&logo=GOOGLE-CHROME&labelColor=4285F4&logoColor=fff" />
+  <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
+    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&icon=circleci">
+  </a>
 </p>
 
-Simple, light-weight, and well tested, universal semantic HTML elements as React components for iOS, Android, web, and desktop!
+Simple, light-weight, and well tested, universal semantic HTML elements as React components for iOS, Android, web, and desktop apps!
 
-We at Expo recommended using platform agnostic primitives like `View`, `Image`, and `Text` whenever possible but sometimes that's not easy! This package aims to solve that while still being an optimal UI package for iOS, and Android.
+We at Expo recommend using platform agnostic primitives like `View`, `Image`, and `Text` whenever possible but sometimes that's not easy. Some primitives like Tables, and Footers are native to web only and currently have no way of easily accessing. This package aims to solve that while still being an optimal UI package for iOS, and Android.
 
 **What you get**
 
-- Using these components will optimize for accessibility and SEO.
+- Using these components will optimize your website for accessibility and SEO.
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
-  - The `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
-- Every component accepts styles from the `StyleSheet` API.
-- TypeScript works for iOS, Android, and web, no need to monkey patch types.
+  - For example, the `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
+- Every component can accept styles from the `StyleSheet` API.
+- TypeScript works for iOS, Android, and web, no more having to create monkey patches to use `href` on a `Text` element.
+- Every component is tested render **tested universally** for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme). Each element is also **E2E tested** on iOS with Detox, and web with [`jest-expo-puppeteer`](https://www.npmjs.com/package/jest-expo-puppeteer).
 - This package is completely side-effect free!
-- Every component is tested universally for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme).
 
 ## Setup
 
@@ -87,13 +90,13 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 
 ## Headings
 
-Header elements will use the expected [font size and margins from web](http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css) universally. You can see how the native CSS units (rem, and em) are transformed here: [css/units](src/css/units.ts).
+Header elements will use the expected [font size and margins from web](http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css) universally. You can see how the native CSS units (rem, and em) are transformed in [css/units](src/css/units.ts).
 
 ```tsx
 import { H1, H2, H3, H4, H5, H6 } from '@expo/html-elements';
 ```
 
-### H1
+### `<H1/>`
 
 ```tsx
 import { H1 } from '@expo/html-elements';
@@ -105,7 +108,7 @@ export default () => <h6>Example<H1/>
 <h1>Example</h1>
 
 
-### H2
+### `<H2/>`
 
 ```tsx
 import { H2 } from '@expo/html-elements';
@@ -117,7 +120,7 @@ export default () => <H2>Example<H2/>
 <h2>Example</h2>
 
 
-### H3
+### `<H3/>`
 
 ```tsx
 import { H3 } from '@expo/html-elements';
@@ -129,7 +132,7 @@ export default () => <H3>Example<H3/>
 <h3>Example</h3>
 
 
-### H4
+### `<H4/>`
 
 ```tsx
 import { H4 } from '@expo/html-elements';
@@ -141,7 +144,7 @@ export default () => <H4>Example<H4/>
 <h4>Example</h4>
 
 
-### H5
+### `<H5/>`
 
 ```tsx
 import { H5 } from '@expo/html-elements';
@@ -153,7 +156,7 @@ export default () => <H5>Example<H5/>
 <h5>Example</h5>
 
 
-### H6
+### `<H6/>`
 
 ```tsx
 import { H6 } from '@expo/html-elements';
@@ -167,12 +170,12 @@ export default () => <H6>Example<H6/>
 
 ## Link
 
-### A
+### `<A/>`
 
 You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`.
 
 - The CSS style is fully normalized to match `<Text />`
-- For pseudo-class effects check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.io/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
+- For pseudo-class effects like hover and focus states check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.io/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
 
 ```tsx
 import { A } from '@expo/html-elements';
@@ -184,7 +187,7 @@ function App() {
 
 ↓ ↓ ↓ ↓ ↓ ↓
 
-#### A output: web
+#### `<A />` output: web
 
 ```html
 <a
@@ -196,7 +199,7 @@ function App() {
 />
 ```
 
-#### A output: native
+#### `<A />` output: native
 
 ```tsx
 <Text
@@ -207,7 +210,7 @@ function App() {
 
 ## Structure
 
-### Nav
+### `<Nav/>`
 
 Renders a `<nav />` on web and a `View` on mobile.
 
@@ -219,7 +222,7 @@ function App() {
 }
 ```
 
-### Header
+### `<Header/>`
 
 Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile.
 
@@ -231,7 +234,7 @@ function App() {
 }
 ```
 
-### Main
+### `<Main/>`
 
 Renders a `<main />` on web with aria set to `main` and a `View` with no aria set on mobile.
 
@@ -243,7 +246,7 @@ function App() {
 }
 ```
 
-### Section
+### `<Section/>`
 
 Renders a `<section />` on web with aria set to `region` and a `View` with aria set to `summary` on mobile.
 
@@ -255,7 +258,7 @@ function App() {
 }
 ```
 
-### Article
+### `<Article/>`
 
 Renders an `<article />` on web and a `View` everywhere else.
 
@@ -267,7 +270,7 @@ function App() {
 }
 ```
 
-### Footer
+### `<Footer/>`
 
 Renders an `<footer />` on web and a `View` everywhere else.
 
@@ -304,45 +307,45 @@ function App() {
 }
 ```
 
-### P
+### `<P/>`
 
 Standard paragraph: <p>example</p>
 
-### B
+### `<B/>`
 
 Bold text: <b>example</b>
 
-### Strong
+### `<Strong/>`
 
 Alternate Bold text: <strong>example</strong>
 
-### S
+### `<S/>`
 
 Strike through text: <s>example</s>
 
-### Del
+### `<Del/>`
 
 Alternate strike through text, renders an `<del/>` on web: <del>example</del>
 
-### I
+### `<I/>`
 
 Italic text: _example_
 
-### EM
+### `<EM/>`
 
 Alternate italic text: _example_
 
-### Small
+### `<Small/>`
 
 Smaller than default text: <small>example</small>
 
-### Code
+### `<Code/>`
 
 Inline code block: <code>example</code>
 
 - [ ] Support lazy loading mono font on mobile.
 
-### Mark
+### `<Mark/>`
 
 Highlight text: <mark>example</mark>
 
@@ -351,7 +354,7 @@ Highlight text: <mark>example</mark>
 
 You should try and use agnostic `FlatList` or `SectionList`s instead of these whenever possible.
 
-### UL
+### `<UL/>`
 
 Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />` on native.
 
@@ -378,7 +381,7 @@ function App() {
 }
 ```
 
-### OL
+### `<OL/>`
 
 Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` on native.
 
@@ -406,13 +409,13 @@ function App() {
 }
 ```
 
-### LI
+### `<LI/>`
 
 Create a standard list item `<li />` on web and a native view on mobile which can render text or views inside it.
 
 ## Rules
 
-### HR
+### `<HR/>`
 
 Renders a `<View>` everywhere. Style is modified to match web.
 
@@ -428,7 +431,7 @@ function App() {
 }
 ```
 
-### BR
+### `<BR/>`
 
 Line break: <br />
 
@@ -480,6 +483,43 @@ function App() {
         </tr>
     </tbody>
 </table>
+
+### `<Table/>`
+
+Base element for creating a Table.
+
+### `<THead/>`
+
+Header element in a Table.
+
+### `<TBody/>`
+
+Body element in a Table.
+
+### `<TFoot/>`
+
+Footer element in a Table.
+
+### `<TH/>`
+
+Used to display text in the Header.
+
+- `colSpan` and `rowSpan` are currently web-only.
+
+
+### `<TR/>`
+
+Used to create a Row in a Table.
+
+### `<TD/>`
+
+Create a cell in a Table.
+
+- `colSpan` and `rowSpan` are currently web-only.
+
+### `<Caption/>`
+
+Used to caption your table. Excepts text as a child.
 
 ## TODO
 
