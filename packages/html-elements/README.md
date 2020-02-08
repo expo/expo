@@ -222,7 +222,7 @@ function App() {
 
 ### Header
 
-Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile. This required a non-universal `accessibilityRole` internally.
+Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile.
 
 ```tsx
 import { Header } from '@expo/html-elements';
@@ -234,7 +234,7 @@ function App() {
 
 ### Main
 
-Renders a `<main />` on web with aria set to `main` and a `View` with no aria set on mobile. This required a non-universal `accessibilityRole` internally.
+Renders a `<main />` on web with aria set to `main` and a `View` with no aria set on mobile.
 
 ```tsx
 import { Main } from '@expo/html-elements';
@@ -258,7 +258,7 @@ function App() {
 
 ### Article
 
-Renders an `<article />` on web and a `View` everywhere else. This required a non-universal `accessibilityRole` internally.
+Renders an `<article />` on web and a `View` everywhere else.
 
 ```tsx
 import { Article } from '@expo/html-elements';
@@ -270,7 +270,7 @@ function App() {
 
 ### Footer
 
-Renders an `<footer />` on web and a `View` everywhere else. This required a platform specific implementations for web and mobile.
+Renders an `<footer />` on web and a `View` everywhere else.
 
 ```tsx
 import { Footer } from '@expo/html-elements';
