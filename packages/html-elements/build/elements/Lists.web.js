@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { createElement, StyleSheet } from 'react-native';
-export const Ul = forwardRef((props, ref) => {
+export const UL = forwardRef((props, ref) => {
     return createElement('ul', { ...props, style: [{ listStyleType: 'initial' }, props.style], ref });
 });
 export const Ol = forwardRef((props, ref) => {

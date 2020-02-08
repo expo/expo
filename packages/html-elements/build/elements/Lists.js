@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import View from '../primitives/View';
 import Text from '../primitives/Text';
 import { em } from '../css/units';
-export const Ul = forwardRef((props, ref) => {
+export const UL = forwardRef((props, ref) => {
     const { children } = props;
     const elements = React.Children.toArray(children).map(element => {
         if (React.isValidElement(element))

@@ -74,7 +74,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<tr />` => `<Tr />`
 - [x] `<td />` => `<Td />`
 - [x] `<caption />` => `<Caption />`
-- [x] `<ul />` => `<Ul />`
+- [x] `<ul />` => `<UL />`
 - [x] `<ol />` => `<Ol />`
 - [x] `<li />` => `<Li />` or `<FlatList />` from `react-native-web`
 - [ ] `<div />` => `<View />` from `react-native-web`
@@ -351,7 +351,7 @@ Highlight text: <mark>example</mark>
 
 You should try and use agnostic `FlatList` or `SectionList`s instead of these whenever possible.
 
-### Ul
+### UL
 
 Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />` on native.
 
@@ -360,19 +360,19 @@ Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />
 - [ ] Supports custom bullets
 
 ```tsx
-import { Ul, Li } from '@expo/html-elements';
+import { UL, Li } from '@expo/html-elements';
 
 function App() {
     return (
         <>
-            <Ul>
+            <UL>
                 <Li>oranges</Li>
                 <Li>apples</Li>
-                <Ul>
+                <UL>
                     <Li>green</Li>
                     <Li>red</Li>
-                </Ul>
-            </Ul>
+                </UL>
+            </UL>
         </>
     )
 }
@@ -388,7 +388,7 @@ Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` 
 - [ ] Supports custom bullets
 
 ```tsx
-import { Ul, Li } from '@expo/html-elements';
+import { UL, Li } from '@expo/html-elements';
 
 function App() {
     return (

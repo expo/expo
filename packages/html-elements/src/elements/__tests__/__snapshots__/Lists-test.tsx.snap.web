@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders Ol nested in Ul 1`] = `
+exports[`renders Ol nested in UL 1`] = `
 <ul
   className="css-reset-4rbku5"
   style={
@@ -36,7 +36,7 @@ exports[`renders Ol nested in Ul 1`] = `
 </ul>
 `;
 
-exports[`renders Ul nested in Ol 1`] = `
+exports[`renders UL nested in Ol 1`] = `
 <ol>
   <li
     className="css-reset-4rbku5"

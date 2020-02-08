@@ -4,7 +4,7 @@ import { createElement, StyleSheet } from 'react-native';
 import { TextProps } from '../primitives/Text';
 import { ViewProps } from '../primitives/View';
 
-export const Ul = forwardRef((props: ViewProps, ref) => {
+export const UL = forwardRef((props: ViewProps, ref) => {
   return createElement('ul', { ...props, style: [{ listStyleType: 'initial' }, props.style], ref });
 }) as ComponentType<ViewProps>;
 

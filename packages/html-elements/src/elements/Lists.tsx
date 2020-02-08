@@ -4,7 +4,7 @@ import View, { ViewProps } from '../primitives/View';
 import Text, { TextProps } from '../primitives/Text';
 import { em } from '../css/units';
 
-export const Ul = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
+export const UL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
 
   const elements = React.Children.toArray(children).map(element => {
