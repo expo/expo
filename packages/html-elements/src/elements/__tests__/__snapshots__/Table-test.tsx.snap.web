@@ -60,7 +60,7 @@ exports[`renders Td 1`] = `
 </td>
 `;
 
-exports[`renders Tfoot 1`] = `
+exports[`renders TFoot 1`] = `
 <tfoot
   style={
     Object {

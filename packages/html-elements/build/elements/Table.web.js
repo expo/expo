@@ -9,7 +9,7 @@ export const THead = forwardRef((props, ref) => {
 export const TBody = forwardRef((props, ref) => {
     return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Tfoot = forwardRef((props, ref) => {
+export const TFoot = forwardRef((props, ref) => {
     return createElement('tfoot', { ...props, style: [styles.reset, props.style], ref });
 });
 export const Th = forwardRef((props, ref) => {

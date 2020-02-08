@@ -17,7 +17,7 @@ export const TBody = forwardRef((props: ViewProps, ref) => {
   return <View {...props} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Tfoot = forwardRef((props: ViewProps, ref) => {
+export const TFoot = forwardRef((props: ViewProps, ref) => {
   return <View {...props} ref={ref} />;
 }) as ComponentType<ViewProps>;
 

@@ -13,7 +13,7 @@ export const THead = forwardRef((props, ref) => {
 export const TBody = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
-export const Tfoot = forwardRef((props, ref) => {
+export const TFoot = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
 export const Th = forwardRef((props, ref) => {

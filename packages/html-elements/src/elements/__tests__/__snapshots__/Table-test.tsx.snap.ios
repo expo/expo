@@ -30,7 +30,7 @@ exports[`renders Td 1`] = `
 </Text>
 `;
 
-exports[`renders Tfoot 1`] = `<View />`;
+exports[`renders TFoot 1`] = `<View />`;
 
 exports[`renders Th 1`] = `
 <Text

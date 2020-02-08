@@ -5,7 +5,7 @@ import { TextProps } from '../primitives/Text';
 export declare const Table: ComponentType<ViewProps>;
 export declare const THead: ComponentType<ViewProps>;
 export declare const TBody: ComponentType<ViewProps>;
-export declare const Tfoot: ComponentType<ViewProps>;
+export declare const TFoot: ComponentType<ViewProps>;
 export declare const Th: ComponentType<TableTextProps>;
 export declare const Tr: ComponentType<ViewProps>;
 export declare const Td: ComponentType<TableTextProps>;
