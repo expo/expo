@@ -38,7 +38,7 @@ export const Code = forwardRef((props: TextProps, ref) => {
 }) as ComponentType<TextProps>;
 
 export const Strong = B;
-export const Strike = S;
+export const Del = S;
 export const Em = I;
 
 const styles = StyleSheet.create({

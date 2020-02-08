@@ -15,7 +15,9 @@ export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('s', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TextProps>;
 
-export const Strike = S;
+export const Del = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return createElement('del', { ...props, style: [styles.reset, style], ref });
+}) as ComponentType<TextProps>;
 
 export const Strong = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('strong', { ...props, style: [styles.reset, style], ref });

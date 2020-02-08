@@ -9,7 +9,9 @@ export const B = forwardRef(({ style, ...props }, ref) => {
 export const S = forwardRef(({ style, ...props }, ref) => {
     return createElement('s', { ...props, style: [styles.reset, style], ref });
 });
-export const Strike = S;
+export const Del = forwardRef(({ style, ...props }, ref) => {
+    return createElement('del', { ...props, style: [styles.reset, style], ref });
+});
 export const Strong = forwardRef(({ style, ...props }, ref) => {
     return createElement('strong', { ...props, style: [styles.reset, style], ref });
 });

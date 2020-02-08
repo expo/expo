@@ -57,7 +57,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<p />` => `<P />`
 - [x] `<b />` => `<B />`
 - [x] `<s />` => `<S />`
-- [x] `<strike />` => `<Strike />`
+- [x] `<del />` => `<Del />`
 - [x] `<strong />` => `<Strong />`
 - [x] `<i />` => `<I />`
 - [x] `<em />` => `<Em />`
@@ -320,9 +320,9 @@ Alternate Bold text: <strong>example</strong>
 
 Strike through text: <s>example</s>
 
-### Strike
+### Del
 
-Alternate strike through text, renders an `<s/>` on web: <s>example</s>
+Alternate strike through text, renders an `<del/>` on web: <del>example</del>
 
 ### I
 

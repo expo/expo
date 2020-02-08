@@ -3,7 +3,7 @@ import { TextProps } from '../primitives/Text';
 export declare const P: ComponentType<TextProps>;
 export declare const B: ComponentType<TextProps>;
 export declare const S: ComponentType<TextProps>;
-export declare const Strike: ComponentType<TextProps>;
+export declare const Del: ComponentType<TextProps>;
 export declare const Strong: ComponentType<TextProps>;
 export declare const I: ComponentType<TextProps>;
 export declare const Em: ComponentType<TextProps>;

@@ -28,7 +28,7 @@ export const Code = forwardRef((props, ref) => {
     return <Text {...props} ref={ref}/>;
 });
 export const Strong = B;
-export const Strike = S;
+export const Del = S;
 export const Em = I;
 const styles = StyleSheet.create({
     p: {

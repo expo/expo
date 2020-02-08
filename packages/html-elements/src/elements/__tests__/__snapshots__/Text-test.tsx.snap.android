@@ -27,6 +27,21 @@ exports[`renders Br 1`] = `
 
 exports[`renders Code 1`] = `<Text />`;
 
+exports[`renders Del 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 32,
+      "marginVertical": 32,
+      "textDecorationLine": "line-through",
+      "textDecorationStyle": "solid",
+    }
+  }
+>
+  demo
+</Text>
+`;
+
 exports[`renders Em 1`] = `
 <Text
   style={
@@ -102,21 +117,6 @@ exports[`renders Small 1`] = `
     }
   }
 />
-`;
-
-exports[`renders Strike 1`] = `
-<Text
-  style={
-    Object {
-      "fontSize": 32,
-      "marginVertical": 32,
-      "textDecorationLine": "line-through",
-      "textDecorationStyle": "solid",
-    }
-  }
->
-  demo
-</Text>
 `;
 
 exports[`renders Strong 1`] = `
