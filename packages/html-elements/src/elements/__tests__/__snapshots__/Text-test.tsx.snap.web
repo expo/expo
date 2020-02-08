@@ -40,6 +40,16 @@ exports[`renders I 1`] = `
 </i>
 `;
 
+exports[`renders Mark 1`] = `
+<mark
+  style={
+    Object {
+      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+    }
+  }
+/>
+`;
+
 exports[`renders P 1`] = `
 <p
   style={

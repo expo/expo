@@ -55,6 +55,17 @@ exports[`renders I 1`] = `
 </Text>
 `;
 
+exports[`renders Mark 1`] = `
+<Text
+  style={
+    Object {
+      "backgroundColor": "yellow",
+      "color": "black",
+    }
+  }
+/>
+`;
+
 exports[`renders P 1`] = `
 <Text
   style={

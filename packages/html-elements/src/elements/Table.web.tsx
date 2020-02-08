@@ -17,6 +17,10 @@ export const Tbody = forwardRef((props: ViewProps, ref) => {
   return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<ViewProps>;
 
+export const Tfoot = forwardRef((props: ViewProps, ref) => {
+  return createElement('tfoot', { ...props, style: [styles.reset, props.style], ref });
+}) as ComponentType<ViewProps>;
+
 export const Th = forwardRef((props: TableTextProps, ref) => {
   return createElement('th', { ...props, style: [styles.reset, props.style], ref });
 }) as ComponentType<TableTextProps>;

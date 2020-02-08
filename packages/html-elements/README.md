@@ -1,7 +1,18 @@
 # @expo/html-elements
 
-Universal semantic HTML React components for iOS, Android, web, and desktop. We recommended using platform agnostic primitives like `View`, `Image`, and `Text` wherever possible but sometimes that's not always easy.
-For instance rendering an HTML `<footer />` element requires platform specific code in your app for every platform you want to support, this can quickly become a huge burden. So that's where `@expo/html-elements` comes in!
+<p>
+  <!-- iOS -->
+  <img alt="Supports Expo iOS" longdesc="Supports Expo iOS" src="https://img.shields.io/badge/iOS-4630EB.svg?style=flat-square&logo=APPLE&labelColor=999999&logoColor=fff" />
+  <!-- Android -->
+  <img alt="Supports Expo Android" longdesc="Supports Expo Android" src="https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff" />
+  <!-- Web -->
+  <img alt="Supports Expo Web" longdesc="Supports Expo Web" src="https://img.shields.io/badge/web-4630EB.svg?style=flat-square&logo=GOOGLE-CHROME&labelColor=4285F4&logoColor=fff" />
+</p>
+
+Universal semantic HTML React components for iOS, Android, web, and desktop. We recommended using platform agnostic primitives like `View`, `Image`, and `Text` wherever possible but sometimes that's not always an option.
+For instance rendering an HTML `<footer />` element requires platform specific code in your app for every platform you want to support, this can quickly become a huge burden (especially for TypeScript users). This is where `@expo/html-elements` comes in!
+
+**What you get**
 
 - Using these components will optimize for accessibility and SEO.
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
@@ -10,6 +21,18 @@ For instance rendering an HTML `<footer />` element requires platform specific c
 - TypeScript works for iOS, Android, and web, no need to monkey patching types.
 - This package is completely side-effect free!
 - Components are tested with `jest-expo-enzyme`.
+
+**What you do not get**
+
+There are some HTML elements that overlap a lot with universal elements, you should always use the universal elements whenever possible:
+
+- `div` => Use `View` from `react-native`
+- `video` => Use `Video` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/).
+- `img` => Use `Image` from `react-native`
+- `canvas` => Use [`expo-gl`](https://docs.expo.io/versions/v36.0.0/sdk/gl-view/)
+- `input` => `TextView` when possible
+- `ul` => `FlatList` if possible, this package does have `<ul />` support
+- `iframe` => `WebView` this package is not maintained by Expo and doesn't have web support.
 
 ## Setup
 
@@ -26,6 +49,8 @@ import { H1 } from '@expo/html-elements';
 ```
 
 # Components
+
+Not all HTML elements are supported.
 
 ## Headings
 
@@ -276,9 +301,12 @@ Line break: <br />
 
 ## Tables
 
-Create tables universally. `colSpan` and `rowSpan` are currently web-only. Each element renders to the expected type on web.
+Create tables universally.
+
+- Each element renders to the expected type on web.
 - `padding` is removed from all table elements.
-- Text can only be rendered in `Th` and `Td` on mobile.
+- Text **can only** be rendered in `Th` and `Td` on mobile.
+- `colSpan` and `rowSpan` are currently web-only.
 
 ```tsx
 import { Table, Thead, Th, Tbody, Tr, Td, Caption } from '@expo/html-elements';
@@ -303,11 +331,28 @@ function App() {
 }
 ```
 
-# TODO
+** Renders: **
+
+<table>
+    <caption>Caption</caption>
+    <thead>
+        <tr>
+            <th colSpan="2">The table header</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>The table body</td>
+            <td>with two columns</td>
+        </tr>
+    </tbody>
+</table>
+
+## TODO
 
 - Support more HTML elements.
 - Improve relative imports for better tree-shaking.
 
-# Contributing
+## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

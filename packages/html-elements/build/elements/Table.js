@@ -13,6 +13,9 @@ export const Thead = forwardRef((props, ref) => {
 export const Tbody = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
+export const Tfoot = forwardRef((props, ref) => {
+    return <View {...props} ref={ref}/>;
+});
 export const Th = forwardRef((props, ref) => {
     return <TableText {...props} style={[styles.th, props.style]} ref={ref}/>;
 });

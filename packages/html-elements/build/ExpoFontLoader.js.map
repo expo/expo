@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoFontLoader.js","sourceRoot":"","sources":["../src/ExpoFontLoader.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,cAAc,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoFontLoader;\n"]}

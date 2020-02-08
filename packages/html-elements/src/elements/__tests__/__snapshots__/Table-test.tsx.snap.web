@@ -60,6 +60,20 @@ exports[`renders Td 1`] = `
 </td>
 `;
 
+exports[`renders Tfoot 1`] = `
+<tfoot
+  style={
+    Object {
+      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+    }
+  }
+/>
+`;
+
 exports[`renders Th 1`] = `
 <th
   style={
