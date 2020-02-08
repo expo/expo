@@ -12,7 +12,7 @@ export const TBody = forwardRef((props, ref) => {
 export const TFoot = forwardRef((props, ref) => {
     return createElement('tfoot', { ...props, style: [styles.reset, props.style], ref });
 });
-export const Th = forwardRef((props, ref) => {
+export const TH = forwardRef((props, ref) => {
     return createElement('th', { ...props, style: [styles.reset, props.style], ref });
 });
 export const TR = forwardRef((props, ref) => {

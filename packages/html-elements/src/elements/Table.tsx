@@ -21,7 +21,7 @@ export const TFoot = forwardRef((props: ViewProps, ref) => {
   return <View {...props} ref={ref} />;
 }) as ComponentType<ViewProps>;
 
-export const Th = forwardRef((props: TableTextProps, ref: any) => {
+export const TH = forwardRef((props: TableTextProps, ref: any) => {
   return <TableText {...props} style={[styles.th, props.style]} ref={ref} />;
 }) as ComponentType<TableTextProps>;
 

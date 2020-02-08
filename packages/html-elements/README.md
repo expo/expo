@@ -70,7 +70,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<thead />` => `<THead />`
 - [x] `<tbody />` => `<TBody />`
 - [x] `<tfoot />` => `<TFoot />`
-- [x] `<th />` => `<Th />`
+- [x] `<th />` => `<TH />`
 - [x] `<tr />` => `<TR />`
 - [x] `<td />` => `<TD />`
 - [x] `<caption />` => `<Caption />`
@@ -438,11 +438,11 @@ Create tables universally.
 
 - Each element renders to the expected type on web.
 - `padding` is removed from all table elements.
-- Text **can only** be rendered in `Th` and `TD` on mobile.
+- Text **can only** be rendered in `TH` and `TD` on mobile.
 - `colSpan` and `rowSpan` are currently web-only (PRs welcome).
 
 ```tsx
-import { Table, THead, Th, TBody, TFoot, TR, TD, Caption } from '@expo/html-elements';
+import { Table, THead, TH, TBody, TFoot, TR, TD, Caption } from '@expo/html-elements';
 
 function App() {
     return (
@@ -450,7 +450,7 @@ function App() {
             <Caption>Caption</Caption>
             <THead>
                 <TR>
-                    <Th colSpan="2">The table header</Th>
+                    <TH colSpan="2">The table header</TH>
                 </TR>
             </THead>
             <TBody>
