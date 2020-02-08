@@ -53,7 +53,7 @@ export default function App() {
       <Button
         title="Sign In with Google "
         onPress={async () => {
-          let _authState = await signInAsync();
+          const authState = await signInAsync();
           setAuthState(_authState);
         }}
       />
@@ -69,7 +69,7 @@ export default function App() {
   );
 }
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
