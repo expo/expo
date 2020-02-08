@@ -27,15 +27,8 @@ export const Ol = forwardRef((props: ViewProps, ref) => {
 }) as ComponentType<ViewProps>;
 
 function isTextProps(props: any): props is TextProps {
-  if (props.children !== undefined) {
-    if (typeof props.children === 'string') {
-      return true;
-    } else {
-      return false;
-    }
-  }
   // Treat <li></li> as a Text element.
-  return true;
+  return typeof props.children === 'string';
 }
 
 export const Li = forwardRef((props: TextProps | ViewProps, ref: any) => {

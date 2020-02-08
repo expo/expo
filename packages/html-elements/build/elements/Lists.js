@@ -16,16 +16,8 @@ export const Ol = forwardRef((props, ref) => {
     return <View {...props} style={[styles.ol, props.style]} children={elements} ref={ref}/>;
 });
 function isTextProps(props) {
-    if (props.children !== undefined) {
-        if (typeof props.children === 'string') {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
     // Treat <li></li> as a Text element.
-    return true;
+    return typeof props.children === 'string';
 }
 export const Li = forwardRef((props, ref) => {
     // @ts-ignore
