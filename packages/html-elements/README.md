@@ -21,7 +21,7 @@ We at Expo recommended using platform agnostic primitives like `View`, `Image`, 
 - Every component excepts styles from the `StyleSheet` API.
 - TypeScript works for iOS, Android, and web, no need to monkey patch types.
 - This package is completely side-effect free!
-- Every component is tested with `jest-expo-enzyme`.
+- Every component is tested universally for iOS, Android, and Web using the package [`jest-expo-enzyme`](https://www.npmjs.com/package/jest-expo-enzyme).
 
 ## Setup
 
