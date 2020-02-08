@@ -90,7 +90,7 @@ exports[`renders Th 1`] = `
 </th>
 `;
 
-exports[`renders Thead 1`] = `
+exports[`renders THead 1`] = `
 <thead
   style={
     Object {

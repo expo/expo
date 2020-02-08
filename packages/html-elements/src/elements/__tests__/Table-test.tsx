@@ -3,14 +3,14 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { Table, Thead, Tbody, Tfoot, Tr, Th, Td, Caption } from '../Table';
+import { Table, THead, Tbody, Tfoot, Tr, Th, Td, Caption } from '../Table';
 
 it(`renders Table`, () => {
   const tree = renderer.create(<Table />);
   expect(tree).toMatchSnapshot();
 });
-it(`renders Thead`, () => {
-  const tree = renderer.create(<Thead />);
+it(`renders THead`, () => {
+  const tree = renderer.create(<THead />);
   expect(tree).toMatchSnapshot();
 });
 it(`renders Tbody`, () => {

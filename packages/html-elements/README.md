@@ -67,7 +67,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<code />` => `<Code />`
 - [x] `<hr />` => `<HR />`
 - [x] `<table />` => `<Table />`
-- [x] `<thead />` => `<Thead />`
+- [x] `<thead />` => `<THead />`
 - [x] `<tbody />` => `<Tbody />`
 - [x] `<tfoot />` => `<Tfoot />`
 - [x] `<th />` => `<Th />`
@@ -442,17 +442,17 @@ Create tables universally.
 - `colSpan` and `rowSpan` are currently web-only (PRs welcome).
 
 ```tsx
-import { Table, Thead, Th, Tbody, Tfoot, Tr, Td, Caption } from '@expo/html-elements';
+import { Table, THead, Th, Tbody, Tfoot, Tr, Td, Caption } from '@expo/html-elements';
 
 function App() {
     return (
        <Table>
             <Caption>Caption</Caption>
-            <Thead>
+            <THead>
                 <Tr>
                     <Th colSpan="2">The table header</Th>
                 </Tr>
-            </Thead>
+            </THead>
             <Tbody>
                 <Tr>
                     <Td>The table body</Td>

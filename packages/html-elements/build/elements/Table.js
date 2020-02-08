@@ -7,7 +7,7 @@ import { em } from '../css/units';
 export const Table = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
-export const Thead = forwardRef((props, ref) => {
+export const THead = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });
 export const Tbody = forwardRef((props, ref) => {

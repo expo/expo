@@ -47,7 +47,7 @@ exports[`renders Th 1`] = `
 </Text>
 `;
 
-exports[`renders Thead 1`] = `<View />`;
+exports[`renders THead 1`] = `<View />`;
 
 exports[`renders Tr 1`] = `
 <View
