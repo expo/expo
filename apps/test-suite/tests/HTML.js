@@ -37,6 +37,7 @@ import {
   UL,
   Q,
   BlockQuote,
+  Time,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
@@ -68,6 +69,7 @@ const textElements = {
   Caption,
   LI,
   Q,
+  Time,
 };
 
 const viewElements = {

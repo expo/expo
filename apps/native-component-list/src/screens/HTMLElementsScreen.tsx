@@ -13,6 +13,7 @@ import {
   H5,
   H6,
   Header,
+  Time,
   HR,
   I,
   LI,
@@ -75,6 +76,7 @@ export default class HTMLScreen extends React.Component {
         </Header>
         <Section>
           <B>Bold in Section</B>
+          <Time>Feb 2020</Time>
           <HR />
           <OL>
             <LI>Grow a long, majestic beard.</LI>

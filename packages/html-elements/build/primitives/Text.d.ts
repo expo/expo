@@ -26,10 +26,6 @@ export declare type WebTextProps = {
     style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
-    /** @platform web */
-    href?: string;
-    /** @platform web */
-    target?: string;
 };
 export declare type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;
 declare const Text: ComponentType<TextProps>;

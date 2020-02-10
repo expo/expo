@@ -14,6 +14,9 @@ export declare const BR: React.ComponentType<TextProps>;
 export declare const Small: React.ComponentType<TextProps>;
 export declare const Mark: React.ComponentType<TextProps>;
 export declare const Code: React.ComponentType<TextProps>;
+export declare const Time: React.ComponentType<React.PropsWithChildren<Pick<import("react-native").TextProps & React.ClassAttributes<typeof import("react-native").Text>, "allowFontScaling" | "ellipsizeMode" | "lineBreakMode" | "numberOfLines" | "onLayout" | "onPress" | "onLongPress" | "testID" | "nativeID" | "maxFontSizeMultiplier" | "adjustsFontSizeToFit" | "minimumFontScale" | "suppressHighlighting" | "selectable" | "selectionColor" | "textBreakStrategy" | "accessible" | "accessibilityActions" | "accessibilityLabel" | "accessibilityRole" | "accessibilityStates" | "accessibilityState" | "accessibilityHint" | "onAccessibilityAction" | "accessibilityComponentType" | "accessibilityLiveRegion" | "importantForAccessibility" | "accessibilityElementsHidden" | "accessibilityTraits" | "accessibilityViewIsModal" | "onAccessibilityTap" | "onMagicTap" | "accessibilityIgnoresInvertColors" | "key" | "ref"> & import("../primitives/Text").WebTextProps & {
+    dateTime?: string | undefined;
+}>>;
 export declare const Strong: React.ComponentType<TextProps>;
 export declare const Del: React.ComponentType<TextProps>;
 export declare const EM: React.ComponentType<TextProps>;

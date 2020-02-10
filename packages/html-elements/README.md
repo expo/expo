@@ -81,6 +81,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<caption />` => `<Caption />`
 - [x] `<ul />` => `<UL />`
 - [x] `<ol />` => `<OL />`
+- [x] `<time />` => `<Time />`
 - [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
 
 **External**
@@ -399,6 +400,12 @@ Quote text: _"example"_
 ### `<BlockQuote/>`
 
 Render a [`<blockquote />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) on web, and a `<View />` on native. This element doesn't accept text directly.
+
+### `<Time/>`
+
+Renders a `<time />` element with reset styles on web, and a regular `<Text />` on native. 
+
+- `dateTime` prop is supported on web and stripped on native.
 
 ## Lists
 

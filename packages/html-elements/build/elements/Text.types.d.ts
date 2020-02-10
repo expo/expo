@@ -6,3 +6,12 @@ export declare type QuoteProps = React.PropsWithChildren<TextProps & {
 export declare type BlockQuoteProps = React.PropsWithChildren<ViewProps & {
     cite?: string;
 }>;
+export declare type TimeProps = React.PropsWithChildren<TextProps & {
+    dateTime?: string;
+}>;
+export declare type LinkProps = React.PropsWithChildren<TextProps & {
+    /** @platform web */
+    href?: string;
+    /** @platform web */
+    target?: string;
+}>;

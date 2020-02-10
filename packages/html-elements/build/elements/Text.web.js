@@ -39,6 +39,9 @@ export const Mark = forwardRef(({ style, ...props }, ref) => {
 export const Code = forwardRef((props, ref) => {
     return createElement('code', { ...props, ref });
 });
+export const Time = forwardRef(({ style, ...props }, ref) => {
+    return createElement('time', { ...props, style: [styles.reset, style], ref });
+});
 const styles = StyleSheet.create({
     reset: {
         fontFamily: 'System',

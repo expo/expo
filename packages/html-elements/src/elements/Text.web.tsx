@@ -2,7 +2,7 @@ import { ComponentType, forwardRef } from 'react';
 import { createElement, StyleSheet } from 'react-native';
 
 import { TextProps } from '../primitives/Text';
-import { BlockQuoteProps, QuoteProps } from './Text.types';
+import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('p', { ...props, style: [styles.reset, style], ref });
@@ -55,6 +55,10 @@ export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
 export const Code = forwardRef((props: TextProps, ref) => {
   return createElement('code', { ...props, ref });
 }) as ComponentType<TextProps>;
+
+export const Time = forwardRef(({ style, ...props }: TimeProps, ref) => {
+  return createElement('time', { ...props, style: [styles.reset, style], ref });
+}) as ComponentType<TimeProps>;
 
 const styles = StyleSheet.create({
   reset: {

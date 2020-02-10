@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
 import View from '../primitives/View';
-import { BlockQuoteProps, QuoteProps } from './Text.types';
+import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.p, style]} ref={ref} />;
@@ -22,7 +22,7 @@ export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Q = forwardRef(({ children, style, ...props }: QuoteProps, ref) => {
+export const Q = forwardRef(({ children, cite, style, ...props }: QuoteProps, ref) => {
   return (
     <P {...props} style={[styles.q, style]} ref={ref}>
       "{children}"
@@ -30,7 +30,7 @@ export const Q = forwardRef(({ children, style, ...props }: QuoteProps, ref) => 
   );
 }) as ComponentType<QuoteProps>;
 
-export const BlockQuote = forwardRef(({ style, ...props }: BlockQuoteProps, ref) => {
+export const BlockQuote = forwardRef(({ style, cite, ...props }: BlockQuoteProps, ref) => {
   return <View {...props} style={[styles.blockQuote, style]} ref={ref} />;
 }) as ComponentType<BlockQuoteProps>;
 
@@ -50,6 +50,11 @@ export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
 export const Code = forwardRef((props: TextProps, ref) => {
   return <Text {...props} ref={ref} />;
 }) as ComponentType<TextProps>;
+
+// Extract dateTime to prevent passing it to the native Text element
+export const Time = forwardRef(({ dateTime, ...props }: TimeProps, ref) => {
+  return <Text {...props} ref={ref} />;
+}) as ComponentType<TimeProps>;
 
 export const Strong = B;
 export const Del = S;

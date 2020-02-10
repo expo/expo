@@ -1,10 +1,11 @@
 import React, { ComponentType, forwardRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
-import Text, { TextProps } from '../primitives/Text';
+import Text from '../primitives/Text';
+import { LinkProps } from './Text.types';
 
-export const A = forwardRef(({ href, target, ...props }: TextProps, ref) => {
-  const nativeProps = Platform.select<TextProps>({
+export const A = forwardRef(({ href, target, ...props }: LinkProps, ref) => {
+  const nativeProps = Platform.select<LinkProps>({
     web: {
       href,
       target,
@@ -19,4 +20,4 @@ export const A = forwardRef(({ href, target, ...props }: TextProps, ref) => {
     },
   });
   return <Text accessibilityRole="link" {...props} {...nativeProps} ref={ref} />;
-}) as ComponentType<TextProps>;
+}) as ComponentType<LinkProps>;

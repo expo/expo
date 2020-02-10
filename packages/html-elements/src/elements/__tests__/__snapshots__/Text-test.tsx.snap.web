@@ -129,3 +129,11 @@ exports[`renders Strong 1`] = `
   demo
 </strong>
 `;
+
+exports[`renders Time 1`] = `
+<time
+  dateTime="2001-05-15T19:00"
+>
+  May 15
+</time>
+`;

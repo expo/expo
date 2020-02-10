@@ -32,10 +32,6 @@ export type WebTextProps = {
   style?: StyleProp<TextStyle>;
   /** @platform web */
   tabIndex?: number;
-  /** @platform web */
-  href?: string;
-  /** @platform web */
-  target?: string;
 };
 
 export type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;

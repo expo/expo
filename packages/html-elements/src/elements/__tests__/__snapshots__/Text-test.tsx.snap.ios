@@ -158,3 +158,9 @@ exports[`renders Strong 1`] = `
   demo
 </Text>
 `;
+
+exports[`renders Time 1`] = `
+<Text>
+  May 15
+</Text>
+`;

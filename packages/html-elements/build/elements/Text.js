@@ -15,12 +15,12 @@ export const S = forwardRef(({ style, ...props }, ref) => {
 export const I = forwardRef(({ style, ...props }, ref) => {
     return <P {...props} style={[styles.i, style]} ref={ref}/>;
 });
-export const Q = forwardRef(({ children, style, ...props }, ref) => {
+export const Q = forwardRef(({ children, cite, style, ...props }, ref) => {
     return (<P {...props} style={[styles.q, style]} ref={ref}>
       "{children}"
     </P>);
 });
-export const BlockQuote = forwardRef(({ style, ...props }, ref) => {
+export const BlockQuote = forwardRef(({ style, cite, ...props }, ref) => {
     return <View {...props} style={[styles.blockQuote, style]} ref={ref}/>;
 });
 export const BR = forwardRef(({ style, ...props }, ref) => {
@@ -34,6 +34,10 @@ export const Mark = forwardRef(({ style, ...props }, ref) => {
 });
 // TODO: Lazy load mono font on native
 export const Code = forwardRef((props, ref) => {
+    return <Text {...props} ref={ref}/>;
+});
+// Extract dateTime to prevent passing it to the native Text element
+export const Time = forwardRef(({ dateTime, ...props }, ref) => {
     return <Text {...props} ref={ref}/>;
 });
 export const Strong = B;

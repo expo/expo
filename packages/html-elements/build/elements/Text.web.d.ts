@@ -17,3 +17,6 @@ export declare const BR: ComponentType<TextProps>;
 export declare const Small: ComponentType<TextProps>;
 export declare const Mark: ComponentType<TextProps>;
 export declare const Code: ComponentType<TextProps>;
+export declare const Time: ComponentType<import("react").PropsWithChildren<Pick<import("react-native").TextProps & import("react").ClassAttributes<typeof import("react-native").Text>, "allowFontScaling" | "ellipsizeMode" | "lineBreakMode" | "numberOfLines" | "onLayout" | "onPress" | "onLongPress" | "testID" | "nativeID" | "maxFontSizeMultiplier" | "adjustsFontSizeToFit" | "minimumFontScale" | "suppressHighlighting" | "selectable" | "selectionColor" | "textBreakStrategy" | "accessible" | "accessibilityActions" | "accessibilityLabel" | "accessibilityRole" | "accessibilityStates" | "accessibilityState" | "accessibilityHint" | "onAccessibilityAction" | "accessibilityComponentType" | "accessibilityLiveRegion" | "importantForAccessibility" | "accessibilityElementsHidden" | "accessibilityTraits" | "accessibilityViewIsModal" | "onAccessibilityTap" | "onMagicTap" | "accessibilityIgnoresInvertColors" | "key" | "ref"> & import("../primitives/Text").WebTextProps & {
+    dateTime?: string | undefined;
+}>>;
