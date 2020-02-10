@@ -1,4 +1,4 @@
 {
   "name": "expo-splash-screen",
-  "platforms": ["android"]
+  "platforms": ["android", "ios"]
 }
