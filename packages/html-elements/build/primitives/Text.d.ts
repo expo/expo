@@ -1,8 +1,11 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { Text as NativeText, RegisteredStyle, RecursiveArray, TextStyle as NativeTextStyle } from 'react-native';
+import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 declare type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
+    /** string is only available on web */
     fontSize?: NativeTextStyle['fontSize'] | string;
+    /** string is only available on web */
+    lineHeight?: NativeTextStyle['lineHeight'] | string;
     /** @platform web */
     fontFeatureSettings?: string;
     /** @platform web */
@@ -18,9 +21,9 @@ export interface WebTextStyle {
     /** @platform web */
     wordWrap?: string;
 }
-export declare type TextStyle = Omit<NativeTextStyle, 'fontSize'> & WebTextStyle;
+export declare type TextStyle = Omit<NativeTextStyle, 'fontSize' | 'lineHeight'> & WebTextStyle;
 export declare type WebTextProps = {
-    style?: false | TextStyle | RegisteredStyle<TextStyle> | RecursiveArray<false | TextStyle | RegisteredStyle<TextStyle> | null | undefined> | null;
+    style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
     /** @platform web */

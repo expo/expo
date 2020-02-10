@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { RecursiveArray, RegisteredStyle, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 declare type NativeViewProps = ComponentProps<typeof NativeView> & ClassAttributes<typeof NativeView>;
 /**
  * https://baconbrix.gitbook.io/react-native-web/primitives/view
@@ -112,7 +112,7 @@ export interface WebViewStyle {
 }
 export declare type ViewStyle = NativeViewStyle & WebViewStyle;
 export declare type WebViewProps = {
-    style?: false | ViewStyle | RegisteredStyle<ViewStyle> | RecursiveArray<false | ViewStyle | RegisteredStyle<ViewStyle> | null | undefined> | null;
+    style?: StyleProp<ViewStyle>;
     accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
 };
 export declare type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;

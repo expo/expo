@@ -1,10 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  RecursiveArray,
-  RegisteredStyle,
-  View as NativeView,
-  ViewStyle as NativeViewStyle,
-} from 'react-native';
+import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -123,12 +118,8 @@ export interface WebViewStyle {
 export type ViewStyle = NativeViewStyle & WebViewStyle;
 
 export type WebViewProps = {
-  style?:
-    | false
-    | ViewStyle
-    | RegisteredStyle<ViewStyle>
-    | RecursiveArray<false | ViewStyle | RegisteredStyle<ViewStyle> | null | undefined>
-    | null;
+  style?: StyleProp<ViewStyle>;
+
   accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
 };
 
