@@ -44,60 +44,60 @@ import { H1 } from '@expo/html-elements';
 
 Not all HTML elements are supported. There are some HTML elements that mostly overlap with some universal modules, you should always try to use the universal modules whenever possible. All supported components are a capitalized variation of the semantic HTML they implement/emulate.
 
+- [x] `<a />` => `<A />`
+- [x] `<article />` => `<Article />`
+- [x] `<b />` => `<B />`
+- [x] `<blockquote />` => `<BlockQuote />`
+- [x] `<br />` => `<BR />`
+- [x] `<caption />` => `<Caption />`
+- [x] `<code />` => `<Code />`
+- [x] `<del />` => `<Del />`
+- [x] `<em />` => `<EM />`
+- [x] `<footer />` => `<Footer />`
 - [x] `<h1 />` => `<H1 />`
 - [x] `<h2 />` => `<H2 />`
 - [x] `<h3 />` => `<H3 />`
 - [x] `<h4 />` => `<H4 />`
 - [x] `<h5 />` => `<H5 />`
 - [x] `<h6 />` => `<H6 />`
-- [x] `<a />` => `<A />`
-- [x] `<article />` => `<Article />`
-- [x] `<blockquote />` => `<BlockQuote />`
 - [x] `<header />` => `<Header />`
-- [x] `<main />` => `<Main />`
-- [x] `<section />` => `<Section />`
-- [x] `<nav />` => `<Nav />`
-- [x] `<footer />` => `<Footer />`
-- [x] `<p />` => `<P />`
-- [x] `<b />` => `<B />`
-- [x] `<s />` => `<S />`
-- [x] `<del />` => `<Del />`
-- [x] `<strong />` => `<Strong />`
-- [x] `<i />` => `<I />`
-- [x] `<em />` => `<EM />`
-- [x] `<q />` => `<Q />`
-- [x] `<br />` => `<BR />`
-- [x] `<small />` => `<Small />`
-- [x] `<mark />` => `<Mark />`
-- [x] `<code />` => `<Code />`
 - [x] `<hr />` => `<HR />`
+- [x] `<i />` => `<I />`
+- [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
+- [x] `<main />` => `<Main />`
+- [x] `<mark />` => `<Mark />`
+- [x] `<nav />` => `<Nav />`
+- [x] `<ol />` => `<OL />`
+- [x] `<p />` => `<P />`
+- [x] `<q />` => `<Q />`
+- [x] `<s />` => `<S />`
+- [x] `<section />` => `<Section />`
+- [x] `<small />` => `<Small />`
+- [x] `<strong />` => `<Strong />`
 - [x] `<table />` => `<Table />`
-- [x] `<thead />` => `<THead />`
 - [x] `<tbody />` => `<TBody />`
+- [x] `<td />` => `<TD />`
 - [x] `<tfoot />` => `<TFoot />`
 - [x] `<th />` => `<TH />`
-- [x] `<tr />` => `<TR />`
-- [x] `<td />` => `<TD />`
-- [x] `<caption />` => `<Caption />`
-- [x] `<ul />` => `<UL />`
-- [x] `<ol />` => `<OL />`
+- [x] `<thead />` => `<THead />`
 - [x] `<time />` => `<Time />`
-- [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
+- [x] `<tr />` => `<TR />`
+- [x] `<ul />` => `<UL />`
 
 **External**
 
-- [ ] `<div />` => `<View />` from `react-native-web`
-- [ ] `<button />` => `<Button />` from `react-native-web`
-- [ ] `<span />` => `<Text />` from `react-native-web`
-- [ ] `<img />` => Use `<Image />` from `react-native-web`
 - [ ] `<audio />` => Use `Audio` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/audio/)
-- [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
+- [ ] `<button />` => `<Button />` from `react-native-web`
 - [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/) and the [Expo Canvas API](https://github.com/expo/expo-2d-context)
+- [ ] `<div />` => `<View />` from `react-native-web`
+- [ ] `<iframe />` => On native use [`<WebView />`](https://docs.expo.io/versions/latest/sdk/webview/). Notice: `@react-native-community/web-view` is not maintained by Expo and doesn't have web support
+- [ ] `<img />` => Use `<Image />` from `react-native-web`
 - [ ] `<input type="text" />` => Use `<TextView />`
 - [ ] `<input type="file" />` => Use [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/) and [`expo-document-picker`](https://docs.expo.io/versions/latest/sdk/document-picker/)
-- [ ] `<iframe />` => On native use [`<WebView />`](https://docs.expo.io/versions/latest/sdk/webview/). Notice: `@react-native-community/web-view` is not maintained by Expo and doesn't have web support
-- [ ] [`<noscript />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) eject the `index.html` with `expo customize:web` and use `<noscript />` directly as HTML
 - [ ] [`<link />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link) eject the `index.html` with `expo customize:web` and link resources directly with `<link />`
+- [ ] [`<noscript />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) eject the `index.html` with `expo customize:web` and use `<noscript />` directly as HTML
+- [ ] `<span />` => `<Text />` from `react-native-web`
+- [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
 
 **Pending**
 
