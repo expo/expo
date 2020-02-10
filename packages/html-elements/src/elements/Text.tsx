@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
+import View from '../primitives/View';
+import { BlockQuoteProps, QuoteProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.p, style]} ref={ref} />;
@@ -19,6 +21,18 @@ export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
 export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <P {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
+
+export const Q = forwardRef(({ children, style, ...props }: QuoteProps, ref) => {
+  return (
+    <P {...props} style={[styles.q, style]} ref={ref}>
+      "{children}"
+    </P>
+  );
+}) as ComponentType<QuoteProps>;
+
+export const BlockQuote = forwardRef(({ style, ...props }: BlockQuoteProps, ref) => {
+  return <View {...props} style={[styles.blockQuote, style]} ref={ref} />;
+}) as ComponentType<BlockQuoteProps>;
 
 export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.br, style]} ref={ref} />;
@@ -48,6 +62,12 @@ const styles = StyleSheet.create({
   },
   b: {
     fontWeight: 'bold',
+  },
+  q: {
+    fontStyle: 'italic',
+  },
+  blockQuote: {
+    marginVertical: em(1),
   },
   br: {
     width: 0,

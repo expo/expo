@@ -25,6 +25,16 @@ exports[`renders BR 1`] = `
 />
 `;
 
+exports[`renders BlockQuote 1`] = `
+<View
+  style={
+    Object {
+      "marginVertical": 32,
+    }
+  }
+/>
+`;
+
 exports[`renders Code 1`] = `<Text />`;
 
 exports[`renders Del 1`] = `
@@ -91,6 +101,22 @@ exports[`renders P 1`] = `
   }
 >
   demo
+</Text>
+`;
+
+exports[`renders Q 1`] = `
+<Text
+  style={
+    Object {
+      "fontSize": 32,
+      "fontStyle": "italic",
+      "marginVertical": 32,
+    }
+  }
+>
+  "
+  demo
+  "
 </Text>
 `;
 

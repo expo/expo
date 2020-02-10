@@ -2,6 +2,7 @@ import { ComponentType, forwardRef } from 'react';
 import { createElement, StyleSheet } from 'react-native';
 
 import { TextProps } from '../primitives/Text';
+import { BlockQuoteProps, QuoteProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('p', { ...props, style: [styles.reset, style], ref });
@@ -26,6 +27,14 @@ export const Strong = forwardRef(({ style, ...props }: TextProps, ref) => {
 export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('i', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TextProps>;
+
+export const Q = forwardRef(({ style, ...props }: QuoteProps, ref) => {
+  return createElement('q', { ...props, style: [styles.reset, style], ref });
+}) as ComponentType<QuoteProps>;
+
+export const BlockQuote = forwardRef(({ style, ...props }: BlockQuoteProps, ref) => {
+  return createElement('blockquote', { ...props, style: [styles.reset, style], ref });
+}) as ComponentType<BlockQuoteProps>;
 
 export const EM = forwardRef(({ style, ...props }: TextProps, ref) => {
   return createElement('em', { ...props, style: [styles.reset, style], ref });

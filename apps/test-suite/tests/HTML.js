@@ -35,6 +35,8 @@ import {
   THead,
   TR,
   UL,
+  Q,
+  BlockQuote,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
@@ -65,6 +67,7 @@ const textElements = {
   TD,
   Caption,
   LI,
+  Q,
 };
 
 const viewElements = {
@@ -85,6 +88,7 @@ const viewElements = {
   UL,
   OL,
   LI,
+  BlockQuote,
 };
 
 export async function test(

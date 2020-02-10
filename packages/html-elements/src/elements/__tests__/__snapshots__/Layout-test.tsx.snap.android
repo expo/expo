@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Footer 1`] = `<View />`;
+
+exports[`renders Nav 1`] = `<View />`;

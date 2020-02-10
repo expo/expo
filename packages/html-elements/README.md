@@ -16,9 +16,9 @@ Simple, light-weight, and well tested, universal semantic HTML elements as React
 
 We at Expo recommend using platform agnostic primitives like `View`, `Image`, and `Text` whenever possible but sometimes that's not easy. Some primitives like Tables, and Footers are native to web only and currently have no way of easily accessing. This package aims to solve that while still being an optimal UI package for iOS, and Android.
 
-**What you get**
+### What you get
 
-- Using these components will optimize your website for accessibility and SEO.
+- Using `@expo/html-elements` will optimize your website for SEO and accessibility. Meaning your websites are indexed more accurately and your native apps better accommodate the physically impaired.
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
   - For example, the `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component can accept styles from the `StyleSheet` API.
@@ -52,6 +52,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<h6 />` => `<H6 />`
 - [x] `<a />` => `<A />`
 - [x] `<article />` => `<Article />`
+- [x] `<blockquote />` => `<BlockQuote />`
 - [x] `<header />` => `<Header />`
 - [x] `<main />` => `<Main />`
 - [x] `<section />` => `<Section />`
@@ -64,6 +65,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<strong />` => `<Strong />`
 - [x] `<i />` => `<I />`
 - [x] `<em />` => `<EM />`
+- [x] `<q />` => `<Q />`
 - [x] `<br />` => `<BR />`
 - [x] `<small />` => `<Small />`
 - [x] `<mark />` => `<Mark />`
@@ -208,7 +210,26 @@ function App() {
 />
 ```
 
-## Structure
+## Layout
+
+You can use layout elements like Header, Main, Footer, Section, Nav, etc. as a drop-in replacement for `View`s in your existing app.
+
+#### Default Layout style
+
+All layout HTML elements inherit the shared style of `<View />` to accommodate the [Yoga layout engine][yoga] which we use on native for iOS, and Android.
+
+- `display` is always `flex`. This is because [Yoga][yoga] only implements `display: flex`.
+- `flex-direction` is always `column` instead of `row`.
+
+#### Why use Layout elements
+
+Consider the following: in your app you have a basic element at the top which wraps the buttons and title. A screen reader doesn't understand that this is a header, and mostly neither does a web crawler. But if you replace the encasing view with a `<Header />` the following happens:
+
+- **iOS**: `UIView` uses [`UIAccessibilityTraitHeader`](https://developer.apple.com/documentation/uikit/uiaccessibilitytraitheader?language=objc).
+- **Android**: `View` will use the proper [`AccessibilityNodeInfoCompat.CollectionItemInfoCompat`](https://github.com/facebook/react-native/blob/7428271995adf21b2b31b188ed83b785ce1e9189/ReactAndroid/src/main/java/com/facebook/react/uimanager/ReactAccessibilityDelegate.java#L370-L372) | [docs](https://developer.android.com/reference/android/support/v4/view/accessibility/AccessibilityNodeInfoCompat.CollectionItemInfoCompat).
+- **web**: render an HTML 5 [`<header />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header) with the ARIA `role` set to [`"banner"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/Banner_role).
+
+Some elements like `Footer` and `Main` have no iOS, or Android enhancements, but they'll still improve web. Using the proper HTML 5 elements will make your layout compliant with the [HTML5 outline algorithm](https://html.spec.whatwg.org/multipage/sections.html#outlines).
 
 ### `<Nav/>`
 
@@ -224,7 +245,7 @@ function App() {
 
 ### `<Header/>`
 
-Renders a `<header />` on web with aria set to `banner` and a `View` with aria set to `header` on mobile.
+Renders a `<header />` on web with ARIA set to `banner` and a `View` with ARIA set to `header` on mobile.
 
 ```tsx
 import { Header } from '@expo/html-elements';
@@ -234,9 +255,13 @@ function App() {
 }
 ```
 
+- **iOS**: `UIView` uses [`UIAccessibilityTraitHeader`](https://developer.apple.com/documentation/uikit/uiaccessibilitytraitheader?language=objc).
+- **Android**: `View` will use the proper [`AccessibilityNodeInfoCompat.CollectionItemInfoCompat`](https://github.com/facebook/react-native/blob/7428271995adf21b2b31b188ed83b785ce1e9189/ReactAndroid/src/main/java/com/facebook/react/uimanager/ReactAccessibilityDelegate.java#L370-L372) | [docs](https://developer.android.com/reference/android/support/v4/view/accessibility/AccessibilityNodeInfoCompat.CollectionItemInfoCompat).
+- **web**: render an HTML 5 [`<header />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header) with the ARIA `role` set to [`"banner"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/Banner_role).
+
 ### `<Main/>`
 
-Renders a `<main />` on web with aria set to `main` and a `View` with no aria set on mobile.
+Renders a `<main />` on web with ARIA `role` set to `main` and a `View` with no ARIA set on mobile.
 
 ```tsx
 import { Main } from '@expo/html-elements';
@@ -248,7 +273,7 @@ function App() {
 
 ### `<Section/>`
 
-Renders a `<section />` on web with aria set to `region` and a `View` with aria set to `summary` on mobile.
+Renders a `<section />` on web with ARIA set to `region` and a `View` with ARIA set to `summary` on mobile.
 
 ```tsx
 import { Section } from '@expo/html-elements';
@@ -349,14 +374,21 @@ Inline code block: <code>example</code>
 
 Highlight text: <mark>example</mark>
 
+### `<Q/>`
+
+Quote text: _"example"_
+
+### `<BlockQuote/>`
+
+Render a [`<blockquote />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) on web, and a `<View />` on native. This element doesn't accept text directly.
 
 ## Lists
 
-You should try and use agnostic `FlatList` or `SectionList`s instead of these whenever possible.
+Lists can be used to create basic bulleted or numbered lists. You should try and use universal `FlatList` or `SectionList` components for long scrolling lists instead of these.
 
 ### `<UL/>`
 
-Create an unordered (bulleted) list `<ul />` on web and emulate with a `<View />` on native.
+Create an unordered (bulleted) list `<ul />` on web, and emulates the style with a `<View />` on native.
 
 - [x] Resets font styles everywhere.
 - [ ] Supports i18n by reversing format on iOS and Android
@@ -367,23 +399,21 @@ import { UL, LI } from '@expo/html-elements';
 
 function App() {
     return (
-        <>
+        <UL>
+            <LI>oranges</LI>
+            <LI>apples</LI>
             <UL>
-                <LI>oranges</LI>
-                <LI>apples</LI>
-                <UL>
-                    <LI>green</LI>
-                    <LI>red</LI>
-                </UL>
+                <LI>green</LI>
+                <LI>red</LI>
             </UL>
-        </>
+        </UL>
     )
 }
 ```
 
 ### `<OL/>`
 
-Create an ordered (numbered) list `<ol />` on web and emulate with a `<View />` on native.
+Create an ordered (numbered) list `<ol />` on web, and emulates the style with a `<View />` on native.
 
 - [x] Resets font styles everywhere.
 - [ ] Supports i18n by reversing format on iOS and Android
@@ -395,16 +425,14 @@ import { UL, LI } from '@expo/html-elements';
 
 function App() {
     return (
-        <>
+        <OL>
+            <LI>oranges</LI>
+            <LI>apples</LI>
             <OL>
-                <LI>oranges</LI>
-                <LI>apples</LI>
-                <OL>
-                    <LI>green</LI>
-                    <LI>red</LI>
-                </OL>
+                <LI>green</LI>
+                <LI>red</LI>
             </OL>
-        </>
+        </OL>
     )
 }
 ```
@@ -424,9 +452,7 @@ import { HR } from '@expo/html-elements';
 
 function App() {
     return (
-        <>
-            <HR />
-        </>
+        <HR />
     )
 }
 ```
@@ -446,6 +472,7 @@ Create tables universally.
 
 ```tsx
 import { Table, THead, TH, TBody, TFoot, TR, TD, Caption } from '@expo/html-elements';
+import { Text } from 'react-native';
 
 function App() {
     return (
@@ -462,13 +489,21 @@ function App() {
                     <TD>with two columns</TD>
                 </TR>
             </TBody>
+            <TFoot>
+                <TR>
+                    <TD>
+                        <Text>This is the table footer</Text>
+                    </TD>
+                </TR>
+            </TFoot>
         </Table>
     )
 }
 ```
 
-#### Table Example
+#### Table example output web
 
+```html
 <table>
     <caption>Caption</caption>
     <thead>
@@ -482,44 +517,63 @@ function App() {
             <td>with two columns</td>
         </tr>
     </tbody>
+    <tfoot>
+        <tr>
+            <td><div>The table body</div></td>
+        </tr>
+    </tfoot>
 </table>
+```
 
 ### `<Table/>`
 
 Base element for creating a Table.
 
+- Renders a `<table />` on web.
+
 ### `<THead/>`
 
 Header element in a Table.
+
+- Renders a `<thead />` on web.
 
 ### `<TBody/>`
 
 Body element in a Table.
 
+- Renders a `<tbody />` on web.
+
 ### `<TFoot/>`
 
 Footer element in a Table.
+
+- Renders a `<tfoot />` on web.
 
 ### `<TH/>`
 
 Used to display text in the Header.
 
 - `colSpan` and `rowSpan` are currently web-only.
-
+- Renders a `<th />` on web.
 
 ### `<TR/>`
 
 Used to create a Row in a Table.
+
+- Renders a `<tr />` on web.
 
 ### `<TD/>`
 
 Create a cell in a Table.
 
 - `colSpan` and `rowSpan` are currently web-only.
+- Renders a `<td />` on web.
 
 ### `<Caption/>`
 
 Used to caption your table. Excepts text as a child.
+
+- Renders a `<caption />` on web.
 
 ## TODO
 
@@ -529,3 +583,5 @@ Used to caption your table. Excepts text as a child.
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+
+[yoga]: https://yogalayout.com/

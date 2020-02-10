@@ -18,6 +18,12 @@ export const Strong = forwardRef(({ style, ...props }, ref) => {
 export const I = forwardRef(({ style, ...props }, ref) => {
     return createElement('i', { ...props, style: [styles.reset, style], ref });
 });
+export const Q = forwardRef(({ style, ...props }, ref) => {
+    return createElement('q', { ...props, style: [styles.reset, style], ref });
+});
+export const BlockQuote = forwardRef(({ style, ...props }, ref) => {
+    return createElement('blockquote', { ...props, style: [styles.reset, style], ref });
+});
 export const EM = forwardRef(({ style, ...props }, ref) => {
     return createElement('em', { ...props, style: [styles.reset, style], ref });
 });
