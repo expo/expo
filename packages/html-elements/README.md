@@ -82,14 +82,31 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<ul />` => `<UL />`
 - [x] `<ol />` => `<OL />`
 - [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
+
+**External**
+
 - [ ] `<div />` => `<View />` from `react-native-web`
+- [ ] `<button />` => `<Button />` from `react-native-web`
+- [ ] `<span />` => `<Text />` from `react-native-web`
+- [ ] `<img />` => Use `<Image />` from `react-native-web`
 - [ ] `<audio />` => Use `Audio` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/audio/)
 - [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
-- [ ] `<img />` => Use `<Image />` from `react-native-web`
 - [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/) and the [Expo Canvas API](https://github.com/expo/expo-2d-context)
 - [ ] `<input type="text" />` => Use `<TextView />`
 - [ ] `<input type="file" />` => Use [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/) and [`expo-document-picker`](https://docs.expo.io/versions/latest/sdk/document-picker/)
 - [ ] `<iframe />` => On native use [`<WebView />`](https://docs.expo.io/versions/latest/sdk/webview/). Notice: `@react-native-community/web-view` is not maintained by Expo and doesn't have web support
+- [ ] [`<noscript />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) eject the `index.html` with `expo customize:web` and use `<noscript />` directly as HTML
+- [ ] [`<link />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link) eject the `index.html` with `expo customize:web` and link resources directly with `<link />`
+
+**Pending**
+
+- [ ] [`<details />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+- [ ] [`<summary />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary)
+- [ ] [`<progress />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress)
+- [ ] [`<select />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)
+- [ ] [`<picture />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture)
+- [ ] [`<figure />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure)
+- [ ] [`<figcaption />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption)
 
 ## Headings
 
@@ -578,7 +595,6 @@ Used to caption your table. Excepts text as a child.
 
 ## TODO
 
-- Support more HTML elements.
 - Improve relative imports for better tree-shaking.
 
 ## Contributing
