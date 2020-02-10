@@ -1234,10 +1234,6 @@ EXGL:
   LABEL: EXGL
   PROJECT_PATH: EXGL.xcodeproj
   UUID: 78CC35D6F49ACC0F72F0095F78EFDCE7
-EXGL-CPP:
-  LABEL: EXGL-CPP
-  PROJECT_PATH: EXGL-CPP.xcodeproj
-  UUID: 348F48833A31FAAF4C3FBBBCAA504BB8
 EXGL_CPP:
   LABEL: EXGL_CPP
   PROJECT_PATH: EXGL_CPP.xcodeproj
@@ -1250,6 +1246,10 @@ EXHaptics:
   LABEL: EXHaptics
   PROJECT_PATH: EXHaptics.xcodeproj
   UUID: 458E4E0DEA9D752CC28F1A42E4B306AC
+EXImageLoader:
+  LABEL: EXImageLoader
+  PROJECT_PATH: EXImageLoader.xcodeproj
+  UUID: E9B8755E94C7C9AA493F2BF95AB61410
 EXImageManipulator:
   LABEL: EXImageManipulator
   PROJECT_PATH: EXImageManipulator.xcodeproj
@@ -1302,6 +1302,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenOrientation:
+  LABEL: EXScreenOrientation
+  PROJECT_PATH: EXScreenOrientation.xcodeproj
+  UUID: AA651E1AC215FDCE87E218058A342349
 EXSecureStore:
   LABEL: EXSecureStore
   PROJECT_PATH: EXSecureStore.xcodeproj
@@ -1442,10 +1446,6 @@ GoogleMaps:
   LABEL: GoogleMaps
   PROJECT_PATH: GoogleMaps.xcodeproj
   UUID: BF08434370CEBD287CA17CA7862D7C59
-GoogleMobileVision:
-  LABEL: GoogleMobileVision
-  PROJECT_PATH: GoogleMobileVision.xcodeproj
-  UUID: 2708175A425F1F6674D0854CB8EA85C4
 GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj

@@ -50,7 +50,8 @@ export function getTestModules() {
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient')
+    require('./tests/LinearGradient'),
+    require('./tests/Facebook')
   );
 
   if (Platform.OS === 'android') {
@@ -64,7 +65,8 @@ export function getTestModules() {
       require('./tests/Localization'),
       require('./tests/SecureStore'),
       require('./tests/SMS'),
-      require('./tests/StoreReview')
+      require('./tests/StoreReview'),
+      require('./tests/NewNotifications')
     );
     return modules;
   }
@@ -73,7 +75,8 @@ export function getTestModules() {
     modules.push(
       require('./tests/Contacts'),
       // require('./tests/SVG'),
-      require('./tests/Localization')
+      require('./tests/Localization'),
+      optionalRequire(() => require('./tests/NewNotifications'))
     );
 
     if (browserSupportsWebGL()) {
@@ -102,7 +105,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd'))
+    optionalRequire(() => require('./tests/FBBannerAd')),
+    optionalRequire(() => require('./tests/NewNotifications'))
   );
 
   if (!isDeviceFarm()) {

@@ -24,6 +24,9 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-sharing"
   },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
@@ -33,7 +36,7 @@
     "unimodules-file-system-interface": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1"
+    "expo-module-scripts": "~1.2.0"
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }

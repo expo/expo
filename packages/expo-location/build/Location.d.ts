@@ -10,6 +10,7 @@ export interface ProviderStatus {
 }
 export interface LocationOptions {
     accuracy?: LocationAccuracy;
+    maximumAge?: number;
     enableHighAccuracy?: boolean;
     timeInterval?: number;
     distanceInterval?: number;
@@ -117,7 +118,7 @@ export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
     remove: () => void;
 }>;
-export declare function geocodeAsync(address: string): Promise<Array<GeocodedLocation>>;
+export declare function geocodeAsync(address: string): Promise<GeocodedLocation[]>;
 export declare function reverseGeocodeAsync(location: {
     latitude: number;
     longitude: number;
@@ -133,7 +134,7 @@ export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;
-export declare function startGeofencingAsync(taskName: string, regions?: Array<Region>): Promise<void>;
+export declare function startGeofencingAsync(taskName: string, regions?: Region[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
 export declare function installWebGeolocationPolyfill(): void;

@@ -1,5 +1,5 @@
 ---
-title: What is Expo?
+title: Introduction
 ---
 
 import Video from '../../../components/plugins/Video'

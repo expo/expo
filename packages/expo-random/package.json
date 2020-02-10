@@ -42,7 +42,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1"
+    "expo-module-scripts": "~1.2.0"
   },
   "dependencies": {
     "base64-js": "^1.3.0"

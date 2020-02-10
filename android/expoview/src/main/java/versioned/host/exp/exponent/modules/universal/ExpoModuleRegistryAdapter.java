@@ -5,18 +5,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 
 import org.json.JSONObject;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ModuleRegistryReadyNotifier;
-import org.unimodules.adapters.react.NativeModulesProxy;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
@@ -57,6 +53,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     // Overriding expo-error-recovery ErrorRecoveryModule
     moduleRegistry.registerExportedModule(new ScopedErrorRecoveryModule(scopedContext, manifest, experienceId));
+
+    // Overriding expo-permissions ScopedPermissionsService
+    moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext));
 
     // Overriding expo-facebook
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));

@@ -143,7 +143,7 @@ export type RecurrenceRule = {
   endDate?: string;
   occurrence?: number;
 
-  daysOfTheWeek?: Array<{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }>;
+  daysOfTheWeek?: { dayOfTheWeek: DayOfTheWeek; weekNumber?: number }[];
   daysOfTheMonth?: number[];
   monthsOfTheYear?: MonthOfTheYear[];
   weeksOfTheYear?: number[];
@@ -427,7 +427,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 } // Android
 
 export async function getRemindersAsync(
-  calendarIds: Array<string | null>,
+  calendarIds: (string | null)[],
   status: string | null,
   startDate: Date,
   endDate: Date

@@ -37,7 +37,7 @@
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1"
+    "expo-module-scripts": "~1.2.0"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"

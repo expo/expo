@@ -139,16 +139,30 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 {
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
-  NSMutableDictionary *items = [@{
-    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": isDevModeEnabled ? @YES : @NO },
-  } mutableCopy];
+  NSMutableDictionary *items = [NSMutableDictionary new];
+
+  if (isDevModeEnabled) {
+    items[@"dev-inspector"] = @{
+      @"label": devSettings.isElementInspectorShown ? @"Hide Element Inspector" : @"Show Element Inspector",
+      @"isEnabled": @YES
+    };
+  } else {
+    items[@"dev-inspector"] = @{
+      @"label": @"Element Inspector Unavailable",
+      @"isEnabled": @NO
+    };
+  }
+  
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
     };
   } else {
-    items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
+    items[@"dev-remote-debug"] =  @{
+      @"label": @"Remote Debugger Unavailable",
+      @"isEnabled": @NO
+    };
   }
 
   if (devSettings.isHotLoadingAvailable && isDevModeEnabled) {
@@ -157,19 +171,23 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       @"isEnabled": @YES,
     };
   } else {
-    NSMutableDictionary *hmrItem = [@{
+    items[@"dev-hmr"] =  @{
       @"label": @"Fast Refresh Unavailable",
       @"isEnabled": @NO,
       @"detail": @"Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh."
-    } mutableCopy];
-    items[@"dev-hmr"] =  hmrItem;
+    };
   }
 
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
-  if (perfMonitor) {
+  if (perfMonitor && isDevModeEnabled) {
     items[@"dev-perf-monitor"] = @{
       @"label": devSettings.isPerfMonitorShown ? @"Hide Performance Monitor" : @"Show Performance Monitor",
-      @"isEnabled": isDevModeEnabled ? @YES : @NO,
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-perf-monitor"] = @{
+      @"label": @"Performance Monitor Unavailable",
+      @"isEnabled": @NO,
     };
   }
 

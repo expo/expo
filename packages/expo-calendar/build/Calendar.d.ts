@@ -127,10 +127,10 @@ export declare type RecurrenceRule = {
     interval?: number;
     endDate?: string;
     occurrence?: number;
-    daysOfTheWeek?: Array<{
+    daysOfTheWeek?: {
         dayOfTheWeek: DayOfTheWeek;
         weekNumber?: number;
-    }>;
+    }[];
     daysOfTheMonth?: number[];
     monthsOfTheYear?: MonthOfTheYear[];
     weeksOfTheYear?: number[];
@@ -155,7 +155,7 @@ export declare function createAttendeeAsync(eventId: string, details?: OptionalK
 export declare function updateAttendeeAsync(id: string, details?: OptionalKeys<Attendee>): Promise<string>;
 export declare function getDefaultCalendarAsync(): Promise<Calendar>;
 export declare function deleteAttendeeAsync(id: string): Promise<void>;
-export declare function getRemindersAsync(calendarIds: Array<string | null>, status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 export declare function getReminderAsync(id: string): Promise<Reminder>;
 export declare function createReminderAsync(calendarId: string | null, { id, ...details }?: Reminder): Promise<string>;
 export declare function updateReminderAsync(id: string, details?: Reminder): Promise<string>;

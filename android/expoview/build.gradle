@@ -170,6 +170,7 @@ dependencies {
       exclude      : [
           'expo-module-template',
           'expo-bluetooth',
+          'expo-notifications',
           'expo-in-app-purchases',
           'expo-updates',
       ]

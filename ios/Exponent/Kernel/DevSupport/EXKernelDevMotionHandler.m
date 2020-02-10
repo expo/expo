@@ -2,7 +2,6 @@
 
 #import "EXEnvironment.h"
 #import "EXKernel.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelDevMotionHandler.h"
 #import "EXReactAppManager.h"
@@ -58,7 +57,7 @@ static NSNotificationName EXShakeGestureNotification = @"EXShakeGestureNotificat
 
 - (void)_handleShakeGesture
 {
-  if ([EXEnvironment sharedEnvironment].isDetached || [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled) {
+  if ([EXEnvironment sharedEnvironment].isDetached) {
     [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
   } else {
     [[EXKernel sharedInstance] switchTasks];
