@@ -83,6 +83,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<ol />` => `<OL />`
 - [x] `<li />` => `<LI />` or `<FlatList />` from `react-native-web`
 - [ ] `<div />` => `<View />` from `react-native-web`
+- [ ] `<audio />` => Use `Audio` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/audio/)
 - [ ] `<video />` => Use `<Video />` from [`expo-av`](https://docs.expo.io/versions/latest/sdk/video/)
 - [ ] `<img />` => Use `<Image />` from `react-native-web`
 - [ ] `<canvas />` => Use `<GLView />` from [`expo-gl`](https://docs.expo.io/versions/latest/sdk/gl-view/) and the [Expo Canvas API](https://github.com/expo/expo-2d-context)
