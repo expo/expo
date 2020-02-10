@@ -18,7 +18,7 @@ We at Expo recommend using platform agnostic primitives like `View`, `Image`, an
 
 ### What you get
 
-- Using `@expo/html-elements` will optimize your website for SEO and accessibility. Meaning your websites are indexed more accurately and your native apps better accommodate the physically impaired.
+- Using `@expo/html-elements` will optimize your website for SEO and accessibility. Meaning your websites are indexed more accurately and your native apps better accommodate physically impaired users.
   - This package takes full advantage of [`react-native-web` a11y rules](https://github.com/necolas/react-native-web/blob/master/packages/docs/src/guides/accessibility.stories.mdx) whenever possible.
   - For example, the `H1` component will render an `<h1 />` on web, a `UILabel` on iOS, and a `TextView` on Android.
 - Every component can accept styles from the `StyleSheet` API.
