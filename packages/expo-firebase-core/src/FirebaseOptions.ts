@@ -13,7 +13,7 @@ export interface IFirebaseOptions {
 }
 
 export class FirebaseOptions {
-  static parseAndroidGoogleServices(json: any): IFirebaseOptions {
+  /*static parseAndroidGoogleServices(json: any, packageName?: string): IFirebaseOptions {
     // TODO make this solid
     const projectInfo = json['project_info'];
     const client = json.client[0];
@@ -38,7 +38,7 @@ export class FirebaseOptions {
       storageBucket,
       //authDomain,
     };
-  }
+  }*/
 }
 
 /*export function getFirebaseOptionsFromAndroidManifest(): FirebaseOptions {

@@ -44,6 +44,7 @@
     "expo-sqlite": "~8.0.0",
     "expo-task-manager": "~8.0.0",
     "expo-web-browser": "~8.0.0",
+    "firebase": "^7.8.1",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",

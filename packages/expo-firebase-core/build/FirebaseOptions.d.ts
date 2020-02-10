@@ -8,5 +8,4 @@ export interface IFirebaseOptions {
     projectId: string;
 }
 export declare class FirebaseOptions {
-    static parseAndroidGoogleServices(json: any): IFirebaseOptions;
 }

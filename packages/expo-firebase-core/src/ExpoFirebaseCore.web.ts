@@ -1,4 +1,3 @@
-import { UnavailabilityError } from '@unimodules/core';
 import { IFirebaseOptions } from './FirebaseOptions';
 
 export default {
@@ -6,7 +5,7 @@ export default {
     return '[DEFAULT]';
   },
 
-  get DEFAULT_APP_OPTIONS(): IFirebaseOptions {
-    throw new UnavailabilityError('expo-firebase-core', 'DEFAULT_APP_OPTIONS');
+  get DEFAULT_APP_OPTIONS(): IFirebaseOptions | void {
+    return undefined;
   },
 };
