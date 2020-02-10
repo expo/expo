@@ -1,12 +1,12 @@
 import { PixelRatio, Platform } from 'react-native';
-export function rem(pixels) {
+export function rem(value) {
     if (Platform.OS === 'web')
-        return `${pixels}rem`;
-    return PixelRatio.getFontScale() * 16 * pixels;
+        return `${value}rem`;
+    return PixelRatio.getFontScale() * 16 * value;
 }
-export function em(pixels) {
+export function em(value) {
     if (Platform.OS === 'web')
-        return `${pixels}em`;
-    return rem(pixels);
+        return `${value}em`;
+    return rem(value);
 }
 //# sourceMappingURL=units.js.map
