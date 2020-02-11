@@ -44,55 +44,55 @@ import { H1 } from '@expo/html-elements';
 
 Here is a list of all the currently supported elements and the web feature they map to. Not all HTML elements are supported. There are some HTML elements that mostly overlap with some universal modules, you should always try to use the universal modules whenever possible. All supported components are a capitalized variation of the semantic HTML they implement/emulate.
 
-| HTML                                | `@expo/html-elements` |
-| ----------------------------------- | :-------------------: |
-| [`<a />`][html-a]                   |        `<A />`        |
-| [`<article />`][html-article]       |     `<Article />`     |
-| [`<b />`][html-b]                   |        `<B />`        |
-| [`<blockquote />`][html-blockquote] |   `<BlockQuote />`    |
-| [`<br />`][html-br]                 |       `<BR />`        |
-| [`<caption />`][html-caption]       |     `<Caption />`     |
-| [`<code />`][html-code]             |      `<Code />`       |
-| [`<del />`][html-del]               |       `<Del />`       |
-| [`<em />`][html-em]                 |       `<EM />`        |
-| [`<footer />`][html-footer]         |     `<Footer />`      |
-| [`<h1 />`][html-h1]                 |       `<H1 />`        |
-| [`<h2 />`][html-h2]                 |       `<H2 />`        |
-| [`<h3 />`][html-h3]                 |       `<H3 />`        |
-| [`<h4 />`][html-h4]                 |       `<H4 />`        |
-| [`<h5 />`][html-h5]                 |       `<H5 />`        |
-| [`<h6 />`][html-h6]                 |       `<H6 />`        |
-| [`<header />`][html-header]         |     `<Header />`      |
-| [`<hr />`][html-hr]                 |       `<HR />`        |
-| [`<i />`][html-i]                   |        `<I />`        |
-| [`<main />`][html-main]             |      `<Main />`       |
-| [`<mark />`][html-mark]             |      `<Mark />`       |
-| [`<nav />`][html-nav]               |       `<Nav />`       |
-| [`<ol />`][html-ol]                 |       `<OL />`        |
-| [`<p />`][html-p]                   |        `<P />`        |
-| [`<pre />`][html-pre]               |       `<Pre />`       |
-| [`<q />`][html-q]                   |        `<Q />`        |
-| [`<s />`][html-s]                   |        `<S />`        |
-| [`<section />`][html-section]       |     `<Section />`     |
-| [`<small />`][html-small]           |      `<Small />`      |
-| [`<strong />`][html-strong]         |     `<Strong />`      |
-| [`<table />`][html-table]           |      `<Table />`      |
-| [`<tbody />`][html-tbody]           |      `<TBody />`      |
-| [`<td />`][html-td]                 |       `<TD />`        |
-| [`<tfoot />`][html-tfoot]           |      `<TFoot />`      |
-| [`<th />`][html-th]                 |       `<TH />`        |
-| [`<thead />`][html-thead]           |      `<THead />`      |
-| [`<time />`][html-time]             |      `<Time />`       |
-| [`<tr />`][html-tr]                 |       `<TR />`        |
-| [`<ul />`][html-ul]                 |       `<UL />`        |
-| [`<li />`][html-li]                 |       `<LI />`        |
-| [`<details />`][html-details]       |       ⏱ Pending       |
-| [`<summary />`][html-summary]       |       ⏱ Pending       |
-| [`<progress />`][html-progress]     |       ⏱ Pending       |
-| [`<select />`][html-select]         |       ⏱ Pending       |
-| [`<picture />`][html-picture]       |       ⏱ Pending       |
-| [`<figure />`][html-figure]         |       ⏱ Pending       |
-| [`<figcaption />`][html-figcaption] |       ⏱ Pending       |
+| HTML                                |      `@expo/html-elements`      |
+| ----------------------------------- | :-----------------------------: |
+| [`<a />`][html-a]                   |          [`<A />`](#a)          |
+| [`<article />`][html-article]       |    [`<Article />`](#article)    |
+| [`<b />`][html-b]                   |          [`<B />`](#b)          |
+| [`<blockquote />`][html-blockquote] | [`<BlockQuote />`](#blockquote) |
+| [`<br />`][html-br]                 |         [`<BR />`](#br)         |
+| [`<caption />`][html-caption]       |    [`<Caption />`](#caption)    |
+| [`<code />`][html-code]             |       [`<Code />`](#code)       |
+| [`<del />`][html-del]               |        [`<Del />`](#del)        |
+| [`<em />`][html-em]                 |         [`<EM />`](#em)         |
+| [`<footer />`][html-footer]         |     [`<Footer />`](#footer)     |
+| [`<h1 />`][html-h1]                 |         [`<H1 />`](#h1)         |
+| [`<h2 />`][html-h2]                 |         [`<H2 />`](#h2)         |
+| [`<h3 />`][html-h3]                 |         [`<H3 />`](#h3)         |
+| [`<h4 />`][html-h4]                 |         [`<H4 />`](#h4)         |
+| [`<h5 />`][html-h5]                 |         [`<H5 />`](#h5)         |
+| [`<h6 />`][html-h6]                 |         [`<H6 />`](#h6)         |
+| [`<header />`][html-header]         |     [`<Header />`](#header)     |
+| [`<hr />`][html-hr]                 |         [`<HR />`](#hr)         |
+| [`<i />`][html-i]                   |          [`<I />`](#i)          |
+| [`<main />`][html-main]             |       [`<Main />`](#main)       |
+| [`<mark />`][html-mark]             |       [`<Mark />`](#mark)       |
+| [`<nav />`][html-nav]               |        [`<Nav />`](#nav)        |
+| [`<ol />`][html-ol]                 |         [`<OL />`](#ol)         |
+| [`<p />`][html-p]                   |          [`<P />`](#p)          |
+| [`<pre />`][html-pre]               |        [`<Pre />`](#pre)        |
+| [`<q />`][html-q]                   |          [`<Q />`](#q)          |
+| [`<s />`][html-s]                   |          [`<S />`](#s)          |
+| [`<section />`][html-section]       |    [`<Section />`](#section)    |
+| [`<small />`][html-small]           |      [`<Small />`](#small)      |
+| [`<strong />`][html-strong]         |     [`<Strong />`](#strong)     |
+| [`<table />`][html-table]           |      [`<Table />`](#table)      |
+| [`<tbody />`][html-tbody]           |      [`<TBody />`](#tbody)      |
+| [`<td />`][html-td]                 |         [`<TD />`](#td)         |
+| [`<tfoot />`][html-tfoot]           |      [`<TFoot />`](#tfoot)      |
+| [`<th />`][html-th]                 |         [`<TH />`](#th)         |
+| [`<thead />`][html-thead]           |      [`<THead />`](#thead)      |
+| [`<time />`][html-time]             |       [`<Time />`](#time)       |
+| [`<tr />`][html-tr]                 |         [`<TR />`](#tr)         |
+| [`<ul />`][html-ul]                 |         [`<UL />`](#ul)         |
+| [`<li />`][html-li]                 |         [`<LI />`](#li)         |
+| [`<details />`][html-details]       |            ⏱ Pending            |
+| [`<summary />`][html-summary]       |            ⏱ Pending            |
+| [`<progress />`][html-progress]     |            ⏱ Pending            |
+| [`<select />`][html-select]         |            ⏱ Pending            |
+| [`<picture />`][html-picture]       |            ⏱ Pending            |
+| [`<figure />`][html-figure]         |            ⏱ Pending            |
+| [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
 
 ## External
 
