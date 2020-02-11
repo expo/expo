@@ -220,8 +220,7 @@ You can use the anchor element with href prop to open links. On native this will
 ```tsx
 import { A } from '@expo/html-elements';
 
-function App() {
-  return <A href="#" target="_blank" />;
+export default () => <A href="#" target="_blank" />;
 }
 ```
 
@@ -256,9 +255,7 @@ Some elements like `Footer` and `Main` have no iOS, or Android enhancements, but
 ```tsx
 import { Nav } from '@expo/html-elements';
 
-function App() {
-  return <Nav />;
-}
+export default () => <Nav />;
 ```
 
 | Platform | Output                         |
@@ -273,17 +270,15 @@ Renders a `<header />` on web with ARIA set to [`banner`][aria-banner] and a `Vi
 ```tsx
 import { Header } from '@expo/html-elements';
 
-function App() {
-  return <Header />;
-}
+export default () => <Header />;
 ```
 
-| Platform     | Output                                                                                                              |
-| ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| Web          | [`<header role="banner" />`][html-header]                                                                           |
-| React Native | `<View />`                                                                                                          |
-| iOS          | `UIView` uses [`UIAccessibilityTraitHeader`][uiatheader].                                                           |
-| Android      | `View` will use the proper [`AccessibilityNodeInfoCompat.CollectionItemInfoCompat`][anicompat] [docs][anicompatdoc] |
+| Platform | Output                                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------------------------- |
+| Web      | [`<header role="banner" />`][html-header]                                                                           |
+| Native   | `<View />`                                                                                                          |
+| iOS      | `UIView` uses [`UIAccessibilityTraitHeader`][uiatheader].                                                           |
+| Android  | `View` will use the proper [`AccessibilityNodeInfoCompat.CollectionItemInfoCompat`][anicompat] [docs][anicompatdoc] |
 
 [uiatheader]: https://developer.apple.com/documentation/uikit/uiaccessibilitytraitheader?language=objc
 [anicompat]: https://github.com/facebook/react-native/blob/7428271995adf21b2b31b188ed83b785ce1e9189/ReactAndroid/src/main/java/com/facebook/react/uimanager/ReactAccessibilityDelegate.java#L370-L372
@@ -296,13 +291,12 @@ Renders a `<main />` on web with ARIA `role` set to `main` and a `View` with no 
 ```tsx
 import { Main } from '@expo/html-elements';
 
-function App() {
-  return (
+export default () => (
     <Main>
       <P>Some content in the main element</P>
     </Main>
   );
-}
+)
 ```
 
 | Platform | Output                                      |
@@ -317,9 +311,7 @@ Renders a `<section />` on web with ARIA set to `region` and a `View` with ARIA 
 ```tsx
 import { Section } from '@expo/html-elements';
 
-function App() {
-  return <Section />;
-}
+export default () => <Section />;
 ```
 
 | Platform | Output                                           |
@@ -334,9 +326,7 @@ Renders an `<article />` on web and a `View` everywhere else.
 ```tsx
 import { Article } from '@expo/html-elements';
 
-function App() {
-  return <Article />;
-}
+export default () => <Article />;
 ```
 
 | Platform | Output                                            |
@@ -351,9 +341,7 @@ Renders an `<footer />` on web and a `View` everywhere else.
 ```tsx
 import { Footer } from '@expo/html-elements';
 
-function App() {
-  return <Footer />;
-}
+export default () => <Footer />;
 ```
 
 | Platform | Output                            |
@@ -372,104 +360,102 @@ Wraps the primitive `Text` element on native and renders the expected HTML on we
 ```tsx
 import { P, B, S, I, BR, Small, Code } from '@expo/html-elements';
 
-function App() {
-  return (
-    <>
-      <P>
-        Hello<B>World (in bold)</B>
-      </P>
-      <S>strike text</S>
-      <BR />
-      <I>Italic</I>
-      <Code>const foo = true</Code>
-      <Small>Small text</Small>
-    </>
-  );
-}
+export default () => (
+  <>
+    <P>
+      Hello<B>World (in bold)</B>
+    </P>
+    <S>strike text</S>
+    <BR />
+    <I>Italic</I>
+    <Code>const foo = true</Code>
+    <Small>Small text</Small>
+  </>
+);
 ```
 
 ### `<P/>`
 
-Standard paragraph: <p>example</p>
+Standard paragraph element.
 
-| Platform     | Output                                                        |
-| ------------ | ------------------------------------------------------------- |
-| React        | `<p style={{ fontFamily: 'System' }} />`                      |
-| React Native | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Platform | Output                                                        |
+| -------- | ------------------------------------------------------------- |
+| Web      | `<p style={{ fontFamily: 'System' }} />`                      |
+| Native   | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
-Bold text: <b>example</b>
+Bold text text.
 
-| Platform     | Output                                    |
-| ------------ | ----------------------------------------- |
-| React        | `<b style={{ fontFamily: 'System' }} />`  |
-| React Native | `<Text style={{ fontWeight: 'bold' }} />` |
+| Platform | Output                                    |
+| -------- | ----------------------------------------- |
+| Web      | `<b style={{ fontFamily: 'System' }} />`  |
+| Native   | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<Strong/>`
 
-Alternate Bold text: <strong>example</strong>
+Alternate bold text.
 
-| Platform     | Output                                        |
-| ------------ | --------------------------------------------- |
-| React        | `<strong style={{ fontFamily: 'System' }} />` |
-| React Native | `<Text style={{ fontWeight: 'bold' }} />`     |
+| Platform | Output                                        |
+| -------- | --------------------------------------------- |
+| Web      | `<strong style={{ fontFamily: 'System' }} />` |
+| Native   | `<Text style={{ fontWeight: 'bold' }} />`     |
 
 ### `<S/>`
 
-Strike through text: <s>example</s>
+Strike through text.
 
-| Platform     | Output                                                    |
-| ------------ | --------------------------------------------------------- |
-| React        | `<s style={{ fontFamily: 'System' }} />`                  |
-| React Native | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform | Output                                                    |
+| -------- | --------------------------------------------------------- |
+| Web      | `<s style={{ fontFamily: 'System' }} />`                  |
+| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<Del/>`
 
-Alternate strike through text, renders an `<del/>` on web: <del>example</del>
+Alternate strike through text.
 
-| Platform     | Output                                                    |
-| ------------ | --------------------------------------------------------- |
-| React        | `<del style={{ fontFamily: 'System' }} />`                |
-| React Native | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform | Output                                                    |
+| -------- | --------------------------------------------------------- |
+| Web      | `<del style={{ fontFamily: 'System' }} />`                |
+| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<I/>`
 
-Italic text: _example_
+Italic text.
 
-| Platform     | Output                                     |
-| ------------ | ------------------------------------------ |
-| React        | `<i style={{ fontFamily: 'System' }} />`   |
-| React Native | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform | Output                                     |
+| -------- | ------------------------------------------ |
+| Web      | `<i style={{ fontFamily: 'System' }} />`   |
+| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<EM/>`
 
-Alternate italic text: _example_
+Alternate italic text.
 
-| Platform     | Output                                     |
-| ------------ | ------------------------------------------ |
-| React        | `<em style={{ fontFamily: 'System' }} />`  |
-| React Native | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform | Output                                     |
+| -------- | ------------------------------------------ |
+| Web      | `<em style={{ fontFamily: 'System' }} />`  |
+| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<Small/>`
 
-Smaller than default text: <small>example</small>
+Smaller than default text.
 
-| Platform     | Output                                       |
-| ------------ | -------------------------------------------- |
-| React        | `<small style={{ fontFamily: 'System' }} />` |
-| React Native | `<Text style={{ fontSize: 10 }} />`          |
+| Platform | Output                                       |
+| -------- | -------------------------------------------- |
+| Web      | `<small style={{ fontFamily: 'System' }} />` |
+| Native   | `<Text style={{ fontSize: 10 }} />`          |
 
 ### `<Code/>`
 
-Inline code block: <code>example</code>
+Inline code block.
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<code />`                  |
-| React Native | `<Text style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<code />`                  |
+| Native   | `<Text style={[Custom]} />` |
 
 ### `<Pre/>`
 
@@ -491,37 +477,37 @@ body {
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform     | Output                                    |
-| ------------ | ----------------------------------------- |
-| React        | `<pre />`                                 |
-| React Native | `<Text style={[Custom]} />` \| `<View />` |
+| Platform | Output                                    |
+| -------- | ----------------------------------------- |
+| Web      | `<pre />`                                 |
+| Native   | `<Text style={[Custom]} />` \| `<View />` |
 
 ### `<Mark/>`
 
-Highlight text: <mark>example</mark>
+Highlight text.
 
-| Platform     | Output                                                           |
-| ------------ | ---------------------------------------------------------------- |
-| React        | `<mark />`                                                       |
-| React Native | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
+| Platform | Output                                                           |
+| -------- | ---------------------------------------------------------------- |
+| Web      | `<mark />`                                                       |
+| Native   | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
 
 ### `<Q/>`
 
-Quote text: _"example"_
+Quoted text.
 
-| Platform     | Output                                             |
-| ------------ | -------------------------------------------------- |
-| React        | `<q />`                                            |
-| React Native | `<Text style={[Custom]}>"{props.children}"</Text>` |
+| Platform | Output                                             |
+| -------- | -------------------------------------------------- |
+| Web      | `<q />`                                            |
+| Native   | `<Text style={[Custom]}>"{props.children}"</Text>` |
 
 ### `<BlockQuote/>`
 
 Render a [`<blockquote />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) on web, and a `<View />` on native. This element doesn't accept text directly.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<blockquote />`            |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<blockquote />`            |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<Time/>`
 
@@ -529,10 +515,10 @@ Renders a `<time />` element with reset styles on web, and a regular `<Text />` 
 
 - `dateTime` prop is supported on web and stripped on native.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<time />`                  |
-| React Native | `<Text style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<time />`                  |
+| Native   | `<Text style={[Custom]} />` |
 
 ## Lists
 
@@ -549,24 +535,22 @@ Create an unordered (bulleted) list `<ul />` on web, and emulates the style with
 ```tsx
 import { UL, LI } from '@expo/html-elements';
 
-function App() {
-  return (
+export default () => (
+  <UL>
+    <LI>oranges</LI>
+    <LI>apples</LI>
     <UL>
-      <LI>oranges</LI>
-      <LI>apples</LI>
-      <UL>
-        <LI>green</LI>
-        <LI>red</LI>
-      </UL>
+      <LI>green</LI>
+      <LI>red</LI>
     </UL>
-  );
-}
+  </UL>
+);
 ```
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<ul />`                    |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<ul />`                    |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<OL/>`
 
@@ -578,9 +562,9 @@ Create an ordered (numbered) list `<ol />` on web, and emulates the style with a
 - [ ] Supports custom bullets
 
 ```tsx
-import { UL, LI } from '@expo/html-elements';
+import { OL, LI } from '@expo/html-elements';
 
-function App() {
+export default () =>  {
   return (
     <OL>
       <LI>oranges</LI>
@@ -590,23 +574,22 @@ function App() {
         <LI>red</LI>
       </OL>
     </OL>
-  );
-}
+);
 ```
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<ol />`                    |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<ol />`                    |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<LI/>`
 
 Create a standard list item `<li />` on web and a native view on mobile which can render text or views inside it.
 
-| Platform     | Output                                                     |
-| ------------ | ---------------------------------------------------------- |
-| React        | `<li />`                                                   |
-| React Native | `<Text style={[Custom]} />` \| `<View style={[Custom]} />` |
+| Platform | Output                                                     |
+| -------- | ---------------------------------------------------------- |
+| Web      | `<li />`                                                   |
+| Native   | `<Text style={[Custom]} />` \| `<View style={[Custom]} />` |
 
 ## Rules
 
@@ -617,24 +600,22 @@ Renders a `<View>` everywhere. Style is modified to match web.
 ```tsx
 import { HR } from '@expo/html-elements';
 
-function App() {
-  return <HR />;
-}
+export default () => <HR />;
 ```
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<hr />`                    |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<hr />`                    |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<BR/>`
 
 Create a line break.
 
-| Platform     | Output                                   |
-| ------------ | ---------------------------------------- |
-| React        | `<br />`                                 |
-| React Native | `<View style={{height: 8, width: 0}} />` |
+| Platform | Output                                   |
+| -------- | ---------------------------------------- |
+| Web      | `<br />`                                 |
+| Native   | `<View style={{height: 8, width: 0}} />` |
 
 ## Tables
 
@@ -649,31 +630,29 @@ Create tables universally.
 import { Table, THead, TH, TBody, TFoot, TR, TD, Caption } from '@expo/html-elements';
 import { Text } from 'react-native';
 
-function App() {
-  return (
-    <Table>
-      <Caption>Caption</Caption>
-      <THead>
-        <TR>
-          <TH colSpan="2">The table header</TH>
-        </TR>
-      </THead>
-      <TBody>
-        <TR>
-          <TD>The table body</TD>
-          <TD>with two columns</TD>
-        </TR>
-      </TBody>
-      <TFoot>
-        <TR>
-          <TD>
-            <Text>This is the table footer</Text>
-          </TD>
-        </TR>
-      </TFoot>
-    </Table>
-  );
-}
+export default () => (
+  <Table>
+    <Caption>Caption</Caption>
+    <THead>
+      <TR>
+        <TH colSpan="2">The table header</TH>
+      </TR>
+    </THead>
+    <TBody>
+      <TR>
+        <TD>The table body</TD>
+        <TD>with two columns</TD>
+      </TR>
+    </TBody>
+    <TFoot>
+      <TR>
+        <TD>
+          <Text>This is the table footer</Text>
+        </TD>
+      </TR>
+    </TFoot>
+  </Table>
+);
 ```
 
 #### Table example output web
@@ -706,37 +685,37 @@ function App() {
 
 Base element for creating a Table.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<table />`                 |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<table />`                 |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<THead/>`
 
 Header element in a Table.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<thead />`                 |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<thead />`                 |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<TBody/>`
 
 Body element in a Table.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<tbody />`                 |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<tbody />`                 |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<TFoot/>`
 
 Footer element in a Table.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<tfoot />`                 |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<tfoot />`                 |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<TH/>`
 
@@ -744,19 +723,19 @@ Used to display text in the Header.
 
 - `colSpan` and `rowSpan` are currently web-only.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<th />`                    |
-| React Native | `<Text style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<th />`                    |
+| Native   | `<Text style={[Custom]} />` |
 
 ### `<TR/>`
 
 Used to create a Row in a Table.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<tr />`                    |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<tr />`                    |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<TD/>`
 
@@ -764,19 +743,19 @@ Create a cell in a Table.
 
 - `colSpan` and `rowSpan` are currently web-only.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<td />`                    |
-| React Native | `<View style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<td />`                    |
+| Native   | `<View style={[Custom]} />` |
 
 ### `<Caption/>`
 
 Used to caption your table. Excepts text as a child.
 
-| Platform     | Output                      |
-| ------------ | --------------------------- |
-| React        | `<caption />`               |
-| React Native | `<Text style={[Custom]} />` |
+| Platform | Output                      |
+| -------- | --------------------------- |
+| Web      | `<caption />`               |
+| Native   | `<Text style={[Custom]} />` |
 
 ## TODO
 
