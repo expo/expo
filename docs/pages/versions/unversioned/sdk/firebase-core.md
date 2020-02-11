@@ -17,23 +17,12 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-firebase-core`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-firebase-core).
 
+
 ## Configuration
 
-In order to use Firebase natively, you'll need to setup your project with a google-services configuration.
+To use this package, the Firebase configuration needs to be added to your app.
+[Please follow this guide on how to configure Native Firebase.](../../guides/setup-native-firebase)
 
-### Managed workflow
-
-To use Firebase with the managed workflow, add the google-services configuration to your `app.json`:
-
-- Add the Android `google-services.json` file to your project and link to it in your `app.json` with the `expo.android.googleServicesFile` key
-- Add the iOS `GoogleService-Info.plist` file to your project and link to it in your `app.json` with the `expo.ios.googleServicesFile` key
-
-### Bare workflow
-
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
-
-- [Add the Android `google-services.json` to your `android/app` folder](https://firebase.google.com/docs/android/setup#add-config-file)
-- [Add the iOS `GoogleService-Info.plist` to your XCode project](https://firebase.google.com/docs/ios/setup#add-config-file)
 
 ## API
 
