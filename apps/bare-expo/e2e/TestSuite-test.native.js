@@ -23,6 +23,7 @@ let TESTS = [
   'Random',
   'Permissions',
   'KeepAwake',
+  'FirebaseCore',
   // 'Audio',
   'HTML',
 ];
