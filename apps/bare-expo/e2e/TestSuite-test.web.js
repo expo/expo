@@ -21,6 +21,7 @@ const TESTS = [
   'KeepAwake',
   'HTML',
   'FirebaseCore',
+  'FirebaseAnalytics',
   // Overridding permissions doesn't work in headless mode
   // see https://github.com/puppeteer/puppeteer/issues/3279
   !config.launch.headless && 'expo-notifications',
