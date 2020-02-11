@@ -1,1 +1,1 @@
-../../../../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h
+../../../../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h
