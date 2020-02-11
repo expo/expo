@@ -13,8 +13,6 @@ exports[`renders Caption 1`] = `
 </Text>
 `;
 
-exports[`renders Table 1`] = `<View />`;
-
 exports[`renders TBody 1`] = `<View />`;
 
 exports[`renders TD 1`] = `
@@ -58,3 +56,5 @@ exports[`renders TR 1`] = `
   }
 />
 `;
+
+exports[`renders Table 1`] = `<View />`;
