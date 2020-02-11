@@ -34,6 +34,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String BADGE_KEY = "badge";
   private static final String BODY_KEY = "body";
   private static final String VIBRATE_KEY = "vibrate";
+  private static final String PRIORITY_KEY = "priority";
   private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
   private static final String EXTRAS_BADGE_KEY = "badge";
@@ -68,6 +69,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   protected NotificationCompat.Builder createBuilder() {
     NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, getChannelId());
     builder.setSmallIcon(mContext.getApplicationInfo().icon);
+    builder.setPriority(getPriority());
 
     // We're setting the content only if there is anything to set
     // otherwise the content title and text are displayed
@@ -80,14 +82,6 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     }
     if (!mNotificationRequest.isNull(CONTENT_SUBTITLE_KEY)) {
       builder.setSubText(mNotificationRequest.optString(CONTENT_SUBTITLE_KEY));
-    }
-
-    if (shouldShowAlert()) {
-      // Display as a heads-up notification
-      builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-    } else {
-      // Do not display as a heads-up notification, but show in the notification tray
-      builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
     }
 
     if (shouldPlaySound()) {
@@ -173,10 +167,6 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     return mNotificationRequest.optInt(BADGE_KEY);
   }
 
-  private boolean shouldShowAlert() {
-    return !mNotificationRequest.isNull(CONTENT_TITLE_KEY) || !mNotificationRequest.isNull(CONTENT_TEXT_KEY);
-  }
-
   /**
    * Notification should play a sound if and only if:
    * - behavior is not set or allows sound AND
@@ -208,6 +198,60 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   private boolean shouldSetBadge() {
     return (mAllowedBehavior == null || mAllowedBehavior.shouldSetBadge()) && !mNotificationRequest.isNull(BADGE_KEY);
+  }
+
+  /**
+   * When setting the priority we want to honor both behavior set by the current
+   * notification handler and the preset priority (in that order of significance).
+   * <p>
+   * We do this by returning:
+   * - if the notification should be shown: high priority (or max, if requested in the notification)
+   * - if the notification should not be shown: default priority (or lower, if requested in the notification).
+   * <p>
+   * This way we allow full customization to the developers (if they want the specific priority
+   * of the notification, they can return shouldShowAlert based on the priority).
+   *
+   * @return Priority of the notification, one of NotificationCompat.PRIORITY_*
+   */
+  private int getPriority() {
+    int requestPriority = NotificationCompat.PRIORITY_DEFAULT;
+
+    switch (mNotificationRequest.optString(PRIORITY_KEY)) {
+      case "max":
+        requestPriority = NotificationCompat.PRIORITY_MAX;
+        break;
+      case "high":
+        requestPriority = NotificationCompat.PRIORITY_HIGH;
+        break;
+      case "default":
+        requestPriority = NotificationCompat.PRIORITY_DEFAULT;
+        break;
+      case "low":
+        requestPriority = NotificationCompat.PRIORITY_LOW;
+        break;
+      case "min":
+        requestPriority = NotificationCompat.PRIORITY_MIN;
+        break;
+      case "":
+        break;
+      default:
+        Log.w("expo-notifications", "Unrecognized priority requested: " + mNotificationRequest.optString(PRIORITY_KEY) + ".");
+    }
+
+    // If we know of a behavior guideline, let's honor it by setting min/max values for priority.
+    if (mAllowedBehavior != null) {
+      if (mAllowedBehavior.shouldShowAlert()) {
+        // Display as a heads-up notification, as per the behavior
+        // while also allowing making the priority higher.
+        return Math.max(NotificationCompat.PRIORITY_HIGH, requestPriority);
+      } else {
+        // Do not display as a heads-up notification, but show in the notification tray
+        // as per the behavior, while also allowing making the priority lower.
+        return Math.min(NotificationCompat.PRIORITY_DEFAULT, requestPriority);
+      }
+    }
+
+    return requestPriority;
   }
 
   private long[] getVibrationPatternOverride() {
