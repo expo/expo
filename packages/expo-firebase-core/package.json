@@ -1,0 +1,42 @@
+{
+  "name": "expo-firebase-core",
+  "version": "1.0.0",
+  "description": "Core support for Google Firebase",
+  "main": "build/FirebaseCore.js",
+  "types": "build/FirebaseCore.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "firebase",
+    "expo-firebase-core"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-firebase-core"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-core",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.1.1"
+  },
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  }
+}
