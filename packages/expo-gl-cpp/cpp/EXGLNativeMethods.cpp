@@ -1,109 +1,26 @@
 #include "EXGLContext.h"
+#include "EXGLImageUtils.h"
 
 #include <algorithm>
 
-// Helpers for unpacking arguments from jsi::Value* jsArgv
-// Arguments are assumed to be numbers (double) and implicitly casted
-// to expected type.
-//
-// EXJS_UNPACK_ARGV(GLenum val1, GLint val2) will be resolved to
-// GLenum val1 = jsArgv[0].asNumber() ; GLint val2 = jsArgv[0 +1].asNumber();
+#define ARG(index, type)                                   \
+  (argc > index ? unpackArg<type>(runtime, jsArgv + index) \
+                : throw std::runtime_error("EXGL: Too few arguments"))
 
-#define _EXJS_COMMA() ,
-#define _EXJS_EMPTY()
-#define _EXJS_LITERAL(X) X _EXJS_EMPTY
+#define NATIVE_METHOD(name, ...)                 \
+  jsi::Value EXGLContext::glNativeMethod_##name( \
+      jsi::Runtime &runtime, const jsi::Value &jsThis, const jsi::Value *jsArgv, size_t argc)
 
-#define EXJS_MAP_EXT(OFFSET, JOINER, F, ...) \
-  _EXJS_EVAL(_EXJS_MAP1(OFFSET, JOINER, F, __VA_ARGS__, (), 0))
-#define EXJS_MAP(F, ...) _EXJS_EVAL(_EXJS_MAP1(0, _EXJS_EMPTY, F, __VA_ARGS__, (), 0))
-
-#define _EXJS_EVAL0(...) __VA_ARGS__
-#define _EXJS_EVAL1(...) _EXJS_EVAL0(_EXJS_EVAL0(__VA_ARGS__))
-#define _EXJS_EVAL2(...) _EXJS_EVAL1(_EXJS_EVAL1(__VA_ARGS__))
-#define _EXJS_EVAL(...) _EXJS_EVAL2(_EXJS_EVAL2(__VA_ARGS__))
-
-#define _EXJS_MAP_END(...)
-#define _EXJS_MAP_OUT
-#define _EXJS_MAP_GET_END() 0, _EXJS_MAP_END
-#define _EXJS_MAP_NEXT0(ITEM, NEXT, ...) NEXT _EXJS_MAP_OUT
-#define _EXJS_MAP_NEXT1(JOINER, ITEM, NEXT) _EXJS_MAP_NEXT0(ITEM, JOINER() NEXT, 0)
-#define _EXJS_MAP_NEXT(JOINER, ITEM, NEXT) _EXJS_MAP_NEXT1(JOINER, _EXJS_MAP_GET_END ITEM, NEXT)
-
-#define _EXJS_MAP0(IDX, JOINER, F, NAME, PEEK, ...) \
-  F(IDX, NAME) _EXJS_MAP_NEXT(JOINER, PEEK, _EXJS_MAP1)(IDX + 1, JOINER, F, PEEK, __VA_ARGS__)
-#define _EXJS_MAP1(IDX, JOINER, F, NAME, PEEK, ...) \
-  F(IDX, NAME) _EXJS_MAP_NEXT(JOINER, PEEK, _EXJS_MAP0)(IDX + 1, JOINER, F, PEEK, __VA_ARGS__)
-
-#define EXJS_ARGC(...) \
-  _EXJS_ARGC_SEQ(__VA_ARGS__, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
-#define _EXJS_ARGC_SEQ(                                                            \
-    x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, n, ...) \
-  n
-
-#define EXJS_UNPACK_ARGV(...) EXJS_UNPACK_ARGV_OFFSET(0, __VA_ARGS__)
-#define EXJS_UNPACK_ARGV_OFFSET(OFFSET, ...) \
-  EXJS_MAP_EXT(OFFSET, _EXJS_LITERAL(;), _EXJS_UNPACK_NUMBER, __VA_ARGS__)
-
-#define _EXJS_UNPACK_NUMBER(INDEX, NAME) \
-  NAME = jsArgv[INDEX].isBool() ? jsArgv[INDEX].getBool() : jsArgv[INDEX].asNumber()
-
-// Wrapper functions for implementation of WebGLRenderingContext
-// -----------------
-
-#define _WRAP_METHOD_INTERNAL(name, minArgc, requiresWebGL2)                                     \
-  jsi::Value EXGLContext::exglNativeStatic_##name(                                               \
-      jsi::Runtime &runtime,                                                                     \
-      const jsi::Value &jsThis,                                                                  \
-      const jsi::Value *jsArgv,                                                                  \
-      unsigned int argc) {                                                                       \
-    auto exglCtxId = static_cast<UEXGLContextId>(                                                \
-        jsThis.asObject(runtime).getProperty(runtime, "exglCtxId").asNumber());                  \
-    auto exglCtx = EXGLContext::ContextGet(exglCtxId);                                           \
-    if (!exglCtx) {                                                                              \
-      return nullptr;                                                                            \
-    }                                                                                            \
-    if (argc < minArgc) {                                                                        \
-      throw std::runtime_error("EXGL: Too few arguments to " #name "()!");                       \
-    }                                                                                            \
-    if (requiresWebGL2 && !exglCtx->supportsWebGL2) {                                            \
-      throw std::runtime_error("EXGL: This device doesn't support WebGL2 method: " #name "()!"); \
-    }                                                                                            \
-    try {                                                                                        \
-      return exglCtx->exglNativeInstance_##name(runtime, jsThis, jsArgv, argc);                  \
-    } catch (const std::exception &e) {                                                          \
-      throw std::runtime_error(std::string("[" #name "] ") + e.what());                          \
-    }                                                                                            \
-  }                                                                                              \
-  jsi::Value EXGLContext::exglNativeInstance_##name(                                             \
-      jsi::Runtime &runtime,                                                                     \
-      const jsi::Value &jsThis,                                                                  \
-      const jsi::Value *jsArgv,                                                                  \
-      unsigned int argc)
-
-#define _WRAP_METHOD(name, minArgc) _WRAP_METHOD_INTERNAL(name, minArgc, false)
-#define _WRAP_WEBGL2_METHOD(name, minArgc) _WRAP_METHOD_INTERNAL(name, minArgc, true)
-
-// Wrapper raises an exception saying the function isn't implemented yet
-#define _WRAP_METHOD_UNIMPL(name)                                         \
-  _WRAP_METHOD(name, 0) {                                                 \
-    throw std::runtime_error("EXGL: " #name "() isn't implemented yet!"); \
-    return nullptr;                                                       \
+#define SIMPLE_NATIVE_METHOD(name, func)                               \
+  NATIVE_METHOD(name) {                                                \
+    addToNextBatch(generateNativeMethod(runtime, func, jsArgv, argc)); \
+    return nullptr;                                                    \
   }
 
-// Wrapper that takes only scalar arguments and returns nothing
-#define _WRAP_METHOD_SIMPLE_INTERNAL(name, isWebGL2Method, glFunc, ...)                            \
-  _WRAP_METHOD_INTERNAL(name, EXJS_ARGC(__VA_ARGS__), isWebGL2Method) {                            \
-    addToNextBatch(                                                                                \
-        std::bind(glFunc, EXJS_MAP_EXT(0, _EXJS_COMMA, _WRAP_METHOD_SIMPLE_UNPACK, __VA_ARGS__))); \
-    return nullptr;                                                                                \
+#define UNIMPL_NATIVE_METHOD(name)   \
+  NATIVE_METHOD(name) {              \
+    return exglUnimplemented(#name); \
   }
-#define _WRAP_METHOD_SIMPLE(name, glFunc, ...) \
-  _WRAP_METHOD_SIMPLE_INTERNAL(name, false, glFunc, __VA_ARGS__)
-#define _WRAP_WEBGL2_METHOD_SIMPLE(name, glFunc, ...) \
-  _WRAP_METHOD_SIMPLE_INTERNAL(name, true, glFunc, __VA_ARGS__)
-
-#define _WRAP_METHOD_SIMPLE_UNPACK(i, _) \
-  jsArgv[i].isBool() ? jsArgv[i].getBool() : jsArgv[i].isNull() ? 0 : jsArgv[i].asNumber()
 
 // This listing follows the order in
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
@@ -112,7 +29,7 @@
 // The WebGL context
 // -----------------
 
-_WRAP_METHOD(getContextAttributes, 0) {
+NATIVE_METHOD(getContextAttributes) {
   jsi::Object jsResult(runtime);
   jsResult.setProperty(runtime, "alpha", true);
   jsResult.setProperty(runtime, "depth", true);
@@ -122,56 +39,56 @@ _WRAP_METHOD(getContextAttributes, 0) {
   return jsResult;
 }
 
-_WRAP_METHOD(isContextLost, 0) {
+NATIVE_METHOD(isContextLost) {
   return false;
 }
 
 // Viewing and clipping
 // --------------------
 
-_WRAP_METHOD_SIMPLE(scissor, glScissor, x, y, width, height)
+SIMPLE_NATIVE_METHOD(scissor, glScissor); // x, y, width, height
 
-_WRAP_METHOD_SIMPLE(viewport, glViewport, x, y, width, height)
+SIMPLE_NATIVE_METHOD(viewport, glViewport); // x, y, width, height
 
 // State information
 // -----------------
 
-_WRAP_METHOD_SIMPLE(activeTexture, glActiveTexture, texture)
+SIMPLE_NATIVE_METHOD(activeTexture, glActiveTexture); // texture
 
-_WRAP_METHOD_SIMPLE(blendColor, glBlendColor, red, green, blue, alpha)
+SIMPLE_NATIVE_METHOD(blendColor, glBlendColor); // red, green, blue, alpha
 
-_WRAP_METHOD_SIMPLE(blendEquation, glBlendEquation, mode)
+SIMPLE_NATIVE_METHOD(blendEquation, glBlendEquation); // mode
 
-_WRAP_METHOD_SIMPLE(blendEquationSeparate, glBlendEquationSeparate, modeRGB, modeAlpha)
+SIMPLE_NATIVE_METHOD(blendEquationSeparate, glBlendEquationSeparate); // modeRGB, modeAlpha
 
-_WRAP_METHOD_SIMPLE(blendFunc, glBlendFunc, sfactor, dfactor)
+SIMPLE_NATIVE_METHOD(blendFunc, glBlendFunc); // sfactor, dfactor
 
-_WRAP_METHOD_SIMPLE(blendFuncSeparate, glBlendFuncSeparate, srcRGB, dstRGB, srcAlpha, dstAlpha)
+SIMPLE_NATIVE_METHOD(blendFuncSeparate, glBlendFuncSeparate); // srcRGB, dstRGB, srcAlpha, dstAlpha
 
-_WRAP_METHOD_SIMPLE(clearColor, glClearColor, red, green, blue, alpha)
+SIMPLE_NATIVE_METHOD(clearColor, glClearColor); // red, green, blue, alpha
 
-_WRAP_METHOD_SIMPLE(clearDepth, glClearDepthf, depth)
+SIMPLE_NATIVE_METHOD(clearDepth, glClearDepthf); // depth
 
-_WRAP_METHOD_SIMPLE(clearStencil, glClearStencil, s)
+SIMPLE_NATIVE_METHOD(clearStencil, glClearStencil); // s
 
-_WRAP_METHOD_SIMPLE(colorMask, glColorMask, red, green, blue, alpha)
+SIMPLE_NATIVE_METHOD(colorMask, glColorMask); // red, green, blue, alpha
 
-_WRAP_METHOD_SIMPLE(cullFace, glCullFace, mode)
+SIMPLE_NATIVE_METHOD(cullFace, glCullFace); // mode
 
-_WRAP_METHOD_SIMPLE(depthFunc, glDepthFunc, func)
+SIMPLE_NATIVE_METHOD(depthFunc, glDepthFunc); // func
 
-_WRAP_METHOD_SIMPLE(depthMask, glDepthMask, flag)
+SIMPLE_NATIVE_METHOD(depthMask, glDepthMask); // flag
 
-_WRAP_METHOD_SIMPLE(depthRange, glDepthRangef, zNear, zFar)
+SIMPLE_NATIVE_METHOD(depthRange, glDepthRangef); // zNear, zFar
 
-_WRAP_METHOD_SIMPLE(disable, glDisable, cap)
+SIMPLE_NATIVE_METHOD(disable, glDisable); // cap
 
-_WRAP_METHOD_SIMPLE(enable, glEnable, cap)
+SIMPLE_NATIVE_METHOD(enable, glEnable); // cap
 
-_WRAP_METHOD_SIMPLE(frontFace, glFrontFace, mode)
+SIMPLE_NATIVE_METHOD(frontFace, glFrontFace); // mode
 
-_WRAP_METHOD(getParameter, 1) {
-  EXJS_UNPACK_ARGV(GLenum pname);
+NATIVE_METHOD(getParameter) {
+  auto pname = ARG(0, GLenum);
 
   switch (pname) {
       // Float32Array[0]
@@ -271,25 +188,23 @@ _WRAP_METHOD(getParameter, 1) {
       return nullptr;
     }
 
-    // Unimplemented...
-#define _GET_PARAMETER_UNIMPL(param) \
-  case GL_##param:                   \
-    throw std::runtime_error("EXGL: getParameter() doesn't support gl." #param " yet!");
-      _GET_PARAMETER_UNIMPL(COPY_READ_BUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(COPY_WRITE_BUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(DRAW_FRAMEBUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(READ_FRAMEBUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(RENDERBUFFER)
-      _GET_PARAMETER_UNIMPL(SAMPLER_BINDING)
-      _GET_PARAMETER_UNIMPL(TEXTURE_BINDING_2D_ARRAY)
-      _GET_PARAMETER_UNIMPL(TEXTURE_BINDING_2D)
-      _GET_PARAMETER_UNIMPL(TEXTURE_BINDING_3D)
-      _GET_PARAMETER_UNIMPL(TEXTURE_BINDING_CUBE_MAP)
-      _GET_PARAMETER_UNIMPL(TRANSFORM_FEEDBACK_BINDING)
-      _GET_PARAMETER_UNIMPL(TRANSFORM_FEEDBACK_BUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(UNIFORM_BUFFER_BINDING)
-      _GET_PARAMETER_UNIMPL(VERTEX_ARRAY_BINDING)
-#undef _GET_PARAMETER_UNIMPL
+      // Unimplemented...
+    case GL_COPY_READ_BUFFER_BINDING:
+    case GL_COPY_WRITE_BUFFER_BINDING:
+    case GL_DRAW_FRAMEBUFFER_BINDING:
+    case GL_READ_FRAMEBUFFER_BINDING:
+    case GL_RENDERBUFFER:
+    case GL_SAMPLER_BINDING:
+    case GL_TEXTURE_BINDING_2D_ARRAY:
+    case GL_TEXTURE_BINDING_2D:
+    case GL_TEXTURE_BINDING_3D:
+    case GL_TEXTURE_BINDING_CUBE_MAP:
+    case GL_TRANSFORM_FEEDBACK_BINDING:
+    case GL_TRANSFORM_FEEDBACK_BUFFER_BINDING:
+    case GL_UNIFORM_BUFFER_BINDING:
+    case GL_VERTEX_ARRAY_BINDING:
+      throw std::runtime_error(
+          "EXGL: getParameter() doesn't support gl." + std::to_string(pname) + " yet!");
 
       // int
     default: {
@@ -300,180 +215,154 @@ _WRAP_METHOD(getParameter, 1) {
   }
 }
 
-_WRAP_METHOD(getError, 0) {
+NATIVE_METHOD(getError) {
   GLenum glResult;
   addBlockingToNextBatch([&] { glResult = glGetError(); });
   return static_cast<double>(glResult);
 }
 
-_WRAP_METHOD_SIMPLE(hint, glHint, target, mode)
+SIMPLE_NATIVE_METHOD(hint, glHint); // target, mode
 
-_WRAP_METHOD(isEnabled, 1) {
-  EXJS_UNPACK_ARGV(GLenum cap);
+NATIVE_METHOD(isEnabled) {
+  auto cap = ARG(0, GLenum);
   GLboolean glResult;
   addBlockingToNextBatch([&] { glResult = glIsEnabled(cap); });
   return glResult == GL_TRUE;
 }
 
-_WRAP_METHOD_SIMPLE(lineWidth, glLineWidth, width)
+SIMPLE_NATIVE_METHOD(lineWidth, glLineWidth); // width
 
-_WRAP_METHOD(pixelStorei, 2) {
-  EXJS_UNPACK_ARGV(GLenum pname);
+NATIVE_METHOD(pixelStorei) {
+  auto pname = ARG(0, GLenum);
   switch (pname) {
     case GL_UNPACK_FLIP_Y_WEBGL: {
-      GLboolean param = jsValueToBool(runtime, jsArgv[1]);
-      unpackFLipY = param;
+      unpackFLipY = ARG(1, GLboolean);
       break;
     }
     default:
-      EXGLSysLog("EXGL: gl.pixelStorei() doesn't support this parameter yet!");
+      jsConsoleLog(runtime, "EXGL: gl.pixelStorei() doesn't support this parameter yet!");
   }
   return nullptr;
 }
 
-_WRAP_METHOD_SIMPLE(polygonOffset, glPolygonOffset, factor, units)
+SIMPLE_NATIVE_METHOD(polygonOffset, glPolygonOffset); // factor, units
 
-_WRAP_METHOD_SIMPLE(sampleCoverage, glSampleCoverage, value, invert)
+SIMPLE_NATIVE_METHOD(sampleCoverage, glSampleCoverage); // value, invert
 
-_WRAP_METHOD_SIMPLE(stencilFunc, glStencilFunc, func, ref, mask)
+SIMPLE_NATIVE_METHOD(stencilFunc, glStencilFunc); // func, ref, mask
 
-_WRAP_METHOD_SIMPLE(stencilFuncSeparate, glStencilFuncSeparate, face, func, ref, mask)
+SIMPLE_NATIVE_METHOD(stencilFuncSeparate, glStencilFuncSeparate); // face, func, ref, mask
 
-_WRAP_METHOD_SIMPLE(stencilMask, glStencilMask, mask)
+SIMPLE_NATIVE_METHOD(stencilMask, glStencilMask); // mask
 
-_WRAP_METHOD_SIMPLE(stencilMaskSeparate, glStencilMaskSeparate, face, mask)
+SIMPLE_NATIVE_METHOD(stencilMaskSeparate, glStencilMaskSeparate); // face, mask
 
-_WRAP_METHOD_SIMPLE(stencilOp, glStencilOp, fail, zfail, zpass)
+SIMPLE_NATIVE_METHOD(stencilOp, glStencilOp) // fail, zfail, zpass
 
-_WRAP_METHOD_SIMPLE(stencilOpSeparate, glStencilOpSeparate, face, fail, zfail, zpass)
+SIMPLE_NATIVE_METHOD(stencilOpSeparate, glStencilOpSeparate); // face, fail, zfail, zpass
 
 // Buffers
 // -------
 
-_WRAP_METHOD(bindBuffer, 2) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  UEXGLObjectId fBuffer = jsArgv[1].isNull() ? 0 : jsArgv[1].asNumber();
-  addToNextBatch([=] { glBindBuffer(target, fBuffer == 0 ? 0 : lookupObject(fBuffer)); });
+NATIVE_METHOD(bindBuffer) {
+  auto target = ARG(0, GLenum);
+  auto buffer = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] { glBindBuffer(target, lookupObject(buffer)); });
   return nullptr;
 }
 
-_WRAP_METHOD(bufferData, 3) {
-  GLenum target = jsArgv[0].asNumber();
-  const jsi::Value &sizeOrData = jsArgv[1];
-  GLenum usage = jsArgv[2].asNumber();
+NATIVE_METHOD(bufferData) {
+  auto target = ARG(0, GLenum);
+  auto &sizeOrData = ARG(1, const jsi::Value &);
+  auto usage = ARG(2, GLenum);
 
   if (sizeOrData.isNumber()) {
     GLsizeiptr length = sizeOrData.getNumber();
     addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
-  } else if (sizeOrData.isNull()) {
+  } else if (sizeOrData.isNull() || sizeOrData.isUndefined()) {
     addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
   } else if (sizeOrData.isObject()) {
     auto data = rawArrayBuffer(runtime, sizeOrData.getObject(runtime));
-    addToNextBatch([=] { glBufferData(target, data.size(), data.data(), usage); });
+    addToNextBatch(
+        [=, data{std::move(data)}] { glBufferData(target, data.size(), data.data(), usage); });
   }
   return nullptr;
 }
 
-_WRAP_METHOD(bufferSubData, 3) {
-  EXJS_UNPACK_ARGV(GLenum target, GLintptr offset);
-  const jsi::Value &jsData = jsArgv[2];
-  auto data = rawArrayBuffer(runtime, jsArgv[2].asObject(runtime));
-  addToNextBatch([=] { glBufferSubData(target, offset, data.size(), data.data()); });
+NATIVE_METHOD(bufferSubData) {
+  auto target = ARG(0, GLenum);
+  auto offset = ARG(1, GLintptr);
+  if (ARG(2, const jsi::Value &).isNull()) {
+    addToNextBatch([=] { glBufferSubData(target, offset, 0, nullptr); });
+  } else {
+    auto data = rawArrayBuffer(runtime, ARG(2, jsi::Object));
+    addToNextBatch(
+        [=, data{std::move(data)}] { glBufferSubData(target, offset, data.size(), data.data()); });
+  }
   return nullptr;
 }
 
-_WRAP_METHOD(createBuffer, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    return buffer;
-  });
+NATIVE_METHOD(createBuffer) {
+  return exglGenObject(runtime, glGenBuffers);
 }
 
-_WRAP_METHOD(deleteBuffer, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fBuffer);
-  addToNextBatch([=] {
-    GLuint buffer = lookupObject(fBuffer);
-    glDeleteBuffers(1, &buffer);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteBuffer) {
+  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteBuffers);
 }
 
-_WRAP_METHOD(getBufferParameter, 2) {
-  EXJS_UNPACK_ARGV(GLenum target, GLenum pname);
+NATIVE_METHOD(getBufferParameter) {
+  auto target = ARG(0, GLenum);
+  auto pname = ARG(1, GLenum);
   GLint glResult;
   addBlockingToNextBatch([&] { glGetBufferParameteriv(target, pname, &glResult); });
   return jsi::Value(glResult);
 }
 
-#define _WRAP_METHOD_IS_OBJECT_INTERNAL(type, requiresWebGL2)                \
-  _WRAP_METHOD_INTERNAL(is##type, 1, requiresWebGL2) {                       \
-    EXJS_UNPACK_ARGV(UEXGLObjectId f);                                       \
-    GLboolean glResult;                                                      \
-    addBlockingToNextBatch([&] { glResult = glIs##type(lookupObject(f)); }); \
-    return glResult == GL_TRUE;                                              \
-  }
-
-#define _WRAP_METHOD_IS_OBJECT(type) _WRAP_METHOD_IS_OBJECT_INTERNAL(type, false)
-#define _WRAP_WEBGL2_METHOD_IS_OBJECT(type) _WRAP_METHOD_IS_OBJECT_INTERNAL(type, true)
-
-_WRAP_METHOD_IS_OBJECT(Buffer)
+NATIVE_METHOD(isBuffer) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsBuffer);
+}
 
 // Buffers (WebGL2)
 
-_WRAP_WEBGL2_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     copyBufferSubData,
-    glCopyBufferSubData,
-    readTarget,
-    writeTarget,
-    readOffset,
-    writeOffset,
-    size)
+    glCopyBufferSubData) // readTarget, writeTarget, readOffset, writeOffset, size
 
 // glGetBufferSubData is not available in OpenGL ES
-_WRAP_METHOD_UNIMPL(getBufferSubData)
+UNIMPL_NATIVE_METHOD(getBufferSubData);
 
 // Framebuffers
 // ------------
 
-_WRAP_METHOD(bindFramebuffer, 2) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  if (jsArgv[1].isNull()) {
-    addToNextBatch([=] { glBindFramebuffer(target, defaultFramebuffer); });
-  } else {
-    UEXGLObjectId fFramebuffer = jsArgv[1].asNumber();
-    addToNextBatch([=] { glBindFramebuffer(target, lookupObject(fFramebuffer)); });
-  }
+NATIVE_METHOD(bindFramebuffer) {
+  auto target = ARG(0, GLenum);
+  auto framebuffer = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] {
+    glBindFramebuffer(target, framebuffer == 0 ? defaultFramebuffer : lookupObject(framebuffer));
+  });
   return nullptr;
 }
 
-_WRAP_METHOD(checkFramebufferStatus, 1) {
-  EXJS_UNPACK_ARGV(GLenum target);
+NATIVE_METHOD(checkFramebufferStatus) {
+  auto target = ARG(0, GLenum);
   GLenum glResult;
   addBlockingToNextBatch([&] { glResult = glCheckFramebufferStatus(target); });
   return static_cast<double>(glResult);
 }
 
-_WRAP_METHOD(createFramebuffer, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint framebuffer;
-    glGenFramebuffers(1, &framebuffer);
-    return static_cast<double>(framebuffer);
-  });
+NATIVE_METHOD(createFramebuffer) {
+  return exglGenObject(runtime, glGenFramebuffers);
 }
 
-_WRAP_METHOD(deleteFramebuffer, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fFramebuffer);
-  addToNextBatch([=] {
-    GLuint framebuffer = lookupObject(fFramebuffer);
-    glDeleteFramebuffers(1, &framebuffer);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteFramebuffer) {
+  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteFramebuffers);
 }
 
-_WRAP_METHOD(framebufferRenderbuffer, 4) {
-  EXJS_UNPACK_ARGV(
-      GLenum target, GLenum attachment, GLenum renderbuffertarget, UEXGLObjectId fRenderbuffer);
+NATIVE_METHOD(framebufferRenderbuffer) {
+  auto target = ARG(0, GLenum);
+  auto attachment = ARG(1, GLenum);
+  auto renderbuffertarget = ARG(2, GLenum);
+  auto fRenderbuffer = ARG(3, UEXGLObjectId);
   addToNextBatch([=] {
     GLuint renderbuffer = lookupObject(fRenderbuffer);
     glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
@@ -481,26 +370,36 @@ _WRAP_METHOD(framebufferRenderbuffer, 4) {
   return nullptr;
 }
 
-_WRAP_METHOD(framebufferTexture2D, 5) {
-  EXJS_UNPACK_ARGV(
-      GLenum target, GLenum attachment, GLenum textarget, UEXGLObjectId fTexture, GLint level);
+NATIVE_METHOD(framebufferTexture2D, 5) {
+  auto target = ARG(0, GLenum);
+  auto attachment = ARG(1, GLenum);
+  auto textarget = ARG(2, GLenum);
+  auto fTexture = ARG(3, UEXGLObjectId);
+  auto level = ARG(4, GLint);
   addToNextBatch([=] {
     glFramebufferTexture2D(target, attachment, textarget, lookupObject(fTexture), level);
   });
   return nullptr;
 }
 
-_WRAP_METHOD_UNIMPL(getFramebufferAttachmentParameter)
+UNIMPL_NATIVE_METHOD(getFramebufferAttachmentParameter)
 
-_WRAP_METHOD_IS_OBJECT(Framebuffer)
+NATIVE_METHOD(isFramebuffer) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsFramebuffer);
+}
 
-_WRAP_METHOD(readPixels, 7) {
-  EXJS_UNPACK_ARGV(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type);
+NATIVE_METHOD(readPixels) {
+  auto x = ARG(0, GLint);
+  auto y = ARG(1, GLint);
+  auto width = ARG(2, GLuint); // GLsizei allows negative values
+  auto height = ARG(3, GLuint);
+  auto format = ARG(4, GLenum);
+  auto type = ARG(5, GLenum);
   size_t byteLength = width * height * bytesPerPixel(type, format);
-  auto pixels = std::vector<uint8_t>(byteLength);
+  std::vector<uint8_t> pixels(byteLength);
   addBlockingToNextBatch([&] { glReadPixels(x, y, width, height, format, type, pixels.data()); });
 
-  jsi::TypedArrayBase arr = jsArgv[6].asObject(runtime).asTypedArray(runtime);
+  jsi::TypedArrayBase arr = ARG(6, jsi::TypedArrayBase);
   arr.getBuffer(runtime).update(runtime, pixels, arr.byteOffset(runtime));
   return nullptr;
 }
@@ -508,91 +407,82 @@ _WRAP_METHOD(readPixels, 7) {
 // Framebuffers (WebGL2)
 // ---------------------
 
-_WRAP_METHOD_SIMPLE(
-    blitFramebuffer,
-    glBlitFramebuffer,
-    srcX0,
-    srcY0,
-    srcX1,
-    srcY1,
-    dstX0,
-    dstY0,
-    dstX1,
-    dstY1,
-    mask,
-    filter)
+SIMPLE_NATIVE_METHOD(blitFramebuffer, glBlitFramebuffer);
+// srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter
 
-_WRAP_WEBGL2_METHOD(framebufferTextureLayer, 5) {
-  EXJS_UNPACK_ARGV(
-      GLenum target, GLenum attachment, UEXGLObjectId texture, GLint level, GLint layer);
+NATIVE_METHOD(framebufferTextureLayer) {
+  auto target = ARG(0, GLenum);
+  auto attachment = ARG(1, GLenum);
+  auto texture = ARG(2, UEXGLObjectId);
+  auto level = ARG(3, GLint);
+  auto layer = ARG(4, GLint);
   addToNextBatch(
       [=] { glFramebufferTextureLayer(target, attachment, lookupObject(texture), level, layer); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(invalidateFramebuffer, 2) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  auto jsAttachments = jsArgv[1].asObject(runtime).asArray(runtime);
+NATIVE_METHOD(invalidateFramebuffer) {
+  auto target = ARG(0, GLenum);
+  auto jsAttachments = ARG(1, jsi::Array);
+
   std::vector<GLenum> attachments(jsAttachments.size(runtime));
   for (int i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
-  addToNextBatch([=] { glInvalidateFramebuffer(target, attachments.size(), attachments.data()); });
+  addToNextBatch([=, attachaments{std::move(attachments)}] {
+    glInvalidateFramebuffer(target, attachments.size(), attachments.data());
+  });
   return nullptr; // breaking change TypedArray -> Array (bug in previous implementation)
 }
 
-_WRAP_WEBGL2_METHOD(invalidateSubFramebuffer, 6) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  EXJS_UNPACK_ARGV_OFFSET(2, GLint x, GLint y, GLint width, GLint height);
-  auto jsAttachments = jsArgv[1].asObject(runtime).asArray(runtime);
+NATIVE_METHOD(invalidateSubFramebuffer) {
+  auto target = ARG(0, GLenum);
+  auto jsAttachments = ARG(1, jsi::Array);
+  auto x = ARG(2, GLint);
+  auto y = ARG(3, GLint);
+  auto width = ARG(4, GLint);
+  auto height = ARG(5, GLint);
   std::vector<GLenum> attachments(jsAttachments.size(runtime));
   for (int i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
-  addToNextBatch([=] {
+  addToNextBatch([=, attachments{std::move(attachments)}] {
     glInvalidateSubFramebuffer(target, attachments.size(), attachments.data(), x, y, width, height);
   });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD_SIMPLE(readBuffer, glReadBuffer, mode)
+SIMPLE_NATIVE_METHOD(readBuffer, glReadBuffer); // mode
 
 // Renderbuffers
 // -------------
 
-_WRAP_METHOD(bindRenderbuffer, 2) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  UEXGLObjectId fRenderbuffer = jsArgv[1].isNull() ? 0 : jsArgv[1].asNumber();
-  addToNextBatch([=] {
-    GLuint renderbuffer = lookupObject(fRenderbuffer);
-    glBindRenderbuffer(target, renderbuffer);
-  });
+NATIVE_METHOD(bindRenderbuffer) {
+  auto target = ARG(0, GLenum);
+  auto fRenderbuffer = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] { glBindRenderbuffer(target, lookupObject(fRenderbuffer)); });
   return nullptr;
 }
 
-_WRAP_METHOD(createRenderbuffer, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint renderbuffer;
-    glGenRenderbuffers(1, &renderbuffer);
-    return renderbuffer;
-  });
+NATIVE_METHOD(createRenderbuffer) {
+  return exglGenObject(runtime, glGenRenderbuffers);
 }
 
-_WRAP_METHOD(deleteRenderbuffer, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fRenderbuffer);
-  addToNextBatch([=] {
-    GLuint renderbuffer = lookupObject(fRenderbuffer);
-    glDeleteRenderbuffers(1, &renderbuffer);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteRenderbuffer) {
+  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteRenderbuffers);
 }
 
-_WRAP_METHOD_UNIMPL(getRenderbufferParameter)
+UNIMPL_NATIVE_METHOD(getRenderbufferParameter)
 
-_WRAP_METHOD_IS_OBJECT(Renderbuffer)
+NATIVE_METHOD(isRenderbuffer) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsRenderbuffer);
+}
 
-_WRAP_METHOD(renderbufferStorage, 4) {
-  EXJS_UNPACK_ARGV(GLenum target, GLint internalformat, GLsizei width, GLsizei height);
+NATIVE_METHOD(renderbufferStorage) {
+  auto target = ARG(0, GLenum);
+  auto internalformat = ARG(1, GLint);
+  auto width = ARG(2, GLsizei);
+  auto height = ARG(3, GLsizei);
   addToNextBatch([=] { glRenderbufferStorage(target, internalformat, width, height); });
   return nullptr;
 }
@@ -600,371 +490,348 @@ _WRAP_METHOD(renderbufferStorage, 4) {
 // Renderbuffers (WebGL2)
 // ----------------------
 
-_WRAP_METHOD_UNIMPL(getInternalformatParameter)
+UNIMPL_NATIVE_METHOD(getInternalformatParameter)
 
-_WRAP_METHOD_UNIMPL(renderbufferStorageMultisample)
+UNIMPL_NATIVE_METHOD(renderbufferStorageMultisample)
 
 // Textures
 // --------
 
-_WRAP_METHOD(bindTexture, 2) {
-  EXJS_UNPACK_ARGV(GLenum target);
-  if (jsArgv[1].isNull()) {
-    addToNextBatch(std::bind(glBindTexture, target, 0));
-  } else {
-    UEXGLObjectId fTexture = jsArgv[1].asNumber();
-    addToNextBatch([=] { glBindTexture(target, lookupObject(fTexture)); });
-  }
+NATIVE_METHOD(bindTexture) {
+  auto target = ARG(0, GLenum);
+  auto texture = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] { glBindTexture(target, lookupObject(texture)); });
   return nullptr;
 }
 
-_WRAP_METHOD_UNIMPL(compressedTexImage2D)
+UNIMPL_NATIVE_METHOD(compressedTexImage2D)
 
-_WRAP_METHOD_UNIMPL(compressedTexSubImage2D)
+UNIMPL_NATIVE_METHOD(compressedTexSubImage2D)
 
-_WRAP_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     copyTexImage2D,
-    glCopyTexImage2D,
-    target,
-    level,
-    internalformat,
-    x,
-    y,
-    width,
-    height,
-    border)
+    glCopyTexImage2D); // target, level, internalformat, x, y, width, height, border
 
-_WRAP_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     copyTexSubImage2D,
-    glCopyTexSubImage2D,
-    target,
-    level,
-    xoffset,
-    yoffset,
-    x,
-    y,
-    width,
-    height)
+    glCopyTexSubImage2D) // target, level, xoffset, yoffset, x, y, width, height
 
-_WRAP_METHOD(createTexture, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint texture;
-    glGenTextures(1, &texture);
-    return texture;
-  });
+NATIVE_METHOD(createTexture) {
+  return exglGenObject(runtime, glGenTextures);
 }
 
-_WRAP_METHOD(deleteTexture, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fTexture);
-  addToNextBatch([=] {
-    GLuint texture = lookupObject(fTexture);
-    glDeleteTextures(1, &texture);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteTexture) {
+  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteTextures);
 }
 
-_WRAP_METHOD_SIMPLE(generateMipmap, glGenerateMipmap, target)
+SIMPLE_NATIVE_METHOD(generateMipmap, glGenerateMipmap) // target
 
-_WRAP_METHOD_UNIMPL(getTexParameter)
+UNIMPL_NATIVE_METHOD(getTexParameter)
 
-_WRAP_METHOD_IS_OBJECT(Texture)
+NATIVE_METHOD(isTexture) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsTexture);
+}
 
-_WRAP_METHOD(texImage2D, 6) {
-  GLenum target;
-  GLint level, internalformat;
-  GLsizei width = 0, height = 0, border = 0;
-  GLenum format, type;
-  const jsi::Value *jsPixelsArg;
-
+NATIVE_METHOD(texImage2D, 6) {
+  auto target = ARG(0, GLenum);
+  auto level = ARG(1, GLint);
+  auto internalformat = ARG(2, GLint);
   if (argc == 9) {
-    // 9-argument version
-    EXJS_UNPACK_ARGV(target, level, internalformat, width, height, border, format, type);
-    jsPixelsArg = &jsArgv[8];
+    auto width = ARG(3, GLsizei);
+    auto height = ARG(4, GLsizei);
+    auto border = ARG(5, GLsizei);
+    auto format = ARG(6, GLenum);
+    auto type = ARG(7, GLenum);
+    if (ARG(8, const jsi::Value &).isNull()) {
+      addToNextBatch([=] {
+        glTexImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
+      });
+      return nullptr;
+    }
+    auto data = ARG(8, jsi::Object);
+
+    if (data.isArrayBuffer(runtime) || data.isTypedArray(runtime)) {
+      std::vector<uint8_t> vec = rawArrayBuffer(runtime, data);
+      if (unpackFLipY) {
+        flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
+      }
+      addToNextBatch([=, vec{std::move(vec)}] {
+        glTexImage2D(
+            target, level, internalformat, width, height, border, format, type, vec.data());
+      });
+    } else {
+      auto image = loadImage(runtime, data, &width, &height, nullptr);
+      if (unpackFLipY) {
+        flipPixels(image.get(), width * bytesPerPixel(type, format), height);
+      }
+      addToNextBatch([=] {
+        glTexImage2D(
+            target, level, internalformat, width, height, border, format, type, image.get());
+      });
+    }
   } else if (argc == 6) {
-    // 6-argument version
-    EXJS_UNPACK_ARGV(target, level, internalformat, format, type);
-    jsPixelsArg = &jsArgv[5];
+    auto format = ARG(3, GLenum);
+    auto type = ARG(4, GLenum);
+    auto data = ARG(5, jsi::Object);
+    GLsizei width = 0, height = 0, border = 0;
+    auto image = loadImage(runtime, data, &width, &height, nullptr);
+    if (unpackFLipY) {
+      flipPixels(image.get(), width * bytesPerPixel(type, format), height);
+    }
+    addToNextBatch([=] {
+      glTexImage2D(target, level, internalformat, width, height, border, format, type, image.get());
+    });
   } else {
     throw std::runtime_error("EXGL: Invalid number of arguments to gl.texImage2D()!");
   }
-  const jsi::Value &jsPixels = *jsPixelsArg;
-
-  if (jsPixels.isNull()) {
-    addToNextBatch([=] {
-      glTexImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
-    });
-    return nullptr;
-  }
-
-  std::shared_ptr<uint8_t> data(nullptr);
-
-  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) ||
-      jsPixels.asObject(runtime).isTypedArray(runtime)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
-    data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
-    std::copy(vec.begin(), vec.end(), data.get());
-  } else {
-    data = loadImage(runtime, jsPixels, &width, &height, nullptr);
-  }
-
-  if (data) {
-    if (unpackFLipY) {
-      flipPixels((GLubyte *)data.get(), width * bytesPerPixel(type, format), height);
-    }
-    addToNextBatch([=] {
-      glTexImage2D(target, level, internalformat, width, height, border, format, type, data.get());
-    });
-    return nullptr;
-  }
-
-  // Nothing worked...
-  throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage2D()!");
+  return nullptr;
 }
 
-_WRAP_METHOD(texSubImage2D, 7) {
-  GLenum target;
-  GLint level, xoffset, yoffset;
-  GLsizei width = 0, height = 0;
-  GLenum format, type;
-  const jsi::Value *jsPixelsArg;
-
+NATIVE_METHOD(texSubImage2D, 6) {
+  auto target = ARG(0, GLenum);
+  auto level = ARG(1, GLint);
+  auto xoffset = ARG(2, GLint);
+  auto yoffset = ARG(3, GLint);
   if (argc == 9) {
-    // 9-argument version
-    EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, width, height, format, type);
-    jsPixelsArg = &jsArgv[8];
+    auto width = ARG(4, GLsizei);
+    auto height = ARG(5, GLsizei);
+    auto format = ARG(6, GLenum);
+    auto type = ARG(7, GLenum);
+    if (ARG(8, const jsi::Value &).isNull()) {
+      addToNextBatch([=] {
+        auto empty = std::make_unique<uint8_t>(width * height * bytesPerPixel(type, format));
+        std::memset(empty.get(), 0, width * height * bytesPerPixel(type, format));
+        glTexImage2D(target, level, xoffset, yoffset, width, height, format, type, empty.get());
+      });
+      return nullptr;
+    }
+
+    auto data = ARG(8, jsi::Object);
+
+    if (data.isArrayBuffer(runtime) || data.isTypedArray(runtime)) {
+      std::vector<uint8_t> vec = rawArrayBuffer(runtime, data);
+      if (unpackFLipY) {
+        flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
+      }
+      addToNextBatch([=, vec{std::move(vec)}] {
+        glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, vec.data());
+      });
+    } else {
+      auto image = loadImage(runtime, data, &width, &height, nullptr);
+      if (unpackFLipY) {
+        flipPixels(image.get(), width * bytesPerPixel(type, format), height);
+      }
+      addToNextBatch([=] {
+        glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, image.get());
+      });
+    }
   } else if (argc == 7) {
-    // 7-argument version
-    EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, format, type);
-    jsPixelsArg = &jsArgv[6];
+    auto format = ARG(4, GLenum);
+    auto type = ARG(5, GLenum);
+    auto data = ARG(6, jsi::Object);
+    GLsizei width = 0, height = 0;
+    auto image = loadImage(runtime, data, &width, &height, nullptr);
+    if (unpackFLipY) {
+      flipPixels(image.get(), width * bytesPerPixel(type, format), height);
+    }
+    addToNextBatch([=] {
+      glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, image.get());
+    });
   } else {
     throw std::runtime_error("EXGL: Invalid number of arguments to gl.texSubImage2D()!");
   }
-  const jsi::Value &jsPixels = *jsPixelsArg;
-
-  // Null?
-  if (jsPixels.isNull()) {
-    addToNextBatch([=] {
-      void *nulled = calloc(width * height, bytesPerPixel(type, format));
-      glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, nulled);
-      free(nulled);
-    });
-    return nullptr;
-  }
-
-  std::shared_ptr<uint8_t> data(nullptr);
-
-  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) ||
-      jsPixels.asObject(runtime).isTypedArray(runtime)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
-    data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
-    std::copy(vec.begin(), vec.end(), data.get());
-  } else {
-    data = loadImage(runtime, jsPixels, &width, &height, nullptr);
-  }
-
-  if (data) {
-    if (unpackFLipY) {
-      flipPixels((GLubyte *)data.get(), width * bytesPerPixel(type, format), height);
-    }
-    addToNextBatch([=] {
-      glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, data.get());
-    });
-    return nullptr;
-  }
-
-  // Nothing worked...
-  throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage2D()!");
+  return nullptr;
 }
 
-_WRAP_METHOD_SIMPLE(texParameterf, glTexParameterf, target, pname, param)
+SIMPLE_NATIVE_METHOD(texParameterf, glTexParameterf); // target, pname, param
 
-_WRAP_METHOD_SIMPLE(texParameteri, glTexParameteri, target, pname, param)
+SIMPLE_NATIVE_METHOD(texParameteri, glTexParameteri); // target, pname, param
 
 // Textures (WebGL2)
 // -----------------
 
-_WRAP_METHOD_SIMPLE(texStorage2D, glTexStorage2D, target, levels, internalformat, width, height)
+SIMPLE_NATIVE_METHOD(texStorage2D, glTexStorage2D); // target, levels, internalformat, width, height
 
-_WRAP_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     texStorage3D,
-    glTexStorage3D,
-    target,
-    levels,
-    internalformat,
-    width,
-    height,
-    depth)
+    glTexStorage3D); // target, levels, internalformat, width, height, depth
 
-_WRAP_WEBGL2_METHOD(texImage3D, 10) {
-  GLenum target;
-  GLint level, internalformat;
-  GLsizei width, height, depth, border;
-  GLenum format, type;
+NATIVE_METHOD(texImage3D) {
+  auto target = ARG(0, GLenum);
+  auto level = ARG(1, GLint);
+  auto internalformat = ARG(2, GLint);
+  auto width = ARG(3, GLsizei);
+  auto height = ARG(4, GLsizei);
+  auto depth = ARG(5, GLsizei);
+  auto border = ARG(6, GLsizei);
+  auto format = ARG(7, GLenum);
+  auto type = ARG(8, GLenum);
 
-  EXJS_UNPACK_ARGV(target, level, internalformat, width, height, depth, border, format, type);
-  const jsi::Value &jsPixels = jsArgv[9];
-
-  if (jsPixels.isNull()) {
+  if (ARG(9, const jsi::Value &).isNull()) {
     addToNextBatch([=] {
       glTexImage3D(
           target, level, internalformat, width, height, depth, border, format, type, nullptr);
     });
     return nullptr;
   }
+  auto data = ARG(9, jsi::Object);
+  auto flip = [&](uint8_t *data) {
+    GLubyte *texelLayer = data;
+    for (int z = 0; z < depth; z++) {
+      flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
+      texelLayer += bytesPerPixel(type, format) * width * height;
+    }
+  };
 
-  std::shared_ptr<uint8_t> data(nullptr);
-
-  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) ||
-      jsPixels.asObject(runtime).isTypedArray(runtime)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
-    data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
-    std::copy(vec.begin(), vec.end(), data.get());
-  } else {
-    data = loadImage(runtime, jsPixels, &width, &height, nullptr);
-  }
-
-  if (data) {
+  if (data.isArrayBuffer(runtime) || data.isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, data);
     if (unpackFLipY) {
-      GLubyte *texels = (GLubyte *)data.get();
-      GLubyte *texelLayer = texels;
-      for (int z = 0; z < depth; z++) {
-        flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
-        texelLayer += bytesPerPixel(type, format) * width * height;
-      }
+      flip(vec.data());
+    }
+    addToNextBatch([=, vec{std::move(vec)}] {
+      glTexImage3D(
+          target, level, internalformat, width, height, depth, border, format, type, vec.data());
+    });
+  } else {
+    auto image = loadImage(runtime, data, &width, &height, nullptr);
+    if (unpackFLipY) {
+      flip(image.get());
     }
     addToNextBatch([=] {
       glTexImage3D(
-          target, level, internalformat, width, height, depth, border, format, type, data.get());
+          target, level, internalformat, width, height, depth, border, format, type, image.get());
     });
-    return nullptr;
   }
-
-  // Nothing worked...
-  throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage3D()!");
+  return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(texSubImage3D, 11) {
-  GLenum target;
-  GLint level, xoffset, yoffset, zoffset;
-  GLsizei width, height, depth;
-  GLenum format, type;
+NATIVE_METHOD(texSubImage3D) {
+  auto target = ARG(0, GLenum);
+  auto level = ARG(1, GLint);
+  auto xoffset = ARG(2, GLint);
+  auto yoffset = ARG(3, GLint);
+  auto zoffset = ARG(4, GLint);
+  auto width = ARG(5, GLsizei);
+  auto height = ARG(6, GLsizei);
+  auto depth = ARG(7, GLsizei);
+  auto format = ARG(8, GLenum);
+  auto type = ARG(9, GLenum);
 
-  EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type);
-  const jsi::Value &jsPixels = jsArgv[10];
-
-  if (jsPixels.isNull()) {
+  if (ARG(10, const jsi::Value &).isNull()) {
     addToNextBatch([=] {
-      void *nulled = calloc(width * height, bytesPerPixel(type, format));
+      auto empty = std::make_unique<uint8_t>(width * height * depth * bytesPerPixel(type, format));
+      std::memset(empty.get(), 0, width * height * depth * bytesPerPixel(type, format));
+      auto ptr = empty.get();
       glTexSubImage3D(
-          target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, nulled);
-      free(nulled);
+          target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, ptr);
     });
     return nullptr;
   }
+  auto data = ARG(10, jsi::Object);
+  auto flip = [&](uint8_t *data) {
+    GLubyte *texelLayer = data;
+    for (int z = 0; z < depth; z++) {
+      flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
+      texelLayer += bytesPerPixel(type, format) * width * height;
+    }
+  };
 
-  std::shared_ptr<uint8_t> data(nullptr);
-
-  if (jsPixels.asObject(runtime).isArrayBuffer(runtime) ||
-      jsPixels.asObject(runtime).isTypedArray(runtime)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, jsPixels.asObject(runtime));
-    data = std::shared_ptr<uint8_t>(new uint8_t[vec.size()]);
-    std::copy(vec.begin(), vec.end(), data.get());
-  } else {
-    data = loadImage(runtime, jsPixels, &width, &height, nullptr);
-  }
-
-  if (data) {
+  if (data.isArrayBuffer(runtime) || data.isTypedArray(runtime)) {
+    std::vector<uint8_t> vec = rawArrayBuffer(runtime, data);
     if (unpackFLipY) {
-      GLubyte *texels = (GLubyte *)data.get();
-      GLubyte *texelLayer = texels;
-      for (int z = 0; z < depth; z++) {
-        flipPixels(texelLayer, width * bytesPerPixel(type, format), height);
-        texelLayer += bytesPerPixel(type, format) * width * height;
-      }
+      flip(vec.data());
+    }
+    addToNextBatch([=, vec{std::move(vec)}] {
+      glTexSubImage3D(
+          target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, vec.data());
+    });
+  } else {
+    auto image = loadImage(runtime, data, &width, &height, nullptr);
+    if (unpackFLipY) {
+      flip(image.get());
     }
     addToNextBatch([=] {
       glTexSubImage3D(
-          target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data.get());
+          target,
+          level,
+          xoffset,
+          yoffset,
+          zoffset,
+          width,
+          height,
+          depth,
+          format,
+          type,
+          image.get());
     });
-    return nullptr;
   }
-
-  // Nothing worked...
-  throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage3D()!");
+  return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     copyTexSubImage3D,
-    glCopyTexSubImage3D,
-    target,
-    level,
-    xoffset,
-    yoffset,
-    zoffset,
-    x,
-    y,
-    width,
-    height)
+    glCopyTexSubImage3D); // target, level, xoffset, yoffset, zoffset, x, y, width, height
 
-_WRAP_METHOD_UNIMPL(compressedTexImage3D)
+UNIMPL_NATIVE_METHOD(compressedTexImage3D)
 
-_WRAP_METHOD_UNIMPL(compressedTexSubImage3D)
+UNIMPL_NATIVE_METHOD(compressedTexSubImage3D)
 
 // Programs and shaders
 // --------------------
 
-_WRAP_METHOD(attachShader, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, UEXGLObjectId fShader);
-  addToNextBatch([=] { glAttachShader(lookupObject(fProgram), lookupObject(fShader)); });
+NATIVE_METHOD(attachShader) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto shader = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] { glAttachShader(lookupObject(program), lookupObject(shader)); });
   return nullptr;
 }
 
-_WRAP_METHOD(bindAttribLocation, 3) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint index);
-  auto name = jsArgv[2].asString(runtime).utf8(runtime);
-  addToNextBatch([=] { glBindAttribLocation(lookupObject(fProgram), index, name.c_str()); });
+NATIVE_METHOD(bindAttribLocation) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto index = ARG(1, GLuint);
+  auto name = ARG(2, std::string);
+  addToNextBatch([=, name{std::move(name)}] {
+    glBindAttribLocation(lookupObject(program), index, name.c_str());
+  });
   return nullptr;
 }
 
-_WRAP_METHOD(compileShader, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
-  addToNextBatch([=] { glCompileShader(lookupObject(fShader)); });
+NATIVE_METHOD(compileShader) {
+  auto shader = ARG(0, UEXGLObjectId);
+  addToNextBatch([=] { glCompileShader(lookupObject(shader)); });
   return nullptr;
 }
 
-_WRAP_METHOD(createProgram, 0) {
-  return addFutureToNextBatch(runtime, &glCreateProgram);
+NATIVE_METHOD(createProgram) {
+  return exglCreateObject(runtime, glCreateProgram);
 }
 
-_WRAP_METHOD(createShader, 1) {
-  EXJS_UNPACK_ARGV(GLenum type);
+NATIVE_METHOD(createShader) {
+  auto type = ARG(0, GLenum);
   if (type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER) {
-    return addFutureToNextBatch(runtime, std::bind(glCreateShader, type));
+    return exglCreateObject(runtime, std::bind(glCreateShader, type));
   } else {
-    return jsi::Value::null();
+    throw std::runtime_error("unknown shader type passed to function");
   }
 }
 
-_WRAP_METHOD(deleteProgram, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
-  addToNextBatch([=] { glDeleteProgram(lookupObject(fProgram)); });
+NATIVE_METHOD(deleteProgram) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteProgram);
+}
+
+NATIVE_METHOD(deleteShader) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteShader);
+}
+
+NATIVE_METHOD(detachShader) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto shader = ARG(1, UEXGLObjectId);
+  addToNextBatch([=] { glDetachShader(lookupObject(program), lookupObject(shader)); });
   return nullptr;
 }
 
-_WRAP_METHOD(deleteShader, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
-  addToNextBatch([=] { glDeleteShader(lookupObject(fShader)); });
-  return nullptr;
-}
-
-_WRAP_METHOD(detachShader, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, UEXGLObjectId fShader);
-  addToNextBatch([=] { glDetachShader(lookupObject(fProgram), lookupObject(fShader)); });
-  return nullptr;
-}
-
-_WRAP_METHOD(getAttachedShaders, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
+NATIVE_METHOD(getAttachedShaders) {
+  auto fProgram = ARG(0, UEXGLObjectId);
 
   GLint count;
   std::vector<GLuint> glResults;
@@ -993,8 +860,9 @@ _WRAP_METHOD(getAttachedShaders, 1) {
   return jsResults;
 }
 
-_WRAP_METHOD(getProgramParameter, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLenum pname);
+NATIVE_METHOD(getProgramParameter) {
+  auto fProgram = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
   GLint glResult;
   addBlockingToNextBatch([&] { glGetProgramiv(lookupObject(fProgram), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_LINK_STATUS || pname == GL_VALIDATE_STATUS) {
@@ -1004,8 +872,9 @@ _WRAP_METHOD(getProgramParameter, 2) {
   }
 }
 
-_WRAP_METHOD(getShaderParameter, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fShader, GLenum pname);
+NATIVE_METHOD(getShaderParameter) {
+  auto fShader = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
   GLint glResult;
   addBlockingToNextBatch([&] { glGetShaderiv(lookupObject(fShader), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_COMPILE_STATUS) {
@@ -1015,8 +884,9 @@ _WRAP_METHOD(getShaderParameter, 2) {
   }
 }
 
-_WRAP_METHOD(getShaderPrecisionFormat, 2) {
-  EXJS_UNPACK_ARGV(GLenum shaderType, GLenum precisionType);
+NATIVE_METHOD(getShaderPrecisionFormat) {
+  auto shaderType = ARG(0, GLenum);
+  auto precisionType = ARG(1, GLenum);
 
   GLint range[2], precision;
   addBlockingToNextBatch(
@@ -1029,86 +899,86 @@ _WRAP_METHOD(getShaderPrecisionFormat, 2) {
   return jsResult;
 }
 
-_WRAP_METHOD(getProgramInfoLog, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fObj);
-  GLint length;
+NATIVE_METHOD(getProgramInfoLog) {
+  auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
   addBlockingToNextBatch([&] {
     GLuint obj = lookupObject(fObj);
+    GLint length;
     glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &length);
-    str.resize(length);
+    str.resize(length > 0 ? length - 1 : 0);
     glGetProgramInfoLog(obj, length, nullptr, &str[0]);
   });
   return jsi::String::createFromUtf8(runtime, str);
 }
 
-_WRAP_METHOD(getShaderInfoLog, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fObj);
-  GLint length;
+NATIVE_METHOD(getShaderInfoLog) {
+  auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
   addBlockingToNextBatch([&] {
     GLuint obj = lookupObject(fObj);
+    GLint length;
     glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &length);
-    str.resize(length);
+    str.resize(length > 0 ? length - 1 : 0);
     glGetShaderInfoLog(obj, length, nullptr, &str[0]);
   });
   return jsi::String::createFromUtf8(runtime, str);
 }
 
-_WRAP_METHOD(getShaderSource, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fObj);
-  GLint length;
+NATIVE_METHOD(getShaderSource) {
+  auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
   addBlockingToNextBatch([&] {
     GLuint obj = lookupObject(fObj);
+    GLint length;
     glGetShaderiv(obj, GL_SHADER_SOURCE_LENGTH, &length);
-    str.resize(length);
+    str.resize(length > 0 ? length - 1 : 0);
     glGetShaderSource(obj, length, nullptr, &str[0]);
   });
   return jsi::String::createFromUtf8(runtime, str);
 }
 
-_WRAP_METHOD_IS_OBJECT(Program)
+NATIVE_METHOD(isShader) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsShader);
+}
 
-_WRAP_METHOD_IS_OBJECT(Shader)
+NATIVE_METHOD(isProgram) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsProgram);
+}
 
-_WRAP_METHOD(linkProgram, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
+NATIVE_METHOD(linkProgram) {
+  auto fProgram = ARG(0, UEXGLObjectId);
   addToNextBatch([=] { glLinkProgram(lookupObject(fProgram)); });
   return nullptr;
 }
 
-_WRAP_METHOD(shaderSource, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fShader);
-  std::string str = jsArgv[1].asString(runtime).utf8(runtime);
-  addToNextBatch([=] {
+NATIVE_METHOD(shaderSource) {
+  auto fShader = ARG(0, UEXGLObjectId);
+  auto str = ARG(1, std::string);
+  addToNextBatch([=, str{std::move(str)}] {
     const char *cstr = str.c_str();
     glShaderSource(lookupObject(fShader), 1, &cstr, nullptr);
   });
   return nullptr;
 }
 
-_WRAP_METHOD(useProgram, 1) {
-  if (jsArgv[0].isNull()) {
-    addToNextBatch(std::bind(glUseProgram, 0));
-  } else {
-    EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
-    addToNextBatch([=] { glUseProgram(lookupObject(fProgram)); });
-  }
+NATIVE_METHOD(useProgram) {
+  auto program = ARG(0, UEXGLObjectId);
+  addToNextBatch([=] { glUseProgram(lookupObject(program)); });
   return nullptr;
 }
 
-_WRAP_METHOD(validateProgram, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
-  addToNextBatch([=] { glValidateProgram(lookupObject(fProgram)); });
+NATIVE_METHOD(validateProgram) {
+  auto program = ARG(0, UEXGLObjectId);
+  addToNextBatch([=] { glValidateProgram(lookupObject(program)); });
   return nullptr;
 }
 
 // Programs and shaders (WebGL2)
 
-_WRAP_METHOD(getFragDataLocation, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId program);
-  std::string name = jsArgv[1].asString(runtime).utf8(runtime);
+NATIVE_METHOD(getFragDataLocation) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto name = ARG(1, std::string);
   GLint location;
   addBlockingToNextBatch(
       [&] { location = glGetFragDataLocation(lookupObject(program), name.c_str()); });
@@ -1118,297 +988,302 @@ _WRAP_METHOD(getFragDataLocation, 2) {
 // Uniforms and attributes
 // -----------------------
 
-_WRAP_METHOD_SIMPLE(disableVertexAttribArray, glDisableVertexAttribArray, index)
+SIMPLE_NATIVE_METHOD(disableVertexAttribArray, glDisableVertexAttribArray); // index
 
-_WRAP_METHOD_SIMPLE(enableVertexAttribArray, glEnableVertexAttribArray, index)
+SIMPLE_NATIVE_METHOD(enableVertexAttribArray, glEnableVertexAttribArray); // index
 
-template <typename F>
-inline jsi::Value EXGLContext::getActiveInfo(
-    jsi::Runtime &runtime,
-    const jsi::Value *jsArgv,
-    GLenum lengthParam,
-    F &&glFunc) {
-  if (jsArgv[0].isNull()) {
-    return nullptr;
-  }
-
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint index);
-
-  GLsizei length;
-  GLint size;
-  GLenum type;
-  std::string name;
-  GLint maxNameLength;
-  addBlockingToNextBatch([&] {
-    GLuint program = lookupObject(fProgram);
-    glGetProgramiv(program, lengthParam, &maxNameLength);
-    name.resize(maxNameLength);
-    glFunc(program, index, maxNameLength, &length, &size, &type, &name[0]);
-  });
-
-  if (strlen(name.c_str()) == 0) { // name.length() may be larger
-    return jsi::Value::null();
-  }
-
-  jsi::Object jsResult(runtime);
-  jsResult.setProperty(runtime, "name", jsi::String::createFromAscii(runtime, name.c_str()));
-  jsResult.setProperty(runtime, "size", size);
-  jsResult.setProperty(runtime, "type", static_cast<double>(type));
-  return jsResult;
+NATIVE_METHOD(getActiveAttrib) {
+  return exglGetActiveInfo(
+      runtime,
+      ARG(0, UEXGLObjectId),
+      ARG(1, GLuint),
+      GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
+      glGetActiveAttrib);
 }
 
-_WRAP_METHOD(getActiveAttrib, 2) {
-  return getActiveInfo(runtime, jsArgv, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, glGetActiveAttrib);
+NATIVE_METHOD(getActiveUniform) {
+  return exglGetActiveInfo(
+      runtime,
+      ARG(0, UEXGLObjectId),
+      ARG(1, GLuint),
+      GL_ACTIVE_UNIFORM_MAX_LENGTH,
+      glGetActiveUniform);
 }
 
-_WRAP_METHOD(getActiveUniform, 2) {
-  return getActiveInfo(runtime, jsArgv, GL_ACTIVE_UNIFORM_MAX_LENGTH, glGetActiveUniform);
-}
-
-_WRAP_METHOD(getAttribLocation, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
-  std::string name = jsArgv[1].asString(runtime).utf8(runtime);
+NATIVE_METHOD(getAttribLocation) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto name = ARG(1, std::string);
   GLint location;
   addBlockingToNextBatch(
-      [&] { location = glGetAttribLocation(lookupObject(fProgram), name.c_str()); });
+      [&] { location = glGetAttribLocation(lookupObject(program), name.c_str()); });
   return jsi::Value(location);
 }
 
-_WRAP_METHOD_UNIMPL(getUniform)
+UNIMPL_NATIVE_METHOD(getUniform)
 
-_WRAP_METHOD(getUniformLocation, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram);
-  std::string name = jsArgv[1].asString(runtime).utf8(runtime);
+NATIVE_METHOD(getUniformLocation) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto name = ARG(1, std::string);
   GLint location;
   addBlockingToNextBatch(
-      [&] { location = glGetUniformLocation(lookupObject(fProgram), name.c_str()); });
+      [&] { location = glGetUniformLocation(lookupObject(program), name.c_str()); });
   return location == -1 ? jsi::Value::null() : location;
 }
 
-_WRAP_METHOD_UNIMPL(getVertexAttrib)
+UNIMPL_NATIVE_METHOD(getVertexAttrib)
 
-_WRAP_METHOD_UNIMPL(getVertexAttribOffset)
+UNIMPL_NATIVE_METHOD(getVertexAttribOffset)
 
-_WRAP_METHOD_SIMPLE(uniform1f, glUniform1f, uniform, x)
-_WRAP_METHOD_SIMPLE(uniform2f, glUniform2f, uniform, x, y)
-_WRAP_METHOD_SIMPLE(uniform3f, glUniform3f, uniform, x, y, z)
-_WRAP_METHOD_SIMPLE(uniform4f, glUniform4f, uniform, x, y, z, w)
-_WRAP_METHOD_SIMPLE(uniform1i, glUniform1i, uniform, x)
-_WRAP_METHOD_SIMPLE(uniform2i, glUniform2i, uniform, x, y)
-_WRAP_METHOD_SIMPLE(uniform3i, glUniform3i, uniform, x, y, z)
-_WRAP_METHOD_SIMPLE(uniform4i, glUniform4i, uniform, x, y, z, w)
+SIMPLE_NATIVE_METHOD(uniform1f, glUniform1f); // uniform, x
+SIMPLE_NATIVE_METHOD(uniform2f, glUniform2f); // uniform, x, y
+SIMPLE_NATIVE_METHOD(uniform3f, glUniform3f); // uniform, x, y, z
+SIMPLE_NATIVE_METHOD(uniform4f, glUniform4f); // uniform, x, y, z, w
+SIMPLE_NATIVE_METHOD(uniform1i, glUniform1i); // uniform, x
+SIMPLE_NATIVE_METHOD(uniform2i, glUniform2i); // uniform, x, y
+SIMPLE_NATIVE_METHOD(uniform3i, glUniform3i); // uniform, x, y, z
+SIMPLE_NATIVE_METHOD(uniform4i, glUniform4i); // uniform, x, y, z, w
 
-#define _WRAP_METHOD_UNIFORM_V(suffix, dim, Type, ArrayType)                                    \
-  _WRAP_METHOD(uniform##suffix, 2) {                                                            \
-    GLuint uniform = jsArgv[0].asNumber();                                                      \
-    std::vector<Type> data =                                                                    \
-        jsArgv[1].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
-    addToNextBatch([=] { glUniform##suffix(uniform, data.size() / dim, data.data()); });        \
-    return nullptr;                                                                             \
-  }
+NATIVE_METHOD(uniform1fv) {
+  return exglUniformv(glUniform1fv, ARG(0, GLuint), 1, ARG(1, std::vector<float>));
+};
 
-_WRAP_METHOD_UNIFORM_V(1fv, 1, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_UNIFORM_V(2fv, 2, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_UNIFORM_V(3fv, 3, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_UNIFORM_V(4fv, 4, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_UNIFORM_V(1iv, 1, GLint, jsi::TypedArrayKind::Int32Array)
-_WRAP_METHOD_UNIFORM_V(2iv, 2, GLint, jsi::TypedArrayKind::Int32Array)
-_WRAP_METHOD_UNIFORM_V(3iv, 3, GLint, jsi::TypedArrayKind::Int32Array)
-_WRAP_METHOD_UNIFORM_V(4iv, 4, GLint, jsi::TypedArrayKind::Int32Array)
+NATIVE_METHOD(uniform2fv) {
+  return exglUniformv(glUniform2fv, ARG(0, GLuint), 2, ARG(1, std::vector<float>));
+};
 
-#define _WRAP_METHOD_UNIFORM_MATRIX(suffix, dim)                                               \
-  _WRAP_METHOD(uniformMatrix##suffix, 3) {                                                     \
-    GLuint uniform = jsArgv[0].asNumber();                                                     \
-    GLboolean transpose = jsValueToBool(runtime, jsArgv[1]);                                   \
-    std::vector<GLfloat> data = jsArgv[2]                                                      \
-                                    .asObject(runtime)                                         \
-                                    .asTypedArray(runtime)                                     \
-                                    .as<jsi::TypedArrayKind::Float32Array>(runtime)            \
-                                    .data(runtime);                                            \
-    addToNextBatch(                                                                            \
-        [=] { glUniformMatrix##suffix(uniform, data.size() / dim, transpose, data.data()); }); \
-    return nullptr;                                                                            \
-  }
+NATIVE_METHOD(uniform3fv) {
+  return exglUniformv(glUniform3fv, ARG(0, GLuint), 3, ARG(1, std::vector<float>));
+};
 
-_WRAP_METHOD_UNIFORM_MATRIX(2fv, 4)
-_WRAP_METHOD_UNIFORM_MATRIX(3fv, 9)
-_WRAP_METHOD_UNIFORM_MATRIX(4fv, 16)
+NATIVE_METHOD(uniform4fv) {
+  return exglUniformv(glUniform4fv, ARG(0, GLuint), 4, ARG(1, std::vector<float>));
+};
 
-#define _WRAP_METHOD_VERTEX_ATTRIB_V(suffix, Type, ArrayType)                                   \
-  _WRAP_METHOD(vertexAttrib##suffix, 2) {                                                       \
-    GLuint index = jsArgv[0].asNumber();                                                        \
-    auto data =                                                                                 \
-        jsArgv[1].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
-    addToNextBatch([=] { glVertexAttrib##suffix(index, data.data()); });                        \
-    return nullptr;                                                                             \
-  }
-_WRAP_METHOD_VERTEX_ATTRIB_V(1fv, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(2fv, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(3fv, GLfloat, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(4fv, GLfloat, jsi::TypedArrayKind::Float32Array)
+NATIVE_METHOD(uniform1iv) {
+  return exglUniformv(glUniform1iv, ARG(0, GLuint), 1, ARG(1, std::vector<int32_t>));
+};
 
-_WRAP_METHOD_SIMPLE(vertexAttrib1f, glVertexAttrib1f, index, x)
-_WRAP_METHOD_SIMPLE(vertexAttrib2f, glVertexAttrib2f, index, x, y)
-_WRAP_METHOD_SIMPLE(vertexAttrib3f, glVertexAttrib3f, index, x, y, z)
-_WRAP_METHOD_SIMPLE(vertexAttrib4f, glVertexAttrib4f, index, x, y, z, w)
+NATIVE_METHOD(uniform2iv) {
+  return exglUniformv(glUniform2iv, ARG(0, GLuint), 2, ARG(1, std::vector<int32_t>));
+};
 
-_WRAP_METHOD(vertexAttribPointer, 6) {
-  EXJS_UNPACK_ARGV(GLuint index, GLuint itemSize, GLenum type);
-  GLboolean normalized = jsValueToBool(runtime, jsArgv[3]);
-  EXJS_UNPACK_ARGV_OFFSET(4, GLsizei stride, GLint offset);
-  addToNextBatch(std::bind(
-      glVertexAttribPointer, index, itemSize, type, normalized, stride, bufferOffset(offset)));
-  return nullptr;
+NATIVE_METHOD(uniform3iv) {
+  return exglUniformv(glUniform3iv, ARG(0, GLuint), 3, ARG(1, std::vector<int32_t>));
+};
+
+NATIVE_METHOD(uniform4iv) {
+  return exglUniformv(glUniform4iv, ARG(0, GLuint), 4, ARG(1, std::vector<int32_t>));
+};
+
+NATIVE_METHOD(uniformMatrix2fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix2fv, ARG(0, GLuint), ARG(1, GLboolean), 4, ARG(2, std::vector<float>));
 }
+
+NATIVE_METHOD(uniformMatrix3fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix3fv, ARG(0, GLuint), ARG(1, GLboolean), 9, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(uniformMatrix4fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix4fv, ARG(0, GLuint), ARG(1, GLboolean), 16, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(vertexAttrib1fv) {
+  return exglVertexAttribv(glVertexAttrib1fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+}
+
+NATIVE_METHOD(vertexAttrib2fv) {
+  return exglVertexAttribv(glVertexAttrib2fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+}
+
+NATIVE_METHOD(vertexAttrib3fv) {
+  return exglVertexAttribv(glVertexAttrib3fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+}
+
+NATIVE_METHOD(vertexAttrib4fv) {
+  return exglVertexAttribv(glVertexAttrib4fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+}
+
+SIMPLE_NATIVE_METHOD(vertexAttrib1f, glVertexAttrib1f); // index, x
+SIMPLE_NATIVE_METHOD(vertexAttrib2f, glVertexAttrib2f); // index, x, y
+SIMPLE_NATIVE_METHOD(vertexAttrib3f, glVertexAttrib3f); // index, x, y, z
+SIMPLE_NATIVE_METHOD(vertexAttrib4f, glVertexAttrib4f); // index, x, y, z, w
+
+SIMPLE_NATIVE_METHOD(
+    vertexAttribPointer,
+    glVertexAttribPointer); // index, itemSize, type, normalized, stride, const void *
 
 // Uniforms and attributes (WebGL2)
 // --------------------------------
 
-_WRAP_METHOD_SIMPLE(uniform1ui, glUniform1ui, location, x)
-_WRAP_METHOD_SIMPLE(uniform2ui, glUniform2ui, location, x, y)
-_WRAP_METHOD_SIMPLE(uniform3ui, glUniform3ui, location, x, y, z)
-_WRAP_METHOD_SIMPLE(uniform4ui, glUniform4ui, location, x, y, z, w)
+SIMPLE_NATIVE_METHOD(uniform1ui, glUniform1ui); // location, x
+SIMPLE_NATIVE_METHOD(uniform2ui, glUniform2ui); // location, x, y
+SIMPLE_NATIVE_METHOD(uniform3ui, glUniform3ui); // location, x, y, z
+SIMPLE_NATIVE_METHOD(uniform4ui, glUniform4ui); // location, x, y, z, w
 
-_WRAP_METHOD_UNIFORM_V(1uiv, 1, GLuint, jsi::TypedArrayKind::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(2uiv, 2, GLuint, jsi::TypedArrayKind::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(3uiv, 3, GLuint, jsi::TypedArrayKind::Uint32Array)
-_WRAP_METHOD_UNIFORM_V(4uiv, 4, GLuint, jsi::TypedArrayKind::Uint32Array)
+NATIVE_METHOD(uniform1uiv) {
+  return exglUniformv(glUniform1uiv, ARG(0, GLuint), 1, ARG(1, std::vector<uint32_t>));
+};
 
-_WRAP_METHOD_UNIFORM_MATRIX(3x2fv, 6)
-_WRAP_METHOD_UNIFORM_MATRIX(4x2fv, 8)
-_WRAP_METHOD_UNIFORM_MATRIX(2x3fv, 6)
-_WRAP_METHOD_UNIFORM_MATRIX(4x3fv, 12)
-_WRAP_METHOD_UNIFORM_MATRIX(2x4fv, 8)
-_WRAP_METHOD_UNIFORM_MATRIX(3x4fv, 12)
+NATIVE_METHOD(uniform2uiv) {
+  return exglUniformv(glUniform2uiv, ARG(0, GLuint), 2, ARG(1, std::vector<uint32_t>));
+};
 
-_WRAP_METHOD_SIMPLE(vertexAttribI4i, glVertexAttribI4i, index, x, y, z, w)
-_WRAP_METHOD_SIMPLE(vertexAttribI4ui, glVertexAttribI4ui, index, x, y, z, w)
+NATIVE_METHOD(uniform3uiv) {
+  return exglUniformv(glUniform3uiv, ARG(0, GLuint), 3, ARG(1, std::vector<uint32_t>));
+};
 
-_WRAP_METHOD_VERTEX_ATTRIB_V(I4iv, GLint, jsi::TypedArrayKind::Int32Array)
-_WRAP_METHOD_VERTEX_ATTRIB_V(I4uiv, GLuint, jsi::TypedArrayKind::Uint32Array)
+NATIVE_METHOD(uniform4uiv) {
+  return exglUniformv(glUniform4uiv, ARG(0, GLuint), 4, ARG(1, std::vector<uint32_t>));
+};
 
-_WRAP_METHOD(vertexAttribIPointer, 5) {
-  EXJS_UNPACK_ARGV(GLuint index, GLuint size, GLenum type, GLsizei stride, GLint offset);
-  addToNextBatch(
-      std::bind(glVertexAttribIPointer, index, size, type, stride, bufferOffset(offset)));
-  return nullptr;
+NATIVE_METHOD(uniformMatrix3x2fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix3x2fv, ARG(0, GLuint), ARG(1, GLboolean), 6, ARG(2, std::vector<float>));
 }
 
-#undef _WRAP_METHOD_UNIFORM_V
-#undef _WRAP_METHOD_UNIFORM_MATRIX
-#undef _WRAP_METHOD_VERTEX_ATTRIB_V
+NATIVE_METHOD(uniformMatrix4x2fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix4x2fv, ARG(0, GLuint), ARG(1, GLboolean), 8, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(uniformMatrix2x3fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix2x3fv, ARG(0, GLuint), ARG(1, GLboolean), 6, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(uniformMatrix4x3fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix4x3fv, ARG(0, GLuint), ARG(1, GLboolean), 12, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(uniformMatrix2x4fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix2x4fv, ARG(0, GLuint), ARG(1, GLboolean), 8, ARG(2, std::vector<float>));
+}
+
+NATIVE_METHOD(uniformMatrix3x4fv) {
+  return exglUniformMatrixv(
+      glUniformMatrix3x4fv, ARG(0, GLuint), ARG(1, GLboolean), 12, ARG(2, std::vector<float>));
+}
+
+SIMPLE_NATIVE_METHOD(vertexAttribI4i, glVertexAttribI4i); // index, x, y, z, w
+SIMPLE_NATIVE_METHOD(vertexAttribI4ui, glVertexAttribI4ui); // index, x, y, z, w
+
+NATIVE_METHOD(vertexAttribI4iv) {
+  return exglVertexAttribv(glVertexAttribI4iv, ARG(0, GLuint), ARG(1, std::vector<int32_t>));
+}
+
+NATIVE_METHOD(vertexAttribI4uiv) {
+  return exglVertexAttribv(glVertexAttribI4uiv, ARG(0, GLuint), ARG(1, std::vector<uint32_t>));
+}
+
+SIMPLE_NATIVE_METHOD(
+    vertexAttribIPointer,
+    glVertexAttribIPointer); // index, size, type, stride, offset
 
 // Drawing buffers
 // ---------------
 
-_WRAP_METHOD_SIMPLE(clear, glClear, mask)
+SIMPLE_NATIVE_METHOD(clear, glClear); // mask
 
-_WRAP_METHOD_SIMPLE(drawArrays, glDrawArrays, mode, first, count)
+SIMPLE_NATIVE_METHOD(drawArrays, glDrawArrays); // mode, first, count)
 
-_WRAP_METHOD(drawElements, 4) {
-  EXJS_UNPACK_ARGV(GLenum mode, GLsizei count, GLenum type, GLint offset);
-  addToNextBatch(std::bind(glDrawElements, mode, count, type, bufferOffset(offset)));
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(drawElements, glDrawElements); // mode, count, type, offset
 
-_WRAP_METHOD(finish, 0) {
-  addToNextBatch(glFinish);
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(finish, glFinish);
 
-_WRAP_METHOD(flush, 0) {
-  addToNextBatch(glFlush);
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(flush, glFlush);
 
 // Drawing buffers (WebGL2)
 // ------------------------
 
-_WRAP_WEBGL2_METHOD_SIMPLE(vertexAttribDivisor, glVertexAttribDivisor, index, divisor)
+SIMPLE_NATIVE_METHOD(vertexAttribDivisor, glVertexAttribDivisor); // index, divisor
 
-_WRAP_WEBGL2_METHOD_SIMPLE(
+SIMPLE_NATIVE_METHOD(
     drawArraysInstanced,
-    glDrawArraysInstanced,
-    mode,
-    first,
-    count,
-    instancecount)
+    glDrawArraysInstanced); // mode, first, count, instancecount
 
-_WRAP_WEBGL2_METHOD(drawElementsInstanced, 5) {
-  EXJS_UNPACK_ARGV(GLenum mode, GLsizei count, GLenum type, GLint offset, GLsizei instanceCount);
+SIMPLE_NATIVE_METHOD(
+    drawElementsInstanced,
+    glDrawElementsInstanced); // mode, count, type, offset, instanceCount
+
+SIMPLE_NATIVE_METHOD(
+    drawRangeElements,
+    glDrawRangeElements); // mode, start, end, count, type, offset
+
+NATIVE_METHOD(drawBuffers) {
+  auto data = jsArrayToVector<GLenum>(runtime, ARG(0, jsi::Array));
+  addToNextBatch([data{std::move(data)}] { glDrawBuffers(data.size(), data.data()); });
+  return nullptr;
+}
+
+NATIVE_METHOD(clearBufferfv) {
+  auto buffer = ARG(0, GLenum);
+  auto drawbuffer = ARG(1, GLint);
+  auto values = ARG(2, jsi::TypedArrayKind::Float32Array).data(runtime);
   addToNextBatch(
-      [=] { glDrawElementsInstanced(mode, count, type, bufferOffset(offset), instanceCount); });
+      [=, values{std::move(values)}] { glClearBufferfv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(drawRangeElements, 6) {
-  EXJS_UNPACK_ARGV(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLint offset);
-  addToNextBatch([=] { glDrawRangeElements(mode, start, end, count, type, bufferOffset(offset)); });
+NATIVE_METHOD(clearBufferiv) {
+  auto buffer = ARG(0, GLenum);
+  auto drawbuffer = ARG(1, GLint);
+  auto values = ARG(2, jsi::TypedArrayKind::Int32Array).data(runtime);
+  addToNextBatch(
+      [=, values{std::move(values)}] { glClearBufferiv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(drawBuffers, 1) {
-  auto data = jsArrayToVector<GLenum>(runtime, jsArgv[0].asObject(runtime).asArray(runtime));
-  addToNextBatch([=] { glDrawBuffers(data.size(), data.data()); });
+NATIVE_METHOD(clearBufferuiv) {
+  auto buffer = ARG(0, GLenum);
+  auto drawbuffer = ARG(1, GLint);
+  auto values = ARG(2, jsi::TypedArrayKind::Uint32Array).data(runtime);
+  addToNextBatch(
+      [=, values{std::move(values)}] { glClearBufferuiv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
 
-#define _WRAP_METHOD_CLEAR_BUFFER(suffix, ArrayType)                                            \
-  _WRAP_WEBGL2_METHOD(clearBuffer##suffix, 4) {                                                 \
-    EXJS_UNPACK_ARGV(GLenum buffer, GLint drawbuffer);                                          \
-    auto values =                                                                               \
-        jsArgv[2].asObject(runtime).asTypedArray(runtime).as<ArrayType>(runtime).data(runtime); \
-    addToNextBatch([=] { glClearBuffer##suffix(buffer, drawbuffer, values.data()); });          \
-    return nullptr;                                                                             \
-  }
-
-_WRAP_METHOD_CLEAR_BUFFER(fv, jsi::TypedArrayKind::Float32Array)
-_WRAP_METHOD_CLEAR_BUFFER(iv, jsi::TypedArrayKind::Int32Array)
-_WRAP_METHOD_CLEAR_BUFFER(uiv, jsi::TypedArrayKind::Uint32Array)
-
-#undef _WRAP_METHOD_CLEAR_BUFFER
-
-_WRAP_WEBGL2_METHOD_SIMPLE(clearBufferfi, glClearBufferfi, buffer, drawbuffer, depth, stencil)
+SIMPLE_NATIVE_METHOD(clearBufferfi, glClearBufferfi); // buffer, drawbuffer, depth, stencil
 
 // Query objects (WebGL2)
 // ----------------------
 
-_WRAP_WEBGL2_METHOD(createQuery, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint query;
-    glGenQueries(1, &query);
-    return query;
-  });
+NATIVE_METHOD(createQuery) {
+  return exglGenObject(runtime, glGenQueries);
 }
 
-_WRAP_WEBGL2_METHOD(deleteQuery, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fQuery);
-  addToNextBatch([=] {
-    GLuint query = lookupObject(fQuery);
-    glDeleteQueries(1, &query);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteQuery) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteQueries);
 }
 
-_WRAP_WEBGL2_METHOD_IS_OBJECT(Query)
+NATIVE_METHOD(isQuery) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsQuery);
+}
 
-_WRAP_WEBGL2_METHOD(beginQuery, 2) {
-  EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId query);
+NATIVE_METHOD(beginQuery) {
+  auto target = ARG(0, GLenum);
+  auto query = ARG(1, UEXGLObjectId);
   addToNextBatch([=] { glBeginQuery(target, lookupObject(query)); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD_SIMPLE(endQuery, glEndQuery, target)
+SIMPLE_NATIVE_METHOD(endQuery, glEndQuery); // target
 
-_WRAP_WEBGL2_METHOD(getQuery, 2) {
-  EXJS_UNPACK_ARGV(GLenum target, GLenum pname);
+NATIVE_METHOD(getQuery) {
+  auto target = ARG(0, GLenum);
+  auto pname = ARG(1, GLenum);
   GLint params;
   addBlockingToNextBatch([&] { glGetQueryiv(target, pname, &params); });
-  return params == 0 ? jsi::Value::null() : jsi::Value(params);
+  return params == 0 ? jsi::Value::null() : static_cast<double>(params);
 }
 
-_WRAP_WEBGL2_METHOD(getQueryParameter, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId query, GLenum pname);
+NATIVE_METHOD(getQueryParameter) {
+  auto query = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
   GLuint params;
   addBlockingToNextBatch([&] { glGetQueryObjectuiv(lookupObject(query), pname, &params); });
   return params == 0 ? jsi::Value::null() : static_cast<double>(params);
@@ -1417,118 +1292,107 @@ _WRAP_WEBGL2_METHOD(getQueryParameter, 2) {
 // Samplers (WebGL2)
 // -----------------
 
-_WRAP_WEBGL2_METHOD(createSampler, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint sampler;
-    glGenSamplers(1, &sampler);
-    return sampler;
-  });
+NATIVE_METHOD(createSampler) {
+  return exglGenObject(runtime, glGenSamplers);
 }
 
-_WRAP_WEBGL2_METHOD(deleteSampler, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fSampler);
-  addToNextBatch([=] {
-    GLuint sampler = lookupObject(fSampler);
-    glDeleteSamplers(1, &sampler);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteSampler) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteSamplers);
 }
 
-_WRAP_WEBGL2_METHOD(bindSampler, 2) {
-  EXJS_UNPACK_ARGV(GLuint unit, UEXGLObjectId sampler);
+NATIVE_METHOD(bindSampler) {
+  auto unit = ARG(0, GLuint);
+  auto sampler = ARG(1, UEXGLObjectId);
   addToNextBatch([=] { glBindSampler(unit, lookupObject(sampler)); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD_IS_OBJECT(Sampler)
+NATIVE_METHOD(isSampler) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsSampler);
+}
 
-_WRAP_WEBGL2_METHOD(samplerParameteri, 3) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId sampler, GLenum pname, GLint param);
+NATIVE_METHOD(samplerParameteri) {
+  auto sampler = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
+  auto param = ARG(2, GLfloat);
   addToNextBatch([=] { glSamplerParameteri(lookupObject(sampler), pname, param); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(samplerParameterf, 3) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId sampler, GLenum pname, GLfloat param);
+NATIVE_METHOD(samplerParameterf) {
+  auto sampler = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
+  auto param = ARG(2, GLfloat);
   addToNextBatch([=] { glSamplerParameterf(lookupObject(sampler), pname, param); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(getSamplerParameter, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fSampler, GLenum pname);
+NATIVE_METHOD(getSamplerParameter) {
+  auto sampler = ARG(0, UEXGLObjectId);
+  auto pname = ARG(1, GLenum);
   bool isFloatParam = pname == GL_TEXTURE_MAX_LOD || pname == GL_TEXTURE_MIN_LOD;
-  GLfloat paramf;
-  GLint parami;
+  union {
+    GLfloat f;
+    GLint i;
+  } param;
 
   addBlockingToNextBatch([&] {
-    GLuint sampler = lookupObject(fSampler);
-
     if (isFloatParam) {
-      glGetSamplerParameterfv(sampler, pname, &paramf);
+      glGetSamplerParameterfv(lookupObject(sampler), pname, &param.f);
     } else {
-      glGetSamplerParameteriv(sampler, pname, &parami);
+      glGetSamplerParameteriv(lookupObject(sampler), pname, &param.i);
     }
   });
-  return isFloatParam ? static_cast<double>(paramf) : static_cast<double>(parami);
+  return isFloatParam ? static_cast<double>(param.f) : static_cast<double>(param.i);
 }
 
 // Sync objects (WebGL2)
 // ---------------------
 
-_WRAP_METHOD_UNIMPL(fenceSync)
+UNIMPL_NATIVE_METHOD(fenceSync)
 
-_WRAP_METHOD_UNIMPL(isSync)
+UNIMPL_NATIVE_METHOD(isSync)
 
-_WRAP_METHOD_UNIMPL(deleteSync)
+UNIMPL_NATIVE_METHOD(deleteSync)
 
-_WRAP_METHOD_UNIMPL(clientWaitSync)
+UNIMPL_NATIVE_METHOD(clientWaitSync)
 
-_WRAP_METHOD_UNIMPL(waitSync)
+UNIMPL_NATIVE_METHOD(waitSync)
 
-_WRAP_METHOD_UNIMPL(getSyncParameter)
+UNIMPL_NATIVE_METHOD(getSyncParameter)
 
 // Transform feedback (WebGL2)
 // ---------------------------
 
-_WRAP_WEBGL2_METHOD(createTransformFeedback, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint transformFeedback;
-    glGenTransformFeedbacks(1, &transformFeedback);
-    return transformFeedback;
-  });
+NATIVE_METHOD(createTransformFeedback) {
+  return exglGenObject(runtime, glGenTransformFeedbacks);
 }
 
-_WRAP_WEBGL2_METHOD(deleteTransformFeedback, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fTransformFeedback);
-  addToNextBatch([=] {
-    GLuint transformFeedback = lookupObject(fTransformFeedback);
-    glDeleteTransformFeedbacks(1, &transformFeedback);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteTransformFeedback) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteTransformFeedbacks);
 }
 
-_WRAP_WEBGL2_METHOD_IS_OBJECT(TransformFeedback)
+NATIVE_METHOD(isTransformFeedback) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsTransformFeedback);
+}
 
-_WRAP_WEBGL2_METHOD(bindTransformFeedback, 1) {
-  EXJS_UNPACK_ARGV(GLenum target, UEXGLObjectId transformFeedback);
+NATIVE_METHOD(bindTransformFeedback) {
+  auto target = ARG(0, GLenum);
+  auto transformFeedback = ARG(1, UEXGLObjectId);
   addToNextBatch([=] { glBindTransformFeedback(target, lookupObject(transformFeedback)); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD_SIMPLE(beginTransformFeedback, glBeginTransformFeedback, primitiveMode)
+SIMPLE_NATIVE_METHOD(beginTransformFeedback, glBeginTransformFeedback); // primitiveMode
 
-_WRAP_WEBGL2_METHOD(endTransformFeedback, 0) {
-  addToNextBatch([=] { glEndTransformFeedback(); });
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(endTransformFeedback, glEndTransformFeedback);
 
-_WRAP_WEBGL2_METHOD(transformFeedbackVaryings, 3) {
-  UEXGLObjectId program = jsArgv[0].asNumber();
-  GLenum bufferMode = jsArgv[2].asNumber();
-  std::vector<std::string> varyings =
-      jsArrayToVector<std::string>(runtime, jsArgv[1].asObject(runtime).asArray(runtime));
+NATIVE_METHOD(transformFeedbackVaryings) {
+  auto program = ARG(0, UEXGLObjectId);
+  std::vector<std::string> varyings = jsArrayToVector<std::string>(runtime, ARG(1, jsi::Array));
+  auto bufferMode = ARG(2, GLenum);
 
-  addToNextBatch([=] {
+  addToNextBatch([=, varyings{std::move(varyings)}] {
     std::vector<const char *> varyingsRaw(varyings.size());
     std::transform(
         varyings.begin(), varyings.end(), varyingsRaw.begin(), [](const std::string &str) {
@@ -1541,40 +1405,43 @@ _WRAP_WEBGL2_METHOD(transformFeedbackVaryings, 3) {
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(getTransformFeedbackVarying, 2) {
-  return getActiveInfo(
-      runtime, jsArgv, GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH, glGetTransformFeedbackVarying);
+NATIVE_METHOD(getTransformFeedbackVarying) {
+  return exglGetActiveInfo(
+      runtime,
+      ARG(0, UEXGLObjectId),
+      ARG(1, GLuint),
+      GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH,
+      glGetTransformFeedbackVarying);
 }
 
-_WRAP_WEBGL2_METHOD(pauseTransformFeedback, 0) {
-  addToNextBatch([=] { glPauseTransformFeedback(); });
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(pauseTransformFeedback, glPauseTransformFeedback);
 
-_WRAP_WEBGL2_METHOD(resumeTransformFeedback, 0) {
-  addToNextBatch([=] { glResumeTransformFeedback(); });
-  return nullptr;
-}
+SIMPLE_NATIVE_METHOD(resumeTransformFeedback, glResumeTransformFeedback);
 
 // Uniform buffer objects (WebGL2)
 // -------------------------------
 
-_WRAP_WEBGL2_METHOD(bindBufferBase, 3) {
-  EXJS_UNPACK_ARGV(GLenum target, GLuint index, UEXGLObjectId buffer);
+NATIVE_METHOD(bindBufferBase) {
+  auto target = ARG(0, GLenum);
+  auto index = ARG(1, GLuint);
+  auto buffer = ARG(2, UEXGLObjectId);
   addToNextBatch([=] { glBindBufferBase(target, index, lookupObject(buffer)); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(bindBufferRange, 5) {
-  EXJS_UNPACK_ARGV(GLenum target, GLuint index, UEXGLObjectId buffer, GLint offset, GLsizei size);
+NATIVE_METHOD(bindBufferRange) {
+  auto target = ARG(0, GLenum);
+  auto index = ARG(1, GLuint);
+  auto buffer = ARG(2, UEXGLObjectId);
+  auto offset = ARG(3, GLint);
+  auto size = ARG(4, GLsizei);
   addToNextBatch([=] { glBindBufferRange(target, index, lookupObject(buffer), offset, size); });
   return nullptr;
 }
 
-_WRAP_WEBGL2_METHOD(getUniformIndices, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId program);
-  std::vector<std::string> uniformNames =
-      jsArrayToVector<std::string>(runtime, jsArgv[1].asObject(runtime).asArray(runtime));
+NATIVE_METHOD(getUniformIndices) {
+  auto program = ARG(0, UEXGLObjectId);
+  std::vector<std::string> uniformNames = jsArrayToVector<std::string>(runtime, ARG(1, jsi::Array));
 
   std::vector<const char *> uniformNamesRaw(uniformNames.size());
   std::transform(
@@ -1583,62 +1450,63 @@ _WRAP_WEBGL2_METHOD(getUniformIndices, 2) {
       uniformNamesRaw.begin(),
       [](const std::string &str) { return str.c_str(); });
 
-  GLuint indices[uniformNames.size()];
+  std::vector<GLuint> indices(uniformNames.size());
   addBlockingToNextBatch([&] {
     glGetUniformIndices(
-        lookupObject(program), uniformNames.size(), uniformNamesRaw.data(), indices);
+        lookupObject(program), uniformNames.size(), uniformNamesRaw.data(), &indices[0]);
   });
-  return jsi::TypedArray<jsi::TypedArrayKind::Uint32Array>(
-      runtime, std::vector<GLuint>(indices, indices + uniformNames.size()));
+  return jsi::TypedArray<jsi::TypedArrayKind::Uint32Array>(runtime, indices);
 }
 
-_WRAP_WEBGL2_METHOD(getActiveUniforms, 3) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId program);
-  EXJS_UNPACK_ARGV_OFFSET(2, GLenum pname);
-  auto uniformIndices =
-      jsArrayToVector<GLuint>(runtime, jsArgv[1].asObject(runtime).asArray(runtime));
-  GLint params[uniformIndices.size()];
+NATIVE_METHOD(getActiveUniforms) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto uniformIndices = jsArrayToVector<GLuint>(runtime, ARG(1, jsi::Array));
+  auto pname = ARG(2, GLenum);
+  std::vector<GLint> params(uniformIndices.size());
 
   addBlockingToNextBatch([&] {
     glGetActiveUniformsiv(
         lookupObject(program),
-        (GLsizei)uniformIndices.size(),
+        static_cast<GLsizei>(uniformIndices.size()),
         uniformIndices.data(),
         pname,
-        params);
+        &params[0]);
   });
-  return jsi::TypedArray<jsi::TypedArrayKind::Int32Array>(
-      runtime, std::vector<GLint>(params, params + uniformIndices.size()));
+  return jsi::TypedArray<jsi::TypedArrayKind::Int32Array>(runtime, params);
 }
 
-_WRAP_WEBGL2_METHOD(getUniformBlockIndex, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId program);
-  std::string uniformBlockName = jsArgv[1].asString(runtime).utf8(runtime);
-  GLuint blockIndex;
+NATIVE_METHOD(getUniformBlockIndex) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto uniformBlockName = ARG(1, std::string);
 
+  GLuint blockIndex;
   addBlockingToNextBatch([&] {
     blockIndex = glGetUniformBlockIndex(lookupObject(program), uniformBlockName.c_str());
   });
   return static_cast<double>(blockIndex);
 }
 
-_WRAP_METHOD_UNIMPL(getActiveUniformBlockParameter)
+UNIMPL_NATIVE_METHOD(getActiveUniformBlockParameter)
 
-_WRAP_WEBGL2_METHOD(getActiveUniformBlockName, 2) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fProgram, GLuint uniformBlockIndex);
+NATIVE_METHOD(getActiveUniformBlockName) {
+  auto fProgram = ARG(0, UEXGLObjectId);
+  auto uniformBlockIndex = ARG(1, GLuint);
+
   std::string blockName;
-
   addBlockingToNextBatch([&] {
     GLuint program = lookupObject(fProgram);
     GLint bufSize;
     glGetActiveUniformBlockiv(program, uniformBlockIndex, GL_UNIFORM_BLOCK_NAME_LENGTH, &bufSize);
+    blockName.resize(bufSize > 0 ? bufSize - 1 : 0);
     glGetActiveUniformBlockName(program, uniformBlockIndex, bufSize, NULL, &blockName[0]);
   });
   return jsi::String::createFromUtf8(runtime, blockName);
 }
 
-_WRAP_WEBGL2_METHOD(uniformBlockBinding, 3) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+NATIVE_METHOD(uniformBlockBinding) {
+  auto program = ARG(0, UEXGLObjectId);
+  auto uniformBlockIndex = ARG(1, GLuint);
+  auto uniformBlockBinding = ARG(2, GLuint);
   addToNextBatch([=] {
     glUniformBlockBinding(lookupObject(program), uniformBlockIndex, uniformBlockBinding);
   });
@@ -1648,27 +1516,20 @@ _WRAP_WEBGL2_METHOD(uniformBlockBinding, 3) {
 // Vertex Array Object (WebGL2)
 // ----------------------------
 
-_WRAP_WEBGL2_METHOD(createVertexArray, 0) {
-  return addFutureToNextBatch(runtime, [] {
-    GLuint vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    return vertexArray;
-  });
+NATIVE_METHOD(createVertexArray) {
+  return exglGenObject(runtime, glGenVertexArrays);
 }
 
-_WRAP_WEBGL2_METHOD(deleteVertexArray, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId fVertexArray);
-  addToNextBatch([=] {
-    GLuint vertexArray = lookupObject(fVertexArray);
-    glDeleteVertexArrays(1, &vertexArray);
-  });
-  return nullptr;
+NATIVE_METHOD(deleteVertexArray) {
+  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteVertexArrays);
 }
 
-_WRAP_WEBGL2_METHOD_IS_OBJECT(VertexArray)
+NATIVE_METHOD(isVertexArray) {
+  return exglIsObject(ARG(0, UEXGLObjectId), glIsVertexArray);
+}
 
-_WRAP_WEBGL2_METHOD(bindVertexArray, 1) {
-  EXJS_UNPACK_ARGV(UEXGLObjectId vertexArray);
+NATIVE_METHOD(bindVertexArray) {
+  auto vertexArray = ARG(0, UEXGLObjectId);
   addToNextBatch([=] { glBindVertexArray(lookupObject(vertexArray)); });
   return nullptr;
 }
@@ -1676,27 +1537,26 @@ _WRAP_WEBGL2_METHOD(bindVertexArray, 1) {
 // Extensions
 // ----------
 
-_WRAP_METHOD(getSupportedExtensions, 0) {
+NATIVE_METHOD(getSupportedExtensions) {
   return jsi::Array(runtime, 0);
 }
 
-_WRAP_METHOD(getExtension, 1) {
-  return jsi::Value::null();
+NATIVE_METHOD(getExtension) {
+  return nullptr;
 }
 
 // Exponent extensions
 // -------------------
 
-_WRAP_METHOD(endFrameEXP, 0) {
+NATIVE_METHOD(endFrameEXP) {
   addToNextBatch([=] { setNeedsRedraw(true); });
   endNextBatch();
   flushOnGLThread();
   return nullptr;
 }
 
-_WRAP_METHOD(flushEXP, 0) {
-  addBlockingToNextBatch([&] {
-    // nothing, it's just a helper so that we can measure how much time some operations take
-  });
+NATIVE_METHOD(flushEXP) {
+  // nothing, it's just a helper so that we can measure how much time some operations take
+  addBlockingToNextBatch([&] {});
   return nullptr;
 }

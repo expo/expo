@@ -8,10 +8,8 @@ LOCAL_MODULE := expo-gl
 LOCAL_C_INCLUDES += ../../../../cpp/
 LOCAL_SRC_FILES := \
   ../../../../cpp/UEXGL.cpp \
-  ../../../../cpp/EXJSUtils.cpp \
+  ../../../../cpp/EXGLImageUtils.cpp \
   ../../../../cpp/EXGLContext.cpp \
-  ../../../../cpp/EXGLInstallMethods.cpp \
-  ../../../../cpp/EXGLInstallConstants.cpp \
   ../../../../cpp/EXGLNativeMethods.cpp \
   EXGL.cpp
 

@@ -1,8 +1,5 @@
 #include "EXGLContext.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 static std::unordered_map<UEXGLContextId, EXGLContext *> EXGLContextMap;
 static std::mutex EXGLContextMapMutex;
 static UEXGLContextId EXGLContextNextId = 1;
@@ -29,7 +26,7 @@ UEXGLContextId EXGLContext::ContextCreate(jsi::Runtime &runtime) {
   EXGLContext *exglCtx;
   UEXGLContextId exglCtxId;
   {
-    std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
+    std::lock_guard<std::mutex> lock(EXGLContextMapMutex);
     exglCtxId = EXGLContextNextId++;
     if (EXGLContextMap.find(exglCtxId) != EXGLContextMap.end()) {
       EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
@@ -43,7 +40,7 @@ UEXGLContextId EXGLContext::ContextCreate(jsi::Runtime &runtime) {
 }
 
 void EXGLContext::ContextDestroy(UEXGLContextId exglCtxId) {
-  std::lock_guard<decltype(EXGLContextMapMutex)> lock(EXGLContextMapMutex);
+  std::lock_guard<std::mutex> lock(EXGLContextMapMutex);
 
   // Destroy C++ object, JavaScript side should just know...
   auto iter = EXGLContextMap.find(exglCtxId);
@@ -53,60 +50,89 @@ void EXGLContext::ContextDestroy(UEXGLContextId exglCtxId) {
   }
 }
 
-void decodeURI(char *dst, const char *src) {
-  char a, b;
-  while (*src) {
-    if ((*src == '%') && ((a = src[1]) && (b = src[2])) && (isxdigit(a) && isxdigit(b))) {
-      if (a >= 'a') {
-        a -= 'a' - 'A';
-      }
-      if (a >= 'A') {
-        a -= ('A' - 10);
-      } else {
-        a -= '0';
-      }
-      if (b >= 'a') {
-        b -= 'a' - 'A';
-      }
-      if (b >= 'A') {
-        b -= ('A' - 10);
-      } else {
-        b -= '0';
-      }
-      *dst++ = 16 * a + b;
-      src += 3;
-    } else if (*src == '+') {
-      *dst++ = ' ';
-      src++;
-    } else {
-      *dst++ = *src++;
-    }
+void EXGLContext::installMethods(
+    jsi::Runtime &runtime,
+    jsi::Object &jsGl,
+    UEXGLContextId exglCtxId) {
+  using namespace std::placeholders;
+#define NATIVE_METHOD(name)                                                        \
+  setFunctionOnObject(                                                             \
+      runtime,                                                                     \
+      jsGl,                                                                        \
+      #name,                                                                       \
+      [this, exglCtxId](                                                           \
+          jsi::Runtime &runtime,                                                   \
+          const jsi::Value &jsThis,                                                \
+          const jsi::Value *jsArgv,                                                \
+          size_t argc) {                                                           \
+        auto exglCtx = EXGLContext::ContextGet(exglCtxId);                         \
+        if (!exglCtx) {                                                            \
+          return jsi::Value::null();                                               \
+        }                                                                          \
+        try {                                                                      \
+          return this->glNativeMethod_##name(runtime, jsThis, jsArgv, argc);       \
+        } catch (const std::exception &e) {                                        \
+          throw std::runtime_error(std::string("[" #name "] error: ") + e.what()); \
+        }                                                                          \
+      });
+#define NATIVE_WEBGL2_METHOD(name)                                                  \
+  if (!this->supportsWebGL2) {                                                      \
+    setFunctionOnObject(                                                            \
+        runtime, jsGl, #name, std::bind(unsupportedWebGL2, #name, _1, _2, _3, _4)); \
+  } else {                                                                          \
+    NATIVE_METHOD(name)                                                             \
   }
-  *dst++ = '\0';
+#include "EXGLNativeMethods.def"
+#undef NATIVE_METHOD
+#undef NATIVE_WEBGL2_METHOD
 }
 
-// TODO(wkozyra95) needs to be moved (for now it's here because it requires access to EXGLContext
-// and needs to be in cpp file Load image data from an object with a `.localUri` member
-std::shared_ptr<uint8_t> EXGLContext::loadImage(
-    jsi::Runtime &runtime,
-    const jsi::Value &jsPixels,
-    int *fileWidth,
-    int *fileHeight,
-    int *fileComp) {
-  auto localUriProp = jsPixels.asObject(runtime).getProperty(runtime, "localUri");
-  if (localUriProp.isString()) {
-    auto localUri = localUriProp.asString(runtime).utf8(runtime);
-    if (strncmp(localUri.c_str(), "file://", 7) != 0) {
-      return std::shared_ptr<uint8_t>(nullptr);
-    }
-    char localPath[localUri.size()];
-    decodeURI(localPath, localUri.c_str() + 7);
+void EXGLContext::installConstants(jsi::Runtime &runtime, jsi::Object &jsGl) {
+#define GL_CONSTANT(name) \
+  jsGl.setProperty(       \
+      runtime, jsi::PropNameID::forUtf8(runtime, #name), static_cast<double>(GL_##name));
+#include "EXGLConstants.def"
+#undef GL_CONSTANT
+};
 
-    return std::shared_ptr<uint8_t>(
-        stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha), [](void *data) {
-          stbi_image_free(data);
-          ;
-        });
-  }
-  return std::shared_ptr<uint8_t>(nullptr);
+jsi::Value EXGLContext::exglIsObject(UEXGLObjectId id, std::function<GLboolean(GLuint)> func) {
+  GLboolean glResult;
+  addBlockingToNextBatch([&] { glResult = func(lookupObject(id)); });
+  return glResult == GL_TRUE;
+}
+
+jsi::Value EXGLContext::exglGenObject(
+    jsi::Runtime &runtime,
+    std::function<void(GLsizei, UEXGLObjectId *)> func) {
+  return addFutureToNextBatch(runtime, [=] {
+    GLuint buffer;
+    func(1, &buffer);
+    return buffer;
+  });
+  return nullptr;
+}
+
+jsi::Value EXGLContext::exglCreateObject(jsi::Runtime &runtime, std::function<GLuint()> func) {
+  return addFutureToNextBatch(runtime, [=] { return func(); });
+  return nullptr;
+}
+
+jsi::Value EXGLContext::exglDeleteObject(
+    UEXGLObjectId id,
+    std::function<void(UEXGLObjectId)> func) {
+  addToNextBatch([=] { func(lookupObject(id)); });
+  return nullptr;
+}
+
+jsi::Value EXGLContext::exglDeleteObject(
+    UEXGLObjectId id,
+    std::function<void(GLsizei, const UEXGLObjectId *)> func) {
+  addToNextBatch([=] {
+    GLuint buffer = lookupObject(id);
+    func(1, &buffer);
+  });
+  return nullptr;
+}
+jsi::Value EXGLContext::exglUnimplemented(std::string name) {
+  throw std::runtime_error("EXGL: " + name + "() isn't implemented yet!");
 }
