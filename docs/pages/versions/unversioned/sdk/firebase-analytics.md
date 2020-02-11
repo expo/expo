@@ -15,17 +15,36 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅              | ✅                | ✅          | ✅             | ❌   |
+| ✅              | ✅                | ✅          | ✅             | ✅   |
 
 
+# Installation
 
-# TODO
-- link to configuration
-- web init
-- Support limitation onExpo client 
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-firebase-core expo-firebase-analytics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics).
+
+When using the web-platform, you'll also need to run `expo install firebase`, which install the Firebase JS SDK.
 
 
-# Docs
+# Configuration
+
+To use this package, the Firebase configuration needs to be added to your app.
+[Please follow this guide on how to configure Native Firebase.](../../guides/setup-native-firebase)
+
+
+# Limitations
+
+Using native Firebase Analytics on the standard Expo client currently doesn't work.
+This is because the standard Expo client can host and load different projects, and the
+native Firebase Analytics SDK does not support this scenario.
+
+Instead, `expo-firebase-analytics` will log the analytics events to the console for debugging
+purposes and generate a one-time warning. You can suppress this warning and disable the logging
+by calling `setUnavailabilityLogging(false)`.
+
+**This limitation applies only to the standard Expo client, not to custom clients, stand-alone builds or bare projects.**
+
+
+# API
 
 ```js
 import * as Analytics from 'expo-firebase-analytics';
