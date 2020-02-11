@@ -42,6 +42,9 @@ export const Code = forwardRef((props, ref) => {
 export const Time = forwardRef(({ style, ...props }, ref) => {
     return createElement('time', { ...props, style: [styles.reset, style], ref });
 });
+export const Pre = forwardRef((props, ref) => {
+    return createElement('pre', { ...props, ref });
+});
 const styles = StyleSheet.create({
     reset: {
         fontFamily: 'System',

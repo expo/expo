@@ -36,6 +36,16 @@ export const Mark = forwardRef(({ style, ...props }, ref) => {
 export const Code = forwardRef((props, ref) => {
     return <Text {...props} ref={ref}/>;
 });
+function isTextProps(props) {
+    return typeof props.children === 'string';
+}
+// TODO: Lazy load mono font on native
+export const Pre = forwardRef((props, ref) => {
+    if (isTextProps(props)) {
+        return <Text {...props} style={[styles.pre, props.style]} ref={ref}/>;
+    }
+    return <View {...props} style={[styles.pre, props.style]} ref={ref}/>;
+});
 // Extract dateTime to prevent passing it to the native Text element
 export const Time = forwardRef(({ dateTime, ...props }, ref) => {
     return <Text {...props} ref={ref}/>;
@@ -53,6 +63,9 @@ const styles = StyleSheet.create({
     },
     q: {
         fontStyle: 'italic',
+    },
+    pre: {
+        marginVertical: em(1),
     },
     blockQuote: {
         marginVertical: em(1),

@@ -69,6 +69,7 @@ Not all HTML elements are supported. There are some HTML elements that mostly ov
 - [x] `<nav />` => `<Nav />`
 - [x] `<ol />` => `<OL />`
 - [x] `<p />` => `<P />`
+- [x] `<pre />` => `<Pre />`
 - [x] `<q />` => `<Q />`
 - [x] `<s />` => `<S />`
 - [x] `<section />` => `<Section />`
@@ -386,6 +387,26 @@ Smaller than default text: <small>example</small>
 ### `<Code/>`
 
 Inline code block: <code>example</code>
+
+- [ ] Support lazy loading mono font on mobile.
+
+### `<Pre/>`
+
+Render a preformatted code block:
+
+```jsx
+<Pre>{`
+body {
+  color: red;
+}
+`}</Pre>
+
+// Or pass views
+
+<Pre>
+  <Code>{`const val = true`}</Code>
+</Pre>
+```
 
 - [ ] Support lazy loading mono font on mobile.
 

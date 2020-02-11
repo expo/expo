@@ -84,6 +84,16 @@ exports[`renders P 1`] = `
 </p>
 `;
 
+exports[`renders Pre 1`] = `
+<pre>
+  
+    body {
+      color: red;
+    }
+  
+</pre>
+`;
+
 exports[`renders Q 1`] = `
 <q
   style={

@@ -104,6 +104,22 @@ exports[`renders P 1`] = `
 </Text>
 `;
 
+exports[`renders Pre 1`] = `
+<Text
+  style={
+    Object {
+      "marginVertical": 32,
+    }
+  }
+>
+  
+    body {
+      color: red;
+    }
+  
+</Text>
+`;
+
 exports[`renders Q 1`] = `
 <Text
   style={
