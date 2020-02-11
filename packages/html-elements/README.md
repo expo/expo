@@ -837,5 +837,4 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-picture]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture
 [html-figure]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure
 [html-figcaption]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
-[html-header]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header
 [aria-banner]: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/Banner_role
