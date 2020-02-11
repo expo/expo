@@ -71,6 +71,198 @@ export async function test(t) {
         t.expect(expoPushToken.type).toBe('expo');
         t.expect(typeof expoPushToken.data).toBe('string');
       });
+
+      // Not running those tests on web since Expo push notification doesn't yet support web.
+      const describeWithExpoPushToken = ['ios', 'android'].includes(Platform.OS)
+        ? t.describe
+        : t.xdescribe;
+
+      describeWithExpoPushToken('when a push notification is sent', () => {
+        let notificationToHandle;
+        let handleSuccessEvent;
+        let handleErrorEvent;
+
+        let expoPushToken;
+
+        let handleFuncOverride;
+
+        t.beforeAll(async () => {
+          let experienceId = undefined;
+          if (!Constants.manifest) {
+            // Absence of manifest means we're running out of managed workflow
+            // in bare-expo. @exponent/bare-expo "experience" has been configured
+            // to use Apple Push Notification key that will work in bare-expo.
+            experienceId = '@exponent/bare-expo';
+          }
+          const pushToken = await Notifications.getExpoPushTokenAsync({
+            experienceId,
+          });
+          expoPushToken = pushToken.data;
+
+          Notifications.setNotificationHandler({
+            handleNotification: async notification => {
+              notificationToHandle = notification;
+              if (handleFuncOverride) {
+                return await handleFuncOverride(notification);
+              } else {
+                return {
+                  shouldPlaySound: false,
+                  shouldSetBadge: false,
+                  shouldShowAlert: true,
+                };
+              }
+            },
+            handleSuccess: event => {
+              handleSuccessEvent = event;
+            },
+            handleError: event => {
+              handleErrorEvent = event;
+            },
+          });
+        });
+
+        t.beforeEach(async () => {
+          handleErrorEvent = null;
+          handleSuccessEvent = null;
+          notificationToHandle = null;
+          await sendTestPushNotification(expoPushToken);
+        });
+
+        t.afterAll(() => {
+          Notifications.setNotificationHandler(null);
+        });
+
+        t.it('calls the `handleNotification` callback of the notification handler', async () => {
+          let iterations = 0;
+          while (iterations < 5) {
+            iterations += 1;
+            if (notificationToHandle) {
+              break;
+            }
+            await waitFor(1000);
+          }
+          t.expect(notificationToHandle).not.toBeNull();
+        });
+
+        t.describe('if handler responds in time', async () => {
+          t.beforeAll(() => {
+            // Overriding handler to return a no-effect behavior
+            // for Android not to reject the promise with
+            // "Notification presenting not implemented."
+            // TODO: Remove override when notification presenting
+            // is implemented.
+            handleFuncOverride = async () => {
+              return {
+                shouldPlaySound: false,
+                shouldSetBadge: false,
+                shouldShowAlert: false,
+              };
+            };
+          });
+
+          t.afterAll(() => {
+            handleFuncOverride = null;
+          });
+
+          t.it(
+            'calls `handleSuccess` callback of the notification handler',
+            async () => {
+              let iterations = 0;
+              while (iterations < 5) {
+                iterations += 1;
+                if (handleSuccessEvent) {
+                  break;
+                }
+                await waitFor(1000);
+              }
+              t.expect(handleSuccessEvent).not.toBeNull();
+              t.expect(handleErrorEvent).toBeNull();
+            },
+            10000
+          );
+        });
+
+        t.describe('if handler fails to respond in time', async () => {
+          t.beforeAll(() => {
+            handleFuncOverride = async () => {
+              await waitFor(3000);
+              return {
+                shouldPlaySound: false,
+                shouldSetBadge: false,
+                shouldShowAlert: true,
+              };
+            };
+          });
+
+          t.afterAll(() => {
+            handleFuncOverride = null;
+          });
+
+          t.it(
+            'calls `handleError` callback of the notification handler',
+            async () => {
+              let iterations = 0;
+              while (iterations < 5) {
+                iterations += 1;
+                if (handleErrorEvent) {
+                  break;
+                }
+                await waitFor(1000);
+              }
+              t.expect(handleErrorEvent).not.toBeNull();
+              t.expect(handleSuccessEvent).toBeNull();
+            },
+            10000
+          );
+        });
+      });
     });
   });
+}
+
+// In this test app we contact the Expo push service directly. You *never*
+// should do this in a real app. You should always store the push tokens on your
+// own server or use the local notification API if you want to notify this user.
+const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
+
+async function sendTestPushNotification(expoPushToken, notificationOverrides) {
+  // POST the token to the Expo push server
+  const response = await fetch(PUSH_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([
+      {
+        to: expoPushToken,
+        title: 'Hello from Expo server!',
+        ...notificationOverrides,
+      },
+    ]),
+  });
+
+  const result = await response.json();
+  if (result.errors) {
+    for (const error of result.errors) {
+      console.warn(`API error sending push notification:`, error);
+    }
+    throw new Error('API error has occurred.');
+  }
+
+  const receipts = result.data;
+  if (receipts) {
+    const receipt = receipts[0];
+    if (receipt.status === 'error') {
+      if (receipt.details) {
+        console.warn(
+          `Expo push service reported an error sending a notification: ${receipt.details.error}`
+        );
+      }
+      if (receipt.__debug) {
+        console.warn(receipt.__debug);
+      }
+      throw new Error(`API error has occurred: ${receipt.details.error}`);
+    }
+  }
 }
