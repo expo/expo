@@ -52,7 +52,8 @@ export function getTestModules() {
     require('./tests/Blur'),
     require('./tests/LinearGradient'),
     require('./tests/Facebook'),
-    require('./tests/HTML')
+    require('./tests/HTML'),
+    require('./tests/FirebaseCore')
   );
 
   if (Platform.OS === 'android') {
