@@ -1,8 +1,9 @@
 import { useLinking } from '@react-navigation/native';
+import { Linking } from 'expo';
 
 export default function(containerRef) {
-  const { getInitialState } = useLinking(containerRef, {
-    prefixes: [],
+  return useLinking(containerRef, {
+    prefixes: [Linking.makeUrl('/')],
     config: {
       Root: {
         path: 'root',
@@ -14,5 +15,4 @@ export default function(containerRef) {
       },
     },
   });
-  return getInitialState();
 }
