@@ -82,6 +82,9 @@ export async function test(t) {
         let handleSuccessEvent;
         let handleErrorEvent;
 
+        let receivedEvent = null;
+        let receivedSubscription = null;
+
         let expoPushToken;
 
         let handleFuncOverride;
@@ -119,9 +122,14 @@ export async function test(t) {
               handleErrorEvent = event;
             },
           });
+
+          subscription = Notifications.addNotificationReceivedListener(event => {
+            receivedEvent = event;
+          });
         });
 
         t.beforeEach(async () => {
+          receivedEvent = null;
           handleErrorEvent = null;
           handleSuccessEvent = null;
           notificationToHandle = null;
@@ -129,6 +137,8 @@ export async function test(t) {
         });
 
         t.afterAll(() => {
+          subscription.remove();
+          subscription = null;
           Notifications.setNotificationHandler(null);
         });
 
@@ -142,6 +152,18 @@ export async function test(t) {
             await waitFor(1000);
           }
           t.expect(notificationToHandle).not.toBeNull();
+        });
+
+        t.it('emits a “notification received” event', async () => {
+          let iterations = 0;
+          while (iterations < 5) {
+            iterations += 1;
+            if (receivedEvent) {
+              break;
+            }
+            await waitFor(1000);
+          }
+          t.expect(receivedEvent).not.toBeNull();
         });
 
         t.describe('if handler responds in time', async () => {
