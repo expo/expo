@@ -367,7 +367,7 @@ Wraps the primitive `Text` element on native and renders the expected HTML on we
 
 - Style is slightly modified to match web.
 - All font styles are reset.
-- All elements except styles from `StyleSheet` API.
+- All elements accept styles from `StyleSheet` API.
 
 ```tsx
 import { P, B, S, I, BR, Small, Code } from '@expo/html-elements';
