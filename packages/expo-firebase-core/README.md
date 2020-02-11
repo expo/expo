@@ -6,7 +6,7 @@ native Firebase features from other unimodules.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/firebase.md)
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/firebase-core.md)
 
 # Installation in managed Expo projects
 
