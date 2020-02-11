@@ -2,7 +2,8 @@ import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
-import AuthSession from '../AuthSession';
+import * as AuthSession from '../AuthSession';
+import { getSessionUrlProvider } from '../SessionUrlProvider';
 
 function applyMocks() {
   mockProperty(Constants.manifest, 'id', '@example/abc');
@@ -30,15 +31,6 @@ it(`returns the correct return URL from getDefaultReturnUrl`, () => {
   );
 });
 
-it(`returns the correct start URL from getStartUrl`, () => {
-  const authUrl = 'https://signin.com';
-  const returnUrl = 'exp://expo.io/@example/abc+';
-  const result = AuthSession.getStartUrl(authUrl, returnUrl);
-  expect(result).toEqual(
-    'https://auth.expo.io/@example/abc/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexpo.io%2F%40example%2Fabc%2B'
-  );
-});
-
 it(`opens WebBrowser startAsync to the start URL`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
@@ -47,7 +39,7 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
   await AuthSession.startAsync({ authUrl, returnUrl });
 
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
-    AuthSession.getStartUrl(authUrl, returnUrl),
+    getSessionUrlProvider().getStartUrl(authUrl, returnUrl),
     returnUrl,
     { showInRecents: false }
   );
@@ -146,13 +138,6 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
   let result = await authSessionPromise;
 
   expect(result.type).not.toEqual('locked');
-});
-
-it(`returns getRedirectUrl and calls a warning when getRedirectUri is called`, () => {
-  mockProperty(console, 'warn', jest.fn());
-  expect(AuthSession.getRedirectUri()).toEqual(AuthSession.getRedirectUrl());
-
-  expect((console.warn as jest.Mock).mock.calls).toMatchSnapshot();
 });
 
 it(`warns if user is @anonymous in getRedirectUrl`, () => {
