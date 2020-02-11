@@ -188,9 +188,6 @@ dependencies {
   // BEGIN_SDK_34
   api 'host.exp:reactandroid-abi34_0_0:1.0.0'
   // END_SDK_34
-  // BEGIN_SDK_33
-  api 'host.exp:reactandroid-abi33_0_0:1.0.0'
-  // END_SDK_33
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
