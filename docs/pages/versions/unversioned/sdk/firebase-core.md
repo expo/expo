@@ -24,6 +24,12 @@ To use this package, the Firebase configuration needs to be added to your app.
 [Please follow this guide on how to configure Native Firebase.](../../guides/setup-native-firebase)
 
 
+## Native Firebase packages
+
+At the moment, only Firebase Analytics is supported natively. We are working on bringing more native Firebase packages to Expo, stay tuned :)
+
+- [expo-firebase-analytics](./firebase-anlytics.md)
+
 ## API
 
 ```js
