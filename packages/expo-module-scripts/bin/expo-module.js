@@ -25,6 +25,7 @@ commander
   .command('babel', `Runs Babel CLI with the given arguments`)
   .command('eslint', `Runs ESLint with the given arguments`)
   .command('jest', `Runs Jest with the given arguments`)
+  .command('coverage', `Collect the coverage with jest`)
   .command('tsc', `Runs tsc with the given arguments`)
 
   .parse(process.argv);

@@ -113,3 +113,5 @@ shellAppWorkspaces
 .env.test.local
 .env.production.local
 
+# Jest
+packages/*/coverage/**/*
