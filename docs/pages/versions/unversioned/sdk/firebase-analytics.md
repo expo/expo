@@ -27,13 +27,56 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 
 ## Configuration
 
-To use this package, the Firebase configuration needs to be added to your app.
-[Please follow this guide on how to configure Native Firebase.](../../guides/setup-native-firebase)
+To use this package, the native Firebase configurations needs to be added to your app.
+[Please follow this guide on how to setup Native Firebase.](../../guides/setup-native-firebase)
+
+### Configure for Web
+
+When using firebase on the web, make sure that the Firebase JavaScript SDK is installed.
+
+```
+expo install firebase
+```
+
+The Firebase JavaScript SDK only needs to be initialized when running on the web-platform. To achieve this, create a `initFirebase.web.js` file that initializes the Firebase app.
+
+```ts
+// initFirebase.web.js
+import * as firebase from 'firebase/app';
+import 'firebase/analytics';
+
+firebase.initializeApp({
+  apiKey: "api-key",
+  authDomain: "project-id.firebaseapp.com",
+  databaseURL: "https://project-id.firebaseio.com",
+  projectId: "project-id",
+  storageBucket: "project-id.appspot.com",
+  messagingSenderId: "sender-id",
+  appId: "app-id",
+  measurementId: "G-measurement-id",
+});
+```
+
+Additionally, you'll need to create a "dummy" file which ensures that the imports work on iOS and Android.
+
+```ts
+// initFirebase.js
+// no need to do anything here, all initialisation is done natively
+```
+
+And import the file into your project.
+
+```ts
+import * as Analytics from 'expo-firebase-analytics';
+import './initFirebase';
+
+Analytics.logEvent(...);
+```
 
 
 ## Limitations
 
-Using native Firebase Analytics on the standard Expo client currently doesn't work.
+Using native Firebase Analytics on the standard Expo client from the App/Play store currently doesn't work.
 This is because the standard Expo client can host and load different projects, and the
 native Firebase Analytics SDK does not support this scenario.
 
@@ -42,6 +85,21 @@ purposes and generate a one-time warning. You can suppress this warning and disa
 by calling `setUnavailabilityLogging(false)`.
 
 **This limitation applies only to the standard Expo client, not to custom clients, stand-alone builds or bare projects.**
+
+
+## Optional: Enable AdSupport in Bare Workflow
+
+To get extra features like `audiences`, `campaign attribution`, and some `user properties`, such as `Age` and `Interests`, you will need to include AdSupport. This is currently only possible in the Bare Workflow and not enabled by default because Apple & Google are strict with allowing apps to use this library.
+
+To enable the AdSupport framework:
+
+- In your Xcode project, select your project's target
+- Select the General tab for your target
+- Expand the Linked Frameworks and Libraries section
+- Click `+` to add a framework
+- Select `AdSupport.framework`
+
+[Learn more in the Firebase Docs](https://firebase.google.com/support/guides/analytics-adsupport)
 
 
 ## API
