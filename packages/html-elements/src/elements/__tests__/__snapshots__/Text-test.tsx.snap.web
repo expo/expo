@@ -194,7 +194,7 @@ exports[`renders Small 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "10px",
+      "fontSize": "12px",
     }
   }
 />
