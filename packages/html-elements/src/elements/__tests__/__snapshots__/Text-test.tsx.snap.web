@@ -4,6 +4,7 @@ exports[`renders B 1`] = `
 <b
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -18,6 +19,7 @@ exports[`renders BlockQuote 1`] = `
 <blockquote
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -30,6 +32,7 @@ exports[`renders Del 1`] = `
 <del
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -42,6 +45,7 @@ exports[`renders EM 1`] = `
 <em
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -54,6 +58,7 @@ exports[`renders I 1`] = `
 <i
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -66,6 +71,7 @@ exports[`renders Mark 1`] = `
 <mark
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -76,6 +82,7 @@ exports[`renders P 1`] = `
 <p
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -98,6 +105,7 @@ exports[`renders Q 1`] = `
 <q
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -110,6 +118,7 @@ exports[`renders S 1`] = `
 <s
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -122,6 +131,7 @@ exports[`renders Small 1`] = `
 <small
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -132,6 +142,7 @@ exports[`renders Strong 1`] = `
 <strong
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
@@ -145,6 +156,7 @@ exports[`renders Time 1`] = `
   dateTime="2001-05-15T19:00"
   style={
     Object {
+      "color": "rgba(0,0,0,1.00)",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
