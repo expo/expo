@@ -49,6 +49,14 @@ const styles = StyleSheet.create({
     reset: {
         fontFamily: 'System',
         color: '#000',
+        border: '0 solid black',
+        boxSizing: 'border-box',
+        // @ts-ignore: inline is not supported
+        display: 'inline',
+        margin: 0,
+        padding: 0,
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
     },
 });
 //# sourceMappingURL=Text.web.js.map

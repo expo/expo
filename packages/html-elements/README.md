@@ -50,6 +50,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | ----------------------------------- | :-----------------------------: |
 | [`<a />`][html-a]                   |          [`<A />`](#a)          |
 | [`<article />`][html-article]       |    [`<Article />`](#article)    |
+| [`<aside />`][html-aside]       |    [`<Aside />`](#aside)    |
 | [`<b />`][html-b]                   |          [`<B />`](#b)          |
 | [`<blockquote />`][html-blockquote] | [`<BlockQuote />`](#blockquote) |
 | [`<br />`][html-br]                 |         [`<BR />`](#br)         |
@@ -95,6 +96,8 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<picture />`][html-picture]       |            ⏱ Pending            |
 | [`<figure />`][html-figure]         |            ⏱ Pending            |
 | [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
+| [`<form />`][html-form] |            ⏱ Pending            |
+| [`<label />`][html-label] |            ⏱ Pending            |
 
 ## External
 
@@ -333,7 +336,20 @@ export default () => <Article />;
 
 | Platform | Output                                            |
 | -------- | ------------------------------------------------- |
-| Web      | `<article role="article" style="display:flex" />` |
+| Web      | `<article role="article" />` |
+| Native   | `<View />`                                        |
+
+### `<Aside/>`
+
+```tsx
+import { Aside } from '@expo/html-elements';
+
+export default () => <Aside />;
+```
+
+| Platform | Output                                            |
+| -------- | ------------------------------------------------- |
+| Web      | `<aside role="complementary" />` |
 | Native   | `<View />`                                        |
 
 ### `<Footer/>`
@@ -348,7 +364,7 @@ export default () => <Footer />;
 
 | Platform | Output                            |
 | -------- | --------------------------------- |
-| Web      | `<footer style="display:flex" />` |
+| Web      | `<footer role="contentinfo" />` |
 | Native   | `<View />`                        |
 
 ## Text
@@ -773,6 +789,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 
 [html-a]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
 [html-article]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article
+[html-aside]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside
 [html-b]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
 [html-blockquote]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
 [html-br]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
@@ -781,6 +798,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-del]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
 [html-em]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 [html-footer]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
+[html-form]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
 [html-h1]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1
 [html-h2]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2
 [html-h3]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3
@@ -811,6 +829,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-tr]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
 [html-ul]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
 [html-li]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
+[html-label]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label
 [html-details]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 [html-summary]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 [html-progress]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress

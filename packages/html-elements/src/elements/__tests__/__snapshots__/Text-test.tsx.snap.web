@@ -4,8 +4,20 @@ exports[`renders B 1`] = `
 <b
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -19,8 +31,20 @@ exports[`renders BlockQuote 1`] = `
 <blockquote
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 />
@@ -32,8 +56,20 @@ exports[`renders Del 1`] = `
 <del
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -45,8 +81,20 @@ exports[`renders EM 1`] = `
 <em
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -58,8 +106,20 @@ exports[`renders I 1`] = `
 <i
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -71,8 +131,20 @@ exports[`renders Mark 1`] = `
 <mark
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 />
@@ -82,8 +154,20 @@ exports[`renders P 1`] = `
 <p
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -105,8 +189,20 @@ exports[`renders Q 1`] = `
 <q
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -118,8 +214,20 @@ exports[`renders S 1`] = `
 <s
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -131,8 +239,20 @@ exports[`renders Small 1`] = `
 <small
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 />
@@ -142,8 +262,20 @@ exports[`renders Strong 1`] = `
 <strong
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >
@@ -156,8 +288,20 @@ exports[`renders Time 1`] = `
   dateTime="2001-05-15T19:00"
   style={
     Object {
+      "boxSizing": "border-box",
       "color": "rgba(0,0,0,1.00)",
+      "display": "inline",
       "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "0px",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "marginTop": "0px",
+      "paddingBottom": "0px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "paddingTop": "0px",
+      "whiteSpace": "pre-wrap",
+      "wordWrap": "break-word",
     }
   }
 >

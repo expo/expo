@@ -60,13 +60,21 @@ export const Time = forwardRef(({ style, ...props }: TimeProps, ref) => {
   return createElement('time', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TimeProps>;
 
-export const Pre = forwardRef((props: TextProps, ref) => {
-  return createElement('pre', { ...props, ref });
+export const Pre = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return createElement('pre', { ...props, style: [styles.resetStyle, style], ref });
 }) as ComponentType<TextProps>;
 
 const styles = StyleSheet.create({
   reset: {
     fontFamily: 'System',
     color: '#000',
+    border: '0 solid black',
+    boxSizing: 'border-box',
+    // @ts-ignore: inline is not supported
+    display: 'inline',
+    margin: 0,
+    padding: 0,
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
   },
 });
