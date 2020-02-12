@@ -4,7 +4,12 @@ exports[`renders Footer 1`] = `
 <footer
   style={
     Object {
+      "WebkitBoxDirection": "normal",
+      "WebkitBoxOrient": "vertical",
+      "WebkitFlexDirection": "column",
       "display": "flex",
+      "flexDirection": "column",
+      "msFlexDirection": "column",
     }
   }
 />
@@ -14,7 +19,12 @@ exports[`renders Nav 1`] = `
 <nav
   style={
     Object {
+      "WebkitBoxDirection": "normal",
+      "WebkitBoxOrient": "vertical",
+      "WebkitFlexDirection": "column",
       "display": "flex",
+      "flexDirection": "column",
+      "msFlexDirection": "column",
     }
   }
 />

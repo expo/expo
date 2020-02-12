@@ -9,9 +9,11 @@ export const Nav = forwardRef((props, ref) => {
 const styles = StyleSheet.create({
     footer: {
         display: 'flex',
+        flexDirection: 'column',
     },
     nav: {
         display: 'flex',
+        flexDirection: 'column',
     },
 });
 //# sourceMappingURL=Layout.web.js.map
