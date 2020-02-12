@@ -48,6 +48,7 @@ export const Pre = forwardRef((props, ref) => {
 const styles = StyleSheet.create({
     reset: {
         fontFamily: 'System',
+        color: '#000',
     },
 });
 //# sourceMappingURL=Text.web.js.map

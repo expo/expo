@@ -67,5 +67,6 @@ export const Pre = forwardRef((props: TextProps, ref) => {
 const styles = StyleSheet.create({
   reset: {
     fontFamily: 'System',
+    color: '#000',
   },
 });

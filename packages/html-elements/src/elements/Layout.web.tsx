@@ -13,8 +13,10 @@ export const Nav = forwardRef((props: ViewProps, ref) => {
 const styles = StyleSheet.create({
   footer: {
     display: 'flex',
+    flexDirection: 'column',
   },
   nav: {
     display: 'flex',
+    flexDirection: 'column',
   },
 });
