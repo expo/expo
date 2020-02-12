@@ -12,7 +12,9 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "collect-coverage": "yarn coverage --preset expo-module-scripts/enzyme/ios && yarn coverage --preset expo-module-scripts/enzyme/android && yarn coverage --preset expo-module-scripts/enzyme/web",
+    "coverage": "yarn jest --coverage"
   },
   "keywords": [
     "expo",

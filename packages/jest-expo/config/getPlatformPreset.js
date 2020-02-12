@@ -1,9 +1,11 @@
 'use strict';
 const { getManagedExtensions } = require('@expo/config/paths');
+const os = require('os');
+const path = require('path');
 const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
-function getPlatformPreset(displayOptions, extensions) {
+function getPlatformPreset(displayOptions, extensions, ignoreExtensions) {
   const moduleFileExtensions = getManagedExtensions(extensions);
   const testMatch = ['', ...extensions].reduce((arr, cur) => {
     const platformExtension = cur ? `.${cur}` : '';
@@ -16,16 +18,26 @@ function getPlatformPreset(displayOptions, extensions) {
     ];
   }, []);
 
+  const platform = extensions[0];
+
   return withWatchPlugins({
     displayName: displayOptions,
     testMatch,
     moduleFileExtensions,
-    snapshotResolver: require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),
+    snapshotResolver: require.resolve(`../src/snapshot/resolver.${platform}.js`),
     haste: {
       ...expoPreset.haste,
-      defaultPlatform: extensions[0],
+      defaultPlatform: platform,
       platforms: extensions,
     },
+    cacheDirectory: path.join(os.tmpdir(), platform),
+    coverageDirectory: `<rootDir>/coverage/${platform}`,
+    collectCoverageFrom: [
+      '<rootDir>/src/**/*.{js,jsx,ts,tsx}',
+      `!<rootDir>/src/**/*.{${ignoreExtensions.join(',')}}.{js,jsx,ts,tsx}`,
+      '!**/node_modules/**',
+      '!**/vendor/**',
+    ],
   });
 }
 
@@ -56,26 +68,42 @@ module.exports = {
   getWebPreset() {
     return {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
+      ...getPlatformPreset(
+        { name: 'Web', color: 'magenta' },
+        ['web'],
+        ['ios', 'android', 'native', 'node']
+      ),
     };
   },
   getNodePreset() {
     return {
       ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web']),
+      ...getPlatformPreset(
+        { name: 'Node', color: 'cyan' },
+        ['node', 'web'],
+        ['ios', 'android', 'native']
+      ),
       testEnvironment: 'node',
     };
   },
   getIOSPreset() {
     return {
       ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native']),
+      ...getPlatformPreset(
+        { name: 'iOS', color: 'white' },
+        ['ios', 'native'],
+        ['android', 'web', 'node']
+      ),
     };
   },
   getAndroidPreset() {
     return {
       ...expoPreset,
-      ...getPlatformPreset({ name: 'Android', color: 'blueBright' }, ['android', 'native']),
+      ...getPlatformPreset(
+        { name: 'Android', color: 'blueBright' },
+        ['android', 'native'],
+        ['ios', 'web', 'node']
+      ),
     };
   },
 };
