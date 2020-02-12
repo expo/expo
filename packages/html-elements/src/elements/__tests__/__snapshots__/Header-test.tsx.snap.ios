@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Header 1`] = `
+<View
+  accessibilityRole="header"
+/>
+`;

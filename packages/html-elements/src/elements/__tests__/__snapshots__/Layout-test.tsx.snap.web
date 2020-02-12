@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Footer 1`] = `
+<footer
+  style={
+    Object {
+      "display": "flex",
+    }
+  }
+/>
+`;
+
+exports[`renders Nav 1`] = `
+<nav
+  style={
+    Object {
+      "display": "flex",
+    }
+  }
+/>
+`;

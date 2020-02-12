@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Main 1`] = `
+<main
+  className="css-view-1dbjc4n"
+  role="main"
+/>
+`;
