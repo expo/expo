@@ -1,9 +1,9 @@
 {
   "project_info": {
-    "project_number": "${FIREBASE_GCM_SENDER_ID}",
-    "firebase_url": "${FIREBASE_DATABASE_URL}",
-    "project_id": "${FIREBASE_PROJECT_ID}",
-    "storage_bucket": "${FIREBASE_STORAGE_BUCKET}"
+    "project_number": "${BARE_EXPO_FIREBASE_GCM_SENDER_ID}",
+    "firebase_url": "${BARE_EXPO_FIREBASE_DATABASE_URL}",
+    "project_id": "${BARE_EXPO_FIREBASE_PROJECT_ID}",
+    "storage_bucket": "${BARE_EXPO_FIREBASE_STORAGE_BUCKET}"
   },
   "client": [
     {
