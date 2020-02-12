@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         height: 8,
     },
     small: {
-        fontSize: 10,
+        fontSize: 12,
     },
     s: {
         textDecorationLine: 'line-through',

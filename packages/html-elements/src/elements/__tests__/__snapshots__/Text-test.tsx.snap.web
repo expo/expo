@@ -1,166 +1,227 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders B 1`] = `
-<b
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "fontWeight": "bold",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
   demo
-</b>
+</div>
 `;
 
-exports[`renders BR 1`] = `<br />`;
-
-exports[`renders BlockQuote 1`] = `
-<blockquote
+exports[`renders BR 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "height": "8px",
+      "width": "0px",
     }
   }
 />
 `;
 
-exports[`renders Code 1`] = `<code />`;
-
-exports[`renders Del 1`] = `
-<del
+exports[`renders BlockQuote 1`] = `
+<div
+  className="css-view-1dbjc4n"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+    }
+  }
+/>
+`;
+
+exports[`renders Code 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+/>
+`;
+
+exports[`renders Del 1`] = `
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "WebkitTextDecorationStyle": "solid",
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+      "textDecoration": "line-through",
+      "textDecorationStyle": "solid",
     }
   }
 >
   demo
-</del>
+</div>
 `;
 
 exports[`renders EM 1`] = `
-<em
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "fontStyle": "italic",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
   demo
-</em>
+</div>
 `;
 
 exports[`renders I 1`] = `
-<i
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "fontStyle": "italic",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
   demo
-</i>
+</div>
 `;
 
 exports[`renders Mark 1`] = `
-<mark
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
+      "backgroundColor": "rgba(255,255,0,1.00)",
       "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
     }
   }
 />
 `;
 
 exports[`renders P 1`] = `
-<p
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
   demo
-</p>
+</div>
 `;
 
 exports[`renders Pre 1`] = `
-<pre>
+<div
+  className="css-text-901oao"
+  dir="auto"
+  style={
+    Object {
+      "marginBottom": "1em",
+      "marginTop": "1em",
+    }
+  }
+>
   
     body {
       color: red;
     }
   
-</pre>
+</div>
 `;
 
 exports[`renders Q 1`] = `
-<q
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "fontStyle": "italic",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
+  "
   demo
-</q>
+  "
+</div>
 `;
 
 exports[`renders S 1`] = `
-<s
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "WebkitTextDecorationStyle": "solid",
+      "fontSize": "1em",
+      "marginBottom": "1em",
+      "marginTop": "1em",
+      "textDecoration": "line-through",
+      "textDecorationStyle": "solid",
     }
   }
 >
   demo
-</s>
+</div>
 `;
 
 exports[`renders Small 1`] = `
-<small
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "12px",
     }
   }
 />
 `;
 
 exports[`renders Strong 1`] = `
-<strong
+<div
+  className="css-text-901oao"
+  dir="auto"
   style={
     Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+      "fontSize": "1em",
+      "fontWeight": "bold",
+      "marginBottom": "1em",
+      "marginTop": "1em",
     }
   }
 >
   demo
-</strong>
+</div>
 `;
 
 exports[`renders Time 1`] = `
-<time
-  dateTime="2001-05-15T19:00"
-  style={
-    Object {
-      "color": "rgba(0,0,0,1.00)",
-      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
-    }
-  }
+<div
+  className="css-text-901oao"
+  dir="auto"
 >
   May 15
-</time>
+</div>
 `;

@@ -1,5 +1,10 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, View as NativeView, ViewStyle as NativeViewStyle } from 'react-native';
+import {
+  StyleProp,
+  View as NativeView,
+  AccessibilityRole,
+  ViewStyle as NativeViewStyle,
+} from 'react-native';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -120,7 +125,15 @@ export type ViewStyle = NativeViewStyle & WebViewStyle;
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
 
-  accessibilityRole?: 'main' | 'article' | 'banner' | NativeViewProps['accessibilityRole'];
+  accessibilityRole?:
+    | 'complementary'
+    | 'contentinfo'
+    | 'region'
+    | 'navigation'
+    | 'main'
+    | 'article'
+    | 'banner'
+    | AccessibilityRole;
 };
 
 export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;

@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`renders Article 1`] = `
-<article
-  className="css-view-1dbjc4n"
-  role="article"
-/>
-`;
