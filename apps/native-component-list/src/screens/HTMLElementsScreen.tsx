@@ -8,6 +8,7 @@ import {
   Footer,
   H1,
   H2,
+  Pre,
   H3,
   H4,
   H5,
@@ -54,6 +55,10 @@ function TableComponent() {
   );
 }
 
+const preformattedText = `body {
+  color: red;
+}`;
+
 export default class HTMLScreen extends React.Component {
   static navigationOptions = {
     title: 'HTML',
@@ -68,6 +73,10 @@ export default class HTMLScreen extends React.Component {
         <H4>Header 4</H4>
         <H5>Header 5</H5>
         <H6>Header 6</H6>
+        <Pre>{preformattedText}</Pre>
+        <Pre>
+          <Code>{`<Code />`}</Code>
+        </Pre>
         <Nav>
           <P>P in Nav</P>
         </Nav>

@@ -84,6 +84,16 @@ exports[`renders P 1`] = `
 </p>
 `;
 
+exports[`renders Pre 1`] = `
+<pre>
+  
+    body {
+      color: red;
+    }
+  
+</pre>
+`;
+
 exports[`renders Q 1`] = `
 <q
   style={
@@ -133,6 +143,11 @@ exports[`renders Strong 1`] = `
 exports[`renders Time 1`] = `
 <time
   dateTime="2001-05-15T19:00"
+  style={
+    Object {
+      "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+    }
+  }
 >
   May 15
 </time>

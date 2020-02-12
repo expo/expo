@@ -60,6 +60,10 @@ export const Time = forwardRef(({ style, ...props }: TimeProps, ref) => {
   return createElement('time', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TimeProps>;
 
+export const Pre = forwardRef((props: TextProps, ref) => {
+  return createElement('pre', { ...props, ref });
+}) as ComponentType<TextProps>;
+
 const styles = StyleSheet.create({
   reset: {
     fontFamily: 'System',

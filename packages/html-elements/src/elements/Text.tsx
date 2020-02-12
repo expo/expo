@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
-import View from '../primitives/View';
+import View, { ViewProps } from '../primitives/View';
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 
 export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
@@ -51,6 +51,20 @@ export const Code = forwardRef((props: TextProps, ref) => {
   return <Text {...props} ref={ref} />;
 }) as ComponentType<TextProps>;
 
+function isTextProps(props: any): props is TextProps {
+  return typeof props.children === 'string';
+}
+
+type PreProps = TextProps | ViewProps;
+
+// TODO: Lazy load mono font on native
+export const Pre = forwardRef((props: PreProps, ref: any) => {
+  if (isTextProps(props)) {
+    return <Text {...props} style={[styles.pre, props.style]} ref={ref} />;
+  }
+  return <View {...props} style={[styles.pre, props.style]} ref={ref} />;
+}) as ComponentType<PreProps>;
+
 // Extract dateTime to prevent passing it to the native Text element
 export const Time = forwardRef(({ dateTime, ...props }: TimeProps, ref) => {
   return <Text {...props} ref={ref} />;
@@ -70,6 +84,9 @@ const styles = StyleSheet.create({
   },
   q: {
     fontStyle: 'italic',
+  },
+  pre: {
+    marginVertical: em(1),
   },
   blockQuote: {
     marginVertical: em(1),

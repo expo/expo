@@ -3,7 +3,23 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import { B, BlockQuote, BR, Code, Del, EM, I, Mark, P, Q, S, Small, Strong, Time } from '../Text';
+import {
+  B,
+  BlockQuote,
+  BR,
+  Pre,
+  Code,
+  Del,
+  EM,
+  I,
+  Mark,
+  P,
+  Q,
+  S,
+  Small,
+  Strong,
+  Time,
+} from '../Text';
 
 it(`renders P`, () => {
   const tree = renderer.create(<P>demo</P>);
@@ -59,5 +75,15 @@ it(`renders Small`, () => {
 });
 it(`renders Time`, () => {
   const tree = renderer.create(<Time dateTime="2001-05-15T19:00">May 15</Time>);
+  expect(tree).toMatchSnapshot();
+});
+it(`renders Pre`, () => {
+  const tree = renderer.create(
+    <Pre>{`
+    body {
+      color: red;
+    }
+  `}</Pre>
+  );
   expect(tree).toMatchSnapshot();
 });

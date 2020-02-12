@@ -2,6 +2,7 @@ import {
   A,
   Article,
   B,
+  BlockQuote,
   BR,
   Caption,
   Code,
@@ -23,6 +24,8 @@ import {
   Nav,
   OL,
   P,
+  Pre,
+  Q,
   S,
   Section,
   Small,
@@ -33,11 +36,9 @@ import {
   TFoot,
   TH,
   THead,
+  Time,
   TR,
   UL,
-  Q,
-  BlockQuote,
-  Time,
 } from '@expo/html-elements';
 import React from 'react';
 import { View } from 'react-native';
@@ -57,6 +58,7 @@ const textElements = {
   P,
   B,
   S,
+  Pre,
   Del,
   Strong,
   I,
@@ -91,6 +93,7 @@ const viewElements = {
   OL,
   LI,
   BlockQuote,
+  Pre,
 };
 
 export async function test(
