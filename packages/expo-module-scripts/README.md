@@ -195,6 +195,14 @@ We run tests using Jest with ts-jest, which runs TypeScript and Babel. This setu
 
 If we were to use just Babel with the TypeScript plugin for the `build` command, Jest with `babel-jest` would be more closely aligned.
 
+### coverage
+
+Collects coverage for each test individually accepts `universal` or `enzyme`.
+Coverage is output in platform specific folders `coverage/{platform}`. 
+By default each reporter can only ignore non-matching platform extensions, for instance web won't include `.ios`, `.android`, `.node`, or `.native` files. Unfortunately this means if you have a file like `foo.ts` and `foo.web.ts`, `foo.ts` will show as having 0% coverage.
+
+Rules regarding `Platform.OS` and `Platform.select` are also not respected by Jest's coverage reporter.
+
 ### lint
 
 This runs ESLint over the source JS and TypeScript files.
