@@ -24,6 +24,7 @@ let TESTS = [
   'Permissions',
   'KeepAwake',
   // 'Audio',
+  'HTML',
 ];
 
 const MIN_TIME = 50000;
