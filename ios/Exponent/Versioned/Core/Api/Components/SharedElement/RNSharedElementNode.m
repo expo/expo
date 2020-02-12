@@ -7,6 +7,7 @@
 #import <React/RCTView.h>
 #import "RNSharedElementNode.h"
 #import "RNSharedElementContent.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface RNSharedElementNodeResolvedSource : NSObject
 @property (nonatomic, readonly) UIView* view;
@@ -38,9 +39,11 @@
     
     NSMutableArray* _contentRequests;
     RNSharedElementContent* _contentCache;
+    CFTimeInterval _contentCacheTimeInterval;
     
     NSMutableArray* _styleRequests;
     RNSharedElementStyle* _styleCache;
+    CFTimeInterval _styleCacheTimeInterval;
     
     CADisplayLink* _displayLink;
     
@@ -66,8 +69,10 @@ NSArray* _imageResolvers;
     _hideRefCount = 0;
     _contentRequests = nil;
     _contentCache = nil;
+    _contentCacheTimeInterval = 0.0;
     _styleRequests = nil;
     _styleCache = nil;
+    _styleCacheTimeInterval = 0.0;
     _displayLink = nil;
     _resolvedSource = [RNSharedElementNodeResolvedSource sourceWithView:nil];
     [self updateResolvedSource:YES];
@@ -241,7 +246,7 @@ NSArray* _imageResolvers;
 
 - (void) requestContent:(__weak id <RNSharedElementDelegate>) delegate
 {
-    if (_contentCache != nil) {
+    if (_contentCache != nil && ((CACurrentMediaTime() - _contentCacheTimeInterval) <= 0.3)) {
         [delegate didLoadContent:_contentCache node:self];
         return;
     }
@@ -312,6 +317,7 @@ NSArray* _imageResolvers;
     //NSLog(@"Content fetched: %@, contentType: %d, size: %@", content, contentType, NSStringFromCGSize(bounds.size));
     
     _contentCache = content;
+    _contentCacheTimeInterval = CACurrentMediaTime();
     
     NSArray* delegates = _contentRequests;
     _contentRequests = nil;
@@ -334,7 +340,7 @@ NSArray* _imageResolvers;
 
 - (void) requestStyle:(__weak id <RNSharedElementDelegate>) delegate
 {
-    if (_styleCache != nil) {
+    if (_styleCache != nil && ((CACurrentMediaTime() - _styleCacheTimeInterval) <= 0.3)) {
         [delegate didLoadStyle:_styleCache node:self];
         return;
     }
@@ -372,6 +378,7 @@ NSArray* _imageResolvers;
      }*/
     
     _styleCache = style;
+    _styleCacheTimeInterval = CACurrentMediaTime();
     
     NSArray* delegates = _styleRequests;
     _styleRequests = nil;
