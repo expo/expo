@@ -33,7 +33,8 @@
   "peerDependencies": {
     "@unimodules/core": "~5.0.0",
     "expo-application": "~2.0.0",
-    "expo-constants": "~8.0.0"
+    "expo-constants": "~8.0.0",
+    "unimodules-permissions-interface": "~5.0.0"
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806",
   "dependencies": {
