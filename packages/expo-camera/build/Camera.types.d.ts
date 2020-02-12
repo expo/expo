@@ -14,7 +14,7 @@ export declare type RecordingOptions = {
     maxFileSize?: number;
     quality?: number | string;
     mute?: boolean;
-    setVideoMirrored?: boolean;
+    mirror?: boolean;
 };
 export declare type CapturedPicture = {
     width: number;

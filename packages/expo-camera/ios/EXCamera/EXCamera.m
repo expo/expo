@@ -526,7 +526,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
 
     bool canBeMirrored = connection.isVideoMirroringSupported;
-    bool shouldBeMirrored = options[@"setVideoMirrored"] && [options[@"setVideoMirrored"] boolValue];
+    bool shouldBeMirrored = options[@"mirror"] && [options[@"mirror"] boolValue];
     if (canBeMirrored && shouldBeMirrored) {
       [connection setVideoMirrored:shouldBeMirrored];
     }
