@@ -155,7 +155,7 @@ exports[`renders Small 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 10,
+      "fontSize": 12,
     }
   }
 />

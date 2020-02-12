@@ -50,6 +50,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | ----------------------------------- | :-----------------------------: |
 | [`<a />`][html-a]                   |          [`<A />`](#a)          |
 | [`<article />`][html-article]       |    [`<Article />`](#article)    |
+| [`<aside />`][html-aside]           |      [`<Aside />`](#aside)      |
 | [`<b />`][html-b]                   |          [`<B />`](#b)          |
 | [`<blockquote />`][html-blockquote] | [`<BlockQuote />`](#blockquote) |
 | [`<br />`][html-br]                 |         [`<BR />`](#br)         |
@@ -95,6 +96,8 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<picture />`][html-picture]       |            ⏱ Pending            |
 | [`<figure />`][html-figure]         |            ⏱ Pending            |
 | [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
+| [`<form />`][html-form]             |            ⏱ Pending            |
+| [`<label />`][html-label]           |            ⏱ Pending            |
 
 ## External
 
@@ -331,10 +334,23 @@ import { Article } from '@expo/html-elements';
 export default () => <Article />;
 ```
 
-| Platform | Output                                            |
-| -------- | ------------------------------------------------- |
-| Web      | `<article role="article" style="display:flex" />` |
-| Native   | `<View />`                                        |
+| Platform | Output                       |
+| -------- | ---------------------------- |
+| Web      | `<article role="article" />` |
+| Native   | `<View />`                   |
+
+### `<Aside/>`
+
+```tsx
+import { Aside } from '@expo/html-elements';
+
+export default () => <Aside />;
+```
+
+| Platform | Output                           |
+| -------- | -------------------------------- |
+| Web      | `<aside role="complementary" />` |
+| Native   | `<View />`                       |
 
 ### `<Footer/>`
 
@@ -346,16 +362,16 @@ import { Footer } from '@expo/html-elements';
 export default () => <Footer />;
 ```
 
-| Platform | Output                            |
-| -------- | --------------------------------- |
-| Web      | `<footer style="display:flex" />` |
-| Native   | `<View />`                        |
+| Platform | Output                          |
+| -------- | ------------------------------- |
+| Web      | `<footer role="contentinfo" />` |
+| Native   | `<View />`                      |
 
 ## Text
 
-Wraps the primitive `Text` element on native and renders the expected HTML on web.
+Text elements currently use `Text` universally rendering either a `div` or `span` to emulate Yoga style properly.
 
-- Style is slightly modified to match web.
+- Style is modified to match web.
 - All font styles are reset.
 - All elements accept styles from `StyleSheet` API.
 
@@ -380,73 +396,65 @@ export default () => (
 
 Standard paragraph element.
 
-| Platform | Output                                                        |
-| -------- | ------------------------------------------------------------- |
-| Web      | `<p style={{ fontFamily: 'System' }} />`                      |
-| Native   | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Platform  | Output                                                        |
+| --------- | ------------------------------------------------------------- |
+| Universal | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
 Bold text text.
 
-| Platform | Output                                    |
-| -------- | ----------------------------------------- |
-| Web      | `<b style={{ fontFamily: 'System' }} />`  |
-| Native   | `<Text style={{ fontWeight: 'bold' }} />` |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<Strong/>`
 
 Alternate bold text.
 
-| Platform | Output                                        |
-| -------- | --------------------------------------------- |
-| Web      | `<strong style={{ fontFamily: 'System' }} />` |
-| Native   | `<Text style={{ fontWeight: 'bold' }} />`     |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<S/>`
 
 Strike through text.
 
-| Platform | Output                                                    |
-| -------- | --------------------------------------------------------- |
-| Web      | `<s style={{ fontFamily: 'System' }} />`                  |
-| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform  | Output                                                    |
+| --------- | --------------------------------------------------------- |
+| Universal | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<Del/>`
 
 Alternate strike through text.
 
-| Platform | Output                                                    |
-| -------- | --------------------------------------------------------- |
-| Web      | `<del style={{ fontFamily: 'System' }} />`                |
-| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform  | Output                                                    |
+| --------- | --------------------------------------------------------- |
+| Universal | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<I/>`
 
 Italic text.
 
-| Platform | Output                                     |
-| -------- | ------------------------------------------ |
-| Web      | `<i style={{ fontFamily: 'System' }} />`   |
-| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform  | Output                                     |
+| --------- | ------------------------------------------ |
+| Universal | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<EM/>`
 
 Alternate italic text.
 
-| Platform | Output                                     |
-| -------- | ------------------------------------------ |
-| Web      | `<em style={{ fontFamily: 'System' }} />`  |
-| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform  | Output                                     |
+| --------- | ------------------------------------------ |
+| Universal | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<Small/>`
 
 Smaller than default text.
 
-| Platform | Output                                       |
-| -------- | -------------------------------------------- |
-| Web      | `<small style={{ fontFamily: 'System' }} />` |
-| Native   | `<Text style={{ fontSize: 10 }} />`          |
+| Platform  | Output                              |
+| --------- | ----------------------------------- |
+| Universal | `<Text style={{ fontSize: 10 }} />` |
 
 ### `<Code/>`
 
@@ -454,10 +462,9 @@ Inline code block.
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Web      | `<code />`                  |
-| Native   | `<Text style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<Text style={[Custom]} />` |
 
 ### `<Pre/>`
 
@@ -479,48 +486,39 @@ body {
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform | Output                                    |
-| -------- | ----------------------------------------- |
-| Web      | `<pre />`                                 |
-| Native   | `<Text style={[Custom]} />` \| `<View />` |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={[Custom]} />` \| `<View />` |
 
 ### `<Mark/>`
 
 Highlight text.
 
-| Platform | Output                                                           |
-| -------- | ---------------------------------------------------------------- |
-| Web      | `<mark />`                                                       |
-| Native   | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
+| Platform  | Output                                                           |
+| --------- | ---------------------------------------------------------------- |
+| Universal | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
 
 ### `<Q/>`
 
 Quoted text.
 
-| Platform | Output                                             |
-| -------- | -------------------------------------------------- |
-| Web      | `<q />`                                            |
-| Native   | `<Text style={[Custom]}>"{props.children}"</Text>` |
+| Platform  | Output                                             |
+| --------- | -------------------------------------------------- |
+| Universal | `<Text style={[Custom]}>"{props.children}"</Text>` |
 
 ### `<BlockQuote/>`
 
-Render a [`<blockquote />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) on web, and a `<View />` on native. This element doesn't accept text directly.
-
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Web      | `<blockquote />`            |
-| Native   | `<View style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<View style={[Custom]} />` |
 
 ### `<Time/>`
 
-Renders a `<time />` element with reset styles on web, and a regular `<Text />` on native.
-
 - `dateTime` prop is supported on web and stripped on native.
 
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Web      | `<time />`                  |
-| Native   | `<Text style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<Text style={[Custom]} />` |
 
 ## Lists
 
@@ -773,6 +771,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 
 [html-a]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
 [html-article]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article
+[html-aside]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside
 [html-b]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/b
 [html-blockquote]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote
 [html-br]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/br
@@ -781,6 +780,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-del]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
 [html-em]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 [html-footer]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
+[html-form]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
 [html-h1]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h1
 [html-h2]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h2
 [html-h3]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/h3
@@ -811,6 +811,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-tr]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr
 [html-ul]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul
 [html-li]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li
+[html-label]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label
 [html-details]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
 [html-summary]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
 [html-progress]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/progress
