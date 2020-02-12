@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
+import expo.modules.notifications.notifications.interfaces.NotificationChannelsManager;
 
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
@@ -44,10 +45,12 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private JSONObject mNotificationRequest;
 
   private ImageLoader mImageLoader;
+  private NotificationChannelsManager mChannelsManager;
 
   public ExpoNotificationBuilder(Context context, ModuleRegistry moduleRegistry) {
     mContext = context;
     mImageLoader = moduleRegistry.getModule(ImageLoader.class);
+    mChannelsManager = moduleRegistry.getSingletonModule("NotificationChannelsManager", NotificationChannelsManager.class);
   }
 
   public ExpoNotificationBuilder setNotificationRequest(JSONObject notificationRequest) {
@@ -149,10 +152,14 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       return null;
     }
 
-    // We need a channel ID, but we don't know any. Let's use system-provided one as a fallback.
-    Log.w("ExpoNotificationBuilder", "Using `NotificationChannel.DEFAULT_CHANNEL_ID` as channel ID for push notification. " +
-        "Please provide a NotificationChannelsManager to provide builder with a fallback channel ID.");
-    return NotificationChannel.DEFAULT_CHANNEL_ID;
+    if (mChannelsManager == null) {
+      // We need a channel ID, but we can't access the provider. Let's use system-provided one as a fallback.
+      Log.w("ExpoNotificationBuilder", "Using `NotificationChannel.DEFAULT_CHANNEL_ID` as channel ID for push notification. " +
+          "Please provide a NotificationChannelsManager to provide builder with a fallback channel ID.");
+      return NotificationChannel.DEFAULT_CHANNEL_ID;
+    }
+
+    return mChannelsManager.getFallbackNotificationChannel().getId();
   }
 
   private int getBadgeCount() {
