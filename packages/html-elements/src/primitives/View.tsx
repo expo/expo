@@ -126,14 +126,14 @@ export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
 
   accessibilityRole?:
-  | 'complementary'
-  | 'contentinfo'
-  | 'region'
-  | 'navigation'
-  | 'main'
-  | 'article'
-  | 'banner'
-  | AccessibilityRole;
+    | 'complementary'
+    | 'contentinfo'
+    | 'region'
+    | 'navigation'
+    | 'main'
+    | 'article'
+    | 'banner'
+    | AccessibilityRole;
 };
 
 export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
