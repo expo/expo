@@ -91,7 +91,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onMessage(RemoteMessage message) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mModuleRegistry, message, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, message, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
