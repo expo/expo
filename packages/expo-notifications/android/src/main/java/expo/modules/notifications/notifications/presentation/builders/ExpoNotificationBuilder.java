@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import androidx.core.app.NotificationCompat;
+import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.interfaces.NotificationChannelsManager;
 
@@ -43,6 +44,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private final Context mContext;
 
   private JSONObject mNotificationRequest;
+  private NotificationBehavior mAllowedBehavior;
 
   private ImageLoader mImageLoader;
   private NotificationChannelsManager mChannelsManager;
@@ -55,6 +57,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   public ExpoNotificationBuilder setNotificationRequest(JSONObject notificationRequest) {
     mNotificationRequest = notificationRequest;
+    return this;
+  }
+
+  public ExpoNotificationBuilder setAllowedBehavior(NotificationBehavior behavior) {
+    mAllowedBehavior = behavior;
     return this;
   }
 
@@ -170,12 +177,24 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     return !mNotificationRequest.isNull(CONTENT_TITLE_KEY) || !mNotificationRequest.isNull(CONTENT_TEXT_KEY);
   }
 
+  /**
+   * Notification should play a sound if and only if:
+   * - behavior is not set or allows sound AND
+   * - notification request doesn't explicitly set "sound" to false.
+   * <p>
+   * This way a notification can set "sound" to false to disable sound,
+   * and we always honor the allowedBehavior, if set.
+   *
+   * @return Whether the notification should play a sound.
+   */
   private boolean shouldPlaySound() {
-    return mNotificationRequest.optBoolean(SOUND_KEY);
+    //                                                                         if SOUND_KEY is not an explicit false we fallback to true
+    return (mAllowedBehavior == null || mAllowedBehavior.shouldPlaySound()) && !mNotificationRequest.optBoolean(SOUND_KEY, true);
   }
 
   /**
    * Notification should vibrate if and only if:
+   * - behavior is not set or allows sound AND
    * - notification request doesn't explicitly set "vibrate" to false.
    * <p>
    * This way a notification can set "vibrate" to false to disable vibration.
@@ -183,12 +202,12 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
    * @return Whether the notification should vibrate.
    */
   private boolean shouldVibrate() {
-    //                          if VIBRATE_KEY is not an explicit false we fallback to true
-    return shouldPlaySound() && !mNotificationRequest.optBoolean(VIBRATE_KEY, true);
+    //                                                                         if VIBRATE_KEY is not an explicit false we fallback to true
+    return (mAllowedBehavior == null || mAllowedBehavior.shouldPlaySound()) && !mNotificationRequest.optBoolean(VIBRATE_KEY, true);
   }
 
   private boolean shouldSetBadge() {
-    return !mNotificationRequest.isNull(BADGE_KEY);
+    return (mAllowedBehavior == null || mAllowedBehavior.shouldSetBadge()) && !mNotificationRequest.isNull(BADGE_KEY);
   }
 
   private long[] getVibrationPatternOverride() {
