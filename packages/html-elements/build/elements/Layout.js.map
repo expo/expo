@@ -1,0 +1,1 @@
+{"version":3,"file":"Layout.js","sourceRoot":"","sources":["../../src/elements/Layout.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,MAAM,EAAE,MAAM,oBAAoB,CAAC;AACvD,OAAO,EAAE,OAAO,IAAI,GAAG,EAAE,MAAM,oBAAoB,CAAC","sourcesContent":["export { default as Footer } from '../primitives/View';\nexport { default as Nav } from '../primitives/View';\n"]}
