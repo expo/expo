@@ -369,9 +369,9 @@ export default () => <Footer />;
 
 ## Text
 
-Wraps the primitive `Text` element on native and renders the expected HTML on web.
+Text elements currently use `Text` universally rendering either a `div` or `span` to emulate Yoga style properly.
 
-- Style is slightly modified to match web.
+- Style is modified to match web.
 - All font styles are reset.
 - All elements accept styles from `StyleSheet` API.
 
@@ -398,8 +398,7 @@ Standard paragraph element.
 
 | Platform | Output                                                        |
 | -------- | ------------------------------------------------------------- |
-| Web      | `<p style={{ fontFamily: 'System' }} />`                      |
-| Native   | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Universal   | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
@@ -407,8 +406,7 @@ Bold text text.
 
 | Platform | Output                                    |
 | -------- | ----------------------------------------- |
-| Web      | `<b style={{ fontFamily: 'System' }} />`  |
-| Native   | `<Text style={{ fontWeight: 'bold' }} />` |
+| Universal   | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<Strong/>`
 
@@ -416,8 +414,7 @@ Alternate bold text.
 
 | Platform | Output                                        |
 | -------- | --------------------------------------------- |
-| Web      | `<strong style={{ fontFamily: 'System' }} />` |
-| Native   | `<Text style={{ fontWeight: 'bold' }} />`     |
+| Universal   | `<Text style={{ fontWeight: 'bold' }} />`     |
 
 ### `<S/>`
 
@@ -425,8 +422,7 @@ Strike through text.
 
 | Platform | Output                                                    |
 | -------- | --------------------------------------------------------- |
-| Web      | `<s style={{ fontFamily: 'System' }} />`                  |
-| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Universal   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<Del/>`
 
@@ -434,8 +430,7 @@ Alternate strike through text.
 
 | Platform | Output                                                    |
 | -------- | --------------------------------------------------------- |
-| Web      | `<del style={{ fontFamily: 'System' }} />`                |
-| Native   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Universal   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<I/>`
 
@@ -443,8 +438,7 @@ Italic text.
 
 | Platform | Output                                     |
 | -------- | ------------------------------------------ |
-| Web      | `<i style={{ fontFamily: 'System' }} />`   |
-| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Universal   | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<EM/>`
 
@@ -452,8 +446,7 @@ Alternate italic text.
 
 | Platform | Output                                     |
 | -------- | ------------------------------------------ |
-| Web      | `<em style={{ fontFamily: 'System' }} />`  |
-| Native   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Universal   | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<Small/>`
 
@@ -461,8 +454,7 @@ Smaller than default text.
 
 | Platform | Output                                       |
 | -------- | -------------------------------------------- |
-| Web      | `<small style={{ fontFamily: 'System' }} />` |
-| Native   | `<Text style={{ fontSize: 10 }} />`          |
+| Universal   | `<Text style={{ fontSize: 10 }} />`          |
 
 ### `<Code/>`
 
@@ -472,8 +464,7 @@ Inline code block.
 
 | Platform | Output                      |
 | -------- | --------------------------- |
-| Web      | `<code />`                  |
-| Native   | `<Text style={[Custom]} />` |
+| Universal   | `<Text style={[Custom]} />` |
 
 ### `<Pre/>`
 
@@ -497,8 +488,7 @@ body {
 
 | Platform | Output                                    |
 | -------- | ----------------------------------------- |
-| Web      | `<pre />`                                 |
-| Native   | `<Text style={[Custom]} />` \| `<View />` |
+| Universal   | `<Text style={[Custom]} />` \| `<View />` |
 
 ### `<Mark/>`
 
@@ -506,8 +496,7 @@ Highlight text.
 
 | Platform | Output                                                           |
 | -------- | ---------------------------------------------------------------- |
-| Web      | `<mark />`                                                       |
-| Native   | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
+| Universal   | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
 
 ### `<Q/>`
 
@@ -515,28 +504,21 @@ Quoted text.
 
 | Platform | Output                                             |
 | -------- | -------------------------------------------------- |
-| Web      | `<q />`                                            |
-| Native   | `<Text style={[Custom]}>"{props.children}"</Text>` |
+| Universal   | `<Text style={[Custom]}>"{props.children}"</Text>` |
 
 ### `<BlockQuote/>`
 
-Render a [`<blockquote />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote) on web, and a `<View />` on native. This element doesn't accept text directly.
-
 | Platform | Output                      |
 | -------- | --------------------------- |
-| Web      | `<blockquote />`            |
-| Native   | `<View style={[Custom]} />` |
+| Universal   | `<View style={[Custom]} />` |
 
 ### `<Time/>`
-
-Renders a `<time />` element with reset styles on web, and a regular `<Text />` on native.
 
 - `dateTime` prop is supported on web and stripped on native.
 
 | Platform | Output                      |
 | -------- | --------------------------- |
-| Web      | `<time />`                  |
-| Native   | `<Text style={[Custom]} />` |
+| Universal   | `<Text style={[Custom]} />` |
 
 ## Lists
 
