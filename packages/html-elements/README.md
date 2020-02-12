@@ -50,7 +50,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | ----------------------------------- | :-----------------------------: |
 | [`<a />`][html-a]                   |          [`<A />`](#a)          |
 | [`<article />`][html-article]       |    [`<Article />`](#article)    |
-| [`<aside />`][html-aside]       |    [`<Aside />`](#aside)    |
+| [`<aside />`][html-aside]           |      [`<Aside />`](#aside)      |
 | [`<b />`][html-b]                   |          [`<B />`](#b)          |
 | [`<blockquote />`][html-blockquote] | [`<BlockQuote />`](#blockquote) |
 | [`<br />`][html-br]                 |         [`<BR />`](#br)         |
@@ -96,8 +96,8 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<picture />`][html-picture]       |            ⏱ Pending            |
 | [`<figure />`][html-figure]         |            ⏱ Pending            |
 | [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
-| [`<form />`][html-form] |            ⏱ Pending            |
-| [`<label />`][html-label] |            ⏱ Pending            |
+| [`<form />`][html-form]             |            ⏱ Pending            |
+| [`<label />`][html-label]           |            ⏱ Pending            |
 
 ## External
 
@@ -334,10 +334,10 @@ import { Article } from '@expo/html-elements';
 export default () => <Article />;
 ```
 
-| Platform | Output                                            |
-| -------- | ------------------------------------------------- |
+| Platform | Output                       |
+| -------- | ---------------------------- |
 | Web      | `<article role="article" />` |
-| Native   | `<View />`                                        |
+| Native   | `<View />`                   |
 
 ### `<Aside/>`
 
@@ -347,10 +347,10 @@ import { Aside } from '@expo/html-elements';
 export default () => <Aside />;
 ```
 
-| Platform | Output                                            |
-| -------- | ------------------------------------------------- |
+| Platform | Output                           |
+| -------- | -------------------------------- |
 | Web      | `<aside role="complementary" />` |
-| Native   | `<View />`                                        |
+| Native   | `<View />`                       |
 
 ### `<Footer/>`
 
@@ -362,10 +362,10 @@ import { Footer } from '@expo/html-elements';
 export default () => <Footer />;
 ```
 
-| Platform | Output                            |
-| -------- | --------------------------------- |
+| Platform | Output                          |
+| -------- | ------------------------------- |
 | Web      | `<footer role="contentinfo" />` |
-| Native   | `<View />`                        |
+| Native   | `<View />`                      |
 
 ## Text
 
@@ -396,65 +396,65 @@ export default () => (
 
 Standard paragraph element.
 
-| Platform | Output                                                        |
-| -------- | ------------------------------------------------------------- |
-| Universal   | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Platform  | Output                                                        |
+| --------- | ------------------------------------------------------------- |
+| Universal | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
 Bold text text.
 
-| Platform | Output                                    |
-| -------- | ----------------------------------------- |
-| Universal   | `<Text style={{ fontWeight: 'bold' }} />` |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<Strong/>`
 
 Alternate bold text.
 
-| Platform | Output                                        |
-| -------- | --------------------------------------------- |
-| Universal   | `<Text style={{ fontWeight: 'bold' }} />`     |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={{ fontWeight: 'bold' }} />` |
 
 ### `<S/>`
 
 Strike through text.
 
-| Platform | Output                                                    |
-| -------- | --------------------------------------------------------- |
-| Universal   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform  | Output                                                    |
+| --------- | --------------------------------------------------------- |
+| Universal | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<Del/>`
 
 Alternate strike through text.
 
-| Platform | Output                                                    |
-| -------- | --------------------------------------------------------- |
-| Universal   | `<Text style={{ textDecorationLine: 'line-through' }} />` |
+| Platform  | Output                                                    |
+| --------- | --------------------------------------------------------- |
+| Universal | `<Text style={{ textDecorationLine: 'line-through' }} />` |
 
 ### `<I/>`
 
 Italic text.
 
-| Platform | Output                                     |
-| -------- | ------------------------------------------ |
-| Universal   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform  | Output                                     |
+| --------- | ------------------------------------------ |
+| Universal | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<EM/>`
 
 Alternate italic text.
 
-| Platform | Output                                     |
-| -------- | ------------------------------------------ |
-| Universal   | `<Text style={{ fontStyle: 'italic' }} />` |
+| Platform  | Output                                     |
+| --------- | ------------------------------------------ |
+| Universal | `<Text style={{ fontStyle: 'italic' }} />` |
 
 ### `<Small/>`
 
 Smaller than default text.
 
-| Platform | Output                                       |
-| -------- | -------------------------------------------- |
-| Universal   | `<Text style={{ fontSize: 10 }} />`          |
+| Platform  | Output                              |
+| --------- | ----------------------------------- |
+| Universal | `<Text style={{ fontSize: 10 }} />` |
 
 ### `<Code/>`
 
@@ -462,9 +462,9 @@ Inline code block.
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Universal   | `<Text style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<Text style={[Custom]} />` |
 
 ### `<Pre/>`
 
@@ -486,39 +486,39 @@ body {
 
 - [ ] Support lazy loading mono font on mobile.
 
-| Platform | Output                                    |
-| -------- | ----------------------------------------- |
-| Universal   | `<Text style={[Custom]} />` \| `<View />` |
+| Platform  | Output                                    |
+| --------- | ----------------------------------------- |
+| Universal | `<Text style={[Custom]} />` \| `<View />` |
 
 ### `<Mark/>`
 
 Highlight text.
 
-| Platform | Output                                                           |
-| -------- | ---------------------------------------------------------------- |
-| Universal   | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
+| Platform  | Output                                                           |
+| --------- | ---------------------------------------------------------------- |
+| Universal | `<Text style={{ backgroundColor: 'yellow', color: 'black' }} />` |
 
 ### `<Q/>`
 
 Quoted text.
 
-| Platform | Output                                             |
-| -------- | -------------------------------------------------- |
-| Universal   | `<Text style={[Custom]}>"{props.children}"</Text>` |
+| Platform  | Output                                             |
+| --------- | -------------------------------------------------- |
+| Universal | `<Text style={[Custom]}>"{props.children}"</Text>` |
 
 ### `<BlockQuote/>`
 
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Universal   | `<View style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<View style={[Custom]} />` |
 
 ### `<Time/>`
 
 - `dateTime` prop is supported on web and stripped on native.
 
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Universal   | `<Text style={[Custom]} />` |
+| Platform  | Output                      |
+| --------- | --------------------------- |
+| Universal | `<Text style={[Custom]} />` |
 
 ## Lists
 
