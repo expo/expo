@@ -80,7 +80,7 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
   [_eventEmitter sendEventWithName:onDidReceiveNotification body:[EXNotificationSerializer serializedNotification:notification]];
-  completionHandler(UNNotificationPresentationOptionAlert);
+  completionHandler(UNNotificationPresentationOptionNone);
 }
 
 @end
