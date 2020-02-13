@@ -7,27 +7,24 @@ export const P = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.p, style]} ref={ref}/>;
 });
 export const B = forwardRef(({ style, ...props }, ref) => {
-    return <P {...props} style={[styles.b, style]} ref={ref}/>;
+    return <Text {...props} style={[styles.b, style]} ref={ref}/>;
 });
 export const S = forwardRef(({ style, ...props }, ref) => {
-    return <P {...props} style={[styles.s, style]} ref={ref}/>;
+    return <Text {...props} style={[styles.s, style]} ref={ref}/>;
 });
 export const I = forwardRef(({ style, ...props }, ref) => {
-    return <P {...props} style={[styles.i, style]} ref={ref}/>;
+    return <Text {...props} style={[styles.i, style]} ref={ref}/>;
 });
 export const Q = forwardRef(({ children, cite, style, ...props }, ref) => {
-    return (<P {...props} style={[styles.q, style]} ref={ref}>
+    return (<Text {...props} style={[styles.q, style]} ref={ref}>
       "{children}"
-    </P>);
+    </Text>);
 });
 export const BlockQuote = forwardRef(({ style, cite, ...props }, ref) => {
     return <View {...props} style={[styles.blockQuote, style]} ref={ref}/>;
 });
 export const BR = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.br, style]} ref={ref}/>;
-});
-export const Small = forwardRef(({ style, ...props }, ref) => {
-    return <Text {...props} style={[styles.small, style]} ref={ref}/>;
 });
 export const Mark = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.mark, style]} ref={ref}/>;
@@ -54,7 +51,6 @@ export const EM = I;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),
-        fontSize: em(1),
     },
     b: {
         fontWeight: 'bold',
@@ -74,10 +70,7 @@ const styles = StyleSheet.create({
     },
     br: {
         width: 0,
-        height: 8,
-    },
-    small: {
-        fontSize: 12,
+        height: em(0.5),
     },
     s: {
         textDecorationLine: 'line-through',

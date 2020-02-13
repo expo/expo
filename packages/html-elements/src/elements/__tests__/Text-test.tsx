@@ -16,7 +16,6 @@ import {
   P,
   Q,
   S,
-  Small,
   Strong,
   Time,
 } from '../Text';
@@ -67,10 +66,6 @@ it(`renders BlockQuote`, () => {
 });
 it(`renders Mark`, () => {
   const tree = renderer.create(<Mark />);
-  expect(tree).toMatchSnapshot();
-});
-it(`renders Small`, () => {
-  const tree = renderer.create(<Small />);
   expect(tree).toMatchSnapshot();
 });
 it(`renders Time`, () => {

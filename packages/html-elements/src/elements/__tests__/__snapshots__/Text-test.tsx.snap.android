@@ -4,9 +4,7 @@ exports[`renders B 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "fontWeight": "bold",
-      "marginVertical": 32,
     }
   }
 >
@@ -18,7 +16,7 @@ exports[`renders BR 1`] = `
 <Text
   style={
     Object {
-      "height": 8,
+      "height": 16,
       "width": 0,
     }
   }
@@ -50,8 +48,6 @@ exports[`renders Del 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
-      "marginVertical": 32,
       "textDecorationLine": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -65,9 +61,7 @@ exports[`renders EM 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "fontStyle": "italic",
-      "marginVertical": 32,
     }
   }
 >
@@ -79,9 +73,7 @@ exports[`renders I 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "fontStyle": "italic",
-      "marginVertical": 32,
     }
   }
 >
@@ -104,7 +96,6 @@ exports[`renders P 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "marginVertical": 32,
     }
   }
@@ -135,9 +126,7 @@ exports[`renders Q 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "fontStyle": "italic",
-      "marginVertical": 32,
     }
   }
 >
@@ -151,8 +140,6 @@ exports[`renders S 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
-      "marginVertical": 32,
       "textDecorationLine": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -162,23 +149,11 @@ exports[`renders S 1`] = `
 </Text>
 `;
 
-exports[`renders Small 1`] = `
-<Text
-  style={
-    Object {
-      "fontSize": 12,
-    }
-  }
-/>
-`;
-
 exports[`renders Strong 1`] = `
 <Text
   style={
     Object {
-      "fontSize": 32,
       "fontWeight": "bold",
-      "marginVertical": 32,
     }
   }
 >

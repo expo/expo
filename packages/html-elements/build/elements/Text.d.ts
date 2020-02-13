@@ -12,7 +12,6 @@ export declare const BlockQuote: React.ComponentType<React.PropsWithChildren<imp
     cite?: string | undefined;
 }>>;
 export declare const BR: React.ComponentType<TextProps>;
-export declare const Small: React.ComponentType<TextProps>;
 export declare const Mark: React.ComponentType<TextProps>;
 export declare const Code: React.ComponentType<TextProps>;
 declare type PreProps = TextProps | ViewProps;
