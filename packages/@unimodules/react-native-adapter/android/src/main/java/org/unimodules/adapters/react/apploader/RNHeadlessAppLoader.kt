@@ -17,20 +17,24 @@ class RNHeadlessAppLoader(private val context: Context) : HeadlessAppLoader {
       throw IllegalArgumentException("Params must be set with appId!")
     }
 
-    val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
-    if (!appRecords.containsKey(params.appId)) {
-      reactInstanceManager.addReactInstanceEventListener {
-        HeadlessAppLoaderNotifier.notifyAppLoaded(params.appId)
-        callback?.apply(true)
-      }
-      appRecords[params.appId] = reactInstanceManager
-      if (reactInstanceManager.hasStartedCreatingInitialContext()) {
-        reactInstanceManager.recreateReactContextInBackground()
+    if(context.applicationContext is ReactApplication) {
+      val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
+      if (!appRecords.containsKey(params.appId)) {
+        reactInstanceManager.addReactInstanceEventListener {
+          HeadlessAppLoaderNotifier.notifyAppLoaded(params.appId)
+          callback?.apply(true)
+        }
+        appRecords[params.appId] = reactInstanceManager
+        if (reactInstanceManager.hasStartedCreatingInitialContext()) {
+          reactInstanceManager.recreateReactContextInBackground()
+        } else {
+          reactInstanceManager.createReactContextInBackground()
+        }
       } else {
-        reactInstanceManager.createReactContextInBackground()
+        alreadyRunning?.run()
       }
     } else {
-      alreadyRunning?.run()
+      throw IllegalStateException("Your application must implement ReactApplication")
     }
   }
 
