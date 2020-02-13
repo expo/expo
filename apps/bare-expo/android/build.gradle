@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
+        gradlePluginVersion = "3.5.3"
         minSdkVersion = 21
         compileSdkVersion = 28
         targetSdkVersion = 28
@@ -16,7 +17,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
+        classpath("com.android.tools.build:gradle:${safeExtGet("gradlePluginVersion", "3.5.3")}")
 
         // Copied version from the Exponent Android project.
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
