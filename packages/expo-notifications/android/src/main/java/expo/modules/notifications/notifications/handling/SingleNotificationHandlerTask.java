@@ -1,20 +1,24 @@
 package expo.modules.notifications.notifications.handling;
 
+import android.app.Notification;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONObject;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 import java.util.UUID;
 
+import androidx.core.app.NotificationManagerCompat;
 import expo.modules.notifications.notifications.RemoteMessageSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
+import expo.modules.notifications.notifications.interfaces.NotificationBuilderFactory;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -40,10 +44,12 @@ import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
    */
   private final static int SECONDS_TO_TIMEOUT = 3;
 
+  private Context mContext;
   private EventEmitter mEventEmitter;
   private RemoteMessage mRemoteMessage;
   private NotificationBehavior mBehavior;
   private NotificationsHandler mDelegate;
+  private NotificationBuilderFactory mBuilderFactory;
   private String mIdentifier;
 
   private Runnable mTimeoutRunnable = new Runnable() {
@@ -53,7 +59,9 @@ import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
     }
   };
 
-  /* package */ SingleNotificationHandlerTask(ModuleRegistry moduleRegistry, RemoteMessage remoteMessage, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, RemoteMessage remoteMessage, NotificationsHandler delegate) {
+    mContext = context;
+    mBuilderFactory = moduleRegistry.getModule(NotificationBuilderFactory.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mRemoteMessage = remoteMessage;
     mDelegate = delegate;
@@ -104,14 +112,21 @@ import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
     HANDLER.post(new Runnable() {
       @Override
       public void run() {
-        // here we would show the notification
-        Log.d("NotificationHandlerTask", String.format("Showing notification %s with params: %s", getIdentifier(), mBehavior));
-        if (behavior.hasAnyEffect()) {
-          promise.reject("ERR_NOTIFICATION_PRESENTATION_IMPL", "Notification presenting not implemented.");
-        } else {
-          promise.resolve(null);
+        try {
+          Notification notification = getNotification();
+          String tag = getIdentifier();
+          int id = 0;
+          try {
+            NotificationManagerCompat.from(mContext).notify(tag, id, notification);
+            promise.resolve(null);
+          } catch (IllegalArgumentException e) {
+            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed, notification was malformed: " + e.getMessage(), e);
+          }
+        } catch (NullPointerException e) {
+          promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", e);
+        } finally {
+          finish();
         }
-        finish();
       }
     });
   }
@@ -137,5 +152,12 @@ import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
   private void finish() {
     HANDLER.removeCallbacks(mTimeoutRunnable);
     mDelegate.onTaskFinished(this);
+  }
+
+  private Notification getNotification() {
+    return mBuilderFactory.createBuilder(mContext)
+        .setNotificationRequest(new JSONObject(mRemoteMessage.getData()))
+        .setAllowedBehavior(mBehavior)
+        .build();
   }
 }
