@@ -154,7 +154,7 @@ export declare function shareContactAsync(contactId: string, message: string, sh
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getContactByIdAsync(id: string, fields?: FieldType[]): Promise<Contact | undefined>;
-export declare function addContactAsync(contact: Contact, containerId: string): Promise<string>;
+export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 export declare function updateContactAsync(contact: Contact): Promise<string>;
 export declare function removeContactAsync(contactId: string): Promise<any>;
 export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | undefined>;
