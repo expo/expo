@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
@@ -205,41 +206,32 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
    * notification handler and the preset priority (in that order of significance).
    * <p>
    * We do this by returning:
-   * - if the notification should be shown: high priority (or max, if requested in the notification)
+   * - if behavior defines a priority: the priority,
+   * - if the notification should be shown: high priority (or max, if requested in the notification),
    * - if the notification should not be shown: default priority (or lower, if requested in the notification).
    * <p>
-   * This way we allow full customization to the developers (if they want the specific priority
-   * of the notification, they can return shouldShowAlert based on the priority).
+   * This way we allow full customization to the developers.
    *
    * @return Priority of the notification, one of NotificationCompat.PRIORITY_*
    */
   private int getPriority() {
-    int requestPriority = NotificationCompat.PRIORITY_DEFAULT;
+    Number requestPriorityNumber = getPriorityFromString(mNotificationRequest.optString(PRIORITY_KEY));
 
-    switch (mNotificationRequest.optString(PRIORITY_KEY)) {
-      case "max":
-        requestPriority = NotificationCompat.PRIORITY_MAX;
-        break;
-      case "high":
-        requestPriority = NotificationCompat.PRIORITY_HIGH;
-        break;
-      case "default":
-        requestPriority = NotificationCompat.PRIORITY_DEFAULT;
-        break;
-      case "low":
-        requestPriority = NotificationCompat.PRIORITY_LOW;
-        break;
-      case "min":
-        requestPriority = NotificationCompat.PRIORITY_MIN;
-        break;
-      case "":
-        break;
-      default:
-        Log.w("expo-notifications", "Unrecognized priority requested: " + mNotificationRequest.optString(PRIORITY_KEY) + ".");
-    }
-
-    // If we know of a behavior guideline, let's honor it by setting min/max values for priority.
+    // If we know of a behavior guideline, let's honor it...
     if (mAllowedBehavior != null) {
+      // ...by using the priority override...
+      Number priorityOverride = getPriorityFromString(mAllowedBehavior.getPriorityOverride());
+      if (priorityOverride != null) {
+        return priorityOverride.intValue();
+      }
+
+      // ...or by setting min/max values for priority:
+      // If the notification has no priority set, let's pick a neutral value and depend solely on the behavior.
+      int requestPriority =
+          requestPriorityNumber == null
+              ? NotificationCompat.PRIORITY_DEFAULT
+              : requestPriorityNumber.intValue();
+
       if (mAllowedBehavior.shouldShowAlert()) {
         // Display as a heads-up notification, as per the behavior
         // while also allowing making the priority higher.
@@ -251,7 +243,39 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       }
     }
 
-    return requestPriority;
+    // No behavior is set, the only source of priority can be the request.
+    if (requestPriorityNumber != null) {
+      return requestPriorityNumber.intValue();
+    }
+
+    // By default let's show the notification
+    return NotificationCompat.PRIORITY_HIGH;
+  }
+
+  @Nullable
+  protected Number getPriorityFromString(@Nullable String priorityString) {
+    if (priorityString == null) {
+      return null;
+    }
+
+    switch (priorityString) {
+      case "max":
+        return NotificationCompat.PRIORITY_MAX;
+      case "high":
+        return NotificationCompat.PRIORITY_HIGH;
+      case "default":
+        return NotificationCompat.PRIORITY_DEFAULT;
+      case "low":
+        return NotificationCompat.PRIORITY_LOW;
+      case "min":
+        return NotificationCompat.PRIORITY_MIN;
+      case "":
+        // A valid non-value
+        return null;
+      default:
+        Log.w("expo-notifications", "Unrecognized priority requested: " + priorityString + ".");
+        return null;
+    }
   }
 
   private long[] getVibrationPatternOverride() {

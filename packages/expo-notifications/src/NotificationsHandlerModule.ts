@@ -6,7 +6,9 @@ export interface BaseNotificationBehavior {
   shouldSetBadge: boolean;
 }
 
-export interface AndroidNotificationBehavior extends BaseNotificationBehavior {}
+export interface AndroidNotificationBehavior extends BaseNotificationBehavior {
+  priority?: 'min' | 'low' | 'default' | 'high' | 'max';
+}
 
 export interface IosNotificationBehavior extends BaseNotificationBehavior {}
 
