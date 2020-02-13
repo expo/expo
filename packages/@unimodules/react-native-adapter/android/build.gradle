@@ -67,7 +67,6 @@ dependencies {
   unimodule 'unimodules-font-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
-  unimodule 'expo-app-loader-provider'
 
   implementation 'com.facebook.react:react-native:+'
 

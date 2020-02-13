@@ -77,7 +77,6 @@ dependencies {
   unimodule "unimodules-constants-interface"
   unimodule "expo-app-loader-provider"
 
-  implementation "com.facebook.react:react-native:+"
 
   api "androidx.core:core:1.0.0"
 }

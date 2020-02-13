@@ -3,7 +3,6 @@
 package expo.modules.sensors.services;
 
 import android.hardware.SensorEventListener2;
-import android.util.Log;
 
 public class SensorServiceSubscription implements org.unimodules.interfaces.sensors.SensorServiceSubscription {
   private boolean mIsEnabled = false;
@@ -21,7 +20,6 @@ public class SensorServiceSubscription implements org.unimodules.interfaces.sens
     assertSubscriptionIsAlive();
     if (!mIsEnabled) {
       mIsEnabled = true;
-      Log.d("SensorServiceSub", "start: " + this);
       mSubscribableSensorService.onSubscriptionEnabledChanged(this);
     }
   }
@@ -51,7 +49,7 @@ public class SensorServiceSubscription implements org.unimodules.interfaces.sens
   }
 
   public void release() {
-    if(!mHasBeenReleased) {
+    if (!mHasBeenReleased) {
       mSubscribableSensorService.removeSubscription(this);
       mHasBeenReleased = true;
     }

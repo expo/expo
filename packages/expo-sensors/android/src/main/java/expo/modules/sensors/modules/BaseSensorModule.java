@@ -86,7 +86,7 @@ public abstract class BaseSensorModule extends ExportedModule implements SensorE
   }
 
   public void stopObserving() {
-    if(mIsObserving) {
+    if (mIsObserving) {
       mIsObserving = false;
       getSensorKernelServiceSubscription().stop();
     }
@@ -101,7 +101,7 @@ public abstract class BaseSensorModule extends ExportedModule implements SensorE
 
   @Override
   public void onHostPause() {
-    if(mIsObserving) {
+    if (mIsObserving) {
       getSensorKernelServiceSubscription().stop();
     }
   }
