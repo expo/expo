@@ -11,7 +11,7 @@ class UnimodulesPlugin implements Plugin<Project> {
                 }
             }
         }
-        
+
         project.ext.unimodule = {
             String dep, Closure closure = null ->
                 Object dependency = null;
