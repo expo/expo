@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import uuidv4 from 'uuid/v4';
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
 import ExponentFileSystem from './ExponentFileSystem';
@@ -42,13 +43,6 @@ function normalizeEndingSlash(p: string | null): string | null {
     return p.replace(/\/*$/, '') + '/';
   }
   return null;
-}
-
-function getUuid(a: string = ''): string {
-  return a
-    /* eslint-disable no-bitwise */
-    ? ((Number(a) ^ Math.random() * 16) >> Number(a) / 4).toString(16)
-    : (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, getUuid)
 }
 
 export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documentDirectory);
@@ -201,7 +195,7 @@ export class DownloadResumable {
     callback?: DownloadProgressCallback,
     resumeData?: string
   ) {
-    this._uuid = getUuid();
+    this._uuid = uuidv4();
     this._url = url;
     this._fileUri = fileUri;
     this._options = options;
