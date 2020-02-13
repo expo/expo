@@ -234,9 +234,8 @@ public class ExperienceActivityUtils {
         return;
       }
 
-      String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
-
       // Set background color of navigation bar
+      String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
       if (navBarColor != null && ColorParser.isValid(navBarColor)) {
         try {
           activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -263,18 +262,26 @@ public class ExperienceActivityUtils {
           EXL.e(TAG, e);
         }
       }
-
+    
       // Set visibility of navigation bar
-      if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)) {
-        Boolean visible = navBarOptions.optBoolean(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
-        if (!visible) {
-          // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
-          // design your app to hide the status bar whenever you hide the navigation bar."
-          View decorView = activity.getWindow().getDecorView();
-          int flags = decorView.getSystemUiVisibility();
+      String navBarVisible = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
+      if (navBarVisible != null && !navBarVisible.equals("true")) {
+        // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+        // design your app to hide the status bar whenever you hide the navigation bar."
+        View decorView = activity.getWindow().getDecorView();
+        int flags = decorView.getSystemUiVisibility();
+
+        if (navBarVisible.equals("false") || navBarVisible.equals("leanback") ) {
           flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
-          decorView.setSystemUiVisibility(flags);
         }
+        else if (navBarVisible.equals("immersive")) { 
+          flags |= ( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        }
+        else if (navBarVisible.equals("sticky-immersive")) { 
+          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+
+        decorView.setSystemUiVisibility(flags);
       }
     }
 
