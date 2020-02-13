@@ -72,7 +72,7 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   private AppLoaderInterface createAppLoader(Context context) {
     // for now only react-native apps in Expo are supported
-    if(appLoader == null) {
+    if (appLoader == null) {
       appLoader = new InternalHeadlessAppLoader(context);
     }
     return appLoader;
