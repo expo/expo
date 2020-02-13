@@ -69,6 +69,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
+  unimodule 'unimodules-image-loader-interface'
 
   api 'androidx.core:core:1.1.0'
   api 'com.google.firebase:firebase-messaging:20.1.0'
