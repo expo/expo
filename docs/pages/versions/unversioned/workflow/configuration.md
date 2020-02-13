@@ -207,10 +207,13 @@ Configuration for the bottom navigation bar on Android.
 {
   "androidNavigationBar": {
     /*
-      Determines whether to show or hide the bottom navigation bar.
-      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+      Determines how and when the navigation bar is shown. For details, see https://developer.android.com/training/system-ui/immersive
+      "leanback" results in the navigation bar being hidden until the first touch gesture is registered
+      "immersive" results in the navigation bar being hidden until the user swipes up from the edge where the navigation bar is hidden
+      "sticky-immersive" is identical to "immersive" except that the navigation bar will be semi-transparent and will be hidden again after a short period of time
+      Valid values: "leanback", "immersive", "sticky-immersive"
     */
-    "visible": BOOLEAN,
+    "visible": STRING,
     /*
       Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
       Valid values: "light-content", "dark-content".
