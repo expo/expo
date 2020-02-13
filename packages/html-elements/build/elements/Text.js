@@ -32,17 +32,15 @@ export const Small = forwardRef(({ style, ...props }, ref) => {
 export const Mark = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.mark, style]} ref={ref}/>;
 });
-// TODO: Lazy load mono font on native
-export const Code = forwardRef((props, ref) => {
-    return <Text {...props} ref={ref}/>;
+export const Code = forwardRef(({ style, ...props }, ref) => {
+    return <Text {...props} style={[styles.code, style]} ref={ref}/>;
 });
 function isTextProps(props) {
     return typeof props.children === 'string';
 }
-// TODO: Lazy load mono font on native
 export const Pre = forwardRef((props, ref) => {
     if (isTextProps(props)) {
-        return <Text {...props} style={[styles.pre, props.style]} ref={ref}/>;
+        return <Text {...props} style={[styles.code, styles.pre, props.style]} ref={ref}/>;
     }
     return <View {...props} style={[styles.pre, props.style]} ref={ref}/>;
 });
@@ -63,6 +61,10 @@ const styles = StyleSheet.create({
     },
     q: {
         fontStyle: 'italic',
+    },
+    code: {
+        fontFamily: 'Courier',
+        fontWeight: '500',
     },
     pre: {
         marginVertical: em(1),
