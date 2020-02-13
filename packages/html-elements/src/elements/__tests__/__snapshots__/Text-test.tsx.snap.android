@@ -35,7 +35,16 @@ exports[`renders BlockQuote 1`] = `
 />
 `;
 
-exports[`renders Code 1`] = `<Text />`;
+exports[`renders Code 1`] = `
+<Text
+  style={
+    Object {
+      "fontFamily": "Courier",
+      "fontWeight": "500",
+    }
+  }
+/>
+`;
 
 exports[`renders Del 1`] = `
 <Text
@@ -108,6 +117,8 @@ exports[`renders Pre 1`] = `
 <Text
   style={
     Object {
+      "fontFamily": "Courier",
+      "fontWeight": "500",
       "marginVertical": 32,
     }
   }

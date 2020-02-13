@@ -372,7 +372,7 @@ export default () => <Footer />;
 Text elements currently use `Text` universally rendering either a `div` or `span` to emulate Yoga style properly.
 
 - Style is modified to match web.
-- All font styles are reset.
+- All font styles are reset (minus `Code`, and `Pre`).
 - All elements accept styles from `StyleSheet` API.
 
 ```tsx
@@ -458,9 +458,7 @@ Smaller than default text.
 
 ### `<Code/>`
 
-Inline code block.
-
-- [ ] Support lazy loading mono font on mobile.
+Inline code block with `fontFamily: 'Courier'`.
 
 | Platform  | Output                      |
 | --------- | --------------------------- |
@@ -468,7 +466,7 @@ Inline code block.
 
 ### `<Pre/>`
 
-Render a preformatted code block:
+Render a preformatted code block with `fontFamily: 'Courier'`.
 
 ```jsx
 <Pre>{`
@@ -483,8 +481,6 @@ body {
   <Code>{`const val = true`}</Code>
 </Pre>
 ```
-
-- [ ] Support lazy loading mono font on mobile.
 
 | Platform  | Output                                    |
 | --------- | ----------------------------------------- |
