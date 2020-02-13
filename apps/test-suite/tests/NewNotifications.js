@@ -71,153 +71,155 @@ export async function test(t) {
         t.expect(expoPushToken.type).toBe('expo');
         t.expect(typeof expoPushToken.data).toBe('string');
       });
+    });
 
-      // Not running those tests on web since Expo push notification doesn't yet support web.
-      const describeWithExpoPushToken = ['ios', 'android'].includes(Platform.OS)
-        ? t.describe
-        : t.xdescribe;
+    // Not running those tests on web since Expo push notification doesn't yet support web.
+    const describeWithExpoPushToken = ['ios', 'android'].includes(Platform.OS)
+      ? t.describe
+      : t.xdescribe;
 
-      describeWithExpoPushToken('when a push notification is sent', () => {
-        let notificationToHandle;
-        let handleSuccessEvent;
-        let handleErrorEvent;
+    describeWithExpoPushToken('when a push notification is sent', () => {
+      let notificationToHandle;
+      let handleSuccessEvent;
+      let handleErrorEvent;
 
-        let receivedEvent = null;
-        let receivedSubscription = null;
+      let receivedEvent = null;
+      let receivedSubscription = null;
 
-        let expoPushToken;
+      let expoPushToken;
 
-        let handleFuncOverride;
+      let handleFuncOverride;
 
-        t.beforeAll(async () => {
-          let experienceId = undefined;
-          if (!Constants.manifest) {
-            // Absence of manifest means we're running out of managed workflow
-            // in bare-expo. @exponent/bare-expo "experience" has been configured
-            // to use Apple Push Notification key that will work in bare-expo.
-            experienceId = '@exponent/bare-expo';
-          }
-          const pushToken = await Notifications.getExpoPushTokenAsync({
-            experienceId,
-          });
-          expoPushToken = pushToken.data;
-
-          Notifications.setNotificationHandler({
-            handleNotification: async notification => {
-              notificationToHandle = notification;
-              if (handleFuncOverride) {
-                return await handleFuncOverride(notification);
-              } else {
-                return {
-                  shouldPlaySound: false,
-                  shouldSetBadge: false,
-                  shouldShowAlert: true,
-                };
-              }
-            },
-            handleSuccess: event => {
-              handleSuccessEvent = event;
-            },
-            handleError: event => {
-              handleErrorEvent = event;
-            },
-          });
-
-          subscription = Notifications.addNotificationReceivedListener(event => {
-            receivedEvent = event;
-          });
+      t.beforeAll(async () => {
+        let experienceId = undefined;
+        if (!Constants.manifest) {
+          // Absence of manifest means we're running out of managed workflow
+          // in bare-expo. @exponent/bare-expo "experience" has been configured
+          // to use Apple Push Notification key that will work in bare-expo.
+          experienceId = '@exponent/bare-expo';
+        }
+        const pushToken = await Notifications.getExpoPushTokenAsync({
+          experienceId,
         });
+        expoPushToken = pushToken.data;
 
-        t.beforeEach(async () => {
-          receivedEvent = null;
-          handleErrorEvent = null;
-          handleSuccessEvent = null;
-          notificationToHandle = null;
-          await sendTestPushNotification(expoPushToken);
-        });
-
-        t.afterAll(() => {
-          subscription.remove();
-          subscription = null;
-          Notifications.setNotificationHandler(null);
-        });
-
-        t.it('calls the `handleNotification` callback of the notification handler', async () => {
-          let iterations = 0;
-          while (iterations < 5) {
-            iterations += 1;
-            if (notificationToHandle) {
-              break;
-            }
-            await waitFor(1000);
-          }
-          t.expect(notificationToHandle).not.toBeNull();
-        });
-
-        t.it('emits a “notification received” event', async () => {
-          let iterations = 0;
-          while (iterations < 5) {
-            iterations += 1;
-            if (receivedEvent) {
-              break;
-            }
-            await waitFor(1000);
-          }
-          t.expect(receivedEvent).not.toBeNull();
-        });
-
-        t.describe('if handler responds in time', async () => {
-          t.it(
-            'calls `handleSuccess` callback of the notification handler',
-            async () => {
-              let iterations = 0;
-              while (iterations < 5) {
-                iterations += 1;
-                if (handleSuccessEvent) {
-                  break;
-                }
-                await waitFor(1000);
-              }
-              t.expect(handleSuccessEvent).not.toBeNull();
-              t.expect(handleErrorEvent).toBeNull();
-            },
-            10000
-          );
-        });
-
-        t.describe('if handler fails to respond in time', async () => {
-          t.beforeAll(() => {
-            handleFuncOverride = async () => {
-              await waitFor(3000);
+        Notifications.setNotificationHandler({
+          handleNotification: async notification => {
+            notificationToHandle = notification;
+            if (handleFuncOverride) {
+              return await handleFuncOverride(notification);
+            } else {
               return {
                 shouldPlaySound: false,
                 shouldSetBadge: false,
                 shouldShowAlert: true,
               };
-            };
-          });
-
-          t.afterAll(() => {
-            handleFuncOverride = null;
-          });
-
-          t.it(
-            'calls `handleError` callback of the notification handler',
-            async () => {
-              let iterations = 0;
-              while (iterations < 5) {
-                iterations += 1;
-                if (handleErrorEvent) {
-                  break;
-                }
-                await waitFor(1000);
-              }
-              t.expect(handleErrorEvent).not.toBeNull();
-              t.expect(handleSuccessEvent).toBeNull();
-            },
-            10000
-          );
+            }
+          },
+          handleSuccess: event => {
+            handleSuccessEvent = event;
+          },
+          handleError: event => {
+            handleErrorEvent = event;
+          },
         });
+
+        receivedSubscription = Notifications.addNotificationReceivedListener(event => {
+          receivedEvent = event;
+        });
+      });
+
+      t.beforeEach(async () => {
+        receivedEvent = null;
+        handleErrorEvent = null;
+        handleSuccessEvent = null;
+        notificationToHandle = null;
+        await sendTestPushNotification(expoPushToken);
+      });
+
+      t.afterAll(() => {
+        if (receivedSubscription) {
+          receivedSubscription.remove();
+          receivedSubscription = null;
+        }
+        Notifications.setNotificationHandler(null);
+      });
+
+      t.it('calls the `handleNotification` callback of the notification handler', async () => {
+        let iterations = 0;
+        while (iterations < 5) {
+          iterations += 1;
+          if (notificationToHandle) {
+            break;
+          }
+          await waitFor(1000);
+        }
+        t.expect(notificationToHandle).not.toBeNull();
+      });
+
+      t.it('emits a “notification received” event', async () => {
+        let iterations = 0;
+        while (iterations < 5) {
+          iterations += 1;
+          if (receivedEvent) {
+            break;
+          }
+          await waitFor(1000);
+        }
+        t.expect(receivedEvent).not.toBeNull();
+      });
+
+      t.describe('if handler responds in time', async () => {
+        t.it(
+          'calls `handleSuccess` callback of the notification handler',
+          async () => {
+            let iterations = 0;
+            while (iterations < 5) {
+              iterations += 1;
+              if (handleSuccessEvent) {
+                break;
+              }
+              await waitFor(1000);
+            }
+            t.expect(handleSuccessEvent).not.toBeNull();
+            t.expect(handleErrorEvent).toBeNull();
+          },
+          10000
+        );
+      });
+
+      t.describe('if handler fails to respond in time', async () => {
+        t.beforeAll(() => {
+          handleFuncOverride = async () => {
+            await waitFor(3000);
+            return {
+              shouldPlaySound: false,
+              shouldSetBadge: false,
+              shouldShowAlert: true,
+            };
+          };
+        });
+
+        t.afterAll(() => {
+          handleFuncOverride = null;
+        });
+
+        t.it(
+          'calls `handleError` callback of the notification handler',
+          async () => {
+            let iterations = 0;
+            while (iterations < 5) {
+              iterations += 1;
+              if (handleErrorEvent) {
+                break;
+              }
+              await waitFor(1000);
+            }
+            t.expect(handleErrorEvent).not.toBeNull();
+            t.expect(handleSuccessEvent).toBeNull();
+          },
+          10000
+        );
       });
     });
 
