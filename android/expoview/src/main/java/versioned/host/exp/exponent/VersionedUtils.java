@@ -27,7 +27,6 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.singletonModules))
         .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
-    Log.e("ReactNativeJS", "jsBundlePath: " + instanceManagerBuilderProperties.jsBundlePath + ".");
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
       builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
     }
