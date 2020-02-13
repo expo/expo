@@ -4,39 +4,19 @@ const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
-export function addNotificationListener(listener) {
-    const subscriptions = [
-        emitter.addListener(didReceiveNotificationEventName, notification => {
-            listener({ notification, type: 'notificationReceived' });
-        }),
-        emitter.addListener(didReceiveNotificationResponseEventName, response => {
-            listener({ response, type: 'notificationResponseReceived' });
-        }),
-        emitter.addListener(didReceiveNotificationResponseEventName, () => {
-            listener({ type: 'notificationsDropped' });
-        }),
-    ];
-    return {
-        remove: () => {
-            for (let subscription of subscriptions) {
-                subscription.remove();
-            }
-        },
-        __subscriptions: subscriptions,
-    };
+export function addNotificationReceivedListener(listener) {
+    return emitter.addListener(didReceiveNotificationEventName, listener);
 }
-export function removeNotificationSubscription(subscription) {
-    if ('__subscriptions' in subscription) {
-        const compoundSubscription = subscription;
-        for (let subscription of compoundSubscription.__subscriptions) {
-            emitter.removeSubscription(subscription);
-        }
-    }
-    else {
-        emitter.removeSubscription(subscription);
-    }
+export function addNotificationsDroppedListener(listener) {
+    return emitter.addListener(didDropNotificationsEventName, listener);
 }
-export function removeAllNotificationListeners() {
+export function addNotificationResponseReceivedListener(listener) {
+    return emitter.addListener(didReceiveNotificationResponseEventName, listener);
+}
+export function removeSubscription(subscription) {
+    emitter.removeSubscription(subscription);
+}
+export function removeAllListeners() {
     emitter.removeAllListeners(didReceiveNotificationEventName);
     emitter.removeAllListeners(didDropNotificationsEventName);
     emitter.removeAllListeners(didReceiveNotificationResponseEventName);
