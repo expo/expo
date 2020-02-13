@@ -209,10 +209,6 @@ dependencies {
   implementation(project(':expoview-abi34_0_0'))
   // END_SDK_34
 
-  // BEGIN_SDK_33
-  implementation(project(':expoview-abi33_0_0'))
-  // END_SDK_33
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
 
@@ -221,7 +217,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
-  api 'com.facebook.react:react-native:33.0.0'
+  api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
