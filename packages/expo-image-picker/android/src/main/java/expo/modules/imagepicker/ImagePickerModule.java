@@ -18,7 +18,6 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
-import androidx.core.content.FileProvider;
 
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
@@ -49,13 +48,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 public class ImagePickerModule extends ExportedModule implements ActivityEventListener {
 
   public static final String TAG = "ExponentImagePicker";
-  public static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
-  public static final String MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available";
+  private static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
+  private static final String MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available";
+  private static final String CAN_NOT_DEDUCE_TYPE = "ERR_CAN_NOT_DEDUCE_TYPE";
+  private static final String CAN_NOT_DEDUCE_TYPE_MESSAGE = "Can not deduce type of the returned file.";
   // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
   // separately so we skip them in this list.
   public static final String[][] exifTags = new String[][]{
@@ -284,7 +284,6 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     final Intent cameraIntent = new Intent(mediaTypes.equals("Videos") ?
         MediaStore.ACTION_VIDEO_CAPTURE :
         MediaStore.ACTION_IMAGE_CAPTURE);
-
     if (cameraIntent.resolveActivity(getApplication(null).getPackageManager()) == null) {
       promise.reject(new IllegalStateException("Error resolving activity"));
       return;
@@ -308,7 +307,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
     File imageFile = null;
     try {
-      imageFile = new File(ExpFileUtils.generateOutputPath(mContext.getCacheDir(),
+      imageFile = new File(ImagePickerFileUtils.generateOutputPath(mContext.getCacheDir(),
           "ImagePicker", mediaTypes.equals("Videos") ? ".mp4" : ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
@@ -318,7 +317,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       promise.reject(new IOException("Could not create image file."));
       return;
     }
-    mCameraCaptureURI = ExpFileUtils.uriFromFile(imageFile);
+    mCameraCaptureURI = ImagePickerFileUtils.uriFromFile(imageFile);
 
     if (getExperienceActivity() == null) {
       promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
@@ -341,7 +340,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
     mPromise = promise;
     // camera intent needs a content URI but we need a file one
-    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ExpFileUtils.contentUriFromFile(imageFile, getApplication(null)));
+    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ImagePickerFileUtils.contentUriFromFile(imageFile, getApplication(null)));
     startActivityOnResult(cameraIntent, REQUEST_LAUNCH_CAMERA, promise);
   }
 
@@ -424,14 +423,12 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
             promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
             return;
           }
-          String type = getExperienceActivity().getApplication().getContentResolver().getType(uri);
 
-          // previous method sometimes returns null
+          String type = ImagePickerFileUtils.getType(getExperienceActivity().getApplication().getContentResolver(), uri);
+
           if (type == null) {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
-            if (extension != null) {
-              type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            }
+            promise.reject(CAN_NOT_DEDUCE_TYPE, CAN_NOT_DEDUCE_TYPE_MESSAGE);
+            return;
           }
 
           boolean isImage = type.contains("image");
@@ -469,7 +466,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
             // if the image is created by camera intent we don't need a new path - it's been already saved
             final String path = requestCode == REQUEST_LAUNCH_CAMERA ?
                 uri.getPath() :
-                ExpFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", extension);
+                ImagePickerFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", extension);
             Uri fileUri = requestCode == REQUEST_LAUNCH_CAMERA ? uri : Uri.fromFile(new File(path));
 
             if (allowsEditing) {
@@ -667,7 +664,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
   private String writeVideo(Uri uri) {
     String path = null;
     try (InputStream in = Objects.requireNonNull(getApplication(mPromise).getContentResolver().openInputStream(uri))) {
-      path = ExpFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", ".mp4");
+      path = ImagePickerFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", ".mp4");
 
       try (OutputStream out = new FileOutputStream(path)) {
         byte[] buffer = new byte[4096];
@@ -783,35 +780,4 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       return getExperienceActivity().getApplication();
     }
   }
-
-  public static class ExpFileUtils {
-
-    // http://stackoverflow.com/a/38858040/1771921
-    public static Uri uriFromFile(File file) {
-      return Uri.fromFile(file);
-    }
-
-    public static Uri contentUriFromFile(File file, Application application) {
-      try {
-        return FileProvider.getUriForFile(application, application.getPackageName() + ".ImagePickerFileProvider", file);
-      } catch (Exception e) {
-        return Uri.fromFile(file);
-      }
-    }
-
-    public static File ensureDirExists(File dir) throws IOException {
-      if (!(dir.isDirectory() || dir.mkdirs())) {
-        throw new IOException("Couldn't create directory '" + dir + "'");
-      }
-      return dir;
-    }
-
-    public static String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
-      File directory = new File(internalDirectory + File.separator + dirName);
-      ExpFileUtils.ensureDirExists(directory);
-      String filename = UUID.randomUUID().toString();
-      return directory + File.separator + filename + extension;
-    }
-  }
-
 }
