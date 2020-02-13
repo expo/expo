@@ -53,7 +53,7 @@ const ExploreSearchSwitch = createBottomTabNavigator(
       let { routeName } = navigation.state.routes[navigation.state.index];
 
       return {
-        header: null,
+        headerShown: false,
         title: routeName,
       };
     },
@@ -129,7 +129,7 @@ const TabNavigator =
     ? createBottomTabNavigator(TabRoutes, {
         initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
         tabBarOptions: {
           style: {
@@ -143,7 +143,7 @@ const TabNavigator =
         activeTintColor: Colors.light.tabIconSelected,
         inactiveTintColor: Colors.light.tabIconDefault,
         navigationOptions: {
-          header: null,
+          headerShown: false,
         },
         barStyle: {
           backgroundColor: '#fff',

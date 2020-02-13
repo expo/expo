@@ -48,7 +48,8 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
 
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
     AuthSession.getStartUrl(authUrl, returnUrl),
-    returnUrl
+    returnUrl,
+    { showInRecents: false }
   );
 });
 

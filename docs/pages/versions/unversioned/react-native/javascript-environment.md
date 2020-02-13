@@ -55,7 +55,7 @@ Specific
 
 - [JSX](https://reactjs.org/docs/jsx-in-depth.html): `<View style={{color: 'red'}} />`
 - [Flow](https://flowtype.org/): `function foo(x: ?number): string {};`
-- [TypeScript](https://flowtype.org/): `function foo(x: number | undefined): string {};`
+- [TypeScript](https://www.typescriptlang.org/): `function foo(x: number | undefined): string {};`
 - [Babel Template](https://babeljs.io/docs/en/babel-template): allows AST templating
 
 ## Polyfills

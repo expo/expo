@@ -105,7 +105,7 @@ export default {
     return await getExponentPushTokenAsync();
   },
 
-  async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
+  async getDevicePushTokenAsync(): Promise<{ type: string; data: object }> {
     return await getDevicePushTokenAsync();
   },
 

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders A 1`] = `
+<Text
+  accessibilityRole="link"
+  onPress={[Function]}
+  style={
+    Object {
+      "fontSize": 32,
+    }
+  }
+/>
+`;

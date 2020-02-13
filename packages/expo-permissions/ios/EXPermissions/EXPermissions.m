@@ -51,11 +51,6 @@ UM_EXPORT_MODULE(ExpoPermissions);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  
-  id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationPermissionRequester alloc] initWithNotificationProxy:[moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMethodQueue:self.methodQueue];
-  id<UMPermissionsRequester> remoteNotificationRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:userNotificationRequester withMethodQueue:self.methodQueue];
-
-  [self registerRequesters:@[userNotificationRequester, remoteNotificationRequester]];
 }
 
 # pragma mark - Exported methods
@@ -110,7 +105,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)type
 {
-  return [self getPermissionUsingRequester:_requesters[type]];
+  return [self getPermissionUsingRequester:[self getPermissionRequesterForType:type]];
 }
 
 - (NSDictionary *)getPermissionUsingRequester:(id<UMPermissionsRequester>)requester
@@ -213,6 +208,10 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (id<UMPermissionsRequester>)getPermissionRequesterForType:(NSString *)type
 {
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    [self ensureRequestersFallbacksAreRegistered];
+  });
   return _requesters[type];
 }
 
@@ -221,8 +220,19 @@ UM_EXPORT_METHOD_AS(askAsync,
   return [_requestersByClass objectForKey:requesterClass];
 }
 
-- (UMModuleRegistry *)getModuleRegistry {
-  return _moduleRegistry;
+- (void)ensureRequestersFallbacksAreRegistered
+{
+  // TODO: Remove once we promote `expo-notifications` to a stable unimodule (and integrate into Expo client)
+  if (!_requesters[@"userFacingNotifications"]) {
+    id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationPermissionRequester alloc] initWithNotificationProxy:[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMethodQueue:self.methodQueue];
+    [self registerRequesters:@[userNotificationRequester]];
+  }
+
+  // TODO: Remove once we deprecate and remove "notifications" permission type
+  if (!_requesters[@"notifications"] && _requesters[@"userFacingNotifications"]) {
+    id<UMPermissionsRequester> remoteNotificationsRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:_requesters[@"userFacingNotifications"] withMethodQueue:self.methodQueue];
+    [self registerRequesters:@[remoteNotificationsRequester]];
+  }
 }
 
 @end

@@ -9,19 +9,10 @@ daysUntilClose: 30
 
 # Only issues or pull requests with all of these labels are check if stale. Defaults to `[]` (disabled)
 onlyLabels: 
-  - status:needs more info
+  - 'status: needs more info'
 
 # Issues or Pull Requests with these labels will never be considered stale. Set to `[]` to disable
 exemptLabels: []
-
-# Set to true to ignore issues in a project (defaults to false)
-exemptProjects: false
-
-# Set to true to ignore issues in a milestone (defaults to false)
-exemptMilestones: false
-
-# Set to true to ignore issues with an assignee (defaults to false)
-exemptAssignees: false
 
 # Label to use when marking as stale
 staleLabel: stale
@@ -32,30 +23,11 @@ markComment: >
   can properly address it, we will be closing it in one month. If you've found a fix, please share it! Otherwise, please 
   provide the info we asked for, especially a reproducible example. Thanks!
 
-# Comment to post when removing the stale label.
-# unmarkComment: >
-#   Your comment here.
-
 # Comment to post when closing a stale Issue or Pull Request.
- closeComment: >
+closeComment: >
    This issue has been automatically closed since there has not been
    any recent activity after it was marked as stale. Please open a new issue for any
    related bugs.
 
-# Limit the number of actions per hour, from 1-30. Default is 30
-limitPerRun: 30
-
 # Limit to only `issues` or `pulls`
- only: issues
-
-# Optionally, specify configuration settings that are specific to just 'issues' or 'pulls':
-# pulls:
-#   daysUntilStale: 30
-#   markComment: >
-#     This pull request has been automatically marked as stale because it has not had
-#     recent activity. It will be closed if no further activity occurs. Thank you
-#     for your contributions.
-
-# issues:
-#   exemptLabels:
-#     - confirmed
+only: issues

@@ -74,6 +74,7 @@ export default function App() {
 
 </SnackInline>
 
-## We have completed our app!
+## Up next
 
-Well done, you have now gone through the motions of building a simple but meaningful app that runs on iOS, Android, and web from the same codebase! I am sure you have many questions, and so [the next section will guide you towards where you can go to learn more and continue your learning journey](../../tutorial/follow-up/).
+Our app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](../../tutorial/configuration/).
+

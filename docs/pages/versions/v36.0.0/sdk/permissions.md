@@ -17,6 +17,25 @@ If you are deploying your app to the Apple iTunes Store, you must add additional
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-permissions`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-permissions).
 
+### Usage in bare workflow
+
+`expo-permissions` includes the shared infrastructure for handling system permissions, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+
+The following table shows you which permissions correspond to which packages.
+
+| Permission type             | Packages                                  |
+| --------------------------- | ----------------------------------------- |
+| `NOTIFICATIONS`             | `expo-permissions`                        |
+| `USER_FACING_NOTIFICATIONS` | `expo-permissions`                        |
+| `LOCATION`                  | `expo-location`                           |
+| `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`    |
+| `AUDIO_RECORDING`           | `expo-av`                                 |
+| `CONTACTS`                  | `expo-contacts`                           |
+| `CAMERA_ROLL`               | `expo-image-picker`, `expo-media-library` |
+| `CALENDAR`                  | `expo-calendar`                           |
+| `REMINDERS`                 | `expo-calendar`                           |
+| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
+
 ## Usage
 
 ### Manually testing permissions
@@ -85,7 +104,7 @@ async function checkMultiPermissions() {
     Permissions.CONTACTS
   );
   if (status !== 'granted') {
-    alert('Hey! You heve not enabled selected permissions');
+    alert('Hey! You have not enabled selected permissions');
   }
 }
 ```

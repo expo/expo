@@ -209,6 +209,7 @@ An enum whose values can be passed to the [`lockAsync`](#screenorientationlockas
 
 - **`OrientationLock.DEFAULT`** -- The default orientation. On iOS, this will allow all orientations except `Orientation.PORTRAIT_DOWN`. On Android, this lets the system decide the best orientation.
 - **`OrientationLock.ALL`** -- All four possible orientations
+- **`OrientationLock.ALL_BUT_UPSIDE_DOWN`** -- ALL, excluding PORTRAIT_DOWN.
 - **`OrientationLock.PORTRAIT`** -- Any portrait orientation.
 - **`OrientationLock.PORTRAIT_UP`** -- Right-side up portrait only.
 - **`OrientationLock.PORTRAIT_DOWN`** -- Upside down portrait only.

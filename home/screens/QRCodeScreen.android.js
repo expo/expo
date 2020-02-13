@@ -9,7 +9,7 @@ import Layout from '../constants/Layout';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    headerShown: false,
   };
 
   state = {

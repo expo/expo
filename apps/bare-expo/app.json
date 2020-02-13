@@ -11,12 +11,12 @@
       "build": {
         "babel": {
           "root": "./",
-          "include": ["test-suite", "bare-expo"]
+          "include": ["test-suite", "native-component-list", "bare-expo"]
         }
       }
     },
     "android": {
-      "package": "dev.expo.payments",
+      "package": "dev.expo.payments"
     },
     "ios": {
       "bundleIdentifier": "dev.expo.Payments"

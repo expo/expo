@@ -50,7 +50,9 @@ export function getTestModules() {
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient')
+    require('./tests/LinearGradient'),
+    require('./tests/Facebook'),
+    require('./tests/HTML')
   );
 
   if (Platform.OS === 'android') {

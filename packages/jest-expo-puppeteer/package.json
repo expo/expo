@@ -27,19 +27,19 @@
   "dependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-flow": "^7.0.0",
-    "@expo/babel-preset-cli": "^0.2.0",
-    "@expo/config": "^2.1.4",
-    "@expo/xdl": "^56.2.1",
-    "@types/getenv": "^0.7.0",
+    "@expo/babel-preset-cli": "^0.2.5",
+    "@expo/config": "^2.5.6",
+    "@expo/xdl": "^57.4.6",
     "babel-jest": "^24.7.1",
-    "getenv": "^0.7.0",
+    "getenv": "^1.0.0",
     "jest": "^24.7.1",
     "jest-puppeteer": "^4.3.0",
     "puppeteer": "^1.19.0",
     "serve": "^11.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1",
+    "@types/getenv": "^1.0.0",
+    "expo-module-scripts": "~1.2.0",
     "react": "16.9.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",

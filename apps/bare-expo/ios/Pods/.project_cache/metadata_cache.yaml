@@ -90,6 +90,10 @@ EXErrorRecovery:
   LABEL: EXErrorRecovery
   PROJECT_PATH: EXErrorRecovery.xcodeproj
   UUID: 49603BA4A7FB1CFC9ACD589B8CE05EA2
+EXFacebook:
+  LABEL: EXFacebook
+  PROJECT_PATH: EXFacebook.xcodeproj
+  UUID: FEAA3FBA5C5225363EE9E6D0B5B3183B
 EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
@@ -102,10 +106,6 @@ EXGL:
   LABEL: EXGL
   PROJECT_PATH: EXGL.xcodeproj
   UUID: 78CC35D6F49ACC0F72F0095F78EFDCE7
-EXGL-CPP:
-  LABEL: EXGL-CPP
-  PROJECT_PATH: EXGL-CPP.xcodeproj
-  UUID: 348F48833A31FAAF4C3FBBBCAA504BB8
 EXGL_CPP:
   LABEL: EXGL_CPP
   PROJECT_PATH: EXGL_CPP.xcodeproj
@@ -118,6 +118,10 @@ EXHaptics:
   LABEL: EXHaptics
   PROJECT_PATH: EXHaptics.xcodeproj
   UUID: 458E4E0DEA9D752CC28F1A42E4B306AC
+EXImageLoader:
+  LABEL: EXImageLoader
+  PROJECT_PATH: EXImageLoader.xcodeproj
+  UUID: E9B8755E94C7C9AA493F2BF95AB61410
 EXImageManipulator:
   LABEL: EXImageManipulator
   PROJECT_PATH: EXImageManipulator.xcodeproj
@@ -142,6 +146,10 @@ EXLocalization:
   LABEL: EXLocalization
   PROJECT_PATH: EXLocalization.xcodeproj
   UUID: 55C7C51CE4B49B971674C896CB1DC301
+EXLocation:
+  LABEL: EXLocation
+  PROJECT_PATH: EXLocation.xcodeproj
+  UUID: 9448EAC8D0286D37F065B24667BFBB8F
 EXMailComposer:
   LABEL: EXMailComposer
   PROJECT_PATH: EXMailComposer.xcodeproj
@@ -170,6 +178,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenOrientation:
+  LABEL: EXScreenOrientation
+  PROJECT_PATH: EXScreenOrientation.xcodeproj
+  UUID: AA651E1AC215FDCE87E218058A342349
 EXSecureStore:
   LABEL: EXSecureStore
   PROJECT_PATH: EXSecureStore.xcodeproj
@@ -218,6 +230,14 @@ FBReactNativeSpec:
   LABEL: FBReactNativeSpec
   PROJECT_PATH: FBReactNativeSpec.xcodeproj
   UUID: 5CDFFFDA1BEA16A0D3629FE9F761022A
+FBSDKCoreKit:
+  LABEL: FBSDKCoreKit
+  PROJECT_PATH: FBSDKCoreKit.xcodeproj
+  UUID: 322040CF2C7D2642650A8BFCDB4B2AD3
+FBSDKLoginKit:
+  LABEL: FBSDKLoginKit
+  PROJECT_PATH: FBSDKLoginKit.xcodeproj
+  UUID: 99D9EFC28DE380315427F305282258E8
 Folly:
   LABEL: Folly
   PROJECT_PATH: Folly.xcodeproj
@@ -282,6 +302,10 @@ React-jsinspector:
   LABEL: React-jsinspector
   PROJECT_PATH: React-jsinspector.xcodeproj
   UUID: 1AC0EAF3E808B6AA276E43B30A5B20AA
+react-native-appearance:
+  LABEL: react-native-appearance
+  PROJECT_PATH: react-native-appearance.xcodeproj
+  UUID: A6256F4276AA88FDEAAA83D3F4FEBA89
 react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj
@@ -374,6 +398,10 @@ UMSensorsInterface:
   LABEL: UMSensorsInterface
   PROJECT_PATH: UMSensorsInterface.xcodeproj
   UUID: 1FDCE556B997E87DAB0DA2727CC69285
+UMTaskManagerInterface:
+  LABEL: UMTaskManagerInterface
+  PROJECT_PATH: UMTaskManagerInterface.xcodeproj
+  UUID: A565C99DEFBAFA44A1B5C3B49ADD8A84
 Yoga:
   LABEL: Yoga
   PROJECT_PATH: Yoga.xcodeproj

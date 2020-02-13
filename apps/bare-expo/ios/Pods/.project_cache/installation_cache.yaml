@@ -72,6 +72,8 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.m"
+      - "../../../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.h"
+      - "../../../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
@@ -273,6 +275,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXErrorRecovery
     SPECS:
       - EXErrorRecovery (1.0.0)
+  EXFacebook:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFacebook: dc1658cf687deeaa14cc9e39f36d7cac
+    CHECKSUM: c10f77ea97b3003c29b4f0a49942acc1ba8330b5
+    FILES:
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.h"
+      - "../../../../packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m"
+    PROJECT_NAME: EXFacebook
+    SPECS:
+      - EXFacebook (8.0.0)
   EXFileSystem:
     BUILD_SETTINGS_CHECKSUM:
       EXFileSystem: 384bbcee0771bf79893a232d6cd6c5e2
@@ -380,6 +394,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXHaptics
     SPECS:
       - EXHaptics (8.0.0)
+  EXImageLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      EXImageLoader: 311389058db34474056fe2e893a52953
+    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    FILES:
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
+    PROJECT_NAME: EXImageLoader
+    SPECS:
+      - EXImageLoader (1.0.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -448,6 +472,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXLocalization
     SPECS:
       - EXLocalization (8.0.0)
+  EXLocation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXLocation: 2cdf527b8fd9660760dea76fb7930f4a
+    CHECKSUM: 3c75d012ca92eed94d4338778d79c49d1252393a
+    FILES:
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocation.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
+      - "../../../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.m"
+    PROJECT_NAME: EXLocation
+    SPECS:
+      - EXLocation (8.0.0)
   EXMailComposer:
     BUILD_SETTINGS_CHECKSUM:
       EXMailComposer: dde34d492aa6e58f5e36c7f4824e2b42
@@ -484,14 +526,33 @@ CACHE_KEYS:
       - EXNetwork (2.0.0)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
-      EXNotifications: 42083d7be3b81dc87f399732a97ebffe
-    CHECKSUM: d654494e84df90927cca410ebac178c61553647b
+      EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
+    CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
     FILES:
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)
@@ -537,6 +598,22 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 605d41100602a3265d74a60e6ef76c6d
+    CHECKSUM: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+    FILES:
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.h"
+      - "../../../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 10a623412aef75951df791abc0f7f5ba
@@ -673,6 +750,23 @@ CACHE_KEYS:
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
       - FBReactNativeSpec (0.61.4)
+  FBSDKCoreKit:
+    BUILD_SETTINGS_CHECKSUM:
+      FBSDKCoreKit: 60d69dde3e50d94f5f39949c424b03c5
+    CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+    PROJECT_NAME: FBSDKCoreKit
+    SPECS:
+      - FBSDKCoreKit (5.8.0)
+      - FBSDKCoreKit/Basics (5.8.0)
+      - FBSDKCoreKit/Core (5.8.0)
+  FBSDKLoginKit:
+    BUILD_SETTINGS_CHECKSUM:
+      FBSDKLoginKit: 0df82783c4955cafdce54ee3f9243823
+    CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
+    PROJECT_NAME: FBSDKLoginKit
+    SPECS:
+      - FBSDKLoginKit (5.8.0)
+      - FBSDKLoginKit/Login (5.8.0)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -713,12 +807,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 56436cf11abb9cf3f33b76749e92e0af
-      Release: 56436cf11abb9cf3f33b76749e92e0af
+      Debug: 24da9cf02142a099b78f8dc4c1ecf6da
+      Release: 24da9cf02142a099b78f8dc4c1ecf6da
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9af093871462b0148da322b01f112ded
-      Release: 9af093871462b0148da322b01f112ded
+      Debug: ef1d0d8f7832def44040a5f31253ac75
+      Release: ef1d0d8f7832def44040a5f31253ac75
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1245,6 +1339,22 @@ CACHE_KEYS:
     PROJECT_NAME: React-jsinspector
     SPECS:
       - React-jsinspector (0.61.4)
+  react-native-appearance:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-appearance: 7404d29f4c015c0c51680f1bce6a4d8f
+    CHECKSUM: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
+    FILES:
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
+      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
+      - "../../node_modules/react-native-appearance/LICENSE"
+      - "../../node_modules/react-native-appearance/README.md"
+    PROJECT_NAME: react-native-appearance
+    SPECS:
+      - react-native-appearance (0.3.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
@@ -1692,6 +1802,8 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.h"
+      - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"
@@ -1715,6 +1827,19 @@ CACHE_KEYS:
     PROJECT_NAME: UMSensorsInterface
     SPECS:
       - UMSensorsInterface (5.0.0)
+  UMTaskManagerInterface:
+    BUILD_SETTINGS_CHECKSUM:
+      UMTaskManagerInterface: 7659aca9cac609731d0f1bd954e77065
+    CHECKSUM: a98e37a576a5220bf43b8faf33cfdc129d2f441d
+    FILES:
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskConsumerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskLaunchReason.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskManagerInterface.h"
+      - "../../../../packages/unimodules-task-manager-interface/ios/UMTaskManagerInterface/UMTaskServiceInterface.h"
+    PROJECT_NAME: UMTaskManagerInterface
+    SPECS:
+      - UMTaskManagerInterface (5.0.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 1c1562cda00c80e209af7feb55d5f6dd

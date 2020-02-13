@@ -111,7 +111,7 @@ public class BarCodeScannerModule extends ExportedModule {
     }
 
     final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
-    imageLoader.loadImageForDisplayFromURL(url, new ImageLoader.ResultListener() {
+    imageLoader.loadImageForManipulationFromURL(url, new ImageLoader.ResultListener() {
       @Override
       public void onSuccess(@NonNull Bitmap bitmap) {
         BarCodeScanner scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());

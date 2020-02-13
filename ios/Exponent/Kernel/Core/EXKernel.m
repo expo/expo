@@ -10,6 +10,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
+#import "EXHomeModule.h"
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
@@ -267,7 +268,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [self->_browserController toggleMenuWithCompletion:nil];
+      if ([self->_browserController isMenuVisible]) {
+        EXHomeModule *homeModule = [self nativeModuleForAppManager:self->_appRegistry.homeAppRecord.appManager named:@"ExponentKernel"];
+        [homeModule requestToCloseDevMenu];
+      } else {
+        [self->_browserController toggleMenuWithCompletion:nil];
+      }
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;

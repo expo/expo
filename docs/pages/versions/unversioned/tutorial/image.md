@@ -6,7 +6,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Let's imagine that our designer has provided us with a beautiful logo:
 
-<img src="https://imgur.com/TkIrScD.png" style={{maxWidth: 305, maxHeight: 159}} />
+<img src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
 <br />
 <br />
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 
 <br />
 
-> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
+> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this typically won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
 
 ## Time for a code organization break!
 
@@ -103,7 +103,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Image source="https://i.imgur.com/TkIrScD.png" /* @info See below for the styles! */ style={styles.logo} /* @end *//>
+      <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} /* @info See below for the styles! */ style={styles.logo} /* @end *//>
 
       <Text /* @info See below for the styles! */ style={styles.instructions} /* @end */>
         To share a photo from your phone with a friend, just press the button below!

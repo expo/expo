@@ -11,7 +11,7 @@ import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
 import DevAppContainer from './environment/DevAppContainer';
 
-if (typeof Constants.manifest.env === 'object') {
+if (Constants.manifest && typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
 }
 

@@ -8,6 +8,7 @@ async function startAsync(options) {
     const returnUrl = options.returnUrl || getDefaultReturnUrl();
     const authUrl = options.authUrl;
     const startUrl = getStartUrl(authUrl, returnUrl);
+    const showInRecents = options.showInRecents || false;
     // Prevent accidentally starting to an empty url
     if (!authUrl) {
         throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
@@ -24,7 +25,7 @@ async function startAsync(options) {
     _authLock = true;
     let result;
     try {
-        result = await _openWebBrowserAsync(startUrl, returnUrl);
+        result = await _openWebBrowserAsync(startUrl, returnUrl, showInRecents);
     }
     finally {
         // WebBrowser session complete, unset lock
@@ -53,9 +54,9 @@ async function startAsync(options) {
 function dismiss() {
     dismissAuthSession();
 }
-async function _openWebBrowserAsync(startUrl, returnUrl) {
+async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
-    let result = await openAuthSessionAsync(startUrl, returnUrl);
+    let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
     if (result.type === 'cancel' || result.type === 'dismiss') {
         return { type: result.type };
     }

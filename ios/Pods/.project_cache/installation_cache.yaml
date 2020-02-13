@@ -6191,6 +6191,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../packages/expo-application/ios/EXApplication/EXApplication.m"
+      - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.h"
+      - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
@@ -6583,6 +6585,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXHaptics
     SPECS:
       - EXHaptics (8.0.0)
+  EXImageLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      EXImageLoader: ff130239ac953a821bd3d528b6f13828
+    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    FILES:
+      - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
+      - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
+    PROJECT_NAME: EXImageLoader
+    SPECS:
+      - EXImageLoader (1.0.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 5d68aa0d6f2a7fdd838a8783136b6a40
@@ -6745,6 +6757,22 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 5909998709fdccddd02f9653688202a8
+    CHECKSUM: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+    FILES:
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationUtilities.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 50e8e13014befd337f5b36b246cde917
@@ -7141,16 +7169,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 975f47ebe83766cf972b07b6b2eb7075
-      Release: 975f47ebe83766cf972b07b6b2eb7075
+      Debug: 4b22a0424674fb4aa5af0e3b99e5ca01
+      Release: 4b22a0424674fb4aa5af0e3b99e5ca01
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 704bee7f7fc762df105d69e08c2d1961
-      Release: 704bee7f7fc762df105d69e08c2d1961
+      Debug: 01d535d12867663316fe30a75b374e05
+      Release: 01d535d12867663316fe30a75b374e05
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 704bee7f7fc762df105d69e08c2d1961
-      Release: 704bee7f7fc762df105d69e08c2d1961
+      Debug: 01d535d12867663316fe30a75b374e05
+      Release: 01d535d12867663316fe30a75b374e05
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -9701,6 +9729,8 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMBridgeModule.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryAdapter.m"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.h"
+      - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMModuleRegistryHolderReactModule.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMModuleRegistryAdapter/UMViewManagerAdapterClassesRegistry.m"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMNativeModulesProxy/UMNativeModulesProxy.h"

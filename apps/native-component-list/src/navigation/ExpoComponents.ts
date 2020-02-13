@@ -1,7 +1,9 @@
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {}
+  } catch (e) {
+    return null;
+  }
 }
 
 const AdMob = optionalRequire(() => require('../screens/AdMobScreen'));
@@ -38,8 +40,9 @@ const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScree
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
+const HTML = optionalRequire(() => require('../screens/HTMLElementsScreen'));
 
-const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
+const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
   BarCodeScanner,
   MaskedView: BasicMaskScreen,
@@ -51,6 +54,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
+  HTML,
   ReanimatedImagePreview,
   ReanimatedProgress,
   Gif,

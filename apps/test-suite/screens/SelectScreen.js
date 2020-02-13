@@ -79,9 +79,7 @@ export default class SelectScreen extends React.PureComponent {
       if (!selected.length) {
         console.log('[TEST_SUITE]', 'No selected modules', testNames);
       }
-      this.props.navigation.navigate('RunTests', {
-        selected: this.modules.filter(m => testNames.includes(m.name)),
-      });
+      this.props.navigation.navigate('RunTests', { selected });
     }
   };
 

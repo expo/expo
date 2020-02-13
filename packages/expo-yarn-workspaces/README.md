@@ -2,6 +2,8 @@
 
 This is a package that provides support for Yarn workspaces within monorepos like the Expo repository. It finesses Yarn workspaces, Metro, and the Expo repository to work together.
 
+**Note:** This package runs only on macOS and Linux.
+
 ## How apps work with workspaces
 
 Each Expo app in the repository that is intended to work with Yarn workspaces (as opposed to being tested in a non-workspace environment) does the steps described below. All of the steps are important and need to be followed carefully.

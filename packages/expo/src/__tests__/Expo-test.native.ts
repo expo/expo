@@ -58,6 +58,7 @@ const skippedExports: string[] = [
   'Print',
   'PublisherBanner',
   'Random',
+  'ScreenOrientation',
   'SecureStore',
   'Segment',
   'Sensors',

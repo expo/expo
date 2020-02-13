@@ -27,8 +27,10 @@ const _isValueValid = (value: any, validValues: any[]): boolean => {
   return validValues.filter(validValue => validValue === value).length > 0;
 };
 
-// Returns array of missing keys in object. Returns an empty array if no missing keys are found.
-const _populateMissingKeys = (userAudioMode: Object, defaultAudioMode: AudioMode): AudioMode => {
+const _populateMissingKeys = (
+  userAudioMode: Partial<AudioMode>,
+  defaultAudioMode: AudioMode
+): AudioMode => {
   for (let key in defaultAudioMode) {
     if (!userAudioMode.hasOwnProperty(key)) {
       userAudioMode[key] = defaultAudioMode[key];
@@ -56,9 +58,8 @@ function getCurrentAudioMode(): AudioMode {
   return currentAudioMode;
 }
 
-export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
-  mode = _populateMissingKeys(mode, getCurrentAudioMode());
-  currentAudioMode = mode;
+export async function setAudioModeAsync(partialMode: Partial<AudioMode>): Promise<void> {
+  const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
 
   if (
     !_isValueValid(mode.interruptionModeIOS, [
@@ -88,5 +89,6 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
       '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.'
     );
   }
+  currentAudioMode = mode;
   return await ExponentAV.setAudioMode(mode);
 }

@@ -35,7 +35,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
 
 - **url (_string_)** -- The url to open in the web browser.
 - **options (_object_)** (_optional_) --
-  A dictionaty with following key-value pairs:
+  A dictionary with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website

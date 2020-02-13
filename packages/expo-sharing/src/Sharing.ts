@@ -19,7 +19,7 @@ export async function isAvailableAsync(): Promise<boolean> {
   return false;
 }
 
-export async function shareAsync(url: string, options: ShareOptions = {}): Promise<{}> {
+export async function shareAsync(url: string, options: ShareOptions = {}): Promise<object> {
   if (!Sharing || !Sharing.shareAsync) {
     throw new UnavailabilityError('Sharing', 'shareAsync');
   }

@@ -238,7 +238,7 @@ export { PermissionStatus, PermissionResponse };
 export async function shareContactAsync(
   contactId: string,
   message: string,
-  shareOptions: Object = {}
+  shareOptions: object = {}
 ): Promise<any> {
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
@@ -281,7 +281,7 @@ export async function getPagedContactsAsync(
 
 export async function getContactByIdAsync(
   id: string,
-  fields?: FieldType
+  fields?: FieldType[]
 ): Promise<Contact | undefined> {
   if (!ExpoContacts.getContactsAsync) {
     throw new UnavailabilityError('Contacts', 'getContactsAsync');
@@ -303,7 +303,7 @@ export async function getContactByIdAsync(
   return undefined;
 }
 
-export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
+export async function addContactAsync(contact: Contact, containerId?: string): Promise<string> {
   if (!ExpoContacts.addContactAsync) {
     throw new UnavailabilityError('Contacts', 'addContactAsync');
   }

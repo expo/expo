@@ -16,7 +16,7 @@ const sections = [
   {
     name: 'Introduction',
     reference: [
-      'What is Expo?',
+      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
@@ -31,13 +31,14 @@ const sections = [
   {
     name: 'Tutorial',
     reference: [
-      'Introduction',
+      'First steps',
       'Styling text',
       'Adding an image',
       'Creating a button',
       'Picking an image',
       'Sharing the image',
       'Handling platform differences',
+      'Configuring a splash screen and app icon',
       'Learning more',
     ],
   },
