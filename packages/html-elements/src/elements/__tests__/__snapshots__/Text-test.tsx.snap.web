@@ -46,6 +46,12 @@ exports[`renders Code 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
+  style={
+    Object {
+      "fontFamily": "Courier",
+      "fontWeight": "500",
+    }
+  }
 />
 `;
 
@@ -137,6 +143,8 @@ exports[`renders Pre 1`] = `
   dir="auto"
   style={
     Object {
+      "fontFamily": "Courier",
+      "fontWeight": "500",
       "marginBottom": "1em",
       "marginTop": "1em",
     }

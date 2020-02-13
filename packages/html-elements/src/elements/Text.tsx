@@ -46,9 +46,8 @@ export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.mark, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-// TODO: Lazy load mono font on native
-export const Code = forwardRef((props: TextProps, ref) => {
-  return <Text {...props} ref={ref} />;
+export const Code = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <Text {...props} style={[styles.code, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 function isTextProps(props: any): props is TextProps {
@@ -57,10 +56,9 @@ function isTextProps(props: any): props is TextProps {
 
 type PreProps = TextProps | ViewProps;
 
-// TODO: Lazy load mono font on native
 export const Pre = forwardRef((props: PreProps, ref: any) => {
   if (isTextProps(props)) {
-    return <Text {...props} style={[styles.pre, props.style]} ref={ref} />;
+    return <Text {...props} style={[styles.code, styles.pre, props.style]} ref={ref} />;
   }
   return <View {...props} style={[styles.pre, props.style]} ref={ref} />;
 }) as ComponentType<PreProps>;
@@ -84,6 +82,10 @@ const styles = StyleSheet.create({
   },
   q: {
     fontStyle: 'italic',
+  },
+  code: {
+    fontFamily: 'Courier',
+    fontWeight: '500',
   },
   pre: {
     marginVertical: em(1),
