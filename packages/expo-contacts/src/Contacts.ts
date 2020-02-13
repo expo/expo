@@ -485,6 +485,7 @@ export const SOCIAL_PROFILES = 'socialProfiles';
 export const IM_ADDRESSES = 'instantMessageAddresses';
 export const URLS = 'urlAddresses';
 export const DATES = 'dates';
+export const RAW_DATES = 'rawDates';
 export const RELATIONSHIPS = 'relationships';
 
 export const Fields = {
