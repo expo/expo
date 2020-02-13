@@ -38,6 +38,10 @@ EXAV:
   LABEL: EXAV
   PROJECT_PATH: EXAV.xcodeproj
   UUID: 657B3E0E8F77DB91FA182432EC404FBF
+EXBackgroundFetch:
+  LABEL: EXBackgroundFetch
+  PROJECT_PATH: EXBackgroundFetch.xcodeproj
+  UUID: 280658D584B63A5E8CB5F0405789A353
 EXBarCodeScanner:
   LABEL: EXBarCodeScanner
   PROJECT_PATH: EXBarCodeScanner.xcodeproj
@@ -214,6 +218,10 @@ EXStoreReview:
   LABEL: EXStoreReview
   PROJECT_PATH: EXStoreReview.xcodeproj
   UUID: F2C74458D282DA74DB95F8A7FE6A5207
+EXTaskManager:
+  LABEL: EXTaskManager
+  PROJECT_PATH: EXTaskManager.xcodeproj
+  UUID: 86D546D1F048CDA66BE7589194F91D23
 EXUpdates:
   LABEL: EXUpdates
   PROJECT_PATH: EXUpdates.xcodeproj

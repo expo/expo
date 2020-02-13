@@ -113,6 +113,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXAV
     SPECS:
       - EXAV (8.0.0)
+  EXBackgroundFetch:
+    BUILD_SETTINGS_CHECKSUM:
+      EXBackgroundFetch: a5e0aec4c8a3ed87903824257d54d1ee
+    CHECKSUM: a99eac546ec3cf81701fdc739755c76e4a3e0619
+    FILES:
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
+    PROJECT_NAME: EXBackgroundFetch
+    SPECS:
+      - EXBackgroundFetch (8.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
@@ -678,8 +690,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -693,6 +705,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXStoreReview
     SPECS:
       - EXStoreReview (2.0.0)
+  EXTaskManager:
+    BUILD_SETTINGS_CHECKSUM:
+      EXTaskManager: 9cea3845e2e57cfd67d0da843facfcee
+    CHECKSUM: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
+    FILES:
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
+    PROJECT_NAME: EXTaskManager
+    SPECS:
+      - EXTaskManager (8.0.0)
   EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
       EXUpdates: 4607b0f75bd46d01ee0d14c14ccef45d
@@ -790,12 +820,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 24da9cf02142a099b78f8dc4c1ecf6da
-      Release: 24da9cf02142a099b78f8dc4c1ecf6da
+      Debug: 460f1f1df63cfd33350fd73fc008b14a
+      Release: 460f1f1df63cfd33350fd73fc008b14a
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ef1d0d8f7832def44040a5f31253ac75
-      Release: ef1d0d8f7832def44040a5f31253ac75
+      Debug: 65aac66b4e9ac267a6dffbb85b3c136b
+      Release: 65aac66b4e9ac267a6dffbb85b3c136b
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

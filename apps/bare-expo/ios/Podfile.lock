@@ -22,6 +22,9 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
+  - EXBackgroundFetch (8.0.0):
+    - UMCore
+    - UMTaskManagerInterface
   - EXBarCodeScanner (8.0.0):
     - UMCore
     - UMImageLoaderInterface
@@ -150,6 +153,11 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (2.0.0):
     - UMCore
+  - EXTaskManager (8.0.0):
+    - EXAppLoaderProvider
+    - UMConstantsInterface
+    - UMCore
+    - UMTaskManagerInterface
   - EXUpdates (0.0.1-rc.0):
     - UMCore
   - EXWebBrowser (8.0.0):
@@ -429,6 +437,7 @@ DEPENDENCIES:
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../../../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
+  - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
   - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
@@ -473,6 +482,7 @@ DEPENDENCIES:
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
+  - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -535,107 +545,164 @@ EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAmplitude:
-    :path: "../../../packages/expo-analytics-amplitude/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-analytics-amplitude/ios"
   EXAppAuth:
-    :path: "../../../packages/expo-app-auth/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-app-auth/ios"
   EXApplication:
-    :path: "../../../packages/expo-application/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-application/ios"
   EXAppLoaderProvider:
-    :path: "../../../packages/expo-app-loader-provider/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-app-loader-provider/ios"
   EXAV:
-    :path: "../../../packages/expo-av/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-av/ios"
+  EXBackgroundFetch:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
-    :path: "../../../packages/expo-barcode-scanner/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-barcode-scanner/ios"
   EXBattery:
-    :path: "../../../packages/expo-battery/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-battery/ios"
   EXBluetooth:
-    :path: "../../../packages/expo-bluetooth/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-bluetooth/ios"
   EXBlur:
-    :path: "../../../packages/expo-blur/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-blur/ios"
   EXBrightness:
-    :path: "../../../packages/expo-brightness/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-brightness/ios"
   EXCalendar:
-    :path: "../../../packages/expo-calendar/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-calendar/ios"
   EXCellular:
-    :path: "../../../packages/expo-cellular/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-cellular/ios"
   EXConstants:
-    :path: "../../../packages/expo-constants/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-constants/ios"
   EXContacts:
-    :path: "../../../packages/expo-contacts/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-contacts/ios"
   EXCrypto:
-    :path: "../../../packages/expo-crypto/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-crypto/ios"
   EXDevice:
-    :path: "../../../packages/expo-device/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-device/ios"
   EXDocumentPicker:
-    :path: "../../../packages/expo-document-picker/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-document-picker/ios"
   EXErrorRecovery:
-    :path: "../../../packages/expo-error-recovery/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-error-recovery/ios"
   EXFacebook:
-    :path: "../../../packages/expo-facebook/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-facebook/ios"
   EXFileSystem:
-    :path: "../../../packages/expo-file-system/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-file-system/ios"
   EXFont:
-    :path: "../../../packages/expo-font/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-font/ios"
   EXGL:
-    :path: "../../../packages/expo-gl/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-gl/ios"
   EXGL_CPP:
-    :path: "../../../packages/expo-gl-cpp/cpp"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
-    :path: "../../../packages/expo-google-sign-in/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-google-sign-in/ios"
   EXHaptics:
-    :path: "../../../packages/expo-haptics/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-haptics/ios"
   EXImageLoader:
-    :path: "../../../packages/expo-image-loader/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-image-loader/ios"
   EXImageManipulator:
-    :path: "../../../packages/expo-image-manipulator/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-image-manipulator/ios"
   EXImagePicker:
-    :path: "../../../packages/expo-image-picker/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-image-picker/ios"
   EXKeepAwake:
-    :path: "../../../packages/expo-keep-awake/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-keep-awake/ios"
   EXLinearGradient:
-    :path: "../../../packages/expo-linear-gradient/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-linear-gradient/ios"
   EXLocalAuthentication:
-    :path: "../../../packages/expo-local-authentication/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-local-authentication/ios"
   EXLocalization:
-    :path: "../../../packages/expo-localization/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-localization/ios"
   EXLocation:
-    :path: "../../../packages/expo-location/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-location/ios"
   EXMailComposer:
-    :path: "../../../packages/expo-mail-composer/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-mail-composer/ios"
   EXMediaLibrary:
-    :path: "../../../packages/expo-media-library/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-media-library/ios"
   EXNetwork:
-    :path: "../../../packages/expo-network/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-network/ios"
   EXNotifications:
-    :path: "../../../packages/expo-notifications/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-notifications/ios"
   EXPermissions:
-    :path: "../../../packages/expo-permissions/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-permissions/ios"
   EXPrint:
-    :path: "../../../packages/expo-print/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-print/ios"
   EXRandom:
-    :path: "../../../packages/expo-random/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-random/ios"
   EXScreenOrientation:
-    :path: "../../../packages/expo-screen-orientation/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-screen-orientation/ios"
   EXSecureStore:
-    :path: "../../../packages/expo-secure-store/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-secure-store/ios"
   EXSegment:
-    :path: "../../../packages/expo-analytics-segment/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-analytics-segment/ios"
   EXSensors:
-    :path: "../../../packages/expo-sensors/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-sensors/ios"
   EXSharing:
-    :path: "../../../packages/expo-sharing/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-sharing/ios"
   EXSMS:
-    :path: "../../../packages/expo-sms/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-sms/ios"
   EXSpeech:
-    :path: "../../../packages/expo-speech/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-speech/ios"
   EXSQLite:
-    :path: "../../../packages/expo-sqlite/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-sqlite/ios"
   EXStoreReview:
-    :path: "../../../packages/expo-store-review/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-store-review/ios"
+  EXTaskManager:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-task-manager/ios"
   EXUpdates:
-    :path: "../../../packages/expo-updates/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-updates/ios"
   EXWebBrowser:
-    :path: "../../../packages/expo-web-browser/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-web-browser/ios"
   FBLazyVector:
     :path: "../../../react-native-lab/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -691,27 +758,38 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   UMBarCodeScannerInterface:
-    :path: "../../../packages/unimodules-barcode-scanner-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-barcode-scanner-interface/ios"
   UMCameraInterface:
-    :path: "../../../packages/unimodules-camera-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-camera-interface/ios"
   UMConstantsInterface:
-    :path: "../../../packages/unimodules-constants-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-constants-interface/ios"
   UMCore:
-    :path: "../../../packages/@unimodules/core/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/@unimodules/core/ios"
   UMFileSystemInterface:
-    :path: "../../../packages/unimodules-file-system-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-file-system-interface/ios"
   UMFontInterface:
-    :path: "../../../packages/unimodules-font-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-font-interface/ios"
   UMImageLoaderInterface:
-    :path: "../../../packages/unimodules-image-loader-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-image-loader-interface/ios"
   UMPermissionsInterface:
-    :path: "../../../packages/unimodules-permissions-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-permissions-interface/ios"
   UMReactNativeAdapter:
-    :path: "../../../packages/@unimodules/react-native-adapter/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/@unimodules/react-native-adapter/ios"
   UMSensorsInterface:
-    :path: "../../../packages/unimodules-sensors-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-sensors-interface/ios"
   UMTaskManagerInterface:
-    :path: "../../../packages/unimodules-task-manager-interface/ios"
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
@@ -726,6 +804,7 @@ SPEC CHECKSUMS:
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
   EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
   EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
+  EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
   EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
@@ -770,6 +849,7 @@ SPEC CHECKSUMS:
   EXSpeech: 3f7d29b3da9283637176f0fd8dbb1e9da59b2741
   EXSQLite: 220226a354912b100dfe913f5fe6f31762c8927e
   EXStoreReview: 6fc278b9e50805ce3f7a2b9f15b5f0addaa21b90
+  EXTaskManager: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
   EXUpdates: 4bb4c813dac48562f9640b5cb7c8283a60b0e68b
   EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
@@ -818,6 +898,6 @@ SPEC CHECKSUMS:
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: f9b310a7da0a72b720dd3e0eaf31394e24c3f736
+PODFILE CHECKSUM: 162d0da014b56b6eed97501eff5e4f095cef06ea
 
 COCOAPODS: 1.8.4
