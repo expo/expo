@@ -263,27 +263,31 @@ public class ExperienceActivityUtils {
         }
       }
     
+    
       // Set visibility of navigation bar
       String navBarVisible = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
-      if (navBarVisible != null && !navBarVisible.equals("true")) {
+      if (navBarVisible != null) {
         // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
         // design your app to hide the status bar whenever you hide the navigation bar."
         View decorView = activity.getWindow().getDecorView();
         int flags = decorView.getSystemUiVisibility();
 
-        if (navBarVisible.equals("false") || navBarVisible.equals("leanback") ) {
-          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        switch (navBarVisible) {
+          case "leanback":
+            flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            break;
+          case "immersive":
+            flags |= ( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
+            break;
+          case "sticky-immersive":
+            flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            break;
         }
-        else if (navBarVisible.equals("immersive")) { 
-          flags |= ( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        }
-        else if (navBarVisible.equals("sticky-immersive")) { 
-          flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-
+      
         decorView.setSystemUiVisibility(flags);
       }
     }
+  
 
     public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
       String colorString;
