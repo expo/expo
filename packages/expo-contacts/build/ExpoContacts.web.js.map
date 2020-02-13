@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoContacts.web.js","sourceRoot":"","sources":["../src/ExpoContacts.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,cAAc,CAAC;IACxB,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoContacts';\n  },\n};\n"]}
