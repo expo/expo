@@ -3,22 +3,7 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import {
-  B,
-  BlockQuote,
-  BR,
-  Pre,
-  Code,
-  Del,
-  EM,
-  I,
-  Mark,
-  P,
-  Q,
-  S,
-  Strong,
-  Time,
-} from '../Text';
+import { B, BlockQuote, BR, Pre, Code, Del, EM, I, Mark, P, Q, S, Strong, Time } from '../Text';
 
 it(`renders P`, () => {
   const tree = renderer.create(<P>demo</P>);
