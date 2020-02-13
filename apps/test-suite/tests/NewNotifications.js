@@ -145,25 +145,6 @@ export async function test(t) {
         });
 
         t.describe('if handler responds in time', async () => {
-          t.beforeAll(() => {
-            // Overriding handler to return a no-effect behavior
-            // for Android not to reject the promise with
-            // "Notification presenting not implemented."
-            // TODO: Remove override when notification presenting
-            // is implemented.
-            handleFuncOverride = async () => {
-              return {
-                shouldPlaySound: false,
-                shouldSetBadge: false,
-                shouldShowAlert: false,
-              };
-            };
-          });
-
-          t.afterAll(() => {
-            handleFuncOverride = null;
-          });
-
           t.it(
             'calls `handleSuccess` callback of the notification handler',
             async () => {
