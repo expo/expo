@@ -11,7 +11,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+| ✅              | ✅                | ✅          | ✅             | ✅   |
 
 ## Installation
 
@@ -19,7 +19,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Configuration
 
-In Managed apps, `Location` requires `Permissions.LOCATION`.
+In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
