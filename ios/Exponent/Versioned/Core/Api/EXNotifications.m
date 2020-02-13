@@ -69,7 +69,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
 
   [_remoteNotificationsDelegate getApnsTokenForScopedModule:self completionHandler:^(NSString * _Nullable apnsToken, NSError * _Nullable error) {
     if (error) {
-      reject(@"ERR_NOTIFICATIONS_PUSH_TOKEN_FAILED", error.localizedDescription, error);
+      reject(@"ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED", error.localizedDescription, error);
     } else {
       resolve(@{ @"type": @"apns", @"data": apnsToken });
     }
