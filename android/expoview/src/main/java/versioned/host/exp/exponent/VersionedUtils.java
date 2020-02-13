@@ -2,7 +2,6 @@
 
 package versioned.host.exp.exponent;
 
-import android.util.Log;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
