@@ -303,7 +303,7 @@ export async function getContactByIdAsync(
   return undefined;
 }
 
-export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
+export async function addContactAsync(contact: Contact, containerId?: string): Promise<string> {
   if (!ExpoContacts.addContactAsync) {
     throw new UnavailabilityError('Contacts', 'addContactAsync');
   }
