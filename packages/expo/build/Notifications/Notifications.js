@@ -113,7 +113,9 @@ export default {
     },
     // User passes set of actions titles.
     createCategoryAsync(categoryId, actions, previewPlaceholder) {
-        return ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder);
+        return Platform.OS === 'ios'
+            ? ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder)
+            : ExponentNotifications.createCategoryAsync(categoryId, actions);
     },
     deleteCategoryAsync(categoryId) {
         return ExponentNotifications.deleteCategoryAsync(categoryId);

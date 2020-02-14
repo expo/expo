@@ -144,7 +144,9 @@ export default {
     actions: ActionType[],
     previewPlaceholder?: string
   ): Promise<void> {
-    return ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder);
+    return Platform.OS === 'ios'
+      ? ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder)
+      : ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
   deleteCategoryAsync(categoryId: string): Promise<void> {
