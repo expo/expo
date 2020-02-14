@@ -1,5 +1,5 @@
-import GoogleUser from './GoogleUser';
 import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
+import GoogleUser from './GoogleUser';
 export declare const ERRORS: any, SCOPES: any, TYPES: any;
 export declare function allowInClient(): void;
 export declare function getCurrentUser(): GoogleUser | null;

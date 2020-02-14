@@ -1,11 +1,12 @@
 import * as badgin from 'badgin';
 import uuidv4 from 'uuid/v4';
-import { LocalNotification, LocalNotificationId } from './Notifications.types';
+
 import {
   guardPermission,
   getExponentPushTokenAsync,
   getDevicePushTokenAsync,
 } from './ExponentNotificationsHelper.web';
+import { LocalNotification, LocalNotificationId } from './Notifications.types';
 
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';

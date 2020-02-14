@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 
 import ExpoContacts from './ExpoContacts';

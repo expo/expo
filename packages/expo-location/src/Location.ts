@@ -1,10 +1,9 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import invariant from 'invariant';
 import {
   PermissionResponse as UMPermissionResponse,
   PermissionStatus,
 } from 'unimodules-permissions-interface';
-
-import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
 

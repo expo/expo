@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import {
   coalesceExpirations,
   coalesceStatuses,
@@ -6,7 +7,6 @@ import {
   coalesceGranted,
 } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
-
 import {
   PermissionResponse,
   PermissionType,
