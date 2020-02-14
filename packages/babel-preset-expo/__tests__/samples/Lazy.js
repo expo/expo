@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Boo from 'Boo';
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
+import FooView from 'foo-view';
+import InlineFuncFromPackage from 'inline-comp';
 import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
 import 'Foo';
-import * as Boo from 'Boo';
-import FooView from 'foo-view';
-import InlineFuncFromPackage from 'inline-comp';
 
 import './local-file/i-have-side-effects.fx.js';
 import '../i-also-have-side-effects.fx';
