@@ -8,12 +8,17 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- `expo-facebook` Error code `E_CONF_ERROR` has been replaced with `ERR_FB_CONF`. ([#6862](https://github.com/expo/expo/pull/6862) by [@evanbacon](https://github.com/evanbacon))
+- `expo-facebook` All methods and platforms now return time intervals in milliseconds instead of seconds. ([#6862](https://github.com/expo/expo/pull/6862) by [@evanbacon](https://github.com/evanbacon))
 - `expo-constants` `Constants.deviceName` now only returns the possible Browser name and doesn't fallback to engine or OS name. ([#6809](https://github.com/expo/expo/pull/6809) [@evanbacon](https://github.com/evanbacon))
 - `expo-constants` `Constants.platform.web` now only returns the `ua` (user agent string). ([#6809](https://github.com/expo/expo/pull/6809) [@evanbacon](https://github.com/evanbacon))
 - Enriched `androidStatusBar` configuration in `app.json`. ([#6506](https://github.com/expo/expo/pull/6506) [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
 
+- `expo-facebook` Added web support. ([#6862](https://github.com/expo/expo/pull/6862) by [@evanbacon](https://github.com/evanbacon))
+- `expo-facebook` Added method to get authenticated Facebook access token `getAccessTokenAsync()`. ([#6862](https://github.com/expo/expo/pull/6862) by [@evanbacon](https://github.com/evanbacon))
+- `expo-facebook` Added method to log out of Facebook `logOutAsync()`. ([#6862](https://github.com/expo/expo/pull/6862) by [@evanbacon](https://github.com/evanbacon))
 - Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
 
 ### 🐛 Bug fixes
