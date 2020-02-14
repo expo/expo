@@ -295,6 +295,7 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
 RCT_REMAP_METHOD(createCategoryAsync,
                  createCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
+                 previewPlaceholder: (NSString *)previewPlaceholder
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
@@ -306,6 +307,7 @@ RCT_REMAP_METHOD(createCategoryAsync,
   UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
                                                                                actions:actionsArray
                                                                      intentIdentifiers:@[]
+                                                                     hiddenPreviewsBodyPlaceholder: previewPlaceholder
                                                                                options:UNNotificationCategoryOptionNone];
 
   __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;

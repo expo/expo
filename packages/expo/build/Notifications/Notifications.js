@@ -112,8 +112,8 @@ export default {
         _initialNotification = notification;
     },
     // User passes set of actions titles.
-    createCategoryAsync(categoryId, actions) {
-        return ExponentNotifications.createCategoryAsync(categoryId, actions);
+    createCategoryAsync(categoryId, actions, previewPlaceholder) {
+        return ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder);
     },
     deleteCategoryAsync(categoryId) {
         return ExponentNotifications.deleteCategoryAsync(categoryId);
