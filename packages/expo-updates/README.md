@@ -229,7 +229,6 @@ Make the following changes to `MainApplication.java` (or whichever file you inst
 +
 +    if (!BuildConfig.DEBUG) {
 +      UpdatesController.initialize(this);
-+      UpdatesController.getInstance().start(this);
 +    }
    }
  }
@@ -239,7 +238,9 @@ Make the following changes to `MainApplication.java` (or whichever file you inst
 
 Some build-time configuration options are available to allow your app to update automatically on launch. On iOS, these properties are set as keys in `expo-config.plist` and on Android as `meta-data` tags in `AndroidManifest.xml`, adjacent to the tags added during installation.
 
-| iOS plist key | Android meta-data name | Description | Default | Required? |
+On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`.
+
+| iOS plist / Android Map key | Android meta-data name | Description | Default | Required? |
 | --- | --- | --- | --- | --- |
 | `remoteUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
 | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
