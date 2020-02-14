@@ -6,10 +6,7 @@ exports[`renders B 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "fontWeight": "bold",
-      "marginBottom": "1em",
-      "marginTop": "1em",
     }
   }
 >
@@ -23,7 +20,7 @@ exports[`renders BR 1`] = `
   dir="auto"
   style={
     Object {
-      "height": "8px",
+      "height": "0.5em",
       "width": "0px",
     }
   }
@@ -62,9 +59,6 @@ exports[`renders Del 1`] = `
   style={
     Object {
       "WebkitTextDecorationStyle": "solid",
-      "fontSize": "1em",
-      "marginBottom": "1em",
-      "marginTop": "1em",
       "textDecoration": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -80,10 +74,7 @@ exports[`renders EM 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "fontStyle": "italic",
-      "marginBottom": "1em",
-      "marginTop": "1em",
     }
   }
 >
@@ -97,10 +88,7 @@ exports[`renders I 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "fontStyle": "italic",
-      "marginBottom": "1em",
-      "marginTop": "1em",
     }
   }
 >
@@ -127,7 +115,6 @@ exports[`renders P 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "marginBottom": "1em",
       "marginTop": "1em",
     }
@@ -164,10 +151,7 @@ exports[`renders Q 1`] = `
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "fontStyle": "italic",
-      "marginBottom": "1em",
-      "marginTop": "1em",
     }
   }
 >
@@ -184,9 +168,6 @@ exports[`renders S 1`] = `
   style={
     Object {
       "WebkitTextDecorationStyle": "solid",
-      "fontSize": "1em",
-      "marginBottom": "1em",
-      "marginTop": "1em",
       "textDecoration": "line-through",
       "textDecorationStyle": "solid",
     }
@@ -196,28 +177,13 @@ exports[`renders S 1`] = `
 </div>
 `;
 
-exports[`renders Small 1`] = `
-<div
-  className="css-text-901oao"
-  dir="auto"
-  style={
-    Object {
-      "fontSize": "12px",
-    }
-  }
-/>
-`;
-
 exports[`renders Strong 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
   style={
     Object {
-      "fontSize": "1em",
       "fontWeight": "bold",
-      "marginBottom": "1em",
-      "marginTop": "1em",
     }
   }
 >

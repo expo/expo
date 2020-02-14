@@ -11,22 +11,22 @@ export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
 }) as ComponentType<TextProps>;
 
 export const B = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.b, style]} ref={ref} />;
+  return <Text {...props} style={[styles.b, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.s, style]} ref={ref} />;
+  return <Text {...props} style={[styles.s, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.i, style]} ref={ref} />;
+  return <Text {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const Q = forwardRef(({ children, cite, style, ...props }: QuoteProps, ref) => {
   return (
-    <P {...props} style={[styles.q, style]} ref={ref}>
+    <Text {...props} style={[styles.q, style]} ref={ref}>
       "{children}"
-    </P>
+    </Text>
   );
 }) as ComponentType<QuoteProps>;
 
@@ -36,10 +36,6 @@ export const BlockQuote = forwardRef(({ style, cite, ...props }: BlockQuoteProps
 
 export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.br, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
-
-export const Small = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.small, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
@@ -75,7 +71,6 @@ export const EM = I;
 const styles = StyleSheet.create({
   p: {
     marginVertical: em(1),
-    fontSize: em(1),
   },
   b: {
     fontWeight: 'bold',
@@ -95,10 +90,7 @@ const styles = StyleSheet.create({
   },
   br: {
     width: 0,
-    height: 8,
-  },
-  small: {
-    fontSize: 12,
+    height: em(0.5),
   },
   s: {
     textDecorationLine: 'line-through',

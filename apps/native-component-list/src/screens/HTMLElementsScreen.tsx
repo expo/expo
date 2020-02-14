@@ -27,7 +27,6 @@ import {
   P,
   S,
   Section,
-  Small,
   Table,
   TBody,
   TD,
@@ -109,7 +108,6 @@ function TextArticle() {
       <Time>Feb 2020</Time>
       <I>Italic</I>
       <EM>Emphasize</EM>
-      <Small>Small</Small>
       <S>Striked</S>
       <Del>Deleted</Del>
       <Pre>{preformattedText}</Pre>

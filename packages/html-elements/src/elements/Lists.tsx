@@ -2,7 +2,6 @@ import React, { PropsWithChildren, ComponentType, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import View, { ViewProps } from '../primitives/View';
 import Text, { TextProps } from '../primitives/Text';
-import { em } from '../css/units';
 
 export const UL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
@@ -55,7 +54,6 @@ export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
 const styles = StyleSheet.create({
   caption: {
     textAlign: 'center',
-    fontSize: em(1) as number,
   },
   ul: {
     paddingLeft: 20,
@@ -70,13 +68,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     flex: 1,
-    fontSize: em(1) as number,
   },
   tr: {
     flexDirection: 'row',
   },
   td: {
     flex: 1,
-    fontSize: em(1) as number,
   },
 });
