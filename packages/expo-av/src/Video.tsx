@@ -22,9 +22,9 @@ import {
   PlaybackStatus,
   PlaybackStatusToSet,
 } from './AV';
+import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
-import ExpoVideoManager from './ExpoVideoManager';
 import {
   ExponentVideoComponent,
   FullscreenUpdateEvent,

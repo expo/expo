@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { View, createElement } from 'react-native';
-import ExponentAV from './ExponentAV';
 
 import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+import ExponentAV from './ExponentAV';
 
 type ExponentVideoProps = {
   source: PlaybackNativeSource | null;

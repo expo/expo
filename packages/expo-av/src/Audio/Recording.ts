@@ -6,10 +6,8 @@ import {
   PlaybackStatus,
   PlaybackStatusToSet,
 } from '../AV';
-
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
-
 import { Sound } from './Sound';
 
 export type RecordingOptions = {

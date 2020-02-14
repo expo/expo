@@ -1,4 +1,5 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+
 import ExpoTaskManager from './ExpoTaskManager';
 
 interface TaskError {

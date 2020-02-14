@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
 export default {

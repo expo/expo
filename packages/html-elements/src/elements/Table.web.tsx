@@ -1,9 +1,9 @@
 import { ComponentType, forwardRef } from 'react';
-
 import { StyleSheet, createElement } from 'react-native';
+
 import { TableTextProps } from '../primitives/Table';
-import { ViewProps } from '../primitives/View';
 import { TextProps } from '../primitives/Text';
+import { ViewProps } from '../primitives/View';
 
 export const Table = forwardRef((props: ViewProps, ref) => {
   return createElement('table', { ...props, style: [styles.reset, props.style], ref });

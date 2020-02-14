@@ -1,7 +1,7 @@
-import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
-import ExponentWebBrowser from './ExpoWebBrowser';
+import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
 
+import ExponentWebBrowser from './ExpoWebBrowser';
 import {
   RedirectEvent,
   OpenBrowserOptions,

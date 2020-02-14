@@ -5,6 +5,7 @@
 'use strict';
 
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
+
 const createMockConstants = require('./createMockConstants');
 
 // window isn't defined as of react-native 0.45+ it seems

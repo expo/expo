@@ -1,6 +1,6 @@
-import uuidv4 from 'uuid/v4';
 import * as Permissions from 'expo-permissions';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import uuidv4 from 'uuid/v4';
 
 import {
   ImagePickerResult,

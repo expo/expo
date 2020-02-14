@@ -1,7 +1,8 @@
 import React, { PropsWithChildren, ComponentType, forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
-import View, { ViewProps } from '../primitives/View';
+
 import Text, { TextProps } from '../primitives/Text';
+import View, { ViewProps } from '../primitives/View';
 
 export const UL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
   const { children } = props;
