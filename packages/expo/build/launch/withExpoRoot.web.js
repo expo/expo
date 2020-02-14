@@ -1,5 +1,5 @@
-import * as React from 'react';
 import * as ErrorRecovery from 'expo-error-recovery';
+import * as React from 'react';
 import RootErrorBoundary from './RootErrorBoundary';
 export default function withExpoRoot(AppRootComponent) {
     return class ExpoRootComponent extends React.Component {

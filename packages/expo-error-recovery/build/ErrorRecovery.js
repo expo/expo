@@ -1,5 +1,5 @@
-import ExpoErrorRecovery from './ExpoErrorRecovery';
 import { setRecoveryPropsToSave } from './ErroRecoveryStore';
+import ExpoErrorRecovery from './ExpoErrorRecovery';
 import './ErrorRecovery.fx';
 export const recoveredProps = _getRecoveredProps();
 export function setRecoveryProps(props) {

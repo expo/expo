@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
 import ExponentSegment from './ExponentSegment';
 export function initialize(options) {
     if (Platform.OS === 'android') {

@@ -5,8 +5,8 @@ import { PictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
+import { FacingModeToCameraType, PictureSizes } from './constants';
 
 export { ImageType, CameraType, CaptureOptions };
 

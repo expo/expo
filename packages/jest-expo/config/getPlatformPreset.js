@@ -1,5 +1,6 @@
 'use strict';
 const { getManagedExtensions } = require('@expo/config/paths');
+
 const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 

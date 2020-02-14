@@ -1,7 +1,7 @@
-import { Platform } from 'react-native';
 import { CodedError, EventEmitter } from '@unimodules/core';
-import { IAPErrorCode, IAPItemType, IAPResponseCode, InAppPurchaseState, } from './InAppPurchases.types';
+import { Platform } from 'react-native';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
+import { IAPErrorCode, IAPItemType, IAPResponseCode, InAppPurchaseState, } from './InAppPurchases.types';
 const errors = {
     ALREADY_CONNECTED: 'Already connected to App Store',
     ALREADY_DISCONNECTED: 'Already disconnected from App Store',

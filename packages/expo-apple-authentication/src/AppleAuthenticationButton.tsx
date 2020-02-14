@@ -1,4 +1,10 @@
 import React from 'react';
+
+import {
+  AppleAuthenticationButtonProps,
+  AppleAuthenticationButtonStyle,
+  AppleAuthenticationButtonType,
+} from './AppleAuthentication.types';
 import {
   ExpoAppleAuthenticationButtonSignInWhite,
   ExpoAppleAuthenticationButtonSignInWhiteOutline,
@@ -7,12 +13,6 @@ import {
   ExpoAppleAuthenticationButtonContinueWhiteOutline,
   ExpoAppleAuthenticationButtonContinueBlack,
 } from './ExpoAppleAuthenticationButton';
-
-import {
-  AppleAuthenticationButtonProps,
-  AppleAuthenticationButtonStyle,
-  AppleAuthenticationButtonType,
-} from './AppleAuthentication.types';
 
 /**
  * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on

@@ -1,9 +1,9 @@
-import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
-import processTheme from './utils/processTheme';
-import checkArgs from './utils/checkArgs';
-import * as validators from './utils/validators';
+import { Platform } from 'react-native';
 import errorCodes from './errorCodes';
+import checkArgs from './utils/checkArgs';
+import processTheme from './utils/processTheme';
+import * as validators from './utils/validators';
 const { StripeModule } = NativeModulesProxy;
 function checkInit(instance) {
     if (!instance.stripeInitialized) {

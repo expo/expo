@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoAmplitude from './ExpoAmplitude';
 
 interface TrackingOptions {

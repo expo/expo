@@ -1,11 +1,11 @@
+import { NativeModulesProxy } from '@unimodules/core';
 import { Platform } from 'react-native';
 
-import { NativeModulesProxy } from '@unimodules/core';
-import processTheme from './utils/processTheme';
+import errorCodes from './errorCodes';
 import checkArgs from './utils/checkArgs';
+import processTheme from './utils/processTheme';
 import * as types from './utils/types';
 import * as validators from './utils/validators';
-import errorCodes from './errorCodes';
 
 const { StripeModule } = NativeModulesProxy;
 
