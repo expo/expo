@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
-import View from '../primitives/View';
-import Text from '../primitives/Text';
-import { TableText } from '../primitives/Table';
 import { em } from '../css/units';
+import { TableText } from '../primitives/Table';
+import Text from '../primitives/Text';
+import View from '../primitives/View';
 export const Table = forwardRef((props, ref) => {
     return <View {...props} ref={ref}/>;
 });

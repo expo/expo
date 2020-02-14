@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoCalendar from './ExpoCalendar';
 export var DayOfTheWeek;
 (function (DayOfTheWeek) {
