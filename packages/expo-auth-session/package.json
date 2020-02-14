@@ -16,7 +16,11 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-auth-session"
+    "expo-auth-session",
+    "auth",
+    "oauth",
+    "authentication",
+    "auth-session"
   ],
   "repository": {
     "type": "git",
@@ -28,7 +32,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-constants": "~8.0.0",
     "expo-web-browser": "~8.0.0"

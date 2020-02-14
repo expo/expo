@@ -1,12 +1,12 @@
 export class BareSessionUrlProvider {
     getDefaultReturnUrl() {
-        throw new Error('You are using bare workflow which does not support `default return url`. You need to provide the return url.');
+        throw new Error("No default return URL could be found. If you're using the bare workflow, please provide `options.returnUrl`.");
     }
     getStartUrl(authUrl, _returnUrl) {
         return authUrl;
     }
     getRedirectUrl() {
-        throw new Error('You need to provide redirect url.');
+        throw new Error("No default redirect URL could be found. If you're using the bare workflow, you'll need to provide this yourself.");
     }
 }
 //# sourceMappingURL=BareSessionUrlProvider.js.map

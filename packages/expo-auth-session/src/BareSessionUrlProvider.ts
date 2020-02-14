@@ -3,7 +3,7 @@ import { SessionUrlProvider } from './SessionUrlProvider';
 export class BareSessionUrlProvider implements SessionUrlProvider {
   getDefaultReturnUrl(): string {
     throw new Error(
-      'You are using bare workflow which does not support `default return url`. You need to provide the return url.'
+      "No default return URL could be found. If you're using the bare workflow, please provide `options.returnUrl`."
     );
   }
 
@@ -12,6 +12,8 @@ export class BareSessionUrlProvider implements SessionUrlProvider {
   }
 
   getRedirectUrl(): string {
-    throw new Error('You need to provide redirect url.');
+    throw new Error(
+      "No default redirect URL could be found. If you're using the bare workflow, you'll need to provide this yourself."
+    );
   }
 }
