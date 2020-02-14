@@ -1,9 +1,9 @@
 import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 import LogSerialization from './LogSerialization';
-const _sessionId = UUID.create().toString();
+const _sessionId = uuidv4();
 const _logQueue = [];
 const _transportEventEmitter = new EventEmitter();
 let _logCounter = 0;

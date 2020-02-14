@@ -1,5 +1,5 @@
 import * as badgin from 'badgin';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
 import {
   guardPermission,
@@ -28,10 +28,6 @@ function transformLocalNotification(
   return [nativeNotification.title, nativeNotification];
 }
 
-function generateID(): string {
-  return UUID.create().toString();
-}
-
 async function getRegistrationAsync(): Promise<ServiceWorkerRegistration> {
   guardPermission();
   const registration = await navigator.serviceWorker.getRegistration();
@@ -50,7 +46,7 @@ async function getNotificationsAsync(tag?: string): Promise<Notification[]> {
 export default {
   async presentLocalNotification(notification: LocalNotification): Promise<LocalNotificationId> {
     const registration = await getRegistrationAsync();
-    const tag = generateID();
+    const tag = uuidv4();
     registration.showNotification(...transformLocalNotification(notification, tag));
     return tag;
   },
@@ -64,7 +60,7 @@ export default {
   ): Promise<string> {
     if (options.intervalMs) {
       const registration = await getRegistrationAsync();
-      const tag = generateID();
+      const tag = uuidv4();
       setTimeout(() => {
         registration.showNotification(...transformLocalNotification(notification, tag));
       }, options.intervalMs);
