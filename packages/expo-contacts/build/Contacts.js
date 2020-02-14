@@ -1,7 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
@@ -111,7 +111,7 @@ export async function createGroupAsync(name, containerId) {
     if (!ExpoContacts.createGroupAsync) {
         throw new UnavailabilityError('Contacts', 'createGroupAsync');
     }
-    name = name || UUID.create().toString();
+    name = name || uuidv4();
     if (!containerId) {
         containerId = await getDefaultContainerIdAsync();
     }

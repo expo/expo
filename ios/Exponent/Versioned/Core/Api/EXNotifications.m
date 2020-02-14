@@ -67,11 +67,13 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);
   }
 
-  NSString *token = [_remoteNotificationsDelegate apnsTokenStringForScopedModule:self];
-  if (!token) {
-    return reject(0, @"APNS token has not been set", nil);
-  }
-  return resolve(@{ @"type": @"apns", @"data": token });
+  [_remoteNotificationsDelegate getApnsTokenForScopedModule:self completionHandler:^(NSString * _Nullable apnsToken, NSError * _Nullable error) {
+    if (error) {
+      reject(@"ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED", error.localizedDescription, error);
+    } else {
+      resolve(@{ @"type": @"apns", @"data": apnsToken });
+    }
+  }];
 }
 
 RCT_REMAP_METHOD(getExponentPushTokenAsync,

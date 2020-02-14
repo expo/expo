@@ -91,7 +91,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onMessage(RemoteMessage message) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(mModuleRegistry, message, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, message, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
@@ -127,6 +127,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
     private static final String SHOULD_SHOW_ALERT_KEY = "shouldShowAlert";
     private static final String SHOULD_PLAY_SOUND_KEY = "shouldPlaySound";
     private static final String SHOULD_SET_BADGE_KEY = "shouldSetBadge";
+    private static final String PRIORITY_KEY = "priority";
 
     private ReadableArguments mArguments;
 
@@ -147,6 +148,11 @@ public class NotificationsHandler extends ExportedModule implements Notification
     @Override
     public boolean shouldSetBadge() {
       return mArguments.getBoolean(SHOULD_SET_BADGE_KEY);
+    }
+
+    @Override
+    public String getPriorityOverride() {
+      return mArguments.getString(PRIORITY_KEY);
     }
   }
 }

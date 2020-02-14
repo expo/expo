@@ -113,6 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated: (BOOL)flag completion:(void (^ __nullable)(void))completion
+{
+  [super presentViewController:viewControllerToPresent animated:flag completion:completion];
+  [self _overrideUserInterfaceStyleOf:viewControllerToPresent];
+}
+
 #pragma mark - Public
 
 - (void)maybeShowError:(NSError *)error
@@ -197,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
-      [self _overrideUserInterfaceStyle];
+      [self _overrideUserInterfaceStyleOf:self];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -423,11 +429,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - user interface style
 
-- (void)_overrideUserInterfaceStyle
+- (void)_overrideUserInterfaceStyleOf:(UIViewController *)viewController
 {
   if (@available(iOS 13.0, *)) {
     NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
-    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+    viewController.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
   }
 }
 

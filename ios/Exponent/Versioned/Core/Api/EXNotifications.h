@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXNotificationsScopedModuleDelegate
 
-- (NSString *)apnsTokenStringForScopedModule:(id)scopedModule;
+- (void)getApnsTokenForScopedModule:(id)scopedModule
+                  completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler;
 - (void)getExpoPushTokenForScopedModule:(id)scopedModule
                       completionHandler:(void (^)(NSString * _Nullable pushToken, NSError * _Nullable error))handler;
 

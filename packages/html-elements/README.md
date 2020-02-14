@@ -77,7 +77,6 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<q />`][html-q]                   |          [`<Q />`](#q)          |
 | [`<s />`][html-s]                   |          [`<S />`](#s)          |
 | [`<section />`][html-section]       |    [`<Section />`](#section)    |
-| [`<small />`][html-small]           |      [`<Small />`](#small)      |
 | [`<strong />`][html-strong]         |     [`<Strong />`](#strong)     |
 | [`<table />`][html-table]           |      [`<Table />`](#table)      |
 | [`<tbody />`][html-tbody]           |      [`<TBody />`](#tbody)      |
@@ -372,11 +371,11 @@ export default () => <Footer />;
 Text elements currently use `Text` universally rendering either a `div` or `span` to emulate Yoga style properly.
 
 - Style is modified to match web.
-- All font styles are reset.
+- All font styles are reset (minus `Code`, and `Pre`).
 - All elements accept styles from `StyleSheet` API.
 
 ```tsx
-import { P, B, S, I, BR, Small, Code } from '@expo/html-elements';
+import { P, B, S, I, BR, Code } from '@expo/html-elements';
 
 export default () => (
   <>
@@ -387,7 +386,6 @@ export default () => (
     <BR />
     <I>Italic</I>
     <Code>const foo = true</Code>
-    <Small>Small text</Small>
   </>
 );
 ```
@@ -398,7 +396,7 @@ Standard paragraph element.
 
 | Platform  | Output                                                        |
 | --------- | ------------------------------------------------------------- |
-| Universal | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Universal | `<Text style={{ fontSize: 14, marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
@@ -448,19 +446,9 @@ Alternate italic text.
 | --------- | ------------------------------------------ |
 | Universal | `<Text style={{ fontStyle: 'italic' }} />` |
 
-### `<Small/>`
-
-Smaller than default text.
-
-| Platform  | Output                              |
-| --------- | ----------------------------------- |
-| Universal | `<Text style={{ fontSize: 10 }} />` |
-
 ### `<Code/>`
 
-Inline code block.
-
-- [ ] Support lazy loading mono font on mobile.
+Inline code block with `fontFamily: 'Courier'`.
 
 | Platform  | Output                      |
 | --------- | --------------------------- |
@@ -468,7 +456,7 @@ Inline code block.
 
 ### `<Pre/>`
 
-Render a preformatted code block:
+Render a preformatted code block with `fontFamily: 'Courier'`.
 
 ```jsx
 <Pre>{`
@@ -483,8 +471,6 @@ body {
   <Code>{`const val = true`}</Code>
 </Pre>
 ```
-
-- [ ] Support lazy loading mono font on mobile.
 
 | Platform  | Output                                    |
 | --------- | ----------------------------------------- |

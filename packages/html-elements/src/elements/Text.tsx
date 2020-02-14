@@ -11,22 +11,22 @@ export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
 }) as ComponentType<TextProps>;
 
 export const B = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.b, style]} ref={ref} />;
+  return <Text {...props} style={[styles.b, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.s, style]} ref={ref} />;
+  return <Text {...props} style={[styles.s, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <P {...props} style={[styles.i, style]} ref={ref} />;
+  return <Text {...props} style={[styles.i, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 export const Q = forwardRef(({ children, cite, style, ...props }: QuoteProps, ref) => {
   return (
-    <P {...props} style={[styles.q, style]} ref={ref}>
+    <Text {...props} style={[styles.q, style]} ref={ref}>
       "{children}"
-    </P>
+    </Text>
   );
 }) as ComponentType<QuoteProps>;
 
@@ -38,17 +38,12 @@ export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.br, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-export const Small = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.small, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
-
 export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.mark, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
-// TODO: Lazy load mono font on native
-export const Code = forwardRef((props: TextProps, ref) => {
-  return <Text {...props} ref={ref} />;
+export const Code = forwardRef(({ style, ...props }: TextProps, ref) => {
+  return <Text {...props} style={[styles.code, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
 
 function isTextProps(props: any): props is TextProps {
@@ -57,10 +52,9 @@ function isTextProps(props: any): props is TextProps {
 
 type PreProps = TextProps | ViewProps;
 
-// TODO: Lazy load mono font on native
 export const Pre = forwardRef((props: PreProps, ref: any) => {
   if (isTextProps(props)) {
-    return <Text {...props} style={[styles.pre, props.style]} ref={ref} />;
+    return <Text {...props} style={[styles.code, styles.pre, props.style]} ref={ref} />;
   }
   return <View {...props} style={[styles.pre, props.style]} ref={ref} />;
 }) as ComponentType<PreProps>;
@@ -77,13 +71,16 @@ export const EM = I;
 const styles = StyleSheet.create({
   p: {
     marginVertical: em(1),
-    fontSize: em(1),
   },
   b: {
     fontWeight: 'bold',
   },
   q: {
     fontStyle: 'italic',
+  },
+  code: {
+    fontFamily: 'Courier',
+    fontWeight: '500',
   },
   pre: {
     marginVertical: em(1),
@@ -93,10 +90,7 @@ const styles = StyleSheet.create({
   },
   br: {
     width: 0,
-    height: 8,
-  },
-  small: {
-    fontSize: 12,
+    height: em(0.5),
   },
   s: {
     textDecorationLine: 'line-through',

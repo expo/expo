@@ -529,6 +529,8 @@ CACHE_KEYS:
       EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
     CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
     FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"

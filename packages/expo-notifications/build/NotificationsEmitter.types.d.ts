@@ -64,7 +64,6 @@ interface TimeIntervalNotificationTrigger extends BaseNotificationTrigger {
 }
 declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger;
 interface IosNotification {
-    type: 'ios';
     request: {
         identifier: string;
         content: {
@@ -90,10 +89,9 @@ interface IosNotification {
         };
         trigger: NotificationTrigger;
     };
-    date: string;
+    date: number;
 }
 interface AndroidNotification {
-    type: 'android';
     collapseKey: string | null;
     data: {
         [key: string]: string;

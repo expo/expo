@@ -2,7 +2,6 @@ import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import View from '../primitives/View';
 import Text from '../primitives/Text';
-import { em } from '../css/units';
 export const UL = forwardRef((props, ref) => {
     const { children } = props;
     const elements = React.Children.toArray(children).map(element => {
@@ -40,7 +39,6 @@ export const LI = forwardRef((props, ref) => {
 const styles = StyleSheet.create({
     caption: {
         textAlign: 'center',
-        fontSize: em(1),
     },
     ul: {
         paddingLeft: 20,
@@ -55,14 +53,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         flex: 1,
-        fontSize: em(1),
     },
     tr: {
         flexDirection: 'row',
     },
     td: {
         flex: 1,
-        fontSize: em(1),
     },
 });
 //# sourceMappingURL=Lists.js.map
