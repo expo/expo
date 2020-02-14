@@ -30,6 +30,7 @@ public class BasePackageList {
         new expo.modules.gl.GLPackage(),
         new expo.modules.google.signin.GoogleSignInPackage(),
         new expo.modules.haptics.HapticsPackage(),
+        new expo.modules.imageloader.ImageLoaderPackage(),
         new expo.modules.imagemanipulator.ImageManipulatorPackage(),
         new expo.modules.imagepicker.ImagePickerPackage(),
         new expo.modules.intentlauncher.IntentLauncherPackage(),

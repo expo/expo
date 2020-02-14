@@ -154,9 +154,6 @@
     <!-- BEGIN_SDK_34 -->
     <activity android:name="abi34_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_34 -->
-    <!-- BEGIN_SDK_33 -->
-    <activity android:name="abi33_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_33 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
@@ -226,20 +223,6 @@
       </intent-filter>
     </activity>
     <!-- END_SDK_34 -->
-    <!-- BEGIN_SDK_33 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi33_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="abi33_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_33 -->
     <!-- END OF STRIPE SCHEMES -->
 
     <activity

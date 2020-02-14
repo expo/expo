@@ -3,10 +3,9 @@ package expo.modules.notifications.tokens;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.WeakHashMap;
 
+import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.tokens.interfaces.PushTokenListener;
 
 public class PushTokenManager implements SingletonModule, expo.modules.notifications.tokens.interfaces.PushTokenManager {
@@ -26,9 +25,9 @@ public class PushTokenManager implements SingletonModule, expo.modules.notificat
   public PushTokenManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
-    // Registers this singleton instance in static FirebaseTokenListenerService listeners collection.
+    // Registers this singleton instance in static FirebaseListenerService listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
-    FirebaseTokenListenerService.addListener(this);
+    FirebaseListenerService.addTokenListener(this);
   }
 
   @Override
@@ -67,13 +66,13 @@ public class PushTokenManager implements SingletonModule, expo.modules.notificat
   }
 
   /**
-   * Used by {@link FirebaseTokenListenerService} to notify of new tokens.
+   * Used by {@link FirebaseListenerService} to notify of new tokens.
    * Calls {@link PushTokenListener#onNewToken(String)} on all values
    * of {@link PushTokenManager#mListenerReferenceMap}.
    *
    * @param token New device push token.
    */
-  void onNewToken(String token) {
+  public void onNewToken(String token) {
     for (WeakReference<PushTokenListener> listenerReference : mListenerReferenceMap.values()) {
       PushTokenListener listener = listenerReference.get();
       if (listener != null) {

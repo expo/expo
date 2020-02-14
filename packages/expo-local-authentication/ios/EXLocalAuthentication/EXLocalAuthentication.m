@@ -68,7 +68,9 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
 {
   NSString *warningMessage;
   NSString *reason = options[@"promptMessage"];
+  NSString *cancelLabel = options[@"cancelLabel"];
   NSString *fallbackLabel = options[@"fallbackLabel"];
+  NSString *disableDeviceFallback = options[@"disableDeviceFallback"];
 
   if ([[self class] isFaceIdDevice]) {
     NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
@@ -84,11 +86,16 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
     context.localizedFallbackTitle = fallbackLabel;
   }
 
+  if (cancelLabel != nil) {
+    context.localizedCancelTitle = cancelLabel;
+  }
+
   if (@available(iOS 11.0, *)) {
     context.interactionNotAllowed = false;
   }
 
-  [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+  if (disableDeviceFallback) {
+    [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
           localizedReason:reason
                     reply:^(BOOL success, NSError *error) {
                       resolve(@{
@@ -97,6 +104,18 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
                                 @"warning": UMNullIfNil(warningMessage),
                                 });
                     }];
+  } else {
+    [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication
+          localizedReason:reason
+                    reply:^(BOOL success, NSError *error) {
+                      resolve(@{
+                                @"success": @(success),
+                                @"error": error == nil ? [NSNull null] : [self convertErrorCode:error],
+                                @"warning": UMNullIfNil(warningMessage),
+                                });
+                    }];
+  }
+
 }
 
 - (NSString *)convertErrorCode:(NSError *)error

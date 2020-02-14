@@ -187,10 +187,12 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BareExpo" */;
 			buildPhases = (
 				4B0225741A3EE6614741CF8A /* [CP] Check Pods Manifest.lock */,
+				21646C4123F2D18200CB927F /* Generate Dynamic Macros */,
 				FD4C38642228810C00325AF5 /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				21646C4223F2D1BA00CB927F /* Copy Bundle Resources Conditionally */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				F6332E868606A56C9C6C2366 /* [CP] Copy Pods Resources */,
 			);
@@ -273,7 +275,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+		};
+		21646C4123F2D18200CB927F /* Generate Dynamic Macros */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Dynamic Macros";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
+		};
+		21646C4223F2D1BA00CB927F /* Copy Bundle Resources Conditionally */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Bundle Resources Conditionally";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "$SRCROOT/Build-Phases/cp-bundle-resources-conditionally.sh\n";
 		};
 		4B0225741A3EE6614741CF8A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -470,6 +508,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "Bare Expo";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -492,6 +531,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = "Bare Expo";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

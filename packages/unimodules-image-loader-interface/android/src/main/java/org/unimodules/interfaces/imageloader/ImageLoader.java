@@ -20,14 +20,14 @@ public interface ImageLoader {
   Future<Bitmap> loadImageForDisplayFromURL(@NonNull String url);
 
   /**
-   * Loads full-sized image with no caching.
-   */
-  Future<Bitmap> loadImageForManipulationFromURL(@NonNull String url);
-
-  /**
    * Loads image into memory that might be cached and downsampled if necessary.
    */
   void loadImageForDisplayFromURL(@NonNull String url, ResultListener resultListener);
+
+  /**
+   * Loads full-sized image with no caching.
+   */
+  Future<Bitmap> loadImageForManipulationFromURL(@NonNull String url);
 
   /**
    * Loads full-sized image with no caching.

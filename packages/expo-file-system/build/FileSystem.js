@@ -1,5 +1,5 @@
-import UUID from 'uuid-js';
 import { Platform } from 'react-native';
+import uuidv4 from 'uuid/v4';
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentFileSystem from './ExponentFileSystem';
 import { EncodingType, } from './FileSystem.types';
@@ -109,7 +109,7 @@ export function createDownloadResumable(uri, fileUri, options, callback, resumeD
 }
 export class DownloadResumable {
     constructor(url, fileUri, options = {}, callback, resumeData) {
-        this._uuid = UUID.create(4).toString();
+        this._uuid = uuidv4();
         this._url = url;
         this._fileUri = fileUri;
         this._options = options;

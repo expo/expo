@@ -1,7 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 
 import ExpoContacts from './ExpoContacts';
 
@@ -281,7 +281,7 @@ export async function getPagedContactsAsync(
 
 export async function getContactByIdAsync(
   id: string,
-  fields?: FieldType
+  fields?: FieldType[]
 ): Promise<Contact | undefined> {
   if (!ExpoContacts.getContactsAsync) {
     throw new UnavailabilityError('Contacts', 'getContactsAsync');
@@ -303,7 +303,7 @@ export async function getContactByIdAsync(
   return undefined;
 }
 
-export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {
+export async function addContactAsync(contact: Contact, containerId?: string): Promise<string> {
   if (!ExpoContacts.addContactAsync) {
     throw new UnavailabilityError('Contacts', 'addContactAsync');
   }
@@ -381,7 +381,7 @@ export async function createGroupAsync(name?: string, containerId?: string): Pro
     throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
-  name = name || UUID.create().toString();
+  name = name || uuidv4();
   if (!containerId) {
     containerId = await getDefaultContainerIdAsync();
   }

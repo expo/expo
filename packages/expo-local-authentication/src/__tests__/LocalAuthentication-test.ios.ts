@@ -6,10 +6,12 @@ beforeEach(() => {
   ExpoLocalAuthentication.authenticateAsync.mockImplementation(async () => ({ success: true }));
 });
 
-it(`uses promptMessage and fallbackLabel on iOS`, async () => {
+it(`uses options on iOS`, async () => {
   const options = {
     promptMessage: 'Authentication is required',
+    cancelLabel: 'Abort',
     fallbackLabel: 'Use passcode',
+    disableDeviceFallback: false,
   };
   await LocalAuthentication.authenticateAsync(options);
 
