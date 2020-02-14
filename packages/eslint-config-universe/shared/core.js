@@ -157,7 +157,10 @@ module.exports = {
       'warn',
       {
         groups: [['builtin', 'external'], 'internal', ['parent', 'index', 'sibling']],
-        'newlines-between': 'ignore',
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+        },
       },
     ],
   },
@@ -170,4 +173,12 @@ module.exports = {
       node: { extensions: jsExtensions },
     },
   },
+  overrides: [
+    {
+      files: ['*.d.ts'],
+      rules: {
+        'import/order': 'off',
+      },
+    },
+  ],
 };
