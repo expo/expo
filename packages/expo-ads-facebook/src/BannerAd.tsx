@@ -1,6 +1,6 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import React from 'react';
 import { View } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 
 type Props = {
   placementId: string;

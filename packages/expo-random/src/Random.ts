@@ -1,5 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { toByteArray } from 'base64-js';
+
 import ExpoRandom from './ExpoRandom';
 
 function assertByteCount(value: any): void {

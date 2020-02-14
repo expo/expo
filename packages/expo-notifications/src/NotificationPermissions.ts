@@ -1,4 +1,5 @@
 import { Platform } from '@unimodules/core';
+
 import NotificationPermissionsModule, {
   IosNotificationPermissionsRequest,
   AndroidNotificationPermissionRequest,

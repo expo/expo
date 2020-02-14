@@ -1,5 +1,5 @@
-import ExponentAV from './ExponentAV';
 import { PlaybackStatus } from './AV';
+import ExponentAV from './ExponentAV';
 
 export default {
   get name(): string {

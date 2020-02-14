@@ -1,4 +1,5 @@
 import { NativeModulesProxy } from '@unimodules/core';
+
 import * as Amplitude from '../Amplitude';
 
 const { ExpoAmplitude } = NativeModulesProxy;

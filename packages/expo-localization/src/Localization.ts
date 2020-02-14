@@ -1,5 +1,4 @@
 import ExpoLocalization from './ExpoLocalization';
-
 import { Localization } from './Localization.types';
 
 // Web, Android, and some iOS values use `-`. This will convert the iOS values that use `_`
