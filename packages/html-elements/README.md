@@ -77,7 +77,6 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<q />`][html-q]                   |          [`<Q />`](#q)          |
 | [`<s />`][html-s]                   |          [`<S />`](#s)          |
 | [`<section />`][html-section]       |    [`<Section />`](#section)    |
-| [`<small />`][html-small]           |      [`<Small />`](#small)      |
 | [`<strong />`][html-strong]         |     [`<Strong />`](#strong)     |
 | [`<table />`][html-table]           |      [`<Table />`](#table)      |
 | [`<tbody />`][html-tbody]           |      [`<TBody />`](#tbody)      |
@@ -376,7 +375,7 @@ Text elements currently use `Text` universally rendering either a `div` or `span
 - All elements accept styles from `StyleSheet` API.
 
 ```tsx
-import { P, B, S, I, BR, Small, Code } from '@expo/html-elements';
+import { P, B, S, I, BR, Code } from '@expo/html-elements';
 
 export default () => (
   <>
@@ -387,7 +386,6 @@ export default () => (
     <BR />
     <I>Italic</I>
     <Code>const foo = true</Code>
-    <Small>Small text</Small>
   </>
 );
 ```
@@ -398,7 +396,7 @@ Standard paragraph element.
 
 | Platform  | Output                                                        |
 | --------- | ------------------------------------------------------------- |
-| Universal | `<Text style={{ fontSize: '1em', marginVertical: '1em' }} />` |
+| Universal | `<Text style={{ fontSize: 14, marginVertical: '1em' }} />` |
 
 ### `<B/>`
 
@@ -447,14 +445,6 @@ Alternate italic text.
 | Platform  | Output                                     |
 | --------- | ------------------------------------------ |
 | Universal | `<Text style={{ fontStyle: 'italic' }} />` |
-
-### `<Small/>`
-
-Smaller than default text.
-
-| Platform  | Output                              |
-| --------- | ----------------------------------- |
-| Universal | `<Text style={{ fontSize: 10 }} />` |
 
 ### `<Code/>`
 

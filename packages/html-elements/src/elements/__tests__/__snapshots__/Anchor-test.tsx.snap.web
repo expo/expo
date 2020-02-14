@@ -7,11 +7,6 @@ exports[`renders A 1`] = `
   dir="auto"
   href="#"
   role="link"
-  style={
-    Object {
-      "fontSize": "1em",
-    }
-  }
   target="_parent"
 />
 `;
