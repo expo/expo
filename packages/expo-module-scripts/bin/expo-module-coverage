@@ -9,5 +9,5 @@ script_dir="$(dirname "$0")"
 "$script_dir/npx" jest --coverage --preset expo-module-scripts/"$1"/web
 
 if [[ $1 = 'universal' ]]; then
-    "$script_dir/npx" jest --coverage --preset expo-module-scripts/"$1"/node
+  "$script_dir/npx" jest --coverage --preset expo-module-scripts/"$1"/node
 fi
