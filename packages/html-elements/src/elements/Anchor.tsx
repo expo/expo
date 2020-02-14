@@ -1,7 +1,6 @@
 import React, { ComponentType, forwardRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
-import { em } from '../css/units';
 import Text from '../primitives/Text';
 import { LinkProps } from './Text.types';
 
