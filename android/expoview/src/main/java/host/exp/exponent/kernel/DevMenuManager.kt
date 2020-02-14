@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
@@ -71,19 +72,23 @@ class DevMenuManager {
     }
 
     UiThreadUtil.runOnUiThread {
-      val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
-      val devMenuView = prepareRootView(devMenuModule.getInitialProps())
+      try {
+        val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
+        val devMenuView = prepareRootView(devMenuModule.getInitialProps())
 
-      // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
-      // However, when removing it, we should set it back to the orientation from before showing the dev menu.
-      orientationBeforeShowingDevMenu = activity.requestedOrientation
-      activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
+        // However, when removing it, we should set it back to the orientation from before showing the dev menu.
+        orientationBeforeShowingDevMenu = activity.requestedOrientation
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-      activity.addView(devMenuView)
+        activity.addView(devMenuView)
 
-      // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
-      // Otherwise, touches and other gestures may not work correctly.
-      kernel?.reactInstanceManager?.onHostResume(activity)
+        // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
+        // Otherwise, touches and other gestures may not work correctly.
+        kernel?.reactInstanceManager?.onHostResume(activity)
+      } catch (exception: Exception) {
+        Log.e("ExpoDevMenu", exception.message)
+      }
     }
   }
 
@@ -259,10 +264,16 @@ class DevMenuManager {
    * that will render the other endpoint of home app whose name is described by [DEV_MENU_JS_MODULE_NAME] constant.
    * Also sets initialProps, layout settings and initial animation values.
    */
+  @Throws(Exception::class)
   private fun prepareRootView(initialProps: Bundle): ReactRootView {
+    // Throw an exception in case the kernel is not initialized yet.
+    if (kernel?.reactInstanceManager == null) {
+      throw Exception("Kernel's React instance manager is not initialized yet.")
+    }
+
     if (reactRootView == null) {
-      reactRootView = ReactUnthemedRootView(kernel?.activityContext)
-      reactRootView?.startReactApplication(kernel?.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
+      reactRootView = ReactUnthemedRootView(kernel.activityContext)
+      reactRootView?.startReactApplication(kernel.reactInstanceManager, DEV_MENU_JS_MODULE_NAME, initialProps)
     } else {
       reactRootView?.appProperties = initialProps
     }

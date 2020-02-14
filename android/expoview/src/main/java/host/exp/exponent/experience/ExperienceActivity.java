@@ -342,7 +342,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onDoneLoading() {
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_LOADING_REACT_NATIVE);
     Analytics.sendTimedEvents(mManifestUrl);
-    maybeDisplayOnboarding();
+    maybeShowOnboarding();
   }
 
   /*
@@ -623,7 +623,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    * Shows the dev menu with onboarding view if this is the first time the user opens an experience,
    * or he hasn't finished onboarding yet.
    */
-  private void maybeDisplayOnboarding() {
+  public void maybeShowOnboarding() {
     boolean isOnboardingFinished = mDevMenuManager.isOnboardingFinished();
     boolean shouldShowOnboarding = !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished;
 

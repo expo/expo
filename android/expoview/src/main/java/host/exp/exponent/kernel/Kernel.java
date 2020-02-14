@@ -167,7 +167,7 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel(AppCompatActivity activity) {
+  public void startJSKernel(Activity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
@@ -261,6 +261,7 @@ public class Kernel extends KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
+
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
                 .setCurrentActivity(getActivityContext())
@@ -284,6 +285,13 @@ public class Kernel extends KernelInterface {
 
             // Reset this flag if we crashed
             mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
+
+            // If we're opening an experience on the emulator from the cli then it's possible we can't show onboarding yet
+            // because home is still not initialized. For this case we can trigger it from here.
+            ExperienceActivity currentExperienceActivity = ExperienceActivity.getCurrentActivity();
+            if (currentExperienceActivity != null) {
+              currentExperienceActivity.maybeShowOnboarding();
+            }
           }
         });
       }

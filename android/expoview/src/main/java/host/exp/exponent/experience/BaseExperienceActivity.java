@@ -62,7 +62,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   private static BaseExperienceActivity sVisibleActivity;
 
   @Inject
-  Kernel mKernel;
+  protected Kernel mKernel;
 
   private long mOnResumeTime;
 
