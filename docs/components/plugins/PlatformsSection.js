@@ -19,11 +19,24 @@ const STYLES_CELL = css`
   }
 `;
 
+const STYLES_LINK = css`
+  text-decoration: none;
+`;
+
 function getInfo(isSupported, { title }) {
-  if (isSupported) {
+  if (isSupported === true) {
     return {
       children: '✅',
       title: `${title} is supported`,
+    };
+  } else if (typeof isSupported === 'object') {
+    return {
+      children: (
+        <a className={STYLES_LINK} target="_blank" href={isSupported.pending}>
+          ⏱ Pending
+        </a>
+      ),
+      title: `${title} support is pending`,
     };
   }
   return {
@@ -40,14 +53,14 @@ const platforms = [
   { title: 'Web', propName: 'web' },
 ];
 
-// type Props = { ios: boolean, android: boolean, web: boolean, simulator: boolean, emulator: boolean };
+// type Props = { title?: string; ios: boolean; android: boolean; web: boolean; simulator: boolean; emulator: boolean; };
 
 export default class PlatformsSection extends React.Component {
   render() {
     return (
       <div>
         <h4 data-heading="true" className={STYLES_TITLE}>
-          Platform Compatibility
+          {this.props.title || 'Platform Compatibility'}
         </h4>
         <table>
           <thead>
