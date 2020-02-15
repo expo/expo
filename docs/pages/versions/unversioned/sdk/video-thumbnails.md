@@ -5,8 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-video-thu
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 **`expo-video-thumbnails`** allows you to generate an image to serve as a thumbnail from a video file.
 
 <PlatformsSection android emulator ios simulator />
