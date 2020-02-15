@@ -1,8 +1,10 @@
+
 import mapValues from 'lodash/mapValues';
 import { AsyncStorage } from 'react-native';
 
 import * as Kernel from '../kernel/Kernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import getExperienceIdFromManifest from '../utils/getExperienceIdFromManifest';
 
 type Settings = object;
 
@@ -101,7 +103,9 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
     let item1time = item1.time ? item1.time : 0;
     return item2time - item1time;
   });
-  let historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
+  let historyItem = history.find(
+    item => getExperienceIdFromManifest(item.manifest) === experienceId
+  );
   if (historyItem) {
     return { url: historyItem.url };
   }
