@@ -273,7 +273,7 @@ void ABI36_0_0EXRegisterScopedModule(Class moduleClass, ...)
 {
   BOOL isDeveloper = [params[@"isDeveloper"] boolValue];
   NSDictionary *manifest = params[@"manifest"];
-  NSString *experienceId = manifest[@"id"];
+  NSString *experienceId = manifest[@"scopeKey"] ?: manifest[@"id"];
   NSDictionary *services = params[@"services"];
   BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
