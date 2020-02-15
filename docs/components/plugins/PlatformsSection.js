@@ -19,13 +19,31 @@ const STYLES_CELL = css`
   }
 `;
 
-function getEmoji(isSupported) {
-  return isSupported ? '✅' : '❌';
+function getInfo(isSupported, { title }) {
+  if (isSupported) {
+    return {
+      children: '✅',
+      title: `${title} is supported`,
+    };
+  }
+  return {
+    children: '❌',
+    title: `${title} is not supported`,
+  };
 }
+
+const platforms = [
+  { title: 'Android Device', propName: 'android' },
+  { title: 'Android Emulator', propName: 'emulator' },
+  { title: 'iOS Device', propName: 'ios' },
+  { title: 'iOS Simulator', propName: 'simulator' },
+  { title: 'Web', propName: 'web' },
+];
+
+// type Props = { ios: boolean, android: boolean, web: boolean, simulator: boolean, emulator: boolean };
 
 export default class PlatformsSection extends React.Component {
   render() {
-    const { ios, android, web, simulator, emulator } = this.props;
     return (
       <div>
         <h4 data-heading="true" className={STYLES_TITLE}>
@@ -34,19 +52,19 @@ export default class PlatformsSection extends React.Component {
         <table>
           <thead>
             <tr>
-              <th>Android Device</th>
-              <th>Android Emulator</th>
-              <th>iOS Device</th>
-              <th>iOS Simulator</th>
-              <th>Web</th>
+              {platforms.map(({ title }) => (
+                <th key={title}>{title}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             <tr>
-              {[android, emulator, ios, simulator, web].map((platform, index) => (
-                <td key={`-${index}`} className={STYLES_CELL}>
-                  {getEmoji(platform)}
-                </td>
+              {platforms.map(platform => (
+                <td
+                  key={platform.title}
+                  className={STYLES_CELL}
+                  {...getInfo(this.props[platform.propName], platform)}
+                />
               ))}
             </tr>
           </tbody>
