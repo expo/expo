@@ -3,15 +3,13 @@ title: KeepAwake
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-keep-awake'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6889' }} />
 
 ## Installation
 

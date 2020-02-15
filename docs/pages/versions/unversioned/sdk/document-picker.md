@@ -3,17 +3,15 @@ title: DocumentPicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-document-picker'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import Video from '../../../../components/plugins/Video'
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
 <Video file={"sdk/documentpicker.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

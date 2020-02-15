@@ -3,13 +3,11 @@ title: NetInfo
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-netinfo'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`@react-native-community/netinfo`** allows you to get information about connection type and connection quality.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

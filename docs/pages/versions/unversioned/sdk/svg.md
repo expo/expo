@@ -3,15 +3,13 @@ title: Svg
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-svg'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 **`react-native-svg`** allows you to use SVGs in your app, with support for interactivity and animation.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
