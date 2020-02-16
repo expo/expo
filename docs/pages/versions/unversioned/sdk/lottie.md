@@ -1,15 +1,13 @@
 ---
 title: Lottie
-sourceCodeUrl: "https://github.com/react-native-community/lottie-react-native"
+sourceCodeUrl: 'https://github.com/react-native-community/lottie-react-native'
 ---
+
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ❌    |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -26,7 +24,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 The Lottie SDK currently lives under Expo's **DangerZone** namespace because it's implementation is still in Alpha. You can import it like this:
 
 ```javascript
-import LottieView from "lottie-react-native";
+import LottieView from 'lottie-react-native';
 ```
 
 ## Using the Lottie API

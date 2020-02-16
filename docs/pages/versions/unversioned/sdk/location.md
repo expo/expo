@@ -3,15 +3,13 @@ title: Location
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

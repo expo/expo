@@ -1,17 +1,14 @@
 ---
 title: BlurView
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-blur"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-blur'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -40,6 +37,7 @@ export default function App() {
   );
 }
 ```
+
 </SnackInline>
 
 ## API

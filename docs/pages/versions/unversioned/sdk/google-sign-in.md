@@ -3,15 +3,13 @@ title: GoogleSignIn
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-sign-in'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [Google](../google) or [AppAuth](../app-auth).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
 ## Installation
 
@@ -34,7 +32,6 @@ When using Firebase, also configure the Google-services configuration files:
 4. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-Info.plist`.
 5. Also in `app.json`, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
 6. And also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
-
 
 ```js
  // app.json
@@ -90,7 +87,7 @@ export default class AuthScreen extends React.Component {
   initAsync = async () => {
     await GoogleSignIn.initAsync({
       // You may ommit the clientId when the firebase `googleServicesFile` is configured
-      clientId: '<YOUR_IOS_CLIENT_ID>', 
+      clientId: '<YOUR_IOS_CLIENT_ID>',
     });
     this._syncUserWithStateAsync();
   };
@@ -139,7 +136,7 @@ Before using the API we first need to call `GoogleSignIn.initAsync({ ... })` whi
 try {
   await GoogleSignIn.initAsync({
     // You may ommit the clientId when the firebase `googleServicesFile` is configured
-    clientId: '<YOUR_IOS_CLIENT_ID>'
+    clientId: '<YOUR_IOS_CLIENT_ID>',
     // Provide other custom options...
   });
 } catch ({ message }) {

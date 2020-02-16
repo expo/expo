@@ -3,13 +3,11 @@ title: Font
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-font'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../guides/using-custom-fonts/#using-custom-fonts) guide.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

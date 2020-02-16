@@ -3,6 +3,8 @@ title: Haptics
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-haptics'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-haptics`** provides haptic (touch) feedback for
@@ -19,11 +21,7 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 - iOS version is less than 10 (iPhone 7 is the first phone to support this)
   - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
