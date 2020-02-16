@@ -3,17 +3,14 @@ title: DateTimePicker
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-datetimepicker'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '../../../../components/plugins/Video'
 
 A component that provides access to the system UI for date and time selection.
 
 <Video file={"sdk/datetimepicker.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

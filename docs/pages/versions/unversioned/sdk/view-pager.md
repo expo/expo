@@ -3,17 +3,15 @@ title: ViewPager
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-viewpager'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import Video from '../../../../components/plugins/Video'
 
 **`@react-native-community/viewpager`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
 <Video file={"sdk/viewpager.mp4"} loop={"false"}/>
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

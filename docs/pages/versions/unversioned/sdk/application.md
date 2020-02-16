@@ -3,13 +3,11 @@ title: Application
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-application'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-application`** provides useful information about the native application, itself, such as the ID, app name, and build version.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
