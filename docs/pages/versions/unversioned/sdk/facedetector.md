@@ -3,13 +3,11 @@ title: FaceDetector
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-face-detector'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ✅  |
+<PlatformsSection android ios web={{ pending: 'https://github.com/expo/expo/issues/6888' }} />
 
 ## Installation
 

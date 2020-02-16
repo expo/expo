@@ -3,16 +3,14 @@ title: Contacts
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-contacts`** provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
@@ -14,11 +15,7 @@ If you are trying to implement sign in with [Google](../google-sign-in) or [Face
 
 Currently, this module only supports on Android, and iOS. Web support is planned to be added. Track it here: [Web support in expo-app-auth](https://github.com/expo/expo/issues/6883).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
 ## Installation
 
@@ -26,7 +23,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
- Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
+Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 
 <SnackInline>
 

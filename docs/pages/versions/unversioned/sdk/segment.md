@@ -3,15 +3,13 @@ title: Segment
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-segment'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-analytics-segment`** provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6887' }} />
 
 ## Installation
 

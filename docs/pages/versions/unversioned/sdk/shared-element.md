@@ -3,15 +3,13 @@ title: SharedElement
 sourceCodeUrl: 'https://github.com/IjzerenHein/react-native-shared-element'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`react-native-shared-element`** provides a set of building blocks to help you build shared element transitions &mdash; animations where you transition an element in one scene smoothly into another.
 
 > Note: this library is still in alpha. Please refer to [the issue tracker](https://github.com/IjzerenHein/react-native-shared-element/issues) if you encounter any problems.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

@@ -3,15 +3,13 @@ title: Reanimated
 sourceCodeUrl: 'https://github.com/kmagiera/react-native-reanimated'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`react-native-reanimated`** provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations. From the project's README:
 
 > It provides a more comprehensive, low level abstraction for the Animated library API to be built on top of and hence allow for much greater flexibility especially when it comes to gesture based interactions.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
