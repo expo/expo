@@ -18,7 +18,7 @@ assignees: ''
 
 ### [2. Quality Assurance](https://git.io/JeKCx#stage-2---quality-assurance)
 
-- [ ] [2.1. Quality Assurance](https://git.io/JeKCx#21-quality-assurance)
+- [ ] [2.1. Versioned Quality Assurance](https://git.io/JeKCx#21-versioned-quality-assurance)
 - [ ] [2.2. Publish demo apps](https://git.io/JeKCx#22-publish-demo-apps)
 
 ### [3. Prerelease](https://git.io/JeKCx#stage-3---prerelease)

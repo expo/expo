@@ -7,7 +7,7 @@
     - [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance)
     - [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk)
   - [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
-    - [2.1. Quality Assurance](#21-quality-assurance)
+    - [2.1. Quality Assurance](#21-versioned-quality-assurance)
     - [2.2. Publish demo apps](#22-publish-demo-apps)
   - [Stage 3 - Prerelease](#stage-3---prerelease)
     - [3.1. Tag React Native fork](#31-tag-react-native-fork)
@@ -27,7 +27,7 @@
   - [Stage 6 - Final release](#stage-6---final-release)
     - [6.1. Publishing final packages to NPM registry](#61-publishing-final-packages-to-npm-registry)
     - [6.2. Publishing final project templates](#62-publishing-final-project-templates)
-    - [6.3. Generate and deploy new docs](63-generate-and-deploy-new-docs)
+    - [6.3. Generate and deploy new docs](#63-generate-and-deploy-new-docs)
   - [Stage 7 - Snack](#stage-7---snack)
     - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
   - [Stage 8 - Press release](#stage-8---press-release)
@@ -159,7 +159,7 @@
 
 | Prerequisites                                             |
 | --------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance](#21-quality-assurance) |
+| [2.1. Versioned Quality Assurance](#21-versioned-quality-assurance) |
 
 **Why:** We need to publish prerelease versions of the packages so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release.
 
