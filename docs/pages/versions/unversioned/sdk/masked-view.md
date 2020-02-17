@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['@react-native-community/masked-view']} href="https://github.com/react-native-community/react-native-masked-view#getting-started" />
+<InstallSection cmd={['expo install @react-native-community/masked-view']} href="https://github.com/react-native-community/react-native-masked-view#getting-started" />
 
 ## Usage
 

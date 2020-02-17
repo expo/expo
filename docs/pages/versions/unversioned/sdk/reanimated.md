@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['react-native-reanimated']} href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
+<InstallSection cmd={['expo install react-native-reanimated']} href="https://github.com/kmagiera/react-native-reanimated#getting-started" />
 
 ## API Usage
 

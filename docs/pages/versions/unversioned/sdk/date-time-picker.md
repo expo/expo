@@ -15,7 +15,7 @@ A component that provides access to the system UI for date and time selection.
 
 ## Installation
 
-<InstallSection cmd={['@react-native-community/datetimepicker']} href="https://github.com/react-native-community/react-native-datetimepicker#linking" />
+<InstallSection cmd={['expo install @react-native-community/datetimepicker']} href="https://github.com/react-native-community/react-native-datetimepicker#linking" />
 
 ## Usage
 

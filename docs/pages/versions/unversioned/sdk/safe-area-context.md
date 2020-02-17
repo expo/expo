@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['react-native-safe-area-context']} href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
+<InstallSection cmd={['expo install react-native-safe-area-context']} href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
 
 ## API
 

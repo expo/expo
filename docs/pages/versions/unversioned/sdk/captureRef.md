@@ -14,7 +14,7 @@ If you're interested in taking snapshots from the GLView, we recommend you use [
 
 ## Installation
 
-<InstallSection cmd={['react-native-view-shot']} href="https://github.com/gre/react-native-view-shot" />
+<InstallSection cmd={['expo install react-native-view-shot']} href="https://github.com/gre/react-native-view-shot" />
 
 ## API
 

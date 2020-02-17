@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['react-native-shared-element']} href="https://github.com/IjzerenHein/react-native-shared-element#installation" />
+<InstallSection cmd={['expo install react-native-shared-element']} href="https://github.com/IjzerenHein/react-native-shared-element#installation" />
 
 ## API
 
