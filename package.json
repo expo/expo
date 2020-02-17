@@ -34,6 +34,6 @@
     "prettier": "^1.19.0"
   },
   "resolutions": {
-    "@react-native-community/cli-platform-ios": "^3.0.0"
+    "@react-native-community/cli-platform-ios": "3.0.0"
   }
 }
