@@ -2,8 +2,7 @@ package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
 
-import com.google.firebase.messaging.RemoteMessage;
-
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -15,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
-import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -87,11 +86,13 @@ public class NotificationsHandler extends ExportedModule implements Notification
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
-   * @param message Received message
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
    */
   @Override
-  public void onMessage(RemoteMessage message) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, message, this);
+  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, identifier, request, trigger, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
@@ -102,7 +103,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    * Apps get notified of this event by {@link NotificationsEmitter}.
    */
   @Override
-  public void onDeletedMessages() {
+  public void onNotificationsDropped() {
     // do nothing
   }
 
