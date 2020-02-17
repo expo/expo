@@ -1,79 +1,41 @@
-import React, { PropsWithChildren, ComponentType, forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { ComponentType, forwardRef, PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
 import Text, { TextProps } from '../primitives/Text';
 import View, { ViewProps } from '../primitives/View';
 
-export const UL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
-  const { children } = props;
+function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
+  return forwardRef((props: ViewProps, ref) => {
+    return <View {...nativeProps} {...props} ref={ref} />;
+  }) as ComponentType<ViewProps>;
+}
 
-  const elements = React.Children.toArray(children).map(element => {
-    if (React.isValidElement(element)) return React.cloneElement(element, { bullet: '\u00B7' });
-    return element;
-  });
-
-  return <View {...props} style={[styles.ul, props.style]} children={elements} ref={ref} />;
-}) as ComponentType<ViewProps>;
-
-export const OL = forwardRef((props: PropsWithChildren<ViewProps>, ref) => {
-  const { children } = props;
-
-  const elements = React.Children.toArray(children).map((element, index) => {
-    if (React.isValidElement(element))
-      return React.cloneElement(element, { bullet: `${index + 1}.` });
-    return element;
-  });
-
-  return <View {...props} style={[styles.ol, props.style]} children={elements} ref={ref} />;
-}) as ComponentType<ViewProps>;
+export const UL = createView(
+  Platform.select({
+    web: {
+      accessibilityRole: 'list',
+    },
+  })
+);
 
 function isTextProps(props: any): props is TextProps {
   // Treat <li></li> as a Text element.
   return typeof props.children === 'string';
 }
 
-type LIProps = (TextProps | ViewProps) & { bullet?: string };
+type LIProps = TextProps | ViewProps;
 
 export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
-  const { bullet, children } = props;
-
   if (isTextProps(props)) {
-    return (
-      <Text {...props} style={props.style} ref={ref}>
-        {bullet} {children}
-      </Text>
-    );
+    const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+      web: 'listitem',
+      default: props.accessibilityRole,
+    });
+    return <Text {...props} accessibilityRole={accessibilityRole} ref={ref} />;
   }
-  return (
-    <View {...props} style={[styles.liWrapper, props.style]} ref={ref}>
-      <Text>{bullet}</Text>
-      {children}
-    </View>
-  );
+  const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+    web: 'listitem',
+    default: props.accessibilityRole,
+  });
+  return <View {...props} accessibilityRole={accessibilityRole} ref={ref} />;
 }) as ComponentType<LIProps>;
-
-const styles = StyleSheet.create({
-  caption: {
-    textAlign: 'center',
-  },
-  ul: {
-    paddingLeft: 20,
-  },
-  ol: {
-    paddingLeft: 20,
-  },
-  liWrapper: {
-    flexDirection: 'row',
-  },
-  th: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    flex: 1,
-  },
-  tr: {
-    flexDirection: 'row',
-  },
-  td: {
-    flex: 1,
-  },
-});

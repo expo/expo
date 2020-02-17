@@ -126,6 +126,8 @@ export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
 
   accessibilityRole?:
+    | 'list'
+    | 'listitem'
     | 'complementary'
     | 'contentinfo'
     | 'region'
