@@ -70,14 +70,13 @@ async function createAlbum(assets, name) {
 }
 
 async function checkIfThrows(f) {
-  let hasError = false;
   try {
     await f();
   } catch (e) {
-    hasError = true;
+    return true;
   }
 
-  return hasError;
+  return false;
 }
 
 function timeoutWrapper(fun, time) {
