@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 public class VideoThumbnailsModule extends ExportedModule {
   private static final String TAG = "ExpoVideoThumbnails";
@@ -52,6 +51,7 @@ public class VideoThumbnailsModule extends ExportedModule {
   private static class GetThumbnailAsyncTask extends AsyncTask<Void, Void, Bitmap> {
     private String mSourceFilename;
     private ReadableArguments mVideoOptions;
+    Exception mError;
 
     GetThumbnailAsyncTask(String sourceFilename, ReadableArguments videoOptions) {
       mSourceFilename = sourceFilename;
@@ -61,13 +61,18 @@ public class VideoThumbnailsModule extends ExportedModule {
     @Override
     protected final Bitmap doInBackground(Void... voids) {
       long time = mVideoOptions.getInt(KEY_TIME, 0) * 1000;
-      Map headers = mVideoOptions.getMap(KEY_HEADERS, new HashMap<String, String>());
       MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-      if (URLUtil.isFileUrl(mSourceFilename)) {
-        retriever.setDataSource(Uri.decode(mSourceFilename).replace("file://", ""));
-      } else {
-        retriever.setDataSource(Uri.decode(mSourceFilename), headers);
+      try {
+        if (URLUtil.isFileUrl(mSourceFilename)) {
+          retriever.setDataSource(Uri.decode(mSourceFilename).replace("file://", ""));
+        } else {
+          retriever.setDataSource(mSourceFilename, mVideoOptions.getMap(KEY_HEADERS, new HashMap<String, String>()));
+        }
+      } catch (RuntimeException e) {
+        mError = e;
+        return null;
       }
+
       return retriever.getFrameAtTime(time, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
     }
   }
@@ -92,8 +97,12 @@ public class VideoThumbnailsModule extends ExportedModule {
     GetThumbnailAsyncTask getThumbnailAsyncTask = new GetThumbnailAsyncTask(sourceFilename, videoOptions) {
       @Override
       protected void onPostExecute(Bitmap thumbnail) {
-        if (thumbnail == null) {
-          promise.reject(ERR_COULD_NOT_GET_THUMBNAIL, "Could not get thumbnail.");
+        if (thumbnail == null || mError != null) {
+          String errorMessage = "Could not generate thumbnail.";
+          if (mError != null) {
+            errorMessage = String.format("%s %s", errorMessage, mError.getMessage());
+          }
+          promise.reject(ERR_COULD_NOT_GET_THUMBNAIL, errorMessage, mError);
           return;
         }
         try {
