@@ -65,7 +65,7 @@
 
 ## 1.3. Unversioned Quality Assurance
 
-| Requirements                                        |
+| Prerequisites                                       |
 | --------------------------------------------------- |
 | [1.2. Update React Native](#12-update-react-native) |
 
@@ -78,7 +78,7 @@
 
 ## 1.4. Versioning code for the new SDK
 
-| Requirements                                                            |
+| Prerequisites                                                           |
 | ----------------------------------------------------------------------- |
 | [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance) |
 
@@ -100,7 +100,7 @@
 
 ## 2.1. Versioned Quality Assurance
 
-| Requirements                                                                |
+| Prerequisites                                                               |
 | --------------------------------------------------------------------------- |
 | [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk) |
 
@@ -112,7 +112,7 @@
 
 ## 2.2. Publish demo apps
 
-| Requirements                                                        |
+| Prerequisites                                                       |
 | ------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance](#21-versioned-quality-assurance) |
 
@@ -128,7 +128,7 @@
 
 ## 3.1. Tag React Native fork
 
-| Requirements                                                        |
+| Prerequisites                                                       |
 | ------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance](#21-versioned-quality-assurance) |
 
@@ -151,7 +151,7 @@
 
 ## 3.3. Publishing prerelease packages
 
-| Requirements                                              |
+| Prerequisites                                             |
 | --------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance](#21-quality-assurance) |
 
@@ -163,7 +163,7 @@
 
 ## 3.4. Publishing prerelease project templates
 
-| Requirements                                                              |
+| Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
 | [3.1. Tag React Native fork](#31-tag-react-native-fork)                   |
 | [3.2. Generate new mocks](#32-generate-new-mocks)                         |
@@ -181,7 +181,7 @@
 
 ## 4.1. Cutting off release branch
 
-| Requirements                                                                                |
+| Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
 | [3.4. Publishing prerelease project templates](#34-publishing-prerelease-project-templates) |
 
@@ -191,7 +191,7 @@
 
 ## 4.2. Releasing beta version
 
-| Requirements                                                      |
+| Prerequisites                                                     |
 | ----------------------------------------------------------------- |
 | [4.1. Cutting off release branch](#41-cutting-off-release-branch) |
 
@@ -218,7 +218,7 @@
 
 ## 4.3. Making a simulator build
 
-| Requirements                                                      |
+| Prerequisites                                                     |
 | ----------------------------------------------------------------- |
 | [4.1. Cutting off release branch](#41-cutting-off-release-branch) |
 
@@ -232,7 +232,7 @@
 
 ## 4.4. Submitting to the stores
 
-| Requirements                                              |
+| Prerequisites                                             |
 | --------------------------------------------------------- |
 | [4.2. Releasing beta version](#42-releasing-beta-version) |
 
@@ -255,7 +255,7 @@
 
 ## 5.1. Updating ExpoKit
 
-| Requirements                                                              |
+| Prerequisites                                                             |
 | ------------------------------------------------------------------------- |
 | [3.3. Publishing prerelease packages](#33-publishing-prerelease-packages) |
 | [4.2. Releasing beta version](#42-releasing-beta-version)                 |
@@ -273,7 +273,7 @@
 
 ## 5.2. Make shell app build
 
-| Requirements                                  |
+| Prerequisites                                 |
 | --------------------------------------------- |
 | [5.1. Updating ExpoKit](#51-updating-expokit) |
 
@@ -294,7 +294,7 @@
 
 ## 5.4. Deploy Turtle with new shell tarballs
 
-| Requirements                                                        |
+| Prerequisites                                                       |
 | ------------------------------------------------------------------- |
 | [5.2. Make shell app build](#52-make-shell-app-build)               |
 | [5.3. Make adhoc client shell app](#53-make-adhoc-client-shell-app) |
@@ -319,7 +319,7 @@
 
 ## 6.2. Publishing final project templates
 
-| Requirements                                                                                    |
+| Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
 | [6.1. Publishing final packages to NPM registry](#61-publishing-final-packages-to-npm-registry) |
 
@@ -349,7 +349,7 @@
 
 ## 8.2. Post on Twitter
 
-| Requirements                                        |
+| Prerequisites                                       |
 | --------------------------------------------------- |
 | [8.1. Publish a blog post](#81-publish-a-blog-post) |
 
