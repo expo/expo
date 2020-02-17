@@ -424,9 +424,121 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         }
     }
 
+    // @tsapeta This method can be removed once we fully remove support for ExpoKit,
+    // then our React Native fork will be used only in managed workflow and standalone builds have dev support disabled anyway.
+    public boolean isExpoStandaloneApp() {
+        try {
+            return (boolean) Class.forName("host.exp.exponent.Constants").getMethod("isStandaloneApp").invoke(null);
+        } catch (Exception e) {
+            // This shouldn't ever happen, but `false` as a fallback seems to be better than `true`.
+            FLog.e("Expo", "Unable to find host.exp.exponent.Constants#isStandaloneApp method.");
+            return false;
+        }
+    }
+
     @Override
     public void showDevOptionsDialog() {
-    // @tsapeta: React Native dev options shouldn't show up in Expo managed workflow.
+        if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey() || !isExpoStandaloneApp()) {
+            return;
+        }
+        LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
+        /* register standard options */
+        options.put(mApplicationContext.getString(R.string.reactandroid_catalyst_reload), new DevOptionHandler() {
+
+            @Override
+            public void onOptionSelected() {
+                if (!mDevSettings.isJSDevModeEnabled() && mDevSettings.isHotModuleReplacementEnabled()) {
+                    Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_disable), Toast.LENGTH_LONG).show();
+                    mDevSettings.setHotModuleReplacementEnabled(false);
+                }
+                // NOTE(brentvatne): rather than reload just JS we need to reload the entire project from manifest
+                // handleReloadJS();
+                reloadExpoApp();
+            }
+        });
+        options.put(mDevSettings.isNuclideJSDebugEnabled() ? mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome) : mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_debug), new DevOptionHandler() {
+
+            @Override
+            public void onOptionSelected() {
+                mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
+                handleReloadJS();
+            }
+        });
+        // code removed by ReactAndroidCodeTransformer
+        ;
+        // code removed by ReactAndroidCodeTransformer
+        ;
+        options.put(// NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
+        mApplicationContext.getString(R.string.reactandroid_catalyst_inspector), new DevOptionHandler() {
+
+            @Override
+            public void onOptionSelected() {
+                mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
+                mReactInstanceManagerHelper.toggleElementInspector();
+            }
+        });
+        // See D15958697 for more context.
+        options.put(mDevSettings.isHotModuleReplacementEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading), new DevOptionHandler() {
+
+            @Override
+            public void onOptionSelected() {
+                boolean nextEnabled = !mDevSettings.isHotModuleReplacementEnabled();
+                mDevSettings.setHotModuleReplacementEnabled(nextEnabled);
+                if (mCurrentContext != null) {
+                    if (nextEnabled) {
+                        mCurrentContext.getJSModule(HMRClient.class).enable();
+                    } else {
+                        mCurrentContext.getJSModule(HMRClient.class).disable();
+                    }
+                }
+                // code removed by ReactAndroidCodeTransformer
+                ;
+            }
+        });
+        // code removed by ReactAndroidCodeTransformer
+        ;
+        options.put(mDevSettings.isFpsDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor), new DevOptionHandler() {
+
+            @Override
+            public void onOptionSelected() {
+                if (!mDevSettings.isFpsDebugEnabled()) {
+                    // Request overlay permission if needed when "Show Perf Monitor" option is selected
+                    Context context = mReactInstanceManagerHelper.getCurrentActivity();
+                    if (context == null) {
+                        FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+                    } else {
+                        DebugOverlayController.requestPermission(context);
+                    }
+                }
+                mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
+            }
+        });
+        // code removed by ReactAndroidCodeTransformer
+        ;
+        if (mCustomDevOptions.size() > 0) {
+            options.putAll(mCustomDevOptions);
+        }
+        final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
+        Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+        if (context == null || context.isFinishing()) {
+            FLog.e(ReactConstants.TAG, "Unable to launch dev options menu because react activity " + "isn't available");
+            return;
+        }
+        mDevOptionsDialog = new AlertDialog.Builder(context).setItems(options.keySet().toArray(new String[0]), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                optionHandlers[which].onOptionSelected();
+                mDevOptionsDialog = null;
+            }
+        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                mDevOptionsDialog = null;
+            }
+        }).create();
+        mDevOptionsDialog.show();
     }
 
     /** Starts of stops the sampling profiler */
