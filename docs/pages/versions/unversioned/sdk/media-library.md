@@ -3,8 +3,8 @@ title: MediaLibrary
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
@@ -13,7 +13,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+<InstallSection packageName="expo-media-library" />
 
 ## Configuration
 

@@ -3,6 +3,7 @@ title: Video
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
@@ -13,7 +14,7 @@ Much of Video and Audio have common APIs that are documented in [AV documentatio
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-av`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+<InstallSection packageName="expo-av" />
 
 ## Usage
 

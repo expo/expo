@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={["expo install expo-sensors"]} href="https://github.com/expo/expo/tree/master/packages/expo-sensors" />
+<InstallSection packageName="expo-sensors" />
 
 ## Example Usage
 

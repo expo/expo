@@ -3,6 +3,7 @@ title: SecureStore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-secure-store`** provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects. **Please note** that for iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
@@ -19,7 +20,7 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
+<InstallSection packageName="expo-secure-store" />
 
 ## API
 

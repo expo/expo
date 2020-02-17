@@ -3,8 +3,8 @@ title: Cellular
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-cellular'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-cellular`** provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
@@ -13,7 +13,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-cellular`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-cellular).
+<InstallSection packageName="expo-cellular" />
 
 ## API
 

@@ -3,6 +3,7 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-barcode-scanner'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -12,7 +13,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+<InstallSection packageName="expo-barcode-scanner" />
 
 ## Supported formats
 

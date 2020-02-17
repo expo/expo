@@ -3,6 +3,7 @@ title: Audio
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-av'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-av`** allows you to implement audio playback and recording in your app.
@@ -15,7 +16,7 @@ Try the [playlist example app](https://expo.io/@documentation/playlist-example) 
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-av`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+<InstallSection packageName="expo-av" />
 
 ## API
 

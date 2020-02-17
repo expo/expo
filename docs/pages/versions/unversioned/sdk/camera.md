@@ -3,6 +3,7 @@ title: Camera
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
@@ -18,7 +19,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-camera`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
+<InstallSection packageName="expo-camera" />
 
 ## Configuration
 

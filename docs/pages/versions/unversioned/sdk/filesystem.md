@@ -3,8 +3,8 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
@@ -13,7 +13,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+<InstallSection packageName="expo-file-system" />
 
 ## Example Usage
 

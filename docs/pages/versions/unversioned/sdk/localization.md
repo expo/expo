@@ -3,8 +3,8 @@ title: Localization
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-localization'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-localization`** allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device.
@@ -14,7 +14,7 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-localization`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+<InstallSection packageName="expo-localization" />
 
 ## Usage
 

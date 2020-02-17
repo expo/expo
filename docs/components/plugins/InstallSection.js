@@ -36,7 +36,11 @@ const STYLES_LINK = css`
   }
 `;
 
-export default function InstallSection({ cmd, href }) {
+export default function InstallSection({
+  packageName,
+  cmd = [`expo install ${packageName}`],
+  href = `https://github.com/expo/expo/tree/master/packages/${packageName}`,
+}) {
   return (
     <div>
       <TerminalBlock cmd={cmd} />

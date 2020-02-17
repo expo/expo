@@ -3,8 +3,8 @@ title: ImageManipulator
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-manipulator'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-manipulator`** provides an API to modify images stored on the local file system.
@@ -13,7 +13,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-manipulator`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+<InstallSection packageName="expo-image-manipulator" />
 
 ## Usage
 
