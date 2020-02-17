@@ -1,0 +1,8 @@
+<!--
+
+    THIS FILE IS CREATED BY 'expo-splash-screen' COMMAND AND IT'S FRAGMENTS ARE HANDLED BY IT
+
+-->
+<resources>
+  <color name="splashscreen_background">#AABBCC</color> <!-- THIS LINE IS HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY -->
+</resources>
