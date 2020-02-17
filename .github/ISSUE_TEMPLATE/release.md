@@ -46,6 +46,7 @@ assignees: ''
 
 - [ ] [6.1. Publishing final packages to NPM registry](https://git.io/JeKCx#61-publishing-final-packages-to-npm-registry)
 - [ ] [6.2. Publishing final project templates](https://git.io/JeKCx#62-publishing-final-project-templates)
+- [ ] [6.3. Generate and deploy new docs](https://git.io/JeKCx#63-generate-and-deploy-new-docs)
 
 ### [7. Snack](https://git.io/JeKCx#stage-7---snack)
 

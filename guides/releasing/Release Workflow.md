@@ -27,6 +27,7 @@
   - [Stage 6 - Final release](#stage-6---final-release)
     - [6.1. Publishing final packages to NPM registry](#61-publishing-final-packages-to-npm-registry)
     - [6.2. Publishing final project templates](#62-publishing-final-project-templates)
+    - [6.3. Generate and deploy new docs](63-generate-and-deploy-new-docs)
   - [Stage 7 - Snack](#stage-7---snack)
     - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
   - [Stage 8 - Press release](#stage-8---press-release)
@@ -330,6 +331,16 @@
 - On a new branch, check all `expo-template-*` packages under `templates` directory and bump dependencies versions wherever possible. Use versions stored in `packages/expo/bundledNativeModules.json` for vendored libs like `react-native-gesture-handler`.
 - Run `et publish-templates` and answer to questions it asks.
 - Create a pull request from your branch to `master`. Make sure a reviewer will cherry-pick that commit to the release branch as well.
+
+## 6.3. Generate and deploy new docs
+
+**Why:** We store separate versions of docs for each SDK version. That being said, we also have to generate versioned docs.
+
+**How:**
+
+- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page.
+- Commit and push changes to `master` branch.
+- Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
 
 # Stage 7 - Snack
 
