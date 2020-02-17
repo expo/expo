@@ -1,11 +1,16 @@
-// runtime polyfills
-import 'core-js/es/string/match-all';
-
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { projectConfig } from '@react-native-community/cli-platform-android';
 
+import {
+  writeOrReplaceOrInsertInFile,
+  writeToFile,
+  replaceOrInsertInFile,
+  insertToFile,
+  insertToFileBeforeLastOccurrence,
+  COMMENTS,
+} from './helpers';
 import { ResizeMode } from './constants';
 
 const DRAWABLES_CONFIGS = {
@@ -35,157 +40,6 @@ const FILENAMES = {
   STYLES: 'styles_splashscreen.xml',
   ANDROID_MANIFEST: 'AndroidManifest.xml',
 };
-const TEMPLATES_COMMENTS_JAVA_KOTLIN = {
-  LINE: `// THIS LINE IS HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY`,
-};
-const TEMPLATES_COMMENTS_XML = {
-  LINE: `<!-- THIS LINE IS HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY -->`,
-  TOP: `<!--\n\n    THIS FILE IS CREATED BY 'expo-splash-screen' COMMAND AND IT'S FRAGMENTS ARE HANDLED BY IT\n\n-->`,
-  TOP_NO_MANUAL_MODIFY: `<!--\n\n    THIS FILE IS CREATED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY\n\n-->`,
-  ANDROID_MANIFEST: `<!-- THIS ACTIVITY'S 'android:theme' ATTRIBUTE IS HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY -->`,
-};
-
-/**
- * Modifies file's content if either `replacePattern` or `insertPattern` matches.
- * If `replacePatten` matches `replaceContent` is used, otherwise if `insertPattern` matches `insertContent` is used.
- * @returns object describing which operation is successful.
- */
-async function replaceOrInsertInFile(
-  filePath: string,
-  {
-    replaceContent,
-    replacePattern,
-    insertContent,
-    insertPattern,
-  }: {
-    replaceContent: string;
-    replacePattern: RegExp | string;
-    insertContent: string;
-    insertPattern: RegExp | string;
-  }
-): Promise<{ replaced: boolean; inserted: boolean }> {
-  const replaced = await replaceInFile(filePath, { replaceContent, replacePattern });
-  const inserted = !replaced && (await insertToFile(filePath, { insertContent, insertPattern }));
-  return { replaced, inserted };
-}
-
-/**
- * Tries to do following actions:
- * - when file doesn't exist or is empty - create it with given fileContent,
- * - when file does exist and contains provided replacePattern - replace replacePattern with replaceContent,
- * - when file does exist and doesn't contain provided replacePattern - insert given insertContent before first match of insertPattern,
- * - when insertPattern does not occur in the file - append insertContent to the end of the file.
- * @returns object describing which operation is successful.
- */
-async function writeOrReplaceOrInsertInFile(
-  filePath: string,
-  {
-    fileContent,
-    replaceContent,
-    replacePattern,
-    insertContent,
-    insertPattern,
-  }: {
-    fileContent: string;
-    replaceContent: string;
-    replacePattern: RegExp | string;
-    insertContent: string;
-    insertPattern: RegExp | string;
-  }
-): Promise<{ created?: boolean; replaced?: boolean; inserted?: boolean }> {
-  if (!(await fs.pathExists(filePath)) || !/\S/m.test(await fs.readFile(filePath, 'utf8'))) {
-    await writeToFile(filePath, fileContent);
-    return { created: true };
-  }
-
-  const { replaced, inserted } = await replaceOrInsertInFile(filePath, {
-    replaceContent,
-    replacePattern,
-    insertContent,
-    insertPattern,
-  });
-  if (replaced || inserted) {
-    return { replaced, inserted };
-  }
-
-  const originalFileContent = await fs.readFile(filePath, 'utf8');
-  await fs.writeFile(filePath, `${originalFileContent}${insertPattern}`);
-  return { inserted: true };
-}
-
-/**
- * Overrides or creates file (with possibly missing directories) with given content.
- */
-async function writeToFile(filePath: string, fileContent: string) {
-  const fileDirnamePath = path.dirname(filePath);
-  if (!(await fs.pathExists(fileDirnamePath))) {
-    await fs.mkdirp(fileDirnamePath);
-  }
-  return await fs.writeFile(filePath, fileContent);
-}
-
-/**
- * @returns `true` if replacement is successful, `false` otherwise.
- */
-async function replaceInFile(
-  filePath: string,
-  { replaceContent, replacePattern }: { replaceContent: string; replacePattern: string | RegExp }
-) {
-  const originalFileContent = await fs.readFile(filePath, 'utf8');
-  const replacePatternOccurrence = originalFileContent.search(replacePattern);
-  if (replacePatternOccurrence !== -1) {
-    await fs.writeFile(filePath, originalFileContent.replace(replacePattern, replaceContent));
-    return true;
-  }
-  return false;
-}
-
-/**
- * @returns `true` if insertion is successful, `false` otherwise.
- */
-async function insertToFile(
-  filePath: string,
-  { insertContent, insertPattern }: { insertContent: string; insertPattern: RegExp | string }
-) {
-  const originalFileContent = await fs.readFile(filePath, 'utf8');
-  const insertPatternOccurrence = originalFileContent.search(insertPattern);
-  if (insertPatternOccurrence !== -1) {
-    await fs.writeFile(
-      filePath,
-      `${originalFileContent.slice(
-        0,
-        insertPatternOccurrence
-      )}${insertContent}${originalFileContent.slice(insertPatternOccurrence)}`
-    );
-    return true;
-  }
-  return false;
-}
-
-/**
- * Finds last occurrence of provided pattern and inserts content just before it.
- * @return `true` is insertion is successful, `false` otherwise.
- */
-async function insertToFileBeforeLastOccurrence(
-  filePath: string,
-  { insertContent, insertPattern }: { insertContent: string; insertPattern: RegExp | string }
-) {
-  const originalFileContent = await fs.readFile(filePath, 'utf8');
-
-  const results = [...originalFileContent.matchAll(new RegExp(insertPattern, 'gm'))];
-  const patternLastOccurrence = results[results.length - 1];
-  if (!patternLastOccurrence) {
-    return false;
-  }
-  await fs.writeFile(
-    filePath,
-    `${originalFileContent.slice(
-      0,
-      patternLastOccurrence.index
-    )}${insertContent}${originalFileContent.slice(patternLastOccurrence.index)}`
-  );
-  return true;
-}
 
 /**
  * Deletes all previous splash_screen_images and copies new one to desired drawable directory.
@@ -221,15 +75,21 @@ async function configureSplashScreenDrawables(
 
 async function configureColorsXML(androidMainResPath: string, splashScreenBackgroundColor: string) {
   await writeOrReplaceOrInsertInFile(path.resolve(androidMainResPath, 'values', FILENAMES.COLORS), {
-    fileContent: `${TEMPLATES_COMMENTS_XML.TOP}
+    fileContent: `${COMMENTS.wrapXML(COMMENTS.FILE_TOP)}
 <resources>
-  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${TEMPLATES_COMMENTS_XML.LINE}
+  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}
 </resources>
 `,
-    replaceContent: `  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${TEMPLATES_COMMENTS_XML.LINE}\n`,
+    replaceContent: `  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}\n`,
     replacePattern: /(?<=(?<openingTagLine>^.*?<resources>.*?$\n)(?<beforeLines>(?<beforeLine>^.*$\n)*?))(?<colorLine>^.*?(?<color><color name="splashscreen_background">.*<\/color>).*$\n)(?=(?<linesAfter>(?<afterLine>^.*$\n)*?)(?<closingTagLine>^.*?<\/resources>.*?$\n))/m,
 
-    insertContent: `  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${TEMPLATES_COMMENTS_XML.LINE}\n`,
+    insertContent: `  <color name="splashscreen_background">${splashScreenBackgroundColor}</color> ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}\n`,
     insertPattern: /^(.*?)<\/resources>(.*?)$/m,
   });
 }
@@ -249,7 +109,7 @@ async function configureDrawableXML(androidMainResPath: string, resizeMode: Resi
 
   await writeToFile(
     path.resolve(androidMainResPath, 'drawable', FILENAMES.SPLASH_SCREEN_XML),
-    `${TEMPLATES_COMMENTS_XML.TOP_NO_MANUAL_MODIFY}
+    `${COMMENTS.wrapXML(COMMENTS.FILE_TOP_NO_MODIFY)}
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:drawable="@color/splashscreen_background"/>${nativeSplashScreen}
 </layer-list>
@@ -259,20 +119,30 @@ async function configureDrawableXML(androidMainResPath: string, resizeMode: Resi
 
 async function configureStylesXML(androidMainResPath: string) {
   await writeOrReplaceOrInsertInFile(path.resolve(androidMainResPath, 'values', FILENAMES.STYLES), {
-    fileContent: `${TEMPLATES_COMMENTS_XML.TOP}
+    fileContent: `${COMMENTS.wrapXML(COMMENTS.FILE_TOP)}
 <resources>
-  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar"> ${TEMPLATES_COMMENTS_XML.LINE}
-    <item name="android:windowBackground">@drawable/splashscreen</item>  ${TEMPLATES_COMMENTS_XML.LINE}
+  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar"> ${COMMENTS.wrapXML(
+    COMMENTS.LINE
+  )}
+    <item name="android:windowBackground">@drawable/splashscreen</item>  ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}
     <item name="android:windowDrawsSystemBarBackgrounds">true</item> <!-- Tells the system that the app would take care of drawing background for StatusBar -->
     <item name="android:statusBarColor">@android:color/transparent</item> <!-- Make StatusBar transparent by default -->
   </style>
 </resources>
 `,
-    replaceContent: `    <item name="android:windowBackground">@drawable/splashscreen</item>  ${TEMPLATES_COMMENTS_XML.LINE}\n`,
+    replaceContent: `    <item name="android:windowBackground">@drawable/splashscreen</item>  ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}\n`,
     replacePattern: /(?<=(?<styleNameLine>^.*?(?<styleName><style name="Theme\.App\.SplashScreen" parent=".*?">).*?$\n)(?<linesBeforeWindowBackgroundLine>(?<singleBeforeLine>^.*$\n)*?))(?<windowBackgroundLine>^.*?(?<windowBackground><item name="android:windowBackground">.*<\/item>).*$\n)(?=(?<linesAfterWindowBackgroundLine>(?<singleAfterLine>^.*$\n)*?)(?<closingTagLine>^.*?<\/style>.*?$\n))/m,
 
-    insertContent: `  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">  ${TEMPLATES_COMMENTS_XML.LINE}
-    <item name="android:windowBackground">@drawable/splashscreen</item>  ${TEMPLATES_COMMENTS_XML.LINE}
+    insertContent: `  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">  ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}
+    <item name="android:windowBackground">@drawable/splashscreen</item>  ${COMMENTS.wrapXML(
+      COMMENTS.LINE
+    )}
   </style>
 `,
     insertPattern: /^(.*?)<\/resources>(.*?)$/m,
@@ -291,16 +161,18 @@ async function configureAndroidManifestXML(androidMainPath: string) {
   });
 
   const r2 = await replaceOrInsertInFile(androidManifestPath, {
-    replaceContent: `\n\n    ${TEMPLATES_COMMENTS_XML.ANDROID_MANIFEST}\n`,
+    replaceContent: `\n\n    ${COMMENTS.wrapXML(COMMENTS.ANDROID_MANIFEST)}\n`,
     replacePattern: RegExp(
-      `(?<=(?<application>^.*?<application(.|\n)*?))([\n\t ])*(?<comment>${TEMPLATES_COMMENTS_XML.ANDROID_MANIFEST.replace(
+      `(?<=(?<application>^.*?<application(.|\n)*?))([\n\t ])*(?<comment>${COMMENTS.wrapXML(
+        COMMENTS.ANDROID_MANIFEST
+      ).replace(
         /[-/\\^$*+?.()|[\]{}]/g,
-        '\\$&'
+        '\\$&' // eslint-disable-next-line no-useless-escape
       )})([\n\t ])*(?=(?<activity>(^.*?<activity)(.|\n)*?android:name="\.MainActivity"(.|\n)*?>))`,
       'm'
     ),
 
-    insertContent: `\n    ${TEMPLATES_COMMENTS_XML.ANDROID_MANIFEST}\n`,
+    insertContent: `\n    ${COMMENTS.wrapXML(COMMENTS.ANDROID_MANIFEST)}\n`,
     insertPattern: /(?<=(?<application>^.*?<application(.|\n)*?))(?<activity>(^.*?<activity)(.|\n)*?android:name="\.MainActivity"(.|\n)*?>)/m,
   });
 
@@ -374,13 +246,13 @@ async function configureShowingSplashScreen(projectRootPath: string, resizeMode:
     // handle onCreate
     const r = await replaceOrInsertInFile(mainActivityPathJava, {
       replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\);.*$/m, // super.onCreate has to be called first
-      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
-        TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-      }`,
+      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${COMMENTS.wrapJavaKotlin(
+        COMMENTS.LINE
+      )}`,
       insertPattern: /(?<=^.*super\.onCreate.*$)/m, // insert just below super.onCreate
-      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
-        TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-      }`,
+      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${COMMENTS.wrapJavaKotlin(
+        COMMENTS.LINE
+      )}`,
     });
 
     let onCreateInserted = false;
@@ -394,9 +266,9 @@ async function configureShowingSplashScreen(projectRootPath: string, resizeMode:
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // SplashScreen.show(...) has to called after super.onCreate(...)
-    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${
-          TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-        }
+    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView.class); ${COMMENTS.wrapJavaKotlin(
+          COMMENTS.LINE
+        )}
   }\n`,
       });
       // with additional bundle import at the top
@@ -462,13 +334,13 @@ async function configureShowingSplashScreen(projectRootPath: string, resizeMode:
     // handle onCreate
     const r = await replaceOrInsertInFile(mainActivityPathKotlin, {
       replacePattern: /(?<=super\.onCreate(.|\n)*?)SplashScreen\.show\(this, SplashScreenImageResizeMode\..*\).*$/m, // super.onCreate has to be called first
-      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
-        TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-      }`,
+      replaceContent: `SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${COMMENTS.wrapJavaKotlin(
+        COMMENTS.LINE
+      )}`,
       insertPattern: /(?<=^.*super\.onCreate.*$)/m, // insert just below super.onCreate
-      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
-        TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-      }`,
+      insertContent: `\n    // SplashScreen.show(...) has to called after super.onCreate(...)\n    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${COMMENTS.wrapJavaKotlin(
+        COMMENTS.LINE
+      )}`,
     });
 
     let onCreateInserted = false;
@@ -481,9 +353,9 @@ async function configureShowingSplashScreen(projectRootPath: string, resizeMode:
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     // SplashScreen.show(...) has to called after super.onCreate(...)
-    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${
-          TEMPLATES_COMMENTS_JAVA_KOTLIN.LINE
-        }
+    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView::class.java) ${COMMENTS.wrapJavaKotlin(
+          COMMENTS.LINE
+        )}
   }\n`,
       });
       // with additional bundle import at the top
@@ -527,7 +399,7 @@ async function configureShowingSplashScreen(projectRootPath: string, resizeMode:
     return;
   }
 
-  console.log('TODO: ERROR');
+  console.log(chalk.red(`Failed to configure 'MainActivity'.`));
 }
 
 export default async function configureAndroidSplashScreen({
