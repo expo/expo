@@ -75,7 +75,7 @@
 **How:**
 
 - Go through another guide about [Quality Assurance](Quality Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
-- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). All fixes should land on `master` before versioning.
+- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` before versioning.
 
 ## 1.4. Versioning code for the new SDK
 
@@ -110,6 +110,11 @@
 **How:**
 
 - Go through another guide about [Quality Assurance](Quality Assurance.md).
+- Remember that you **must** go through the QA process for both the Expo client and a standalone app! (e.g. build `native-component-list` and `test-suite` as standalone apps). There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
+  **Android**:
+    - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
+  **iOS**:
+    - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
 
 ## 2.2. Publish demo apps
 
