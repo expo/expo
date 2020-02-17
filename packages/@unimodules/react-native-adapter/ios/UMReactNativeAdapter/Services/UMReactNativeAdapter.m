@@ -187,7 +187,9 @@ UM_REGISTER_MODULE();
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
+                           UIApplicationWillEnterForegroundNotification,
+                           RCTContentDidAppearNotification,
+                           RCTBridgeWillReloadNotification]) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
@@ -198,7 +200,11 @@ UM_REGISTER_MODULE();
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
-  if (
+  if ([notification.name isEqualToString:RCTContentDidAppearNotification]) {
+    [self notifyAboutContentDidAppear];
+  } else if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
+    [self notifyAboutContentWillReload];
+  } else if (
       _isForegrounded && (
        [notification.name isEqualToString:UIApplicationWillResignActiveNotification] ||
        [notification.name isEqualToString:UIApplicationWillEnterForegroundNotification] ||
@@ -229,6 +235,24 @@ UM_REGISTER_MODULE();
     }];
     _isForegrounded = true;
   }
+}
+
+- (void)notifyAboutContentDidAppear
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentDidAppear)]) {
+      [obj performSelector:@selector(onAppContentDidAppear)];
+    }
+  }];
+}
+
+- (void)notifyAboutContentWillReload
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentWillReload)]) {
+      [obj performSelector:@selector(onAppContentWillReload)];
+    }
+  }];
 }
 
 - (void)stopObserving
