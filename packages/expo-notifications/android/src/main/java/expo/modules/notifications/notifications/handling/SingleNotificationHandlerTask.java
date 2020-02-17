@@ -1,10 +1,10 @@
 package expo.modules.notifications.notifications.handling;
 
-import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ResultReceiver;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -15,11 +15,9 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 
 import java.util.UUID;
 
-import androidx.core.app.NotificationManagerCompat;
 import expo.modules.notifications.notifications.RemoteMessageSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
-import expo.modules.notifications.notifications.interfaces.NotificationBuilderFactory;
-import expo.modules.notifications.notifications.interfaces.NotificationPresentationEffectsManager;
+import expo.modules.notifications.notifications.service.ExpoNotificationsService;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -50,8 +48,6 @@ import expo.modules.notifications.notifications.interfaces.NotificationPresentat
   private RemoteMessage mRemoteMessage;
   private NotificationBehavior mBehavior;
   private NotificationsHandler mDelegate;
-  private NotificationBuilderFactory mBuilderFactory;
-  private NotificationPresentationEffectsManager mEffectsManager;
   private String mIdentifier;
 
   private Runnable mTimeoutRunnable = new Runnable() {
@@ -63,8 +59,6 @@ import expo.modules.notifications.notifications.interfaces.NotificationPresentat
 
   /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, RemoteMessage remoteMessage, NotificationsHandler delegate) {
     mContext = context;
-    mEffectsManager = moduleRegistry.getModule(NotificationPresentationEffectsManager.class);
-    mBuilderFactory = moduleRegistry.getModule(NotificationBuilderFactory.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mRemoteMessage = remoteMessage;
     mDelegate = delegate;
@@ -110,37 +104,25 @@ import expo.modules.notifications.notifications.interfaces.NotificationPresentat
    * @param behavior Behavior requested by the app
    * @param promise  Promise to fulfill once the behavior is applied to the notification.
    */
-  /* package */ void handleResponse(final NotificationBehavior behavior, final Promise promise) {
+  /* package */ void handleResponse(NotificationBehavior behavior, final Promise promise) {
     mBehavior = behavior;
     HANDLER.post(new Runnable() {
       @Override
       public void run() {
-        try {
-          Notification notification = getNotification();
-          String tag = getIdentifier();
-          int id = 0;
-          boolean notificationPresented = false;
-          boolean effectorsActed;
-          try {
-            NotificationManagerCompat.from(mContext).notify(tag, id, notification);
-            notificationPresented = true;
-            effectorsActed = mEffectsManager.onNotificationPresented(tag, id, notification);
-          } catch (IllegalArgumentException e) {
-            effectorsActed = mEffectsManager.onNotificationPresentationFailed(tag, id, notification);
+        JSONObject notificationRequest = new JSONObject(mRemoteMessage.getData());
+        ExpoNotificationsService.enqueuePresent(mContext, getIdentifier(), notificationRequest, mBehavior, new ResultReceiver(HANDLER) {
+          @Override
+          protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == ExpoNotificationsService.SUCCESS_CODE) {
+              promise.resolve(null);
+            } else {
+              Exception e = resultData.getParcelable(ExpoNotificationsService.EXCEPTION_KEY);
+              promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
+            }
           }
-
-          // If we want to support badge-update-only notifications, we need to treat
-          // a failed-but-acted-upon notification as successful.
-          if (notificationPresented || effectorsActed) {
-            promise.resolve(null);
-          } else {
-            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed. Neither presentation nor any of the effectors completed successfully.");
-          }
-        } catch (NullPointerException e) {
-          promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", e);
-        } finally {
-          finish();
-        }
+        });
+        finish();
       }
     });
   }
@@ -166,12 +148,5 @@ import expo.modules.notifications.notifications.interfaces.NotificationPresentat
   private void finish() {
     HANDLER.removeCallbacks(mTimeoutRunnable);
     mDelegate.onTaskFinished(this);
-  }
-
-  private Notification getNotification() {
-    return mBuilderFactory.createBuilder(mContext)
-        .setNotificationRequest(new JSONObject(mRemoteMessage.getData()))
-        .setAllowedBehavior(mBehavior)
-        .build();
   }
 }
