@@ -1,0 +1,12 @@
+<!--
+
+    THIS FILE IS CREATED BY 'expo-splash-screen' COMMAND AND IT'S FRAGMENTS ARE HANDLED BY IT
+
+-->
+<resources>
+  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar"> <!-- THIS LINE HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY MANUALLY -->
+    <item name="android:windowBackground">@drawable/splashscreen</item>  <!-- THIS LINE IS HANDLED BY 'expo-splash-screen' COMMAND AND IT'S DISCOURAGED TO MODIFY IT MANUALLY -->
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+  </style>
+</resources>

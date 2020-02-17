@@ -394,6 +394,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXHaptics
     SPECS:
       - EXHaptics (8.0.0)
+  EXImageLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      EXImageLoader: 311389058db34474056fe2e893a52953
+    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    FILES:
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
+    PROJECT_NAME: EXImageLoader
+    SPECS:
+      - EXImageLoader (1.0.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -663,13 +673,32 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.0.0)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen: 83713feec4d325ed6f02c63cd438d057
+    CHECKSUM: e3069ca197ffc78b985114e5778b76649afe0cc0
+    FILES:
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/UIView+SubviewObserver.h"
+      - "../../../../packages/expo-splash-screen/ios/EXSplashScreen/UIView+SubviewObserver.m"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (1.0.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -780,12 +809,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: eecf7d1263b3ce3378ec9d3446115311
-      Release: eecf7d1263b3ce3378ec9d3446115311
+      Debug: c6fe2f66c689180f6224976ae406871f
+      Release: c6fe2f66c689180f6224976ae406871f
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: afa3e21077b9551248ae89a97600b432
-      Release: afa3e21077b9551248ae89a97600b432
+      Debug: f4047ae16710f70dfb01d3cb8656ae26
+      Release: f4047ae16710f70dfb01d3cb8656ae26
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

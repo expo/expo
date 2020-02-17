@@ -83,7 +83,7 @@
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow bare-expo to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
