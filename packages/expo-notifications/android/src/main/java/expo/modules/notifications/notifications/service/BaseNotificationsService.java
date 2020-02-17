@@ -9,13 +9,19 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.google.firebase.messaging.RemoteMessage;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.triggers.FirebaseNotificationTrigger;
 
 /**
  * A notification service foundation handling incoming intents
@@ -33,10 +39,13 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String NOTIFICATION_IDENTIFIER_KEY = "id";
   private static final String NOTIFICATION_REQUEST_KEY = "request";
   private static final String NOTIFICATION_BEHAVIOR_KEY = "behavior";
+  private static final String NOTIFICATION_TRIGGER_KEY = "trigger";
   private static final String EVENT_TYPE_KEY = "type";
   private static final String RECEIVER_KEY = "receiver";
 
   private static final String PRESENT_TYPE = "present";
+  private static final String RECEIVE_TYPE = "receive";
+  private static final String DROPPED_TYPE = "dropped";
 
   private static final Intent SEARCH_INTENT = new Intent(NOTIFICATION_EVENT_ACTION);
   private static final int JOB_ID = BaseNotificationsService.class.getName().hashCode();
@@ -57,6 +66,48 @@ public abstract class BaseNotificationsService extends JobIntentService {
     intent.putExtra(NOTIFICATION_REQUEST_KEY, notification.toString());
     intent.putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior);
     intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * A helper function for dispatching a "RemoteMessage received" command to the service.
+   *
+   * @param context       Context where to start the service.
+   * @param remoteMessage Received remote message.
+   */
+  public static void enqueueReceive(Context context, @NonNull RemoteMessage remoteMessage) {
+    String identifier = remoteMessage.getMessageId();
+    if (identifier == null) {
+      identifier = UUID.randomUUID().toString();
+    }
+    enqueueReceive(context, identifier, new JSONObject(remoteMessage.getData()), new FirebaseNotificationTrigger(remoteMessage));
+  }
+
+  /**
+   * A helper function for dispatching a "notification received" command to the service.
+   *
+   * @param context      Context where to start the service.
+   * @param identifier   Notification identifier
+   * @param notification Notification request
+   * @param trigger      Notification trigger
+   */
+  public static void enqueueReceive(Context context, @NonNull String identifier, @NonNull JSONObject notification, @Nullable NotificationTrigger trigger) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION, getUriBuilderForIdentifier(identifier).appendPath("receive").build());
+    intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE);
+    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifier);
+    intent.putExtra(NOTIFICATION_REQUEST_KEY, notification.toString());
+    intent.putExtra(NOTIFICATION_TRIGGER_KEY, trigger);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * A helper function for dispatching a "notifications dropped" command to the service.
+   *
+   * @param context Context where to start the service.
+   */
+  public static void enqueueDropped(Context context) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE);
     enqueueWork(context, intent);
   }
 
@@ -94,6 +145,14 @@ public abstract class BaseNotificationsService extends JobIntentService {
             // Removing <NotificationBehavior> produces a compile error /shrug
             intent.<NotificationBehavior>getParcelableExtra(NOTIFICATION_BEHAVIOR_KEY)
         );
+      } else if (RECEIVE_TYPE.equals(eventType)) {
+        onNotificationReceived(
+            intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY),
+            new JSONObject(intent.getStringExtra(NOTIFICATION_REQUEST_KEY)),
+            intent.<NotificationTrigger>getParcelableExtra(NOTIFICATION_TRIGGER_KEY)
+        );
+      } else if (DROPPED_TYPE.equals(eventType)) {
+        onNotificationsDropped();
       } else {
         throw new IllegalArgumentException(String.format("Received event of unrecognized type: %s. Ignoring.", intent.getAction()));
       }
@@ -122,6 +181,22 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param behavior   Allowed notification behavior
    */
   protected void onNotificationPresent(String identifier, JSONObject request, NotificationBehavior behavior) {
+  }
+
+  /**
+   * Callback called when the notifications system is informed of a new notification.
+   *
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
+   */
+  protected void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+  }
+
+  /**
+   * Callback called when some notifications dispatched by the backend haven't been delivered to the device.
+   */
+  protected void onNotificationsDropped() {
   }
 
   protected static Uri.Builder getUriBuilderForIdentifier(String identifier) {
