@@ -69,6 +69,16 @@ async function createAlbum(assets, name) {
   return album;
 }
 
+async function checkIfThrows(f) {
+  try {
+    await f();
+  } catch (e) {
+    return true;
+  }
+
+  return false;
+}
+
 function timeoutWrapper(fun, time) {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -147,6 +157,23 @@ export async function test(t) {
         t.expect(asset).toBeNull();
       });
 
+      t.it(
+        'saveToLibraryAsync should throw when the provided path does not contain an extension',
+        async () => {
+          t.expect(
+            await checkIfThrows(() => MediaLibrary.saveToLibraryAsync('/test/file'))
+          ).toBeTruthy();
+        }
+      );
+
+      t.it(
+        'createAssetAsync should throw when the provided path does not contain an extension',
+        async () => {
+          t.expect(
+            await checkIfThrows(() => MediaLibrary.createAssetAsync('/test/file'))
+          ).toBeTruthy();
+        }
+      );
       // On both platforms assets should perserve their id. On iOS it's native behaviour,
       // but on Android it should be implemented (but it isn't)
       // t.it("After createAlbum and addAssetsTo album all assets have the same id", async () => {
@@ -219,7 +246,7 @@ export async function test(t) {
         assets.forEach(asset => {
           t.expect(asset.width).not.toEqual(0);
           t.expect(asset.height).not.toEqual(0);
-        });      
+        });
       });
 
       t.it('check size - video', async () => {
@@ -230,7 +257,7 @@ export async function test(t) {
         assets.forEach(asset => {
           t.expect(asset.width).not.toEqual(0);
           t.expect(asset.height).not.toEqual(0);
-        });      
+        });
       });
 
       t.it('supports getting assets from specified time range', async () => {

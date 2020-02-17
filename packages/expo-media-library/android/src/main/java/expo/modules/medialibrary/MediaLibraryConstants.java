@@ -22,8 +22,7 @@ final class MediaLibraryConstants {
   static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
   static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing CAMERA_ROLL permissions.";
   static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing CAMERA_ROLL write permission.";
-  static final String ERROR_NO_PERMISSIONS_MODULE = "E_NO_PERMISSIONS_MODULE";
-  static final String ERROR_NO_PERMISSIONS_MODULE_MESSAGE = "Permissions module not found. Are you sure that Expo modules are properly linked?";
+  static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
 
   static final String MEDIA_TYPE_AUDIO = "audio";
   static final String MEDIA_TYPE_PHOTO = "photo";

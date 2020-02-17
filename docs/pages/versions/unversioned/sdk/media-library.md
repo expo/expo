@@ -60,7 +60,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
@@ -72,7 +72,7 @@ Saves the file at given `localUri` to the user's media library. On **iOS 11+**, 
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 ### `MediaLibrary.getAssetsAsync(options)`
 
