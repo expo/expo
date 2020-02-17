@@ -4,6 +4,7 @@
 @class EXKernelAppRecord;
 @class EXLoadingProgress;
 
+// TODO: @bbarthec: LoadingView
 @interface EXAppLoadingView : UIView
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record;

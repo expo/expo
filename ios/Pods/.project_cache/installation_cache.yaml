@@ -6849,6 +6849,25 @@ CACHE_KEYS:
     PROJECT_NAME: EXSpeech
     SPECS:
       - EXSpeech (8.0.0)
+  EXSplashScreen:
+    BUILD_SETTINGS_CHECKSUM:
+      EXSplashScreen: 2f6758c3bf969370b36b7c1e52bf6366
+    CHECKSUM: e3069ca197ffc78b985114e5778b76649afe0cc0
+    FILES:
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenController.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenModule.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenService.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewNativeProvider.m"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/EXSplashScreenViewProvider.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/UIView+SubviewObserver.h"
+      - "../../packages/expo-splash-screen/ios/EXSplashScreen/UIView+SubviewObserver.m"
+    PROJECT_NAME: EXSplashScreen
+    SPECS:
+      - EXSplashScreen (1.0.0)
   EXSQLite:
     BUILD_SETTINGS_CHECKSUM:
       EXSQLite: 65d89a6af97b24f728e91e75169fcc55
@@ -7169,16 +7188,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4b22a0424674fb4aa5af0e3b99e5ca01
-      Release: 4b22a0424674fb4aa5af0e3b99e5ca01
+      Debug: ea02c16531fe3aff290bbae210956d7a
+      Release: ea02c16531fe3aff290bbae210956d7a
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: 32987ade2c6a8adbd835705e4efe6fbc
+      Release: 32987ade2c6a8adbd835705e4efe6fbc
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: 32987ade2c6a8adbd835705e4efe6fbc
+      Release: 32987ade2c6a8adbd835705e4efe6fbc
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c

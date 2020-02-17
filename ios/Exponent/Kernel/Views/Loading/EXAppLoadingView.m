@@ -8,25 +8,31 @@
 #import "EXResourceLoader.h"
 #import "EXUtil.h"
 
+#import "EXSplashScreenConfig.h"
+#import "EXManifestBasedSplashScreenViewProvider.h"
+
+#import <EXSplashScreen/EXSplashScreenService.h>
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTComponent.h>
-#import <React/RCTImageSource.h>
-#import <React/RCTImageView.h>
-
-@interface RCTImageView (EXAppLoadingView)
-
-@property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
-
-@end
 
 @interface EXAppLoadingView () <EXAppLoadingCancelViewDelegate>
 
+@property (nonatomic, assign) BOOL isHomeApp;
+@property (nonatomic, assign) BOOL isStandaloneApp;
+
+@property (nonatomic, weak) EXAppViewController *appViewController;
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicatorFromNib;
 @property (nonatomic, strong) UIView *loadingView;
-@property (nonatomic, assign) BOOL usesSplashFromNSBundle;
-@property (nonatomic, strong) EXAppLoadingProgressView *vProgress;
-@property (nonatomic, strong) RCTImageView *vBackgroundImage;
-@property (nonatomic, strong) EXAppLoadingCancelView *vCancel;
+
+/**
+ * Responsible for showing progress and messages from loading JS bundle via bridge.
+ * Only available in managed flow or HomeApp.
+ */
+@property (nonatomic, strong) EXAppLoadingProgressView *loadingProgressView;
+/**
+ * Only avaialble in managed flow.
+ */
+@property (nonatomic, strong) EXAppLoadingCancelView *loadingCancelView;
 
 @end
 
@@ -35,7 +41,9 @@
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record
 {
   if (self = [super init]) {
-    _usesSplashFromNSBundle = [[self class] _recordUsesSplashScreenFromNSBundle:record];
+    _isHomeApp = record == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+    _isStandaloneApp = [EXEnvironment sharedEnvironment].isDetached;
+    _appViewController = record.viewController;
     [self _setUpViews];
   }
   return self;
@@ -45,16 +53,16 @@
 {
   [super setFrame:frame];
   _loadingView.frame = self.bounds;
-  _vBackgroundImage.frame = self.bounds;
+  // TODO: @bbarthec handle SplashScreen unimodule's `setFrame`
   
   CGFloat progressHeight = 36.0f;
   if (@available(iOS 11.0, *)) {
     progressHeight += self.safeAreaInsets.bottom;
   }
-  _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
-  if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
+  _loadingProgressView.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
+  if (!_isHomeApp && _isStandaloneApp && !_manifest && _loadingCancelView) {
     CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
-    _vCancel.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
+    _loadingCancelView.frame = CGRectMake(0, vCancelY, self.bounds.size.width, self.bounds.size.height - vCancelY);
   }
 }
 
@@ -66,121 +74,88 @@
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress
 {
-  [_vProgress updateStatusWithProgress:progress];
-  _vProgress.hidden = !(progress.total.floatValue > 0.0f);
+  [_loadingProgressView updateStatusWithProgress:progress];
+  _loadingProgressView.hidden = !(progress.total.floatValue > 0.0f);
 }
 
 #pragma mark - internal
 
 - (void)_setUpViews
 {
-  self.backgroundColor = [UIColor whiteColor];
   BOOL hasSplashScreen = NO;
-  if (_usesSplashFromNSBundle) {
-    // Display the launch screen behind the React view so that the React view appears to seamlessly load
-    NSArray *views;
-    @try {
-      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
-    } @catch (NSException *_) {
-      DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
-    }
-    if (views) {
-      self.loadingView = views.firstObject;
-      self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-      [self addSubview:self.loadingView];
-      
-      _loadingIndicatorFromNib = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
-      _loadingIndicatorFromNib.hidesWhenStopped = YES;
-      [_loadingIndicatorFromNib startAnimating];
-      hasSplashScreen = YES;
-    }
+  if (_isStandaloneApp) {
+//    EXStandaloneSplashScreenViewProvider *splashScreenViewProvider = [[EXManifestBasedSplashScreenViewProvider alloc] init];
+//    [EXSplashScreen ];
+//
+//    // Display the launch screen behind the React view so that the React view appears to seamlessly load
+//    NSArray *views;
+//    @try {
+//      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"SplashScreen";
+//      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+//    } @catch (NSException *_) {
+//      DDLogWarn(@"Expo SplashScreen.xib is missing. Unexpected loading behavior may occur.");
+//    }
+//    if (views) {
+//      self.loadingView = views.firstObject;
+//      self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//      [self addSubview:self.loadingView];
+//      _loadingIndicatorFromNib = (UIActivityIndicatorView *)[self.loadingView viewWithTag:1];
+//      _loadingIndicatorFromNib.hidesWhenStopped = YES;
+//      [_loadingIndicatorFromNib startAnimating];
+//      hasSplashScreen = YES;
+//    }
   }
-  if (!hasSplashScreen) {
-    self.loadingView = [[UIView alloc] init];
-    [self addSubview:_loadingView];
-    _loadingView.backgroundColor = [UIColor whiteColor];
-    if ([self _isCancelAvailable]) {
-      _vCancel = [[EXAppLoadingCancelView alloc] init];
-      _vCancel.delegate = self;
-      [self addSubview:_vCancel];
-    }
+  if (_isHomeApp) {
+    _loadingProgressView = [EXAppLoadingProgressView new];
+    _loadingProgressView.hidden = YES;
+    [self addSubview:_loadingProgressView];
   }
-  _vProgress = [[EXAppLoadingProgressView alloc] init];
-  _vProgress.hidden = YES;
-  [self addSubview:_vProgress];
+  
+//  if (!hasSplashScreen) {
+//    self.loadingView = [[UIView alloc] init];
+//    [self addSubview:_loadingView];
+//    _loadingView.backgroundColor = [UIColor whiteColor];
+//    if ([self _isCancelAvailable]) {
+//      _vCancel = [[EXAppLoadingCancelView alloc] init];
+//      _vCancel.delegate = self;
+//      [self addSubview:_vCancel];
+//    }
+//  }
+  
+
   [self setNeedsLayout];
   [self setNeedsDisplay];
 }
 
-+ (BOOL)_recordUsesSplashScreenFromNSBundle:(EXKernelAppRecord *)record
-{
-  if (record && record == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    // home always uses splash
-    return YES;
-  } else {
-    // standalone apps use splash
-    return [EXEnvironment sharedEnvironment].isDetached;
-  }
-}
-
+/**
+ * Only applicable to managed flow.
+ * When manifest is ready - show SplashScreen from unimodule basing on configuration from manifest
+ */
 - (void)_updateViewsWithManifest
 {
   if (!_manifest) {
     return;
   }
+  
+  // TODO: @bbarthec: not sure about it yet
+  if (_isStandaloneOrHomeApp) {
+    return;
+  }
+  
+  EXSplashScreenConfig *splashScreenConfig = [EXSplashScreenConfig fromManifest:_manifest];
+  EXManifestBasedSplashScreenViewProvider *splashScreenViewProvider = [[EXManifestBasedSplashScreenViewProvider alloc] initWithConfig:splashScreenConfig];
+  [EXSplashScreenService.sharedInstance show:(UIViewController *)_appViewController
+                                  resizeMode:splashScreenConfig.resizeMode
+                    splashScreenViewProvider:splashScreenViewProvider
+                             successCallback:^{}
+                             failureCallback:^(NSString * _Nonnull message) {}];
+  
+  
+  // TODO @bbarthec: here actual SplashScreen is being presented
   UIColor *backgroundColor = [UIColor whiteColor];
-  RCTResizeMode backgroundImageResizeMode = RCTResizeModeContain;
-  if (_vBackgroundImage) {
-    [_vBackgroundImage removeFromSuperview];
-    _vBackgroundImage = nil;
-  }
-
-  RCTImageSource *imageSource;
-  NSDictionary *splash;
-  
-  @try {
-    if (_manifest[@"ios"] && _manifest[@"ios"][@"splash"]) {
-      splash = _manifest[@"ios"][@"splash"];
-    } else if (_manifest[@"splash"]) {
-      splash = _manifest[@"splash"];
-    }
-
-    UIColor *maybeColor = [EXUtil colorWithHexString:splash[@"backgroundColor"]];
-    if (maybeColor) {
-      backgroundColor = maybeColor;
-    }
-    backgroundImageResizeMode = ([splash[@"resizeMode"] isEqualToString:@"cover"]) ? RCTResizeModeCover : RCTResizeModeContain;
-    
-    NSString *imageUrl;
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && splash[@"tabletImageUrl"]) {
-      imageUrl = splash[@"tabletImageUrl"];
-    } else if (splash[@"imageUrl"]) {
-      imageUrl = splash[@"imageUrl"];
-    }
-    if (imageUrl) {
-      imageSource = [RCTConvert RCTImageSource:@{ @"uri":imageUrl }];
-    }
-  } @catch (NSException *e) {}
-  
-  EXKernelAppRecord *homeAppRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  if (imageSource && homeAppRecord.appManager.reactBridge) {
-    // hey, it's better than pulling in SDWebImage, right?
-    _vBackgroundImage = [[RCTImageView alloc] initWithBridge:homeAppRecord.appManager.reactBridge];
-    _vBackgroundImage.frame = self.bounds;
-    _vBackgroundImage.imageSources = @[ imageSource ];
-    _vBackgroundImage.resizeMode = backgroundImageResizeMode;
-    __weak typeof(self) weakSelf = self;
-    [_vBackgroundImage setOnLoadEnd:^(NSDictionary *dict) {
-      [weakSelf _hidePlaceholder];
-    }];
-    [self addSubview:_vBackgroundImage];
-  } else {
-    [self _hidePlaceholder];
-  }
   
   _loadingView.backgroundColor = backgroundColor;
-  [self bringSubviewToFront:_vProgress];
+  [self bringSubviewToFront:_loadingProgressView];
 }
 
 - (BOOL)_isCancelAvailable
@@ -191,15 +166,17 @@
 - (void)_hidePlaceholder
 {
   // if we used splash from NSBundle, we didn't use a placeholder in the first place
-  if ([self usesSplashFromNSBundle]) {
+  if (_isStandaloneOrHomeApp) {
     return;
   }
+  UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (self->_loadingIndicatorFromNib) {
-      [self->_loadingIndicatorFromNib stopAnimating];
+    UM_ENSURE_STRONGIFY(self);
+    if (self.loadingIndicatorFromNib) {
+      [self.loadingIndicatorFromNib stopAnimating];
     }
-    if (self->_vCancel) {
-      self->_vCancel.hidden = YES;
+    if (self.loadingCancelView) {
+      self.loadingCancelView.hidden = YES;
     }
   });
 }

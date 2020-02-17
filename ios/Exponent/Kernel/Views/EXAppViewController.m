@@ -305,6 +305,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
+{
+  // TODO: @bbarthec
+}
+
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager
+{
+  // TODO: @bbarhec
+}
+
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
   EXAssertMainThread();
@@ -508,6 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setIsLoading:(BOOL)isLoading
 {
+  // TODO: @bbarthec: here LoadingView hides
   if ([_appRecord.appManager enablesDeveloperTools] && _dtmLastFatalErrorShown) {
     if ([_dtmLastFatalErrorShown timeIntervalSinceNow] >= -kEXDevelopmentErrorCoolDownSeconds) {
       // we just showed a fatal error very recently, do not begin loading.

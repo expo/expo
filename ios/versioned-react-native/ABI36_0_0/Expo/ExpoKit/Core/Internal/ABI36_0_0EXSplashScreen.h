@@ -5,7 +5,9 @@
 
 @interface ABI36_0_0EXSplashScreen : NSObject <ABI36_0_0RCTBridgeModule>
 
-@property (assign) BOOL started;
-@property (assign) BOOL finished;
+/**
+ * This property has to be set before any React Native method is called.
+ */
+@property (nonatomic, weak) UIViewController *viewController;
 
 @end

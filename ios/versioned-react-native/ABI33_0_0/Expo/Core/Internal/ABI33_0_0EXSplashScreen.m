@@ -1,19 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ABI33_0_0EXSplashScreen.h"
+#import <EXSplashScreen/EXSplashScreenService.h>
 
 @implementation ABI33_0_0EXSplashScreen
 
 ABI33_0_0RCT_EXPORT_MODULE(ExponentSplashScreen);
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _started = NO;
-    _finished = NO;
-  }
-  return self;
-}
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -22,13 +14,20 @@ ABI33_0_0RCT_EXPORT_MODULE(ExponentSplashScreen);
 
 ABI33_0_0RCT_EXPORT_METHOD(hide)
 {
-  _finished = YES;
+  [[EXSplashScreenService sharedInstance] hide:_viewController
+                               successCallback:^{}
+                               failureCallback:^(NSString * _Nonnull message) {
+    // TODO: @bbarthec: some log here please
+  }];
 }
 
 ABI33_0_0RCT_EXPORT_METHOD(preventAutoHide)
 {
-  _started = YES;
-  _finished = NO;
+  [[EXSplashScreenService sharedInstance] preventAutoHide:_viewController
+                                          successCallback:^{}
+                                          failureCallback:^(NSString * _Nonnull message) {
+    // TODO: @bbarthec: some log here please
+  }];
 }
 
 @end

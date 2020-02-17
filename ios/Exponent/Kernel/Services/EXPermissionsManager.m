@@ -23,7 +23,7 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
   return self;
 }
 
-UM_REGISTER_SINGLETON_MODULE(Permissions)
+UM_REGISTER_SINGLETON_MODULE(Permissions);
 
 - (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
 {

@@ -244,6 +244,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
 {
+  // TODO: @bbarthec: create Experience
   NSString *recordId = [_appRegistry registerAppWithManifestUrl:url initialProps:initialProps];
   EXKernelAppRecord *record = [_appRegistry recordForId:recordId];
   [self _moveAppToVisible:record];
@@ -253,6 +254,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)reloadVisibleApp
 {
+  // TODO: @bbarthec: reload mechanism
   if (_browserController) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController reloadVisibleApp];

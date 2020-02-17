@@ -5,7 +5,6 @@
 
 @interface ABI34_0_0EXSplashScreen : NSObject <ABI34_0_0RCTBridgeModule>
 
-@property (assign) BOOL started;
-@property (assign) BOOL finished;
+@property (nonatomic, weak) UIViewController *viewController;
 
 @end

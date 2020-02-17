@@ -1,24 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clipsSubviews="YES" contentMode="scaleToFill" id="OfY-5Y-tS4">
-            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I4E-qu-tGV">
-                    <rect key="frame" x="271" y="244" width="59" height="112"/>
+                    <rect key="frame" x="158" y="277.5" width="59" height="112"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ExponentLaunchIcon" translatesAutoresizingMaskIntoConstraints="NO" id="eWP-B9-1fW">
                             <rect key="frame" x="0.0" y="0.0" width="59" height="52"/>
                         </imageView>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="eWP-B9-1fW" secondAttribute="bottom" constant="60" id="UPa-Bd-4TY"/>
                         <constraint firstItem="eWP-B9-1fW" firstAttribute="leading" secondItem="I4E-qu-tGV" secondAttribute="leading" id="YlO-Yq-9Gr"/>
@@ -26,14 +28,14 @@
                         <constraint firstItem="eWP-B9-1fW" firstAttribute="top" secondItem="I4E-qu-tGV" secondAttribute="top" id="k2w-l0-haC"/>
                     </constraints>
                 </view>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ExponentLaunchText" translatesAutoresizingMaskIntoConstraints="NO" id="4B2-sF-9ij">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="ExponentLaunchText" translatesAutoresizingMaskIntoConstraints="NO" id="4B2-sF-9ij">
                     <rect key="frame" x="250" y="554" width="100" height="26"/>
                 </imageView>
-                <activityIndicatorView hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="SMy-jf-0an">
+                <activityIndicatorView hidden="YES" opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="SMy-jf-0an">
                     <rect key="frame" x="358" y="557.5" width="20" height="20"/>
                 </activityIndicatorView>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="SMy-jf-0an" firstAttribute="centerY" secondItem="4B2-sF-9ij" secondAttribute="centerY" id="9r7-GO-DuJ"/>
                 <constraint firstItem="I4E-qu-tGV" firstAttribute="centerY" secondItem="OfY-5Y-tS4" secondAttribute="centerY" id="ABT-vJ-Zxd"/>
@@ -46,7 +48,7 @@
         </view>
     </objects>
     <resources>
-        <image name="ExponentLaunchIcon" width="59" height="52"/>
-        <image name="ExponentLaunchText" width="100" height="26"/>
+        <image name="ExponentLaunchIcon" width="59.5" height="52"/>
+        <image name="ExponentLaunchText" width="50.5" height="21.5"/>
     </resources>
 </document>

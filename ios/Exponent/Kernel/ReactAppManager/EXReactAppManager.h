@@ -15,6 +15,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)reactAppManagerIsReadyForLoad:(EXReactAppManager *)appManager;
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager;
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager;
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager;
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager;
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error;
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
