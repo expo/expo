@@ -80,7 +80,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
       promise.reject("ERR_NOTIFICATION_HANDLED", message);
       return;
     }
-    task.handleResponse(new ArgumentsNotificationBehavior(behavior), promise);
+    task.handleResponse(new ExpoNotificationBehavior(behavior), promise);
   }
 
   /**
@@ -114,45 +114,5 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   void onTaskFinished(SingleNotificationHandlerTask task) {
     mTasksMap.remove(task.getIdentifier());
-  }
-
-  /**
-   * An implementation of {@link NotificationBehavior} capable of
-   * "deserialization" of behavior objects with which the app responds.
-   * <p>
-   * Used in {@link #handleNotificationAsync(String, ReadableArguments, Promise)}
-   * to pass the behavior to {@link SingleNotificationHandlerTask}.
-   */
-  class ArgumentsNotificationBehavior extends NotificationBehavior {
-    private static final String SHOULD_SHOW_ALERT_KEY = "shouldShowAlert";
-    private static final String SHOULD_PLAY_SOUND_KEY = "shouldPlaySound";
-    private static final String SHOULD_SET_BADGE_KEY = "shouldSetBadge";
-    private static final String PRIORITY_KEY = "priority";
-
-    private ReadableArguments mArguments;
-
-    ArgumentsNotificationBehavior(ReadableArguments arguments) {
-      mArguments = arguments;
-    }
-
-    @Override
-    public boolean shouldShowAlert() {
-      return mArguments.getBoolean(SHOULD_SHOW_ALERT_KEY);
-    }
-
-    @Override
-    public boolean shouldPlaySound() {
-      return mArguments.getBoolean(SHOULD_PLAY_SOUND_KEY);
-    }
-
-    @Override
-    public boolean shouldSetBadge() {
-      return mArguments.getBoolean(SHOULD_SET_BADGE_KEY);
-    }
-
-    @Override
-    public String getPriorityOverride() {
-      return mArguments.getString(PRIORITY_KEY);
-    }
   }
 }
