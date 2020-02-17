@@ -1,22 +1,19 @@
-package expo.modules.notifications.notifications.channels;
+package expo.modules.notifications.notifications.presentation.builders;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
-import org.unimodules.core.interfaces.SingletonModule;
-
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.R;
-import expo.modules.notifications.notifications.interfaces.NotificationChannelsManager;
 
 /**
- * A singleton module implementing {@link NotificationChannelsManager} interface.
+ * A notification builder foundation capable of fetching and/or creating
+ * a notification channel to which the notification request should be posted.
  */
-public class ExpoNotificationChannelsManager implements SingletonModule, NotificationChannelsManager {
-  private final static String SINGLETON_NAME = "NotificationChannelsManager";
-
+public abstract class ChannelAwareNotificationBuilder extends BaseNotificationBuilder {
   private final static String FALLBACK_CHANNEL_ID = "expo_notifications_fallback_notification_channel";
 
   // Behaviors we will want to impose on received notifications include
@@ -25,15 +22,24 @@ public class ExpoNotificationChannelsManager implements SingletonModule, Notific
   @RequiresApi(api = Build.VERSION_CODES.N)
   private final static int FALLBACK_CHANNEL_IMPORTANCE = NotificationManager.IMPORTANCE_HIGH;
 
-  private Context mContext;
-
-  public ExpoNotificationChannelsManager(Context context) {
-    mContext = context;
+  public ChannelAwareNotificationBuilder(Context context) {
+    super(context);
   }
 
-  @Override
-  public String getName() {
-    return SINGLETON_NAME;
+  protected NotificationCompat.Builder createBuilder() {
+    return new NotificationCompat.Builder(getContext(), getChannelId());
+  }
+
+  /**
+   * @return A {@link NotificationChannel}'s identifier to use for the notification.
+   */
+  protected String getChannelId() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      // Returning null on incompatible platforms won't be an error.
+      return null;
+    }
+
+    return getFallbackNotificationChannel().getId();
   }
 
   /**
@@ -43,7 +49,6 @@ public class ExpoNotificationChannelsManager implements SingletonModule, Notific
    *
    * @return Fallback {@link NotificationChannel} or null.
    */
-  @Override
   public NotificationChannel getFallbackNotificationChannel() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return null;
@@ -80,10 +85,10 @@ public class ExpoNotificationChannelsManager implements SingletonModule, Notific
    * @return Name of the fallback channel
    */
   protected String getFallbackChannelName() {
-    return mContext.getString(R.string.expo_notifications_fallback_channel_name);
+    return getContext().getString(R.string.expo_notifications_fallback_channel_name);
   }
 
   private NotificationManager getNotificationManager() {
-    return (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+    return (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
   }
 }

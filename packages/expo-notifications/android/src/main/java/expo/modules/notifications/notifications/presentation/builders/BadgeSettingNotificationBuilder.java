@@ -4,8 +4,6 @@ import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.unimodules.core.ModuleRegistry;
-
 import androidx.core.app.NotificationCompat;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -14,8 +12,8 @@ public class BadgeSettingNotificationBuilder extends ExpoNotificationBuilder {
 
   public static final String EXTRAS_BADGE_KEY = "badge";
 
-  public BadgeSettingNotificationBuilder(Context context, ModuleRegistry moduleRegistry) {
-    super(context, moduleRegistry);
+  public BadgeSettingNotificationBuilder(Context context) {
+    super(context);
   }
 
   @Override

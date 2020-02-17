@@ -16,20 +16,13 @@ import expo.modules.notifications.notifications.presentation.builders.BadgeSetti
  * {@link NotificationBuilderFactory} returning instances of {@link BadgeSettingNotificationBuilder}.
  */
 public class ExpoNotificationBuilderFactory implements InternalModule, NotificationBuilderFactory {
-  private ModuleRegistry mModuleRegistry;
-
   @Override
   public List<? extends Class> getExportedInterfaces() {
     return Collections.singletonList(NotificationBuilderFactory.class);
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-  }
-
-  @Override
   public NotificationBuilder createBuilder(Context context) {
-    return new BadgeSettingNotificationBuilder(context, mModuleRegistry);
+    return new BadgeSettingNotificationBuilder(context);
   }
 }
