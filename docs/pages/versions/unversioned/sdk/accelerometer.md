@@ -3,7 +3,7 @@ title: Accelerometer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -14,11 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<TerminalBlock cmd={["expo install expo-sensors"]} />
-
-### Advanced
-
-To use this in a [bare React Native app](../../introduction/managed-vs-bare/#bare-workflow), follow the [**installation instructions**](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection cmd={["expo install expo-sensors"]} href="https://github.com/expo/expo/tree/master/packages/expo-sensors" />
 
 ## Example Usage
 
