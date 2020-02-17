@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import expo.modules.notifications.notifications.RemoteMessageSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
-import expo.modules.notifications.notifications.service.ExpoNotificationsService;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -110,14 +110,14 @@ import expo.modules.notifications.notifications.service.ExpoNotificationsService
       @Override
       public void run() {
         JSONObject notificationRequest = new JSONObject(mRemoteMessage.getData());
-        ExpoNotificationsService.enqueuePresent(mContext, getIdentifier(), notificationRequest, mBehavior, new ResultReceiver(HANDLER) {
+        BaseNotificationsService.enqueuePresent(mContext, getIdentifier(), notificationRequest, mBehavior, new ResultReceiver(HANDLER) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if (resultCode == ExpoNotificationsService.SUCCESS_CODE) {
+            if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
               promise.resolve(null);
             } else {
-              Exception e = resultData.getParcelable(ExpoNotificationsService.EXCEPTION_KEY);
+              Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }

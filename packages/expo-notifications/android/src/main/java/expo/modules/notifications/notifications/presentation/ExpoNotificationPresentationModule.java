@@ -11,7 +11,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.Map;
 
-import expo.modules.notifications.notifications.service.ExpoNotificationsService;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
@@ -28,22 +28,16 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
   @ExpoMethod
   public void presentNotificationAsync(String identifier, Map notificationSpec, final Promise promise) {
     JSONObject notificationRequest = new JSONObject(notificationSpec);
-    ExpoNotificationsService.enqueuePresent(getContext(), identifier, notificationRequest, null, new ResultReceiver(null) {
+    BaseNotificationsService.enqueuePresent(getContext(), identifier, notificationRequest, null, new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == ExpoNotificationsService.SUCCESS_CODE) {
+        if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
           promise.resolve(null);
-          return;
-        } else if (resultCode == ExpoNotificationsService.EXCEPTION_OCCURRED_CODE) {
-          Exception e = resultData.getParcelable(ExpoNotificationsService.EXCEPTION_KEY);
-          if (e != null) {
-            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented: " + e.getMessage(), e);
-            return;
-          }
+        } else {
+          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);
         }
-
-        promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.");
       }
     });
   }
