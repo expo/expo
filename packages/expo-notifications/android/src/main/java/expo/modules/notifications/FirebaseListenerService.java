@@ -8,6 +8,7 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 import expo.modules.notifications.tokens.PushTokenManager;
 
 /**
@@ -99,6 +100,7 @@ public class FirebaseListenerService extends FirebaseMessagingService {
         listener.onMessage(remoteMessage);
       }
     }
+    BaseNotificationsService.enqueueReceive(this, remoteMessage);
   }
 
   @Override
@@ -111,5 +113,6 @@ public class FirebaseListenerService extends FirebaseMessagingService {
         listener.onDeletedMessages();
       }
     }
+    BaseNotificationsService.enqueueDropped(this);
   }
 }
