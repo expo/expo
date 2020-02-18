@@ -1,4 +1,3 @@
-import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
 import { getExpoRepositoryRootDir } from '../Directories';

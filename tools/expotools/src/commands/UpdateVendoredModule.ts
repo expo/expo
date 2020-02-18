@@ -470,7 +470,7 @@ async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) 
   const packageViews: PackageViewType[] = await Promise.all(vendoredPackageNames.map(getPackageViewFromRegistryAsync));
 
   for (const packageName of vendoredPackageNames) {
-    const packageView = packageViews.shift();
+    const packageView = packageViews.shift() as PackageViewType;
     const moduleConfig = vendoredModulesConfig[packageName];
     const bundledVersion = bundledNativeModules[packageName];
     const latestVersion = packageView.versions[packageView.versions.length - 1];
