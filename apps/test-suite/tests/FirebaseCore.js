@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import * as FirebaseCore from 'expo-firebase-core';
+import { Platform } from 'react-native';
 
 export const name = 'FirebaseCore';
 
