@@ -6,6 +6,7 @@ export interface IFirebaseOptions {
     messagingSenderId: string;
     storageBucket: string;
     projectId: string;
+    authDomain: string;
+    measurementId: string;
 }
-export declare class FirebaseOptions {
-}
+export declare function getDefaultWebOptions(): IFirebaseOptions | void;
