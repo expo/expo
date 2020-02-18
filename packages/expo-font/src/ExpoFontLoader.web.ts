@@ -132,7 +132,7 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
 function isFontLoadingListenerSupported(): boolean {
   const { userAgent } = window.navigator;
   // WebKit is broken https://github.com/bramstein/fontfaceobserver/issues/95
-  const isIOS = !!(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i));
+  const isIOS = !!userAgent.match(/iPad|iPhone/i);
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
   const isEdge = userAgent.includes('Edge');
