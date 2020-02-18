@@ -30,61 +30,19 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 To use this package, the native Firebase configurations needs to be added to your app.
 [Please follow this guide on how to setup Native Firebase.](../../guides/setup-native-firebase)
 
-### Configure for Web
 
-When using firebase on the web, make sure that the Firebase JavaScript SDK is installed.
+## Expo Client: Limitations & configuration
 
-```
-expo install firebase
-```
+The use of Native Firebase Analytics requires that the google-services configuration is bundled
+and linked into your app. Since the standard Expo Client loads projects on demand, it does not have
+the google-services configuration linked into its app-bundle.
 
-The Firebase JavaScript SDK only needs to be initialized when running on the web-platform. To achieve this, create a `initFirebase.web.js` file that initializes the Firebase app.
-
-```ts
-// initFirebase.web.js
-import * as firebase from 'firebase/app';
-import 'firebase/analytics';
-
-firebase.initializeApp({
-  apiKey: "api-key",
-  authDomain: "project-id.firebaseapp.com",
-  databaseURL: "https://project-id.firebaseio.com",
-  projectId: "project-id",
-  storageBucket: "project-id.appspot.com",
-  messagingSenderId: "sender-id",
-  appId: "app-id",
-  measurementId: "G-measurement-id",
-});
-```
-
-Additionally, you'll need to create a "dummy" file which ensures that the imports work on iOS and Android.
-
-```ts
-// initFirebase.js
-// no need to do anything here, all initialisation is done natively
-```
-
-And import the file into your project.
-
-```ts
-import * as Analytics from 'expo-firebase-analytics';
-import './initFirebase';
-
-Analytics.logEvent(...);
-```
-
-
-## Limitations
-
-Using native Firebase Analytics on the standard Expo client from the App/Play store currently doesn't work.
-This is because the standard Expo client can host and load different projects, and the
-native Firebase Analytics SDK does not support this scenario.
-
-Instead, `expo-firebase-analytics` will log the analytics events to the console for debugging
-purposes and generate a one-time warning. You can suppress this warning and disable the logging
+Instead, the standard Expo Client logs the analytics events to the console for debug & development
+purposes. It also generates a one time warning to let you know that analytics events are not recorded
+on the standard Expo Client. You can suppress this warning and disable the logging
 by calling `setUnavailabilityLogging(false)`.
 
-**This limitation applies only to the standard Expo client, not to custom clients, stand-alone builds or bare projects.**
+> This limitation only applies to the Expo Client in the App/Play store, standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
 
 
 ## Optional: Enable AdSupport in Bare Workflow
