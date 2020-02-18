@@ -305,6 +305,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
+    CHECKSUM: b9efb5317c071cb10905d5a82734407e8fc7fd43
+    FILES:
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
+    PROJECT_NAME: EXFirebaseAnalytics
+    SPECS:
+      - EXFirebaseAnalytics (3.0.0)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
@@ -907,12 +917,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1ed616e1527196c5f5942ea954486c27
-      Release: 1ed616e1527196c5f5942ea954486c27
+      Debug: 80448970aa7e7ef1c7fd92d1b973ea87
+      Release: 80448970aa7e7ef1c7fd92d1b973ea87
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c93df6ae982d2f44bc30fd7eacce5561
-      Release: c93df6ae982d2f44bc30fd7eacce5561
+      Debug: 0c46c378911738d03bb75d3494febc0d
+      Release: 0c46c378911738d03bb75d3494febc0d
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
