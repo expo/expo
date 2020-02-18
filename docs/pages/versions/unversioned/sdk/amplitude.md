@@ -87,18 +87,18 @@ Add the current user to a group. For more information, see here for [iOS](https:
 - **groupType (_string_)** -- The group name, e.g. "sports".
 - **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
 
-### `Amplitude.setTrackingOptions(trackingOptions: TrackingOptions): Promise<void>`
+### `Amplitude.setTrackingOptions(trackingOptions)`
 
-By default the Amplitude SDK will track several user properties such as carrier and city. You can use the provided method to customize and disable individual fields.
+By default the Amplitude SDK will track several user properties such as carrier and city. You can use this method to customize and disable individual fields.
 
 > **Note:** These configurations will prevent default properties from being tracked on newly created projects, where data has not yet been sent. Please contact platform@amplitude.com if you would like default properties blocked (moving forward) on projects with existing data.
 
 #### Arguments
 
-- **trackingOptions (_TrackingOptions_)** -- Options object for what shouldn't be tracked. The table below describes what properties may the object contain. All the properties are expected to be booleans. Passing eg. `disableCarrier: true` disables tracking the device's carrier. Passing a falsy value under a given property doesn't disable tracking of the specific feature.
+- **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
 
 | Property                    | Description                                                                |
-| --------------------------- | -------------------------------------------------------------------------- |
+|-----------------------------|----------------------------------------------------------------------------|
 | `disableCarrier`            | Disable tracking of the device's carrier.                                  |
 | `disableCity`               | Disable tracking of the user's city.                                       |
 | `disableCountry`            | Disable tracking of the user's country.                                    |
