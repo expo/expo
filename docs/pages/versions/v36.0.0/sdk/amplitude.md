@@ -89,3 +89,33 @@ Add the current user to a group. For more information, see here for [iOS](https:
 
 - **groupType (_string_)** -- The group name, e.g. "sports".
 - **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
+
+
+### `Amplitude.setTrackingOptions(trackingOptions)`
+
+By default the Amplitude SDK will track several user properties such as carrier and city. You can use this method to customize and disable individual fields.
+
+> **Note:** These configurations will prevent default properties from being tracked on newly created projects, where data has not yet been sent. Please contact platform@amplitude.com if you would like default properties blocked (moving forward) on projects with existing data.
+
+#### Arguments
+
+- **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
+
+| Property                    | Description                                                                |
+|-----------------------------|----------------------------------------------------------------------------|
+| `disableCarrier`            | Disable tracking of the device's carrier.                                  |
+| `disableCity`               | Disable tracking of the user's city.                                       |
+| `disableCountry`            | Disable tracking of the user's country.                                    |
+| `disableDeviceManufacturer` | Disable tracking of the device manufacturer.                               |
+| `disableDeviceModel`        | Disable tracking of the device model.                                      |
+| `disableDMA`                | Disable tracking of the user's DMA.                                        |
+| `disableIDFA`               | Disable tracking of the user's IDFA.                                       |
+| `disableIDFV`               | Disable tracking of the user's IDFV.                                       |
+| `disableIPAddress`          | Disable tracking of the user's IP address.                                 |
+| `disableLanguage`           | Disable tracking of the device's language.                                 |
+| `disableLatLng`             | Disable tracking of the user's current latitude and longitude coordinates. |
+| `disableOSName`             | Disable tracking of the device's OS name.                                  |
+| `disableOSVersion`          | Disable tracking of the device's OS version.                               |
+| `disablePlatform`           | Disable tracking of the device's platform.                                 |
+| `disableRegion`             | Disable tracking of the user's region.                                     |
+| `disableVersionName`        | Disable tracking of the app version the user is on for your app.           |
