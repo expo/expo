@@ -56,15 +56,27 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 }
 ```
 
-## Limitations & Analytics
+## Web
 
-After you've configured the `googleServicesFile` entries in **`app.json`**, your app is ready to use the native Firebase features.
-By creating a standalone build (e.g. `expo build:android`), the google-services configuration will be bundled with your app and Analytics collection is automatically enabled for your app.
-Additionally you can install `expo-firebase-analytics` to log custom events or control analytics collection.
+- Open **Project overview** in the firebase console and click on the Web icon or + button to **Add Firebase to your iOS app**.
+- Register the app & copy the config into your **`app.json`** under the key **`web.config.firebase`**.
 
-Unfornately, analytics collection is not available on the standard Expo Client available on the App/Play store. For this feature to work correctly, the google-services configuration
-needs to be bundled with the app and native analytics needs to be initialized at app startup. It's possible to work around this using a [custom iOS client](../../guides/adhoc-builds), and that will be explained in this guide. There is no workaround available yet for the Android Expo client, but you can use it in an Android standalone build.
-
+```json
+{
+  "expo": {
+    "web": {
+      "config": {
+        "firebase": {
+          "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
+          "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          ...
+          "measurementId": "G-XXXXXXXXXXXX"
+        }
+      }
+    }
+  }
+}
+```
 
 # Bare Workflow Setup
 
