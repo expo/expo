@@ -10,10 +10,10 @@ import java.util.List;
 
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilderFactory;
-import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
+import expo.modules.notifications.notifications.presentation.builders.BadgeSettingNotificationBuilder;
 
 /**
- * {@link NotificationBuilderFactory} returning instances of {@link ExpoNotificationBuilder}.
+ * {@link NotificationBuilderFactory} returning instances of {@link BadgeSettingNotificationBuilder}.
  */
 public class ExpoNotificationBuilderFactory implements InternalModule, NotificationBuilderFactory {
   private ModuleRegistry mModuleRegistry;
@@ -30,6 +30,6 @@ public class ExpoNotificationBuilderFactory implements InternalModule, Notificat
 
   @Override
   public NotificationBuilder createBuilder(Context context) {
-    return new ExpoNotificationBuilder(context, mModuleRegistry);
+    return new BadgeSettingNotificationBuilder(context, mModuleRegistry);
   }
 }

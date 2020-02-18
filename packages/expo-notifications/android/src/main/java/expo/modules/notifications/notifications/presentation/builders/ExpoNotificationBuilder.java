@@ -32,13 +32,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String CONTENT_TEXT_KEY = "message";
   private static final String CONTENT_SUBTITLE_KEY = "subtitle";
   private static final String SOUND_KEY = "sound";
-  private static final String BADGE_KEY = "badge";
   private static final String BODY_KEY = "body";
   private static final String VIBRATE_KEY = "vibrate";
   private static final String PRIORITY_KEY = "priority";
   private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
-  private static final String EXTRAS_BADGE_KEY = "badge";
   private static final String EXTRAS_BODY_KEY = "body";
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
@@ -65,6 +63,14 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   public ExpoNotificationBuilder setAllowedBehavior(NotificationBehavior behavior) {
     mAllowedBehavior = behavior;
     return this;
+  }
+
+  protected Context getContext() {
+    return mContext;
+  }
+
+  protected JSONObject getNotificationRequest() {
+    return mNotificationRequest;
   }
 
   protected NotificationCompat.Builder createBuilder() {
@@ -113,14 +119,6 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       builder.setVibrate(vibrationPatternOverride);
     }
 
-    if (shouldSetBadge()) {
-      // TODO: Set badge as an effect of presenting notification,
-      //       not as an effect of building a notification.
-      Bundle extras = builder.getExtras();
-      extras.putInt(EXTRAS_BADGE_KEY, getBadgeCount());
-      builder.setExtras(extras);
-    }
-
     // Add body - JSON data - to extras
     Bundle extras = builder.getExtras();
     extras.putString(EXTRAS_BODY_KEY, mNotificationRequest.optString(BODY_KEY));
@@ -164,10 +162,6 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     return mChannelsManager.getFallbackNotificationChannel().getId();
   }
 
-  private int getBadgeCount() {
-    return mNotificationRequest.optInt(BADGE_KEY);
-  }
-
   /**
    * Notification should play a sound if and only if:
    * - behavior is not set or allows sound AND
@@ -195,10 +189,6 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private boolean shouldVibrate() {
     //                                                                         if VIBRATE_KEY is not an explicit false we fallback to true
     return (mAllowedBehavior == null || mAllowedBehavior.shouldPlaySound()) && !mNotificationRequest.optBoolean(VIBRATE_KEY, true);
-  }
-
-  private boolean shouldSetBadge() {
-    return (mAllowedBehavior == null || mAllowedBehavior.shouldSetBadge()) && !mNotificationRequest.isNull(BADGE_KEY);
   }
 
   /**
