@@ -2,25 +2,23 @@ import spawnAsync from '@expo/spawn-async';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 
-type PlainObjectType<V = any> = {
-  [key: string]: V;
-}
-
-type PackageViewType = PlainObjectType & {
-  'name': string;
-  'dist-tags': PlainObjectType<string>;
-  'versions': string[],
-  'time': PlainObjectType<string> & {
-    'created': string;
-    'modified': string;
+type PackageViewType = {
+  name: string;
+  'dist-tags': { [tag: string]: string };
+  versions: string[],
+  time: {
+    created: string;
+    modified: string;
+    [time: string]: string;
   };
-  'maintainers': string[];
-  'description': string;
-  'author': string;
+  maintainers: string[];
+  description: string;
+  author: string;
   // and more but these are the basic ones, we shouldn't need more.
+  [key: string]: any;
 }
 
-async function spawnJSONCommandAsync(command: string, args: ReadonlyArray<string>, options: PlainObjectType = {}) {
+async function spawnJSONCommandAsync(command: string, args: ReadonlyArray<string>, options: object = {}) {
   const child = await spawnAsync(command, args, {
     cwd: getExpoRepositoryRootDir(),
     ...options
