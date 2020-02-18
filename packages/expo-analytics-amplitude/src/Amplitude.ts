@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoAmplitude from './ExpoAmplitude';
 
-interface TrackingOptions {
+export interface TrackingOptions {
   disableAdid?: boolean;
   disableCarrier?: boolean;
   disableCity?: boolean;
