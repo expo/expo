@@ -17,7 +17,7 @@ import org.unimodules.core.BasePackage;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.Package;
 
-import expo.loaders.provider.AppLoaderProvider;
+import org.unimodules.apploader.AppLoaderProvider;
 
 /**
  * A {@link Package} creating modules provided with the @unimodules/react-native-adapter package.

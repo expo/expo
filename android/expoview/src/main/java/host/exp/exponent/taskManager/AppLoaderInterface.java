@@ -1,8 +1,8 @@
 package host.exp.exponent.taskManager;
 
-import java.util.Map;
+import org.unimodules.apploader.AppLoaderProvider;
 
-import expo.loaders.provider.AppLoaderProvider;
+import java.util.Map;
 
 public interface AppLoaderInterface {
   AppRecordInterface loadApp(String appUrl, Map<String, Object> options, AppLoaderProvider.Callback callback);

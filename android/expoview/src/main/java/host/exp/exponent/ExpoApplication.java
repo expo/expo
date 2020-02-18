@@ -9,17 +9,14 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
 import com.facebook.ads.AudienceNetworkAds;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.soloader.SoLoader;
 
 import javax.inject.Inject;
 
-import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExponentKernelModuleInterface;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
@@ -31,6 +28,7 @@ import host.exp.exponent.taskManager.ExpoHeadlessAppLoader;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
 import io.fabric.sdk.android.Fabric;
+import org.unimodules.apploader.AppLoaderProvider;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public abstract class ExpoApplication extends MultiDexApplication {

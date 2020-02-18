@@ -14,14 +14,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
+import org.unimodules.apploader.AppLoaderProvider;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.List;
 import java.util.Map;
 
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;

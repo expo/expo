@@ -4,14 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
+import org.unimodules.apploader.AppLoaderProvider;
+import org.unimodules.apploader.HeadlessAppLoader;
 import org.unimodules.core.interfaces.Consumer;
-
-import expo.loaders.provider.interfaces.HeadlessAppLoader;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.headless.InternalHeadlessAppLoader;
 
 public class ExpoHeadlessAppLoader implements HeadlessAppLoader {

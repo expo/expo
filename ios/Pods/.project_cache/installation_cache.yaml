@@ -6196,18 +6196,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
-  EXAppLoaderProvider:
-    BUILD_SETTINGS_CHECKSUM:
-      EXAppLoaderProvider: 2060dec5700c4da366d33b8585101723
-    CHECKSUM: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
-    FILES:
-      - "../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.h"
-      - "../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.m"
-      - "../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppLoaderInterface.h"
-      - "../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppRecordInterface.h"
-    PROJECT_NAME: EXAppLoaderProvider
-    SPECS:
-      - EXAppLoaderProvider (8.0.0)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: ce127c23292472b7f4826cd92eb35fbb
@@ -6854,8 +6842,8 @@ CACHE_KEYS:
       EXSQLite: 65d89a6af97b24f728e91e75169fcc55
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -6871,8 +6859,8 @@ CACHE_KEYS:
       - EXStoreReview (2.0.0)
   EXTaskManager:
     BUILD_SETTINGS_CHECKSUM:
-      EXTaskManager: e90631cbfd50f5f64db2d519076a9ffa
-    CHECKSUM: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
+      EXTaskManager: c45e9c9fbb8d73ae7a0ade23384967ee
+    CHECKSUM: 46f97c9cf14cc372001cae8710e836d54f0f5a35
     FILES:
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
       - "../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
@@ -7169,16 +7157,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4b22a0424674fb4aa5af0e3b99e5ca01
-      Release: 4b22a0424674fb4aa5af0e3b99e5ca01
+      Debug: 48e537475143b379da8a2f5762c249af
+      Release: 48e537475143b379da8a2f5762c249af
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: 7f98b728bc6a847ef00b5078c2735226
+      Release: 7f98b728bc6a847ef00b5078c2735226
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: 7f98b728bc6a847ef00b5078c2735226
+      Release: 7f98b728bc6a847ef00b5078c2735226
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -9593,6 +9581,18 @@ CACHE_KEYS:
     SPECS:
       - ReactCommon/jscallinvoker (0.61.4)
       - ReactCommon/turbomodule/core (0.61.4)
+  UMAppLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      UMAppLoader: 98f4825f425141e39e25ec9bb92098e1
+    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    FILES:
+      - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
+      - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
+      - "../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.h"
+      - "../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
+    PROJECT_NAME: UMAppLoader
+    SPECS:
+      - UMAppLoader (1.0.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 0b7affbc39246c1e4ce2f9f58ebdc8c5

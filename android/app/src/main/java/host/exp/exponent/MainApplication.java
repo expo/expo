@@ -2,12 +2,12 @@ package host.exp.exponent;
 
 import com.facebook.react.ReactPackage;
 
+import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
 import org.unimodules.core.interfaces.Package;
 
 import java.util.Arrays;
 import java.util.List;
 
-import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.generated.BasePackageList;
 import okhttp3.OkHttpClient;
 

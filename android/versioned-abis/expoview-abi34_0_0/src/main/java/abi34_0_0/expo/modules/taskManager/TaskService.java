@@ -14,6 +14,8 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.apploader.AppLoaderProvider;
+import org.unimodules.apploader.HeadlessAppLoader;
 import org.unimodules.core.interfaces.SingletonModule;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -34,8 +36,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.HeadlessAppLoader;
 import abi34_0_0.expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import abi34_0_0.expo.modules.taskManager.exceptions.TaskNotFoundException;
 import abi34_0_0.expo.modules.taskManager.exceptions.TaskRegisteringFailedException;

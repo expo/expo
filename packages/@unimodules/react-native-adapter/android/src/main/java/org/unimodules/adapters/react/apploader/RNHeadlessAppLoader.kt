@@ -3,7 +3,7 @@ package org.unimodules.adapters.react.apploader
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
-import expo.loaders.provider.interfaces.HeadlessAppLoader
+import org.unimodules.apploader.HeadlessAppLoader
 import org.unimodules.core.interfaces.Consumer
 
 private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()

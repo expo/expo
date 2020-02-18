@@ -6,8 +6,8 @@
 #import <EXTaskManager/EXTaskService.h>
 #import <UMTaskManagerInterface/UMTaskConsumerInterface.h>
 
-#import <EXAppLoaderProvider/EXAppLoaderProvider.h>
-#import <EXAppLoaderProvider/EXAppRecordInterface.h>
+#import <UMAppLoader/UMAppLoaderProvider.h>
+#import <UMAppLoader/UMAppRecordInterface.h>
 
 @interface EXTaskService ()
 
@@ -18,7 +18,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, EXTask *> *> *tasks;
 
 // Dictionary with app records of running background apps. Schema: { "<appId>": EXAppRecordInterface }
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id<EXAppRecordInterface>> *appRecords;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id<UMAppRecordInterface>> *appRecords;
 
 // MapTable with task managers of running (foregrounded) apps. Schema: { "<appId>": UMTaskManagerInterface }
 @property (nonatomic, strong) NSMapTable<NSString *, id<UMTaskManagerInterface>> *taskManagers;
@@ -533,10 +533,10 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
 - (void)_loadAppWithId:(nonnull NSString *)appId
                 appUrl:(nonnull NSString *)appUrl
 {
-  id<EXAppLoaderInterface> appLoader = [[EXAppLoaderProvider sharedInstance] createAppLoader:@"react-native-experience"];
+  id<UMAppLoaderInterface> appLoader = [[UMAppLoaderProvider sharedInstance] createAppLoader:@"react-native-experience"];
   
   if (appLoader != nil && appUrl != nil) {
-    __block id<EXAppRecordInterface> appRecord;
+    __block id<UMAppRecordInterface> appRecord;
     
     NSLog(@"EXTaskService: Loading headless app '%@' with url '%@'.", appId, appUrl);
     
@@ -652,7 +652,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
 
 - (void)_invalidateAppWithId:(NSString *)appId
 {
-  id<EXAppRecordInterface> appRecord = _appRecords[appId];
+  id<UMAppRecordInterface> appRecord = _appRecords[appId];
   
   if (appRecord) {
     [appRecord invalidate];

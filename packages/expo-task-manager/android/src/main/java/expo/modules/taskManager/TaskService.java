@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,13 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.HeadlessAppLoader;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
+import org.unimodules.apploader.AppLoaderProvider;
+import org.unimodules.apploader.HeadlessAppLoader;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)

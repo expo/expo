@@ -366,6 +366,10 @@ RNReanimated:
   LABEL: RNReanimated
   PROJECT_PATH: RNReanimated.xcodeproj
   UUID: E9E22639328ACC061EB56756AD5B4F57
+UMAppLoader:
+  LABEL: UMAppLoader
+  PROJECT_PATH: UMAppLoader.xcodeproj
+  UUID: AD914734744A00B4515A3E7A846EDC15
 UMBarCodeScannerInterface:
   LABEL: UMBarCodeScannerInterface
   PROJECT_PATH: UMBarCodeScannerInterface.xcodeproj

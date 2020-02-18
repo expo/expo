@@ -7,395 +7,332 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3FE39A19F768BBC34ADC1CCB6462DB76 /* Pods-BareExpo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D090CDB16B158897ECDA29AE3E2FDBF6 /* Pods-BareExpo-dummy.m */; };
 		E89FBD11BA5BD749E1F14E71BC829335 /* Pods-BareExpoTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8465E2FC705BE47B5397BF4A39C8AC18 /* Pods-BareExpoTests-dummy.m */; };
-		F3758CA4CC988AF1CB0952FA3C07EB79 /* Pods-BareExpo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D090CDB16B158897ECDA29AE3E2FDBF6 /* Pods-BareExpo-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		001C42D805506A2DA7F5F28513C18267 /* PBXContainerItemProxy */ = {
+		01376A542D45DC53294F46755AB8902A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7DBD7F55BF0053C2F26060F933197516 /* EXGoogleSignIn.xcodeproj */;
+			containerPortal = 91642237B7D8F635A1AD19D87357B153 /* React-jsi.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1EBA7C3FD4A2348A1EFF618E12286F06;
-			remoteInfo = EXGoogleSignIn;
+			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
+			remoteInfo = "React-jsi";
 		};
-		02A98BB249695A76FE0826FAAFDF8134 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A23EE280B6CEDFCB40ECC8377BFEABCD /* EXLocalization.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 55C7C51CE4B49B971674C896CB1DC301;
-			remoteInfo = EXLocalization;
-		};
-		04F64BC5FD300A50A43348245AAA2237 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5CC2ACD8665BAF5987D9C468F7690079 /* EXSecureStore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C4DBAA5ED98E7A037D09674FF42AF66F;
-			remoteInfo = EXSecureStore;
-		};
-		0841C3DEF48FDCAC0E2CD61F4D1AD83F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 949E8980DE5274CA53A97B80102E8B1F /* React-cxxreact.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
-			remoteInfo = "React-cxxreact";
-		};
-		0846100B6767DCB761422AAF7A4D9BFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6B74B35F9A22487842ACBFDE9C63AD81 /* EXPermissions.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 488F0C19AB92FC4B503EB55CC688FCF5;
-			remoteInfo = EXPermissions;
-		};
-		0A6987AB9B6A1A5975C619C222D65D2B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2841F3950E957706C16E273E68401A65 /* EXDocumentPicker.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 40300EFA08DDB78C6AFF84A0F118E9CD;
-			remoteInfo = EXDocumentPicker;
-		};
-		0CDD236B6E1179073B2D0B17E830B050 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1260CA87FC642511E1966D621D1D9AC9 /* React-jsiexecutor.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7F7693C84AD2D676CE4E5741F508C198;
-			remoteInfo = "React-jsiexecutor";
-		};
-		0EBF69F4C6DAA6B773ADE42F9DFB84C1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D94A97E0682F0B88CEE784DF0606E02E /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
-		};
-		0FCEC7FA645DBB89820E6C7964D5D94B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AC664B320458856E7168D08427B5A76E /* EXLinearGradient.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AF5113FDFEF2ECEBDD58149C34DD4634;
-			remoteInfo = EXLinearGradient;
-		};
-		158519CEAE8CBFAB943032A2D3323FBB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B888E1CADEF1F453D8C2C1EC7D3F7022 /* ZXingObjC.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F1A98E99C5291C55C29C32D889990685;
-			remoteInfo = ZXingObjC;
-		};
-		15D78C28CEAED830B41F17B39B720F6C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F3317B6E00903DEF65B688E84EA04AA3 /* FBSDKCoreKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
-			remoteInfo = FBSDKCoreKit;
-		};
-		16F47AF52DE81F3B6BE203888300574D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D0FD87486C9771AE3C4F01ADB0FE8663 /* EXFacebook.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FEAA3FBA5C5225363EE9E6D0B5B3183B;
-			remoteInfo = EXFacebook;
-		};
-		17D2741587E2C26B6D9E3A1CCA1289DF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 953EFFFA6F09C37417054792992BC827 /* EXBrightness.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4AA3EE5BEEB58B2975A12819B1C58D97;
-			remoteInfo = EXBrightness;
-		};
-		1B34AD8317702D097A383A239675DC32 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7E6EB46BBC7B3F1A86F831B135CFEED3 /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		206BB12CF8161DB2CC04351AE8DB45A8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5458387F467DC3759B84D6888BDF4B43 /* UMFontInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
-			remoteInfo = UMFontInterface;
-		};
-		208401D34BBD889C9A1E073ED549A480 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 409E2483452EBA4E60EE12D525571F58 /* EXGL_CPP.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
-			remoteInfo = EXGL_CPP;
-		};
-		213CBA3812D6EB9EEDD1FC488F9A0289 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 330DAD0DCBFA9462B89FB51C5E192709 /* EXTaskManager.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86D546D1F048CDA66BE7589194F91D23;
-			remoteInfo = EXTaskManager;
-		};
-		24BE401C541928B16F291FA6E6B991D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CDEA890F0B361CB0C715B73D7A282471 /* EXSharing.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1458926EF4B0A3DF1C40B5639E7358B1;
-			remoteInfo = EXSharing;
-		};
-		24E29A88011A10DB5EF2B7E827C61BC2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1B61580939B2AF08D20C889295CF1961 /* EXScreenOrientation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AA651E1AC215FDCE87E218058A342349;
-			remoteInfo = EXScreenOrientation;
-		};
-		2618CE9216D26FEC69F1D8BE997E0496 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B91187988E28833D13CFBC4937182D1E /* EXLocation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9448EAC8D0286D37F065B24667BFBB8F;
-			remoteInfo = EXLocation;
-		};
-		27CC0D7CC866A49D6FC32875B698194B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 77F1654B393E87607D25D6E7F85F4A46 /* EXBlur.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D08BCCD5DE12C8EFB6429B9126525E9F;
-			remoteInfo = EXBlur;
-		};
-		27CCE4FA4B6B57DAEA64F2DE57DD1179 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CA573CAC169CC5A7EA73BC965596E158 /* EXFileSystem.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5232535845650ADAE59870B722468D8A;
-			remoteInfo = EXFileSystem;
-		};
-		2BAE7AC67C30BC2C8ACA3C7E8B229DD2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ACF3CE1B2E951F4A3A64072224341995 /* EXUpdates.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 076FF2640FFF3466FB36FD12A629113A;
-			remoteInfo = EXUpdates;
-		};
-		2E4CCE6DE4A58351A4727B420BB43908 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FDB70E0860CF8C36940465E14F698FD2 /* EXWebBrowser.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 026359A12CA511AF12897ED05A83462C;
-			remoteInfo = EXWebBrowser;
-		};
-		30900A3FE8B5E33E0BAE7D50E7D0D482 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7D2D3C92DB0EBF5C4A06ACF19A3C394F /* UMImageLoaderInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
-			remoteInfo = UMImageLoaderInterface;
-		};
-		33AE3740D829EA5391086867E702E5E1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E557148B1E43DC418D43AC23E1DF3514 /* boost-for-react-native.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
-			remoteInfo = "boost-for-react-native";
-		};
-		377CC498077CFDA8F6D10A84F362E50B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B6FA839377BAEA1C8A9BBA779A7158F9 /* React-RCTSettings.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 02DD1E05F06C403A8300ABEFC2C29A3D;
-			remoteInfo = "React-RCTSettings";
-		};
-		38E7D4EA98E36AA81738D335AFF7DFED /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F8CFEA92E887260D193BF10ECFF0130E /* EXRandom.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 00EB4A6BB9778AFFF7F587D732973596;
-			remoteInfo = EXRandom;
-		};
-		396BFE3548B98533F5881BAE9D13929E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D8DB40F448374C875A12044592D22E9C /* EXAmplitude.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 700BA3D76A8C4362E721FECC92A96DFB;
-			remoteInfo = EXAmplitude;
-		};
-		405FCAD71354405CDD13C808B456FB86 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4270F852C3F1D430FCDED33F469B6B9C /* UMSensorsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1FDCE556B997E87DAB0DA2727CC69285;
-			remoteInfo = UMSensorsInterface;
-		};
-		40D09EDBB2AB395AACFA5E5968F0569D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B636BDC69A99EBBFBADDC886E4B50168 /* EXSQLite.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = B8358C45B103287E90F710967785DD34;
-			remoteInfo = EXSQLite;
-		};
-		447173851658DB05FAEC72F425193505 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 005366AEBED727B4E35B8ECEB47F3334 /* EXAppAuth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5FB7695B45E2F2A9171D3B6C97B3A1A2;
-			remoteInfo = EXAppAuth;
-		};
-		462D13C3D2E91688262190345CA32EA9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E843037DAD82B64C132D7B5C3FC1C59C /* EXBackgroundFetch.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 280658D584B63A5E8CB5F0405789A353;
-			remoteInfo = EXBackgroundFetch;
-		};
-		476CAD8F60AD841B4451D13B7278DA7A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6FA017ED878B66AC413EA203A9076D0A /* ReactCommon.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
-			remoteInfo = ReactCommon;
-		};
-		48A5CC7F9A84ABBF36F33BF68196D6CE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B4FF14CB7EC6178E10B4B383A22FC5EB /* RNGestureHandler.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0356CDCA5DB6D4F4B4F5991088D05580;
-			remoteInfo = RNGestureHandler;
-		};
-		4AF283F44F9EC892C1B9FB5065791310 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B6489F2AAAFD4294BC3EA8BF75C53B15 /* AppAuth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
-			remoteInfo = AppAuth;
-		};
-		4B3DB998A15B90E00DF7270B9565A57E /* PBXContainerItemProxy */ = {
+		0434F9ADCCAC47DE3FB828526EDFC4AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9B246F48CB5A122EA4B98F3484607064 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
 			remoteInfo = GTMSessionFetcher;
 		};
-		4CF823737264B2B461B13AB67818FA97 /* PBXContainerItemProxy */ = {
+		097C283A00A8285DA1A67518C09F0F10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7F25AF103CD1456EC259A8244F572CF0 /* EXConstants.xcodeproj */;
+			containerPortal = BFAF163A2425D7C2CD27D866AFFBCDD7 /* EXSMS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1309E054CB75DA99E029D5D2C8C2210E;
+			remoteInfo = EXSMS;
+		};
+		0A684A092F5DAEEA688CFB3329B135EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9B6EEAE510C536D1B831A2B5AA38AA53 /* UMFontInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
+			remoteInfo = UMFontInterface;
+		};
+		0C58E8CA8CEAA997C2D5E47952A6AA1C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6DB368A4FFC55518E43CFCA8665E3B97 /* DoubleConversion.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
+			remoteInfo = DoubleConversion;
+		};
+		18068DF077E35990E072F98318233CB9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A80300CD38753C030745F054157B2AAE /* UMSensorsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1FDCE556B997E87DAB0DA2727CC69285;
+			remoteInfo = UMSensorsInterface;
+		};
+		18CF98AF7DB555E4940023FF4EAA4737 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2E3F16CC43733F94E675A61B00DDD99 /* EXConstants.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F3E96ACB94E2361FA9D83BE599DEC427;
 			remoteInfo = EXConstants;
 		};
-		507EE9528D801C9548773663A9805C06 /* PBXContainerItemProxy */ = {
+		1B9F8DDDD50289337CF9E1F36FCECD42 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 648B703B3FEA1D4E5B5392848855AD59 /* Amplitude-iOS.xcodeproj */;
+			containerPortal = 8F3F0A45E9AA192F63F7F90EE162FA68 /* EXBrightness.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
-			remoteInfo = "Amplitude-iOS";
+			remoteGlobalIDString = 4AA3EE5BEEB58B2975A12819B1C58D97;
+			remoteInfo = EXBrightness;
 		};
-		50B00878F2B8DDF7EBD8F84A157DCB04 /* PBXContainerItemProxy */ = {
+		1E5528694CA8996611175444C4CFDCB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 96404DAFB39B904B65654D85BD8668CF /* GoogleSignIn.xcodeproj */;
+			containerPortal = 8974B4E6EB25680511DC9B9E29C2A54E /* react-native-appearance.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
-			remoteInfo = GoogleSignIn;
+			remoteGlobalIDString = A6256F4276AA88FDEAAA83D3F4FEBA89;
+			remoteInfo = "react-native-appearance";
 		};
-		50BC53F032D19F0974ACFC37BCD5005D /* PBXContainerItemProxy */ = {
+		24841B36CD3FFA8DAC3BEC0E3B1ED990 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5CD97465CE5F7C29982DCA560D9B48A9 /* UMBarCodeScannerInterface.xcodeproj */;
+			containerPortal = C56FDC77A12E71F5FEEECE0A7E0D008A /* EXNetwork.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
-			remoteInfo = UMBarCodeScannerInterface;
+			remoteGlobalIDString = 71F2A4AC24C8FBC0E24B6A613BB4F7BC;
+			remoteInfo = EXNetwork;
 		};
-		53E94276BAE0E307494EFC918D54B6C6 /* PBXContainerItemProxy */ = {
+		267689EFA2EAC0A34A1489D79424D0D8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 57F45A356791F4D46C943DD6CB70D620 /* React-jsi.xcodeproj */;
+			containerPortal = B888E1CADEF1F453D8C2C1EC7D3F7022 /* ZXingObjC.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
-			remoteInfo = "React-jsi";
+			remoteGlobalIDString = F1A98E99C5291C55C29C32D889990685;
+			remoteInfo = ZXingObjC;
 		};
-		5A205E3C4665D7632751896648FC1B18 /* PBXContainerItemProxy */ = {
+		27E875062CA04727E31FB8AB558EAF2B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5D2F8DE560F0BC828F1E47283F34CB8F /* EXMediaLibrary.xcodeproj */;
+			containerPortal = 2C4CBAB9330D0122890456B95F02E118 /* React-RCTSettings.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 422CF65902B3ABF0E6A47527F9209CC8;
-			remoteInfo = EXMediaLibrary;
+			remoteGlobalIDString = 02DD1E05F06C403A8300ABEFC2C29A3D;
+			remoteInfo = "React-RCTSettings";
 		};
-		5AC20DEC6688F71F8483DD3D05D511C1 /* PBXContainerItemProxy */ = {
+		2959E49560E7DEDBC5F97F4053BEAFF5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 10D2416A8C3E1C5267AA4BFF168F0726 /* UMConstantsInterface.xcodeproj */;
+			containerPortal = 8DC88630FC02792AAD8D7E7AC144E566 /* Yoga.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
-			remoteInfo = UMConstantsInterface;
+			remoteGlobalIDString = 8DB658880A3F558549A84D99BCFADCBC;
+			remoteInfo = Yoga;
 		};
-		5B48E0C2253A33C4E04BA2BDBAD2AC8C /* PBXContainerItemProxy */ = {
+		2BE24C0C93EEE6FADD61CCAD1470FEB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8D28CD84957AEFBDD4C8D17774065FAE /* UMCore.xcodeproj */;
+			containerPortal = 06698A6B9F1075AF0E990C639CAEB4CD /* EXLocation.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
+			remoteGlobalIDString = 9448EAC8D0286D37F065B24667BFBB8F;
+			remoteInfo = EXLocation;
 		};
-		5BACD3043E923205097F344C426559FA /* PBXContainerItemProxy */ = {
+		2C01F686EB7193C8F441E15E489E5302 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8CB712A2F38BE315CD50BDD306AEE04F /* React-RCTNetwork.xcodeproj */;
+			containerPortal = F3317B6E00903DEF65B688E84EA04AA3 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
-			remoteInfo = "React-RCTNetwork";
+			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
+			remoteInfo = FBSDKCoreKit;
 		};
-		5C817F13288CF5CF37C3965044E09D5D /* PBXContainerItemProxy */ = {
+		33A0A7531CC4F7828899A47554B31781 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E9806A9518AD19378AACBF3FADC024BE /* Analytics.xcodeproj */;
+			containerPortal = E3DC409AB72D5410305A71F6FF9FB504 /* EXRandom.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
-			remoteInfo = Analytics;
+			remoteGlobalIDString = 00EB4A6BB9778AFFF7F587D732973596;
+			remoteInfo = EXRandom;
 		};
-		5E14EA6D867052F1585273CD716B0E2A /* PBXContainerItemProxy */ = {
+		33A7C3DB5A21C1EC46BE193AA41C06C8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 09F65C6199CEA61A469455DA1407FA0F /* EXAppLoaderProvider.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BCF55F45F804FC2D6BC57983597F3174;
-			remoteInfo = EXAppLoaderProvider;
-		};
-		600408A95FC0D01C5A4EDAF3CA57F6C7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8BEFC1F9526F517F269E627FD171F935 /* EXFont.xcodeproj */;
+			containerPortal = 98F5EE3FA0A163F3E047EF0D7256AABF /* EXFont.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0A4A001679E384FB337FF08C5D081399;
 			remoteInfo = EXFont;
 		};
-		61AD5973BD3B78DDE6FC8FA64DA24BA8 /* PBXContainerItemProxy */ = {
+		33BE65EE210E604CC55355D4687A3A68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = AED03E2E5451B6EFC22A248166FE11B7 /* React-RCTVibration.xcodeproj */;
+			containerPortal = BFB3A0C7CF6799F3336A4E5B08BF598C /* EXAV.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 502D208480A94D02F62BB739D7512657;
-			remoteInfo = "React-RCTVibration";
+			remoteGlobalIDString = 657B3E0E8F77DB91FA182432EC404FBF;
+			remoteInfo = EXAV;
 		};
-		674285044BC02F022EE7E954911C5DDD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 32B8B075229991CF0743A486BDEA1F87 /* EXImageLoader.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E9B8755E94C7C9AA493F2BF95AB61410;
-			remoteInfo = EXImageLoader;
-		};
-		6CE5AB785417271D2BE9984E890DCFD3 /* PBXContainerItemProxy */ = {
+		33D52F9BF6EC08AF57CAF687AF3218CF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A24AB511B9A02D0046526CA99BE62D6F /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
 		};
-		6D34AC3483BAB3BB437994137BA17BDF /* PBXContainerItemProxy */ = {
+		352F4EDA62AB855A103B35ABB2E05319 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6057F5C95592CBDDB1EC6FE932FDEA1E /* EXSMS.xcodeproj */;
+			containerPortal = 270D30302296CCCC8D6ABC434EDB475D /* RNReanimated.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1309E054CB75DA99E029D5D2C8C2210E;
-			remoteInfo = EXSMS;
+			remoteGlobalIDString = E9E22639328ACC061EB56756AD5B4F57;
+			remoteInfo = RNReanimated;
 		};
-		6DDFE4F4804ED21AD0CB1C7DC27C7433 /* PBXContainerItemProxy */ = {
+		3646B2B695C6D9829B752091E58A7ADD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EA070BB6E92680B5636A51D366C307D1 /* EXHaptics.xcodeproj */;
+			containerPortal = 0DEC226E0235F849738702B07B2BBED6 /* EXCellular.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 458E4E0DEA9D752CC28F1A42E4B306AC;
-			remoteInfo = EXHaptics;
+			remoteGlobalIDString = 0F0F7D35F4DD6BA6A33589D3CB5759F3;
+			remoteInfo = EXCellular;
 		};
-		6EF411145BA740701E4332ABE0E7B1A2 /* PBXContainerItemProxy */ = {
+		3ACE6EC51890CF4540B3F9364627DB4F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CA634914A505DB35DFE1DA8279E6C3B3 /* React-Core.xcodeproj */;
+			containerPortal = 728B4B6A0629C15E7975E406DD6756E9 /* React-RCTImage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C78CA5C5EDDCCF5EC637E0FC8BB4C96E;
+			remoteInfo = "React-RCTImage";
+		};
+		3B414D6BD6C55ABEADCFBE63871B5F90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B36E9FAACA53792605F96452B673FC3E /* Folly.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
+			remoteInfo = Folly;
+		};
+		40ED21E044A03D8BF739523C2CFD935B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23DA93E473B1179D97AF42A16B417E14 /* React-RCTActionSheet.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B622CBAFD85AC413ED6306FD8B71B00;
+			remoteInfo = "React-RCTActionSheet";
+		};
+		415F557F111D16CF55DE10E35E98F208 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 06F95FD44C85C7EE3E1DA785DE662CA5 /* EXImageManipulator.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C3AA7C99B7CAD2FC22B8AA8928D7DF6F;
+			remoteInfo = EXImageManipulator;
+		};
+		46B76DBFF05C6B111DFDB1CA9330E89F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90E584F402684B1D449D55070988F689 /* EXSegment.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D65C18BEC619DFEA9C73805518539F66;
+			remoteInfo = EXSegment;
+		};
+		4CB54A2C8695C92D5CC510BC4F106E32 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44036F0957D7D6FFA28F2CC99EBDD4DD /* UMBarCodeScannerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
+			remoteInfo = UMBarCodeScannerInterface;
+		};
+		4DF39BCBF11CBBC713EE2591A71A769B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83F268ED74A8607216A3C7D0CFF5DDED /* ReactCommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
+			remoteInfo = ReactCommon;
+		};
+		54A5C02A403AA426FDF09EA93FFA99C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F406904A57A57925742B8F1D78DB9F61 /* EXBarCodeScanner.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E6D544E86F973F511B82FE486E5E25CD;
+			remoteInfo = EXBarCodeScanner;
+		};
+		564239E69A8395852CD71D6473AD807F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA840FFC902B007B9ADC0E45D86B30FF /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
+		};
+		568B5088DC0FB5CFE13CCFC43B8441B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A5CECA8D9CAFE636CA08D9B1315DCF13 /* React-RCTAnimation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8FD0C9BFE0E509D0066C67C06EE170B5;
+			remoteInfo = "React-RCTAnimation";
+		};
+		5751457E8E4E2BF752E7FF74A2EAD0DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82A8CEAE405517F64F0E91CA8E0D4C6C /* UMCameraInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
+			remoteInfo = UMCameraInterface;
+		};
+		598CDA9EDD541EABE47724B63F75913B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 240C77C2A2F1D0E2E62C981DCB0CDA7C /* EXBluetooth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 85E4ABA3FE5052C9FD39179D7166A9C1;
+			remoteInfo = EXBluetooth;
+		};
+		59A9762215B19E29B2621B3500B3CEF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A20248EDE91FE79E869E9F942B910EE5 /* EXApplication.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C391225329DE46C6566ED1ADF52F10D;
+			remoteInfo = EXApplication;
+		};
+		5B205C77EA9B9C0E60D3C5243204F2F9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9CA07A296FD8C0821B438E3283FA86B4 /* EXSecureStore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C4DBAA5ED98E7A037D09674FF42AF66F;
+			remoteInfo = EXSecureStore;
+		};
+		5B8A259B8829FC55B9E61BDEA3FCC8FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7EE1A76D280E53852E37E9284E5FF4FB /* EXSharing.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1458926EF4B0A3DF1C40B5639E7358B1;
+			remoteInfo = EXSharing;
+		};
+		5C9C2856F8F321534CB2A219F8ADA7F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 131ABB9F70B9247DBBC76234BB981872 /* EXSpeech.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AC043527FC46D59E5210AD9D49B847FC;
+			remoteInfo = EXSpeech;
+		};
+		5F47C761246A9BEF22F6C7310D746051 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBB69C8827AE851B714A1580FFBC57DF /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+		5FCFE0F4EF20682105438C44BC03513D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB5F0FA62814A131C8FF183DDF46FD9E /* EXFileSystem.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5232535845650ADAE59870B722468D8A;
+			remoteInfo = EXFileSystem;
+		};
+		62888BFBA67143E196351CB7DFFB9CB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93FD1DD41B7A7E6DCEC91B1CA7598665 /* EXImagePicker.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9ACF1D2895E366F44F904503F65171CD;
+			remoteInfo = EXImagePicker;
+		};
+		63E1B198A4AB303DF7C6C1F2CD9AF637 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 513190FA2FC3B8450B998E3C92B25F3C /* EXGL.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 78CC35D6F49ACC0F72F0095F78EFDCE7;
+			remoteInfo = EXGL;
+		};
+		6601BA995C3A2F428E03F9517E2078CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5AD0A3649D2FD152278EFD3F57453B71 /* React-RCTVibration.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 502D208480A94D02F62BB739D7512657;
+			remoteInfo = "React-RCTVibration";
+		};
+		6A0316B075EF9798FA911E8C0048A66E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B3825A5527EF654DE3B1F0F9F2CA5DE /* EXKeepAwake.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E593B1631324E147D59AE9990EDA53A2;
+			remoteInfo = EXKeepAwake;
+		};
+		6D2128004555CBD9DBD2E429C4B6ED70 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4452137291AC15A03ED5F5A0945448A6 /* RNGestureHandler.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0356CDCA5DB6D4F4B4F5991088D05580;
+			remoteInfo = RNGestureHandler;
+		};
+		6EAA061D8905581242BC88452850AE28 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A76970136FD953AEC7A8A0246E83964 /* FBReactNativeSpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
+			remoteInfo = FBReactNativeSpec;
+		};
+		6F2765F61C52449216A854FCC040F30B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1258523728F5A4AF804F8752005753CF /* react-native-safe-area-context.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6FF729CB9CEA59FDDF1BA16AEB2B98D6;
+			remoteInfo = "react-native-safe-area-context";
 		};
 		70227CF8F6B2D08A40EC88165F2BAEE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -404,462 +341,525 @@
 			remoteGlobalIDString = C616BB9F650D110E835D02A3250F302E;
 			remoteInfo = "Pods-BareExpo";
 		};
-		737A307EFA31DA3E64B434E369050DDF /* PBXContainerItemProxy */ = {
+		70CD36C3A47463DFB3CA881C9FFD7510 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 11B10E0B905BB9F52FC20D291E277DB0 /* React-RCTAnimation.xcodeproj */;
+			containerPortal = E557148B1E43DC418D43AC23E1DF3514 /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8FD0C9BFE0E509D0066C67C06EE170B5;
-			remoteInfo = "React-RCTAnimation";
+			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
+			remoteInfo = "boost-for-react-native";
 		};
-		742CF707835DEE8607B0B5CECABFF041 /* PBXContainerItemProxy */ = {
+		71D021211FBCA6AC0809EE48DBC1C158 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0087F0F9FFC522842CAF9C5362A2CDF5 /* React-RCTBlob.xcodeproj */;
+			containerPortal = 911BB1FEF98785F736B895AA27A23383 /* EXMailComposer.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D8D59AAB809693DB02967107370F4619;
-			remoteInfo = "React-RCTBlob";
+			remoteGlobalIDString = 2E02530F5AAAD2AC2A43FE2B8AC3E99C;
+			remoteInfo = EXMailComposer;
 		};
-		75B36D49F034962047F5E5E01B3C23B0 /* PBXContainerItemProxy */ = {
+		72413E19379C0578029CB0DE91846B7E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EC00C51EEF4E038ABDEFE41899C70E2A /* FBReactNativeSpec.xcodeproj */;
+			containerPortal = E9806A9518AD19378AACBF3FADC024BE /* Analytics.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
-			remoteInfo = FBReactNativeSpec;
+			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
+			remoteInfo = Analytics;
 		};
-		7678A2C88E4C418808FB64AA16511F13 /* PBXContainerItemProxy */ = {
+		7669FC6B47A3CD0833147AC931EA2C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E40783A4511E71EDB0B8AB336F9ABAA0 /* EXKeepAwake.xcodeproj */;
+			containerPortal = 648B703B3FEA1D4E5B5392848855AD59 /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = E593B1631324E147D59AE9990EDA53A2;
-			remoteInfo = EXKeepAwake;
+			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
+			remoteInfo = "Amplitude-iOS";
 		};
-		7745F3AD5F0B70068AABA554A7865656 /* PBXContainerItemProxy */ = {
+		7884C6E91FC5D52599C2EBFC449309E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2F06208BED6AEFE1EFD3E40BC5043E62 /* EXSegment.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D65C18BEC619DFEA9C73805518539F66;
-			remoteInfo = EXSegment;
-		};
-		7AC2A739BC40C77BFF49FD61F53C7CEC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5BA9B4E458EBF8ECDC7F9A03746DBE60 /* EXContacts.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = B22EE26A55A92797A576C80A1202EFFD;
-			remoteInfo = EXContacts;
-		};
-		7C356232FCD6393E7EBB756FBE8985ED /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0D30F5A5F08BD206A1441CCC465441D2 /* UMReactNativeAdapter.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E0F5743D6C158230DA447A63190DF2E9;
-			remoteInfo = UMReactNativeAdapter;
-		};
-		7D67D993654BA672BC58771A24D80EA9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8F2260A16410A7CDFADDF4ED0D215627 /* EXAV.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 657B3E0E8F77DB91FA182432EC404FBF;
-			remoteInfo = EXAV;
-		};
-		7EF481CA54BF7CF5268F2947629D32CA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEA3F5FFA174548C3EA3D2147AAD8177 /* Yoga.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DB658880A3F558549A84D99BCFADCBC;
-			remoteInfo = Yoga;
-		};
-		7FF4BAE0F6F37716085CBA7EDA119848 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 90036929EAEFE6D29655C57D3035095D /* RCTRequired.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7B4E6DC12B1D694845842E9A06C59213;
-			remoteInfo = RCTRequired;
-		};
-		815C97932A3DD96A26C63A52D0A0F1C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 76E0E71083EC61FF8F2BA93C7091D540 /* EXCrypto.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7313EAFC3221A55173D00B5135657D25;
-			remoteInfo = EXCrypto;
-		};
-		82CC1F601F85F4180F0E4685DE651DCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3453DA47F6E33173C89A3C21E70ACB2E /* EXBattery.xcodeproj */;
+			containerPortal = AF535F7052EEA078ED3891D91C745F91 /* EXBattery.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5941E7B2BA388644B9A594045D22DE1D;
 			remoteInfo = EXBattery;
 		};
-		835266AF0AB21DDAC3371A03470F99F6 /* PBXContainerItemProxy */ = {
+		78D50A098E1A4DD0CEFEFA0702DC5D01 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4619522B57561DA9840C4B2CCC820EA0 /* EXGL.xcodeproj */;
+			containerPortal = 05FAFBC78468FB19DA80689950B4EE59 /* EXBackgroundFetch.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 78CC35D6F49ACC0F72F0095F78EFDCE7;
-			remoteInfo = EXGL;
+			remoteGlobalIDString = 280658D584B63A5E8CB5F0405789A353;
+			remoteInfo = EXBackgroundFetch;
 		};
-		83B07B772E4DAD66A1BB7558BA85BD95 /* PBXContainerItemProxy */ = {
+		798FC122AA70E5BA6F92934785CB7B41 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2B8A279B337AC4FEEAD7C7C95E72267D /* EXSpeech.xcodeproj */;
+			containerPortal = 697ED587AC099329AF6BDDE8019133EB /* EXImageLoader.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = AC043527FC46D59E5210AD9D49B847FC;
-			remoteInfo = EXSpeech;
+			remoteGlobalIDString = E9B8755E94C7C9AA493F2BF95AB61410;
+			remoteInfo = EXImageLoader;
 		};
-		861A929E87BCF0AE94254E26A9EAC110 /* PBXContainerItemProxy */ = {
+		81BF5FBAEBF288DADD0B9D88AB28ECD0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2688019F47F22F252AE15A8345121453 /* React-RCTImage.xcodeproj */;
+			containerPortal = 13BBE1BF6776B543A11E41B72F71F1AD /* EXScreenOrientation.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = C78CA5C5EDDCCF5EC637E0FC8BB4C96E;
-			remoteInfo = "React-RCTImage";
+			remoteGlobalIDString = AA651E1AC215FDCE87E218058A342349;
+			remoteInfo = EXScreenOrientation;
 		};
-		8AE0FC3EA69FF1ACE6D4FA39938322C8 /* PBXContainerItemProxy */ = {
+		84395145DAB7171ACFA6634793CDD491 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E9878AB5E24FB00E3877A41D634954FC /* EXDevice.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 61CE878EC16A63D023F23DA6C1B824B9;
-			remoteInfo = EXDevice;
-		};
-		95083A850B4D27443AA807004D8FF573 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD269EF63482D75A6C5442B22742785A /* EXCellular.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0F0F7D35F4DD6BA6A33589D3CB5759F3;
-			remoteInfo = EXCellular;
-		};
-		97481FA959CD8BF42022BE7D6A2352AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 220F34FBC5D29E6460E1D8C969623EE0 /* EXSensors.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 5F5B88A2576A073FBDD91B02A10308F1;
-			remoteInfo = EXSensors;
-		};
-		9A487F74CF2EE0CEC91C921F488F455E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3A5E8B0CED89EC689F4B501F59C229D3 /* React-RCTLinking.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FF1621D1C3F9AF33EDD2BF51FEDEB3D8;
-			remoteInfo = "React-RCTLinking";
-		};
-		9CAB1AF06C12EC6B021B291ECAEF4C02 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F7BF1FFF31434EE8966699D7B002209B /* react-native-appearance.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A6256F4276AA88FDEAAA83D3F4FEBA89;
-			remoteInfo = "react-native-appearance";
-		};
-		9DB80E9BF0C9BB5E8619A35D1E9BE5B9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5F47D476ABCE509EE01C065A89A55FFF /* EXStoreReview.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F2C74458D282DA74DB95F8A7FE6A5207;
-			remoteInfo = EXStoreReview;
-		};
-		A1E22C1059E7F326CE6E7C1EBB477BD4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 06AA47214E9693150CB49A705F3F6C27 /* EXApplication.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2C391225329DE46C6566ED1ADF52F10D;
-			remoteInfo = EXApplication;
-		};
-		A2E1091475D402D08232796A122BDE84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9A7E59E13721231195E4C1B2EFADB546 /* react-native-safe-area-context.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 6FF729CB9CEA59FDDF1BA16AEB2B98D6;
-			remoteInfo = "react-native-safe-area-context";
-		};
-		A5B791957D15AA7A88F1B3877F4CAC47 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F8BC3510D8DD9A31995CBDE0DA978EE7 /* FBLazyVector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
-			remoteInfo = FBLazyVector;
-		};
-		A60C783A7C7495265D5F3203098BF2F7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5E526B8172F2D3A122FBCC911367CAD9 /* EXNotifications.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 6C660F81CE4F0EC96D208B20C3E8B154;
-			remoteInfo = EXNotifications;
-		};
-		B073144DD77C27D6A08E167601DFA9D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C85A70B1B57D072613D0899A67BF8CE9 /* EXPrint.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FEAB4A1E3F5EAA6EBAE612E8CBDD2612;
-			remoteInfo = EXPrint;
-		};
-		B18A675E85E4071A3CB0F8ECB95C60A6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6DB368A4FFC55518E43CFCA8665E3B97 /* DoubleConversion.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
-			remoteInfo = DoubleConversion;
-		};
-		B307330C2B4D246BC657CDB87E2AA743 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2DF88CAA4C6A5306EC4E76C20B0E86F4 /* UMPermissionsInterface.xcodeproj */;
+			containerPortal = DA3D26AE32253F98ACC50B309687D5DA /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		B8ADBDC5BDB364CC7545DAC7C0EF3DF1 /* PBXContainerItemProxy */ = {
+		85D768A300B9AC3B984A1CD6821AC1C7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 635D71D6E8B974B9DA1059EE836255EF /* EXWebBrowser.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 026359A12CA511AF12897ED05A83462C;
+			remoteInfo = EXWebBrowser;
+		};
+		865702F706A3619FF325F1D6910A7AB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FFA9B26555DFA027D04D6C2BDB708C65 /* FBLazyVector.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
+			remoteInfo = FBLazyVector;
+		};
+		87C7268DBFB64CFC238ACC061FECE5AE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2B5A9EB29CE9D1668640383F8C857787 /* EXPrint.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FEAB4A1E3F5EAA6EBAE612E8CBDD2612;
+			remoteInfo = EXPrint;
+		};
+		8A62D0410197E611B137EFE9A5D81FBC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 949CD53AA22DABDBC6B7508D4DDF712C /* React-RCTLinking.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FF1621D1C3F9AF33EDD2BF51FEDEB3D8;
+			remoteInfo = "React-RCTLinking";
+		};
+		8CA06D795911DDFDFD5A08B89EF4413B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1AE3BB5F5D54D22FE5BA862EA879D388 /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
 		};
-		BAFFD40610D9FBAB9986D082A3FA291B /* PBXContainerItemProxy */ = {
+		8DF2024D9EAFC05E291C4106977B804A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01C31368D80D1F1E36987664BB65467C /* EXDevice.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 61CE878EC16A63D023F23DA6C1B824B9;
+			remoteInfo = EXDevice;
+		};
+		8F82151A3E24F0EBD1F634DB61048C4D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6489F2AAAFD4294BC3EA8BF75C53B15 /* AppAuth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
+			remoteInfo = AppAuth;
+		};
+		93F8FB4191676F3B8C5F32527BE17C3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F94B71E3BA2D52C578B49F9F3A7D4EC /* EXBlur.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D08BCCD5DE12C8EFB6429B9126525E9F;
+			remoteInfo = EXBlur;
+		};
+		97CBC5DC8E4164BD92FCA3AC0FFC1222 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96404DAFB39B904B65654D85BD8668CF /* GoogleSignIn.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
+			remoteInfo = GoogleSignIn;
+		};
+		986FC1B6C688386389FC3CE876C1FD09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9B135140FE41B34FEBCAF60C9231E22A /* React-jsinspector.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AC0EAF3E808B6AA276E43B30A5B20AA;
+			remoteInfo = "React-jsinspector";
+		};
+		9C0FDD9948BE6A2CF3B4283E10F3DD4D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF8D7497F491F686403D500527EE4D45 /* EXGL_CPP.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C66693C554B15E2593FB1F665F8BA01;
+			remoteInfo = EXGL_CPP;
+		};
+		A21C473796EB93162AD2D633650A0BDD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13816BAA0492D82677A4D950F4BA299A /* RCTRequired.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B4E6DC12B1D694845842E9A06C59213;
+			remoteInfo = RCTRequired;
+		};
+		A30D8F58CDDC0B125217A024BD420132 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F611167A50D00F1258A9DFFD9976886 /* EXAmplitude.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 700BA3D76A8C4362E721FECC92A96DFB;
+			remoteInfo = EXAmplitude;
+		};
+		A4226BB5985744DAF27C87133F0F23EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E5E95E3FA3B360C2CF317642CAFFBB9 /* React-CoreModules.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 42F070932EC272C376353459CE0FA76E;
+			remoteInfo = "React-CoreModules";
+		};
+		A8820D3BFA32F8B79D1E223BD1A9DAEF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 40DFF745EDBEA45A560B776D2390FF55 /* EXLocalAuthentication.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D12244750972C21D688A2875A0E77F4;
+			remoteInfo = EXLocalAuthentication;
+		};
+		AC7E9CE78A686D28B59B575C56E44C77 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F14838313F6E38E1A7CC39A22DEDB80 /* EXAppAuth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5FB7695B45E2F2A9171D3B6C97B3A1A2;
+			remoteInfo = EXAppAuth;
+		};
+		ACA6F9576AA4D6610618C8DEBF2AF44B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 41B9E88790680507BE34764D35892C49 /* EXStoreReview.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F2C74458D282DA74DB95F8A7FE6A5207;
+			remoteInfo = EXStoreReview;
+		};
+		AD19576CE027BC4100EBFE5BAB5A9B1D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6E3E60BE6CF5A05B8475C8761A3330A1 /* EXContacts.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B22EE26A55A92797A576C80A1202EFFD;
+			remoteInfo = EXContacts;
+		};
+		B24C56DA713604C794141BDE19BEB17E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FDA2EA473F1A1F70163412655B7B8CC6 /* EXLinearGradient.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AF5113FDFEF2ECEBDD58149C34DD4634;
+			remoteInfo = EXLinearGradient;
+		};
+		B49377880C2D6263929021959E904BBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4EBB5CF4647D2343C020074CE36DDA2B /* EXDocumentPicker.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 40300EFA08DDB78C6AFF84A0F118E9CD;
+			remoteInfo = EXDocumentPicker;
+		};
+		B55D7553FA07E8A6E8B1AC760A82E3CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D40AC9342409F0915056D02365C8708 /* React-jsiexecutor.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F7693C84AD2D676CE4E5741F508C198;
+			remoteInfo = "React-jsiexecutor";
+		};
+		B5B2166404346E0C3352429B4945906E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A510551B5FD4A9CCC8E5B85621A4278C /* EXFacebook.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FEAA3FBA5C5225363EE9E6D0B5B3183B;
+			remoteInfo = EXFacebook;
+		};
+		B5F19A97ECE3C755B291FF371DD4FB09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FD1DE833AC591830C76AC217A53CCC34 /* EXSQLite.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B8358C45B103287E90F710967785DD34;
+			remoteInfo = EXSQLite;
+		};
+		B76547439E3481996A71CE3FFCA09BE6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 604E701616718501752514181B7B4C57 /* EXCrypto.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7313EAFC3221A55173D00B5135657D25;
+			remoteInfo = EXCrypto;
+		};
+		BA5B675A41A6BD094357674F6D6B3FF4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8EA9B9EA23C2D55F4B1EEC87239F36D7 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		BB34D99DDDA833008FC01D56CD5BD6B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 39878DB1923B67946D15856056EAB89C /* UMReactNativeAdapter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E0F5743D6C158230DA447A63190DF2E9;
+			remoteInfo = UMReactNativeAdapter;
+		};
+		BBCA94FEF95D26269DF7714844967547 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 115087EF3753F7141B5F8E9681D28269 /* EXLocalization.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 55C7C51CE4B49B971674C896CB1DC301;
+			remoteInfo = EXLocalization;
+		};
+		C0506B4A4B2497561BB3234D7B59DE84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA774FEB3E0196A23EFA92F6A8BBA7F2 /* EXUpdates.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 076FF2640FFF3466FB36FD12A629113A;
+			remoteInfo = EXUpdates;
+		};
+		C5FBBB81DE138CBC618AFB4F3A0F8BF4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2E89158FA7FC364A37B639295C73CF48 /* UMConstantsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
+			remoteInfo = UMConstantsInterface;
+		};
+		C87C4FCD82BA8D149A09A57BBB41673E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 40CA79B5F0A21D2F6128139EC2D55900 /* UMImageLoaderInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
+			remoteInfo = UMImageLoaderInterface;
+		};
+		D1B89F0D09A4701D30C93C627ABC3A54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCF9941A71E94A2A91DD34089C0A9CC9 /* EXSensors.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F5B88A2576A073FBDD91B02A10308F1;
+			remoteInfo = EXSensors;
+		};
+		D34389BB74977518529EF1EE27494718 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 071B32F4B1B9F446933CF10DB896CF35 /* UMTaskManagerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
+			remoteInfo = UMTaskManagerInterface;
+		};
+		D4AEB193BA52B896A571F69794228A74 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9F0A8316D970F5506550AE49A843CB52 /* React-RCTBlob.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D8D59AAB809693DB02967107370F4619;
+			remoteInfo = "React-RCTBlob";
+		};
+		D6C7712B5F09E43E29FC5849F3A71BE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8AF2CADC935A6FE72B43D03B58BE77D0 /* EXCalendar.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0F2988851D689F1E41CFC89C31422758;
+			remoteInfo = EXCalendar;
+		};
+		D8BA0D3819483FFEE67ADDD3A354E2EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A1766165759A9482B6A19EDE3759E64 /* EXHaptics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 458E4E0DEA9D752CC28F1A42E4B306AC;
+			remoteInfo = EXHaptics;
+		};
+		DBB7DF2B213384F797D69C0A29E8AE46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D44095C99F6E221217C0E668233F8425 /* EXGoogleSignIn.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1EBA7C3FD4A2348A1EFF618E12286F06;
+			remoteInfo = EXGoogleSignIn;
+		};
+		DEE301AEFDAD7C18DCD7F5C7DF93B9B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B7620E5C0169617802FCBE2B6CE1FA33 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+		E04FBFEFA097AB6C484FE1017FFDEDA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA8113EEF615BB003D9C66B23B35E8EB /* RCTTypeSafety.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9C3601DE72183D42B9DC3FF333D35CF7;
+			remoteInfo = RCTTypeSafety;
+		};
+		E15D1DD6634B67347AA67AF3C3701A44 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 20208F4914A792313423A5BF608B8BAF /* React-RCTText.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F0809BF90AC70C40646AB597C21CC420;
+			remoteInfo = "React-RCTText";
+		};
+		EAA72D9F4F839E39530FAA06C36C48E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 469172776CA5A3A957D095A230A07EB5 /* EXTaskManager.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 86D546D1F048CDA66BE7589194F91D23;
+			remoteInfo = EXTaskManager;
+		};
+		EB8666D620DF2B709D363F53B1C5EEB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4ACD9E347BC8B10F7771AB00D782DD6F /* React-RCTNetwork.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
+			remoteInfo = "React-RCTNetwork";
+		};
+		F03486EE9183E8351FEA7F90B9D14BB5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF9C3E6542EDBEBCF8A883E33ECD02EB /* React-cxxreact.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
+			remoteInfo = "React-cxxreact";
+		};
+		F2C35CEA502574E7F544E258A365C55B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E61E56E18464AB678BF4A594A44FC70B /* EXErrorRecovery.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 49603BA4A7FB1CFC9ACD589B8CE05EA2;
+			remoteInfo = EXErrorRecovery;
+		};
+		F7940AC985DADFD197FEC5C2EBD5BA26 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95A2BAC98913E24899027A76BD7FD22C /* EXPermissions.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 488F0C19AB92FC4B503EB55CC688FCF5;
+			remoteInfo = EXPermissions;
+		};
+		FB36C0B6FAA05270F6AE613C3D075CA7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 82696FBDE123ED71F401CBE7C5F347F0 /* UMAppLoader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AD914734744A00B4515A3E7A846EDC15;
+			remoteInfo = UMAppLoader;
+		};
+		FB744D575FB341D2F2928163C6A2BFC9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D40E30349907EB2CAC16D5413DD38F88 /* GTMAppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AFFE62B58843E7D325544E4D760E8920;
 			remoteInfo = GTMAppAuth;
 		};
-		BEE9A4DBA6A16FE181F8CA81C0EFC625 /* PBXContainerItemProxy */ = {
+		FCC5FC4A0C66F73738B210D4F1AFA42C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 214BB47D0451F6627748CD571213DA63 /* React-RCTActionSheet.xcodeproj */;
+			containerPortal = 49654934104E7170E753085ABDADCDCD /* EXMediaLibrary.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 2B622CBAFD85AC413ED6306FD8B71B00;
-			remoteInfo = "React-RCTActionSheet";
+			remoteGlobalIDString = 422CF65902B3ABF0E6A47527F9209CC8;
+			remoteInfo = EXMediaLibrary;
 		};
-		BEFED293F541FD2233CBA1E860A4D5BE /* PBXContainerItemProxy */ = {
+		FEFBE2BEAA903819141852CCCFD04A64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E0FB1F781A3DD5FA1B80FBBF92FF263D /* React-CoreModules.xcodeproj */;
+			containerPortal = 294117818F44E78C5C96ACCB80731DA6 /* EXNotifications.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 42F070932EC272C376353459CE0FA76E;
-			remoteInfo = "React-CoreModules";
-		};
-		C1BB0ED738EA7C9B8AC277DA1AA24F5B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E17A4FF58777750FEE2367B8131DE0C7 /* EXCalendar.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0F2988851D689F1E41CFC89C31422758;
-			remoteInfo = EXCalendar;
-		};
-		C41BAD665C4F19A7D79D1C944DE11F4D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B36E9FAACA53792605F96452B673FC3E /* Folly.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
-			remoteInfo = Folly;
-		};
-		C583F012A1045CBEE0FDDCDA00EDCDE6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 79597C6EE7AE3F42A077E8ED76E409EC /* UMTaskManagerInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
-			remoteInfo = UMTaskManagerInterface;
-		};
-		C86693C22A20623B96E547E34FFE9492 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D8AC490B90D36C33C940BEE74486E0AD /* EXErrorRecovery.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 49603BA4A7FB1CFC9ACD589B8CE05EA2;
-			remoteInfo = EXErrorRecovery;
-		};
-		C8A7EBF878F74EAFFBC3C1AEDD67DDFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ED84C3DABF125E35A7997EEA8E024458 /* EXNetwork.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 71F2A4AC24C8FBC0E24B6A613BB4F7BC;
-			remoteInfo = EXNetwork;
-		};
-		CDFF95002B0986589240B68BFFDC89A9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8DA601539688CCA864DBA45369C63C89 /* React-jsinspector.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1AC0EAF3E808B6AA276E43B30A5B20AA;
-			remoteInfo = "React-jsinspector";
-		};
-		CF416A1BC69C1322B8FA9AEBC4BA280D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C3CB519F1D8ED16D1326F848D011855C /* React-RCTText.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F0809BF90AC70C40646AB597C21CC420;
-			remoteInfo = "React-RCTText";
-		};
-		D5938BC5D0C3827E50CA209455B54BB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CCE7609431705D86AE800257C4F01DDE /* EXBluetooth.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 85E4ABA3FE5052C9FD39179D7166A9C1;
-			remoteInfo = EXBluetooth;
-		};
-		D6CBD332F91C5EE6C57379CE47B678BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2F9A4122CE5ECE84BAF75A0F648CACC8 /* EXBarCodeScanner.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E6D544E86F973F511B82FE486E5E25CD;
-			remoteInfo = EXBarCodeScanner;
-		};
-		D9668493B48DA60F5BD0D5BD020A3E19 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 436E2143218F7DDE9A6626864B0E6AF0 /* EXImageManipulator.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C3AA7C99B7CAD2FC22B8AA8928D7DF6F;
-			remoteInfo = EXImageManipulator;
-		};
-		DD584F8E37BB3057E22BA499B9075707 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA2BCA8FF68B0A990312F141051FFD3A /* RCTTypeSafety.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9C3601DE72183D42B9DC3FF333D35CF7;
-			remoteInfo = RCTTypeSafety;
-		};
-		DD95CABCF2D176DEF9A06047BC218D51 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2369ACF12B3111C68265F2595350C327 /* RNReanimated.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E9E22639328ACC061EB56756AD5B4F57;
-			remoteInfo = RNReanimated;
-		};
-		E7D195F539122BA77E01B91E003A67DF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 05A194EC45FB2117BD8F870ABF086815 /* EXMailComposer.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2E02530F5AAAD2AC2A43FE2B8AC3E99C;
-			remoteInfo = EXMailComposer;
-		};
-		EF0CDE855D234C083FA7C2FF99D5F3B4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4E7D0BD6516EB6EBF7C2E1596DA869CE /* EXLocalAuthentication.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D12244750972C21D688A2875A0E77F4;
-			remoteInfo = EXLocalAuthentication;
-		};
-		F07D0EA2D8BBA54772A5B40F1BFCC652 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 20549439A9BB3A290CA54A5216CAED82 /* EXImagePicker.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9ACF1D2895E366F44F904503F65171CD;
-			remoteInfo = EXImagePicker;
-		};
-		FA28BA756C6BBE2FF4F8EA20F44AA4E2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 89B1D20C24C2AEFAF4E2428AE375AE83 /* UMCameraInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
-			remoteInfo = UMCameraInterface;
+			remoteGlobalIDString = 6C660F81CE4F0EC96D208B20C3E8B154;
+			remoteInfo = EXNotifications;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		005366AEBED727B4E35B8ECEB47F3334 /* EXAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAppAuth; path = EXAppAuth.xcodeproj; sourceTree = "<group>"; };
-		0087F0F9FFC522842CAF9C5362A2CDF5 /* React-RCTBlob */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTBlob"; path = "React-RCTBlob.xcodeproj"; sourceTree = "<group>"; };
-		05A194EC45FB2117BD8F870ABF086815 /* EXMailComposer */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMailComposer; path = EXMailComposer.xcodeproj; sourceTree = "<group>"; };
-		06AA47214E9693150CB49A705F3F6C27 /* EXApplication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXApplication; path = EXApplication.xcodeproj; sourceTree = "<group>"; };
-		09F65C6199CEA61A469455DA1407FA0F /* EXAppLoaderProvider */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAppLoaderProvider; path = EXAppLoaderProvider.xcodeproj; sourceTree = "<group>"; };
+		01C31368D80D1F1E36987664BB65467C /* EXDevice */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevice; path = EXDevice.xcodeproj; sourceTree = "<group>"; };
+		05FAFBC78468FB19DA80689950B4EE59 /* EXBackgroundFetch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBackgroundFetch; path = EXBackgroundFetch.xcodeproj; sourceTree = "<group>"; };
+		06698A6B9F1075AF0E990C639CAEB4CD /* EXLocation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocation; path = EXLocation.xcodeproj; sourceTree = "<group>"; };
+		06F95FD44C85C7EE3E1DA785DE662CA5 /* EXImageManipulator */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageManipulator; path = EXImageManipulator.xcodeproj; sourceTree = "<group>"; };
+		071B32F4B1B9F446933CF10DB896CF35 /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
+		0A1766165759A9482B6A19EDE3759E64 /* EXHaptics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXHaptics; path = EXHaptics.xcodeproj; sourceTree = "<group>"; };
 		0B584D0632E15581F96D24B9C3B042D7 /* Pods-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
-		0D30F5A5F08BD206A1441CCC465441D2 /* UMReactNativeAdapter */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMReactNativeAdapter; path = UMReactNativeAdapter.xcodeproj; sourceTree = "<group>"; };
-		10D2416A8C3E1C5267AA4BFF168F0726 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
-		11B10E0B905BB9F52FC20D291E277DB0 /* React-RCTAnimation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTAnimation"; path = "React-RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
-		1260CA87FC642511E1966D621D1D9AC9 /* React-jsiexecutor */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsiexecutor"; path = "React-jsiexecutor.xcodeproj"; sourceTree = "<group>"; };
+		0D40AC9342409F0915056D02365C8708 /* React-jsiexecutor */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsiexecutor"; path = "React-jsiexecutor.xcodeproj"; sourceTree = "<group>"; };
+		0DEC226E0235F849738702B07B2BBED6 /* EXCellular */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCellular; path = EXCellular.xcodeproj; sourceTree = "<group>"; };
+		115087EF3753F7141B5F8E9681D28269 /* EXLocalization */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalization; path = EXLocalization.xcodeproj; sourceTree = "<group>"; };
+		1258523728F5A4AF804F8752005753CF /* react-native-safe-area-context */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-safe-area-context"; path = "react-native-safe-area-context.xcodeproj"; sourceTree = "<group>"; };
+		131ABB9F70B9247DBBC76234BB981872 /* EXSpeech */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSpeech; path = EXSpeech.xcodeproj; sourceTree = "<group>"; };
+		13816BAA0492D82677A4D950F4BA299A /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
+		13BBE1BF6776B543A11E41B72F71F1AD /* EXScreenOrientation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXScreenOrientation; path = EXScreenOrientation.xcodeproj; sourceTree = "<group>"; };
+		1A76970136FD953AEC7A8A0246E83964 /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
 		1AE3BB5F5D54D22FE5BA862EA879D388 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
-		1B61580939B2AF08D20C889295CF1961 /* EXScreenOrientation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXScreenOrientation; path = EXScreenOrientation.xcodeproj; sourceTree = "<group>"; };
-		20549439A9BB3A290CA54A5216CAED82 /* EXImagePicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImagePicker; path = EXImagePicker.xcodeproj; sourceTree = "<group>"; };
-		214BB47D0451F6627748CD571213DA63 /* React-RCTActionSheet */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTActionSheet"; path = "React-RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
-		220F34FBC5D29E6460E1D8C969623EE0 /* EXSensors */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSensors; path = EXSensors.xcodeproj; sourceTree = "<group>"; };
-		2369ACF12B3111C68265F2595350C327 /* RNReanimated */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNReanimated; path = RNReanimated.xcodeproj; sourceTree = "<group>"; };
-		2688019F47F22F252AE15A8345121453 /* React-RCTImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTImage"; path = "React-RCTImage.xcodeproj"; sourceTree = "<group>"; };
-		2841F3950E957706C16E273E68401A65 /* EXDocumentPicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDocumentPicker; path = EXDocumentPicker.xcodeproj; sourceTree = "<group>"; };
-		2B8A279B337AC4FEEAD7C7C95E72267D /* EXSpeech */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSpeech; path = EXSpeech.xcodeproj; sourceTree = "<group>"; };
-		2DF88CAA4C6A5306EC4E76C20B0E86F4 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		2F06208BED6AEFE1EFD3E40BC5043E62 /* EXSegment */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSegment; path = EXSegment.xcodeproj; sourceTree = "<group>"; };
-		2F9A4122CE5ECE84BAF75A0F648CACC8 /* EXBarCodeScanner */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBarCodeScanner; path = EXBarCodeScanner.xcodeproj; sourceTree = "<group>"; };
-		32B8B075229991CF0743A486BDEA1F87 /* EXImageLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageLoader; path = EXImageLoader.xcodeproj; sourceTree = "<group>"; };
-		330DAD0DCBFA9462B89FB51C5E192709 /* EXTaskManager */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXTaskManager; path = EXTaskManager.xcodeproj; sourceTree = "<group>"; };
-		3453DA47F6E33173C89A3C21E70ACB2E /* EXBattery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBattery; path = EXBattery.xcodeproj; sourceTree = "<group>"; };
-		3A5E8B0CED89EC689F4B501F59C229D3 /* React-RCTLinking */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTLinking"; path = "React-RCTLinking.xcodeproj"; sourceTree = "<group>"; };
-		409E2483452EBA4E60EE12D525571F58 /* EXGL_CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL_CPP; path = EXGL_CPP.xcodeproj; sourceTree = "<group>"; };
-		4270F852C3F1D430FCDED33F469B6B9C /* UMSensorsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMSensorsInterface; path = UMSensorsInterface.xcodeproj; sourceTree = "<group>"; };
-		436E2143218F7DDE9A6626864B0E6AF0 /* EXImageManipulator */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageManipulator; path = EXImageManipulator.xcodeproj; sourceTree = "<group>"; };
-		4619522B57561DA9840C4B2CCC820EA0 /* EXGL */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL; path = EXGL.xcodeproj; sourceTree = "<group>"; };
-		4E7D0BD6516EB6EBF7C2E1596DA869CE /* EXLocalAuthentication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalAuthentication; path = EXLocalAuthentication.xcodeproj; sourceTree = "<group>"; };
-		5458387F467DC3759B84D6888BDF4B43 /* UMFontInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFontInterface; path = UMFontInterface.xcodeproj; sourceTree = "<group>"; };
-		57F45A356791F4D46C943DD6CB70D620 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
-		5BA9B4E458EBF8ECDC7F9A03746DBE60 /* EXContacts */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXContacts; path = EXContacts.xcodeproj; sourceTree = "<group>"; };
-		5CC2ACD8665BAF5987D9C468F7690079 /* EXSecureStore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSecureStore; path = EXSecureStore.xcodeproj; sourceTree = "<group>"; };
-		5CD97465CE5F7C29982DCA560D9B48A9 /* UMBarCodeScannerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMBarCodeScannerInterface; path = UMBarCodeScannerInterface.xcodeproj; sourceTree = "<group>"; };
-		5D2F8DE560F0BC828F1E47283F34CB8F /* EXMediaLibrary */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMediaLibrary; path = EXMediaLibrary.xcodeproj; sourceTree = "<group>"; };
-		5E526B8172F2D3A122FBCC911367CAD9 /* EXNotifications */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNotifications; path = EXNotifications.xcodeproj; sourceTree = "<group>"; };
-		5F47D476ABCE509EE01C065A89A55FFF /* EXStoreReview */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXStoreReview; path = EXStoreReview.xcodeproj; sourceTree = "<group>"; };
-		6057F5C95592CBDDB1EC6FE932FDEA1E /* EXSMS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSMS; path = EXSMS.xcodeproj; sourceTree = "<group>"; };
+		1B3825A5527EF654DE3B1F0F9F2CA5DE /* EXKeepAwake */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXKeepAwake; path = EXKeepAwake.xcodeproj; sourceTree = "<group>"; };
+		1E5E95E3FA3B360C2CF317642CAFFBB9 /* React-CoreModules */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-CoreModules"; path = "React-CoreModules.xcodeproj"; sourceTree = "<group>"; };
+		20208F4914A792313423A5BF608B8BAF /* React-RCTText */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTText"; path = "React-RCTText.xcodeproj"; sourceTree = "<group>"; };
+		23DA93E473B1179D97AF42A16B417E14 /* React-RCTActionSheet */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTActionSheet"; path = "React-RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
+		240C77C2A2F1D0E2E62C981DCB0CDA7C /* EXBluetooth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBluetooth; path = EXBluetooth.xcodeproj; sourceTree = "<group>"; };
+		270D30302296CCCC8D6ABC434EDB475D /* RNReanimated */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNReanimated; path = RNReanimated.xcodeproj; sourceTree = "<group>"; };
+		294117818F44E78C5C96ACCB80731DA6 /* EXNotifications */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNotifications; path = EXNotifications.xcodeproj; sourceTree = "<group>"; };
+		2B5A9EB29CE9D1668640383F8C857787 /* EXPrint */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXPrint; path = EXPrint.xcodeproj; sourceTree = "<group>"; };
+		2C4CBAB9330D0122890456B95F02E118 /* React-RCTSettings */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTSettings"; path = "React-RCTSettings.xcodeproj"; sourceTree = "<group>"; };
+		2E89158FA7FC364A37B639295C73CF48 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
+		39878DB1923B67946D15856056EAB89C /* UMReactNativeAdapter */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMReactNativeAdapter; path = UMReactNativeAdapter.xcodeproj; sourceTree = "<group>"; };
+		3F94B71E3BA2D52C578B49F9F3A7D4EC /* EXBlur */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBlur; path = EXBlur.xcodeproj; sourceTree = "<group>"; };
+		40CA79B5F0A21D2F6128139EC2D55900 /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
+		40DFF745EDBEA45A560B776D2390FF55 /* EXLocalAuthentication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalAuthentication; path = EXLocalAuthentication.xcodeproj; sourceTree = "<group>"; };
+		41B9E88790680507BE34764D35892C49 /* EXStoreReview */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXStoreReview; path = EXStoreReview.xcodeproj; sourceTree = "<group>"; };
+		44036F0957D7D6FFA28F2CC99EBDD4DD /* UMBarCodeScannerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMBarCodeScannerInterface; path = UMBarCodeScannerInterface.xcodeproj; sourceTree = "<group>"; };
+		4452137291AC15A03ED5F5A0945448A6 /* RNGestureHandler */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler; path = RNGestureHandler.xcodeproj; sourceTree = "<group>"; };
+		469172776CA5A3A957D095A230A07EB5 /* EXTaskManager */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXTaskManager; path = EXTaskManager.xcodeproj; sourceTree = "<group>"; };
+		49654934104E7170E753085ABDADCDCD /* EXMediaLibrary */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMediaLibrary; path = EXMediaLibrary.xcodeproj; sourceTree = "<group>"; };
+		4ACD9E347BC8B10F7771AB00D782DD6F /* React-RCTNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTNetwork"; path = "React-RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
+		4EBB5CF4647D2343C020074CE36DDA2B /* EXDocumentPicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDocumentPicker; path = EXDocumentPicker.xcodeproj; sourceTree = "<group>"; };
+		513190FA2FC3B8450B998E3C92B25F3C /* EXGL */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL; path = EXGL.xcodeproj; sourceTree = "<group>"; };
+		5AD0A3649D2FD152278EFD3F57453B71 /* React-RCTVibration */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTVibration"; path = "React-RCTVibration.xcodeproj"; sourceTree = "<group>"; };
+		604E701616718501752514181B7B4C57 /* EXCrypto */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCrypto; path = EXCrypto.xcodeproj; sourceTree = "<group>"; };
+		635D71D6E8B974B9DA1059EE836255EF /* EXWebBrowser */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXWebBrowser; path = EXWebBrowser.xcodeproj; sourceTree = "<group>"; };
 		648B703B3FEA1D4E5B5392848855AD59 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
-		6B74B35F9A22487842ACBFDE9C63AD81 /* EXPermissions */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXPermissions; path = EXPermissions.xcodeproj; sourceTree = "<group>"; };
+		697ED587AC099329AF6BDDE8019133EB /* EXImageLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImageLoader; path = EXImageLoader.xcodeproj; sourceTree = "<group>"; };
 		6D02C945BC67559AFEB7B446AD8A35E6 /* Pods-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
 		6DB368A4FFC55518E43CFCA8665E3B97 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
-		6FA017ED878B66AC413EA203A9076D0A /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
-		76E0E71083EC61FF8F2BA93C7091D540 /* EXCrypto */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCrypto; path = EXCrypto.xcodeproj; sourceTree = "<group>"; };
-		77F1654B393E87607D25D6E7F85F4A46 /* EXBlur */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBlur; path = EXBlur.xcodeproj; sourceTree = "<group>"; };
-		79597C6EE7AE3F42A077E8ED76E409EC /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
+		6E3E60BE6CF5A05B8475C8761A3330A1 /* EXContacts */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXContacts; path = EXContacts.xcodeproj; sourceTree = "<group>"; };
+		728B4B6A0629C15E7975E406DD6756E9 /* React-RCTImage */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTImage"; path = "React-RCTImage.xcodeproj"; sourceTree = "<group>"; };
 		7BA510FA2B18C840471D62EB836D6A34 /* Pods-BareExpoTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BareExpoTests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		7D2D3C92DB0EBF5C4A06ACF19A3C394F /* UMImageLoaderInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMImageLoaderInterface; path = UMImageLoaderInterface.xcodeproj; sourceTree = "<group>"; };
-		7DBD7F55BF0053C2F26060F933197516 /* EXGoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGoogleSignIn; path = EXGoogleSignIn.xcodeproj; sourceTree = "<group>"; };
-		7E6EB46BBC7B3F1A86F831B135CFEED3 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		7F25AF103CD1456EC259A8244F572CF0 /* EXConstants */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXConstants; path = EXConstants.xcodeproj; sourceTree = "<group>"; };
+		7EE1A76D280E53852E37E9284E5FF4FB /* EXSharing */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSharing; path = EXSharing.xcodeproj; sourceTree = "<group>"; };
+		7F14838313F6E38E1A7CC39A22DEDB80 /* EXAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAppAuth; path = EXAppAuth.xcodeproj; sourceTree = "<group>"; };
+		82696FBDE123ED71F401CBE7C5F347F0 /* UMAppLoader */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMAppLoader; path = UMAppLoader.xcodeproj; sourceTree = "<group>"; };
+		82A8CEAE405517F64F0E91CA8E0D4C6C /* UMCameraInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCameraInterface; path = UMCameraInterface.xcodeproj; sourceTree = "<group>"; };
+		83F268ED74A8607216A3C7D0CFF5DDED /* ReactCommon */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCommon; path = ReactCommon.xcodeproj; sourceTree = "<group>"; };
 		8465E2FC705BE47B5397BF4A39C8AC18 /* Pods-BareExpoTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BareExpoTests-dummy.m"; sourceTree = "<group>"; };
 		878E77864652C9881F9C85C3BC4CA6E7 /* libPods-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-BareExpoTests.a"; path = "libPods-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		89B1D20C24C2AEFAF4E2428AE375AE83 /* UMCameraInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCameraInterface; path = UMCameraInterface.xcodeproj; sourceTree = "<group>"; };
-		8BEFC1F9526F517F269E627FD171F935 /* EXFont */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFont; path = EXFont.xcodeproj; sourceTree = "<group>"; };
-		8CB712A2F38BE315CD50BDD306AEE04F /* React-RCTNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTNetwork"; path = "React-RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
-		8D28CD84957AEFBDD4C8D17774065FAE /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		8DA601539688CCA864DBA45369C63C89 /* React-jsinspector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsinspector"; path = "React-jsinspector.xcodeproj"; sourceTree = "<group>"; };
-		8F2260A16410A7CDFADDF4ED0D215627 /* EXAV */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAV; path = EXAV.xcodeproj; sourceTree = "<group>"; };
-		90036929EAEFE6D29655C57D3035095D /* RCTRequired */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTRequired; path = RCTRequired.xcodeproj; sourceTree = "<group>"; };
-		949E8980DE5274CA53A97B80102E8B1F /* React-cxxreact */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-cxxreact"; path = "React-cxxreact.xcodeproj"; sourceTree = "<group>"; };
-		953EFFFA6F09C37417054792992BC827 /* EXBrightness */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBrightness; path = EXBrightness.xcodeproj; sourceTree = "<group>"; };
+		8974B4E6EB25680511DC9B9E29C2A54E /* react-native-appearance */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-appearance"; path = "react-native-appearance.xcodeproj"; sourceTree = "<group>"; };
+		8AF2CADC935A6FE72B43D03B58BE77D0 /* EXCalendar */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCalendar; path = EXCalendar.xcodeproj; sourceTree = "<group>"; };
+		8DC88630FC02792AAD8D7E7AC144E566 /* Yoga */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Yoga; path = Yoga.xcodeproj; sourceTree = "<group>"; };
+		8EA9B9EA23C2D55F4B1EEC87239F36D7 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		8F3F0A45E9AA192F63F7F90EE162FA68 /* EXBrightness */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBrightness; path = EXBrightness.xcodeproj; sourceTree = "<group>"; };
+		90E584F402684B1D449D55070988F689 /* EXSegment */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSegment; path = EXSegment.xcodeproj; sourceTree = "<group>"; };
+		911BB1FEF98785F736B895AA27A23383 /* EXMailComposer */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXMailComposer; path = EXMailComposer.xcodeproj; sourceTree = "<group>"; };
+		91642237B7D8F635A1AD19D87357B153 /* React-jsi */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsi"; path = "React-jsi.xcodeproj"; sourceTree = "<group>"; };
+		93FD1DD41B7A7E6DCEC91B1CA7598665 /* EXImagePicker */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXImagePicker; path = EXImagePicker.xcodeproj; sourceTree = "<group>"; };
+		949CD53AA22DABDBC6B7508D4DDF712C /* React-RCTLinking */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTLinking"; path = "React-RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		95A2BAC98913E24899027A76BD7FD22C /* EXPermissions */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXPermissions; path = EXPermissions.xcodeproj; sourceTree = "<group>"; };
 		96404DAFB39B904B65654D85BD8668CF /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
-		9A7E59E13721231195E4C1B2EFADB546 /* react-native-safe-area-context */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-safe-area-context"; path = "react-native-safe-area-context.xcodeproj"; sourceTree = "<group>"; };
+		98F5EE3FA0A163F3E047EF0D7256AABF /* EXFont */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFont; path = EXFont.xcodeproj; sourceTree = "<group>"; };
+		9B135140FE41B34FEBCAF60C9231E22A /* React-jsinspector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-jsinspector"; path = "React-jsinspector.xcodeproj"; sourceTree = "<group>"; };
 		9B246F48CB5A122EA4B98F3484607064 /* GTMSessionFetcher */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMSessionFetcher; path = GTMSessionFetcher.xcodeproj; sourceTree = "<group>"; };
+		9B6EEAE510C536D1B831A2B5AA38AA53 /* UMFontInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFontInterface; path = UMFontInterface.xcodeproj; sourceTree = "<group>"; };
+		9CA07A296FD8C0821B438E3283FA86B4 /* EXSecureStore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSecureStore; path = EXSecureStore.xcodeproj; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9F0A8316D970F5506550AE49A843CB52 /* React-RCTBlob */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTBlob"; path = "React-RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		9F3EED7C7CC54C74129840B0C037651C /* Pods-BareExpo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-BareExpo-acknowledgements.markdown"; sourceTree = "<group>"; };
-		A23EE280B6CEDFCB40ECC8377BFEABCD /* EXLocalization */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocalization; path = EXLocalization.xcodeproj; sourceTree = "<group>"; };
+		9F611167A50D00F1258A9DFFD9976886 /* EXAmplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAmplitude; path = EXAmplitude.xcodeproj; sourceTree = "<group>"; };
+		A20248EDE91FE79E869E9F942B910EE5 /* EXApplication */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXApplication; path = EXApplication.xcodeproj; sourceTree = "<group>"; };
 		A24AB511B9A02D0046526CA99BE62D6F /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
-		AC664B320458856E7168D08427B5A76E /* EXLinearGradient */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLinearGradient; path = EXLinearGradient.xcodeproj; sourceTree = "<group>"; };
-		ACF3CE1B2E951F4A3A64072224341995 /* EXUpdates */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXUpdates; path = EXUpdates.xcodeproj; sourceTree = "<group>"; };
-		AEA3F5FFA174548C3EA3D2147AAD8177 /* Yoga */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Yoga; path = Yoga.xcodeproj; sourceTree = "<group>"; };
-		AED03E2E5451B6EFC22A248166FE11B7 /* React-RCTVibration */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTVibration"; path = "React-RCTVibration.xcodeproj"; sourceTree = "<group>"; };
+		A510551B5FD4A9CCC8E5B85621A4278C /* EXFacebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFacebook; path = EXFacebook.xcodeproj; sourceTree = "<group>"; };
+		A5CECA8D9CAFE636CA08D9B1315DCF13 /* React-RCTAnimation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTAnimation"; path = "React-RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
+		A80300CD38753C030745F054157B2AAE /* UMSensorsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMSensorsInterface; path = UMSensorsInterface.xcodeproj; sourceTree = "<group>"; };
+		AA8113EEF615BB003D9C66B23B35E8EB /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
+		AF535F7052EEA078ED3891D91C745F91 /* EXBattery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBattery; path = EXBattery.xcodeproj; sourceTree = "<group>"; };
 		B36E9FAACA53792605F96452B673FC3E /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
-		B4FF14CB7EC6178E10B4B383A22FC5EB /* RNGestureHandler */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler; path = RNGestureHandler.xcodeproj; sourceTree = "<group>"; };
 		B54740B002D716FDD124C76801E0EAB3 /* Pods-BareExpoTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BareExpoTests-acknowledgements.plist"; sourceTree = "<group>"; };
-		B636BDC69A99EBBFBADDC886E4B50168 /* EXSQLite */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSQLite; path = EXSQLite.xcodeproj; sourceTree = "<group>"; };
 		B6489F2AAAFD4294BC3EA8BF75C53B15 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
-		B6FA839377BAEA1C8A9BBA779A7158F9 /* React-RCTSettings */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTSettings"; path = "React-RCTSettings.xcodeproj"; sourceTree = "<group>"; };
+		B7620E5C0169617802FCBE2B6CE1FA33 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
 		B888E1CADEF1F453D8C2C1EC7D3F7022 /* ZXingObjC */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC; path = ZXingObjC.xcodeproj; sourceTree = "<group>"; };
-		B91187988E28833D13CFBC4937182D1E /* EXLocation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLocation; path = EXLocation.xcodeproj; sourceTree = "<group>"; };
 		B9129F18779266F08BA65232D729B5FC /* Pods-BareExpo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BareExpo-resources.sh"; sourceTree = "<group>"; };
-		BD269EF63482D75A6C5442B22742785A /* EXCellular */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCellular; path = EXCellular.xcodeproj; sourceTree = "<group>"; };
-		C3CB519F1D8ED16D1326F848D011855C /* React-RCTText */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-RCTText"; path = "React-RCTText.xcodeproj"; sourceTree = "<group>"; };
+		BB5F0FA62814A131C8FF183DDF46FD9E /* EXFileSystem */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFileSystem; path = EXFileSystem.xcodeproj; sourceTree = "<group>"; };
+		BFAF163A2425D7C2CD27D866AFFBCDD7 /* EXSMS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSMS; path = EXSMS.xcodeproj; sourceTree = "<group>"; };
+		BFB3A0C7CF6799F3336A4E5B08BF598C /* EXAV */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAV; path = EXAV.xcodeproj; sourceTree = "<group>"; };
 		C42944AE78D3C85AE9277FE320D54C35 /* Pods-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
 		C4A8AD09B0987CCC643BCC6FFC68B2AE /* Pods-BareExpoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BareExpoTests.debug.xcconfig"; sourceTree = "<group>"; };
-		C85A70B1B57D072613D0899A67BF8CE9 /* EXPrint */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXPrint; path = EXPrint.xcodeproj; sourceTree = "<group>"; };
-		CA573CAC169CC5A7EA73BC965596E158 /* EXFileSystem */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFileSystem; path = EXFileSystem.xcodeproj; sourceTree = "<group>"; };
-		CA634914A505DB35DFE1DA8279E6C3B3 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
-		CCE7609431705D86AE800257C4F01DDE /* EXBluetooth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBluetooth; path = EXBluetooth.xcodeproj; sourceTree = "<group>"; };
-		CDEA890F0B361CB0C715B73D7A282471 /* EXSharing */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSharing; path = EXSharing.xcodeproj; sourceTree = "<group>"; };
+		C56FDC77A12E71F5FEEECE0A7E0D008A /* EXNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNetwork; path = EXNetwork.xcodeproj; sourceTree = "<group>"; };
 		D090CDB16B158897ECDA29AE3E2FDBF6 /* Pods-BareExpo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BareExpo-dummy.m"; sourceTree = "<group>"; };
-		D0FD87486C9771AE3C4F01ADB0FE8663 /* EXFacebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXFacebook; path = EXFacebook.xcodeproj; sourceTree = "<group>"; };
 		D1014EA3C6789E7FAA1DC562E34C204D /* libPods-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-BareExpo.a"; path = "libPods-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2E3F16CC43733F94E675A61B00DDD99 /* EXConstants */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXConstants; path = EXConstants.xcodeproj; sourceTree = "<group>"; };
 		D40E30349907EB2CAC16D5413DD38F88 /* GTMAppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GTMAppAuth; path = GTMAppAuth.xcodeproj; sourceTree = "<group>"; };
+		D44095C99F6E221217C0E668233F8425 /* EXGoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGoogleSignIn; path = EXGoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		D48CF9AF6779F366D43DAFA00F78BE5E /* Pods-BareExpo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BareExpo-acknowledgements.plist"; sourceTree = "<group>"; };
-		D8AC490B90D36C33C940BEE74486E0AD /* EXErrorRecovery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXErrorRecovery; path = EXErrorRecovery.xcodeproj; sourceTree = "<group>"; };
-		D8DB40F448374C875A12044592D22E9C /* EXAmplitude */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXAmplitude; path = EXAmplitude.xcodeproj; sourceTree = "<group>"; };
-		D94A97E0682F0B88CEE784DF0606E02E /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		E0FB1F781A3DD5FA1B80FBBF92FF263D /* React-CoreModules */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-CoreModules"; path = "React-CoreModules.xcodeproj"; sourceTree = "<group>"; };
-		E17A4FF58777750FEE2367B8131DE0C7 /* EXCalendar */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXCalendar; path = EXCalendar.xcodeproj; sourceTree = "<group>"; };
-		E40783A4511E71EDB0B8AB336F9ABAA0 /* EXKeepAwake */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXKeepAwake; path = EXKeepAwake.xcodeproj; sourceTree = "<group>"; };
+		DA3D26AE32253F98ACC50B309687D5DA /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
+		DA774FEB3E0196A23EFA92F6A8BBA7F2 /* EXUpdates */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXUpdates; path = EXUpdates.xcodeproj; sourceTree = "<group>"; };
+		DBB69C8827AE851B714A1580FFBC57DF /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		DCF9941A71E94A2A91DD34089C0A9CC9 /* EXSensors */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSensors; path = EXSensors.xcodeproj; sourceTree = "<group>"; };
+		E3DC409AB72D5410305A71F6FF9FB504 /* EXRandom */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXRandom; path = EXRandom.xcodeproj; sourceTree = "<group>"; };
 		E557148B1E43DC418D43AC23E1DF3514 /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
-		E843037DAD82B64C132D7B5C3FC1C59C /* EXBackgroundFetch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBackgroundFetch; path = EXBackgroundFetch.xcodeproj; sourceTree = "<group>"; };
+		E61E56E18464AB678BF4A594A44FC70B /* EXErrorRecovery */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXErrorRecovery; path = EXErrorRecovery.xcodeproj; sourceTree = "<group>"; };
 		E9806A9518AD19378AACBF3FADC024BE /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
-		E9878AB5E24FB00E3877A41D634954FC /* EXDevice */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXDevice; path = EXDevice.xcodeproj; sourceTree = "<group>"; };
-		EA070BB6E92680B5636A51D366C307D1 /* EXHaptics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXHaptics; path = EXHaptics.xcodeproj; sourceTree = "<group>"; };
-		EA2BCA8FF68B0A990312F141051FFD3A /* RCTTypeSafety */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTypeSafety; path = RCTTypeSafety.xcodeproj; sourceTree = "<group>"; };
-		EC00C51EEF4E038ABDEFE41899C70E2A /* FBReactNativeSpec */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBReactNativeSpec; path = FBReactNativeSpec.xcodeproj; sourceTree = "<group>"; };
-		ED84C3DABF125E35A7997EEA8E024458 /* EXNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXNetwork; path = EXNetwork.xcodeproj; sourceTree = "<group>"; };
+		EF8D7497F491F686403D500527EE4D45 /* EXGL_CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXGL_CPP; path = EXGL_CPP.xcodeproj; sourceTree = "<group>"; };
 		F3317B6E00903DEF65B688E84EA04AA3 /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
-		F7BF1FFF31434EE8966699D7B002209B /* react-native-appearance */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "react-native-appearance"; path = "react-native-appearance.xcodeproj"; sourceTree = "<group>"; };
-		F8BC3510D8DD9A31995CBDE0DA978EE7 /* FBLazyVector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBLazyVector; path = FBLazyVector.xcodeproj; sourceTree = "<group>"; };
-		F8CFEA92E887260D193BF10ECFF0130E /* EXRandom */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXRandom; path = EXRandom.xcodeproj; sourceTree = "<group>"; };
-		FDB70E0860CF8C36940465E14F698FD2 /* EXWebBrowser */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXWebBrowser; path = EXWebBrowser.xcodeproj; sourceTree = "<group>"; };
+		F406904A57A57925742B8F1D78DB9F61 /* EXBarCodeScanner */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXBarCodeScanner; path = EXBarCodeScanner.xcodeproj; sourceTree = "<group>"; };
+		FA840FFC902B007B9ADC0E45D86B30FF /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		FD1DE833AC591830C76AC217A53CCC34 /* EXSQLite */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXSQLite; path = EXSQLite.xcodeproj; sourceTree = "<group>"; };
+		FDA2EA473F1A1F70163412655B7B8CC6 /* EXLinearGradient */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EXLinearGradient; path = EXLinearGradient.xcodeproj; sourceTree = "<group>"; };
+		FF9C3E6542EDBEBCF8A883E33ECD02EB /* React-cxxreact */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-cxxreact"; path = "React-cxxreact.xcodeproj"; sourceTree = "<group>"; };
+		FFA9B26555DFA027D04D6C2BDB708C65 /* FBLazyVector */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBLazyVector; path = FBLazyVector.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -870,7 +870,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FE9D5A685DAAD6146DFFFCD36F575A45 /* Frameworks */ = {
+		F48F9A9A56BA047A688793BBCCDA5BD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -880,6 +880,103 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		38C6ADD1F48CA640B7030B06C8EFA1EA /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9F611167A50D00F1258A9DFFD9976886 /* EXAmplitude */,
+				7F14838313F6E38E1A7CC39A22DEDB80 /* EXAppAuth */,
+				A20248EDE91FE79E869E9F942B910EE5 /* EXApplication */,
+				BFB3A0C7CF6799F3336A4E5B08BF598C /* EXAV */,
+				05FAFBC78468FB19DA80689950B4EE59 /* EXBackgroundFetch */,
+				F406904A57A57925742B8F1D78DB9F61 /* EXBarCodeScanner */,
+				AF535F7052EEA078ED3891D91C745F91 /* EXBattery */,
+				240C77C2A2F1D0E2E62C981DCB0CDA7C /* EXBluetooth */,
+				3F94B71E3BA2D52C578B49F9F3A7D4EC /* EXBlur */,
+				8F3F0A45E9AA192F63F7F90EE162FA68 /* EXBrightness */,
+				8AF2CADC935A6FE72B43D03B58BE77D0 /* EXCalendar */,
+				0DEC226E0235F849738702B07B2BBED6 /* EXCellular */,
+				D2E3F16CC43733F94E675A61B00DDD99 /* EXConstants */,
+				6E3E60BE6CF5A05B8475C8761A3330A1 /* EXContacts */,
+				604E701616718501752514181B7B4C57 /* EXCrypto */,
+				01C31368D80D1F1E36987664BB65467C /* EXDevice */,
+				4EBB5CF4647D2343C020074CE36DDA2B /* EXDocumentPicker */,
+				E61E56E18464AB678BF4A594A44FC70B /* EXErrorRecovery */,
+				A510551B5FD4A9CCC8E5B85621A4278C /* EXFacebook */,
+				BB5F0FA62814A131C8FF183DDF46FD9E /* EXFileSystem */,
+				98F5EE3FA0A163F3E047EF0D7256AABF /* EXFont */,
+				513190FA2FC3B8450B998E3C92B25F3C /* EXGL */,
+				EF8D7497F491F686403D500527EE4D45 /* EXGL_CPP */,
+				D44095C99F6E221217C0E668233F8425 /* EXGoogleSignIn */,
+				0A1766165759A9482B6A19EDE3759E64 /* EXHaptics */,
+				697ED587AC099329AF6BDDE8019133EB /* EXImageLoader */,
+				06F95FD44C85C7EE3E1DA785DE662CA5 /* EXImageManipulator */,
+				93FD1DD41B7A7E6DCEC91B1CA7598665 /* EXImagePicker */,
+				1B3825A5527EF654DE3B1F0F9F2CA5DE /* EXKeepAwake */,
+				FDA2EA473F1A1F70163412655B7B8CC6 /* EXLinearGradient */,
+				40DFF745EDBEA45A560B776D2390FF55 /* EXLocalAuthentication */,
+				115087EF3753F7141B5F8E9681D28269 /* EXLocalization */,
+				06698A6B9F1075AF0E990C639CAEB4CD /* EXLocation */,
+				911BB1FEF98785F736B895AA27A23383 /* EXMailComposer */,
+				49654934104E7170E753085ABDADCDCD /* EXMediaLibrary */,
+				C56FDC77A12E71F5FEEECE0A7E0D008A /* EXNetwork */,
+				294117818F44E78C5C96ACCB80731DA6 /* EXNotifications */,
+				95A2BAC98913E24899027A76BD7FD22C /* EXPermissions */,
+				2B5A9EB29CE9D1668640383F8C857787 /* EXPrint */,
+				E3DC409AB72D5410305A71F6FF9FB504 /* EXRandom */,
+				13BBE1BF6776B543A11E41B72F71F1AD /* EXScreenOrientation */,
+				9CA07A296FD8C0821B438E3283FA86B4 /* EXSecureStore */,
+				90E584F402684B1D449D55070988F689 /* EXSegment */,
+				DCF9941A71E94A2A91DD34089C0A9CC9 /* EXSensors */,
+				7EE1A76D280E53852E37E9284E5FF4FB /* EXSharing */,
+				BFAF163A2425D7C2CD27D866AFFBCDD7 /* EXSMS */,
+				131ABB9F70B9247DBBC76234BB981872 /* EXSpeech */,
+				FD1DE833AC591830C76AC217A53CCC34 /* EXSQLite */,
+				41B9E88790680507BE34764D35892C49 /* EXStoreReview */,
+				469172776CA5A3A957D095A230A07EB5 /* EXTaskManager */,
+				DA774FEB3E0196A23EFA92F6A8BBA7F2 /* EXUpdates */,
+				635D71D6E8B974B9DA1059EE836255EF /* EXWebBrowser */,
+				FFA9B26555DFA027D04D6C2BDB708C65 /* FBLazyVector */,
+				1A76970136FD953AEC7A8A0246E83964 /* FBReactNativeSpec */,
+				13816BAA0492D82677A4D950F4BA299A /* RCTRequired */,
+				AA8113EEF615BB003D9C66B23B35E8EB /* RCTTypeSafety */,
+				DBB69C8827AE851B714A1580FFBC57DF /* React */,
+				FA840FFC902B007B9ADC0E45D86B30FF /* React-Core */,
+				1E5E95E3FA3B360C2CF317642CAFFBB9 /* React-CoreModules */,
+				FF9C3E6542EDBEBCF8A883E33ECD02EB /* React-cxxreact */,
+				91642237B7D8F635A1AD19D87357B153 /* React-jsi */,
+				0D40AC9342409F0915056D02365C8708 /* React-jsiexecutor */,
+				9B135140FE41B34FEBCAF60C9231E22A /* React-jsinspector */,
+				8974B4E6EB25680511DC9B9E29C2A54E /* react-native-appearance */,
+				1258523728F5A4AF804F8752005753CF /* react-native-safe-area-context */,
+				23DA93E473B1179D97AF42A16B417E14 /* React-RCTActionSheet */,
+				A5CECA8D9CAFE636CA08D9B1315DCF13 /* React-RCTAnimation */,
+				9F0A8316D970F5506550AE49A843CB52 /* React-RCTBlob */,
+				728B4B6A0629C15E7975E406DD6756E9 /* React-RCTImage */,
+				949CD53AA22DABDBC6B7508D4DDF712C /* React-RCTLinking */,
+				4ACD9E347BC8B10F7771AB00D782DD6F /* React-RCTNetwork */,
+				2C4CBAB9330D0122890456B95F02E118 /* React-RCTSettings */,
+				20208F4914A792313423A5BF608B8BAF /* React-RCTText */,
+				5AD0A3649D2FD152278EFD3F57453B71 /* React-RCTVibration */,
+				83F268ED74A8607216A3C7D0CFF5DDED /* ReactCommon */,
+				4452137291AC15A03ED5F5A0945448A6 /* RNGestureHandler */,
+				270D30302296CCCC8D6ABC434EDB475D /* RNReanimated */,
+				82696FBDE123ED71F401CBE7C5F347F0 /* UMAppLoader */,
+				44036F0957D7D6FFA28F2CC99EBDD4DD /* UMBarCodeScannerInterface */,
+				82A8CEAE405517F64F0E91CA8E0D4C6C /* UMCameraInterface */,
+				2E89158FA7FC364A37B639295C73CF48 /* UMConstantsInterface */,
+				8EA9B9EA23C2D55F4B1EEC87239F36D7 /* UMCore */,
+				B7620E5C0169617802FCBE2B6CE1FA33 /* UMFileSystemInterface */,
+				9B6EEAE510C536D1B831A2B5AA38AA53 /* UMFontInterface */,
+				40CA79B5F0A21D2F6128139EC2D55900 /* UMImageLoaderInterface */,
+				DA3D26AE32253F98ACC50B309687D5DA /* UMPermissionsInterface */,
+				39878DB1923B67946D15856056EAB89C /* UMReactNativeAdapter */,
+				A80300CD38753C030745F054157B2AAE /* UMSensorsInterface */,
+				071B32F4B1B9F446933CF10DB896CF35 /* UMTaskManagerInterface */,
+				8DC88630FC02792AAD8D7E7AC144E566 /* Yoga */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
 		47A0FFA7A01C9BA895E5664886E9B952 /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -901,103 +998,6 @@
 			);
 			name = "Pods-BareExpo";
 			path = "Target Support Files/Pods-BareExpo";
-			sourceTree = "<group>";
-		};
-		553B6B48AD525AB3C53CD98EAAD54538 /* Development Pods */ = {
-			isa = PBXGroup;
-			children = (
-				D8DB40F448374C875A12044592D22E9C /* EXAmplitude */,
-				005366AEBED727B4E35B8ECEB47F3334 /* EXAppAuth */,
-				06AA47214E9693150CB49A705F3F6C27 /* EXApplication */,
-				09F65C6199CEA61A469455DA1407FA0F /* EXAppLoaderProvider */,
-				8F2260A16410A7CDFADDF4ED0D215627 /* EXAV */,
-				E843037DAD82B64C132D7B5C3FC1C59C /* EXBackgroundFetch */,
-				2F9A4122CE5ECE84BAF75A0F648CACC8 /* EXBarCodeScanner */,
-				3453DA47F6E33173C89A3C21E70ACB2E /* EXBattery */,
-				CCE7609431705D86AE800257C4F01DDE /* EXBluetooth */,
-				77F1654B393E87607D25D6E7F85F4A46 /* EXBlur */,
-				953EFFFA6F09C37417054792992BC827 /* EXBrightness */,
-				E17A4FF58777750FEE2367B8131DE0C7 /* EXCalendar */,
-				BD269EF63482D75A6C5442B22742785A /* EXCellular */,
-				7F25AF103CD1456EC259A8244F572CF0 /* EXConstants */,
-				5BA9B4E458EBF8ECDC7F9A03746DBE60 /* EXContacts */,
-				76E0E71083EC61FF8F2BA93C7091D540 /* EXCrypto */,
-				E9878AB5E24FB00E3877A41D634954FC /* EXDevice */,
-				2841F3950E957706C16E273E68401A65 /* EXDocumentPicker */,
-				D8AC490B90D36C33C940BEE74486E0AD /* EXErrorRecovery */,
-				D0FD87486C9771AE3C4F01ADB0FE8663 /* EXFacebook */,
-				CA573CAC169CC5A7EA73BC965596E158 /* EXFileSystem */,
-				8BEFC1F9526F517F269E627FD171F935 /* EXFont */,
-				4619522B57561DA9840C4B2CCC820EA0 /* EXGL */,
-				409E2483452EBA4E60EE12D525571F58 /* EXGL_CPP */,
-				7DBD7F55BF0053C2F26060F933197516 /* EXGoogleSignIn */,
-				EA070BB6E92680B5636A51D366C307D1 /* EXHaptics */,
-				32B8B075229991CF0743A486BDEA1F87 /* EXImageLoader */,
-				436E2143218F7DDE9A6626864B0E6AF0 /* EXImageManipulator */,
-				20549439A9BB3A290CA54A5216CAED82 /* EXImagePicker */,
-				E40783A4511E71EDB0B8AB336F9ABAA0 /* EXKeepAwake */,
-				AC664B320458856E7168D08427B5A76E /* EXLinearGradient */,
-				4E7D0BD6516EB6EBF7C2E1596DA869CE /* EXLocalAuthentication */,
-				A23EE280B6CEDFCB40ECC8377BFEABCD /* EXLocalization */,
-				B91187988E28833D13CFBC4937182D1E /* EXLocation */,
-				05A194EC45FB2117BD8F870ABF086815 /* EXMailComposer */,
-				5D2F8DE560F0BC828F1E47283F34CB8F /* EXMediaLibrary */,
-				ED84C3DABF125E35A7997EEA8E024458 /* EXNetwork */,
-				5E526B8172F2D3A122FBCC911367CAD9 /* EXNotifications */,
-				6B74B35F9A22487842ACBFDE9C63AD81 /* EXPermissions */,
-				C85A70B1B57D072613D0899A67BF8CE9 /* EXPrint */,
-				F8CFEA92E887260D193BF10ECFF0130E /* EXRandom */,
-				1B61580939B2AF08D20C889295CF1961 /* EXScreenOrientation */,
-				5CC2ACD8665BAF5987D9C468F7690079 /* EXSecureStore */,
-				2F06208BED6AEFE1EFD3E40BC5043E62 /* EXSegment */,
-				220F34FBC5D29E6460E1D8C969623EE0 /* EXSensors */,
-				CDEA890F0B361CB0C715B73D7A282471 /* EXSharing */,
-				6057F5C95592CBDDB1EC6FE932FDEA1E /* EXSMS */,
-				2B8A279B337AC4FEEAD7C7C95E72267D /* EXSpeech */,
-				B636BDC69A99EBBFBADDC886E4B50168 /* EXSQLite */,
-				5F47D476ABCE509EE01C065A89A55FFF /* EXStoreReview */,
-				330DAD0DCBFA9462B89FB51C5E192709 /* EXTaskManager */,
-				ACF3CE1B2E951F4A3A64072224341995 /* EXUpdates */,
-				FDB70E0860CF8C36940465E14F698FD2 /* EXWebBrowser */,
-				F8BC3510D8DD9A31995CBDE0DA978EE7 /* FBLazyVector */,
-				EC00C51EEF4E038ABDEFE41899C70E2A /* FBReactNativeSpec */,
-				90036929EAEFE6D29655C57D3035095D /* RCTRequired */,
-				EA2BCA8FF68B0A990312F141051FFD3A /* RCTTypeSafety */,
-				D94A97E0682F0B88CEE784DF0606E02E /* React */,
-				CA634914A505DB35DFE1DA8279E6C3B3 /* React-Core */,
-				E0FB1F781A3DD5FA1B80FBBF92FF263D /* React-CoreModules */,
-				949E8980DE5274CA53A97B80102E8B1F /* React-cxxreact */,
-				57F45A356791F4D46C943DD6CB70D620 /* React-jsi */,
-				1260CA87FC642511E1966D621D1D9AC9 /* React-jsiexecutor */,
-				8DA601539688CCA864DBA45369C63C89 /* React-jsinspector */,
-				F7BF1FFF31434EE8966699D7B002209B /* react-native-appearance */,
-				9A7E59E13721231195E4C1B2EFADB546 /* react-native-safe-area-context */,
-				214BB47D0451F6627748CD571213DA63 /* React-RCTActionSheet */,
-				11B10E0B905BB9F52FC20D291E277DB0 /* React-RCTAnimation */,
-				0087F0F9FFC522842CAF9C5362A2CDF5 /* React-RCTBlob */,
-				2688019F47F22F252AE15A8345121453 /* React-RCTImage */,
-				3A5E8B0CED89EC689F4B501F59C229D3 /* React-RCTLinking */,
-				8CB712A2F38BE315CD50BDD306AEE04F /* React-RCTNetwork */,
-				B6FA839377BAEA1C8A9BBA779A7158F9 /* React-RCTSettings */,
-				C3CB519F1D8ED16D1326F848D011855C /* React-RCTText */,
-				AED03E2E5451B6EFC22A248166FE11B7 /* React-RCTVibration */,
-				6FA017ED878B66AC413EA203A9076D0A /* ReactCommon */,
-				B4FF14CB7EC6178E10B4B383A22FC5EB /* RNGestureHandler */,
-				2369ACF12B3111C68265F2595350C327 /* RNReanimated */,
-				5CD97465CE5F7C29982DCA560D9B48A9 /* UMBarCodeScannerInterface */,
-				89B1D20C24C2AEFAF4E2428AE375AE83 /* UMCameraInterface */,
-				10D2416A8C3E1C5267AA4BFF168F0726 /* UMConstantsInterface */,
-				8D28CD84957AEFBDD4C8D17774065FAE /* UMCore */,
-				7E6EB46BBC7B3F1A86F831B135CFEED3 /* UMFileSystemInterface */,
-				5458387F467DC3759B84D6888BDF4B43 /* UMFontInterface */,
-				7D2D3C92DB0EBF5C4A06ACF19A3C394F /* UMImageLoaderInterface */,
-				2DF88CAA4C6A5306EC4E76C20B0E86F4 /* UMPermissionsInterface */,
-				0D30F5A5F08BD206A1441CCC465441D2 /* UMReactNativeAdapter */,
-				4270F852C3F1D430FCDED33F469B6B9C /* UMSensorsInterface */,
-				79597C6EE7AE3F42A077E8ED76E409EC /* UMTaskManagerInterface */,
-				AEA3F5FFA174548C3EA3D2147AAD8177 /* Yoga */,
-			);
-			name = "Development Pods";
 			sourceTree = "<group>";
 		};
 		96741A40D6E5EA5D2D8D1E730C026736 /* Pods */ = {
@@ -1024,7 +1024,7 @@
 			isa = PBXGroup;
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
-				553B6B48AD525AB3C53CD98EAAD54538 /* Development Pods */,
+				38C6ADD1F48CA640B7030B06C8EFA1EA /* Development Pods */,
 				D89477F20FB1DE18A04690586D7808C4 /* Frameworks */,
 				96741A40D6E5EA5D2D8D1E730C026736 /* Pods */,
 				E71A1A9A54AF9481ED09CD84DBFA729C /* Products */,
@@ -1064,14 +1064,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		812176C36DC9493765AA2494EBC2867F /* Headers */ = {
+		8ED90DC5716F75FECF5D5B4BD8C3C21E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8ED90DC5716F75FECF5D5B4BD8C3C21E /* Headers */ = {
+		FF2609238BB2E151AB0E9BA29B0B40ED /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1101,118 +1101,118 @@
 		};
 		C616BB9F650D110E835D02A3250F302E /* Pods-BareExpo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0D359FF9435936BD3EF4C18E7372AF66 /* Build configuration list for PBXNativeTarget "Pods-BareExpo" */;
+			buildConfigurationList = 1DE86C5EFD358BA88F4EA75CE0A0A6E5 /* Build configuration list for PBXNativeTarget "Pods-BareExpo" */;
 			buildPhases = (
-				812176C36DC9493765AA2494EBC2867F /* Headers */,
-				FF0A358FD300739C80B7D5935EBFA36D /* Sources */,
-				FE9D5A685DAAD6146DFFFCD36F575A45 /* Frameworks */,
+				FF2609238BB2E151AB0E9BA29B0B40ED /* Headers */,
+				935B3E19953344864E20EA5FC42FEB60 /* Sources */,
+				F48F9A9A56BA047A688793BBCCDA5BD3 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C3AB754D3834B7B27496461F898641EB /* PBXTargetDependency */,
-				081EB5AF5C15ABE35BFEDEEB6139BB75 /* PBXTargetDependency */,
-				B2182AF38287FB2E906F4945D32E5F7A /* PBXTargetDependency */,
-				62F0F862D5DF43DB130C1196CC699F7C /* PBXTargetDependency */,
-				61A586CF2B17637929CFCE59E76FF4D5 /* PBXTargetDependency */,
-				DDEC157F7BC7C35648D4BAE9D3D1968F /* PBXTargetDependency */,
-				5625E26C0CF8A2405E3D9EAC706CF8E8 /* PBXTargetDependency */,
-				1D88B7B76584891F4160987B0A78C39F /* PBXTargetDependency */,
-				1815B47146533A2B507871456A7B8738 /* PBXTargetDependency */,
-				B91A15594CE748F8CD324AA33A874564 /* PBXTargetDependency */,
-				576E9621D124BD051E4AEC3654F81B12 /* PBXTargetDependency */,
-				A0F1F90B50B9E375FE6C1F8A23924AFB /* PBXTargetDependency */,
-				17F13964D5DADC4747A7F8C92F2460B6 /* PBXTargetDependency */,
-				87C17A94A21168DC0CBF9516091AE9DF /* PBXTargetDependency */,
-				575EC407BF21789980EC3E4046830DB0 /* PBXTargetDependency */,
-				D2B7FDFA211ACE080D0B9DDDACE27427 /* PBXTargetDependency */,
-				75897E35FA7EA9557FFC747BC1AEC208 /* PBXTargetDependency */,
-				CB2232B6A22FF97FD15B8EE50E46D263 /* PBXTargetDependency */,
-				329ACCE9DF26603B89C6B21E08DEE46B /* PBXTargetDependency */,
-				5FCC96FEEF6496F4824AD2DCCB693B03 /* PBXTargetDependency */,
-				04C82F03770A72D49D79E6CA87A95D4B /* PBXTargetDependency */,
-				CFB66E0FF573B48CF38BA6A8532EED5F /* PBXTargetDependency */,
-				4DF7EA7C505DAA5B49C71615CB47CB49 /* PBXTargetDependency */,
-				04FAF503A03976CC47D6265F179AC5C9 /* PBXTargetDependency */,
-				E8B8B2B2AFF1C40417401DB33A2163C3 /* PBXTargetDependency */,
-				1C158A2D02FE938B22617AE5EB63E2AE /* PBXTargetDependency */,
-				7E3B1E494105E78098FF65F71AF275F7 /* PBXTargetDependency */,
-				95227ED6E40DFE8C409A432196FA6642 /* PBXTargetDependency */,
-				A3E64835EEAB6943EC804771CCC085A1 /* PBXTargetDependency */,
-				9EE06DAB23D11E0A9B923BF3D51ECF9A /* PBXTargetDependency */,
-				4C5420B854EE5138DBD719EDECEE08FA /* PBXTargetDependency */,
-				CAD2BEB539E574A12DFB27EB3F0FDAB0 /* PBXTargetDependency */,
-				E47063A67D67BF30CF70495726A41405 /* PBXTargetDependency */,
-				C62F4DB4439A4E984A8C79FB084B7947 /* PBXTargetDependency */,
-				2921958AD77AD7CC56AA7E15273527E8 /* PBXTargetDependency */,
-				D1DCE8BFECE5A95A67009614AAA92BB5 /* PBXTargetDependency */,
-				94545EE3AEDA1B096E811BCA59FE61E3 /* PBXTargetDependency */,
-				D15A5B1AFDE56F1A133E773CF17EDDBD /* PBXTargetDependency */,
-				1D989AFE5350A7E77B6680A14E9587F4 /* PBXTargetDependency */,
-				BFE4C9D0F21E5DC551B7DAA1DF5BD0E3 /* PBXTargetDependency */,
-				DE89EA43E87864D75A4BC10A46FECA28 /* PBXTargetDependency */,
-				2518945E23BE075528846835BB3E7B22 /* PBXTargetDependency */,
-				5EE3338F353FB282D8F4217E65F47E7B /* PBXTargetDependency */,
-				5C83B1EBA0EFE9313CF8BABF33DE526E /* PBXTargetDependency */,
-				55FA4237C2DEF75617091E507566AEA0 /* PBXTargetDependency */,
-				707DE7E35CD642E2791E8F47C61A2606 /* PBXTargetDependency */,
-				FCFD32F0E16DD168F92F153D13C90BD8 /* PBXTargetDependency */,
-				19507B16BB052853C532C04B9363B8CF /* PBXTargetDependency */,
-				153646CD6615C6F16A54120893EAD5E4 /* PBXTargetDependency */,
-				451CB520C179D66F04EB5E929C834E4E /* PBXTargetDependency */,
-				20368D853B7DE7D62F3E345E872D3D74 /* PBXTargetDependency */,
-				699399186ED2A66614A2A31AF7F3A019 /* PBXTargetDependency */,
-				633748E75193A67DE7812558C96BECD7 /* PBXTargetDependency */,
-				F28329D50E48385307C5A2594E98A613 /* PBXTargetDependency */,
-				88BAFCB9E7DFADCDF78C970ED3CE4C5B /* PBXTargetDependency */,
-				B584EB98C268B17E536B8B8E73CAAB18 /* PBXTargetDependency */,
-				0E058E4529270D6AB2AD2A97E1ACD36C /* PBXTargetDependency */,
-				67A2952D23DEF219313509797DD6AD89 /* PBXTargetDependency */,
-				897A596D5D2F3CEFB63E99613D4DD42D /* PBXTargetDependency */,
-				A4482CF7006174F0BAFC33F681E42F40 /* PBXTargetDependency */,
-				6E6B91E9F98B81461AD5B0319F7738A4 /* PBXTargetDependency */,
-				28EABDA5DE7ABD70A42BBB5A7E291A4F /* PBXTargetDependency */,
-				B503D0220DFA438F542A0673150708A0 /* PBXTargetDependency */,
-				024D64E8FD1957EF6DBAB0562690442A /* PBXTargetDependency */,
-				D1F6EC06E777B48FBB7D464D398EF0F9 /* PBXTargetDependency */,
-				26313365275CD9ECB35F859465B9B798 /* PBXTargetDependency */,
-				1D60AB7BBB419A0E48704E3C63B62BAD /* PBXTargetDependency */,
-				49DC42716B538B91CD08448533DB3A71 /* PBXTargetDependency */,
-				ADA485F056D2894406518F447E868F1F /* PBXTargetDependency */,
-				530A054E7E49C6A6AD1AE6559AC3D291 /* PBXTargetDependency */,
-				0E62286BECFDFC85743241898A673C40 /* PBXTargetDependency */,
-				BC3739BF0E0BFB80FAE4EFFD30A98EBB /* PBXTargetDependency */,
-				DCFA535A3B9CCDD8AF0513F4874C3C9C /* PBXTargetDependency */,
-				83C10943E7509126604E6E82456774E7 /* PBXTargetDependency */,
-				C540A68FC1C06CE4CA5C9E2AAB0D5DB3 /* PBXTargetDependency */,
-				BF871A208FBF531C6FE8315254B47F37 /* PBXTargetDependency */,
-				ED152E4B7D5C05694C3FE8E99F23E0AD /* PBXTargetDependency */,
-				86027D376C80814309D33F3BBE3B6AC8 /* PBXTargetDependency */,
-				FA4B06AC23D6D7FD26E0057053A10B42 /* PBXTargetDependency */,
-				BB2EF72B8528B5CE0010B0573978EFC3 /* PBXTargetDependency */,
-				D8144D9378EDAAB2523A4B399778A4F3 /* PBXTargetDependency */,
-				DD0B2F6D1805EE3AFC8EF53CDEFC32A6 /* PBXTargetDependency */,
-				086060AADC03251A6E8B9B17280679A1 /* PBXTargetDependency */,
-				2F98DE42BCE254B79F897372A56B6480 /* PBXTargetDependency */,
-				FFFE53DD5FB85AEF7DA5E5C0D5BF6EDC /* PBXTargetDependency */,
-				34FAEEFEF9DD24B9D871ECBBFC10BA29 /* PBXTargetDependency */,
-				9DA205381A4C579B81ABAAF70567B829 /* PBXTargetDependency */,
-				2E1D89DCCB1F4A6D1B228FDEE7EAB80E /* PBXTargetDependency */,
-				4A9A925E160195C830942C6099EE23BC /* PBXTargetDependency */,
-				88160BD06D940B6861B677CF6E2E17C5 /* PBXTargetDependency */,
-				9D3EDBB85F9ABC6389DB8CFE04835E5C /* PBXTargetDependency */,
-				08ED1584E2627C06911C33CCB2C11A11 /* PBXTargetDependency */,
-				235DFF58AC927A06A85577E08716050D /* PBXTargetDependency */,
-				C0620BB3B015C15C6787CDE9AE7AD549 /* PBXTargetDependency */,
-				62E8C483FF3334ABD412A7CE39ACE29E /* PBXTargetDependency */,
-				5DBAEE49C600C07D1F844C9359BDC331 /* PBXTargetDependency */,
-				0BC2FC2D622C43B832EC3FC2415D1E8E /* PBXTargetDependency */,
-				7DE965E4B4CFDEA39ABAF5933634F2A8 /* PBXTargetDependency */,
-				ACDD48AAEEA1BE10D55006E87C815C00 /* PBXTargetDependency */,
-				3568055D290ED8F9D48D7CA6DDFE23DB /* PBXTargetDependency */,
-				1DB2EFAB2F7E52C277926E538A4EBC34 /* PBXTargetDependency */,
-				71DC071DBB0CD20203030CDBAEC56222 /* PBXTargetDependency */,
-				04F2916641465572432413B954E440CD /* PBXTargetDependency */,
+				3C4F89F4AA168D0099A23E540815F915 /* PBXTargetDependency */,
+				585425832DEC53953308B2F331D0B89E /* PBXTargetDependency */,
+				23FCFC861E3B6763BA52647F4E3A2310 /* PBXTargetDependency */,
+				7C0906BEDA9BBD253D7EC90E58EE1871 /* PBXTargetDependency */,
+				00F0896ABE0AD03E155805932FC837DE /* PBXTargetDependency */,
+				067F67A9526275BB3C32F5771E81F51B /* PBXTargetDependency */,
+				66358F6D102F2EA2B7AC521F2D0C8250 /* PBXTargetDependency */,
+				BC96621B24BD3302FC25D42DACCEC078 /* PBXTargetDependency */,
+				4EFAC33D45C00DA21FCA862D323F0EB8 /* PBXTargetDependency */,
+				D9B6869AD07F431B8D20E741D7C9F000 /* PBXTargetDependency */,
+				1D953B82419898F14F65AB2D7BE647BB /* PBXTargetDependency */,
+				C7B91B6121EC60E5F776FEAD70C0AC2A /* PBXTargetDependency */,
+				611F053AE05616B0307EA6F1264ED8C3 /* PBXTargetDependency */,
+				055DB1188C354F0B495150F49B29BB8D /* PBXTargetDependency */,
+				A4E8ABC6CFB8EEDAB748866FDBB0055D /* PBXTargetDependency */,
+				7BFBF8FCE17A5383F6AE856FE462A346 /* PBXTargetDependency */,
+				7262096C77B37004B8CCC250F324530A /* PBXTargetDependency */,
+				6E020463375D54294750F0F70D70FE51 /* PBXTargetDependency */,
+				E0AD990C799A8FDBF5D9371C79CB0775 /* PBXTargetDependency */,
+				50F5414E17F54F998A294378DF1798FA /* PBXTargetDependency */,
+				6B5AA705C8F855C4E8803636FDF42DDC /* PBXTargetDependency */,
+				DCB809B3741993EF790407AB7426F4DF /* PBXTargetDependency */,
+				B0A1DC0C581CA78C8796609BB6BC93D6 /* PBXTargetDependency */,
+				AAB91798DF04B587B2C3D70BA8244ACD /* PBXTargetDependency */,
+				4A857827C431F6AFBA7B838754B577CF /* PBXTargetDependency */,
+				78B2327F0060173873F3E21FB2FFCFEA /* PBXTargetDependency */,
+				46D0A0924FB2E1A857C92E9DED078815 /* PBXTargetDependency */,
+				8E3CB0BA06F222028A0A6B69875C6F9A /* PBXTargetDependency */,
+				59ED6492457672039C4CF5CDBF246989 /* PBXTargetDependency */,
+				BAF32B2649E5E1FB80F61802275E069D /* PBXTargetDependency */,
+				AE394D31EB96FC8AF26C307AF5C9212B /* PBXTargetDependency */,
+				8DF069B3AF995D5A5ECA0E8FCC331D60 /* PBXTargetDependency */,
+				143F53C87F2FBB1FD70AD4EE3E3CC246 /* PBXTargetDependency */,
+				A36A63288C69E47F8731C679B42D15B2 /* PBXTargetDependency */,
+				C14CEBA6B8C91AA2EA5A7425D3471B1A /* PBXTargetDependency */,
+				D4E26397BAD7E259FFB3DFD72A822E9D /* PBXTargetDependency */,
+				097442C2564E0E5FCB3563E1F7E883A2 /* PBXTargetDependency */,
+				70B70809FF3589EA21AE9D0A85511C33 /* PBXTargetDependency */,
+				79A8F5FC27347C43F3C1BD381F8D90ED /* PBXTargetDependency */,
+				91A1DCF53074BF0F5B1E15703E22ED34 /* PBXTargetDependency */,
+				69A23A68FBB2474193EA9544D48251E6 /* PBXTargetDependency */,
+				9B88FD01A8E10F06C2F1946EFC02E2E7 /* PBXTargetDependency */,
+				F251F0B2632F923A87F0BB218B4377AB /* PBXTargetDependency */,
+				A86F284C0F513B97C5A0E158F3722E66 /* PBXTargetDependency */,
+				DBB74E5925290472C73E8048291B6364 /* PBXTargetDependency */,
+				FF3A8D6C42343279C5AD87C11BAF8909 /* PBXTargetDependency */,
+				336A7ABA19FCFF1197E4D69E2B684958 /* PBXTargetDependency */,
+				5A5AD87A4F8CEA85394A9184930C0355 /* PBXTargetDependency */,
+				12F65E5E9F66749024E8119DC9F0834A /* PBXTargetDependency */,
+				0FA54023B49CBA83876C9E3B2D7A033C /* PBXTargetDependency */,
+				066BFFE26F491385AD798D3F3BA9CD90 /* PBXTargetDependency */,
+				CC5B1150163602E291916C6E477BDA9A /* PBXTargetDependency */,
+				853515452609E094914A96A21E2D16D4 /* PBXTargetDependency */,
+				588C8DB139E094F23CA26938E460F521 /* PBXTargetDependency */,
+				2C850FF4AC6ED7E05FA7E7FC10D7DA7B /* PBXTargetDependency */,
+				CA6E408A269C4A17CEA41025C5E78B0C /* PBXTargetDependency */,
+				DF063E884B259605A97BAFA102F7B395 /* PBXTargetDependency */,
+				1D1AB462FC1172227200818FA7C207B2 /* PBXTargetDependency */,
+				1A0EBCB868974F96CBFD21F76B105EC1 /* PBXTargetDependency */,
+				03DEB446D9DAF72128B3BC987D7B79B3 /* PBXTargetDependency */,
+				CA7A34045E79C3487467F437A1DDBDC3 /* PBXTargetDependency */,
+				4D89E08815B3DBED6E234E74C7A87B3B /* PBXTargetDependency */,
+				3AAC4E63262429F17BF0D17B69261805 /* PBXTargetDependency */,
+				23C24F021D7D572C11E1B81C1D5629AA /* PBXTargetDependency */,
+				0B4F96FA99C3C0124519A6CEFA4A97AB /* PBXTargetDependency */,
+				1C44471CAC87EF856E76B7F05A1E6CBA /* PBXTargetDependency */,
+				652F46D71DFF6477775CFDC1DAE9E114 /* PBXTargetDependency */,
+				B2EFE3C694C243BB63C8746C94D002EE /* PBXTargetDependency */,
+				E6803EFF03D1895881C925DAB5C97747 /* PBXTargetDependency */,
+				09FDB3FB4FAE7AB79E5331386D6A140A /* PBXTargetDependency */,
+				4ADD124DECF6ADA3903ED205B3AABD50 /* PBXTargetDependency */,
+				17FA5707BA851300072FC932C9BE5209 /* PBXTargetDependency */,
+				2D80811B8486CCBEEC792A890788CB3E /* PBXTargetDependency */,
+				F9B32449F3A683876238C8EF46F8DBC0 /* PBXTargetDependency */,
+				7AD76CC3E9CAFECFA5C39162571BEFDE /* PBXTargetDependency */,
+				A6E2044E98028974F62C4E2ED9652A76 /* PBXTargetDependency */,
+				26C7D82967F66AFCBB6CCA573440DC37 /* PBXTargetDependency */,
+				DEE7B4DB42E39EC0A1D2E93C71894BAB /* PBXTargetDependency */,
+				7887657B8A0746A208A60AF3BFD6E1C2 /* PBXTargetDependency */,
+				BE7ADAA58596B773CDD8E5B4C7E0AC5A /* PBXTargetDependency */,
+				E653B983F51FB52442B45E0CF79BE5EB /* PBXTargetDependency */,
+				2DDD61F14C0A0C42902EF55F4317FADE /* PBXTargetDependency */,
+				CF4E0E20F842587BEC97D436448EA129 /* PBXTargetDependency */,
+				F31EEBE731728CCB1059DC5FD4CB0CFC /* PBXTargetDependency */,
+				35DDADA2C93214207C9776C5B0A41223 /* PBXTargetDependency */,
+				6C2B75745D9FE45848C093108B9A16BB /* PBXTargetDependency */,
+				36EFDF639988016A54EE668DA4709851 /* PBXTargetDependency */,
+				976D823DA6CC686DC4A523F79A916967 /* PBXTargetDependency */,
+				F28D90F0FDA612900B91A1555DBB5725 /* PBXTargetDependency */,
+				DC6247610B8129841A43C81B3D7133B0 /* PBXTargetDependency */,
+				FC6D5870D2BA3C549AFC526459108EE4 /* PBXTargetDependency */,
+				3DCA9D15CB99EB27E413212875A822D6 /* PBXTargetDependency */,
+				94E2661C6F0C3F4DDBC9BE3EC20A4BCC /* PBXTargetDependency */,
+				CAD88F66AD5A9A9CBB4F7249DE6553E5 /* PBXTargetDependency */,
+				3E92CE191332D2515F3032E4E7C735C1 /* PBXTargetDependency */,
+				A3C6A5A2F1E00E14507DEA6E484E02D5 /* PBXTargetDependency */,
+				F665A7C09AA1FF62A0D8F3A6628B5C54 /* PBXTargetDependency */,
+				A8ACEA347F7D21294567258D28F0FF21 /* PBXTargetDependency */,
+				B2119B4F629F83E41BBCA98A3DE8D212 /* PBXTargetDependency */,
+				EC59BF0242DCAD81D074C11F469ED0A7 /* PBXTargetDependency */,
+				DB09D924EE7859AE511ECFB5F9C49A16 /* PBXTargetDependency */,
+				4ABF96CF844D213B130784EDB2C441F0 /* PBXTargetDependency */,
+				D4FF4A9988EF0AECEABBB0EF3605644C /* PBXTargetDependency */,
 			);
 			name = "Pods-BareExpo";
 			productName = "Pods-BareExpo";
@@ -1241,15 +1241,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = E843037DAD82B64C132D7B5C3FC1C59C /* EXBackgroundFetch */;
-				},
-				{
-					ProjectRef = 330DAD0DCBFA9462B89FB51C5E192709 /* EXTaskManager */;
-				},
-				{
-					ProjectRef = B636BDC69A99EBBFBADDC886E4B50168 /* EXSQLite */;
-				},
-				{
 					ProjectRef = 648B703B3FEA1D4E5B5392848855AD59 /* Amplitude-iOS */;
 				},
 				{
@@ -1262,160 +1253,166 @@
 					ProjectRef = 6DB368A4FFC55518E43CFCA8665E3B97 /* DoubleConversion */;
 				},
 				{
-					ProjectRef = 8F2260A16410A7CDFADDF4ED0D215627 /* EXAV */;
+					ProjectRef = BFB3A0C7CF6799F3336A4E5B08BF598C /* EXAV */;
 				},
 				{
-					ProjectRef = D8DB40F448374C875A12044592D22E9C /* EXAmplitude */;
+					ProjectRef = 9F611167A50D00F1258A9DFFD9976886 /* EXAmplitude */;
 				},
 				{
-					ProjectRef = 005366AEBED727B4E35B8ECEB47F3334 /* EXAppAuth */;
+					ProjectRef = 7F14838313F6E38E1A7CC39A22DEDB80 /* EXAppAuth */;
 				},
 				{
-					ProjectRef = 09F65C6199CEA61A469455DA1407FA0F /* EXAppLoaderProvider */;
+					ProjectRef = A20248EDE91FE79E869E9F942B910EE5 /* EXApplication */;
 				},
 				{
-					ProjectRef = 06AA47214E9693150CB49A705F3F6C27 /* EXApplication */;
+					ProjectRef = 05FAFBC78468FB19DA80689950B4EE59 /* EXBackgroundFetch */;
 				},
 				{
-					ProjectRef = 2F9A4122CE5ECE84BAF75A0F648CACC8 /* EXBarCodeScanner */;
+					ProjectRef = F406904A57A57925742B8F1D78DB9F61 /* EXBarCodeScanner */;
 				},
 				{
-					ProjectRef = 3453DA47F6E33173C89A3C21E70ACB2E /* EXBattery */;
+					ProjectRef = AF535F7052EEA078ED3891D91C745F91 /* EXBattery */;
 				},
 				{
-					ProjectRef = CCE7609431705D86AE800257C4F01DDE /* EXBluetooth */;
+					ProjectRef = 240C77C2A2F1D0E2E62C981DCB0CDA7C /* EXBluetooth */;
 				},
 				{
-					ProjectRef = 77F1654B393E87607D25D6E7F85F4A46 /* EXBlur */;
+					ProjectRef = 3F94B71E3BA2D52C578B49F9F3A7D4EC /* EXBlur */;
 				},
 				{
-					ProjectRef = 953EFFFA6F09C37417054792992BC827 /* EXBrightness */;
+					ProjectRef = 8F3F0A45E9AA192F63F7F90EE162FA68 /* EXBrightness */;
 				},
 				{
-					ProjectRef = E17A4FF58777750FEE2367B8131DE0C7 /* EXCalendar */;
+					ProjectRef = 8AF2CADC935A6FE72B43D03B58BE77D0 /* EXCalendar */;
 				},
 				{
-					ProjectRef = BD269EF63482D75A6C5442B22742785A /* EXCellular */;
+					ProjectRef = 0DEC226E0235F849738702B07B2BBED6 /* EXCellular */;
 				},
 				{
-					ProjectRef = 7F25AF103CD1456EC259A8244F572CF0 /* EXConstants */;
+					ProjectRef = D2E3F16CC43733F94E675A61B00DDD99 /* EXConstants */;
 				},
 				{
-					ProjectRef = 5BA9B4E458EBF8ECDC7F9A03746DBE60 /* EXContacts */;
+					ProjectRef = 6E3E60BE6CF5A05B8475C8761A3330A1 /* EXContacts */;
 				},
 				{
-					ProjectRef = 76E0E71083EC61FF8F2BA93C7091D540 /* EXCrypto */;
+					ProjectRef = 604E701616718501752514181B7B4C57 /* EXCrypto */;
 				},
 				{
-					ProjectRef = E9878AB5E24FB00E3877A41D634954FC /* EXDevice */;
+					ProjectRef = 01C31368D80D1F1E36987664BB65467C /* EXDevice */;
 				},
 				{
-					ProjectRef = 2841F3950E957706C16E273E68401A65 /* EXDocumentPicker */;
+					ProjectRef = 4EBB5CF4647D2343C020074CE36DDA2B /* EXDocumentPicker */;
 				},
 				{
-					ProjectRef = D8AC490B90D36C33C940BEE74486E0AD /* EXErrorRecovery */;
+					ProjectRef = E61E56E18464AB678BF4A594A44FC70B /* EXErrorRecovery */;
 				},
 				{
-					ProjectRef = D0FD87486C9771AE3C4F01ADB0FE8663 /* EXFacebook */;
+					ProjectRef = A510551B5FD4A9CCC8E5B85621A4278C /* EXFacebook */;
 				},
 				{
-					ProjectRef = CA573CAC169CC5A7EA73BC965596E158 /* EXFileSystem */;
+					ProjectRef = BB5F0FA62814A131C8FF183DDF46FD9E /* EXFileSystem */;
 				},
 				{
-					ProjectRef = 8BEFC1F9526F517F269E627FD171F935 /* EXFont */;
+					ProjectRef = 98F5EE3FA0A163F3E047EF0D7256AABF /* EXFont */;
 				},
 				{
-					ProjectRef = 4619522B57561DA9840C4B2CCC820EA0 /* EXGL */;
+					ProjectRef = 513190FA2FC3B8450B998E3C92B25F3C /* EXGL */;
 				},
 				{
-					ProjectRef = 409E2483452EBA4E60EE12D525571F58 /* EXGL_CPP */;
+					ProjectRef = EF8D7497F491F686403D500527EE4D45 /* EXGL_CPP */;
 				},
 				{
-					ProjectRef = 7DBD7F55BF0053C2F26060F933197516 /* EXGoogleSignIn */;
+					ProjectRef = D44095C99F6E221217C0E668233F8425 /* EXGoogleSignIn */;
 				},
 				{
-					ProjectRef = EA070BB6E92680B5636A51D366C307D1 /* EXHaptics */;
+					ProjectRef = 0A1766165759A9482B6A19EDE3759E64 /* EXHaptics */;
 				},
 				{
-					ProjectRef = 32B8B075229991CF0743A486BDEA1F87 /* EXImageLoader */;
+					ProjectRef = 697ED587AC099329AF6BDDE8019133EB /* EXImageLoader */;
 				},
 				{
-					ProjectRef = 436E2143218F7DDE9A6626864B0E6AF0 /* EXImageManipulator */;
+					ProjectRef = 06F95FD44C85C7EE3E1DA785DE662CA5 /* EXImageManipulator */;
 				},
 				{
-					ProjectRef = 20549439A9BB3A290CA54A5216CAED82 /* EXImagePicker */;
+					ProjectRef = 93FD1DD41B7A7E6DCEC91B1CA7598665 /* EXImagePicker */;
 				},
 				{
-					ProjectRef = E40783A4511E71EDB0B8AB336F9ABAA0 /* EXKeepAwake */;
+					ProjectRef = 1B3825A5527EF654DE3B1F0F9F2CA5DE /* EXKeepAwake */;
 				},
 				{
-					ProjectRef = AC664B320458856E7168D08427B5A76E /* EXLinearGradient */;
+					ProjectRef = FDA2EA473F1A1F70163412655B7B8CC6 /* EXLinearGradient */;
 				},
 				{
-					ProjectRef = 4E7D0BD6516EB6EBF7C2E1596DA869CE /* EXLocalAuthentication */;
+					ProjectRef = 40DFF745EDBEA45A560B776D2390FF55 /* EXLocalAuthentication */;
 				},
 				{
-					ProjectRef = A23EE280B6CEDFCB40ECC8377BFEABCD /* EXLocalization */;
+					ProjectRef = 115087EF3753F7141B5F8E9681D28269 /* EXLocalization */;
 				},
 				{
-					ProjectRef = B91187988E28833D13CFBC4937182D1E /* EXLocation */;
+					ProjectRef = 06698A6B9F1075AF0E990C639CAEB4CD /* EXLocation */;
 				},
 				{
-					ProjectRef = 05A194EC45FB2117BD8F870ABF086815 /* EXMailComposer */;
+					ProjectRef = 911BB1FEF98785F736B895AA27A23383 /* EXMailComposer */;
 				},
 				{
-					ProjectRef = 5D2F8DE560F0BC828F1E47283F34CB8F /* EXMediaLibrary */;
+					ProjectRef = 49654934104E7170E753085ABDADCDCD /* EXMediaLibrary */;
 				},
 				{
-					ProjectRef = ED84C3DABF125E35A7997EEA8E024458 /* EXNetwork */;
+					ProjectRef = C56FDC77A12E71F5FEEECE0A7E0D008A /* EXNetwork */;
 				},
 				{
-					ProjectRef = 5E526B8172F2D3A122FBCC911367CAD9 /* EXNotifications */;
+					ProjectRef = 294117818F44E78C5C96ACCB80731DA6 /* EXNotifications */;
 				},
 				{
-					ProjectRef = 6B74B35F9A22487842ACBFDE9C63AD81 /* EXPermissions */;
+					ProjectRef = 95A2BAC98913E24899027A76BD7FD22C /* EXPermissions */;
 				},
 				{
-					ProjectRef = C85A70B1B57D072613D0899A67BF8CE9 /* EXPrint */;
+					ProjectRef = 2B5A9EB29CE9D1668640383F8C857787 /* EXPrint */;
 				},
 				{
-					ProjectRef = F8CFEA92E887260D193BF10ECFF0130E /* EXRandom */;
+					ProjectRef = E3DC409AB72D5410305A71F6FF9FB504 /* EXRandom */;
 				},
 				{
-					ProjectRef = 6057F5C95592CBDDB1EC6FE932FDEA1E /* EXSMS */;
+					ProjectRef = BFAF163A2425D7C2CD27D866AFFBCDD7 /* EXSMS */;
 				},
 				{
-					ProjectRef = 1B61580939B2AF08D20C889295CF1961 /* EXScreenOrientation */;
+					ProjectRef = FD1DE833AC591830C76AC217A53CCC34 /* EXSQLite */;
 				},
 				{
-					ProjectRef = 5CC2ACD8665BAF5987D9C468F7690079 /* EXSecureStore */;
+					ProjectRef = 13BBE1BF6776B543A11E41B72F71F1AD /* EXScreenOrientation */;
 				},
 				{
-					ProjectRef = 2F06208BED6AEFE1EFD3E40BC5043E62 /* EXSegment */;
+					ProjectRef = 9CA07A296FD8C0821B438E3283FA86B4 /* EXSecureStore */;
 				},
 				{
-					ProjectRef = 220F34FBC5D29E6460E1D8C969623EE0 /* EXSensors */;
+					ProjectRef = 90E584F402684B1D449D55070988F689 /* EXSegment */;
 				},
 				{
-					ProjectRef = CDEA890F0B361CB0C715B73D7A282471 /* EXSharing */;
+					ProjectRef = DCF9941A71E94A2A91DD34089C0A9CC9 /* EXSensors */;
 				},
 				{
-					ProjectRef = 2B8A279B337AC4FEEAD7C7C95E72267D /* EXSpeech */;
+					ProjectRef = 7EE1A76D280E53852E37E9284E5FF4FB /* EXSharing */;
 				},
 				{
-					ProjectRef = 5F47D476ABCE509EE01C065A89A55FFF /* EXStoreReview */;
+					ProjectRef = 131ABB9F70B9247DBBC76234BB981872 /* EXSpeech */;
 				},
 				{
-					ProjectRef = ACF3CE1B2E951F4A3A64072224341995 /* EXUpdates */;
+					ProjectRef = 41B9E88790680507BE34764D35892C49 /* EXStoreReview */;
 				},
 				{
-					ProjectRef = FDB70E0860CF8C36940465E14F698FD2 /* EXWebBrowser */;
+					ProjectRef = 469172776CA5A3A957D095A230A07EB5 /* EXTaskManager */;
 				},
 				{
-					ProjectRef = F8BC3510D8DD9A31995CBDE0DA978EE7 /* FBLazyVector */;
+					ProjectRef = DA774FEB3E0196A23EFA92F6A8BBA7F2 /* EXUpdates */;
 				},
 				{
-					ProjectRef = EC00C51EEF4E038ABDEFE41899C70E2A /* FBReactNativeSpec */;
+					ProjectRef = 635D71D6E8B974B9DA1059EE836255EF /* EXWebBrowser */;
+				},
+				{
+					ProjectRef = FFA9B26555DFA027D04D6C2BDB708C65 /* FBLazyVector */;
+				},
+				{
+					ProjectRef = 1A76970136FD953AEC7A8A0246E83964 /* FBReactNativeSpec */;
 				},
 				{
 					ProjectRef = F3317B6E00903DEF65B688E84EA04AA3 /* FBSDKCoreKit */;
@@ -1436,103 +1433,106 @@
 					ProjectRef = 96404DAFB39B904B65654D85BD8668CF /* GoogleSignIn */;
 				},
 				{
-					ProjectRef = 90036929EAEFE6D29655C57D3035095D /* RCTRequired */;
+					ProjectRef = 13816BAA0492D82677A4D950F4BA299A /* RCTRequired */;
 				},
 				{
-					ProjectRef = EA2BCA8FF68B0A990312F141051FFD3A /* RCTTypeSafety */;
+					ProjectRef = AA8113EEF615BB003D9C66B23B35E8EB /* RCTTypeSafety */;
 				},
 				{
-					ProjectRef = B4FF14CB7EC6178E10B4B383A22FC5EB /* RNGestureHandler */;
+					ProjectRef = 4452137291AC15A03ED5F5A0945448A6 /* RNGestureHandler */;
 				},
 				{
-					ProjectRef = 2369ACF12B3111C68265F2595350C327 /* RNReanimated */;
+					ProjectRef = 270D30302296CCCC8D6ABC434EDB475D /* RNReanimated */;
 				},
 				{
-					ProjectRef = D94A97E0682F0B88CEE784DF0606E02E /* React */;
+					ProjectRef = DBB69C8827AE851B714A1580FFBC57DF /* React */;
 				},
 				{
-					ProjectRef = CA634914A505DB35DFE1DA8279E6C3B3 /* React-Core */;
+					ProjectRef = FA840FFC902B007B9ADC0E45D86B30FF /* React-Core */;
 				},
 				{
-					ProjectRef = E0FB1F781A3DD5FA1B80FBBF92FF263D /* React-CoreModules */;
+					ProjectRef = 1E5E95E3FA3B360C2CF317642CAFFBB9 /* React-CoreModules */;
 				},
 				{
-					ProjectRef = 214BB47D0451F6627748CD571213DA63 /* React-RCTActionSheet */;
+					ProjectRef = 23DA93E473B1179D97AF42A16B417E14 /* React-RCTActionSheet */;
 				},
 				{
-					ProjectRef = 11B10E0B905BB9F52FC20D291E277DB0 /* React-RCTAnimation */;
+					ProjectRef = A5CECA8D9CAFE636CA08D9B1315DCF13 /* React-RCTAnimation */;
 				},
 				{
-					ProjectRef = 0087F0F9FFC522842CAF9C5362A2CDF5 /* React-RCTBlob */;
+					ProjectRef = 9F0A8316D970F5506550AE49A843CB52 /* React-RCTBlob */;
 				},
 				{
-					ProjectRef = 2688019F47F22F252AE15A8345121453 /* React-RCTImage */;
+					ProjectRef = 728B4B6A0629C15E7975E406DD6756E9 /* React-RCTImage */;
 				},
 				{
-					ProjectRef = 3A5E8B0CED89EC689F4B501F59C229D3 /* React-RCTLinking */;
+					ProjectRef = 949CD53AA22DABDBC6B7508D4DDF712C /* React-RCTLinking */;
 				},
 				{
-					ProjectRef = 8CB712A2F38BE315CD50BDD306AEE04F /* React-RCTNetwork */;
+					ProjectRef = 4ACD9E347BC8B10F7771AB00D782DD6F /* React-RCTNetwork */;
 				},
 				{
-					ProjectRef = B6FA839377BAEA1C8A9BBA779A7158F9 /* React-RCTSettings */;
+					ProjectRef = 2C4CBAB9330D0122890456B95F02E118 /* React-RCTSettings */;
 				},
 				{
-					ProjectRef = C3CB519F1D8ED16D1326F848D011855C /* React-RCTText */;
+					ProjectRef = 20208F4914A792313423A5BF608B8BAF /* React-RCTText */;
 				},
 				{
-					ProjectRef = AED03E2E5451B6EFC22A248166FE11B7 /* React-RCTVibration */;
+					ProjectRef = 5AD0A3649D2FD152278EFD3F57453B71 /* React-RCTVibration */;
 				},
 				{
-					ProjectRef = 949E8980DE5274CA53A97B80102E8B1F /* React-cxxreact */;
+					ProjectRef = FF9C3E6542EDBEBCF8A883E33ECD02EB /* React-cxxreact */;
 				},
 				{
-					ProjectRef = 57F45A356791F4D46C943DD6CB70D620 /* React-jsi */;
+					ProjectRef = 91642237B7D8F635A1AD19D87357B153 /* React-jsi */;
 				},
 				{
-					ProjectRef = 1260CA87FC642511E1966D621D1D9AC9 /* React-jsiexecutor */;
+					ProjectRef = 0D40AC9342409F0915056D02365C8708 /* React-jsiexecutor */;
 				},
 				{
-					ProjectRef = 8DA601539688CCA864DBA45369C63C89 /* React-jsinspector */;
+					ProjectRef = 9B135140FE41B34FEBCAF60C9231E22A /* React-jsinspector */;
 				},
 				{
-					ProjectRef = 6FA017ED878B66AC413EA203A9076D0A /* ReactCommon */;
+					ProjectRef = 83F268ED74A8607216A3C7D0CFF5DDED /* ReactCommon */;
 				},
 				{
-					ProjectRef = 5CD97465CE5F7C29982DCA560D9B48A9 /* UMBarCodeScannerInterface */;
+					ProjectRef = 82696FBDE123ED71F401CBE7C5F347F0 /* UMAppLoader */;
 				},
 				{
-					ProjectRef = 89B1D20C24C2AEFAF4E2428AE375AE83 /* UMCameraInterface */;
+					ProjectRef = 44036F0957D7D6FFA28F2CC99EBDD4DD /* UMBarCodeScannerInterface */;
 				},
 				{
-					ProjectRef = 10D2416A8C3E1C5267AA4BFF168F0726 /* UMConstantsInterface */;
+					ProjectRef = 82A8CEAE405517F64F0E91CA8E0D4C6C /* UMCameraInterface */;
 				},
 				{
-					ProjectRef = 8D28CD84957AEFBDD4C8D17774065FAE /* UMCore */;
+					ProjectRef = 2E89158FA7FC364A37B639295C73CF48 /* UMConstantsInterface */;
 				},
 				{
-					ProjectRef = 7E6EB46BBC7B3F1A86F831B135CFEED3 /* UMFileSystemInterface */;
+					ProjectRef = 8EA9B9EA23C2D55F4B1EEC87239F36D7 /* UMCore */;
 				},
 				{
-					ProjectRef = 5458387F467DC3759B84D6888BDF4B43 /* UMFontInterface */;
+					ProjectRef = B7620E5C0169617802FCBE2B6CE1FA33 /* UMFileSystemInterface */;
 				},
 				{
-					ProjectRef = 7D2D3C92DB0EBF5C4A06ACF19A3C394F /* UMImageLoaderInterface */;
+					ProjectRef = 9B6EEAE510C536D1B831A2B5AA38AA53 /* UMFontInterface */;
 				},
 				{
-					ProjectRef = 2DF88CAA4C6A5306EC4E76C20B0E86F4 /* UMPermissionsInterface */;
+					ProjectRef = 40CA79B5F0A21D2F6128139EC2D55900 /* UMImageLoaderInterface */;
 				},
 				{
-					ProjectRef = 0D30F5A5F08BD206A1441CCC465441D2 /* UMReactNativeAdapter */;
+					ProjectRef = DA3D26AE32253F98ACC50B309687D5DA /* UMPermissionsInterface */;
 				},
 				{
-					ProjectRef = 4270F852C3F1D430FCDED33F469B6B9C /* UMSensorsInterface */;
+					ProjectRef = 39878DB1923B67946D15856056EAB89C /* UMReactNativeAdapter */;
 				},
 				{
-					ProjectRef = 79597C6EE7AE3F42A077E8ED76E409EC /* UMTaskManagerInterface */;
+					ProjectRef = A80300CD38753C030745F054157B2AAE /* UMSensorsInterface */;
 				},
 				{
-					ProjectRef = AEA3F5FFA174548C3EA3D2147AAD8177 /* Yoga */;
+					ProjectRef = 071B32F4B1B9F446933CF10DB896CF35 /* UMTaskManagerInterface */;
+				},
+				{
+					ProjectRef = 8DC88630FC02792AAD8D7E7AC144E566 /* Yoga */;
 				},
 				{
 					ProjectRef = B888E1CADEF1F453D8C2C1EC7D3F7022 /* ZXingObjC */;
@@ -1544,10 +1544,10 @@
 					ProjectRef = A24AB511B9A02D0046526CA99BE62D6F /* glog */;
 				},
 				{
-					ProjectRef = F7BF1FFF31434EE8966699D7B002209B /* react-native-appearance */;
+					ProjectRef = 8974B4E6EB25680511DC9B9E29C2A54E /* react-native-appearance */;
 				},
 				{
-					ProjectRef = 9A7E59E13721231195E4C1B2EFADB546 /* react-native-safe-area-context */;
+					ProjectRef = 1258523728F5A4AF804F8752005753CF /* react-native-safe-area-context */;
 				},
 			);
 			projectRoot = "";
@@ -1559,6 +1559,14 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		935B3E19953344864E20EA5FC42FEB60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FE39A19F768BBC34ADC1CCB6462DB76 /* Pods-BareExpo-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		ECECE0707C914B4558851614D2B7C408 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1567,476 +1575,433 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF0A358FD300739C80B7D5935EBFA36D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F3758CA4CC988AF1CB0952FA3C07EB79 /* Pods-BareExpo-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		024D64E8FD1957EF6DBAB0562690442A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTMSessionFetcher;
-			targetProxy = 4B3DB998A15B90E00DF7270B9565A57E /* PBXContainerItemProxy */;
-		};
-		04C82F03770A72D49D79E6CA87A95D4B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXDevice;
-			targetProxy = 8AE0FC3EA69FF1ACE6D4FA39938322C8 /* PBXContainerItemProxy */;
-		};
-		04F2916641465572432413B954E440CD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "react-native-safe-area-context";
-			targetProxy = A2E1091475D402D08232796A122BDE84 /* PBXContainerItemProxy */;
-		};
-		04FAF503A03976CC47D6265F179AC5C9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXFacebook;
-			targetProxy = 16F47AF52DE81F3B6BE203888300574D /* PBXContainerItemProxy */;
-		};
-		081EB5AF5C15ABE35BFEDEEB6139BB75 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Analytics;
-			targetProxy = 5C817F13288CF5CF37C3965044E09D5D /* PBXContainerItemProxy */;
-		};
-		086060AADC03251A6E8B9B17280679A1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-jsi";
-			targetProxy = 53E94276BAE0E307494EFC918D54B6C6 /* PBXContainerItemProxy */;
-		};
-		08ED1584E2627C06911C33CCB2C11A11 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFontInterface;
-			targetProxy = 206BB12CF8161DB2CC04351AE8DB45A8 /* PBXContainerItemProxy */;
-		};
-		0BC2FC2D622C43B832EC3FC2415D1E8E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMTaskManagerInterface;
-			targetProxy = C583F012A1045CBEE0FDDCDA00EDCDE6 /* PBXContainerItemProxy */;
-		};
-		0E058E4529270D6AB2AD2A97E1ACD36C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXWebBrowser;
-			targetProxy = 2E4CCE6DE4A58351A4727B420BB43908 /* PBXContainerItemProxy */;
-		};
-		0E62286BECFDFC85743241898A673C40 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-Core";
-			targetProxy = 6EF411145BA740701E4332ABE0E7B1A2 /* PBXContainerItemProxy */;
-		};
-		153646CD6615C6F16A54120893EAD5E4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXSecureStore;
-			targetProxy = 04F64BC5FD300A50A43348245AAA2237 /* PBXContainerItemProxy */;
-		};
-		17F13964D5DADC4747A7F8C92F2460B6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBluetooth;
-			targetProxy = D5938BC5D0C3827E50CA209455B54BB4 /* PBXContainerItemProxy */;
-		};
-		1815B47146533A2B507871456A7B8738 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXApplication;
-			targetProxy = A1E22C1059E7F326CE6E7C1EBB477BD4 /* PBXContainerItemProxy */;
-		};
-		19507B16BB052853C532C04B9363B8CF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXScreenOrientation;
-			targetProxy = 24E29A88011A10DB5EF2B7E827C61BC2 /* PBXContainerItemProxy */;
-		};
-		1C158A2D02FE938B22617AE5EB63E2AE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXFont;
-			targetProxy = 600408A95FC0D01C5A4EDAF3CA57F6C7 /* PBXContainerItemProxy */;
-		};
-		1D60AB7BBB419A0E48704E3C63B62BAD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RCTTypeSafety;
-			targetProxy = DD584F8E37BB3057E22BA499B9075707 /* PBXContainerItemProxy */;
-		};
-		1D88B7B76584891F4160987B0A78C39F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXAppLoaderProvider;
-			targetProxy = 5E14EA6D867052F1585273CD716B0E2A /* PBXContainerItemProxy */;
-		};
-		1D989AFE5350A7E77B6680A14E9587F4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXMailComposer;
-			targetProxy = E7D195F539122BA77E01B91E003A67DF /* PBXContainerItemProxy */;
-		};
-		1DB2EFAB2F7E52C277926E538A4EBC34 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = glog;
-			targetProxy = 6CE5AB785417271D2BE9984E890DCFD3 /* PBXContainerItemProxy */;
-		};
-		20368D853B7DE7D62F3E345E872D3D74 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXSensors;
-			targetProxy = 97481FA959CD8BF42022BE7D6A2352AD /* PBXContainerItemProxy */;
-		};
-		235DFF58AC927A06A85577E08716050D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMImageLoaderInterface;
-			targetProxy = 30900A3FE8B5E33E0BAE7D50E7D0D482 /* PBXContainerItemProxy */;
-		};
-		2518945E23BE075528846835BB3E7B22 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXNotifications;
-			targetProxy = A60C783A7C7495265D5F3203098BF2F7 /* PBXContainerItemProxy */;
-		};
-		26313365275CD9ECB35F859465B9B798 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RCTRequired;
-			targetProxy = 7FF4BAE0F6F37716085CBA7EDA119848 /* PBXContainerItemProxy */;
-		};
-		28EABDA5DE7ABD70A42BBB5A7E291A4F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Folly;
-			targetProxy = C41BAD665C4F19A7D79D1C944DE11F4D /* PBXContainerItemProxy */;
-		};
-		2921958AD77AD7CC56AA7E15273527E8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXLinearGradient;
-			targetProxy = 0FCEC7FA645DBB89820E6C7964D5D94B /* PBXContainerItemProxy */;
-		};
-		2E1D89DCCB1F4A6D1B228FDEE7EAB80E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCameraInterface;
-			targetProxy = FA28BA756C6BBE2FF4F8EA20F44AA4E2 /* PBXContainerItemProxy */;
-		};
-		2F98DE42BCE254B79F897372A56B6480 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-jsiexecutor";
-			targetProxy = 0CDD236B6E1179073B2D0B17E830B050 /* PBXContainerItemProxy */;
-		};
-		329ACCE9DF26603B89C6B21E08DEE46B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXContacts;
-			targetProxy = 7AC2A739BC40C77BFF49FD61F53C7CEC /* PBXContainerItemProxy */;
-		};
-		34FAEEFEF9DD24B9D871ECBBFC10BA29 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ReactCommon;
-			targetProxy = 476CAD8F60AD841B4451D13B7278DA7A /* PBXContainerItemProxy */;
-		};
-		3568055D290ED8F9D48D7CA6DDFE23DB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "boost-for-react-native";
-			targetProxy = 33AE3740D829EA5391086867E702E5E1 /* PBXContainerItemProxy */;
-		};
-		451CB520C179D66F04EB5E929C834E4E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXSegment;
-			targetProxy = 7745F3AD5F0B70068AABA554A7865656 /* PBXContainerItemProxy */;
-		};
-		49DC42716B538B91CD08448533DB3A71 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RNGestureHandler;
-			targetProxy = 48A5CC7F9A84ABBF36F33BF68196D6CE /* PBXContainerItemProxy */;
-		};
-		4A9A925E160195C830942C6099EE23BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMConstantsInterface;
-			targetProxy = 5AC20DEC6688F71F8483DD3D05D511C1 /* PBXContainerItemProxy */;
-		};
-		4C5420B854EE5138DBD719EDECEE08FA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXImageLoader;
-			targetProxy = 674285044BC02F022EE7E954911C5DDD /* PBXContainerItemProxy */;
-		};
-		4DF7EA7C505DAA5B49C71615CB47CB49 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXErrorRecovery;
-			targetProxy = C86693C22A20623B96E547E34FFE9492 /* PBXContainerItemProxy */;
-		};
-		530A054E7E49C6A6AD1AE6559AC3D291 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 0EBF69F4C6DAA6B773ADE42F9DFB84C1 /* PBXContainerItemProxy */;
-		};
-		55FA4237C2DEF75617091E507566AEA0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXRandom;
-			targetProxy = 38E7D4EA98E36AA81738D335AFF7DFED /* PBXContainerItemProxy */;
-		};
-		5625E26C0CF8A2405E3D9EAC706CF8E8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXAppAuth;
-			targetProxy = 447173851658DB05FAEC72F425193505 /* PBXContainerItemProxy */;
-		};
-		575EC407BF21789980EC3E4046830DB0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBrightness;
-			targetProxy = 17D2741587E2C26B6D9E3A1CCA1289DF /* PBXContainerItemProxy */;
-		};
-		576E9621D124BD051E4AEC3654F81B12 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBarCodeScanner;
-			targetProxy = D6CBD332F91C5EE6C57379CE47B678BC /* PBXContainerItemProxy */;
-		};
-		5C83B1EBA0EFE9313CF8BABF33DE526E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXPrint;
-			targetProxy = B073144DD77C27D6A08E167601DFA9D7 /* PBXContainerItemProxy */;
-		};
-		5DBAEE49C600C07D1F844C9359BDC331 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMSensorsInterface;
-			targetProxy = 405FCAD71354405CDD13C808B456FB86 /* PBXContainerItemProxy */;
-		};
-		5EE3338F353FB282D8F4217E65F47E7B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXPermissions;
-			targetProxy = 0846100B6767DCB761422AAF7A4D9BFA /* PBXContainerItemProxy */;
-		};
-		5FCC96FEEF6496F4824AD2DCCB693B03 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXCrypto;
-			targetProxy = 815C97932A3DD96A26C63A52D0A0F1C3 /* PBXContainerItemProxy */;
-		};
-		61A586CF2B17637929CFCE59E76FF4D5 /* PBXTargetDependency */ = {
+		00F0896ABE0AD03E155805932FC837DE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXAV;
-			targetProxy = 7D67D993654BA672BC58771A24D80EA9 /* PBXContainerItemProxy */;
+			targetProxy = 33BE65EE210E604CC55355D4687A3A68 /* PBXContainerItemProxy */;
 		};
-		62E8C483FF3334ABD412A7CE39ACE29E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMReactNativeAdapter;
-			targetProxy = 7C356232FCD6393E7EBB756FBE8985ED /* PBXContainerItemProxy */;
-		};
-		62F0F862D5DF43DB130C1196CC699F7C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = DoubleConversion;
-			targetProxy = B18A675E85E4071A3CB0F8ECB95C60A6 /* PBXContainerItemProxy */;
-		};
-		633748E75193A67DE7812558C96BECD7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXSpeech;
-			targetProxy = 83B07B772E4DAD66A1BB7558BA85BD95 /* PBXContainerItemProxy */;
-		};
-		67A2952D23DEF219313509797DD6AD89 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBLazyVector;
-			targetProxy = A5B791957D15AA7A88F1B3877F4CAC47 /* PBXContainerItemProxy */;
-		};
-		699399186ED2A66614A2A31AF7F3A019 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXSharing;
-			targetProxy = 24BE401C541928B16F291FA6E6B991D7 /* PBXContainerItemProxy */;
-		};
-		6E6B91E9F98B81461AD5B0319F7738A4 /* PBXTargetDependency */ = {
+		03DEB446D9DAF72128B3BC987D7B79B3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBSDKLoginKit;
-			targetProxy = B8ADBDC5BDB364CC7545DAC7C0EF3DF1 /* PBXContainerItemProxy */;
+			targetProxy = 8CA06D795911DDFDFD5A08B89EF4413B /* PBXContainerItemProxy */;
 		};
-		707DE7E35CD642E2791E8F47C61A2606 /* PBXTargetDependency */ = {
+		055DB1188C354F0B495150F49B29BB8D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXSMS;
-			targetProxy = 6D34AC3483BAB3BB437994137BA17BDF /* PBXContainerItemProxy */;
+			name = EXBrightness;
+			targetProxy = 1B9F8DDDD50289337CF9E1F36FCECD42 /* PBXContainerItemProxy */;
 		};
-		71DC071DBB0CD20203030CDBAEC56222 /* PBXTargetDependency */ = {
+		066BFFE26F491385AD798D3F3BA9CD90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "react-native-appearance";
-			targetProxy = 9CAB1AF06C12EC6B021B291ECAEF4C02 /* PBXContainerItemProxy */;
+			name = EXSharing;
+			targetProxy = 5B8A259B8829FC55B9E61BDEA3FCC8FC /* PBXContainerItemProxy */;
 		};
-		75897E35FA7EA9557FFC747BC1AEC208 /* PBXTargetDependency */ = {
+		067F67A9526275BB3C32F5771E81F51B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXCellular;
-			targetProxy = 95083A850B4D27443AA807004D8FF573 /* PBXContainerItemProxy */;
+			name = EXAmplitude;
+			targetProxy = A30D8F58CDDC0B125217A024BD420132 /* PBXContainerItemProxy */;
 		};
-		7DE965E4B4CFDEA39ABAF5933634F2A8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Yoga;
-			targetProxy = 7EF481CA54BF7CF5268F2947629D32CA /* PBXContainerItemProxy */;
-		};
-		7E3B1E494105E78098FF65F71AF275F7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXGL;
-			targetProxy = 835266AF0AB21DDAC3371A03470F99F6 /* PBXContainerItemProxy */;
-		};
-		83C10943E7509126604E6E82456774E7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTAnimation";
-			targetProxy = 737A307EFA31DA3E64B434E369050DDF /* PBXContainerItemProxy */;
-		};
-		86027D376C80814309D33F3BBE3B6AC8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTNetwork";
-			targetProxy = 5BACD3043E923205097F344C426559FA /* PBXContainerItemProxy */;
-		};
-		87C17A94A21168DC0CBF9516091AE9DF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBlur;
-			targetProxy = 27CC0D7CC866A49D6FC32875B698194B /* PBXContainerItemProxy */;
-		};
-		88160BD06D940B6861B677CF6E2E17C5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 5B48E0C2253A33C4E04BA2BDBAD2AC8C /* PBXContainerItemProxy */;
-		};
-		88BAFCB9E7DFADCDF78C970ED3CE4C5B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXTaskManager;
-			targetProxy = 213CBA3812D6EB9EEDD1FC488F9A0289 /* PBXContainerItemProxy */;
-		};
-		897A596D5D2F3CEFB63E99613D4DD42D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBReactNativeSpec;
-			targetProxy = 75B36D49F034962047F5E5E01B3C23B0 /* PBXContainerItemProxy */;
-		};
-		94545EE3AEDA1B096E811BCA59FE61E3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXLocalization;
-			targetProxy = 02A98BB249695A76FE0826FAAFDF8134 /* PBXContainerItemProxy */;
-		};
-		95227ED6E40DFE8C409A432196FA6642 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXGL_CPP;
-			targetProxy = 208401D34BBD889C9A1E073ED549A480 /* PBXContainerItemProxy */;
-		};
-		9D3EDBB85F9ABC6389DB8CFE04835E5C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = 1B34AD8317702D097A383A239675DC32 /* PBXContainerItemProxy */;
-		};
-		9DA205381A4C579B81ABAAF70567B829 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMBarCodeScannerInterface;
-			targetProxy = 50BC53F032D19F0974ACFC37BCD5005D /* PBXContainerItemProxy */;
-		};
-		9EE06DAB23D11E0A9B923BF3D51ECF9A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXHaptics;
-			targetProxy = 6DDFE4F4804ED21AD0CB1C7DC27C7433 /* PBXContainerItemProxy */;
-		};
-		A0F1F90B50B9E375FE6C1F8A23924AFB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBattery;
-			targetProxy = 82CC1F601F85F4180F0E4685DE651DCD /* PBXContainerItemProxy */;
-		};
-		A3E64835EEAB6943EC804771CCC085A1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXGoogleSignIn;
-			targetProxy = 001C42D805506A2DA7F5F28513C18267 /* PBXContainerItemProxy */;
-		};
-		A4482CF7006174F0BAFC33F681E42F40 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBSDKCoreKit;
-			targetProxy = 15D78C28CEAED830B41F17B39B720F6C /* PBXContainerItemProxy */;
-		};
-		ACDD48AAEEA1BE10D55006E87C815C00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ZXingObjC;
-			targetProxy = 158519CEAE8CBFAB943032A2D3323FBB /* PBXContainerItemProxy */;
-		};
-		ADA485F056D2894406518F447E868F1F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RNReanimated;
-			targetProxy = DD95CABCF2D176DEF9A06047BC218D51 /* PBXContainerItemProxy */;
-		};
-		B2182AF38287FB2E906F4945D32E5F7A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AppAuth;
-			targetProxy = 4AF283F44F9EC892C1B9FB5065791310 /* PBXContainerItemProxy */;
-		};
-		B503D0220DFA438F542A0673150708A0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GTMAppAuth;
-			targetProxy = BAFFD40610D9FBAB9986D082A3FA291B /* PBXContainerItemProxy */;
-		};
-		B584EB98C268B17E536B8B8E73CAAB18 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXUpdates;
-			targetProxy = 2BAE7AC67C30BC2C8ACA3C7E8B229DD2 /* PBXContainerItemProxy */;
-		};
-		B91A15594CE748F8CD324AA33A874564 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXBackgroundFetch;
-			targetProxy = 462D13C3D2E91688262190345CA32EA9 /* PBXContainerItemProxy */;
-		};
-		BB2EF72B8528B5CE0010B0573978EFC3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTText";
-			targetProxy = CF416A1BC69C1322B8FA9AEBC4BA280D /* PBXContainerItemProxy */;
-		};
-		BC3739BF0E0BFB80FAE4EFFD30A98EBB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-CoreModules";
-			targetProxy = BEFED293F541FD2233CBA1E860A4D5BE /* PBXContainerItemProxy */;
-		};
-		BF871A208FBF531C6FE8315254B47F37 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTImage";
-			targetProxy = 861A929E87BCF0AE94254E26A9EAC110 /* PBXContainerItemProxy */;
-		};
-		BFE4C9D0F21E5DC551B7DAA1DF5BD0E3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXMediaLibrary;
-			targetProxy = 5A205E3C4665D7632751896648FC1B18 /* PBXContainerItemProxy */;
-		};
-		C0620BB3B015C15C6787CDE9AE7AD549 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = B307330C2B4D246BC657CDB87E2AA743 /* PBXContainerItemProxy */;
-		};
-		C3AB754D3834B7B27496461F898641EB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Amplitude-iOS";
-			targetProxy = 507EE9528D801C9548773663A9805C06 /* PBXContainerItemProxy */;
-		};
-		C540A68FC1C06CE4CA5C9E2AAB0D5DB3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTBlob";
-			targetProxy = 742CF707835DEE8607B0B5CECABFF041 /* PBXContainerItemProxy */;
-		};
-		C62F4DB4439A4E984A8C79FB084B7947 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXKeepAwake;
-			targetProxy = 7678A2C88E4C418808FB64AA16511F13 /* PBXContainerItemProxy */;
-		};
-		CAD2BEB539E574A12DFB27EB3F0FDAB0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXImageManipulator;
-			targetProxy = D9668493B48DA60F5BD0D5BD020A3E19 /* PBXContainerItemProxy */;
-		};
-		CB2232B6A22FF97FD15B8EE50E46D263 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXConstants;
-			targetProxy = 4CF823737264B2B461B13AB67818FA97 /* PBXContainerItemProxy */;
-		};
-		CFB66E0FF573B48CF38BA6A8532EED5F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXDocumentPicker;
-			targetProxy = 0A6987AB9B6A1A5975C619C222D65D2B /* PBXContainerItemProxy */;
-		};
-		D15A5B1AFDE56F1A133E773CF17EDDBD /* PBXTargetDependency */ = {
+		097442C2564E0E5FCB3563E1F7E883A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXLocation;
-			targetProxy = 2618CE9216D26FEC69F1D8BE997E0496 /* PBXContainerItemProxy */;
+			targetProxy = 2BE24C0C93EEE6FADD61CCAD1470FEB6 /* PBXContainerItemProxy */;
 		};
-		D1DCE8BFECE5A95A67009614AAA92BB5 /* PBXTargetDependency */ = {
+		09FDB3FB4FAE7AB79E5331386D6A140A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXLocalAuthentication;
-			targetProxy = EF0CDE855D234C083FA7C2FF99D5F3B4 /* PBXContainerItemProxy */;
+			name = "React-Core";
+			targetProxy = 564239E69A8395852CD71D6473AD807F /* PBXContainerItemProxy */;
 		};
-		D1F6EC06E777B48FBB7D464D398EF0F9 /* PBXTargetDependency */ = {
+		0B4F96FA99C3C0124519A6CEFA4A97AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTRequired;
+			targetProxy = A21C473796EB93162AD2D633650A0BDD /* PBXContainerItemProxy */;
+		};
+		0FA54023B49CBA83876C9E3B2D7A033C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXSensors;
+			targetProxy = D1B89F0D09A4701D30C93C627ABC3A54 /* PBXContainerItemProxy */;
+		};
+		12F65E5E9F66749024E8119DC9F0834A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXSegment;
+			targetProxy = 46B76DBFF05C6B111DFDB1CA9330E89F /* PBXContainerItemProxy */;
+		};
+		143F53C87F2FBB1FD70AD4EE3E3CC246 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXKeepAwake;
+			targetProxy = 6A0316B075EF9798FA911E8C0048A66E /* PBXContainerItemProxy */;
+		};
+		17FA5707BA851300072FC932C9BE5209 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTActionSheet";
+			targetProxy = 40ED21E044A03D8BF739523C2CFD935B /* PBXContainerItemProxy */;
+		};
+		1A0EBCB868974F96CBFD21F76B105EC1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBSDKCoreKit;
+			targetProxy = 2C01F686EB7193C8F441E15E489E5302 /* PBXContainerItemProxy */;
+		};
+		1C44471CAC87EF856E76B7F05A1E6CBA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTTypeSafety;
+			targetProxy = E04FBFEFA097AB6C484FE1017FFDEDA4 /* PBXContainerItemProxy */;
+		};
+		1D1AB462FC1172227200818FA7C207B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBReactNativeSpec;
+			targetProxy = 6EAA061D8905581242BC88452850AE28 /* PBXContainerItemProxy */;
+		};
+		1D953B82419898F14F65AB2D7BE647BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXBattery;
+			targetProxy = 7884C6E91FC5D52599C2EBFC449309E7 /* PBXContainerItemProxy */;
+		};
+		23C24F021D7D572C11E1B81C1D5629AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleSignIn;
-			targetProxy = 50B00878F2B8DDF7EBD8F84A157DCB04 /* PBXContainerItemProxy */;
+			targetProxy = 97CBC5DC8E4164BD92FCA3AC0FFC1222 /* PBXContainerItemProxy */;
 		};
-		D2B7FDFA211ACE080D0B9DDDACE27427 /* PBXTargetDependency */ = {
+		23FCFC861E3B6763BA52647F4E3A2310 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AppAuth;
+			targetProxy = 8F82151A3E24F0EBD1F634DB61048C4D /* PBXContainerItemProxy */;
+		};
+		26C7D82967F66AFCBB6CCA573440DC37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTNetwork";
+			targetProxy = EB8666D620DF2B709D363F53B1C5EEB0 /* PBXContainerItemProxy */;
+		};
+		2C850FF4AC6ED7E05FA7E7FC10D7DA7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXUpdates;
+			targetProxy = C0506B4A4B2497561BB3234D7B59DE84 /* PBXContainerItemProxy */;
+		};
+		2D80811B8486CCBEEC792A890788CB3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTAnimation";
+			targetProxy = 568B5088DC0FB5CFE13CCFC43B8441B6 /* PBXContainerItemProxy */;
+		};
+		2DDD61F14C0A0C42902EF55F4317FADE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-jsi";
+			targetProxy = 01376A542D45DC53294F46755AB8902A /* PBXContainerItemProxy */;
+		};
+		336A7ABA19FCFF1197E4D69E2B684958 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXScreenOrientation;
+			targetProxy = 81BF5FBAEBF288DADD0B9D88AB28ECD0 /* PBXContainerItemProxy */;
+		};
+		35DDADA2C93214207C9776C5B0A41223 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactCommon;
+			targetProxy = 4DF39BCBF11CBBC713EE2591A71A769B /* PBXContainerItemProxy */;
+		};
+		36EFDF639988016A54EE668DA4709851 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMBarCodeScannerInterface;
+			targetProxy = 4CB54A2C8695C92D5CC510BC4F106E32 /* PBXContainerItemProxy */;
+		};
+		3AAC4E63262429F17BF0D17B69261805 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMSessionFetcher;
+			targetProxy = 0434F9ADCCAC47DE3FB828526EDFC4AA /* PBXContainerItemProxy */;
+		};
+		3C4F89F4AA168D0099A23E540815F915 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Amplitude-iOS";
+			targetProxy = 7669FC6B47A3CD0833147AC931EA2C1A /* PBXContainerItemProxy */;
+		};
+		3DCA9D15CB99EB27E413212875A822D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFontInterface;
+			targetProxy = 0A684A092F5DAEEA688CFB3329B135EA /* PBXContainerItemProxy */;
+		};
+		3E92CE191332D2515F3032E4E7C735C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMReactNativeAdapter;
+			targetProxy = BB34D99DDDA833008FC01D56CD5BD6B7 /* PBXContainerItemProxy */;
+		};
+		46D0A0924FB2E1A857C92E9DED078815 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXGL_CPP;
+			targetProxy = 9C0FDD9948BE6A2CF3B4283E10F3DD4D /* PBXContainerItemProxy */;
+		};
+		4A857827C431F6AFBA7B838754B577CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXFont;
+			targetProxy = 33A7C3DB5A21C1EC46BE193AA41C06C8 /* PBXContainerItemProxy */;
+		};
+		4ABF96CF844D213B130784EDB2C441F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "react-native-appearance";
+			targetProxy = 1E5528694CA8996611175444C4CFDCB6 /* PBXContainerItemProxy */;
+		};
+		4ADD124DECF6ADA3903ED205B3AABD50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-CoreModules";
+			targetProxy = A4226BB5985744DAF27C87133F0F23EC /* PBXContainerItemProxy */;
+		};
+		4D89E08815B3DBED6E234E74C7A87B3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GTMAppAuth;
+			targetProxy = FB744D575FB341D2F2928163C6A2BFC9 /* PBXContainerItemProxy */;
+		};
+		4EFAC33D45C00DA21FCA862D323F0EB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXBackgroundFetch;
+			targetProxy = 78D50A098E1A4DD0CEFEFA0702DC5D01 /* PBXContainerItemProxy */;
+		};
+		50F5414E17F54F998A294378DF1798FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXDevice;
+			targetProxy = 8DF2024D9EAFC05E291C4106977B804A /* PBXContainerItemProxy */;
+		};
+		585425832DEC53953308B2F331D0B89E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Analytics;
+			targetProxy = 72413E19379C0578029CB0DE91846B7E /* PBXContainerItemProxy */;
+		};
+		588C8DB139E094F23CA26938E460F521 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXTaskManager;
+			targetProxy = EAA72D9F4F839E39530FAA06C36C48E1 /* PBXContainerItemProxy */;
+		};
+		59ED6492457672039C4CF5CDBF246989 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXHaptics;
+			targetProxy = D8BA0D3819483FFEE67ADDD3A354E2EE /* PBXContainerItemProxy */;
+		};
+		5A5AD87A4F8CEA85394A9184930C0355 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXSecureStore;
+			targetProxy = 5B205C77EA9B9C0E60D3C5243204F2F9 /* PBXContainerItemProxy */;
+		};
+		611F053AE05616B0307EA6F1264ED8C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXBlur;
+			targetProxy = 93F8FB4191676F3B8C5F32527BE17C3E /* PBXContainerItemProxy */;
+		};
+		652F46D71DFF6477775CFDC1DAE9E114 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RNGestureHandler;
+			targetProxy = 6D2128004555CBD9DBD2E429C4B6ED70 /* PBXContainerItemProxy */;
+		};
+		66358F6D102F2EA2B7AC521F2D0C8250 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXAppAuth;
+			targetProxy = AC7E9CE78A686D28B59B575C56E44C77 /* PBXContainerItemProxy */;
+		};
+		69A23A68FBB2474193EA9544D48251E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXNotifications;
+			targetProxy = FEFBE2BEAA903819141852CCCFD04A64 /* PBXContainerItemProxy */;
+		};
+		6B5AA705C8F855C4E8803636FDF42DDC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXDocumentPicker;
+			targetProxy = B49377880C2D6263929021959E904BBE /* PBXContainerItemProxy */;
+		};
+		6C2B75745D9FE45848C093108B9A16BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMAppLoader;
+			targetProxy = FB36C0B6FAA05270F6AE613C3D075CA7 /* PBXContainerItemProxy */;
+		};
+		6E020463375D54294750F0F70D70FE51 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXContacts;
+			targetProxy = AD19576CE027BC4100EBFE5BAB5A9B1D /* PBXContainerItemProxy */;
+		};
+		70B70809FF3589EA21AE9D0A85511C33 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXMailComposer;
+			targetProxy = 71D021211FBCA6AC0809EE48DBC1C158 /* PBXContainerItemProxy */;
+		};
+		7262096C77B37004B8CCC250F324530A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXConstants;
+			targetProxy = 18CF98AF7DB555E4940023FF4EAA4737 /* PBXContainerItemProxy */;
+		};
+		7887657B8A0746A208A60AF3BFD6E1C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTText";
+			targetProxy = E15D1DD6634B67347AA67AF3C3701A44 /* PBXContainerItemProxy */;
+		};
+		78B2327F0060173873F3E21FB2FFCFEA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXGL;
+			targetProxy = 63E1B198A4AB303DF7C6C1F2CD9AF637 /* PBXContainerItemProxy */;
+		};
+		79A8F5FC27347C43F3C1BD381F8D90ED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXMediaLibrary;
+			targetProxy = FCC5FC4A0C66F73738B210D4F1AFA42C /* PBXContainerItemProxy */;
+		};
+		7AD76CC3E9CAFECFA5C39162571BEFDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTImage";
+			targetProxy = 3ACE6EC51890CF4540B3F9364627DB4F /* PBXContainerItemProxy */;
+		};
+		7BFBF8FCE17A5383F6AE856FE462A346 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXCellular;
+			targetProxy = 3646B2B695C6D9829B752091E58A7ADD /* PBXContainerItemProxy */;
+		};
+		7C0906BEDA9BBD253D7EC90E58EE1871 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DoubleConversion;
+			targetProxy = 0C58E8CA8CEAA997C2D5E47952A6AA1C /* PBXContainerItemProxy */;
+		};
+		853515452609E094914A96A21E2D16D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXStoreReview;
+			targetProxy = ACA6F9576AA4D6610618C8DEBF2AF44B /* PBXContainerItemProxy */;
+		};
+		8DF069B3AF995D5A5ECA0E8FCC331D60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXImagePicker;
+			targetProxy = 62888BFBA67143E196351CB7DFFB9CB6 /* PBXContainerItemProxy */;
+		};
+		8E3CB0BA06F222028A0A6B69875C6F9A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXGoogleSignIn;
+			targetProxy = DBB7DF2B213384F797D69C0A29E8AE46 /* PBXContainerItemProxy */;
+		};
+		91A1DCF53074BF0F5B1E15703E22ED34 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXNetwork;
+			targetProxy = 24841B36CD3FFA8DAC3BEC0E3B1ED990 /* PBXContainerItemProxy */;
+		};
+		94E2661C6F0C3F4DDBC9BE3EC20A4BCC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMImageLoaderInterface;
+			targetProxy = C87C4FCD82BA8D149A09A57BBB41673E /* PBXContainerItemProxy */;
+		};
+		976D823DA6CC686DC4A523F79A916967 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCameraInterface;
+			targetProxy = 5751457E8E4E2BF752E7FF74A2EAD0DC /* PBXContainerItemProxy */;
+		};
+		9B88FD01A8E10F06C2F1946EFC02E2E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXPermissions;
+			targetProxy = F7940AC985DADFD197FEC5C2EBD5BA26 /* PBXContainerItemProxy */;
+		};
+		A36A63288C69E47F8731C679B42D15B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXLinearGradient;
+			targetProxy = B24C56DA713604C794141BDE19BEB17E /* PBXContainerItemProxy */;
+		};
+		A3C6A5A2F1E00E14507DEA6E484E02D5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMSensorsInterface;
+			targetProxy = 18068DF077E35990E072F98318233CB9 /* PBXContainerItemProxy */;
+		};
+		A4E8ABC6CFB8EEDAB748866FDBB0055D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXCalendar;
-			targetProxy = C1BB0ED738EA7C9B8AC277DA1AA24F5B /* PBXContainerItemProxy */;
+			targetProxy = D6C7712B5F09E43E29FC5849F3A71BE8 /* PBXContainerItemProxy */;
 		};
-		D8144D9378EDAAB2523A4B399778A4F3 /* PBXTargetDependency */ = {
+		A6E2044E98028974F62C4E2ED9652A76 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTLinking";
+			targetProxy = 8A62D0410197E611B137EFE9A5D81FBC /* PBXContainerItemProxy */;
+		};
+		A86F284C0F513B97C5A0E158F3722E66 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXRandom;
+			targetProxy = 33A0A7531CC4F7828899A47554B31781 /* PBXContainerItemProxy */;
+		};
+		A8ACEA347F7D21294567258D28F0FF21 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Yoga;
+			targetProxy = 2959E49560E7DEDBC5F97F4053BEAFF5 /* PBXContainerItemProxy */;
+		};
+		AAB91798DF04B587B2C3D70BA8244ACD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXFileSystem;
+			targetProxy = 5FCFE0F4EF20682105438C44BC03513D /* PBXContainerItemProxy */;
+		};
+		AE394D31EB96FC8AF26C307AF5C9212B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXImageManipulator;
+			targetProxy = 415F557F111D16CF55DE10E35E98F208 /* PBXContainerItemProxy */;
+		};
+		B0A1DC0C581CA78C8796609BB6BC93D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXFacebook;
+			targetProxy = B5B2166404346E0C3352429B4945906E /* PBXContainerItemProxy */;
+		};
+		B2119B4F629F83E41BBCA98A3DE8D212 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ZXingObjC;
+			targetProxy = 267689EFA2EAC0A34A1489D79424D0D8 /* PBXContainerItemProxy */;
+		};
+		B2EFE3C694C243BB63C8746C94D002EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RNReanimated;
+			targetProxy = 352F4EDA62AB855A103B35ABB2E05319 /* PBXContainerItemProxy */;
+		};
+		BAF32B2649E5E1FB80F61802275E069D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXImageLoader;
+			targetProxy = 798FC122AA70E5BA6F92934785CB7B41 /* PBXContainerItemProxy */;
+		};
+		BC96621B24BD3302FC25D42DACCEC078 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXApplication;
+			targetProxy = 59A9762215B19E29B2621B3500B3CEF9 /* PBXContainerItemProxy */;
+		};
+		BE7ADAA58596B773CDD8E5B4C7E0AC5A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-RCTVibration";
-			targetProxy = 61AD5973BD3B78DDE6FC8FA64DA24BA8 /* PBXContainerItemProxy */;
+			targetProxy = 6601BA995C3A2F428E03F9517E2078CE /* PBXContainerItemProxy */;
+		};
+		C14CEBA6B8C91AA2EA5A7425D3471B1A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXLocalAuthentication;
+			targetProxy = A8820D3BFA32F8B79D1E223BD1A9DAEF /* PBXContainerItemProxy */;
+		};
+		C7B91B6121EC60E5F776FEAD70C0AC2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXBluetooth;
+			targetProxy = 598CDA9EDD541EABE47724B63F75913B /* PBXContainerItemProxy */;
+		};
+		CA6E408A269C4A17CEA41025C5E78B0C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXWebBrowser;
+			targetProxy = 85D768A300B9AC3B984A1CD6821AC1C7 /* PBXContainerItemProxy */;
+		};
+		CA7A34045E79C3487467F437A1DDBDC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Folly;
+			targetProxy = 3B414D6BD6C55ABEADCFBE63871B5F90 /* PBXContainerItemProxy */;
+		};
+		CAD88F66AD5A9A9CBB4F7249DE6553E5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = 84395145DAB7171ACFA6634793CDD491 /* PBXContainerItemProxy */;
+		};
+		CC5B1150163602E291916C6E477BDA9A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXSpeech;
+			targetProxy = 5C9C2856F8F321534CB2A219F8ADA7F2 /* PBXContainerItemProxy */;
+		};
+		CF4E0E20F842587BEC97D436448EA129 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-jsiexecutor";
+			targetProxy = B55D7553FA07E8A6E8B1AC760A82E3CC /* PBXContainerItemProxy */;
+		};
+		D4E26397BAD7E259FFB3DFD72A822E9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXLocalization;
+			targetProxy = BBCA94FEF95D26269DF7714844967547 /* PBXContainerItemProxy */;
+		};
+		D4FF4A9988EF0AECEABBB0EF3605644C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "react-native-safe-area-context";
+			targetProxy = 6F2765F61C52449216A854FCC040F30B /* PBXContainerItemProxy */;
 		};
 		D99886342357C6B0C1EC9E10BD60A6CA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2044,109 +2009,99 @@
 			target = C616BB9F650D110E835D02A3250F302E /* Pods-BareExpo */;
 			targetProxy = 70227CF8F6B2D08A40EC88165F2BAEE8 /* PBXContainerItemProxy */;
 		};
-		DCFA535A3B9CCDD8AF0513F4874C3C9C /* PBXTargetDependency */ = {
+		D9B6869AD07F431B8D20E741D7C9F000 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "React-RCTActionSheet";
-			targetProxy = BEE9A4DBA6A16FE181F8CA81C0EFC625 /* PBXContainerItemProxy */;
+			name = EXBarCodeScanner;
+			targetProxy = 54A5C02A403AA426FDF09EA93FFA99C7 /* PBXContainerItemProxy */;
 		};
-		DD0B2F6D1805EE3AFC8EF53CDEFC32A6 /* PBXTargetDependency */ = {
+		DB09D924EE7859AE511ECFB5F9C49A16 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "React-cxxreact";
-			targetProxy = 0841C3DEF48FDCAC0E2CD61F4D1AD83F /* PBXContainerItemProxy */;
+			name = glog;
+			targetProxy = 33D52F9BF6EC08AF57CAF687AF3218CF /* PBXContainerItemProxy */;
 		};
-		DDEC157F7BC7C35648D4BAE9D3D1968F /* PBXTargetDependency */ = {
+		DBB74E5925290472C73E8048291B6364 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXAmplitude;
-			targetProxy = 396BFE3548B98533F5881BAE9D13929E /* PBXContainerItemProxy */;
+			name = EXSMS;
+			targetProxy = 097C283A00A8285DA1A67518C09F0F10 /* PBXContainerItemProxy */;
 		};
-		DE89EA43E87864D75A4BC10A46FECA28 /* PBXTargetDependency */ = {
+		DC6247610B8129841A43C81B3D7133B0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXNetwork;
-			targetProxy = C8A7EBF878F74EAFFBC3C1AEDD67DDFA /* PBXContainerItemProxy */;
+			name = UMCore;
+			targetProxy = BA5B675A41A6BD094357674F6D6B3FF4 /* PBXContainerItemProxy */;
 		};
-		E47063A67D67BF30CF70495726A41405 /* PBXTargetDependency */ = {
+		DCB809B3741993EF790407AB7426F4DF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXImagePicker;
-			targetProxy = F07D0EA2D8BBA54772A5B40F1BFCC652 /* PBXContainerItemProxy */;
+			name = EXErrorRecovery;
+			targetProxy = F2C35CEA502574E7F544E258A365C55B /* PBXContainerItemProxy */;
 		};
-		E8B8B2B2AFF1C40417401DB33A2163C3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXFileSystem;
-			targetProxy = 27CCE4FA4B6B57DAEA64F2DE57DD1179 /* PBXContainerItemProxy */;
-		};
-		ED152E4B7D5C05694C3FE8E99F23E0AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "React-RCTLinking";
-			targetProxy = 9A487F74CF2EE0CEC91C921F488F455E /* PBXContainerItemProxy */;
-		};
-		F28329D50E48385307C5A2594E98A613 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = EXStoreReview;
-			targetProxy = 9DB80E9BF0C9BB5E8619A35D1E9BE5B9 /* PBXContainerItemProxy */;
-		};
-		FA4B06AC23D6D7FD26E0057053A10B42 /* PBXTargetDependency */ = {
+		DEE7B4DB42E39EC0A1D2E93C71894BAB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-RCTSettings";
-			targetProxy = 377CC498077CFDA8F6D10A84F362E50B /* PBXContainerItemProxy */;
+			targetProxy = 27E875062CA04727E31FB8AB558EAF2B /* PBXContainerItemProxy */;
 		};
-		FCFD32F0E16DD168F92F153D13C90BD8 /* PBXTargetDependency */ = {
+		DF063E884B259605A97BAFA102F7B395 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = EXSQLite;
-			targetProxy = 40D09EDBB2AB395AACFA5E5968F0569D /* PBXContainerItemProxy */;
+			name = FBLazyVector;
+			targetProxy = 865702F706A3619FF325F1D6910A7AB2 /* PBXContainerItemProxy */;
 		};
-		FFFE53DD5FB85AEF7DA5E5C0D5BF6EDC /* PBXTargetDependency */ = {
+		E0AD990C799A8FDBF5D9371C79CB0775 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXCrypto;
+			targetProxy = B76547439E3481996A71CE3FFCA09BE6 /* PBXContainerItemProxy */;
+		};
+		E653B983F51FB52442B45E0CF79BE5EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-cxxreact";
+			targetProxy = F03486EE9183E8351FEA7F90B9D14BB5 /* PBXContainerItemProxy */;
+		};
+		E6803EFF03D1895881C925DAB5C97747 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 5F47C761246A9BEF22F6C7310D746051 /* PBXContainerItemProxy */;
+		};
+		EC59BF0242DCAD81D074C11F469ED0A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "boost-for-react-native";
+			targetProxy = 70CD36C3A47463DFB3CA881C9FFD7510 /* PBXContainerItemProxy */;
+		};
+		F251F0B2632F923A87F0BB218B4377AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXPrint;
+			targetProxy = 87C7268DBFB64CFC238ACC061FECE5AE /* PBXContainerItemProxy */;
+		};
+		F28D90F0FDA612900B91A1555DBB5725 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMConstantsInterface;
+			targetProxy = C5FBBB81DE138CBC618AFB4F3A0F8BF4 /* PBXContainerItemProxy */;
+		};
+		F31EEBE731728CCB1059DC5FD4CB0CFC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-jsinspector";
-			targetProxy = CDFF95002B0986589240B68BFFDC89A9 /* PBXContainerItemProxy */;
+			targetProxy = 986FC1B6C688386389FC3CE876C1FD09 /* PBXContainerItemProxy */;
+		};
+		F665A7C09AA1FF62A0D8F3A6628B5C54 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMTaskManagerInterface;
+			targetProxy = D34389BB74977518529EF1EE27494718 /* PBXContainerItemProxy */;
+		};
+		F9B32449F3A683876238C8EF46F8DBC0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-RCTBlob";
+			targetProxy = D4AEB193BA52B896A571F69794228A74 /* PBXContainerItemProxy */;
+		};
+		FC6D5870D2BA3C549AFC526459108EE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = DEE301AEFDAD7C18DCD7F5C7DF93B9B4 /* PBXContainerItemProxy */;
+		};
+		FF3A8D6C42343279C5AD87C11BAF8909 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXSQLite;
+			targetProxy = B5F19A97ECE3C755B291FF371DD4FB09 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		03273164B4D9296118490BBB459E8E76 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C42944AE78D3C85AE9277FE320D54C35 /* Pods-BareExpo.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		189F88094817398350DCE28EBB78BB97 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D02C945BC67559AFEB7B446AD8A35E6 /* Pods-BareExpo.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		196DFA3E4A09A28224918543529A1885 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2234,6 +2189,29 @@
 			};
 			name = Release;
 		};
+		81CD149A38317F29A7EEBE09D9C51E63 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C42944AE78D3C85AE9277FE320D54C35 /* Pods-BareExpo.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		B01D14FDC83DCF9D4BE53066BEA96D05 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2294,6 +2272,28 @@
 			};
 			name = Release;
 		};
+		C390CEE1F73939AAC501FB77CD868683 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D02C945BC67559AFEB7B446AD8A35E6 /* Pods-BareExpo.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		CAC967986E19219352651EDC499E5D26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C4A8AD09B0987CCC643BCC6FFC68B2AE /* Pods-BareExpoTests.debug.xcconfig */;
@@ -2319,11 +2319,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0D359FF9435936BD3EF4C18E7372AF66 /* Build configuration list for PBXNativeTarget "Pods-BareExpo" */ = {
+		1DE86C5EFD358BA88F4EA75CE0A0A6E5 /* Build configuration list for PBXNativeTarget "Pods-BareExpo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				189F88094817398350DCE28EBB78BB97 /* Debug */,
-				03273164B4D9296118490BBB459E8E76 /* Release */,
+				C390CEE1F73939AAC501FB77CD868683 /* Debug */,
+				81CD149A38317F29A7EEBE09D9C51E63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

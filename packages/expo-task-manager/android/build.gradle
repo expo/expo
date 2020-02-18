@@ -75,7 +75,7 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-task-manager-interface"
   unimodule "unimodules-constants-interface"
-  unimodule "expo-app-loader-provider"
+  unimodule "unimodules-app-loader"
 
 
   api "androidx.core:core:1.0.0"
