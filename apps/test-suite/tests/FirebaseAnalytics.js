@@ -1,11 +1,11 @@
-import * as FirebaseCore from 'expo-firebase-core';
 import * as Analytics from 'expo-firebase-analytics';
+import * as FirebaseCore from 'expo-firebase-core';
 import { Platform } from 'react-native';
 
 export const name = 'FirebaseAnalytics';
 
 export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
-  const isConfigured = Platform.OS === 'web' || !!FirebaseCore.DEFAULT_APP_OPTIONS;
+  const isConfigured = !!FirebaseCore.DEFAULT_APP_OPTIONS;
   const itWhenConfigured = isConfigured ? it : xit;
   const itWhenNotConfigured = isConfigured ? xit : it;
 
