@@ -19,6 +19,7 @@ import androidx.core.app.NotificationManagerCompat;
 import expo.modules.notifications.notifications.RemoteMessageSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilderFactory;
+import expo.modules.notifications.notifications.interfaces.NotificationPresentationEffectsManager;
 
 /**
  * A "task" responsible for managing response to a single notification.
@@ -50,6 +51,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilderFa
   private NotificationBehavior mBehavior;
   private NotificationsHandler mDelegate;
   private NotificationBuilderFactory mBuilderFactory;
+  private NotificationPresentationEffectsManager mEffectsManager;
   private String mIdentifier;
 
   private Runnable mTimeoutRunnable = new Runnable() {
@@ -61,6 +63,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilderFa
 
   /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, RemoteMessage remoteMessage, NotificationsHandler delegate) {
     mContext = context;
+    mEffectsManager = moduleRegistry.getModule(NotificationPresentationEffectsManager.class);
     mBuilderFactory = moduleRegistry.getModule(NotificationBuilderFactory.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mRemoteMessage = remoteMessage;
@@ -116,11 +119,22 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilderFa
           Notification notification = getNotification();
           String tag = getIdentifier();
           int id = 0;
+          boolean notificationPresented = false;
+          boolean effectorsActed;
           try {
             NotificationManagerCompat.from(mContext).notify(tag, id, notification);
-            promise.resolve(null);
+            notificationPresented = true;
+            effectorsActed = mEffectsManager.onNotificationPresented(tag, id, notification);
           } catch (IllegalArgumentException e) {
-            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed, notification was malformed: " + e.getMessage(), e);
+            effectorsActed = mEffectsManager.onNotificationPresentationFailed(tag, id, notification);
+          }
+
+          // If we want to support badge-update-only notifications, we need to treat
+          // a failed-but-acted-upon notification as successful.
+          if (notificationPresented || effectorsActed) {
+            promise.resolve(null);
+          } else {
+            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed. Neither presentation nor any of the effectors completed successfully.");
           }
         } catch (NullPointerException e) {
           promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", e);
