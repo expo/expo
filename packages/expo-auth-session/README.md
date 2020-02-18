@@ -1,14 +1,15 @@
 # expo-auth-session
 
-Gets native application the easiest way to add web browser based authentication.
+`AuthSession` is the easiest way to implement web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [expo-web-browser](https://www.npmjs.com/package/expo-web-browser).
 
 # API documentation
 
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/auth-session.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/auth-session)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/auth-session).
 
 # Installation in bare React Native projects
 
@@ -22,21 +23,31 @@ expo install expo-auth-session
 
 ### Configuration
 
-To use this module, you need to set up react native linking and create a deep link to your application. For more information, check out [react native documentation](https://facebook.github.io/react-native/docs/linking#basic-usage).
+To use this module, you need to set up React Native deep linking in your application. For more information, check out [React Native documentation](https://facebook.github.io/react-native/docs/linking#basic-usage).
 
-#### Add support for react native linking
+#### Add support for React Native deep linking
 
 - **Android**:
 
-  Set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
+  Add intent fileter and set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
 
   ```xml
   <activity
       android:name=".MainActivity"
       android:launchMode="singleTask">
+      <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <!-- Accepts URIs that begin with "example://gizmos” -->
+          <data android:scheme="example"
+              android:host="gizmos" />
+      </intent-filter>
   ```
 
-- **iOS**:
+  For more information about the available configuration, check out [Android documentation](https://developer.android.com/training/app-links/deep-linking#adding-filters).
+
+* **iOS**:
 
   Add following lines to your `AppDelegate.m`:
 
@@ -54,38 +65,15 @@ To use this module, you need to set up react native linking and create a deep li
   // iOS 8.x or older
   - (BOOL)application:(UIApplication *)application
               openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-          annotation:(id)annotation
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation
   {
       return [RCTLinkingManager application:application openURL:url
                       sourceApplication:sourceApplication annotation:annotation];
   }
   ```
 
-#### Create deep link to your application
-
-- **Android**:
-
-  Add intent filter to your MainActivity in `AndroidManifest.yml`:
-
-  ```xml
-  <activity
-      android:name=".MainActivity">
-      <intent-filter>
-          <action android:name="android.intent.action.VIEW" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <category android:name="android.intent.category.BROWSABLE" />
-          <!-- Accepts URIs that begin with "example://gizmos” -->
-          <data android:scheme="example"
-              android:host="gizmos" />
-      </intent-filter>
-  ```
-
-  For more information about the available configuration, check out [android documentation](https://developer.android.com/training/app-links/deep-linking#adding-filters).
-
-- **iOS**:
-
-  Add following lines to `info.plist`:
+  Add following lines to `Info.plist`:
 
   ```xml
   <dict>

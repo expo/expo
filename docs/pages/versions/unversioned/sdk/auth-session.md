@@ -151,7 +151,7 @@ Get the URL that your authentication provider needs to redirect to. For example:
 
 ## Usage in the bare React Native app
 
-In managed apps, `AuthSession` uses expo servers to create a proxy between your application and the auth provider. Unfortunately, you don't have access to these servers in bare apps. To overcome this problem, you can create your proxy service.
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
 
 ### Proxy Service
 
@@ -194,7 +194,7 @@ http
   .listen(PORT);
 ```
 
-Client code which work with this service:
+Client code which works with this service:
 
 ```js
 const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
