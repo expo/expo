@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-declare type BarCodeEvent = {
+export declare type BarCodeEvent = {
     type: string;
     data: string;
     [key: string]: any;
