@@ -1,7 +1,6 @@
 import './ErrorRecovery.fx';
-export declare const recoveredProps: {
+export declare const recoveredProps: Props | null;
+export declare type Props = {
     [key: string]: any;
-} | null;
-export declare function setRecoveryProps(props: {
-    [key: string]: any;
-}): void;
+};
+export declare function setRecoveryProps(props: Props): void;
