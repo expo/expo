@@ -39,8 +39,7 @@
     "@unimodules/core": "*"
   },
   "peerDependencies": {
-    "expo-firebase-core": "*",
-    "firebase": "*"
+    "expo-firebase-core": "*"
   },
   "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }
