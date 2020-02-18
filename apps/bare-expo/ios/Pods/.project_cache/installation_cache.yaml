@@ -544,6 +544,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
