@@ -1,0 +1,1 @@
+../../../../../packages/expo-firebase-core/ios/EXFirebaseCore/UMFirebaseCoreInterface.h

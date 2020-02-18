@@ -98,6 +98,10 @@ EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
   UUID: 5232535845650ADAE59870B722468D8A
+EXFirebaseCore:
+  LABEL: EXFirebaseCore
+  PROJECT_PATH: EXFirebaseCore.xcodeproj
+  UUID: DCC8E69A56EE37BAFC3269F2C48FBBF8
 EXFont:
   LABEL: EXFont
   PROJECT_PATH: EXFont.xcodeproj
@@ -238,6 +242,30 @@ FBSDKLoginKit:
   LABEL: FBSDKLoginKit
   PROJECT_PATH: FBSDKLoginKit.xcodeproj
   UUID: 99D9EFC28DE380315427F305282258E8
+Firebase:
+  LABEL: Firebase
+  PROJECT_PATH: Firebase.xcodeproj
+  UUID: 15B99218A87324F316F0E937B3DAAC8B
+FirebaseAnalytics:
+  LABEL: FirebaseAnalytics
+  PROJECT_PATH: FirebaseAnalytics.xcodeproj
+  UUID: 3DC59710253F562E6B3BE135BABFBA19
+FirebaseCore:
+  LABEL: FirebaseCore
+  PROJECT_PATH: FirebaseCore.xcodeproj
+  UUID: 4BD5DE1E00ED67A59118DB4A3CD5F288
+FirebaseCoreDiagnostics:
+  LABEL: FirebaseCoreDiagnostics
+  PROJECT_PATH: FirebaseCoreDiagnostics.xcodeproj
+  UUID: 0CE453D8DBD3396B4C74B9ACD7A09387
+FirebaseCoreDiagnosticsInterop:
+  LABEL: FirebaseCoreDiagnosticsInterop
+  PROJECT_PATH: FirebaseCoreDiagnosticsInterop.xcodeproj
+  UUID: 82BE183BB67FD85793E8A161FAEDC1AF
+FirebaseInstanceID:
+  LABEL: FirebaseInstanceID
+  PROJECT_PATH: FirebaseInstanceID.xcodeproj
+  UUID: 828A845A4F63A824ED62A82D61941B85
 Folly:
   LABEL: Folly
   PROJECT_PATH: Folly.xcodeproj
@@ -246,10 +274,26 @@ glog:
   LABEL: glog
   PROJECT_PATH: glog.xcodeproj
   UUID: 86F597DC3D8F3D7A34EC5A5C413F7255
+GoogleAppMeasurement:
+  LABEL: GoogleAppMeasurement
+  PROJECT_PATH: GoogleAppMeasurement.xcodeproj
+  UUID: 9677266E0E3834B96EA12E3394F9063D
+GoogleDataTransport:
+  LABEL: GoogleDataTransport
+  PROJECT_PATH: GoogleDataTransport.xcodeproj
+  UUID: 78B41281B6D2EAC6C3C75FFE5052E985
+GoogleDataTransportCCTSupport:
+  LABEL: GoogleDataTransportCCTSupport
+  PROJECT_PATH: GoogleDataTransportCCTSupport.xcodeproj
+  UUID: 11C41BD6B3D59337B4AE45F453918096
 GoogleSignIn:
   LABEL: GoogleSignIn
   PROJECT_PATH: GoogleSignIn.xcodeproj
   UUID: 70D52585A9FA4EEA343010638ADABC11
+GoogleUtilities:
+  LABEL: GoogleUtilities
+  PROJECT_PATH: GoogleUtilities.xcodeproj
+  UUID: 80B861CBFC18436AFD9A3703F00CEEC4
 GTMAppAuth:
   LABEL: GTMAppAuth
   PROJECT_PATH: GTMAppAuth.xcodeproj
@@ -258,6 +302,10 @@ GTMSessionFetcher:
   LABEL: GTMSessionFetcher
   PROJECT_PATH: GTMSessionFetcher.xcodeproj
   UUID: BD7A8A3BC22FD28DCB40568BE43D7C70
+nanopb:
+  LABEL: nanopb
+  PROJECT_PATH: nanopb.xcodeproj
+  UUID: 052B66B57BF269A4B160A5659F7D46D4
 Pods-BareExpo:
   LABEL: Pods-BareExpo
   PROJECT_PATH: Pods.xcodeproj

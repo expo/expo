@@ -1226,6 +1226,10 @@ EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
   UUID: 5232535845650ADAE59870B722468D8A
+EXFirebaseCore:
+  LABEL: EXFirebaseCore
+  PROJECT_PATH: EXFirebaseCore.xcodeproj
+  UUID: DCC8E69A56EE37BAFC3269F2C48FBBF8
 EXFont:
   LABEL: EXFont
   PROJECT_PATH: EXFont.xcodeproj
