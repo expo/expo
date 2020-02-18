@@ -1,4 +1,5 @@
 import { Localization } from './Localization.types';
+export { Localization };
 export declare const locale: string;
 export declare const locales: any;
 export declare const timezone: any;
