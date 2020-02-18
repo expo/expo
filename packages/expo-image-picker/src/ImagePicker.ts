@@ -1,11 +1,15 @@
 import { UnavailabilityError } from '@unimodules/core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {
   ImagePickerResult,
   MediaTypeOptions,
   ImagePickerOptions,
-  PermissionResponse,
   VideoExportPreset,
 } from './ImagePicker.types';
 
@@ -43,4 +47,12 @@ export async function launchCameraAsync(
   return await ExponentImagePicker.launchCameraAsync(options);
 }
 
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, VideoExportPreset };
+export {
+  MediaTypeOptions,
+  ImagePickerOptions,
+  ImagePickerResult,
+  VideoExportPreset,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+};
