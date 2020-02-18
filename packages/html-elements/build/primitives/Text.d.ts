@@ -1,5 +1,5 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
+import { AccessibilityRole, StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 declare type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
     /** string is only available on web */
@@ -26,7 +26,8 @@ export declare type WebTextProps = {
     style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
+    accessibilityRole?: 'listitem' | AccessibilityRole;
 };
-export declare type TextProps = Omit<NativeTextProps, 'style'> & WebTextProps;
+export declare type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
 declare const Text: ComponentType<TextProps>;
 export default Text;
