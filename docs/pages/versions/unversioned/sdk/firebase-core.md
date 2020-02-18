@@ -11,7 +11,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 | Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
 | -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅              | ✅                | ✅          | ✅             | ❌   |
+| ✅              | ✅                | ✅          | ✅             | ✅   |
 
 ## Installation
 
@@ -27,10 +27,10 @@ To use this package, the Firebase configuration needs to be added to your app.
 ## API
 
 ```js
-import FirebaseCore from 'expo-firebase-core';
+import * as FirebaseCore from 'expo-firebase-core';
 ```
 
-<TableOfContentSection title='Constants' contents={['FirebaseCore.DEFAULT_APP_NAME']} />
+<TableOfContentSection title='Constants' contents={['FirebaseCore.DEFAULT_APP_NAME', 'FirebaseCore.DEFAULT_APP_OPTIONS']} />
 
 ## Constants
 
@@ -46,7 +46,7 @@ Object containing the firebase options with which the default app was initialize
 #### Example
 
 ```javascript
-console.log(DEFAULT_APP_OPTIONS);
+console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
 // {
 //   appId: "1:1082251606918:ios:a2800bc715889446e24a07",
 //   apiKey: "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
