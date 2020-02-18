@@ -62,5 +62,6 @@ dependencies {
   unimodule 'unimodules-image-loader-interface'
 
   api 'androidx.core:core:1.1.0'
+  api 'me.leolin:ShortcutBadger:1.1.22@aar'
   api 'com.google.firebase:firebase-messaging:20.1.0'
 }
