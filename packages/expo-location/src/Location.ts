@@ -76,7 +76,7 @@ export interface PermissionResponse extends UMPermissionResponse {
   android?: PermissionDetailsLocationAndroid;
 }
 
-interface LocationTaskOptions {
+export interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
   distanceInterval?: number;
@@ -96,7 +96,7 @@ interface LocationTaskOptions {
   };
 }
 
-interface Region {
+export interface Region {
   identifier?: string;
   latitude: number;
   longitude: number;
@@ -108,8 +108,8 @@ interface Region {
 type Subscription = {
   remove: () => void;
 };
-type LocationCallback = (data: LocationData) => any;
-type HeadingCallback = (data: HeadingData) => any;
+export type LocationCallback = (data: LocationData) => any;
+export type HeadingCallback = (data: HeadingData) => any;
 
 enum LocationAccuracy {
   Lowest = 1,

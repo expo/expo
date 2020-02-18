@@ -58,7 +58,7 @@ export interface PermissionResponse extends UMPermissionResponse {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 }
-interface LocationTaskOptions {
+export interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
     timeInterval?: number;
     distanceInterval?: number;
@@ -74,7 +74,7 @@ interface LocationTaskOptions {
         notificationColor?: string;
     };
 }
-interface Region {
+export interface Region {
     identifier?: string;
     latitude: number;
     longitude: number;
@@ -82,8 +82,8 @@ interface Region {
     notifyOnEnter?: boolean;
     notifyOnExit?: boolean;
 }
-declare type LocationCallback = (data: LocationData) => any;
-declare type HeadingCallback = (data: HeadingData) => any;
+export declare type LocationCallback = (data: LocationData) => any;
+export declare type HeadingCallback = (data: HeadingData) => any;
 declare enum LocationAccuracy {
     Lowest = 1,
     Low = 2,
