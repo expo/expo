@@ -71,7 +71,6 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<main />`][html-main]             |       [`<Main />`](#main)       |
 | [`<mark />`][html-mark]             |       [`<Mark />`](#mark)       |
 | [`<nav />`][html-nav]               |        [`<Nav />`](#nav)        |
-| [`<ol />`][html-ol]                 |         [`<OL />`](#ol)         |
 | [`<p />`][html-p]                   |          [`<P />`](#p)          |
 | [`<pre />`][html-pre]               |        [`<Pre />`](#pre)        |
 | [`<q />`][html-q]                   |          [`<Q />`](#q)          |
@@ -536,36 +535,6 @@ export default () => (
 | Platform | Output                      |
 | -------- | --------------------------- |
 | Web      | `<ul />`                    |
-| Native   | `<View style={[Custom]} />` |
-
-### `<OL/>`
-
-Create an ordered (numbered) list `<ol />` on web, and emulates the style with a `<View />` on native.
-
-- [x] Resets font styles everywhere.
-- [ ] Supports i18n by reversing format on iOS and Android
-- [ ] Supports i18n bullets on iOS and Android
-- [ ] Supports custom bullets
-
-```tsx
-import { OL, LI } from '@expo/html-elements';
-
-export default () =>  {
-  return (
-    <OL>
-      <LI>oranges</LI>
-      <LI>apples</LI>
-      <OL>
-        <LI>green</LI>
-        <LI>red</LI>
-      </OL>
-    </OL>
-);
-```
-
-| Platform | Output                      |
-| -------- | --------------------------- |
-| Web      | `<ol />`                    |
 | Native   | `<View style={[Custom]} />` |
 
 ### `<LI/>`

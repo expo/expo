@@ -1,67 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders OL nested in UL 1`] = `
-<View
-  style={
-    Object {
-      "paddingLeft": 20,
-    }
-  }
->
-  <Text
-    bullet="·"
-  >
-    ·
-     
+exports[`renders UL nested in LI 1`] = `
+<View>
+  <Text>
     item
   </Text>
-  <View
-    bullet="·"
-    style={
-      Object {
-        "paddingLeft": 20,
-      }
-    }
-  >
-    <Text
-      bullet="1."
-    >
-      1.
-       
-      item
-    </Text>
-  </View>
-</View>
-`;
-
-exports[`renders UL nested in OL 1`] = `
-<View
-  style={
-    Object {
-      "paddingLeft": 20,
-    }
-  }
->
-  <Text
-    bullet="1."
-  >
-    1.
-     
-    item
-  </Text>
-  <View
-    bullet="2."
-    style={
-      Object {
-        "paddingLeft": 20,
-      }
-    }
-  >
-    <Text
-      bullet="·"
-    >
-      ·
-       
+  <View>
+    <Text>
       item
     </Text>
   </View>
