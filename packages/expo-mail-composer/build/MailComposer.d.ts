@@ -7,3 +7,4 @@ export declare function composeAsync(options: ComposeOptions): Promise<ComposeRe
  * - Always returns `true` in the browser and on Android
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+export * from './MailComposer.types';

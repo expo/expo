@@ -14,3 +14,5 @@ export async function composeAsync(options: ComposeOptions): Promise<ComposeResu
 export async function isAvailableAsync(): Promise<boolean> {
   return await ExpoMailComposer.isAvailableAsync();
 }
+
+export * from './MailComposer.types';
