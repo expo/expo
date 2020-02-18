@@ -1,6 +1,6 @@
-import FontObserver from 'fontfaceobserver';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { CodedError } from '@unimodules/core';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
     if (!canUseDOM) {

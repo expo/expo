@@ -51,7 +51,8 @@ export function getTestModules() {
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/LinearGradient'),
-    require('./tests/Facebook')
+    require('./tests/Facebook'),
+    require('./tests/HTML')
   );
 
   if (Platform.OS === 'android') {
@@ -127,7 +128,6 @@ export function getTestModules() {
     modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 

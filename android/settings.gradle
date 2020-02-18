@@ -12,7 +12,6 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
     "abi36_0_0",
     "abi35_0_0",
     "abi34_0_0",
-    "abi33_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")

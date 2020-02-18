@@ -3,10 +3,10 @@ import './environment/logging.fx';
 import './environment/muteWarnings.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
-import { AppRegistry, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
+import { AppRegistry, Platform } from 'react-native';
 import DevAppContainer from './environment/DevAppContainer';
 if (Constants.manifest && typeof Constants.manifest.env === 'object') {
     Object.assign(process.env, Constants.manifest.env);

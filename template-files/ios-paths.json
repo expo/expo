@@ -1,4 +1,8 @@
 {
-  "GoogleService-Info.plist": "ios/Exponent/Supporting/",
-  "bare-expo/ios/BareExpo/GoogleService-Info.plist": "apps/"
+  "paths": {
+    "GoogleService-Info.plist": "ios/Exponent/Supporting/"
+  },
+  "generateOnly": {
+    "bare-expo/ios/BareExpo/GoogleService-Info.plist": "apps/"
+  }
 }

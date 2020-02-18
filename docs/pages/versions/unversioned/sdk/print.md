@@ -3,13 +3,11 @@ title: Print
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-print'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-print`** provides an API for iOS (AirPrint) and Android printing functionality.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

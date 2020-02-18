@@ -3,15 +3,13 @@ title: MediaLibrary
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -62,7 +60,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
@@ -74,7 +72,7 @@ Saves the file at given `localUri` to the user's media library. On **iOS 11+**, 
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 ### `MediaLibrary.getAssetsAsync(options)`
 

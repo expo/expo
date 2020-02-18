@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoIntentLauncher from './ExpoIntentLauncher';
 
 /**

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI33_0_0/EXGL/ABI33_0_0EXGL/ABI33_0_0EXGLObject.h

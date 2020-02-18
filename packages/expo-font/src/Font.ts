@@ -1,12 +1,13 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
+
+import ExpoFontLoader from './ExpoFontLoader';
+import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 import {
   getAssetForSource,
   loadSingleFontAsync,
   fontFamilyNeedsScoping,
   getNativeFontName,
 } from './FontLoader';
-import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};

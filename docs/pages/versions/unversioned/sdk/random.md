@@ -3,13 +3,11 @@ title: Random
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-random'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

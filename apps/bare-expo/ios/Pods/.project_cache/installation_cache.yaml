@@ -394,6 +394,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXHaptics
     SPECS:
       - EXHaptics (8.0.0)
+  EXImageLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      EXImageLoader: 311389058db34474056fe2e893a52953
+    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    FILES:
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
+    PROJECT_NAME: EXImageLoader
+    SPECS:
+      - EXImageLoader (1.0.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -516,16 +526,35 @@ CACHE_KEYS:
       - EXNetwork (2.0.0)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
-      EXNotifications: 42083d7be3b81dc87f399732a97ebffe
-    CHECKSUM: d654494e84df90927cca410ebac178c61553647b
+      EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
+    CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
     FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)
@@ -668,8 +697,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -780,12 +809,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: eecf7d1263b3ce3378ec9d3446115311
-      Release: eecf7d1263b3ce3378ec9d3446115311
+      Debug: 24da9cf02142a099b78f8dc4c1ecf6da
+      Release: 24da9cf02142a099b78f8dc4c1ecf6da
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: afa3e21077b9551248ae89a97600b432
-      Release: afa3e21077b9551248ae89a97600b432
+      Debug: ef1d0d8f7832def44040a5f31253ac75
+      Release: ef1d0d8f7832def44040a5f31253ac75
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

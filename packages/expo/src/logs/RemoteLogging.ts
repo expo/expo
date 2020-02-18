@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import UUID from 'uuid-js';
+import uuidv4 from 'uuid/v4';
 
 import LogSerialization from './LogSerialization';
 
@@ -26,7 +26,7 @@ export type LogErrorData = { message: string; stack: string };
 
 type TransportErrorListener = (event: { error: Error; response?: Response }) => void;
 
-const _sessionId = UUID.create().toString();
+const _sessionId = uuidv4();
 const _logQueue: LogEntry[] = [];
 const _transportEventEmitter = new EventEmitter();
 

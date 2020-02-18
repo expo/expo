@@ -1,5 +1,6 @@
 import { mount } from 'enzyme';
 import React from 'react';
+
 import { LinearGradient } from '..';
 
 it(`renders a complex gradient`, () => {

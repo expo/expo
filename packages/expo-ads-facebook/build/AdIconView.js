@@ -1,6 +1,6 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdIconViewContext } from './withNativeAd';
 export default class AdIconView extends React.Component {
     render() {

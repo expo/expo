@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoSecureStore from './ExpoSecureStore';
 
 export type KeychainAccessibilityConstant = number;

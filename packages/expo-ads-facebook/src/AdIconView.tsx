@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { View } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 
 import { AdIconViewContext, AdIconViewContextValue } from './withNativeAd';
 

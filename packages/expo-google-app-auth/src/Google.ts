@@ -1,8 +1,7 @@
+import { CodedError } from '@unimodules/core';
 import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-
-import { CodedError } from '@unimodules/core';
 
 const isInExpo = Constants.appOwnership === 'expo';
 export type GoogleLogInConfig = {

@@ -103,7 +103,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Image source="https://i.imgur.com/TkIrScD.png" /* @info See below for the styles! */ style={styles.logo} /* @end *//>
+      <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} /* @info See below for the styles! */ style={styles.logo} /* @end *//>
 
       <Text /* @info See below for the styles! */ style={styles.instructions} /* @end */>
         To share a photo from your phone with a friend, just press the button below!

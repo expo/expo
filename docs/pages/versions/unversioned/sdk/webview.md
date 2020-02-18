@@ -3,13 +3,11 @@ title: WebView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-webview'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`react-native-webview`** provides a `WebView` component that renders web content in a native view.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

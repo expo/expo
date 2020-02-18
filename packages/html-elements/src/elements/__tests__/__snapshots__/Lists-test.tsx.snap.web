@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders OL nested in UL 1`] = `
+<ul
+  className="css-reset-4rbku5"
+  style={
+    Object {
+      "listStyleType": "initial",
+    }
+  }
+>
+  <li
+    className="css-reset-4rbku5"
+    style={
+      Object {
+        "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+        "listStyleType": "inherit",
+      }
+    }
+  >
+    item
+  </li>
+  <ol>
+    <li
+      className="css-reset-4rbku5"
+      style={
+        Object {
+          "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+          "listStyleType": "inherit",
+        }
+      }
+    >
+      item
+    </li>
+  </ol>
+</ul>
+`;
+
+exports[`renders UL nested in OL 1`] = `
+<ol>
+  <li
+    className="css-reset-4rbku5"
+    style={
+      Object {
+        "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+        "listStyleType": "inherit",
+      }
+    }
+  >
+    item
+  </li>
+  <ul
+    className="css-reset-4rbku5"
+    style={
+      Object {
+        "listStyleType": "initial",
+      }
+    }
+  >
+    <li
+      className="css-reset-4rbku5"
+      style={
+        Object {
+          "fontFamily": "system-ui,-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Ubuntu,\\"Helvetica Neue\\",sans-serif",
+          "listStyleType": "inherit",
+        }
+      }
+    >
+      item
+    </li>
+  </ul>
+</ol>
+`;
