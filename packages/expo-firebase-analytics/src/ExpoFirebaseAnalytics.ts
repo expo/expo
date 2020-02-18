@@ -1,6 +1,6 @@
-import { Platform } from 'react-native';
 import { NativeModulesProxy, UnavailabilityError, CodedError } from '@unimodules/core';
 import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
+import { Platform } from 'react-native';
 const { ExpoFirebaseAnalytics } = NativeModulesProxy;
 
 if (!ExpoFirebaseAnalytics) {
