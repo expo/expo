@@ -153,7 +153,7 @@ export type RecurrenceRule = {
 
 export { PermissionResponse, PermissionStatus };
 
-type OptionalKeys<T> = {
+export type OptionalKeys<T> = {
   [P in keyof T]?: T[P] | null;
 };
 
