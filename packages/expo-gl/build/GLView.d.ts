@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-declare type GLViewProps = {
+export declare type GLViewProps = {
     /**
      * Called when the OpenGL context is created, with the context object as a parameter. The context
      * object has an API mirroring WebGL's WebGLRenderingContext.
@@ -98,7 +98,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
 declare type WebGLObjectId = any;
-declare class WebGLObject {
+export declare class WebGLObject {
     id: WebGLObjectId;
     constructor(id: WebGLObjectId);
     toString(): string;
