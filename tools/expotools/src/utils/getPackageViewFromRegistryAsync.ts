@@ -34,4 +34,5 @@ async function getPackageViewFromRegistryAsync(packageName: string): Promise<Pac
   return json;
 }
 
+export { PackageViewType }
 export default getPackageViewFromRegistryAsync;
