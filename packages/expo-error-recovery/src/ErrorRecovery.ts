@@ -4,11 +4,15 @@ import './ErrorRecovery.fx';
 
 export const recoveredProps = _getRecoveredProps();
 
-export function setRecoveryProps(props: { [key: string]: any }): void {
+export type Props = {
+  [key: string]: any;
+};
+
+export function setRecoveryProps(props: Props): void {
   setRecoveryPropsToSave(props);
 }
 
-function _getRecoveredProps(): { [key: string]: any } | null {
+function _getRecoveredProps(): Props | null {
   if (ExpoErrorRecovery.recoveredProps) {
     return JSON.parse(ExpoErrorRecovery.recoveredProps);
   }
