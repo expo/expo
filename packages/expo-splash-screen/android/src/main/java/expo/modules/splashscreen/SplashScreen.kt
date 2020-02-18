@@ -39,8 +39,10 @@ object SplashScreen: SingletonModule {
       return failureCallback("'SplashScreen.show' has already been called for this activity.")
     }
 
-    controllers[activity] = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenConfigurator)
-    controllers[activity]!!.showSplashScreen(successCallback)
+    val controller = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenConfigurator)
+    controller.showSplashScreen(successCallback)
+
+    controllers[activity] = controller
   }
 
   /**
@@ -59,7 +61,7 @@ object SplashScreen: SingletonModule {
       return failureCallback("No Native SplashScreen registered for provided activity. First call 'SplashScreen.show' for this activity.")
     }
 
-    controllers[activity]!!.preventAutoHide(successCallback, failureCallback)
+    controllers[activity]?.preventAutoHide(successCallback, failureCallback)
   }
 
   /**
@@ -78,6 +80,6 @@ object SplashScreen: SingletonModule {
       return failureCallback("No Native SplashScreen registered for provided activity. First call 'SplashScreen.show' for this activity.")
     }
 
-    controllers[activity]!!.hideSplashScreen(successCallback, failureCallback)
+    controllers[activity]?.hideSplashScreen(successCallback, failureCallback)
   }
 }

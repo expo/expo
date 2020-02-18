@@ -1,7 +1,7 @@
 {
   "name": "expo-splash-screen",
   "version": "1.0.0",
-  "description": "ExpoSplashScreen standalone module",
+  "description": "Expo module that allows you to show native SplashScreen/LaunchScreen view before your app is ready to display it's content.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -16,7 +16,11 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-splash-screen"
+    "expo-splash-screen",
+    "splash-screen",
+    "splash",
+    "launch-screen",
+    "launch"
   ],
   "repository": {
     "type": "git",
@@ -33,7 +37,8 @@
     "@unimodules/core": "*"
   },
   "dependencies": {
-    "expo-module-scripts": "^1.2.0"
+    "expo-module-scripts": "^1.2.0",
+    "fbemitter": "2.1.1"
   },
   "jest": {
     "preset": "expo-module-scripts/ios"
