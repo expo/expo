@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 
 if (!ExpoFirebaseAnalytics) {
