@@ -85,11 +85,12 @@ export default {
 
     const style = _createWebStyle(fontFamilyName, resource);
     document.head!.appendChild(style);
-    // https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
-    if (navigator.userAgent.includes('Edge')) {
+
+    if (!isFontLoadingListenerSupported()) {
       return;
     }
-    return new FontObserver(fontFamilyName).load();
+
+    return new FontObserver(fontFamilyName, { display: resource.display }).load();
   },
 };
 
@@ -126,4 +127,14 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
     styleElement.appendChild(textNode);
   }
   return styleElement;
+}
+
+function isFontLoadingListenerSupported(): boolean {
+  const { userAgent } = window.navigator;
+  // WebKit is broken https://github.com/bramstein/fontfaceobserver/issues/95
+  const isIOS = !!userAgent.match(/iPad|iPhone/i);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
+  const isEdge = userAgent.includes('Edge');
+  return !isSafari && !isIOS && !isEdge;
 }
