@@ -1,9 +1,11 @@
-// import * as firebase from "firebase/app";
-// // side-effect
-// import "firebase/analytics";
+import { DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
 function getFirebaseModule() {
     try {
-        return require('firebase/app');
+        const firebase = require('firebase/app');
+        if (DEFAULT_APP_OPTIONS && !firebase.apps.length) {
+            firebase.initializeApp(DEFAULT_APP_OPTIONS);
+        }
+        return firebase;
     }
     catch ({ message }) {
         throw new Error('Firebase JS SDK is not installed: ' + message);
