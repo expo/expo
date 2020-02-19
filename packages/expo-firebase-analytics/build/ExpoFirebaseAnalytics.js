@@ -1,10 +1,13 @@
 import { NativeModulesProxy, UnavailabilityError, CodedError } from '@unimodules/core';
-import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
+import Constants from 'expo-constants';
+import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS, getDefaultWebOptions } from 'expo-firebase-core';
 import { Platform } from 'react-native';
+import FirebaseAnalyticsJS from './FirebaseAnalyticsJS';
 const { ExpoFirebaseAnalytics } = NativeModulesProxy;
 if (!ExpoFirebaseAnalytics) {
     console.warn("No native ExpoFirebaseAnalytics module found, are you sure the expo-firebase-analytics's module is linked properly?");
 }
+let pureJSAnalyticsTracker;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
 function callAnalyticsModule(funcName, ...args) {
@@ -22,9 +25,21 @@ function callAnalyticsModule(funcName, ...args) {
     // In that case we show a warning and log the analytics events to the console.
     // The user can disable these by calling `setUnavailabilityLogging(false)`.
     if (DEFAULT_APP_NAME !== '[DEFAULT]') {
+        const defaultWebOptions = getDefaultWebOptions();
+        if (defaultWebOptions && !pureJSAnalyticsTracker) {
+            pureJSAnalyticsTracker = new FirebaseAnalyticsJS(defaultWebOptions, {
+                clientId: Constants.sessionId,
+                strictNativeEmulation: true,
+                appName: Constants.manifest?.name || 'Unnamed Expo project',
+                appVersion: Constants.nativeAppVersion || undefined,
+            });
+        }
+        if (pureJSAnalyticsTracker) {
+            return pureJSAnalyticsTracker[funcName].call(pureJSAnalyticsTracker, ...args);
+        }
         if (isUnavailabilityLoggingEnabled) {
             if (!isUnavailabilityWarningLogged) {
-                console.warn('Firebase Analytics is not available in the Expo client. To test Firebase Analytics create a standalone build or custom client. To suppress this warning use `setUnavailabilityLogging(false)`.');
+                console.warn(`Firebase Analytics is not available in the Expo client. See "https://docs.expo.io/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`);
                 isUnavailabilityWarningLogged = true;
             }
             console.info(`ExpoFirebaseAnalytics.${funcName}: ${JSON.stringify(args)}`);
