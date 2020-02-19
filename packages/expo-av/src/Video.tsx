@@ -21,6 +21,7 @@ import {
   PlaybackSource,
   PlaybackStatus,
   PlaybackStatusToSet,
+  PlaybackNativeSource,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
@@ -45,6 +46,9 @@ export {
   ReadyForDisplayEvent,
   ResizeMode,
   VideoState,
+  PlaybackStatus,
+  PlaybackStatusToSet,
+  PlaybackNativeSource,
 };
 
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
