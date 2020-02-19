@@ -39,7 +39,7 @@ class MainScreen extends React.Component<Props> {
 
   render() {
     return (
-      <TouchableOpacity style={styles.flex} onPress={this.onPress}>
+      <TouchableOpacity style={styles.flex} onPress={this.onPress} activeOpacity={0.5}>
         <View style={styles.container}>
           <SharedElement id="image">
             <Image style={styles.image} source={require('../../assets/images/large-example.jpg')} />
@@ -128,8 +128,9 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 200,
-    height: 160,
-    resizeMode: 'contain',
+    height: 200,
+    borderRadius: 100,
+    resizeMode: 'cover',
   },
   detailContainer: {
     flex: 1,

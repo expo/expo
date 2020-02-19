@@ -4,6 +4,7 @@
 //
 
 #import "RNSharedElementStyle.h"
+#import <React/RCTView.h>
 
 @implementation RNSharedElementStyle
 {
@@ -14,6 +15,38 @@
 
 - (instancetype)init
 {
+    return self;
+}
+
+- (instancetype)initWithView:(UIView*) view
+{
+    _view = view;
+    _size = view.bounds.size;
+    _transform = [RNSharedElementStyle getAbsoluteViewTransform:view];
+    
+    // Set base props from style
+    CALayer* layer = view.layer;
+    _opacity = layer.opacity;
+    _cornerRadius = layer.cornerRadius;
+    _borderWidth = layer.borderWidth;
+    _borderColor = layer.borderColor ? [UIColor colorWithCGColor:layer.borderColor] : [UIColor clearColor];
+    _backgroundColor = layer.backgroundColor ? [UIColor colorWithCGColor:layer.backgroundColor] : [UIColor clearColor];
+    _shadowColor = layer.shadowColor ? [UIColor colorWithCGColor:layer.shadowColor] : [UIColor clearColor];
+    _shadowOffset = layer.shadowOffset;
+    _shadowRadius = layer.shadowRadius;
+    _shadowOpacity = layer.shadowOpacity;
+    
+    // On RN60 and beyond, certain styles are not immediately applied to the view/layer
+    // when a borderWidth is set on the view. Therefore, as a fail-safe we also try to
+    // get the props from the RCTView directly, when possible.
+    if ([view isKindOfClass:[RCTView class]]) {
+        RCTView* rctView = (RCTView*) view;
+        _cornerRadius = rctView.borderRadius;
+        _borderColor = rctView.borderColor ? [UIColor colorWithCGColor:rctView.borderColor] : [UIColor clearColor];
+        _borderWidth = rctView.borderWidth >= 0.0f ? rctView.borderWidth : 0.0f;
+        _backgroundColor = rctView.backgroundColor ? rctView.backgroundColor : [UIColor clearColor];
+    }
+        
     return self;
 }
 
