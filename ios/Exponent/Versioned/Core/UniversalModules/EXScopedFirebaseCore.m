@@ -46,9 +46,7 @@
     if (!protectedAppNames[name] && (!options || ![name isEqualToString:appName])) {
       [[FIRApp appNamed:name] deleteApp:^(BOOL success) {
         if (!success) {
-          NSLog(@"Failed to delete Firebase app: %@", name);
-        } else {
-          NSLog(@"Deleted Firebase app: %@", name);
+          UMLogWarn(@"Failed to delete Firebase app: %@", name);
         }
       }];
     }
@@ -60,7 +58,7 @@
 
 # pragma mark - Overriden methods
 
-- (BOOL) isAppAccessible:(nonnull NSString*)name
+- (BOOL)isAppAccessible:(nonnull NSString *)name
 {
   // Deny access to the protected default app on the Expo client
   if (_protectedAppNames && _protectedAppNames[name]) {
@@ -79,22 +77,28 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary*)googleServicesFileFromConstantsManifest:(nullable id<UMConstantsInterface>)constants
++ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<UMConstantsInterface>)constants
 {
   // load GoogleService-Info.plist from manifest
-  if (constants == nil) return nil;
-  NSDictionary* manifest = constants.constants[@"manifest"];
-  NSDictionary* ios = manifest ? manifest[@"ios"] : nil;
-  NSString* googleServicesFile = ios ? ios[@"googleServicesFile"] : nil;
-  if (!googleServicesFile) return nil;
-  NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
-  NSError* error;
-  NSDictionary* plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
-  if (error) NSLog(@"Invalid googleServicesFile: %@", error);
-  return plist;
+  @try {
+    if (constants == nil) return nil;
+    NSDictionary* manifest = constants.constants[@"manifest"];
+    NSDictionary* ios = manifest ? manifest[@"ios"] : nil;
+    NSString* googleServicesFile = ios ? ios[@"googleServicesFile"] : nil;
+    if (!googleServicesFile) return nil;
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
+    NSError* error;
+    NSDictionary* plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
+    if (error) UMLogWarn(@"Invalid googleServicesFile: %@", error);
+    return plist;
+  }
+  @catch(NSException* exception) {
+    UMLogWarn(@"Invalid googleServicesFile: %@", exception);
+    return nil;
+  }
 }
 
-+ (nullable FIROptions*) optionsWithGoogleServicesFile:(nullable NSDictionary*)plist
++ (nullable FIROptions *)optionsWithGoogleServicesFile:(nullable NSDictionary *)plist
 {
   if (!plist) return nil;
   

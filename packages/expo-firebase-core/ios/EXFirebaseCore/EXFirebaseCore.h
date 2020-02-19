@@ -6,10 +6,10 @@
 
 @interface EXFirebaseCore : UMExportedModule<UMFirebaseCoreInterface>
 
-- (nonnull instancetype) init;
-- (nonnull instancetype) initWithAppName:(nonnull NSString*)name options:(nullable FIROptions*)options;
+- (nonnull instancetype)init;
+- (nonnull instancetype)initWithAppName:(nonnull NSString *)name options:(nullable FIROptions *)options;
 
-- (BOOL) isAppAccessible:(nonnull NSString*)name;
+- (BOOL)isAppAccessible:(nonnull NSString *)name;
 
 - (nullable FIRApp *)defaultApp;
 

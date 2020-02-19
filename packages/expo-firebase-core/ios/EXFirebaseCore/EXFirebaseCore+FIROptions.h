@@ -7,7 +7,6 @@
 @interface EXFirebaseCore (FIROptions)
 
 + (nonnull NSDictionary *)firOptionsToJSON:(nonnull FIROptions *)options;
-+ (nullable FIROptions *)firOptionsWithJSON:(nullable NSDictionary *)json;
-+ (BOOL) firOptionsIsEqualTo:(nullable FIROptions*)firebaseOptions compareTo:(nullable FIROptions*)compareTo;
++ (BOOL)areFirOptions:(nullable FIROptions *)options1 equalTo:(nullable FIROptions *)options2;
 
 @end

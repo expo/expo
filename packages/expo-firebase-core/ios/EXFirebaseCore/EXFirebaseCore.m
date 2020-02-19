@@ -4,46 +4,42 @@
 #import <EXFirebaseCore/EXFirebaseCore.h>
 #import <EXFirebaseCore/EXFirebaseCore+FIROptions.h>
 
-#define DEFAULT_APP_NAME_IOS @"__FIRAPP_DEFAULT"
-#define DEFAULT_APP_NAME_UNIVERSAL @"[DEFAULT]"
+static NSString * const DEFAULT_APP_NAME_IOS = @"__FIRAPP_DEFAULT";
+static NSString * const DEFAULT_APP_NAME_UNIVERSAL = @"[DEFAULT]";
 
 @interface EXFirebaseCore ()
-
+@property (nonatomic, strong) NSString *appName;
+@property (nonatomic, strong) FIROptions *appOptions;
 @end
 
-@implementation EXFirebaseCore {
-  NSString* _appName;
-  FIROptions* _appOptions;
-}
+@implementation EXFirebaseCore
 
-UM_REGISTER_MODULE();
-
-+ (const NSString *)exportedModuleName
-{
-  return @"ExpoFirebaseCore";
-}
+UM_EXPORT_MODULE(ExpoFirebaseCore);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(UMFirebaseCoreInterface)];
 }
 
-+ (NSString*) toUniversalAppName:(NSString*)name
++ (NSString *)toUniversalAppName:(NSString *)name
 {
   return [name isEqualToString:DEFAULT_APP_NAME_IOS]
-    ? DEFAULT_APP_NAME_UNIVERSAL
-    : name;
+  ? DEFAULT_APP_NAME_UNIVERSAL
+  : name;
 }
 
-+ (NSString*) fromUniversalAppName:(NSString*)name
++ (NSString *)fromUniversalAppName:(NSString *)name
 {
   return [name isEqualToString:DEFAULT_APP_NAME_UNIVERSAL]
-    ? DEFAULT_APP_NAME_IOS
-    : name;
+  ? DEFAULT_APP_NAME_IOS
+  : name;
 }
 
-- (nonnull instancetype) init
+- (nonnull instancetype)init
 {
+  // Base initialisation of the "default" Firebase App.
+  // This will initialize firebase when a config exists, and when
+  // Firebase hasn't already been initialized.
   if (self = [super init]) {
     _appName = DEFAULT_APP_NAME_IOS;
     NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
@@ -59,7 +55,7 @@ UM_REGISTER_MODULE();
   return self;
 }
 
-- (nonnull instancetype) initWithAppName:(nonnull NSString*)name options:(nullable FIROptions*)options
+- (nonnull instancetype)initWithAppName:(nonnull NSString *)name options:(nullable FIROptions *)options
 {
   if (self = [super init]) {
     _appName = name;
@@ -70,9 +66,7 @@ UM_REGISTER_MODULE();
     // is the same.
     [self.class updateAppWithOptions:options name:name completion:^(BOOL success) {
       if (!success) {
-        NSLog(@"Failed to initialize Firebase app: %@", name);
-      } else {
-        //NSLog(@"Initialized Firebase app: %@", name);
+        UMLogWarn(@"Failed to initialize Firebase app: %@", name);
       }
     }];
   }
@@ -92,7 +86,7 @@ UM_REGISTER_MODULE();
   return constants;
 }
 
-- (BOOL) isAppAccessible:(nonnull NSString*)name
+- (BOOL)isAppAccessible:(nonnull NSString *)name
 {
   return YES;
 }
@@ -102,7 +96,7 @@ UM_REGISTER_MODULE();
   return [FIRApp appNamed:_appName];
 }
 
-+ (void) updateAppWithOptions:(nullable FIROptions*)options name:(nonnull NSString*)name completion:(nonnull FIRAppVoidBoolCallback)completion
++ (void)updateAppWithOptions:(nullable FIROptions *)options name:(nonnull NSString *)name completion:(nonnull FIRAppVoidBoolCallback)completion
 {
   FIRApp* app = [FIRApp appNamed:name];
   if (!options) {
@@ -112,7 +106,7 @@ UM_REGISTER_MODULE();
     }
   } else {
     if (app) {
-      if (![self.class firOptionsIsEqualTo:app.options compareTo:options]) {
+      if (![self.class areFirOptions:app.options equalTo:options]) {
         [app deleteApp:^(BOOL success) {
           [FIRApp configureWithName:name options:options];
           completion(YES);
