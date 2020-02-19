@@ -16,6 +16,7 @@ import org.unimodules.core.ModuleRegistry;
 import expo.modules.firebase.core.FirebaseCoreService;
 import expo.modules.firebase.core.FirebaseCoreOptions;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -116,14 +117,37 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
       map.put(name, value);
   }
 
+  private static JSONObject getClientFromGoogleServices(JSONObject googleServicesFile, List<String> preferredPackageNames) {
+    JSONArray clients = (googleServicesFile != null) ? googleServicesFile.optJSONArray("client") : null;
+    if (clients == null) {
+      return null;
+    }
+
+    // Find the client and prefer the ones that are in the preferredPackageNames list.
+    // Later in the list means higher priority.
+    JSONObject client = null;
+    int clientPreferredPackageNameIndex = -1;
+    for (int i = 0; i < clients.length(); i++) {
+      JSONObject possibleClient = clients.optJSONObject(i);
+      if (possibleClient != null) {
+        String packageName = getJSONStringByPath(possibleClient, "client_info.android_client_info.package_name");
+        int preferredPackageNameIndex = (packageName != null) ? preferredPackageNames.indexOf(packageName) : -1;
+        if ((client == null) || (preferredPackageNameIndex > clientPreferredPackageNameIndex)) {
+          client = possibleClient;
+          clientPreferredPackageNameIndex = preferredPackageNameIndex;
+        }
+      }
+    }
+    return client;
+  }
+
   private static FirebaseOptions getOptionsFromManifest(JSONObject manifest) {
     try {
-      JSONObject android = manifest.has("android") ? manifest.getJSONObject("android") : null;
-      String googleServicesFileString = ((android != null) && android.has("googleServicesFile"))
-          ? android.getString("googleServicesFile")
-          : null;
+      JSONObject android = manifest.optJSONObject("android");
+      String googleServicesFileString = (android != null) ? android.optString("googleServicesFile", null) : null;
       JSONObject googleServicesFile = (googleServicesFileString != null) ? new JSONObject(googleServicesFileString)
-          : null;
+        : null;
+      String packageName = (android != null) ? android.optString("package") : "";
 
       // Read project-info settings
       // https://developers.google.com/android/guides/google-services-plugin
@@ -133,29 +157,26 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
       addJSONStringToMap(googleServicesFile, json, "project_info.firebase_url", "databaseURL");
       addJSONStringToMap(googleServicesFile, json, "project_info.storage_bucket", "storageBucket");
 
-      // Read client info settings. The client is resolved as follows:
-      // 1. Use client with the name "host.exp.exponent" when possible
-      // 2. Use first encountered client
-      JSONArray clients = googleServicesFile.getJSONArray("client");
-      JSONObject client = (clients.length() > 0) ? clients.getJSONObject(0) : null;
-      for (int i = 0; i < clients.length(); i++) {
-        JSONObject c = clients.getJSONObject(i);
-        String packageName = getJSONStringByPath(c, "client_info.android_client_info.package_name");
-        if ((packageName != null) && packageName.equals("host.exp.exponent")) {
-          client = c;
-          break;
-        }
-      }
+      // Get the client that matches this app. When the Expo Client package was explicitely
+      // configured in google-services.json, then use that app when possible.
+      // Otherwise, use the client that matches the package_name specified in app.json.
+      // If none of those are found, use first encountered client in google-services.json.
+      JSONObject client = getClientFromGoogleServices(googleServicesFile, Arrays.asList(
+        packageName,
+        "host.exp.exponent"
+      ));
+
+      // Read properties from client
       addJSONStringToMap(client, json, "client_info.mobilesdk_app_id", "appId");
       addJSONStringToMap(client, json, "services.analytics_service.analytics_property.tracking_id", "trackingId");
-      JSONArray apiKey = client.getJSONArray("api_key");
+      JSONArray apiKey = (client != null) ? client.optJSONArray("api_key") : null;
       if ((apiKey != null) && (apiKey.length() > 0)) {
         addJSONStringToMap(apiKey.getJSONObject(0), json, "current_key", "apiKey");
       }
 
-      if (!json.containsKey("appId"))
-        return null;
-      return FirebaseCoreOptions.fromJSON(json);
+      // The appId is the best indicator on whether all required info was available
+      // and parsed correctly.
+      return json.containsKey("appId") ? FirebaseCoreOptions.fromJSON(json) : null;
     } catch (Exception err) {
       return null;
     }
