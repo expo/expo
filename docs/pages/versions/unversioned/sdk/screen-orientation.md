@@ -3,6 +3,9 @@ title: ScreenOrientation
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/ScreenOrientation'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
 
 ![Portrait orientation in different physical orientations](/static/images/screen-orientation-portrait.png)
@@ -11,15 +14,11 @@ Screen Orientation is defined as the orientation in which graphics are painted o
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+<InstallSection packageName="expo-screen-orientation" />
 
 ## API
 

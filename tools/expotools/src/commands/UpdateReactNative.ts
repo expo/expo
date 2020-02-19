@@ -18,6 +18,9 @@ const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
+  await spawnAsync('git', ['fetch'], {
+    cwd: REACT_NATIVE_SUBMODULE_PATH,
+  });
   await spawnAsync('git', ['checkout', checkoutRef], {
     cwd: REACT_NATIVE_SUBMODULE_PATH,
   });

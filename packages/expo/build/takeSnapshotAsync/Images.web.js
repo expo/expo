@@ -1,5 +1,5 @@
-import { getSourceAndEncodeAsync, formatDataAsUrl, isDataUrl, getMimeTypeFromSource, } from './Utils.web';
 import { batchProcessAllSourcesAsync } from './ProcessSources.web';
+import { getSourceAndEncodeAsync, formatDataAsUrl, isDataUrl, getMimeTypeFromSource, } from './Utils.web';
 export async function processAllImagesAsync(element) {
     if (!(element instanceof HTMLElement)) {
         return;

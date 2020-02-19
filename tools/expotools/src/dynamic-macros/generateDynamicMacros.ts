@@ -108,7 +108,8 @@ async function copyTemplateFileAsync(
   source,
   dest,
   templateSubstitutions,
-  configuration
+  configuration,
+  isOptional
 ): Promise<void> {
   let [currentSourceFile, currentDestFile] = await Promise.all([
     readExistingSourceAsync(source),
@@ -132,7 +133,11 @@ async function copyTemplateFileAsync(
   }
 
   if (currentSourceFile !== currentDestFile) {
-    await fs.writeFile(dest, currentSourceFile, 'utf8');
+    try {
+      await fs.writeFile(dest, currentSourceFile, 'utf8');
+    } catch (error) {
+      if (!isOptional) throw error;
+    }
   }
 }
 
@@ -152,7 +157,7 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   ).readAsync() as unknown as AndroidPaths;
   const promises: Promise<any>[] = [];
   const skipTemplates: Array<string> = args.skipTemplates || [];
-  const templatePaths = { ...templatePathsFile.paths, ...templateFilesPath.generateOnly };
+  const templatePaths = { ...templatePathsFile.paths, ...templatePathsFile.generateOnly };
   for (const [source, dest] of Object.entries(templatePaths)) {
     if (skipTemplates.includes(source)){
       console.log(
@@ -162,10 +167,12 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
       continue;
     }
 
+    const isOptional = !!templatePathsFile.generateOnly[source];
     console.log(
-      'Rendering %s from template %s ...',
+      'Rendering %s from template %s %s...',
       chalk.cyan(path.join(EXPO_DIR, dest as string, source)),
-      chalk.cyan(path.join(templateFilesPath, platform, source))
+      chalk.cyan(path.join(templateFilesPath, platform, source)),
+      isOptional ? chalk.yellow('(Optional) ') : ''
     );
 
     promises.push(
@@ -173,7 +180,8 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
         path.join(templateFilesPath, platform, source),
         path.join(EXPO_DIR, dest as string, source),
         templateSubstitutions,
-        args.configuration
+        args.configuration,
+        isOptional
       )
     );
   }

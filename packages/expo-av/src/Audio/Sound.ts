@@ -1,5 +1,5 @@
 import { EventEmitter } from '@unimodules/core';
-import { throwIfAudioIsDisabled } from './AudioAvailability';
+
 import {
   Playback,
   PlaybackMixin,
@@ -12,6 +12,7 @@ import {
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
+import { throwIfAudioIsDisabled } from './AudioAvailability';
 
 type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {

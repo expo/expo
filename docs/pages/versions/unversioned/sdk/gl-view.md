@@ -3,19 +3,17 @@ title: GLView
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-gl'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-gl`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+<InstallSection packageName="expo-gl" />
 
 ## API
 

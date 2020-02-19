@@ -1,6 +1,6 @@
 import { CodedError, EventEmitter, UnavailabilityError } from '@unimodules/core';
-import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 import { AppleAuthenticationOperation, } from './AppleAuthentication.types';
+import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 export async function isAvailableAsync() {
     if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.isAvailableAsync) {
         return false;

@@ -121,26 +121,29 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
+  if ([[localUri pathExtension] length] == 0) {
+    reject(@"E_NO_FILE_EXTENSION", @"Could not get the file's extension.", nil);
+    return;
+  }
   
+  PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
   if (assetType == PHAssetMediaTypeUnknown || assetType == PHAssetMediaTypeAudio) {
     reject(@"E_UNSUPPORTED_ASSET", @"This file type is not supported yet", nil);
     return;
   }
   
   NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
-  
   if (assetUrl == nil) {
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
+  
   if (!([_fileSystem permissionsForURI:assetUrl] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }
   
   __block PHObjectPlaceholder *assetPlaceholder;
-  
   [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
     PHAssetChangeRequest *changeRequest = assetType == PHAssetMediaTypeVideo
                                         ? [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:assetUrl]
@@ -166,6 +169,12 @@ UM_EXPORT_METHOD_AS(saveToLibraryAsync,
   if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryAddUsageDescription"] == nil) {
     return reject(@"E_NO_PERMISSIONS", @"This app is missing NSPhotoLibraryAddUsageDescription. Add this entry to your bundle's Info.plist.", nil);
   }
+  
+  if ([[localUri pathExtension] length] == 0) {
+    reject(@"E_NO_FILE_EXTENSION", @"Could not get the file's extension.", nil);
+    return;
+  }
+  
   PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
   NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
   UM_WEAKIFY(self)

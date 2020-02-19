@@ -3,19 +3,17 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-barcode-scanner'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+<InstallSection packageName="expo-barcode-scanner" />
 
 ## Supported formats
 

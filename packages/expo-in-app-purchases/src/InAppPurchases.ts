@@ -1,5 +1,7 @@
-import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
+import { Platform } from 'react-native';
+
+import ExpoInAppPurchases from './ExpoInAppPurchases';
 import {
   IAPErrorCode,
   IAPItemType,
@@ -8,7 +10,6 @@ import {
   InAppPurchase,
   InAppPurchaseState,
 } from './InAppPurchases.types';
-import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
   ALREADY_CONNECTED: 'Already connected to App Store',

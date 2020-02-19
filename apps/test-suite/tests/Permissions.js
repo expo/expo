@@ -25,9 +25,19 @@ export function test(t) {
         t.expect(notificationsResultKeys).toContain('status');
         t.expect(notificationsResultKeys).toContain('expires');
         if (Platform.OS === 'ios') {
-          t.expect(notificationsResultKeys).toContain('allowsSound');
-          t.expect(notificationsResultKeys).toContain('allowsAlert');
-          t.expect(notificationsResultKeys).toContain('allowsBadge');
+          // TODO: Remove once we promote `expo-notifications` to a stable unimodule (and integrate into Expo client)
+          if (notificationsResultKeys.includes('ios')) {
+            // expo-notifications handled permissions
+            const platformResultKeys = Object.keys(notificationsResult.ios);
+            t.expect(platformResultKeys).toContain('allowsSound');
+            t.expect(platformResultKeys).toContain('allowsAlert');
+            t.expect(platformResultKeys).toContain('allowsBadge');
+          } else {
+            // expo-permissions handled permissions
+            t.expect(notificationsResultKeys).toContain('allowsSound');
+            t.expect(notificationsResultKeys).toContain('allowsAlert');
+            t.expect(notificationsResultKeys).toContain('allowsBadge');
+          }
         }
       });
     });
@@ -50,9 +60,19 @@ export function test(t) {
         t.expect(notificationsResultKeys).toContain('status');
         t.expect(notificationsResultKeys).toContain('expires');
         if (Platform.OS === 'ios') {
-          t.expect(notificationsResultKeys).toContain('allowsSound');
-          t.expect(notificationsResultKeys).toContain('allowsAlert');
-          t.expect(notificationsResultKeys).toContain('allowsBadge');
+          // TODO: Remove once we promote `expo-notifications` to a stable unimodule (and integrate into Expo client)
+          if (notificationsResultKeys.includes('ios')) {
+            // expo-notifications handled permissions
+            const platformResultKeys = Object.keys(notificationsResult.ios);
+            t.expect(platformResultKeys).toContain('allowsSound');
+            t.expect(platformResultKeys).toContain('allowsAlert');
+            t.expect(platformResultKeys).toContain('allowsBadge');
+          } else {
+            // expo-permissions handled permissions
+            t.expect(notificationsResultKeys).toContain('allowsSound');
+            t.expect(notificationsResultKeys).toContain('allowsAlert');
+            t.expect(notificationsResultKeys).toContain('allowsBadge');
+          }
         }
       });
 

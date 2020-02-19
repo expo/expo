@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <service
-            android:name=".tokens.FirebaseTokenListenerService"
+            android:name=".FirebaseListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

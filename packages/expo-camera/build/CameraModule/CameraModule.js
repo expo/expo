@@ -3,8 +3,8 @@ import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
+import { FacingModeToCameraType, PictureSizes } from './constants';
 export { ImageType, CameraType };
 const VALID_SETTINGS_KEYS = [
     'autoFocus',

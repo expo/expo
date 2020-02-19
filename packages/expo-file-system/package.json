@@ -35,7 +35,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "uuid-js": "^0.7.5"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0",

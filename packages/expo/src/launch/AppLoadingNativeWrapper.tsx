@@ -1,4 +1,5 @@
 import React from 'react';
+
 import * as SplashScreen from './SplashScreen';
 
 type Props = {

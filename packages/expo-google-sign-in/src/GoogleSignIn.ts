@@ -1,11 +1,10 @@
-import Constants from 'expo-constants';
 import { UnavailabilityError } from '@unimodules/core';
+import Constants from 'expo-constants';
 import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
-import GoogleUser from './GoogleUser';
-
 import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
+import GoogleUser from './GoogleUser';
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 

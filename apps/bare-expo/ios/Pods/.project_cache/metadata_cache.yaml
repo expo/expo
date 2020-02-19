@@ -30,10 +30,6 @@ EXApplication:
   LABEL: EXApplication
   PROJECT_PATH: EXApplication.xcodeproj
   UUID: 2C391225329DE46C6566ED1ADF52F10D
-EXAppLoaderProvider:
-  LABEL: EXAppLoaderProvider
-  PROJECT_PATH: EXAppLoaderProvider.xcodeproj
-  UUID: BCF55F45F804FC2D6BC57983597F3174
 EXAV:
   LABEL: EXAV
   PROJECT_PATH: EXAV.xcodeproj
