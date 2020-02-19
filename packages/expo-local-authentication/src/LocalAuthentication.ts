@@ -9,7 +9,7 @@ import {
   LocalAuthenticationResult,
 } from './LocalAuthentication.types';
 
-export { AuthenticationType, LocalAuthenticationResult };
+export { AuthOptions, AuthenticationType, LocalAuthenticationResult };
 
 export async function hasHardwareAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.hasHardwareAsync) {
