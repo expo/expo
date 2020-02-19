@@ -3,8 +3,8 @@ title: Svg
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-svg'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 **`react-native-svg`** allows you to use SVGs in your app, with support for interactivity and animation.
@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install react-native-svg`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [react-native-svg installation instructions](https://github.com/react-native-community/react-native-svg).
+<InstallSection packageName="react-native-svg" href="https://github.com/react-native-community/react-native-svg#with-react-native-cli" />
 
 ## API
 

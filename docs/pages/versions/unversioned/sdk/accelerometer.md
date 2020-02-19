@@ -3,6 +3,7 @@ title: Accelerometer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection packageName="expo-sensors" />
 
 ## Example Usage
 

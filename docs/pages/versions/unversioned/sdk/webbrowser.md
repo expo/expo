@@ -3,8 +3,8 @@ title: WebBrowser
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-web-browser'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
+<InstallSection packageName="expo-web-browser" />
 
 ## Usage
 

@@ -3,8 +3,8 @@ title: MapView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 **`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Client app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-maps`. In bare apps, also follow the [react-native-maps linking and configuration instructions](https://github.com/react-native-community/react-native-maps).
+<InstallSection packageName="react-native-maps" href="https://github.com/react-native-community/react-native-maps" />
 
 ## Usage
 

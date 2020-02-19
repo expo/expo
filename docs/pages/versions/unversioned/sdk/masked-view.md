@@ -3,6 +3,7 @@ title: MaskedView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-masked-view'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`@react-native-community/masked-view`** provides a masked view which only displays the pixels that overlap with the view rendered in its mask element.
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install @react-native-community/masked-view`. In bare apps, make sure you also follow the [linking instructions](https://github.com/react-native-community/react-native-masked-view#getting-started).
+<InstallSection packageName="@react-native-community/masked-view" href="https://github.com/react-native-community/react-native-masked-view#getting-started" />
 
 ## Usage
 

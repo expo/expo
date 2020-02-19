@@ -3,6 +3,7 @@ title: AppAuth
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -19,7 +20,7 @@ Currently, this module only supports on Android, and iOS. Web support is planned
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth).
+<InstallSection packageName="expo-app-auth" />
 
 ## Usage
 

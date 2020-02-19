@@ -13,7 +13,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in). For a more in-depth guide, check out this [blog post](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)!
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
 
 ## Configuration
 

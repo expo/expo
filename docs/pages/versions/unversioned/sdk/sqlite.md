@@ -3,6 +3,7 @@ title: SQLite
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sqlite'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-sqlite`** gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
@@ -13,7 +14,7 @@ An [example to do list app](https://github.com/expo/sqlite-example) is available
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sqlite`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sqlite).
+<InstallSection packageName="expo-sqlite" />
 
 ## API
 

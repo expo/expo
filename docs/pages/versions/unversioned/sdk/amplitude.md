@@ -3,6 +3,7 @@ title: Amplitude
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-analytics-amplitude`** provides access to [Amplitude](https://amplitude.com/) mobile analytics which allows you track and log various events and data. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-analytics-amplitude`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).
+<InstallSection packageName="expo-analytics-amplitude" />
 
 ## API
 

@@ -3,6 +3,7 @@ title: LinearGradient
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-linear-gradient'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-linear-gradient`** provides a React component that renders a gradient view.
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-linear-gradient`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-linear-gradient).
+<InstallSection packageName="expo-linear-gradient" />
 
 ## Usage
 
