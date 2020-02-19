@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionResponse } from './Camera.types';
+import { CapturedPicture, NativeProps, PictureOptions, Props, RecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, MountError } from './Camera.types';
 export default class Camera extends React.Component<Props> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
@@ -131,3 +131,4 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 }, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+export { CapturedPicture, NativeProps, PictureOptions, Props, RecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, MountError, };
