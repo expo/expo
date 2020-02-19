@@ -14,6 +14,17 @@ import {
   CoolDownResult,
 } from './WebBrowser.types';
 
+export {
+  OpenBrowserOptions,
+  AuthSessionResult,
+  CustomTabsBrowsersResults,
+  BrowserResult,
+  RedirectResult,
+  MayInitWithUrlResult,
+  WarmUpResult,
+  CoolDownResult,
+};
+
 const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
   defaultBrowserPackage: undefined,
   preferredBrowserPackage: undefined,

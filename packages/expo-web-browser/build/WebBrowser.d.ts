@@ -1,4 +1,5 @@
-import { OpenBrowserOptions, AuthSessionResult, CustomTabsBrowsersResults, BrowserResult, MayInitWithUrlResult, WarmUpResult, CoolDownResult } from './WebBrowser.types';
+import { OpenBrowserOptions, AuthSessionResult, CustomTabsBrowsersResults, BrowserResult, RedirectResult, MayInitWithUrlResult, WarmUpResult, CoolDownResult } from './WebBrowser.types';
+export { OpenBrowserOptions, AuthSessionResult, CustomTabsBrowsersResults, BrowserResult, RedirectResult, MayInitWithUrlResult, WarmUpResult, CoolDownResult, };
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults>;
 export declare function warmUpAsync(browserPackage?: string): Promise<WarmUpResult>;
 export declare function mayInitWithUrlAsync(url: string, browserPackage?: string): Promise<MayInitWithUrlResult>;
