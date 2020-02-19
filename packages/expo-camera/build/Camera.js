@@ -3,6 +3,7 @@ import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 // TODO: Bacon: Fix multiplatform
@@ -234,4 +235,5 @@ Camera.defaultProps = {
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
 export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export { PermissionStatus, };
 //# sourceMappingURL=Camera.js.map

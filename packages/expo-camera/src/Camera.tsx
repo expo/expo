@@ -11,6 +11,11 @@ import {
   Props,
   RecordingOptions,
   PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  BarCodeScanningResult,
+  FaceDetectionResult,
+  MountError,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
@@ -308,3 +313,17 @@ export default class Camera extends React.Component<Props> {
 }
 
 export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+
+export {
+  CapturedPicture,
+  NativeProps,
+  PictureOptions,
+  Props,
+  RecordingOptions,
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  BarCodeScanningResult,
+  FaceDetectionResult,
+  MountError,
+};

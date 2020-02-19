@@ -1,5 +1,9 @@
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
 export type PictureOptions = {
   quality?: number;
@@ -79,4 +83,4 @@ export type NativeProps = {
   useCamera2Api?: boolean;
 };
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionExpiration };
