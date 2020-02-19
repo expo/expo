@@ -3,17 +3,16 @@ title: WebView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-webview'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`react-native-webview`** provides a `WebView` component that renders web content in a native view.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-webview`. In bare apps, also follow the [react-native-webview linking and configuration instructions](https://github.com/react-native-community/react-native-webview/blob/master/docs/Getting-Started.md#react-native-webview-getting-started-guide).
+<InstallSection packageName="react-native-webview" href="https://github.com/react-native-community/react-native-webview/blob/master/docs/Getting-Started.md#react-native-webview-getting-started-guide" />
 
 ## Usage
 

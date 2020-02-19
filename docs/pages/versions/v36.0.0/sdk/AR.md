@@ -3,17 +3,14 @@ title: AR
 sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AR.ts'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 > ARCore is not yet supported. This library is iOS only for now.
 
 Enables the creation of 3D Augmented Reality scenes with ARKit for iOS. This library is generally used with [expo-three-ar](https://github.com/expo/expo-three-ar) to generate a camera, and manage a 3D scene.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ❌             | ❌               | ✅         | ❌            | ❌  |
+<PlatformsSection ios />
 
 ## Installation
 
