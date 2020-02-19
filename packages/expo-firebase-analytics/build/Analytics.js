@@ -148,7 +148,7 @@ export async function setUserProperties(properties) {
  *
  * Firebase Analytics is not available on the Expo client and therefore
  * logs the requests to the console for development purposes. To test
- * Firebase Analytics, create a stand-alone build or custom client.
+ * Firebase Analytics, create a standalone build or custom client.
  * Use this function to suppress the warning and log messages.
  *
  * @param properties key/value set of user properties
@@ -157,6 +157,6 @@ export function setUnavailabilityLogging(isEnabled) {
     if (!ExpoFirebaseAnalytics.setUnavailabilityLogging) {
         throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
     }
-    return ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
+    ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
 }
 //# sourceMappingURL=Analytics.js.map
