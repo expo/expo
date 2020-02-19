@@ -3,15 +3,13 @@ title: Firebase
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-core'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-firebase-core`** ensures that native Google Firebase features can be used in your app.
+This module provides access to the Firebase configuration and performs initialisation
+of the native Firebase App.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅              | ✅                | ✅          | ✅             | ✅   |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -20,9 +18,11 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Configuration
 
-To use this package, the Firebase configuration needs to be added to your app.
-[Please follow this guide on how to configure Native Firebase.](../../guides/setup-native-firebase)
+To use this package, Firebase needs to be configured for your app.
+[Please follow this guide on how to configure native Firebase.](../../guides/setup-native-firebase)
 
+
+> No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
 
 ## API
 
@@ -36,12 +36,22 @@ import * as FirebaseCore from 'expo-firebase-core';
 
 ### `FirebaseCore.DEFAULT_APP_NAME`
 
-Name of the default Firebase-app. In the Expo client this returns the name of a "sandboxed" firebase app for your project.
-In most other cases this returns the name `[DEFAULT]`.
+Name of the default Firebase app (e.g. `[DEFAULT]`).
+
+On the Expo Client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
 
 ### `FirebaseCore.DEFAULT_APP_OPTIONS`
 
-Object containing the firebase options with which the default app was initialized. If no google services configuration was provided, `undefined` is returned.
+Object containing the firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
+
+The options are read from the following files and app.json keys.
+
+| Platform | File                       | App.json key                 |
+| -------- | -------------------------- | ---------------------------- |
+| iOS      | `GoogleService-Info.plist` | `ios.googleServicesFile`     |
+| Android  | `google-services.json`     | `android.googleServicesFile` |
+| Web      |                            | `web.config.firebase`        |
+
 
 #### Example
 
