@@ -14,13 +14,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.exifinterface.media.ExifInterface;
-
 import android.util.Base64;
-import android.webkit.MimeTypeMap;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -49,12 +43,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
+
 public class ImagePickerModule extends ExportedModule implements ActivityEventListener {
 
   public static final String TAG = "ExponentImagePicker";
-  private static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
+  private static final String ERR_MISSING_ACTIVITY = "ERR_MISSING_ACTIVITY";
   private static final String MISSING_ACTIVITY_MESSAGE = "Activity which was provided during module initialization is no longer available";
-  private static final String CAN_NOT_DEDUCE_TYPE = "ERR_CAN_NOT_DEDUCE_TYPE";
+  private static final String ERR_CAN_NOT_DEDUCE_TYPE = "ERR_CAN_NOT_DEDUCE_TYPE";
   private static final String CAN_NOT_DEDUCE_TYPE_MESSAGE = "Can not deduce type of the returned file.";
   // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
   // separately so we skip them in this list.
@@ -277,7 +275,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
 
     if (getExperienceActivity() == null) {
-      promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+      promise.reject(ERR_MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
       return;
     }
 
@@ -320,7 +318,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     mCameraCaptureURI = ImagePickerFileUtils.uriFromFile(imageFile);
 
     if (getExperienceActivity() == null) {
-      promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+      promise.reject(ERR_MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
       return;
     }
 
@@ -420,14 +418,14 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
           final Bundle exifData = exif ? readExif(uri, promise) : null;
 
           if (getExperienceActivity() == null) {
-            promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+            promise.reject(ERR_MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
             return;
           }
 
           String type = ImagePickerFileUtils.getType(getExperienceActivity().getApplication().getContentResolver(), uri);
 
           if (type == null) {
-            promise.reject(CAN_NOT_DEDUCE_TYPE, CAN_NOT_DEDUCE_TYPE_MESSAGE);
+            promise.reject(ERR_CAN_NOT_DEDUCE_TYPE, CAN_NOT_DEDUCE_TYPE_MESSAGE);
             return;
           }
 
@@ -765,7 +763,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     if (getExperienceActivity() != null) {
       getExperienceActivity().startActivityForResult(intent, requestCode);
     } else {
-      promise.reject(MISSING_ACTIVITY,
+      promise.reject(ERR_MISSING_ACTIVITY,
           MISSING_ACTIVITY_MESSAGE);
     }
   }
@@ -773,7 +771,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
   private Application getApplication(Promise promise) {
     if (getExperienceActivity() == null) {
       if (promise != null) {
-        promise.reject(MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
+        promise.reject(ERR_MISSING_ACTIVITY, MISSING_ACTIVITY_MESSAGE);
       }
       return null;
     } else {
