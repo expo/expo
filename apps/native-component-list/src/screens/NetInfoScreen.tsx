@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView, Platform } from 'react-native';
-import NetInfo, { ConnectionInfo } from '@react-native-community/netinfo';
+import { ScrollView, View } from 'react-native';
+import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 
 import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';
@@ -9,117 +9,82 @@ import MonoText from '../components/MonoText';
 interface ConnectionEvent {
   time: Date;
   key: number;
-}
-
-interface ConnectedChangeEvent extends ConnectionEvent {
-  isConnected: boolean;
+  connectionInfo: NetInfoState;
 }
 
 interface ConnectionChangeEvent extends ConnectionEvent {
-  connectionInfo: ConnectionInfo;
-}
-
-interface Subscription {
-  remove: () => void;
+  connectionInfo: NetInfoState;
 }
 
 interface State {
-  connectionInfo?: ConnectionInfo;
-  isConnectionExpensive?: boolean;
-  isConnectedChangeEvents: ConnectedChangeEvent[];
+  connectionInfo: NetInfoState | null;
   connectionChangeEvents: ConnectionChangeEvent[];
 }
 
-export default class NetInfoScreen extends React.Component<{}, State> {
+export default class NetInfoScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'NetInfo',
   };
 
   readonly state: State = {
-    isConnectedChangeEvents: [],
+    connectionInfo: null,
     connectionChangeEvents: [],
   };
 
-  _eventCounter: number = 0;
-  _subscription?: Subscription;
-  _isConnectedSubscription?: Subscription;
+  eventCounter: number = 0;
+  subscription: NetInfoSubscription = NetInfo.addEventListener(connectionInfo =>
+    this.handleConnectionChange(connectionInfo)
+  );
 
   componentDidMount() {
-    this._eventCounter = 0;
-
-    NetInfo.getConnectionInfo()
-      .then(connectionInfo => this.setState({ connectionInfo }))
-      .catch(console.warn);
-    this._ensureIsConnectionExpensiveIsUpToDate();
-    this._subscription = NetInfo.addEventListener(
-      'connectionChange',
-      this._handleConnectionChange
-    ) as unknown as Subscription;
-    this._isConnectedSubscription = NetInfo.isConnected.addEventListener(
-      'connectionChange',
-      this._handleIsConnectedChange
-    ) as unknown as Subscription;
+    this.fetchStateAsync();
   }
 
   componentWillUnmount() {
-    if (this._subscription) {
-      this._subscription.remove();
-    }
-
-    if (this._isConnectedSubscription) {
-      this._isConnectedSubscription.remove();
+    if (this.subscription) {
+      // Unsubscribe NetInfo events subscription.
+      this.subscription();
     }
   }
 
-  _handleConnectionChange = (connectionInfo: ConnectionInfo) => {
-    this._ensureIsConnectionExpensiveIsUpToDate();
+  async fetchStateAsync() {
+    try {
+      const state = await NetInfo.fetch();
+      this.setState({ connectionInfo: state });
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  handleConnectionChange(connectionInfo: NetInfoState): void {
     this.setState(({ connectionChangeEvents }) => ({
       connectionInfo,
       connectionChangeEvents: [
-        { connectionInfo, time: new Date(), key: this._eventCounter++ },
+        { connectionInfo, time: new Date(), key: this.eventCounter++ },
         ...connectionChangeEvents,
       ],
     }));
   }
 
-  _ensureIsConnectionExpensiveIsUpToDate = () =>
-    Platform.OS === 'android' &&
-    NetInfo.isConnectionExpensive()
-      .then(isConnectionExpensive => this.setState({ isConnectionExpensive }))
-      .catch(console.warn)
-
-  _handleIsConnectedChange = (isConnected: boolean) =>
-    this.setState(({ isConnectedChangeEvents }) => ({
-      isConnectedChangeEvents: [
-        { isConnected, time: new Date(), key: this._eventCounter++ },
-        ...isConnectedChangeEvents,
-      ],
-    }))
-
-  _maybeRenderIsConnectionExpensive = () =>
-    Platform.OS === 'android' ? (
-      <>
-        <HeadingText>NetInfo.isConnectionExpensive()</HeadingText>
-        <MonoText>{JSON.stringify(this.state.isConnectionExpensive, null, 2)}</MonoText>
-      </>
-    ) : null
-
-  _renderEvents = (events: ConnectionEvent[]) =>
-    events.map(event => <MonoText key={event.key}>{JSON.stringify(event, null, 2)}</MonoText>)
+  _renderEvents = (events: ConnectionEvent[]) => {
+    return events.map(event => (
+      <View key={event.key}>
+        <HeadingText style={{ fontSize: 14 }}>{String(event.time)}</HeadingText>
+        <MonoText key={event.key}>{JSON.stringify(event.connectionInfo, null, 2)}</MonoText>
+      </View>
+    ));
+  };
 
   render() {
     return (
       <ScrollView
         style={{ flex: 1, backgroundColor: Colors.greyBackground }}
-        contentContainerStyle={{ padding: 10 }}
-      >
-        <HeadingText>NetInfo.getConnectionInfo()</HeadingText>
+        contentContainerStyle={{ padding: 10 }}>
+        <HeadingText>NetInfo current state:</HeadingText>
         <MonoText>{JSON.stringify(this.state.connectionInfo, null, 2)}</MonoText>
-        {this._maybeRenderIsConnectionExpensive()}
-        <HeadingText>NetInfo.addEventListener</HeadingText>
+
+        <HeadingText>NetInfo events:</HeadingText>
         {this._renderEvents(this.state.connectionChangeEvents)}
-        <HeadingText>NetInfo.isConnected.addEventListener</HeadingText>
-        {this._renderEvents(this.state.isConnectedChangeEvents)}
       </ScrollView>
     );
   }
