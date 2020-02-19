@@ -7,8 +7,8 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 
-NSString * const EXFacebookLoginErrorDomain = @"E_FBLOGIN";
-NSString * const EXFacebookLoginAppIdErrorDomain = @"E_FBLOGIN_APP_ID";
+NSString * const EXFacebookLoginErrorDomain = @"ERR_FB_LOGIN";
+NSString * const EXFacebookLoginAppIdErrorDomain = @"ERR_FB_LOGIN_APP_ID";
 
 @implementation EXFacebook
 
@@ -39,23 +39,29 @@ UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
 }
 
 UM_EXPORT_METHOD_AS(initializeAsync,
-                    initializeWithAppId:(NSString *)appId
-                    appName:(NSString *)appName
+                    initializeAsync:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   // Caller overrides buildtime settings
-  if (appId) {
-    [FBSDKSettings setAppID:appId];
+  if (options[@"appId"]) {
+    [FBSDKSettings setAppID:options[@"appId"]];
   }
   if (![FBSDKSettings appID]) {
-    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    reject(@"ERR_FB_CONF", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
   }
   // Caller overrides buildtime settings
-  if (appName) {
-    [FBSDKSettings setDisplayName:appName];
+  if (options[@"appName"]) {
+    [FBSDKSettings setDisplayName:options[@"appName"]];
   }
+  if (options[@"version"]) {
+    [FBSDKSettings setGraphAPIVersion:options[@"version"]];
+  }
+  if (options[@"autoLogAppEvents"]) {
+    [FBSDKSettings setAutoLogAppEventsEnabled:[options[@"autoLogAppEvents"] boolValue]];
+  }
+
   [FBSDKApplicationDelegate initializeSDK:nil];
   resolve(nil);
 }
@@ -70,13 +76,30 @@ UM_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
   resolve(nil);
 }
 
+UM_EXPORT_METHOD_AS(logOutAsync,
+                    logOutAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
+  [loginMgr logOut];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(getAccessTokenAsync,
+                    getAccessTokenAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  FBSDKAccessToken *currentAccessToken = [FBSDKAccessToken currentAccessToken];
+  resolve(UMNullIfNil([EXFacebook accessTokenNativeToJSON:currentAccessToken]));
+}
+
 UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     logInWithReadPermissionsWithConfig:(NSDictionary *)config
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![FBSDKSettings appID]) {
-    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    reject(@"ERR_FB_CONF", @"No appId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
   }
 
@@ -103,14 +126,9 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
           return;
         }
 
-        NSInteger expiration = [result.token.expirationDate timeIntervalSince1970];
-        resolve(@{
-                  @"type": @"success",
-                  @"token": result.token.tokenString,
-                  @"expires": @(expiration),
-                  @"permissions": [result.token.permissions allObjects],
-                  @"declinedPermissions": [result.token.declinedPermissions allObjects]
-                  });
+        NSMutableDictionary *accessToken = [NSMutableDictionary dictionaryWithDictionary:[EXFacebook accessTokenNativeToJSON:result.token]];
+        accessToken[@"type"] = @"success";
+        resolve(accessToken);
       }];
     }
     @catch (NSException *exception) {
@@ -125,6 +143,27 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
       reject(error.domain, exception.reason, error);
     }
   });
+}
+
++ (NSDictionary *)accessTokenNativeToJSON:(FBSDKAccessToken *)input {
+  if (!input) {
+    return nil;
+  }
+
+  return @{
+    @"token": input.tokenString,
+    @"userID": input.userID,
+    @"appID": input.appID,
+
+    @"permissions": [input.permissions allObjects],
+    @"declinedPermissions": [input.declinedPermissions allObjects],
+    @"expiredPermissions": [input.expiredPermissions allObjects],
+    
+    @"expires": @([input.expirationDate timeIntervalSince1970] * 1000),
+    @"dataAccessExpires": @([input.dataAccessExpirationDate timeIntervalSince1970] * 1000),
+
+    @"refresh": @([input.refreshDate timeIntervalSince1970] * 1000),
+  };
 }
 
 @end

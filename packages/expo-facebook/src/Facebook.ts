@@ -1,22 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
+import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
 
-export type FacebookLoginResult =
-  | {
-      type: 'cancel';
-    }
-  | {
-      type: 'success';
-      token: string;
-      expires: number;
-      permissions: string[];
-      declinedPermissions: string[];
-    };
-
-export type FacebookOptions = {
-  permissions?: string[];
-};
+export { FacebookLoginResult, FacebookOptions, FacebookAuth };
 
 export async function logInWithReadPermissionsAsync(
   options?: FacebookOptions
@@ -30,6 +17,30 @@ export async function logInWithReadPermissionsAsync(
   }
 
   return ExponentFacebook.logInWithReadPermissionsAsync(options);
+}
+
+/**
+ * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
+ *
+ * You can use this method to check if the user should sign-in or not.
+ */
+export async function getAccessTokenAsync(): Promise<FacebookAuth | null> {
+  if (!ExponentFacebook.getAccessTokenAsync) {
+    throw new UnavailabilityError('Facebook', 'getAccessTokenAsync');
+  }
+
+  return await ExponentFacebook.getAccessTokenAsync();
+}
+
+/**
+ * Logs out of the currently authenticated session.
+ */
+export async function logOutAsync() {
+  if (!ExponentFacebook.logOutAsync) {
+    throw new UnavailabilityError('Facebook', 'logOutAsync');
+  }
+
+  return await ExponentFacebook.logOutAsync();
 }
 
 /**
@@ -76,22 +87,35 @@ export async function setAutoInitEnabledAsync(enabled: boolean) {
 
 /**
  * Calling this method ensures that the SDK is initialized.
- * You have to call this method before calling `logInWithReadPermissionsAsync`
- * to ensure that Facebook support is initialized properly.
+ * You have to call this method before calling any method that uses
+ * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
+ * Facebook support is initialized properly.
  *
- * You may or may not provide an optional `appId: string` argument.
- * - If you don't provide it, Facebook SDK will try to use `appId` from native app resources,
- *   If it fails to find one, the promise will be rejected.
+ * - On native platforms you can optional provide an `appId` argument.
+ *   - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+ *   - The same resolution mechanism works for `appName`.
  * - If you provide an explicit `appId`, it will override any other source.
- * The same resolution mechanism is applied to `appName`.
- * @param appId An optional Facebook App ID argument
- * @param appName An optional Facebook App Name argument
+ *
+ * @param options The options used to configure how Facebook is initialized
  */
-export async function initializeAsync(appId?: string, appName?: string) {
+export async function initializeAsync(optionsOrAppId: InitOptions | string, appName?: string) {
   if (!ExponentFacebook.initializeAsync) {
     throw new UnavailabilityError('Facebook', 'initializeAsync');
   }
-  return await ExponentFacebook.initializeAsync(appId, appName);
+
+  let options: InitOptions = {};
+
+  if (typeof optionsOrAppId === 'string') {
+    options.appId = optionsOrAppId;
+    options.appName = appName;
+    console.warn(
+      'The parameters of `initializeAsync(appId, appName)` have changed to support future platforms, you must now provide an object instead: initializeAsync({ appId, appName }).'
+    );
+  } else {
+    options = optionsOrAppId;
+  }
+
+  return await ExponentFacebook.initializeAsync(options);
 }
 
 /**
