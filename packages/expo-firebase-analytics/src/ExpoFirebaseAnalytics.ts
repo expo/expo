@@ -40,7 +40,7 @@ function callAnalyticsModule(funcName: string, ...args) {
       pureJSAnalyticsTracker = new FirebaseAnalyticsJS(defaultWebOptions, {
         clientId: Constants.sessionId,
         strictNativeEmulation: true,
-        appName: Constants.manifest?.name || 'Expo Client',
+        appName: Constants.manifest?.name || 'Unnamed Expo project',
         appVersion: Constants.nativeAppVersion || undefined,
       });
     }
@@ -50,7 +50,7 @@ function callAnalyticsModule(funcName: string, ...args) {
     if (isUnavailabilityLoggingEnabled) {
       if (!isUnavailabilityWarningLogged) {
         console.warn(
-          `Firebase Analytics is not available in the Expo client. See "https://docs.expo.io/versions/unversioned/sdk/firebase-analytics#expo_client_limitations_configuration" on more information on setting up Firebase Analytics with the standard Expo Client.`
+          `Firebase Analytics is not available in the Expo client. See "https://docs.expo.io/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`
         );
         isUnavailabilityWarningLogged = true;
       }

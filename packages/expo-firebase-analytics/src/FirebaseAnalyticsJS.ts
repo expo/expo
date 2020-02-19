@@ -88,14 +88,12 @@ class FirebaseAnalyticsJS {
       };
     }
     const args = encodeQueryArgs(queryArgs);
-    console.log(`FirebaseAnalyticsJS: ${args}...`);
     if (body) console.log(`FirebaseAnalyticsJS body: ${body}...`);
-    const response = await fetch(`${this.url}?${args}`, {
+    await fetch(`${this.url}?${args}`, {
       method: 'POST',
       cache: 'no-cache',
       body,
     });
-    console.log(`FirebaseAnalyticsJS: response: ${response.status}`);
   }
 
   private async addEvent(event: FirebaseAnalyticsJSCodedEvent) {
