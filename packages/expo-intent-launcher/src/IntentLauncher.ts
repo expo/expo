@@ -102,7 +102,7 @@ export const ACTION_ZEN_MODE_SCHEDULE_RULE_SETTINGS =
   'android.settings.ZEN_MODE_SCHEDULE_RULE_SETTINGS';
 export const ACTION_ZEN_MODE_SETTINGS = 'android.settings.ZEN_MODE_SETTINGS';
 
-interface IntentParams {
+export interface IntentParams {
   type?: string;
   category?: string;
   extra?: object;
@@ -112,7 +112,7 @@ interface IntentParams {
   className?: string;
 }
 
-interface IntentResult {
+export interface IntentResult {
   resultCode: number;
   data?: string;
   extra?: object;
