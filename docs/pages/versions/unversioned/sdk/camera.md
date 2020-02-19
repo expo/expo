@@ -3,16 +3,13 @@ title: Camera
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run [this snack](https://snack.expo.io/@charliecruzan/camerja) on your device to see all these features working together!
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ✅  |
+<PlatformsSection android ios web />
 
 > **Note**:
 
@@ -261,6 +258,7 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxDuration (_number_)** -- Maximum video duration in seconds.
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
+  - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
 
 #### Returns
 

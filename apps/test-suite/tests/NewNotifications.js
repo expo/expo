@@ -3,6 +3,7 @@
 import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
+import * as FileSystem from 'expo-file-system';
 
 import * as TestUtils from '../TestUtils';
 import { waitFor } from './helpers';
@@ -247,6 +248,32 @@ export async function test(t) {
         });
         t.expect(permissions).toBeDefined();
         t.expect(typeof permissions).toBe('object');
+      });
+    });
+
+    t.describe('presentNotificationAsync', () => {
+      t.it('presents a simple notification', async () => {
+        await Notifications.presentNotificationAsync({
+          title: 'Sample title',
+          subtitle: 'What an event!',
+          message: 'An interesting event has just happened',
+          badge: 1,
+        });
+      });
+
+      t.it('presents a notification with attachments', async () => {
+        const fileUri = FileSystem.documentDirectory + 'expo-notifications-test-image.jpg';
+        await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
+        await Notifications.presentNotificationAsync({
+          title: 'Look at that kitten! ➡️',
+          message: 'What a cutie!',
+          ios: {
+            attachments: [{ uri: fileUri }],
+          },
+          android: {
+            thumbnailUri: fileUri,
+          },
+        });
       });
     });
   });

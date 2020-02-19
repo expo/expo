@@ -3,13 +3,11 @@ title: Network
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-network'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-network`** provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

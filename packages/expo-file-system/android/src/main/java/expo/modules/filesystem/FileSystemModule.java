@@ -539,7 +539,7 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = root.getBlockSizeLong();
       BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
       //cast down to avoid overflow
-      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      Double capacityDouble = Math.min(capacity.doubleValue(), Math.pow(2, 53) - 1);
       promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());

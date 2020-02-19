@@ -23,7 +23,6 @@ import {
   LI,
   Main,
   Nav,
-  OL,
   P,
   S,
   Section,
@@ -38,9 +37,9 @@ import {
   Aside,
   TFoot,
 } from '@expo/html-elements';
+import View from '@expo/html-elements/build/primitives/View';
 import React from 'react';
 import { ScrollView } from 'react-native';
-import View from '@expo/html-elements/build/primitives/View';
 
 function CustomArticle({ title, children }: any) {
   return (
@@ -125,24 +124,14 @@ function TextArticle() {
 function ListsArticle() {
   return (
     <CustomArticle title="Lists">
-      <OL>
-        <LI>Grow a long, majestic beard.</LI>
-        <LI>Wear a tall, pointed hat.</LI>
-        <UL>
-          <LI>Grow a long, majestic beard.</LI>
-          <LI>Wear a tall, pointed hat.</LI>
-          <LI>Have I mentioned the beard?</LI>
-        </UL>
-        <LI>Have I mentioned the beard?</LI>
-      </OL>
       <UL>
         <LI>Grow a long, majestic beard.</LI>
         <LI>Wear a tall, pointed hat.</LI>
-        <OL>
+        <LI>
           <LI>Grow a long, majestic beard.</LI>
           <LI>Wear a tall, pointed hat.</LI>
           <LI>Have I mentioned the beard?</LI>
-        </OL>
+        </LI>
         <LI>Have I mentioned the beard?</LI>
       </UL>
     </CustomArticle>

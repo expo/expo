@@ -1,4 +1,5 @@
 import { mockProperty, unmockProperty } from 'jest-expo';
+
 import * as Sharing from '../Sharing';
 
 describe('Sharing', () => {

@@ -428,9 +428,9 @@ public class Contact {
                 if (datesArray.size() > 0) {
                     contact.putParcelableArrayList("dates", datesArray);
                 }
-                if (rawDatesArray.size() > 0) {
-                    contact.putParcelableArrayList("rawDates", rawDatesArray);
-                }
+            }
+            if (rawDatesArray.size() > 0) {
+                contact.putParcelableArrayList("rawDates", rawDatesArray);
             }
         }
 

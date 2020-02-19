@@ -3,15 +3,13 @@ title: Crypto
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash (encrypt) data in an equivalent manner to the `Node.js` core `crypto` API.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

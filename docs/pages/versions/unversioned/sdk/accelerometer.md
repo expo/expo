@@ -5,14 +5,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `Accelerometer` from **`expo-sensors`** provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in 3d space, meaning any movement or vibration.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ❌            | ✅  |
+<PlatformsSection android emulator ios web />
 
 ## Installation
 

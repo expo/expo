@@ -3,17 +3,15 @@ title: Sharing
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import Video from '../../../../components/plugins/Video'
 
 **`expo-sharing`** allows you to share files directly with other compatible applications.
 
 <Video file={"sdk/sharing.mp4"} loop={false} />
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 <br />
 

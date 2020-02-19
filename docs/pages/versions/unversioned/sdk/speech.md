@@ -3,15 +3,13 @@ title: Speech
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

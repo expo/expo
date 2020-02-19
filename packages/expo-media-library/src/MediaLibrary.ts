@@ -1,7 +1,6 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-
 import { Platform } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import MediaLibrary from './ExponentMediaLibrary';
 

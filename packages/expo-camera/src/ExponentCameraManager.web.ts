@@ -1,6 +1,6 @@
 import { CapturedPicture, PictureOptions } from './Camera.types';
-import ExponentCamera from './ExponentCamera.web';
 import { canGetUserMedia } from './CameraModule/UserMediaManager';
+import ExponentCamera from './ExponentCamera.web';
 
 export default {
   get name(): string {

@@ -199,6 +199,26 @@ export const objectShorthandTest: object | null = null;
 }
 `;
 
+exports[`lints with the React Native config: fixtures/all-07.js 1`] = `
+Object {
+  "errorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [],
+  "output": "import b from 'b';
+import c from 'c';
+
+import d from './d';
+
+const a = require('a');
+const e = require('e');
+
+export default a + b + c + d + e;
+",
+  "warningCount": 0,
+}
+`;
+
 exports[`lints with the React Native config: fixtures/web-native-00.js 1`] = `
 Object {
   "errorCount": 0,

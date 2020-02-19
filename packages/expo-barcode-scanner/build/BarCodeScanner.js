@@ -1,9 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform, ViewPropTypes } from 'react-native';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;

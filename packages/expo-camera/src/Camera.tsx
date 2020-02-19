@@ -3,6 +3,7 @@ import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+
 import {
   CapturedPicture,
   NativeProps,

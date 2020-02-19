@@ -3,13 +3,11 @@ title: Google
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-app-auth'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
 ### How it works
 

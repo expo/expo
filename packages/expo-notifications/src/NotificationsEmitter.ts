@@ -1,4 +1,5 @@
 import { EventEmitter, Subscription, NativeModulesProxy } from '@unimodules/core';
+
 import { Notification, NotificationResponse } from './NotificationsEmitter.types';
 export { Notification, NotificationResponse } from './NotificationsEmitter.types';
 

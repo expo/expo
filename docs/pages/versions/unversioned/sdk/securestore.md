@@ -3,6 +3,8 @@ title: SecureStore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-secure-store'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-secure-store`** provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects. **Please note** that for iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
 
 iOS: Values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
@@ -11,11 +13,7 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 **Size limit for a value is 2048 bytes. An attempt to store larger values may fail. Currently, we print a warning when the limit is reached, but we will throw an error starting from SDK 35.**
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅\*           | ✅\*             | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator />
 
 - This API is not compatible on devices running Android 5 or older.
 
