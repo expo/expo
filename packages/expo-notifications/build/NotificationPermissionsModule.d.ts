@@ -17,13 +17,14 @@ export declare enum IosAuthorizationStatus {
     PROVISIONAL = 3
 }
 export declare enum AndroidImportance {
-    UNSPECIFIED = -1000,
-    NONE = 0,
-    MIN = 1,
-    LOW = 2,
-    DEEFAULT = 3,
-    HIGH = 4,
-    MAX = 5
+    UNKNOWN = 0,
+    UNSPECIFIED = 1,
+    NONE = 2,
+    MIN = 3,
+    LOW = 4,
+    DEEFAULT = 5,
+    HIGH = 6,
+    MAX = 7
 }
 export declare enum AndroidInterruptionFilter {
     UNKNOWN = 0,

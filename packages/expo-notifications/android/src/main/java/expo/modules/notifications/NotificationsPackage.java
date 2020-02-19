@@ -11,6 +11,7 @@ import java.util.List;
 
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
@@ -27,6 +28,7 @@ public class NotificationsPackage extends BasePackage {
         new NotificationsHandler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
+        new NotificationChannelManagerModule(context),
         new ExpoNotificationPresentationModule(context)
     );
   }

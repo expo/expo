@@ -20,13 +20,14 @@ export var IosAuthorizationStatus;
 })(IosAuthorizationStatus || (IosAuthorizationStatus = {}));
 export var AndroidImportance;
 (function (AndroidImportance) {
-    AndroidImportance[AndroidImportance["UNSPECIFIED"] = -1000] = "UNSPECIFIED";
-    AndroidImportance[AndroidImportance["NONE"] = 0] = "NONE";
-    AndroidImportance[AndroidImportance["MIN"] = 1] = "MIN";
-    AndroidImportance[AndroidImportance["LOW"] = 2] = "LOW";
-    AndroidImportance[AndroidImportance["DEEFAULT"] = 3] = "DEEFAULT";
-    AndroidImportance[AndroidImportance["HIGH"] = 4] = "HIGH";
-    AndroidImportance[AndroidImportance["MAX"] = 5] = "MAX";
+    AndroidImportance[AndroidImportance["UNKNOWN"] = 0] = "UNKNOWN";
+    AndroidImportance[AndroidImportance["UNSPECIFIED"] = 1] = "UNSPECIFIED";
+    AndroidImportance[AndroidImportance["NONE"] = 2] = "NONE";
+    AndroidImportance[AndroidImportance["MIN"] = 3] = "MIN";
+    AndroidImportance[AndroidImportance["LOW"] = 4] = "LOW";
+    AndroidImportance[AndroidImportance["DEEFAULT"] = 5] = "DEEFAULT";
+    AndroidImportance[AndroidImportance["HIGH"] = 6] = "HIGH";
+    AndroidImportance[AndroidImportance["MAX"] = 7] = "MAX";
 })(AndroidImportance || (AndroidImportance = {}));
 export var AndroidInterruptionFilter;
 (function (AndroidInterruptionFilter) {
