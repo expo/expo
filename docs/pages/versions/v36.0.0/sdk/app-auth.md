@@ -3,75 +3,105 @@ title: AppAuth
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
-#### Platform Compatibility
+Many services that let you authenticate with them or login with them, like GitHub, Google, GitLab, etc., use the OAuth 2.0 protocol. It's the industry standard.
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
+
+Currently, this module only supports on Android, and iOS. Web support is planned to be added. Track it here: [Web support in expo-app-auth](https://github.com/expo/expo/issues/6883).
+
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth).
+<InstallSection packageName="expo-app-auth" />
 
 ## Usage
 
-Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth Sign-In provider.
+Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 
-```js
-import { AsyncStorage } from 'react-native';
+<SnackInline>
+
+```tsx
+import React, { useEffect, useState } from 'react';
+import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 import * as AppAuth from 'expo-app-auth';
 
-const config = {
+export default function App() {
+  let [authState, setAuthState] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let cachedAuth = await getCachedAuthAsync();
+      if (cachedAuth && !authState) {
+        setAuthState(cachedAuth);
+      }
+    })();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Expo AppAuth Example</Text>
+      <Button
+        title="Sign In with Google "
+        onPress={async () => {
+          const authState = await signInAsync();
+          setAuthState(_authState);
+        }}
+      />
+      <Button
+        title="Sign Out "
+        onPress={async () => {
+          await signOutAsync(authState);
+          setAuthState(null);
+        }}
+      />
+      <Text>{JSON.stringify(authState, null, 2)}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+let config = {
   issuer: 'https://accounts.google.com',
   scopes: ['openid', 'profile'],
   /* This is the CLIENT_ID generated from a Firebase project */
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
 
-/*
- * StorageKey is used for caching the OAuth Key in your app so you can use it later.
- * This can be any string value, but usually it follows this format: @AppName:NameOfValue
- */
-const StorageKey = '@PillarValley:GoogleOAuthKey';
+let StorageKey = '@PillarValley:GoogleOAuthKey';
 
-/*
- * Notice that Sign-In / Sign-Out aren't operations provided by this module.
- * We emulate them by using authAsync / revokeAsync.
- * For instance if you wanted an "isAuthenticated" flag, you would observe your local tokens.
- * If the tokens exist then you are "Signed-In".
- * Likewise if you cannot refresh the tokens, or they don't exist, then you are "Signed-Out"
- */
-async function signInAsync() {
-  const authState = await AppAuth.authAsync(config);
+export async function signInAsync() {
+  let authState = await AppAuth.authAsync(config);
   await cacheAuthAsync(authState);
   console.log('signInAsync', authState);
   return authState;
 }
 
-/* Let's save our user tokens so when the app resets we can try and get them later */
-function cacheAuthAsync(authState) {
-  return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
+async function cacheAuthAsync(authState) {
+  return await AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 
-/* Before we start our app, we should check to see if a user is signed-in or not */
-async function getCachedAuthAsync() {
-  /* First we will try and get the cached auth */
-  const value = await AsyncStorage.getItem(StorageKey);
-  /* Async Storage stores data as strings, we should parse our data back into a JSON */
-  const authState = JSON.parse(value);
+export async function getCachedAuthAsync() {
+  let value = await AsyncStorage.getItem(StorageKey);
+  let authState = JSON.parse(value);
   console.log('getCachedAuthAsync', authState);
   if (authState) {
-    /* If our data exists, than we should see if it's expired */
     if (checkIfTokenExpired(authState)) {
-      /*
-       * The session has expired.
-       * Let's try and refresh it using the refresh token that some
-       * OAuth providers will return when we sign-in initially.
-       */
       return refreshAuthAsync(authState);
     } else {
       return authState;
@@ -80,52 +110,32 @@ async function getCachedAuthAsync() {
   return null;
 }
 
-/*
- * You might be familiar with the term "Session Expired", this method will check if our session has expired.
- * An expired session means that we should reauthenticate our user.
- * You can learn more about why on the internet: https://www.quora.com/Why-do-web-sessions-expire
- * > Fun Fact: Charlie Cheever the creator of Expo also made Quora :D
- */
 function checkIfTokenExpired({ accessTokenExpirationDate }) {
   return new Date(accessTokenExpirationDate) < new Date();
 }
 
-/*
- * Some OAuth providers will return a "Refresh Token" when you sign-in initially.
- * When our session expires, we can exchange the refresh token to get new auth tokens.
- * > Auth tokens are not the same as a Refresh token
- *
- * Not every provider (very few actually) will return a new "Refresh Token".
- * This just means the user will have to Sign-In more often.
- */
 async function refreshAuthAsync({ refreshToken }) {
-  const authState = await AppAuth.refreshAsync(config, refreshToken);
-  console.log('refreshAuthAsync', authState);
+  let authState = await AppAuth.refreshAsync(config, refreshToken);
+  console.log('refreshAuth', authState);
   await cacheAuthAsync(authState);
   return authState;
 }
 
-/*
- * To sign-out we want to revoke our tokens.
- * This is what high-level auth solutions like FBSDK are doing behind the scenes.
- */
-async function signOutAsync({ accessToken }) {
+export async function signOutAsync({ accessToken }) {
   try {
     await AppAuth.revokeAsync(config, {
       token: accessToken,
       isClientIdProvided: true,
     });
-    /*
-     * We are removing the cached tokens so we can check on our auth state later.
-     * No tokens = Not Signed-In :)
-     */
     await AsyncStorage.removeItem(StorageKey);
     return null;
-  } catch ({ message }) {
-    alert(`Failed to revoke token: ${message}`);
+  } catch (e) {
+    alert(`Failed to revoke token: ${e.message}`);
   }
 }
 ```
+
+</SnackInline>
 
 ## API
 
