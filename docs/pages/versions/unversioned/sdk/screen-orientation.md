@@ -22,11 +22,11 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ### Warning
 
-This module needs additional configuration to work properly on iPads. Unfortunately, it will disable support for the split view.
+The Apple added support for the `split view` mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. Briefly, for the iOS, your iPad is always in the landscape mode unless you open two applicationes side by side. To use the `ScreenOrientation` module you need to disable support for this feature. For more information about the `split view` mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
 
 #### Managed workflow
 
-Open your app.json and add the following inside of the "expo" field:
+Open your `app.json` and add the following inside of the `"expo"` field:
 
 ```json
 "ios": {
@@ -36,7 +36,7 @@ Open your app.json and add the following inside of the "expo" field:
 
 #### Bare workflow
 
-Tick the `Requires Full Screen` checkbox in XCode. It should be located under `Project Target > General > Deployment Info`.
+Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `Project Target > General > Deployment Info`.
 
 ## API
 
