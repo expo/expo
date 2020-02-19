@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['expo install @react-native-community/netinfo']} href="https://github.com/react-native-community/react-native-netinfo#getting-started" />
+<InstallSection packageName="@react-native-community/netinfo" href="https://github.com/react-native-community/react-native-netinfo#getting-started" />
 
 ## API
 

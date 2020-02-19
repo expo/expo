@@ -12,7 +12,7 @@ Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation
 
 ## Installation
 
-<InstallSection cmd={['expo install lottie-react-native']} href="https://github.com/react-native-community/lottie-react-native" />
+<InstallSection packageName="lottie-react-native" href="https://github.com/react-native-community/lottie-react-native" />
 
 ## Usage
 

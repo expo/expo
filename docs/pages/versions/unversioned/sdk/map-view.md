@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-<InstallSection cmd={['expo install react-native-maps']} href="https://github.com/react-native-community/react-native-maps" />
+<InstallSection packageName="react-native-maps" href="https://github.com/react-native-community/react-native-maps" />
 
 ## Usage
 

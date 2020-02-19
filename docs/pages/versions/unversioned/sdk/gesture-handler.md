@@ -14,7 +14,7 @@ An API for handling complex gestures. From the project's README:
 
 ## Installation
 
-<InstallSection cmd={['expo install react-native-gesture-handler']} href="https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html" />
+<InstallSection packageName="react-native-gesture-handler" href="https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html" />
 
 ## API
 

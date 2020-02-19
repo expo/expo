@@ -15,7 +15,7 @@ import Video from '../../../../components/plugins/Video'
 
 ## Installation
 
-<InstallSection cmd={['expo install @react-native-community/viewpager']} href="https://github.com/react-native-community/react-native-viewpager#linking" />
+<InstallSection packageName="@react-native-community/viewpager" href="https://github.com/react-native-community/react-native-viewpager#linking" />
 
 ## Usage
 

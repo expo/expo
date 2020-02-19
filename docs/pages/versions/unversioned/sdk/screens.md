@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['expo install react-native-screens']} href="https://github.com/kmagiera/react-native-screens" />
+<InstallSection packageName="react-native-screens" href="https://github.com/kmagiera/react-native-screens" />
 
 ## API
 

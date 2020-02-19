@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-<InstallSection cmd={['expo install react-native-svg']} href="https://github.com/react-native-community/react-native-svg#with-react-native-cli" />
+<InstallSection packageName="react-native-svg" href="https://github.com/react-native-community/react-native-svg#with-react-native-cli" />
 
 ## API
 

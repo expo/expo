@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection cmd={['expo install react-native-appearance']} href="https://github.com/expo/react-native-appearance#linking" />
+<InstallSection packageName="react-native-appearance" href="https://github.com/expo/react-native-appearance#linking" />
 
 ## Configuration
 
