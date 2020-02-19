@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-declare type Props = {
+export declare type Props = {
     colors: string[];
     locations?: number[] | null;
     start?: Point | null;
     end?: Point | null;
 } & React.ComponentProps<typeof View>;
-declare type Point = {
+export declare type Point = {
     x: number;
     y: number;
 } | [number, number];
@@ -75,4 +75,3 @@ export default class LinearGradient extends React.Component<Props> {
     };
     render(): JSX.Element;
 }
-export {};

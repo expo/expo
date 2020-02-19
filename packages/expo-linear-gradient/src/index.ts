@@ -1,1 +1,1 @@
-export { default as LinearGradient } from './LinearGradient';
+export { default as LinearGradient, Props, Point } from './LinearGradient';
