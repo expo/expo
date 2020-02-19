@@ -34,7 +34,7 @@ function callAnalyticsModule(funcName: string, ...args) {
     if (isUnavailabilityLoggingEnabled) {
       if (!isUnavailabilityWarningLogged) {
         console.warn(
-          'Firebase Analytics is not available in the Expo client. To test Firebase Analytics create a stand-alone build or custom client. To suppress this warning use `setUnavailabilityLogging(false)`.'
+          'Firebase Analytics is not available in the Expo client. To test Firebase Analytics create a standalone build or custom client. To suppress this warning use `setUnavailabilityLogging(false)`.'
         );
         isUnavailabilityWarningLogged = true;
       }

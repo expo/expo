@@ -46,12 +46,12 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
     reject(@"ERR_FIREBASE_ANALYTICS", @"EXFirebaseCore could not be found. Ensure that your app has correctly linked 'expo-firebase-core' and your project has react-native-unimodules installed.", nil);
     return nil;
   }
-  FIRApp* defaultApp = [_firebaseCore defaultApp];
+  FIRApp *defaultApp = [_firebaseCore defaultApp];
   if (!defaultApp) {
     reject(@"ERR_FIREBASE_ANALYTICS", @"Firebase app is not initialized. Ensure your app has a valid GoogleService-Info.plist bundled.", nil);
     return nil;
   }
-  FIRApp* systemApp = [FIRApp defaultApp];
+  FIRApp *systemApp = [FIRApp defaultApp];
   if (!systemApp || ![systemApp.name isEqualToString:defaultApp.name]) {
     reject(@"ERR_FIREBASE_ANALYTICS", @"Analytics events can only be logged for the default app.", nil);
     return nil;

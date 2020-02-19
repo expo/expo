@@ -61,7 +61,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     try {
       systemApp = FirebaseApp.getInstance();
     } catch (Exception e) {
-      // nop
+      // default firebase app doesn't exist, continue
     }
     if ((systemApp == null) || !defaultApp.getName().equals(systemApp.getName())) {
       promise.reject("ERR_FIREBASE_ANALYTICS", "Analytics events can only be logged for the default app.");

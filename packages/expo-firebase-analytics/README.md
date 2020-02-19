@@ -29,7 +29,7 @@ Run `pod install` in the ios directory after installing the npm package.
 
 # Setup native Firebase
 
-Follow the [Setup Native Firebase guide](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/guides/setup-native-firebase.md) on how to setup the native Firebase SDK & configuration further.
+Follow the ["Setup Native Firebase"](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/guides/setup-native-firebase.md) guide in the docs to get started using native Firebase SDK features.
 
 # Contributing
 
