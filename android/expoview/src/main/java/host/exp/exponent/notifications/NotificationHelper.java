@@ -566,7 +566,7 @@ public class NotificationHelper {
     String experienceId;
 
     try {
-      experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = ExponentManifest.getExperienceId(manifest);
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       listener.onFailure(new Exception("Requires Experience Id"));

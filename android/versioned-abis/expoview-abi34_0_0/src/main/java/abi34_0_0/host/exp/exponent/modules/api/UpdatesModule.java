@@ -154,7 +154,7 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
   private void fetchJSBundleAsync(final JSONObject manifest, final Promise promise) {
     try {
       String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-      String id = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      String id = ExponentManifest.getExperienceId(manifest);
       String sdkVersion = manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
       Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {

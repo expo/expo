@@ -33,7 +33,7 @@ public class ExponentDB {
   public static void saveExperience(String manifestUrl, JSONObject manifest, String bundleUrl) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.id = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experience.id = ExponentManifest.getExperienceId(manifest);
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();

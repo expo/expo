@@ -62,7 +62,7 @@ public class ExponentNotificationManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
-        String experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        String experienceId = ExponentManifest.getExperienceId(manifest);
         if (!mNotificationChannelGroupIds.contains(experienceId)) {
           String channelName = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY, experienceId);
           NotificationChannelGroup group = new NotificationChannelGroup(experienceId, channelName);

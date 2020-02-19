@@ -426,7 +426,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     soloaderInit();
 
     try {
-      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceIdString = ExponentManifest.getExperienceId(manifest);
       mExperienceId = ExperienceId.create(mExperienceIdString);
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
@@ -783,7 +783,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+    String experienceId = ExponentManifest.getExperienceIdOrNull(mManifest);
     if (experienceId == null) {
       return;
     }

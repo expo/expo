@@ -176,7 +176,7 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+        ExperienceId experienceId = ExperienceId.create(ExponentManifest.getExperienceId(mManifest));
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));

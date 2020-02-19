@@ -68,6 +68,7 @@ public class ExponentManifest {
   public static final String MANIFEST_SIGNATURE_KEY = "signature";
 
   public static final String MANIFEST_ID_KEY = "id";
+  public static final String MANIFEST_SCOPE_KEY_KEY = "scopeKey";
   public static final String MANIFEST_NAME_KEY = "name";
   public static final String MANIFEST_APP_KEY_KEY = "appKey";
   public static final String MANIFEST_SDK_VERSION_KEY = "sdkVersion";
@@ -719,6 +720,19 @@ public class ExponentManifest {
       KernelProvider.getInstance().handleError(e);
       return null;
     }
+  }
+
+  public static String getExperienceId(final JSONObject manifest) throws JSONException {
+    if (manifest.has(ExponentManifest.MANIFEST_SCOPE_KEY_KEY)) {
+      return manifest.getString(ExponentManifest.MANIFEST_SCOPE_KEY_KEY);
+    } else {
+      return manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+    }
+  }
+
+  public static String getExperienceIdOrNull(final JSONObject manifest) {
+    final String id = manifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+    return manifest.optString(ExponentManifest.MANIFEST_SCOPE_KEY_KEY, id);
   }
 
   public static boolean isDebugModeEnabled(final JSONObject manifest) {

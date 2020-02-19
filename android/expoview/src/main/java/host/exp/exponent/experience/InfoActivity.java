@@ -85,7 +85,7 @@ public class InfoActivity extends AppCompatActivity {
     getSupportActionBar().setDisplayShowHomeEnabled(true);
 
     if (mManifest != null) {
-      mExperienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceId = ExponentManifest.getExperienceIdOrNull(mManifest);
 
       String iconUrlString = mManifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
       if (iconUrlString != null) {

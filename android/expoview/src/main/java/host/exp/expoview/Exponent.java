@@ -678,7 +678,7 @@ public class Exponent {
                 manifest,
                 manifestUrl,
                 bundleUrl,
-                manifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+                ExponentManifest.getExperienceId(manifest),
                 manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY));
           } catch (JSONException e) {
             EXL.e(TAG, e);

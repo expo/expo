@@ -103,7 +103,7 @@ public abstract class AppLoader {
             fetchRemoteManifest();
             return;
           }
-          String experienceId = mCachedManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+          String experienceId = ExponentManifest.getExperienceId(mCachedManifest);
           manifestSdkVersion = mCachedManifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
           JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
           if (updatesManifest != null) {
@@ -284,7 +284,7 @@ public abstract class AppLoader {
       try {
         String bundleUrl = mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
         final boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
-        String id = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        String id = ExponentManifest.getExperienceId(mCachedManifest);
         String sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
         final JSONObject finalManifest = mManifest;
