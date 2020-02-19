@@ -1,8 +1,9 @@
 
 # expo-firebase-core
 
-Core support for the native Google Firebase SDK. This library ensures that Google Firebase is initialized natively and makes it possible to use 
-native Firebase features from other unimodules.
+This module provides access to the Firebase configuration and performs initialisation
+of the native Firebase App. Unimodules that want to use Firebase can use
+this module to get safe access to the native Firebase App.
 
 # API documentation
 
