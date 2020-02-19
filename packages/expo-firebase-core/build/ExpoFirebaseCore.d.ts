@@ -1,6 +1,2 @@
-import { IFirebaseOptions } from './FirebaseOptions';
-declare const _default: {
-    readonly DEFAULT_APP_NAME: string;
-    readonly DEFAULT_APP_OPTIONS: void | IFirebaseOptions;
-};
+declare const _default: import("@unimodules/core").ProxyNativeModule;
 export default _default;
