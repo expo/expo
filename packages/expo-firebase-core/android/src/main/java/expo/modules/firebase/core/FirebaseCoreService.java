@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Collections;
 
 public class FirebaseCoreService implements InternalModule, FirebaseCoreInterface {
-  //protected static final String ERROR_EXCEPTION = "E_FIREBASE_CORE";
 
   static final String DEFAULT_APP_NAME = "[DEFAULT]";
 
