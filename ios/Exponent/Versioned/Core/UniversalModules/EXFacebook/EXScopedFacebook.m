@@ -8,14 +8,19 @@
 
 @interface EXFacebook (ExportedMethods)
 
-- (void)initializeWithAppId:(NSString *)appId
-                    appName:(NSString *)appName
-                   resolver:(UMPromiseResolveBlock)resolve
-                   rejecter:(UMPromiseRejectBlock)reject;
+- (void)initializeAsync:(NSDictionary *)options
+               resolver:(UMPromiseResolveBlock)resolve
+               rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config
                                   resolver:(UMPromiseResolveBlock)resolve
                                   rejecter:(UMPromiseRejectBlock)reject;
+
+- (void)logOutAsync:(UMPromiseResolveBlock)resolve
+           rejecter:(UMPromiseRejectBlock)reject;
+
+- (void)getAccessTokenAsync:(UMPromiseResolveBlock)resolve
+                   rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)setAutoInitEnabled:(BOOL)enabled
                   resolver:(UMPromiseResolveBlock)resolve
@@ -68,13 +73,12 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   return self;
 }
 
-- (void)initializeWithAppId:(NSString *)appId
-                    appName:(NSString *)appName
-                   resolver:(UMPromiseResolveBlock)resolve
-                   rejecter:(UMPromiseRejectBlock)reject
+- (void)initializeAsync:(NSDictionary *)options
+               resolver:(UMPromiseResolveBlock)resolve
+               rejecter:(UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
-  [super initializeWithAppId:appId appName:appName resolver:resolve rejecter:reject];
+  [super initializeAsync:options resolver:resolve rejecter:reject];
 }
 
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
@@ -95,6 +99,26 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
     return;
   }
   [super logInWithReadPermissionsWithConfig:config resolver:resolve rejecter:reject];
+}
+
+- (void)getAccessTokenAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+{
+  // If the developer didn't initialize the SDK, let them know.
+  if (!_isInitialized) {
+    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    return;
+  }
+  [super getAccessTokenAsync:resolve rejecter:reject];
+}
+
+- (void)logOutAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+{
+  // If the developer didn't initialize the SDK, let them know.
+  if (!_isInitialized) {
+    reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
+    return;
+  }
+  [super logOutAsync:resolve rejecter:reject];
 }
 
 # pragma mark - UMModuleRegistryConsumer
