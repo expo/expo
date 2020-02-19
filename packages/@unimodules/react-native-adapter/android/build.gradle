@@ -1,9 +1,25 @@
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.3.50")}")
+  }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'org.unimodules'
 version = '5.0.0'
+
 
 // Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
@@ -60,7 +76,7 @@ dependencies {
 
   implementation 'com.facebook.react:react-native:+'
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.3.50')}"
   api 'com.github.bumptech.glide:glide:4.9.0'
 
 }
