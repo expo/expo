@@ -24,7 +24,6 @@ export const colors = {
   lila: '#A3A1F7',
   lilaLighter: 'rgba(163, 161, 247, 0.4)',
   portage: 'rgba(163, 161, 247, 0.18)',
-  reactBlue: '#61DAFB',
   blackRussian: 'rgba(0, 1, 31, 0.03)',
   orange: '#FFBB83',
   yellow: '#FFDB8A',
