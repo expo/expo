@@ -3,6 +3,7 @@ title: Calendar
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
@@ -13,7 +14,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-calendar`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
+<InstallSection packageName="expo-calendar" />
 
 ## Configuration
 

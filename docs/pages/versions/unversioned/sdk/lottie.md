@@ -3,6 +3,7 @@ title: Lottie
 sourceCodeUrl: 'https://github.com/react-native-community/lottie-react-native'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
@@ -11,7 +12,7 @@ Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install lottie-react-native`. In bare apps, also follow the [lottie-react-native linking and configuration instructions](https://github.com/react-native-community/lottie-react-native).
+<InstallSection packageName="lottie-react-native" href="https://github.com/react-native-community/lottie-react-native" />
 
 ## Usage
 

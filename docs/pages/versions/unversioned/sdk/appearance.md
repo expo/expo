@@ -3,6 +3,7 @@ title: Appearance
 sourceCodeUrl: 'https://github.com/expo/react-native-appearance'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-appearance`** allows you to detect the user's preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-appearance`. In bare apps, make sure you also follow the [react-native-appearance linking and configuration instructions](https://github.com/expo/react-native-appearance#linking).
+<InstallSection packageName="react-native-appearance" href="https://github.com/expo/react-native-appearance#linking" />
 
 ## Configuration
 

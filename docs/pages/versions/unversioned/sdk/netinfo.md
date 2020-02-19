@@ -3,6 +3,7 @@ title: NetInfo
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-netinfo'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`@react-native-community/netinfo`** allows you to get information about connection type and connection quality.
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install @react-native-community/netinfo`. In bare apps, make sure you also follow the [react-native-netinfo linking and configuration instructions](https://github.com/react-native-community/react-native-netinfo#getting-started).
+<InstallSection packageName="@react-native-community/netinfo" href="https://github.com/react-native-community/react-native-netinfo#getting-started" />
 
 ## API
 

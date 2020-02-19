@@ -3,6 +3,7 @@ title: DateTimePicker
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-datetimepicker'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '../../../../components/plugins/Video'
 
@@ -14,7 +15,7 @@ A component that provides access to the system UI for date and time selection.
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install @react-native-community/datetimepicker`. In bare apps, make sure you also follow the [linking instructions](https://github.com/react-native-community/react-native-datetimepicker#linking).
+<InstallSection packageName="@react-native-community/datetimepicker" href="https://github.com/react-native-community/react-native-datetimepicker#linking" />
 
 ## Usage
 

@@ -3,8 +3,8 @@ title: Crypto
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-crypto`** enables you to hash (encrypt) data in an equivalent manner to the `Node.js` core `crypto` API.
@@ -13,7 +13,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+<InstallSection packageName="expo-crypto" />
 
 ## Usage
 

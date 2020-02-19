@@ -3,6 +3,7 @@ title: Network
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-network'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-network`** provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-network`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-network).
+<InstallSection packageName="expo-network" />
 
 ## API
 

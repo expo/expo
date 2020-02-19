@@ -3,8 +3,8 @@ title: Pedometer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 `Pedometer` from **`expo-sensors`** uses Core Motion on iOS and the system `hardware.Sensor` on Android to get the user's step count, and also allows you to subscribe to pedometer updates.
@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+<InstallSection packageName="expo-sensors" />
 
 ## Usage
 
