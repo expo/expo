@@ -85,7 +85,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
     if (!mIsInitialized) {
       promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
     }
-    super.getAccessTokenAsync(config, promise);
+    super.getAccessTokenAsync(promise);
   }
 
   @Override
@@ -93,7 +93,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
     if (!mIsInitialized) {
       promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
     }
-    super.logOutAsync(config, promise);
+    super.logOutAsync(promise);
   }
 
   @Override
