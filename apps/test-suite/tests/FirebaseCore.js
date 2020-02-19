@@ -33,7 +33,7 @@ export async function test({ describe, it, xit, expect, beforeAll }) {
         let error = null;
         try {
           const { DEFAULT_APP_NAME } = FirebaseCore;
-          expect(DEFAULT_APP_NAME.startsWith(SANDBOX_APP_PREFIX)).toBeTrue();
+          expect(DEFAULT_APP_NAME.startsWith(SANDBOX_APP_PREFIX)).toBe(true);
         } catch (e) {
           error = e;
         }
