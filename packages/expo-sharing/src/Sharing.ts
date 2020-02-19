@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import Sharing from './ExpoSharing';
 
-type ShareOptions = {
+export type ShareOptions = {
   mimeType?: string;
   UTI?: string;
   dialogTitle?: string;
