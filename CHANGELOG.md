@@ -20,6 +20,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - **`expo`**: Removed `AuthSession` from the `expo` package and extracted into `expo-auth-session` unimodule. ([#6989](https://github.com/expo/expo/pull/6989) by [@lukmccall](https://github.com/lukmccall))
 - **`expo`**: Removed `ScreenOrientation` from the `expo` package and extracted into `expo-screen-orientation` unimodule. ([#6760](https://github.com/expo/expo/pull/6760) by [@lukmccall](https://github.com/lukmccall))
 - Removed `Orientation.PORTRAIT` and `Orientation.LANDSCAPE` from `ScreenOrientation` in favor of their more specific versions. ([#6760](https://github.com/expo/expo/pull/6760) by [@lukmccall](https://github.com/lukmccall))
+- Previously all scoped app data, permissions, and so on would be carried over between your app in development in the Expo client and the published version of your app in the Expo client. This is no longer the case - they are now scoped differently. This does not apply to standalone apps or bare apps because they do not need to scope anything. ([#7100](https://github.com/expo/expo/pull/7100) [@brentvatne](https://github.com/brentvatne))
 
 ### 🎉 New features
 
