@@ -42,8 +42,7 @@
   // loaded project and the "protected" ones
   NSDictionary<NSString *,FIRApp *>* apps = [FIRApp allApps];
   NSArray<NSString*>* names = [apps allKeys];
-  for (int i = 0; i < names.count; i++) {
-    NSString* name = names[i];
+  for (NSString* name in names) {
     if (!protectedAppNames[name] && (!options || ![name isEqualToString:appName])) {
       [[FIRApp appNamed:name] deleteApp:^(BOOL success) {
         if (!success) {
@@ -108,9 +107,7 @@
   firOptions.projectID = plist[@"PROJECT_ID"];
   firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   firOptions.databaseURL = plist[@"DATABASE_URL"];
-  //firOptions.deepLinkURLScheme = plist[@"DEEP_LINK_URL_SCHEMA"];
   firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
-  //firOptions.appGroupID = plist[@"APP_GROUP_ID"];
   
   return firOptions;
 }
