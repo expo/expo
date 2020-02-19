@@ -3,6 +3,8 @@ import { UnavailabilityError } from '@unimodules/core';
 import ExpoSMS from './ExpoSMS';
 import { SMSResponse } from './SMS.types';
 
+export { SMSResponse };
+
 export async function sendSMSAsync(
   addresses: string | string[],
   message: string
