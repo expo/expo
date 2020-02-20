@@ -56,7 +56,6 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     Map<String, Object> constants = super.getConstants();
 
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
-    constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
     constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
