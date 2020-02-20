@@ -12,6 +12,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
 import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
 import expo.modules.firebase.core.FirebaseCoreService;
 import expo.modules.firebase.core.FirebaseCoreOptions;
@@ -23,10 +24,10 @@ import java.util.List;
 
 import java.io.UnsupportedEncodingException;
 
-public class ScopedFirebaseCoreService extends FirebaseCoreService {
+public class ScopedFirebaseCoreService extends FirebaseCoreService implements RegistryLifecycleListener {
 
-  private ModuleRegistry mModuleRegistry;
-  private String mProtectedAppName;
+  private static Map<String, Boolean> mProtectedAppNames = new HashMap<String, Boolean>(); // Map<App-name, isDeleted>
+
   private String mAppName;
   private FirebaseOptions mAppOptions;
 
@@ -35,19 +36,40 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
 
     // Get the default firebase app name
     FirebaseApp defaultApp = getFirebaseApp(null);
-    mProtectedAppName = (defaultApp != null) ? defaultApp.getName() : DEFAULT_APP_NAME;
+    String defaultAppName = (defaultApp != null) ? defaultApp.getName() : DEFAULT_APP_NAME;
 
     // Get experience key & unique app name
     String experienceKey = getEncodedExperienceId(experienceId);
     mAppName = "__sandbox_" + experienceKey;
     mAppOptions = getOptionsFromManifest(manifest);
 
-    // Delete all previously created apps, except for the "default" one
-    // which will be updated/created/deleted only when it has changed
-    List<FirebaseApp> apps = FirebaseApp.getApps(context);
-    for (FirebaseApp app : apps) {
-      if (!app.getName().equals(mProtectedAppName) && !app.getName().equals(mAppName)) {
+    // Add the app to the list of protected app names
+    synchronized (mProtectedAppNames) {
+      mProtectedAppNames.put(defaultAppName, false);
+      mProtectedAppNames.put(mAppName, false);
+    }
+
+    // Delete any previously created apps for which the project was unloaded
+    // This ensures that the list of Firebase Apps doesn't keep growing
+    // for each uniquely loaded project.
+    for (FirebaseApp app : FirebaseApp.getApps(context)) {
+      Boolean isDeleted = false;
+      synchronized (mProtectedAppNames) {
+        if (mProtectedAppNames.containsKey(app.getName())) {
+          isDeleted = mProtectedAppNames.get(app.getName());
+        }
+      }
+      if (isDeleted) {
         app.delete();
+      }
+    }
+
+    // Cleanup any deleted apps from the protected-names map
+    synchronized (mProtectedAppNames) {
+      for (Map.Entry<String, Boolean> entry : mProtectedAppNames.entrySet()) {
+        if (entry.getValue()) { // isDeleted
+          mProtectedAppNames.remove(entry.getKey());
+        }
       }
     }
 
@@ -82,8 +104,10 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
 
   @Override
   protected boolean isAppAccessible(final String name) {
-    if ((mProtectedAppName != null) && mProtectedAppName.equals(name)) {
-      return false;
+    synchronized (mProtectedAppNames) {
+      if (mProtectedAppNames.containsKey(name) && !mAppName.equals(name)) {
+        return false;
+      }
     }
     return super.isAppAccessible(name);
   }
@@ -179,6 +203,28 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
       return json.containsKey("appId") ? FirebaseCoreOptions.fromJSON(json) : null;
     } catch (Exception err) {
       return null;
+    }
+  }
+
+  // Registry lifecycle events
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    // nop
+  }
+
+  @Override
+  public void onDestroy() {
+
+    // Mark this Firebase App as deleted. Don't delete it straight
+    // away, but mark it for deletion. When loading a new project
+    // a check is performed that will cleanup the deleted Firebase apps.
+    // This ensures that Firebase Apps don't get deleted/recreated
+    // every time a project reload happens, and also also ensures that
+    // `isAppAccessible` keeps the app unavailable for other project/packages
+    // after unload.
+    synchronized (mProtectedAppNames) {
+      mProtectedAppNames.put(mAppName, true);
     }
   }
 }
