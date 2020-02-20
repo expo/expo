@@ -23,6 +23,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added support for video mirroring with `expo-camera`. ([#7016](https://github.com/expo/expo/pull/7016) by [@scandinaro](https://github.com/scandinaro))
 - Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
 - Add support for `expo-firebase-core`. ([#7013](https://github.com/expo/expo/pull/7013) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Add support for `expo-firebase-analytics`. ([#7017](https://github.com/expo/expo/pull/7017) by [@evanbacon](https://github.com/evanbacon) and [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🐛 Bug fixes
 
