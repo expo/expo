@@ -75,7 +75,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:text="@string/info_experience_id"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/info_id"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/scope_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/info_scope_key"
             android:textSize="16sp"/>
 
         <TextView

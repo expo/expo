@@ -4,6 +4,8 @@
   <string name="info_app_name_placeholder">App Name</string>
   <string name="info_sdk_version">SDK Version: %s</string>
   <string name="info_id">ID: %s</string>
+  <string name="info_experience_id">Experience ID: %s</string>
+  <string name="info_scope_key">Scope Key: %s</string>
   <string name="info_published_time">Published Time: %s</string>
   <string name="info_is_verified">Is Verified: %s</string>
   <string name="info_clear_data">Clear Data</string>

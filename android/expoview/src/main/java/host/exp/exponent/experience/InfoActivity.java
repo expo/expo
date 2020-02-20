@@ -38,12 +38,16 @@ public class InfoActivity extends AppCompatActivity {
   private String mManifestUrl;
   private JSONObject mManifest;
   private String mExperienceId;
+  private String mId;
+  private String mScopeKey;
   private boolean isShowingManifest = false;
 
   @BindView(R2.id.toolbar) Toolbar mToolbar;
   @BindView(R2.id.app_icon_small) ImageView mImageView;
   @BindView(R2.id.app_name) TextView mAppNameView;
+  @BindView(R2.id.id) TextView mIdView;
   @BindView(R2.id.experience_id) TextView mExperienceIdView;
+  @BindView(R2.id.scope_key) TextView mScopeKeyView;
   @BindView(R2.id.sdk_version) TextView mSdkVersionView;
   @BindView(R2.id.published_time) TextView mPublishedTimeView;
   @BindView(R2.id.is_verified) TextView mIsVerifiedView;
@@ -86,6 +90,8 @@ public class InfoActivity extends AppCompatActivity {
 
     if (mManifest != null) {
       mExperienceId = ExponentManifest.getExperienceIdOrNull(mManifest);
+      mId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+      mScopeKey = mManifest.optString(ExponentManifest.MANIFEST_SCOPE_KEY_KEY, "-");
 
       String iconUrlString = mManifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
       if (iconUrlString != null) {
@@ -99,7 +105,9 @@ public class InfoActivity extends AppCompatActivity {
 
       mAppNameView.setText(mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY, getString(R.string.info_app_name_placeholder)));
       mSdkVersionView.setText(getString(R.string.info_sdk_version, mManifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)));
-      mExperienceIdView.setText(getString(R.string.info_id, mExperienceId));
+      mExperienceIdView.setText(getString(R.string.info_experience_id, mExperienceId));
+      mIdView.setText(getString(R.string.info_id, mId));
+      mScopeKeyView.setText(getString(R.string.info_scope_key, mScopeKey));
       mPublishedTimeView.setText(getString(R.string.info_published_time, mManifest.optString(ExponentManifest.MANIFEST_PUBLISHED_TIME_KEY)));
       mIsVerifiedView.setText(getString(R.string.info_is_verified, String.valueOf(mManifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false))));
     }
