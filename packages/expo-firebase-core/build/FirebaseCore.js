@@ -7,7 +7,9 @@ if (!ExpoFirebaseCore) {
  * Name of the default Firebase app (e.g. `[DEFAULT]`).
  * On the Expo Client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
  */
-export const DEFAULT_APP_NAME = ExpoFirebaseCore.DEFAULT_APP_NAME;
+export const DEFAULT_APP_NAME = ExpoFirebaseCore
+    ? ExpoFirebaseCore.DEFAULT_APP_NAME
+    : undefined;
 /**
  * Firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
  *
@@ -35,7 +37,9 @@ export const DEFAULT_APP_NAME = ExpoFirebaseCore.DEFAULT_APP_NAME;
  * }
  * ```
  */
-export const DEFAULT_APP_OPTIONS = ExpoFirebaseCore.DEFAULT_APP_OPTIONS;
+export const DEFAULT_APP_OPTIONS = ExpoFirebaseCore
+    ? ExpoFirebaseCore.DEFAULT_APP_OPTIONS
+    : undefined;
 /**
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
