@@ -106,7 +106,7 @@ public class NotificationHelper {
 
   public static void getPushNotificationToken(
       final String deviceId,
-      final String experienceId,
+      final String projectId,
       final ExponentNetwork exponentNetwork,
       final ExponentSharedPreferences exponentSharedPreferences,
       final TokenListener listener) {
@@ -136,7 +136,10 @@ public class NotificationHelper {
         JSONObject params = new JSONObject();
         try {
           params.put("deviceId", deviceId);
-          params.put("experienceId", experienceId);
+          // TODO: possibly resolve naming ambiguity on backend around experienceId, possibly
+          // should be named projectId or something similar now:
+          // https://github.com/expo/expo/pull/7100
+          params.put("experienceId", projectId);
           params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
           params.put("deviceToken", sharedPreferencesToken);
           params.put("type", Constants.FCM_ENABLED ? "fcm" : "gcm");
