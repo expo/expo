@@ -4,181 +4,158 @@ title: Using Custom Fonts
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way.
+Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
+operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you'll want to use your own fonts in your project. This guide will show you how to do that.
 
-In this guide we'll walk you through adding a custom font to your Expo app. We'll use [Odibee Sans](https://fonts.google.com/specimen/Odibee+Sans) from [Google Fonts](https://fonts.google.com/) in the example. It's very distinctive so we should be able to easily tell if we have successfully used the custom font. And the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Odibee Sans](https://fonts.google.com/specimen/Odibee+Sans)
+## A Minimal but Complete Working Example
 
-Here's what it looks like:
-<img src="/static/images/font-example-odibee-sans.png" style={{ maxWidth: 305 }} />
+<SnackEmbed snackId="@ccheever/custom-font-example" />
 
-## Downloading the font
+> 💡 **This won't preview properly in the web viewer of Snack but works everywhere else.** This is just a bug in Snack that should be fixed soon. This code will work on web in expo-cli apps and on all other platforms in Snack.
 
-Take the Odibee Sans zipfile that you downloaded, extract it and copy `OdibeeSans-Regular.ttf` into the assets directory in your project. The convention in most Expo projects is to put your fonts in `your-project/assets/fonts`, but you can put them anywhere and everything should still work.
+If you load this up on a device, you should see something that looks like this:
 
-## Snack and Custom Fonts
+<img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
 
-There is currently a bug in Snack which prevents custom fonts from being correctly loaded across all platforms right now, so the code examples in this guide will all use a project created with the Expo CLI.
+Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to 
+get the example working right, or if something is wrong. If the Platform Default font looks a little different 
+for you, that's fine; the platform default font varies from platform to platform.
 
-You can see a complete working copy of the [source code](https://github.com/expo/examples/tree/master/with-custom-font) in the expo/examples repository on GitHub.
+## Getting a Font
 
-## Starting code
+The first thing you'll need is a font file. In this example, we use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson.
 
-First let's start with a basic "Hello world!" app. Create a new project with `expo init` and change `App.js` to the following:
+You'll want either a font in either `.otf` or `.ttf` format. Those are the two formats that work across all Expo platforms (web, iOS, and Android). If you have both an OTF and a TTF file, just use OTF. It's a newer format that is often smaller and sometimes higher quality in some contexts. Either one is fine though.
 
-```javascript
-import React from 'react';
+The convention in Expo apps is to put your fonts in an `./assets/fonts` directory, but you can put them anywhere you like.
 
-import { Text, View } from 'react-native';
+In this example (which you can see if you [open the Snack in a dedicated window](https://snack.expo.io/@ccheever/custom-font-example)), we've put our font file, `Inter-Black.otf` in the `./assets/fonts` subdirectory of the project.
 
-export default props => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text style={{ fontSize: 48 }}>Hello, standard font!</Text>
-  </View>
-);
-```
+## Using the `useFonts` Hook
 
-Try getting this basic app running before playing with a custom font, so you can get any basic setup issues out of the way.
+The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedic van Putten. It is the easiest way to load custom fonts in modern React.
 
-You should have something that looks roughly like this now.
-
-<img src="/static/images/font-example-standard-font.png" style={{ maxWidth: 305 }} />
-
-If it doesn't look exactly the same, that's fine. You're just seeing the standard font for the platform you're on.
-
-## Loading the font in your app
-
-The easiest way to load custom fonts into your project is to use the Expo font library and the [`useFonts`](https://github.com/byCedric/use-expo/blob/master/packages/font/docs/use-fonts.md) hook included in with the [`use-expo`](https://github.com/byCedric/use-expo) hooks library.
-
-Let's add those to our project now by typing the following at the command line:
+To set it up, first add the library to your project, either by 
 
 ```shell
 yarn add @use-expo/font
 ```
 
-Now we can use the hook in our project like this:
+or 
 
-First, we import the hook
+```shell
+npm install --save @use-expo/font
+
+```
+
+Once the library is installed, you can import the hook with 
 
 ```javascript
 import { useFonts } from '@use-expo/font';
 ```
 
-Now we list out which font resources we want to use and what we want to call them.
-In this case, we're only using one font so it's pretty easy.
+To use any hook in React, you need to use a function component.
+
+The `useFonts` hook returns a single item list containing a value telling you whether the font is loaded or not.
 
 ```javascript
-let customFonts = {
-  'OdibeeSans-Regular': require('./assets/fonts/OdibeeSans-Regular.ttf'),
-};
+[isLoaded] = useFonts({ ... });
 ```
 
-We then use a hook to load the font and then display the text when it's loaded.
+It takes one argument which is a JS object mapping the names you want to give your fonts to the assets they point to.
 
-```javascript
-export default props => {
-  let [fontsLoaded] = useFonts(customFonts);
-  if (!fontsLoaded) {
-    return <View />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'OdibeeSans-Regular', fontSize: 28 }}>
-          Hello, standard font!
-        </Text>
-      </View>
-    );
-  }
-};
-```
+The assets can be either assest in your project, specified by `require('./path/to/your_asset')` or they can be URLs to font files on the web, like `'https://example.org/path/to/your_font.ttf'`.
 
-Now you should see something like this!
+In general, it's best to use assets from your project when possible.
 
-<img src="/static/images/font-example-custom-font.png" style={{ maxWidth: 305 }} />
+## Using `<AppLoading />`
 
+Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready.
 
-To load and use fonts we will use the [Expo SDK](../../sdk/overview/), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save expo` in your project directory. Add the following `import` in your application code:
+A great way we can do that is to use the [`<AppLoading />`](../sdk/app-loading) component. In its simplest form, you can just render it while you're waiting for your app to load.
 
-```javascript
-import * as Font from 'expo-font';
-```
+Sometimes -- particularly on the web -- people choose to render their content in a platform default font while their custom font is loading. Or, alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading.
 
-The `expo` library provides an API to access native functionality of the device from your JavaScript code. `Font` is the module that deals with font-related tasks. First, we must load the font from our assets directory using [`Font.loadAsync()`](../../sdk/font/#exponentfontloadasync 'Font.loadAsync'). We can do this in the [componentDidMount()](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount) lifecycle method of the `App` component. Add the following method in `App`: Now that we have the font files saved to disk and the Font SDK imported, let's add this code:
+These approaches are called FOUT and FOIT and you can read a lot more about them on the web.
 
-```javascript
-export default class App extends React.Component {
-  componentDidMount() {
-    Font.loadAsync({
-      'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
-    });
-  }
+In general, these strategies are not recommended for Expo apps. If you include your fonts in your project, the
+fonts will always be delivered to the user by the time your code is running. The one exception to this is that you may prefer to do this on the web.
 
-  // ...
-}
-```
+# Advanced Topics
 
-This loads Open Sans Bold and associates it with the name `'open-sans-bold'` in Expo's font map. Now we just have to refer to this font in our `Text` component.
+## Loading a remote font directly from the web
 
-#### Styling Custom Fonts
+In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they 
+will be bundled with the download and available immediately. And you don't have to worry about CORS or other potential issues.
 
-> **Note:** Fonts loaded through Expo don't currently support the `fontWeight` or `fontStyle` properties -- you will need to load those variations of the font and specify them by name, ex. `'Open-Sans-Bold'`.
+But if you want to do it, it is also possible to load a remote font file directly from the web rather than from your project's assets.
+
+To do this, just replace the `require('./assets/fonts/MyFont.otf')` with the URL of your font.
+
+Here is a minimal, complete example.
+
+<SnackEmbed snackId="@ccheever/remote-font-example" />
+
+> ⚠️ **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**  If you don't do this, your remote font might not load properly on the web platform.
+
+## Using `Font.loadAsync` directly
+
+If you don't want to use the `useFonts` hook, you can use `Font.loadAsync` directly.
+
+What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](../sdk/font).
+
+You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
+
+<SnackEmbed snackId="@ccheever/font.loadasync-example" />
 
 
-#### TODO(ccheever): Continue here
+## More on Font Formats
 
-## Using the font in a `Text` component
+The two officially supported font formats for the Expo platform are OTF and TTF.
 
-With React Native you specify fonts in `Text` components using the `fontFamily` style property. The `fontFamily` is the key that we used in the `customFonts` object we passed to the `useFonts` hook.
+You should use one of those formats whenever you can. If your font is in another format, try to convert it to
+one of those formats.
 
-```javascript
-<Text style={{ fontFamily: 'OdibeeSans-Regular', fontSize: 56 }}>Hello Odibee!</Text>
-```
+These are the only font formats that work consistently in Expo across web, Android, and iOS.
 
-On next refresh the app seems to still not display the text with Open Sans Bold. You will see that it is still using the default system font. The problem is that [`Font.loadAsync()`](../../sdk/font/#exponentfontloadasync 'Font.loadAsync') is an asynchronous call and takes some time to complete. Before it completes, the `Text` component is already rendered with the default font since it can't find the `'open-sans-bold'` font (which hasn't been loaded yet).
+If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and `.otf` files are often
+smaller than `.ttf` files and sometimes OTF files will render slightly better in certain contexts. In general,
+both formats are very similar and perfectly acceptable.
 
-## Waiting for the font to load before rendering
+## Even More on Font Formats
 
-We need a way to re-render the `Text` component when the font has finished loading. We can do this by keeping a boolean value `fontLoaded` in the `App` component's state that keeps track of whether the font has been loaded. We render the `Text` component only if `fontLoaded` is `true`.
+You may need to fiddle with the Metro bundler options to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. Trying to render a font format that a
+platform doesn't support will sometimes cause your app to crash.
 
-First we initialize `fontLoaded` to false in the `App` class constructor:
+But, for reference, here is a table of which formats work on which platforms.
 
-```javascript
-class App extends React.Component {
-  state = {
-    fontLoaded: false,
-  };
+| Format | Web | iOS | Android |
+| ------ | --- | --- | ------- |
+| ttf    | ✅  | ✅  | ✅      |
+| otf    | ✅  | ✅  | ✅      |
+| woff   | ✅  | ✅  |          |
+| woff2  | ✅  | ✅  |          | 
+| dfont  |     |     | ✅      |
+| svg    | ✳️   |     |         |
+| eot    | ✳️   |     |         |
+| fon    |     |     |         |
+| bdf    |     |     |         |
+| ps     |     |     |         |
+| ttc    |     |     |         |
 
-  // ...
-}
-```
 
-Next, we must set `fontLoaded` to `true` when the font is done loading. [`Font.loadAsync()`](../../sdk/font/#exponentfontloadasync 'Font.loadAsync') returns a `Promise` that is fulfilled when the font is successfully loaded and ready to use. So we can use [async/await](https://blog.getexponent.com/react-native-meets-async-functions-3e6f81111173) with `componentDidMount()` to wait until the font is loaded, then update our state.
+## Platform Built-in Fonts
 
-```javascript
-class App extends React.Component {
-  async componentDidMount() {
-    await Font.loadAsync({
-      'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
-    });
+If you don't want to use a custom font, your best bet is to just use the platform default font by not specifying a font family. Each platform that Expo apps support has a different set of fonts available by default, so there's no good way to specify one that will work everywhere without supplying your own custom font.
 
-    this.setState({ fontLoaded: true });
-  }
+If you are curious, [Nader Dabit](https://twitter.com/dabit3) maintains a [list of fonts always available on iOS and Android](https://github.com/react-native-training/react-native-fonts).
 
-  // ...
-}
-```
+And on web, there are a number of generic font families that you can specify. Different users, browsers, and operating systems will be configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone will use San Francisco as its default for `sans-serif` while Microsoft Edge on Windows will use Arial, and Chrome on Android will typically use Roboto, though OnePlus phones will often use Slate, etc., etc..
 
-Finally, we want to only render the `Text` component if `fontLoaded` is `true`. We can do this by replacing the `Text` element with the following:
++ `sans-serif`
++ `serif`
++ `monospace`
++ `fantasy`
++ `cursive`
 
-```javascript
-<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  {this.state.fontLoaded ? (
-    <Text style={{ fontFamily: 'open-sans-bold', fontSize: 56 }}>Hello, world!</Text>
-  ) : null}
-</View>
-```
-
-A `null` child element is simply ignored by React Native, so this skips rendering the `Text` component when `fontLoaded` is `false`. Now on refreshing the app you will see that `open-sans-bold` is used.
-
-This technique is built into the Tabs template for convenience, as you can see [here](https://github.com/expo/new-project-template/blob/d6a440b01801fbeb323265e39a155d969ab6827f/App.js#L19-L37).
-
-> **Note:** Typically you will want to load your apps primary fonts before the app is displayed to avoid text flashing in after the font loads. The recommended approach is to move the `Font.loadAsync` call to your top-level component.
+In general, your safest bets are just to use the system default which will usually be an easy-to-read sans serif font that the user of any system should be familiar with; or to use your own custom font so you have precise control over what the user will see.
