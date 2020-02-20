@@ -1,6 +1,6 @@
 import { NativeModulesProxy, UnavailabilityError, CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
-import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS, getDefaultWebOptions } from 'expo-firebase-core';
+import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS, DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
 import { Platform } from 'react-native';
 
 import FirebaseAnalyticsJS from './FirebaseAnalyticsJS';
@@ -35,9 +35,8 @@ function callAnalyticsModule(funcName: string, ...args) {
   // In that case we show a warning and log the analytics events to the console.
   // The user can disable these by calling `setUnavailabilityLogging(false)`.
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
-    const defaultWebOptions = getDefaultWebOptions();
-    if (defaultWebOptions && !pureJSAnalyticsTracker) {
-      pureJSAnalyticsTracker = new FirebaseAnalyticsJS(defaultWebOptions, {
+    if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
+      pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
         clientId: Constants.sessionId,
         strictNativeEmulation: true,
         appName: Constants.manifest?.name || 'Unnamed Expo project',
