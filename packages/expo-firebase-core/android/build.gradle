@@ -1,20 +1,10 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '3.0.0'
+version = '1.0.0'
 
+// Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -51,7 +41,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 4
-    versionName '3.0.0'
+    versionName '1.0.0'
   }
   lintOptions {
     abortOnError false
@@ -69,6 +59,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule "unimodules-constants-interface"
+
   api platform("com.google.firebase:firebase-bom:24.1.0")
   api 'com.google.firebase:firebase-core'
   api 'com.google.firebase:firebase-common'
