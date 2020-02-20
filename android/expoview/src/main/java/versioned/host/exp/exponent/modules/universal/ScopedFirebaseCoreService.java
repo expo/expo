@@ -35,7 +35,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
 
     // Get the default firebase app name
     FirebaseApp defaultApp = getFirebaseApp(null);
-    mProtectedAppName = (defaultApp != null) ? defaultApp.getName() : "[DEFAULT]";
+    mProtectedAppName = (defaultApp != null) ? defaultApp.getName() : DEFAULT_APP_NAME;
 
     // Get experience key & unique app name
     String experienceKey = getEncodedExperienceId(experienceId);

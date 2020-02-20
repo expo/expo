@@ -12,7 +12,7 @@ import java.util.Collections;
 
 public class FirebaseCoreService implements InternalModule, FirebaseCoreInterface {
 
-  static final String DEFAULT_APP_NAME = "[DEFAULT]";
+  protected static final String DEFAULT_APP_NAME = "[DEFAULT]";
 
   private Context mContext;
 
