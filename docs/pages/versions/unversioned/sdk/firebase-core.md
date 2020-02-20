@@ -42,16 +42,15 @@ On the Expo Client a Firebase App is created for each project that is loaded, an
 
 ### `FirebaseCore.DEFAULT_APP_OPTIONS`
 
-Object containing the firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
+Firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
 
-The options are read from the following files and app.json keys.
+Depending on the platform, the options are read from the following files and `app.json` keys.
 
 | Platform | File                       | App.json key                 |
 | -------- | -------------------------- | ---------------------------- |
 | iOS      | `GoogleService-Info.plist` | `ios.googleServicesFile`     |
 | Android  | `google-services.json`     | `android.googleServicesFile` |
 | Web      |                            | `web.config.firebase`        |
-
 
 #### Example
 
@@ -67,9 +66,12 @@ console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
 //   projectId: "myexpoapp777",
 //   messagingSenderId:  123454321
 // }
-//
-// When `DEFAULT_APP_OPTIONS` returns undefined, then your google-services
-// configuration is not setup correctly.
 ```
+
+### `FirebaseCore.DEFAULT_WEB_APP_OPTIONS`
+
+The default Firebase options as defined in `web.config.firebase` in `app.json`.
+
+This constant is useful when you want to use the Firebase JS SDK on native.
 
 #
