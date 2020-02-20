@@ -61,8 +61,8 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
     try {
       String encodedUrl = experienceId.getUrlEncoded();
       byte[] data = encodedUrl.getBytes("UTF-8");
-      String base64 = Base64.encodeToString(data, Base64.URL_SAFE | Base64.NO_PADDING);
-      return base64.replace("\n", "").replace("\r", "");
+      String base64 = Base64.encodeToString(data, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+      return base64;
     } catch (UnsupportedEncodingException e) {
       return Integer.toString(experienceId.hashCode());
     }
