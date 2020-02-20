@@ -1,8 +1,8 @@
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;

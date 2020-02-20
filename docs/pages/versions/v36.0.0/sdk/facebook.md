@@ -3,13 +3,11 @@ title: Facebook
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-facebook'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ❌  |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/6862' }} />
 
 ## Installation
 

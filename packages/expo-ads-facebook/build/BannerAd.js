@@ -1,5 +1,5 @@
-import React from 'react';
 import { requireNativeViewManager } from '@unimodules/core';
+import React from 'react';
 export default class BannerAd extends React.Component {
     render() {
         let { type, onPress, onError, style, ...props } = this.props;

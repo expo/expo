@@ -1,7 +1,7 @@
 import React from 'react';
-import { ViewProps } from '../primitives/View';
-import { TextProps } from '../primitives/Text';
 import { TableTextProps } from '../primitives/Table';
+import { TextProps } from '../primitives/Text';
+import { ViewProps } from '../primitives/View';
 export declare const Table: React.ComponentType<ViewProps>;
 export declare const THead: React.ComponentType<ViewProps>;
 export declare const TBody: React.ComponentType<ViewProps>;

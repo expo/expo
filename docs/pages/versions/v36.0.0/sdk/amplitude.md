@@ -3,20 +3,18 @@ title: Amplitude
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-analytics-amplitude"
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 Provides access to [Amplitude](https://amplitude.com/) mobile analytics which basically lets you log various events to the Cloud. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
 
 **Please note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app. For example, the version logged when running experiences in the Expo app will be the [Expo app version](../constants/#constantsexpoversion). Whereas in standalone apps, the version set in `app.json` is used. For more information see [this issue on GitHub](https://github.com/expo/expo/issues/4720).
 
-
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ✅     | ✅     | ✅     | ✅    |
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6886' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-analytics-amplitude`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).
+<InstallSection packageName="expo-analytics-amplitude" />
 
 ## API
 
@@ -89,3 +87,33 @@ Add the current user to a group. For more information, see here for [iOS](https:
 
 - **groupType (_string_)** -- The group name, e.g. "sports".
 - **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
+
+
+### `Amplitude.setTrackingOptions(trackingOptions)`
+
+By default the Amplitude SDK will track several user properties such as carrier and city. You can use this method to customize and disable individual fields.
+
+> **Note:** These configurations will prevent default properties from being tracked on newly created projects, where data has not yet been sent. Please contact platform@amplitude.com if you would like default properties blocked (moving forward) on projects with existing data.
+
+#### Arguments
+
+- **trackingOptions (object)** -- Options object for what should not be tracked. The table below describes what properties the object may contain. All properties are expected to be booleans. For example, passing `disableCarrier: true` disables tracking the device's carrier.
+
+| Property                    | Description                                                                |
+|-----------------------------|----------------------------------------------------------------------------|
+| `disableCarrier`            | Disable tracking of the device's carrier.                                  |
+| `disableCity`               | Disable tracking of the user's city.                                       |
+| `disableCountry`            | Disable tracking of the user's country.                                    |
+| `disableDeviceManufacturer` | Disable tracking of the device manufacturer.                               |
+| `disableDeviceModel`        | Disable tracking of the device model.                                      |
+| `disableDMA`                | Disable tracking of the user's DMA.                                        |
+| `disableIDFA`               | Disable tracking of the user's IDFA.                                       |
+| `disableIDFV`               | Disable tracking of the user's IDFV.                                       |
+| `disableIPAddress`          | Disable tracking of the user's IP address.                                 |
+| `disableLanguage`           | Disable tracking of the device's language.                                 |
+| `disableLatLng`             | Disable tracking of the user's current latitude and longitude coordinates. |
+| `disableOSName`             | Disable tracking of the device's OS name.                                  |
+| `disableOSVersion`          | Disable tracking of the device's OS version.                               |
+| `disablePlatform`           | Disable tracking of the device's platform.                                 |
+| `disableRegion`             | Disable tracking of the user's region.                                     |
+| `disableVersionName`        | Disable tracking of the app version the user is on for your app.           |

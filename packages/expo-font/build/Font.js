@@ -1,7 +1,7 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
-import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
+import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
 const loaded = {};
 const loadPromises = {};
 /**

@@ -3,16 +3,14 @@ title: Camera
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run [this snack](https://snack.expo.io/@charliecruzan/camerja) on your device to see all these features working together!
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ❌               | ✅         | ❌            | ✅  |
+<PlatformsSection android ios web />
 
 > **Note**:
 
@@ -21,7 +19,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-camera`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
+<InstallSection packageName="expo-camera" />
 
 ## Configuration
 

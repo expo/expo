@@ -5,9 +5,9 @@
 // they install the 'expo' package. We can get rid of this entirely when
 // the following RFC has been implemented:
 // https://github.com/react-native-community/discussions-and-proposals/issues/120
+import * as Icon from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import * as Font from 'expo-font';
-import * as Icon from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 export { Asset } from 'expo-asset';
 export { Constants };

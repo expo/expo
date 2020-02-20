@@ -3,13 +3,11 @@ title: ErrorRecovery
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-error-recovery'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 This module provides utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 

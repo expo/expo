@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
-import { getAssetByID } from './AssetRegistry';
 
+import { getAssetByID } from './AssetRegistry';
 import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
 
 declare var nativeExtensions: any;

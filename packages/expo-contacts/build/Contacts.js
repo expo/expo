@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
@@ -189,6 +189,7 @@ export const SOCIAL_PROFILES = 'socialProfiles';
 export const IM_ADDRESSES = 'instantMessageAddresses';
 export const URLS = 'urlAddresses';
 export const DATES = 'dates';
+export const RAW_DATES = 'rawDates';
 export const RELATIONSHIPS = 'relationships';
 export const Fields = {
     ID: 'id',

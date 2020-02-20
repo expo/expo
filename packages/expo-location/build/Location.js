@@ -1,6 +1,6 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
-import { PermissionStatus, } from 'unimodules-permissions-interface';
 import invariant from 'invariant';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
 export { PermissionStatus };

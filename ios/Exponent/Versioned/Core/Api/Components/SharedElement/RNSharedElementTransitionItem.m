@@ -27,7 +27,6 @@
     _needsLayout = NO;
     _needsContent = NO;
     _content = nil;
-    _contentType = RNSharedElementContentTypeNone;
     _style = nil;
     _hidden = NO;
     return self;
@@ -47,7 +46,6 @@
     _needsLayout = node != nil;
     _needsContent = !_isAncestor && (node != nil);
     _content = nil;
-    _contentType = RNSharedElementContentTypeNone;
     _style = nil;
     _hidden = NO;
 }
@@ -63,68 +61,10 @@
     }
 }
 
-- (NSString*) contentTypeName
-{
-    switch(_contentType) {
-        case RNSharedElementContentTypeNone: return @"none";
-        case RNSharedElementContentTypeRawImage: return @"image";
-        case RNSharedElementContentTypeSnapshotView: return @"snapshotView";
-        case RNSharedElementContentTypeSnapshotImage: return @"snapshotImage";
-        default: return @"unknown";
-    }
-}
-
-+ (CGSize) contentSizeFor:(CGRect)layout content:(id)content contentType:(RNSharedElementContentType)contentType
-{
-    if (!content) return layout.size;
-    if (contentType != RNSharedElementContentTypeRawImage) return layout.size;
-    CGSize size = layout.size;
-    return [content isKindOfClass:[UIImage class]] ? ((UIImage*)content).size : size;
-}
-
-+ (CGRect) contentLayoutFor:(CGRect)layout content:(id)content contentType:(RNSharedElementContentType)contentType contentMode:(UIViewContentMode) contentMode reverse:(BOOL)reverse
-{
-    if (!content) return layout;
-    if (contentType != RNSharedElementContentTypeRawImage) return layout;
-    CGSize size = layout.size;
-    CGSize contentSize = [RNSharedElementTransitionItem contentSizeFor:layout content:content contentType:contentType];
-    CGFloat contentAspectRatio = (contentSize.width / contentSize.height);
-    BOOL lo = (size.width / size.height) < contentAspectRatio;
-    BOOL aspectRatioCriteria = reverse ? !lo : lo;
-    switch (contentMode) {
-        case UIViewContentModeScaleToFill: // stretch
-            break;
-        case UIViewContentModeScaleAspectFit: // contain
-            if (aspectRatioCriteria) {
-                size.height = size.width / contentAspectRatio;
-            } else {
-                size.width = size.height * contentAspectRatio;
-            }
-            break;
-        case UIViewContentModeScaleAspectFill: // cover
-            if (aspectRatioCriteria) {
-                size.width = size.height * contentAspectRatio;
-            } else {
-                size.height = size.width / contentAspectRatio;
-            }
-            break;
-        case UIViewContentModeCenter: // center
-            size = contentSize;
-            break;
-        default:
-            break;
-    }
-    CGRect contentLayout = layout;
-    contentLayout.origin.x += (contentLayout.size.width - size.width) / 2;
-    contentLayout.origin.y += (contentLayout.size.height - size.height) / 2;
-    contentLayout.size = size;
-    return contentLayout;
-}
-
-- (CGRect) contentLayoutForContent:(id)content contentType:(RNSharedElementContentType)contentType
+- (CGRect) contentLayoutForContent:(RNSharedElementContent*)content
 {
     if (!content || !_style) return CGRectZero;
-    return [RNSharedElementTransitionItem contentLayoutFor:_style.layout content:content contentType:contentType contentMode:_style.contentMode reverse:NO];
+    return [RNSharedElementContent layoutForRect:_style.layout content:content contentMode:_style.contentMode reverse:NO];
 }
 
 - (CGRect) visibleLayoutForAncestor:(RNSharedElementTransitionItem*) ancestor

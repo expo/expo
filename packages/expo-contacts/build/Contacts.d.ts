@@ -187,6 +187,7 @@ export declare const SOCIAL_PROFILES = "socialProfiles";
 export declare const IM_ADDRESSES = "instantMessageAddresses";
 export declare const URLS = "urlAddresses";
 export declare const DATES = "dates";
+export declare const RAW_DATES = "rawDates";
 export declare const RELATIONSHIPS = "relationships";
 export declare const Fields: {
     ID: string;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { ExpoAppleAuthenticationButtonSignInWhite, ExpoAppleAuthenticationButtonSignInWhiteOutline, ExpoAppleAuthenticationButtonSignInBlack, ExpoAppleAuthenticationButtonContinueWhite, ExpoAppleAuthenticationButtonContinueWhiteOutline, ExpoAppleAuthenticationButtonContinueBlack, } from './ExpoAppleAuthenticationButton';
 import { AppleAuthenticationButtonStyle, AppleAuthenticationButtonType, } from './AppleAuthentication.types';
+import { ExpoAppleAuthenticationButtonSignInWhite, ExpoAppleAuthenticationButtonSignInWhiteOutline, ExpoAppleAuthenticationButtonSignInBlack, ExpoAppleAuthenticationButtonContinueWhite, ExpoAppleAuthenticationButtonContinueWhiteOutline, ExpoAppleAuthenticationButtonContinueBlack, } from './ExpoAppleAuthenticationButton';
 /**
  * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
  * your screen. The App Store Guidelines require you to use this component to start the sign in

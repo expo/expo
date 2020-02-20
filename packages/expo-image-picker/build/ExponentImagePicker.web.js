@@ -1,6 +1,6 @@
-import uuidv4 from 'uuid/v4';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'unimodules-permissions-interface';
+import uuidv4 from 'uuid/v4';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
     [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
