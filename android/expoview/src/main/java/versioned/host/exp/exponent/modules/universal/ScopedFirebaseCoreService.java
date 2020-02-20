@@ -71,17 +71,17 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService {
   // Overriden
 
   @Override
-  public String getAppName() {
+  protected String getAppName() {
     return mAppName;
   }
 
   @Override
-  public FirebaseOptions getAppOptions() {
+  protected FirebaseOptions getAppOptions() {
     return mAppOptions;
   }
 
   @Override
-  public boolean isAppAccessible(final String name) {
+  protected boolean isAppAccessible(final String name) {
     if ((mProtectedAppName != null) && mProtectedAppName.equals(name)) {
       return false;
     }

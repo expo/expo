@@ -34,21 +34,21 @@ public class FirebaseCoreService implements InternalModule, FirebaseCoreInterfac
 
   // Overridable
 
-  public String getAppName() {
+  protected String getAppName() {
     FirebaseApp app = getFirebaseApp(null);
     return (app != null) ? app.getName() : DEFAULT_APP_NAME;
   }
 
-  public FirebaseOptions getAppOptions() {
+  protected FirebaseOptions getAppOptions() {
     FirebaseApp app = getFirebaseApp(null);
     return (app != null) ? app.getOptions() : FirebaseOptions.fromResource(mContext);
   }
 
-  public boolean isAppAccessible(final String name) {
+  protected boolean isAppAccessible(final String name) {
     return true;
   }
 
-  public FirebaseApp updateFirebaseApp(final FirebaseOptions options, final String name) {
+  protected FirebaseApp updateFirebaseApp(final FirebaseOptions options, final String name) {
     FirebaseApp app = getFirebaseApp(name);
     if (app != null) {
       if (options == null) {
@@ -78,7 +78,7 @@ public class FirebaseCoreService implements InternalModule, FirebaseCoreInterfac
 
   // Static
 
-  public static FirebaseApp getFirebaseApp(String name) {
+  protected static FirebaseApp getFirebaseApp(String name) {
     FirebaseApp app;
     try {
       return (name == null) ? FirebaseApp.getInstance() : FirebaseApp.getInstance(name);
