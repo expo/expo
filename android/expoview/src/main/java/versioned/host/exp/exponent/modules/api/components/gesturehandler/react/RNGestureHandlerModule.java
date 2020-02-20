@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -555,7 +556,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       while (!mRoots.isEmpty()) {
         int sizeBefore = mRoots.size();
         RNGestureHandlerRootHelper root = mRoots.get(0);
-        ReactRootView reactRootView = root.getRootView();
+        ViewGroup reactRootView = root.getRootView();
         if (reactRootView instanceof RNGestureHandlerEnabledRootView) {
           ((RNGestureHandlerEnabledRootView) reactRootView).tearDown();
         } else {
@@ -579,7 +580,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     synchronized (mRoots) {
       for (int i = 0; i < mRoots.size(); i++) {
         RNGestureHandlerRootHelper root = mRoots.get(i);
-        if (root.getRootView().getRootViewTag() == rootViewTag) {
+        ViewGroup rootView = root.getRootView();
+        if (rootView instanceof ReactRootView && ((ReactRootView) rootView).getRootViewTag() == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
           // initialize a new one then
           return;
@@ -638,7 +640,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     synchronized (mRoots) {
       for (int i = 0; i < mRoots.size(); i++) {
         RNGestureHandlerRootHelper root = mRoots.get(i);
-        if (root.getRootView().getRootViewTag() == rootViewTag) {
+        ViewGroup rootView = root.getRootView();
+        if (rootView instanceof ReactRootView && ((ReactRootView) rootView).getRootViewTag() == rootViewTag) {
           return root;
         }
       }
