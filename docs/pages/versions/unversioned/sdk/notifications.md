@@ -155,7 +155,7 @@ Registers a new set of actions under given `name`.
   - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
   - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
   - **doNotOpenInForeground (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will not open the app in foreground (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/unnotificationactionoptionforeground) was **NOT** set)
-- **previewPlaceholder (_string_)** -- (iOS only) Customizable placeholder for the notification preview text. This is shown if the user has disabled notification previews for the app. Defaults to the localized iOS system default placeholde r(`Notification`).
+- **previewPlaceholder (_string_)** -- (iOS only) Customizable placeholder for the notification preview text. This is shown if the user has disabled notification previews for the app. Defaults to the localized iOS system default placeholder (`Notification`).
 
 ### `Notifications.deleteCategoryAsync(name: string)`
 
