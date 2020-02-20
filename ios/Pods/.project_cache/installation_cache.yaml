@@ -5600,8 +5600,8 @@ CACHE_KEYS:
       EXSQLite: 65d89a6af97b24f728e91e75169fcc55
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
-      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
+      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
+      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
