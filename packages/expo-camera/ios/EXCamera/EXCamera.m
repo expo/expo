@@ -335,6 +335,10 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     reject(@"E_ANOTHER_CAPTURE", @"Another photo capture is already being processed. Await the first call.", nil);
     return;
   }
+  if (!_photoOutput) {
+    reject(@"E_IMAGE_CAPTURE_FAILED", @"Camera is not ready yet. Wait for 'onCameraReady' callback.", nil);
+    return;
+  }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
   [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
 
