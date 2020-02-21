@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 import android.graphics.PointF;
 
 import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.MapUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public class BezierNode extends Node {
@@ -66,7 +67,7 @@ public class BezierNode extends Node {
   public BezierNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);
 
-    mInputID = config.getInt("input");
+    mInputID = MapUtils.getInt(config, "input", "Reanimated: Argument passed to bezier node is either of wrong type or is missing.");
 
     float startX = (float) config.getDouble("mX1");
     float startY = (float) config.getDouble("mY1");

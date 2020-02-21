@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
 import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.MapUtils;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 
 public class CondNode extends Node {
@@ -9,9 +10,11 @@ public class CondNode extends Node {
 
   public CondNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
     super(nodeID, config, nodesManager);
-    mCondID = config.getInt("cond");
-    mIfBlockID = config.hasKey("ifBlock") ? config.getInt("ifBlock") : -1;
-    mElseBlockID = config.hasKey("elseBlock") ? config.getInt("elseBlock") : -1;
+    mCondID = MapUtils.getInt(config, "cond", "Reanimated: First argument passed to cond node is either of wrong type or is missing.");
+    mIfBlockID = MapUtils.getInt(config, "ifBlock", "Reanimated: Second argument passed to cond node is either of wrong type or is missing.");
+    mElseBlockID = config.hasKey("elseBlock")
+            ? MapUtils.getInt(config, "elseBlock", "Reanimated: Second argument passed to cond node is either of wrong type or is missing.")
+            : -1;
   }
 
   @Override
