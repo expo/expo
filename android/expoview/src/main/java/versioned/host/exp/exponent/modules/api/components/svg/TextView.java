@@ -144,14 +144,12 @@ class TextView extends GroupView {
 
     @Override
     void draw(Canvas canvas, Paint paint, float opacity) {
-        if (opacity > MIN_OPACITY_FOR_DRAW) {
-            setupGlyphContext(canvas);
-            clip(canvas, paint);
-            getGroupPath(canvas, paint);
-            pushGlyphContext();
-            drawGroup(canvas, paint, opacity);
-            popGlyphContext();
-        }
+        setupGlyphContext(canvas);
+        clip(canvas, paint);
+        getGroupPath(canvas, paint);
+        pushGlyphContext();
+        drawGroup(canvas, paint, opacity);
+        popGlyphContext();
     }
 
     @Override

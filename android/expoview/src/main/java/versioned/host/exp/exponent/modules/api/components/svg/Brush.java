@@ -204,7 +204,7 @@ class Brush {
             double ratio = ry / rx;
 
             double cx = getVal(mPoints[4], width, scale, textSize) + offsetX;
-            double cy = getVal(mPoints[5], height, scale, textSize) + offsetY / ratio;
+            double cy = getVal(mPoints[5], height / ratio, scale, textSize) + offsetY / ratio;
 
             // TODO: support focus point.
             //double fx = PropHelper.fromRelative(mPoints[0], width, offsetX, scale);

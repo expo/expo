@@ -43,6 +43,9 @@
             // no-op
         } else if ([node isKindOfClass:[RNSVGNode class]]) {
             RNSVGNode* svgNode = (RNSVGNode*)node;
+            if (svgNode.display && [@"none" isEqualToString:svgNode.display]) {
+                return YES;
+            }
             if (svgNode.responsible && !self.svgView.responsible) {
                 self.svgView.responsible = YES;
             }
@@ -69,7 +72,9 @@
             CGContextClipToRect(context, rect);
             [svgView drawToContext:context withRect:rect];
         } else {
-            [node drawRect:rect];
+            node.hidden = false;
+            [node.layer renderInContext:context];
+            node.hidden = true;
         }
 
         return YES;
@@ -100,6 +105,11 @@
     }
 
     [self popGlyphContext];
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    [self invalidate];
 }
 
 - (void)setupGlyphContext:(CGContextRef)context
