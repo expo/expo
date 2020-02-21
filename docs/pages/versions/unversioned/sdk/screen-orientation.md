@@ -30,7 +30,7 @@ Open your `app.json` and add the following inside of the `"expo"` field:
 
 ```json
 {
-  expo: {
+  "expo": {
     ...
     "ios": {
       ...

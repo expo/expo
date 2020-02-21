@@ -15,11 +15,7 @@
 
 - (instancetype)init
 {
-  if (self = [super init]) {
-    _defaultOrientationMask = UIInterfaceOrientationMaskPortrait;
-  }
-  
-  return self;
+  return [self initWithDefaultScreenOrientationMask:UIInterfaceOrientationMaskPortrait];
 }
 
 - (instancetype)initWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientationMask
