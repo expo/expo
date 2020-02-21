@@ -24,6 +24,7 @@ class PathView extends RenderableView {
     public PathView(ReactContext reactContext) {
         super(reactContext);
         PathParser.mScale = mScale;
+        mPath = new Path();
     }
 
     @ReactProp(name = "d")

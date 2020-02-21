@@ -6,10 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RNSVGBrush.h"
+#import "RNSVGGroupManager.h"
 
-@interface RNSVGSolidColorBrush : RNSVGBrush
-
-- (instancetype)initWithNumber:(NSNumber *)number;
+@interface RNSVGForeignObjectManager : RNSVGGroupManager
 
 @end

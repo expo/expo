@@ -59,7 +59,13 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
             return false;
         }
 
-        svg.getPath(null, null);
+        try {
+            svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return false;
+        }
+
         svg.initBounds();
 
         float scale = svg.mScale;
@@ -78,7 +84,15 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
             return 0;
         }
 
-        Path path = svg.getPath(null, null);
+        Path path;
+
+        try {
+            path = svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return -1;
+        }
+
         PathMeasure pm = new PathMeasure(path, false);
         return pm.getLength() / svg.mScale;
     }
@@ -88,10 +102,18 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getPointAtLength(int tag, ReadableMap options) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
-        Path path = svg.getPath(null, null);
+        Path path;
+
+        try {
+            path = svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return Arguments.createMap();
+        }
+
         PathMeasure pm = new PathMeasure(path, false);
         float length = (float) options.getDouble("length");
         float scale = svg.mScale;
@@ -114,7 +136,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getBBox(int tag, ReadableMap options) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         boolean fill = options.getBoolean("fill");
@@ -122,25 +144,33 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
         boolean markers = options.getBoolean("markers");
         boolean clipped = options.getBoolean("clipped");
 
-        Path path = svg.getPath(null, null);
+        try {
+            svg.getPath(null, null);
+        } catch (NullPointerException e) {
+            svg.invalidate();
+            return Arguments.createMap();
+        }
+
         float scale = svg.mScale;
         svg.initBounds();
 
         RectF bounds = new RectF();
-        if (fill) {
-            bounds.union(svg.mFillBounds);
+        RectF fillBounds = svg.mFillBounds;
+        RectF strokeBounds = svg.mStrokeBounds;
+        RectF markerBounds = svg.mMarkerBounds;
+        RectF clipBounds = svg.mClipBounds;
+
+        if (fill && fillBounds != null) {
+            bounds.union(fillBounds);
         }
-        if (stroke) {
-            bounds.union(svg.mStrokeBounds);
+        if (stroke && strokeBounds != null) {
+            bounds.union(strokeBounds);
         }
-        if (markers) {
-            bounds.union(svg.mMarkerBounds);
+        if (markers && markerBounds != null) {
+            bounds.union(markerBounds);
         }
-        if (clipped) {
-            RectF clipBounds = svg.mClipBounds;
-            if (clipBounds != null) {
-                bounds.intersect(svg.mClipBounds);
-            }
+        if (clipped && clipBounds != null) {
+            bounds.intersect(clipBounds);
         }
 
         WritableMap result = Arguments.createMap();
@@ -156,7 +186,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getCTM(int tag) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         float scale = svg.mScale;
@@ -182,7 +212,7 @@ class RNSVGRenderableManager extends ReactContextBaseJavaModule {
     public WritableMap getScreenCTM(int tag) {
         RenderableView svg = RenderableViewManager.getRenderableViewByTag(tag);
         if (svg == null) {
-            return null;
+            return Arguments.createMap();
         }
 
         float[] values = new float[9];
