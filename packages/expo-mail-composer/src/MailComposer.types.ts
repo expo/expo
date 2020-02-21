@@ -1,4 +1,4 @@
-export type ComposeOptions = {
+export type MailComposerOptions = {
   recipients?: string[];
   ccRecipients?: string[];
   bccRecipients?: string[];
@@ -8,8 +8,8 @@ export type ComposeOptions = {
   attachments?: string[];
 };
 
-export type ComposeResult = {
-  status: ComposeStatus;
+export type MailComposerResult = {
+  status: MailComposerStatus;
 };
 
-export type ComposeStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';
+export type MailComposerStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';

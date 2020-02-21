@@ -1,11 +1,16 @@
 import React, { forwardRef } from 'react';
 import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 
-import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
+import {
+  CameraCapturedPicture,
+  CameraMountError,
+  CamerNativeProps,
+  CameraPictureOptions,
+} from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
-export default class ExponentCamera extends React.Component<NativeProps> {
+export default class ExponentCamera extends React.Component<CamerNativeProps> {
   video?: number | null;
   camera?: CameraModule;
 
@@ -21,7 +26,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     this._updateCameraProps(nextProps);
   }
 
-  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: NativeProps) => {
+  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: CamerNativeProps) => {
     const { camera } = this;
     if (!camera) {
       return;
@@ -53,7 +58,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     return camera.getAvailablePictureSizes(ratio);
   };
 
-  takePicture = async (options: PictureOptions): Promise<CapturedPicture> => {
+  takePicture = async (options: CameraPictureOptions): Promise<CameraCapturedPicture> => {
     const camera = this.getCamera();
     return camera.takePicture({
       ...options,
@@ -83,7 +88,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   };
 
-  onMountError = ({ nativeEvent }: { nativeEvent: MountError }) => {
+  onMountError = ({ nativeEvent }: { nativeEvent: CameraMountError }) => {
     if (this.props.onMountError) {
       this.props.onMountError({ nativeEvent });
     }

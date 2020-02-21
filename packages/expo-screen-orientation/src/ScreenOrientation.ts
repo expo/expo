@@ -10,7 +10,7 @@ import {
   WebOrientationLock,
   WebOrientation,
   SizeClassIOS,
-  OrientationInfo,
+  ScreenOrientationInfo,
 } from './ScreenOrientation.types';
 
 export {
@@ -22,7 +22,7 @@ export {
   WebOrientationLock,
   WebOrientation,
   SizeClassIOS,
-  OrientationInfo,
+  ScreenOrientationInfo,
 };
 
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);

@@ -1,7 +1,7 @@
 import ExpoMailComposer from './ExpoMailComposer';
-import { ComposeOptions, ComposeResult } from './MailComposer.types';
+import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
 
-export async function composeAsync(options: ComposeOptions): Promise<ComposeResult> {
+export async function composeAsync(options: MailComposerOptions): Promise<MailComposerResult> {
   return await ExpoMailComposer.composeAsync(options);
 }
 

@@ -5,17 +5,17 @@ import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 
 import {
-  CapturedPicture,
-  NativeProps,
-  PictureOptions,
-  Props,
-  RecordingOptions,
+  CameraCapturedPicture,
+  CamerNativeProps,
+  CameraPictureOptions,
+  CameraProps,
+  CameraRecordingOptions,
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
   BarCodeScanningResult,
   FaceDetectionResult,
-  MountError,
+  CameraMountError,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
@@ -29,7 +29,7 @@ const _PICTURE_SAVED_CALLBACKS = {};
 
 let _GLOBAL_PICTURE_ID = 1;
 
-function ensurePictureOptions(options?: PictureOptions): PictureOptions {
+function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
   let pictureOptions = options || {};
 
   if (!pictureOptions || typeof pictureOptions !== 'object') {
@@ -48,7 +48,7 @@ function ensurePictureOptions(options?: PictureOptions): PictureOptions {
   return pictureOptions;
 }
 
-function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
+function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordingOptions {
   let recordingOptions = options || {};
 
   if (!recordingOptions || typeof recordingOptions !== 'object') {
@@ -60,14 +60,14 @@ function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: Props): NativeProps {
+function ensureNativeProps(options?: CameraProps): CamerNativeProps {
   let props = options || {};
 
   if (!props || typeof props !== 'object') {
     props = {};
   }
 
-  const newProps: NativeProps = mapValues(props, convertProp);
+  const newProps: CamerNativeProps = mapValues(props, convertProp);
 
   const propsKeys = Object.keys(newProps);
   // barCodeTypes is deprecated
@@ -105,7 +105,11 @@ function convertProp(value: any, key: string): any {
   return value;
 }
 
-function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture; id: number } }) {
+function _onPictureSaved({
+  nativeEvent,
+}: {
+  nativeEvent: { data: CameraCapturedPicture; id: number };
+}) {
   const { id, data } = nativeEvent;
   const callback = _PICTURE_SAVED_CALLBACKS[id];
   if (callback) {
@@ -114,7 +118,7 @@ function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture
   }
 }
 
-export default class Camera extends React.Component<Props> {
+export default class Camera extends React.Component<CameraProps> {
   static async isAvailableAsync(): Promise<boolean> {
     if (!CameraManager.isAvailableAsync) {
       throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
@@ -168,7 +172,7 @@ export default class Camera extends React.Component<Props> {
     autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   };
 
-  static defaultProps: Props = {
+  static defaultProps: CameraProps = {
     zoom: 0,
     ratio: '4:3',
     focusDepth: 0,
@@ -192,7 +196,7 @@ export default class Camera extends React.Component<Props> {
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
-  async takePictureAsync(options?: PictureOptions): Promise<CapturedPicture> {
+  async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
 
     return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
@@ -213,7 +217,7 @@ export default class Camera extends React.Component<Props> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: RecordingOptions): Promise<{ uri: string }> {
+  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }
@@ -315,15 +319,15 @@ export default class Camera extends React.Component<Props> {
 export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
 
 export {
-  CapturedPicture,
-  NativeProps,
-  PictureOptions,
-  Props,
-  RecordingOptions,
+  CameraCapturedPicture,
+  CamerNativeProps,
+  CameraPictureOptions,
+  CameraProps,
+  CameraRecordingOptions,
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
   BarCodeScanningResult,
   FaceDetectionResult,
-  MountError,
+  CameraMountError,
 };

@@ -4,12 +4,12 @@ import { Platform } from 'react-native';
 
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
 import {
-  AuthOptions,
+  LocalAuthenticationOptions,
   AuthenticationType,
   LocalAuthenticationResult,
 } from './LocalAuthentication.types';
 
-export { AuthOptions, AuthenticationType, LocalAuthenticationResult };
+export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult };
 
 export async function hasHardwareAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.hasHardwareAsync) {
@@ -33,7 +33,7 @@ export async function isEnrolledAsync(): Promise<boolean> {
 }
 
 export async function authenticateAsync(
-  options: AuthOptions = {}
+  options: LocalAuthenticationOptions = {}
 ): Promise<LocalAuthenticationResult> {
   if (!ExpoLocalAuthentication.authenticateAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');

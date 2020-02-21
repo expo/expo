@@ -18,37 +18,37 @@ import {
   getUnloadedStatus,
   Playback,
   PlaybackMixin,
-  PlaybackSource,
-  PlaybackStatus,
-  PlaybackStatusToSet,
-  PlaybackNativeSource,
+  AVPlaybackSource,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+  AVPlaybackNativeSource,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import {
   ExponentVideoComponent,
-  FullscreenUpdateEvent,
-  NativeProps,
-  NaturalSize,
+  VideoFullscreenUpdateEvent,
+  VideoNativeProps,
+  VideoNaturalSize,
   VideoProps,
-  ReadyForDisplayEvent,
+  VideoReadyForDisplayEvent,
   ResizeMode,
   VideoState,
 } from './Video.types';
 
 export {
   ExponentVideoComponent,
-  FullscreenUpdateEvent,
-  NativeProps,
-  NaturalSize,
+  VideoFullscreenUpdateEvent,
+  VideoNativeProps,
+  VideoNaturalSize,
   VideoProps,
-  ReadyForDisplayEvent,
+  VideoReadyForDisplayEvent,
   ResizeMode,
   VideoState,
-  PlaybackStatus,
-  PlaybackStatusToSet,
-  PlaybackNativeSource,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+  AVPlaybackNativeSource,
 };
 
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
@@ -163,7 +163,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   };
 
   _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeComponent>();
-  _onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null = null;
+  _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
@@ -174,14 +174,14 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     };
   }
 
-  setNativeProps(nativeProps: NativeProps) {
+  setNativeProps(nativeProps: VideoNativeProps) {
     const nativeVideo = nullthrows(this._nativeRef.current);
     nativeVideo.setNativeProps(nativeProps);
   }
 
   // Internal methods
 
-  _handleNewStatus = (status: PlaybackStatus) => {
+  _handleNewStatus = (status: AVPlaybackStatus) => {
     if (
       this.state.showPoster &&
       status.isLoaded &&
@@ -199,15 +199,15 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   };
 
   _performOperationAndHandleStatusAsync = async (
-    operation: (tag: number) => Promise<PlaybackStatus>
-  ): Promise<PlaybackStatus> => {
+    operation: (tag: number) => Promise<AVPlaybackStatus>
+  ): Promise<AVPlaybackStatus> => {
     const video = this._nativeRef.current;
     if (!video) {
       throw new Error(`Cannot complete operation because the Video component has not yet loaded`);
     }
 
     const handle = findNodeHandle(this._nativeRef.current)!;
-    const status: PlaybackStatus = await operation(handle);
+    const status: AVPlaybackStatus = await operation(handle);
     this._handleNewStatus(status);
     return status;
   };
@@ -251,7 +251,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
   // Get status API
 
-  getStatusAsync = async (): Promise<PlaybackStatus> => {
+  getStatusAsync = async (): Promise<AVPlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
       ExponentAV.getStatusForVideo(tag)
     );
@@ -260,10 +260,10 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   // Loading / unloading API
 
   loadAsync = async (
-    source: PlaybackSource,
-    initialStatus: PlaybackStatusToSet = {},
+    source: AVPlaybackSource,
+    initialStatus: AVPlaybackStatusToSet = {},
     downloadFirst: boolean = true
-  ): Promise<PlaybackStatus> => {
+  ): Promise<AVPlaybackStatus> => {
     const {
       nativeSource,
       fullInitialStatus,
@@ -274,7 +274,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   };
 
   // Equivalent to setting URI to null.
-  unloadAsync = async (): Promise<PlaybackStatus> => {
+  unloadAsync = async (): Promise<AVPlaybackStatus> => {
     return this._performOperationAndHandleStatusAsync((tag: number) =>
       ExponentAV.unloadForVideo(tag)
     );
@@ -282,14 +282,14 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
   // Set status API (only available while isLoaded = true)
 
-  setStatusAsync = async (status: PlaybackStatusToSet): Promise<PlaybackStatus> => {
+  setStatusAsync = async (status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus> => {
     assertStatusValuesInBounds(status);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
       ExponentAV.setStatusForVideo(tag, status)
     );
   };
 
-  replayAsync = async (status: PlaybackStatusToSet = {}): Promise<PlaybackStatus> => {
+  replayAsync = async (status: AVPlaybackStatusToSet = {}): Promise<AVPlaybackStatus> => {
     if (status.positionMillis && status.positionMillis !== 0) {
       throw new Error('Requested position after replay has to be 0.');
     }
@@ -303,34 +303,34 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     );
   };
 
-  setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: PlaybackStatus) => void) | null) {
+  setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null) {
     this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
     this.getStatusAsync();
   }
 
   // Methods of the Playback interface that are set via PlaybackMixin
-  playAsync!: () => Promise<PlaybackStatus>;
+  playAsync!: () => Promise<AVPlaybackStatus>;
   playFromPositionAsync!: (
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ) => Promise<PlaybackStatus>;
-  pauseAsync!: () => Promise<PlaybackStatus>;
-  stopAsync!: () => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
+  pauseAsync!: () => Promise<AVPlaybackStatus>;
+  stopAsync!: () => Promise<AVPlaybackStatus>;
   setPositionAsync!: (
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
-  ) => Promise<PlaybackStatus>;
-  setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<PlaybackStatus>;
-  setVolumeAsync!: (volume: number) => Promise<PlaybackStatus>;
-  setIsMutedAsync!: (isMuted: boolean) => Promise<PlaybackStatus>;
-  setIsLoopingAsync!: (isLooping: boolean) => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
+  setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
+  setVolumeAsync!: (volume: number) => Promise<AVPlaybackStatus>;
+  setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
+  setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;
   setProgressUpdateIntervalAsync!: (
     progressUpdateIntervalMillis: number
-  ) => Promise<PlaybackStatus>;
+  ) => Promise<AVPlaybackStatus>;
 
   // ### Callback wrappers ###
 
-  _nativeOnPlaybackStatusUpdate = (event: { nativeEvent: PlaybackStatus }) => {
+  _nativeOnPlaybackStatusUpdate = (event: { nativeEvent: AVPlaybackStatus }) => {
     this._handleNewStatus(event.nativeEvent);
   };
 
@@ -341,7 +341,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     }
   };
 
-  _nativeOnLoad = (event: { nativeEvent: PlaybackStatus }) => {
+  _nativeOnLoad = (event: { nativeEvent: AVPlaybackStatus }) => {
     if (this.props.onLoad) {
       this.props.onLoad(event.nativeEvent);
     }
@@ -356,13 +356,13 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     this._handleNewStatus(getUnloadedStatus(error));
   };
 
-  _nativeOnReadyForDisplay = (event: { nativeEvent: ReadyForDisplayEvent }) => {
+  _nativeOnReadyForDisplay = (event: { nativeEvent: VideoReadyForDisplayEvent }) => {
     if (this.props.onReadyForDisplay) {
       this.props.onReadyForDisplay(event.nativeEvent);
     }
   };
 
-  _nativeOnFullscreenUpdate = (event: { nativeEvent: FullscreenUpdateEvent }) => {
+  _nativeOnFullscreenUpdate = (event: { nativeEvent: VideoFullscreenUpdateEvent }) => {
     if (this.props.onIOSFullscreenUpdate && this.props.onFullscreenUpdate) {
       console.warn(
         "You've supplied both `onIOSFullscreenUpdate` and `onFullscreenUpdate`. You're going to receive updates on both the callbacks."
@@ -404,7 +404,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     }
 
     // Set status via individual props
-    const status: PlaybackStatusToSet = { ...this.props.status };
+    const status: AVPlaybackStatusToSet = { ...this.props.status };
     [
       'progressUpdateIntervalMillis',
       'positionMillis',
@@ -422,7 +422,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
     // Replace selected native props
     // @ts-ignore: TypeScript thinks "children" is not in the list of props
-    const nativeProps: NativeProps = {
+    const nativeProps: VideoNativeProps = {
       ...omit(
         this.props,
         'source',
