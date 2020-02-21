@@ -225,6 +225,7 @@ snap = async () => {
 ### `takePictureAsync()`
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
+> **Note** be sure not to call this method before [`onCameraReady`](./#oncameraready) callback is fired. 
 
 #### Arguments
 
