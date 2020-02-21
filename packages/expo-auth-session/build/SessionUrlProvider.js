@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
-import { ManagedSessionUrlProvider } from './ManagedSessionUrlProvider';
 import { BareSessionUrlProvider } from './BareSessionUrlProvider';
+import { ManagedSessionUrlProvider } from './ManagedSessionUrlProvider';
 export function getSessionUrlProvider() {
     if (Constants.manifest) {
         return new ManagedSessionUrlProvider();

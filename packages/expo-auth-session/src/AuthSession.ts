@@ -1,9 +1,8 @@
+import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 import qs from 'qs';
 
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
-
-import { getSessionUrlProvider } from './SessionUrlProvider';
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
+import { getSessionUrlProvider } from './SessionUrlProvider';
 
 let _authLock = false;
 const sessionUrlProvider = getSessionUrlProvider();
