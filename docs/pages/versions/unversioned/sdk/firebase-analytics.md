@@ -28,19 +28,33 @@ When using the web-platform, you'll also need to run `expo install firebase`, wh
 ## Configuration
 
 To use this package, the native Firebase configurations needs to be added to your app.
-[Please follow this guide on how to setup Native Firebase.](../../guides/setup-native-firebase)
+[Please follow this guide on how to set up Native Firebase.](../../guides/setup-native-firebase)
 
 
 ## Expo Client: Limitations & configuration
 
-The use of Native Firebase Analytics requires that the google-services configuration is bundled
-and linked into your app. Since the standard Expo Client loads projects on demand, it does not have
-the google-services configuration linked into its app-bundle.
+The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since the standard Expo Client loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
 
-Instead, the standard Expo Client logs the analytics events to the console for debug & development
-purposes. It also generates a one time warning to let you know that analytics events are not recorded
-on the standard Expo Client. You can suppress this warning and disable the logging
-by calling `setUnavailabilityLogging(false)`.
+Instead, the standard Expo client relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native lifecyle events are not recorded in the standard client, but you can still use `logEvent` to record events.
+
+You may want to use Firebase Analytics in Expo client to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To do set this up, ensure that the Firebase web configuration is set in `app.json` and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
+
+**app.json**
+```json
+{
+  "expo": {
+    "web": {
+      "config" {
+        "firebase": {
+          "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          ...
+          "measurementId": "G-XXXXXXXXX"
+        }
+      }
+    }
+  }
+}
+```
 
 > This limitation only applies to the Expo Client in the App/Play store, standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
 
