@@ -11,8 +11,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import url from 'url';
 
-import './menu/DevMenuApp';
-
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import SessionActions from './redux/SessionActions';

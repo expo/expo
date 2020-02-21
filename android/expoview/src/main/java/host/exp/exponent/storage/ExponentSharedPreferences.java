@@ -48,6 +48,7 @@ public class ExponentSharedPreferences {
   public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
+  public static final String IS_ONBOARDING_FINISHED_KEY = "is_onboarding_finished";
   public static final String SHOULD_NOT_USE_KERNEL_CACHE = "should_not_use_kernel_cache";
   public static final String KERNEL_REVISION_ID = "kernel_revision_id";
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
@@ -70,6 +71,7 @@ public class ExponentSharedPreferences {
     DEFAULT_VALUES.put(USE_INTERNET_KERNEL_KEY, ExpoViewBuildConfig.USE_INTERNET_KERNEL);
     DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
+    DEFAULT_VALUES.put(IS_ONBOARDING_FINISHED_KEY, false);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
     DEFAULT_VALUES.put(SHOULD_NOT_USE_KERNEL_CACHE, false);
   }
@@ -81,6 +83,12 @@ public class ExponentSharedPreferences {
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     mContext = context;
+
+    // We renamed `nux` to `onboarding` in January 2020 - the old preference key can be removed from here after some time,
+    // but since then we need to rewrite nux setting to the new key.
+    if (!mSharedPreferences.contains(IS_ONBOARDING_FINISHED_KEY)) {
+      setBoolean(IS_ONBOARDING_FINISHED_KEY, getBoolean(NUX_HAS_FINISHED_FIRST_RUN_KEY));
+    }
   }
 
   public Context getContext() {

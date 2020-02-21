@@ -1,22 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-package abi35_0_0.host.exp.exponent;
+package abi33_0_0.host.exp.exponent;
 
 import android.content.Context;
 import android.os.Looper;
 
-import abi35_0_0.com.facebook.react.ReactPackage;
-import abi35_0_0.com.facebook.react.bridge.NativeModule;
-import abi35_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi35_0_0.com.facebook.react.uimanager.ViewManager;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.interfaces.SingletonModule;
-
-import abi35_0_0.host.exp.exponent.modules.internal.DevMenuModule;
-import abi35_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import abi35_0_0.org.unimodules.core.interfaces.Package;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -27,41 +18,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import abi33_0_0.com.facebook.react.ReactPackage;
+import abi33_0_0.com.facebook.react.bridge.NativeModule;
+import abi33_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi33_0_0.com.facebook.react.uimanager.ViewManager;
+import abi33_0_0.host.exp.exponent.modules.api.ErrorRecoveryModule;
+import abi33_0_0.host.exp.exponent.modules.api.KeyboardModule;
+import abi33_0_0.host.exp.exponent.modules.api.PedometerModule;
+import abi33_0_0.host.exp.exponent.modules.api.ScreenOrientationModule;
+import abi33_0_0.host.exp.exponent.modules.api.ShakeModule;
+import abi33_0_0.host.exp.exponent.modules.api.SplashScreenModule;
+import abi33_0_0.host.exp.exponent.modules.api.URLHandlerModule;
+import abi33_0_0.host.exp.exponent.modules.api.UpdatesModule;
+import abi33_0_0.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
+import abi33_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
+import abi33_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
+import abi33_0_0.host.exp.exponent.modules.api.components.lottie.LottiePackage;
+import abi33_0_0.host.exp.exponent.modules.api.components.maps.MapsPackage;
+import abi33_0_0.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import abi33_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
+import abi33_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
+import abi33_0_0.host.exp.exponent.modules.api.netinfo.NetInfoModule;
+import abi33_0_0.host.exp.exponent.modules.api.notifications.NotificationsModule;
+import abi33_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
+import abi33_0_0.host.exp.exponent.modules.api.screens.RNScreensPackage;
+import abi33_0_0.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
+import abi33_0_0.host.exp.exponent.modules.internal.DevMenuModule;
+import abi33_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
+import abi33_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;
+import abi33_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
+import abi33_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
+import abi33_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
+import abi33_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
+import abi33_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import abi33_0_0.org.unimodules.core.interfaces.Package;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
-import abi35_0_0.host.exp.exponent.modules.api.ErrorRecoveryModule;
-import abi35_0_0.host.exp.exponent.modules.api.KeyboardModule;
-import abi35_0_0.host.exp.exponent.modules.api.PedometerModule;
-import abi35_0_0.host.exp.exponent.modules.api.ScreenOrientationModule;
-import abi35_0_0.host.exp.exponent.modules.api.ShakeModule;
-import abi35_0_0.host.exp.exponent.modules.api.SplashScreenModule;
-import abi35_0_0.host.exp.exponent.modules.api.URLHandlerModule;
-import abi35_0_0.host.exp.exponent.modules.api.UpdatesModule;
-import abi35_0_0.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
-import abi35_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
-import abi35_0_0.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
-import abi35_0_0.host.exp.exponent.modules.api.components.lottie.LottiePackage;
-import abi35_0_0.host.exp.exponent.modules.api.components.maps.MapsPackage;
-import abi35_0_0.host.exp.exponent.modules.api.components.svg.SvgPackage;
-import abi35_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
-import abi35_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
-import abi35_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
-import abi35_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
-import abi35_0_0.host.exp.exponent.modules.api.netinfo.NetInfoModule;
-import abi35_0_0.host.exp.exponent.modules.api.notifications.NotificationsModule;
-import abi35_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
-import abi35_0_0.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
-import abi35_0_0.host.exp.exponent.modules.api.safeareacontext.SafeAreaViewManager;
-import abi35_0_0.host.exp.exponent.modules.api.screens.RNScreensPackage;
-import abi35_0_0.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
-import abi35_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
-import abi35_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;
-import abi35_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
-import abi35_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
-import abi35_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
-import abi35_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
@@ -157,10 +151,11 @@ public class ExponentPackage implements ReactPackage {
         new ExponentIntentModule(reactContext, mExperienceProperties)
     ));
 
-    if (mIsKernel) {
-      // Never need this in versioned code. Comment this out if this is in an abi package
-      // nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
-    } else {
+//    if (mIsKernel) {
+//      // Never need this in versioned code. Comment this out if this is in an abi package
+//      nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
+//    }
+    if (!mIsKernel) {
       // We need DevMenuModule only in non-kernel apps.
       nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest));
     }
@@ -183,7 +178,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
-        nativeModules.add(new RNSharedElementModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
@@ -212,9 +206,7 @@ public class ExponentPackage implements ReactPackage {
         new LottiePackage(),
         new RNGestureHandlerPackage(),
         new RNScreensPackage(),
-        new RNCWebViewPackage(),
-        new SafeAreaContextPackage(),
-        new RNSharedElementPackage()
+        new RNCWebViewPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
