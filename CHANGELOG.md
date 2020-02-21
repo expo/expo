@@ -42,7 +42,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `MediaLibrary.saveToLibraryAsync` and `MediaLibrary.createAssetAsync` will throw an error when provided path does not contain an extension. ([#7030](https://github.com/expo/expo/pull/7030) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `FileSystem.getTotalDiskCapacityAsync()` incorrectly returning `2^53 - 1` instead of the actual total disk capacity. ([#6978](https://github.com/expo/expo/pull/6978) by [@cruzach](https://github.com/cruzach/))
 - Fixed `VideoThumbnails.getThumbnailAsync` crashing when the provided file is corrupted. ([#6877](https://github.com/expo/expo/pull/6877) by [@lukmccall](https://github.com/lukmccall))
-- Fixed `Linking.openSettings` is undefined. ([#7128](https://github.com/expo/expo/pull/7128)) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Linking.openSettings` is undefined. ([#7128](https://github.com/expo/expo/pull/7128) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Camera.takePictureAsync` not resolving promise when native camera isn't ready on iOS. ([#7144](https://github.com/expo/expo/pull/7144) by [@bbarthec](https://github.com/bbarthec))
 
 ## 36.0.0
 
