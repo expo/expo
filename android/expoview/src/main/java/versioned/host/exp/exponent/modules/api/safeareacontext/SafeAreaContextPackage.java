@@ -21,7 +21,7 @@ public class SafeAreaContextPackage implements ReactPackage {
   @Nonnull
   @Override
   public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
-    return Collections.<ViewManager>singletonList(new SafeAreaViewManager());
+    return Collections.<ViewManager>singletonList(new SafeAreaViewManager(reactContext));
   }
 
 }

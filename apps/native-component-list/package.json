@@ -86,7 +86,7 @@
     "react-native-paper": "github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57",
     "react-native-platform-touchable": "^1.1.1",
     "react-native-reanimated": "~1.7.0",
-    "react-native-safe-area-context": "0.6.0",
+    "react-native-safe-area-context": "0.7.3",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-screens": "2.0.0-alpha.12",
     "react-native-shared-element": "~0.5.6",
