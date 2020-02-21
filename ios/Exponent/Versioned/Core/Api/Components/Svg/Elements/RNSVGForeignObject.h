@@ -1,7 +1,7 @@
 
 #import "RNSVGGroup.h"
 #import "RNSVGLength.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTEventDispatcher.h>
 
 @interface RNSVGForeignObject : RNSVGGroup
 
