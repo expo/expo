@@ -14,6 +14,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Updated `@react-native-community/viewpager` from `2.0.2` to `3.3.0`.
 - Updated `react-native-reanimated` from `1.4.0` to `1.7.0`.
 - Updated `react-native-svg` from `9.13.3` to `11.0.1`.
+- Updated `react-native-view-shot` from `3.0.2` to `3.1.2`.
 
 ### 🛠 Breaking changes
 
