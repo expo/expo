@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-auth-session`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-auth-session).
 
 ## How web browser based authentication flows work
 
@@ -125,7 +125,7 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
   - **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-  - **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
+  - **returnUrl (_string_)** -- The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`, for example, `exp://expo.io/@yourname/your-app-slug+expo-auth-session`). However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response. Hence, this method will throw an exception, if you don't provide `returnUrl`.
 
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
 
@@ -146,6 +146,65 @@ Cancels an active `AuthSession` if there is one. No return value, but if there i
 ### `AuthSession.getRedirectUrl()`
 
 Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`.
+
+> **Note** This method will throw an exception if you're using the bare workflow.
+
+## Usage in the bare React Native app
+
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+
+### Proxy Service
+
+This service is responsible for:
+
+- redirecting traffic from your application to the authentication service
+- redirecting response from the auth service to your application using a deep link
+
+To better understand how it works, check out this implementation in `node.js`:
+
+```js
+const http = require('http');
+const url = require('url');
+
+const PORT = PORT;
+const DEEP_LINK = DEEP_LINK_TO_YOUR_APPLICATION;
+
+function redirect(response, url) {
+  response.writeHead(302, {
+    Location: url,
+  });
+  response.end();
+}
+
+http
+  .createServer((request, response) => {
+    // get parameters from request
+    const parameters = url.parse(request.url, true).query;
+
+    // if parameters contain authServiceUrl, this request comes from the application
+    if (parameters.authServiceUrl) {
+      // redirect user to the authUrl
+      redirect(response, decodeURIComponent(parameters.authServiceUrl));
+      return;
+    }
+
+    // redirect response from the auth service to your application
+    redirect(response, DEEP_LINK);
+  })
+  .listen(PORT);
+```
+
+Client code which works with this service:
+
+```js
+const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
+const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
+const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
+const result = await AuthSession.startAsync({
+  authUrl,
+  returnUrl: YOUR_DEEP_LINK,
+});
+```
 
 ## Advanced usage
 

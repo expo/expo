@@ -1,31 +1,16 @@
-import Constants from 'expo-constants';
 import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 import qs from 'qs';
 
-import Linking from './Linking/Linking';
+import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
+import { getSessionUrlProvider } from './SessionUrlProvider';
 
-type AuthSessionOptions = {
-  authUrl: string;
-  returnUrl?: string;
-  showInRecents?: boolean;
-};
-
-type AuthSessionResult =
-  | { type: 'cancel' | 'dismiss' | 'locked' }
-  | {
-      type: 'error' | 'success';
-      errorCode: string | null;
-      params: { [key: string]: string };
-      url: string;
-    };
-
-const BASE_URL = `https://auth.expo.io`;
 let _authLock = false;
+const sessionUrlProvider = getSessionUrlProvider();
 
-async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
-  const returnUrl = options.returnUrl || getDefaultReturnUrl();
+export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
+  const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
   const authUrl = options.authUrl;
-  const startUrl = getStartUrl(authUrl, returnUrl);
+  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
   const showInRecents = options.showInRecents || false;
 
   // Prevent accidentally starting to an empty url
@@ -80,11 +65,19 @@ async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResul
   };
 }
 
-function dismiss() {
+export function dismiss() {
   dismissAuthSession();
 }
 
-async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
+export function getDefaultReturnUrl(): string {
+  return sessionUrlProvider.getDefaultReturnUrl();
+}
+
+export function getRedirectUrl(): string {
+  return sessionUrlProvider.getRedirectUrl();
+}
+
+async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
   let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
   if (result.type === 'cancel' || result.type === 'dismiss') {
@@ -92,27 +85,6 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
   }
 
   return result;
-}
-
-function getStartUrl(authUrl: string, returnUrl: string): string {
-  let queryString = qs.stringify({
-    authUrl,
-    returnUrl,
-  });
-
-  return `${getRedirectUrl()}/start?${queryString}`;
-}
-
-function getRedirectUrl(): string {
-  const redirectUrl = `${BASE_URL}/${Constants.manifest.id}`;
-  if (__DEV__) {
-    _warnIfAnonymous(Constants.manifest.id, redirectUrl);
-  }
-  return redirectUrl;
-}
-
-function getDefaultReturnUrl(): string {
-  return Linking.makeUrl('expo-auth-session');
 }
 
 function parseUrl(url: string): { errorCode: string | null; params: { [key: string]: string } } {
@@ -145,25 +117,3 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
     params,
   };
 }
-
-function _warnIfAnonymous(id, url): void {
-  if (id.startsWith('@anonymous/')) {
-    console.warn(
-      `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires whitelisting redirect URLs, we recommend that you do not whitelist this URL -- instead, you should sign in to Expo to acquired a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`
-    );
-  }
-}
-
-export default {
-  dismiss,
-  getRedirectUrl,
-  getStartUrl,
-  getDefaultReturnUrl,
-  get getRedirectUri() {
-    console.warn(
-      'Use AuthSession.getRedirectUrl rather than AuthSession.getRedirectUri (Url instead of Uri)'
-    );
-    return getRedirectUrl;
-  },
-  startAsync,
-};
