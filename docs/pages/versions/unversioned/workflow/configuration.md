@@ -902,6 +902,37 @@ Configuration for how and when the app should request OTA JavaScript updates
 }
 ```
 
+### `"web"`
+
+```javascript
+{
+  "web": {
+
+    /*
+      Extra web-specific configuration options.
+    */
+    "config": {
+
+      /*
+        Firebase web configuration.
+        Used by the expo-firebase packages on both web and native.
+        See here: https://firebase.google.com/docs/reference/js/firebase.html#initializeapp
+      */
+      "firebase": {
+        "apiKey": STRING,
+        "authDomain": STRING,
+        "databaseURL": STRING,
+        "projectId": STRING,
+        "storageBucket": STRING,
+        "messagingSenderId": STRING,
+        "appId": STRING,
+        "measurementId": STRING
+      }
+    }
+  }
+}
+```
+
 ## ExpoKit
 
 While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
