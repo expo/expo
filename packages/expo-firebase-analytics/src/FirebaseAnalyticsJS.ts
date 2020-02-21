@@ -259,6 +259,15 @@ class FirebaseAnalyticsJS {
     }
     if (!this.enabled) return;
     this.screenName = screenName || undefined;
+
+    // On native, calling `setCurrentScreen` automatically records a screen_view event.
+    // Mimimic that behavior when native emulation is enabled.
+    // https://firebase.google.com/docs/analytics/screenviews#manually_track_screens
+    if (screenName && this.options.strictNativeEmulation) {
+      await this.logEvent('screen_view', {
+        screen_name: screenName,
+      });
+    }
   }
 
   /**
