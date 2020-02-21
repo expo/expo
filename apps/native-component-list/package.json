@@ -15,7 +15,7 @@
     "@react-native-community/datetimepicker": "2.2.2",
     "@react-native-community/masked-view": "0.1.6",
     "@react-native-community/netinfo": "5.5.0",
-    "@react-native-community/viewpager": "2.0.2",
+    "@react-native-community/viewpager": "3.3.0",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
     "expo": "~36.0.0",
