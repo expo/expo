@@ -17,6 +17,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `expo-constants` `Constants.platform.web` now only returns the `ua` (user agent string). ([#6809](https://github.com/expo/expo/pull/6809) [@evanbacon](https://github.com/evanbacon))
 - Enriched `androidStatusBar` configuration in `app.json`. ([#6506](https://github.com/expo/expo/pull/6506) [@bbarthec](https://github.com/bbarthec))
 - Extended `androidNavigationBar.visible` configuration in `app.json`. To keep the same behavior as before, change your `androidNavigationBar.visible` field from `false` to `leanback`. ([#7049](https://github.com/expo/expo/pull/7049) [@cruzach](https://github.com/cruzach))
+- **`expo`**: Removed `AuthSession` from the `expo` package and extracted into `expo-auth-session` unimodule. ([#6989](https://github.com/expo/expo/pull/6989) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
