@@ -210,9 +210,9 @@ This sample was borrowed from [this forum post](https://forums.expo.io/t/open-wh
 
 ## Recording events with Analytics
 
-In order to record analytics events, the Expo Analytics package needs to be installed.
+In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
 
-`expo install expo-firebase-analytics`
+`expo install expo-firebase-core expo-firebase-analytics`
 
 It uses the native Firebase SDK when possible and a JavaScript based implementation on the standard Expo client.
 
