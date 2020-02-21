@@ -17,6 +17,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Updated `react-native-view-shot` from `3.0.2` to `3.1.2`.
 - Updated `react-native-webview` from `7.4.3` to `8.1.1`.
 - Updated `react-native-appearance` from `0.2.1` to `0.3.2`.
+- Updated `react-native-safe-area-context` from `0.6.0` to `0.7.3`.
 
 ### 🛠 Breaking changes
 
