@@ -12,6 +12,7 @@
 #import "EXVersions.h"
 #import "EXHomeModule.h"
 
+#import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
@@ -21,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
-NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
