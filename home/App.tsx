@@ -7,6 +7,8 @@ import HomeApp from './HomeApp';
 import ApolloClient from './api/ApolloClient';
 import Store from './redux/Store';
 
+import './menu/DevMenuApp';
+
 export default (props: any) => {
   let colorScheme = useColorScheme();
 
