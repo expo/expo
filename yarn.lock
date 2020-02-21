@@ -13765,16 +13765,7 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-appearance@0.2.1, react-native-appearance@~0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.2.1.tgz#b8c08cbd6ea92533591c247a4a154b95fd8e31c8"
-  integrity sha512-eaNIVd3CPfDs4/10i0YxCYTx0FcbmaPcUh5xrzfHsgluPJJjHbJEV2MSHqukrNsQ9cQBMNvTSEaBrO9N16L7ZA==
-  dependencies:
-    fbemitter "^2.1.1"
-    invariant "^2.2.4"
-    use-subscription "^1.0.0"
-
-react-native-appearance@^0.3.2:
+react-native-appearance@0.3.2, react-native-appearance@^0.3.2, react-native-appearance@~0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.3.2.tgz#e458e76917778eb1fcb8d17c09a78096115704c9"
   integrity sha512-4laRJovChQe5ualJczWoPyThOlYc0m2jmipdnrx34kAFzzk/JqYZwbkRE3uuLRNnPhaWWZZ8YlFhq0RNFB/G+A==
