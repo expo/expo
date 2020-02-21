@@ -10,6 +10,6 @@
 @interface RNCWKProcessPoolManager : NSObject
 
 + (instancetype) sharedManager;
-- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId;
+- (WKProcessPool *)sharedProcessPool;
 
 @end
