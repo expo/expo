@@ -33,6 +33,7 @@ import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.firebase.core.FirebaseCorePackage;
+import expo.modules.firebase.analytics.FirebaseAnalyticsPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
@@ -87,6 +88,7 @@ public class ExperiencePackagePicker {
       new FaceDetectorPackage(),
       new FileSystemPackage(),
       new FirebaseCorePackage(),
+      new FirebaseAnalyticsPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),

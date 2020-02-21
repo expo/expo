@@ -24,6 +24,7 @@ let TESTS = [
   'Permissions',
   'KeepAwake',
   'FirebaseCore',
+  'FirebaseAnalytics',
   // 'Audio',
   'HTML',
 ];

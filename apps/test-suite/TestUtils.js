@@ -53,7 +53,8 @@ export function getTestModules() {
     require('./tests/LinearGradient'),
     require('./tests/Facebook'),
     require('./tests/HTML'),
-    require('./tests/FirebaseCore')
+    require('./tests/FirebaseCore'),
+    require('./tests/FirebaseAnalytics')
   );
 
   if (Platform.OS === 'android') {
