@@ -61,7 +61,7 @@
   "react-native-reanimated": "~1.7.0",
   "react-native-screens": "2.0.0-alpha.12",
   "react-native-svg": "11.0.1",
-  "react-native-view-shot": "3.0.2",
+  "react-native-view-shot": "3.1.2",
   "react-native-webview": "7.4.3",
   "unimodules-barcode-scanner-interface": "~5.0.0",
   "unimodules-camera-interface": "~5.0.0",
