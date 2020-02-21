@@ -28,7 +28,7 @@ Below is a set of example functions that demonstrate how to use `expo-app-auth` 
 
 <SnackInline>
 
-```tsx
+```js
 import React, { useEffect, useState } from 'react';
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 import * as AppAuth from 'expo-app-auth';
@@ -83,7 +83,7 @@ let config = {
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
 
-let StorageKey = '@PillarValley:GoogleOAuthKey';
+let StorageKey = '@MyApp:CustomGoogleOAuthKey';
 
 export async function signInAsync() {
   let authState = await AppAuth.authAsync(config);
