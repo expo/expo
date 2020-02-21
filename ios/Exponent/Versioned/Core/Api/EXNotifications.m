@@ -295,6 +295,7 @@ RCT_EXPORT_METHOD(setBadgeNumberAsync:(nonnull NSNumber *)number
 RCT_REMAP_METHOD(createCategoryAsync,
                  createCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
+                 previewPlaceholder: (NSString *)previewPlaceholder
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
@@ -303,10 +304,19 @@ RCT_REMAP_METHOD(createCategoryAsync,
     [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
   }
 
-  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
+  UNNotificationCategory *newCategory;
+  if (@available(iOS 11, *)) {
+    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
                                                                                actions:actionsArray
                                                                      intentIdentifiers:@[]
+                                                                     hiddenPreviewsBodyPlaceholder: previewPlaceholder
                                                                                options:UNNotificationCategoryOptionNone];
+  } else {
+    newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
+                                                                  actions:actionsArray
+                                                                  intentIdentifiers:@[]
+                                                                  options:UNNotificationCategoryOptionNone];
+  }
 
   __weak id<EXUserNotificationCenterService> userNotificationCenter = _userNotificationCenter;
   [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
