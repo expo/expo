@@ -1,6 +1,6 @@
 ---
 title: ScreenOrientation
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/ScreenOrientation"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-screen-orientation'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -22,15 +22,21 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ### Warning
 
-The Apple added support for the `split view` mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. Briefly, for the iOS, your iPad is always in the landscape mode unless you open two applicationes side by side. To use the `ScreenOrientation` module you need to disable support for this feature. For more information about the `split view` mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
+Apple added support for _split view_ mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. To put the matter shortly, for the iOS, your iPad is always in the landscape mode unless you open two applications side by side. In order to be able to lock screen orientation using this module you will need to disable support for this feature. For more information about the _split view_ mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
 
 #### Managed workflow
 
 Open your `app.json` and add the following inside of the `"expo"` field:
 
 ```json
-"ios": {
-    "requireFullScreen": true,
+{
+  expo: {
+    ...
+    "ios": {
+      ...
+      "requireFullScreen": true,
+    }
+  }
 }
 ```
 
@@ -119,7 +125,7 @@ Returns a promise with `void` value, resolving when the orientation is set and r
 
 #### Error Codes
 
-- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid [`OrientationLock`](#screenorientationorientationlock) was passed in (**isOnly**).
+- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid [`OrientationLock`](#screenorientationorientationlock) was passed in (**iOS only**).
 - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - the platform does not support the orientation lock policy.
 - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - could not get the current activity (**Android only**).
 
@@ -232,7 +238,7 @@ An enum whose values can be passed to the [`lockAsync`](#screenorientationlockas
 - **`OrientationLock.OTHER`** -- A platform specific orientation. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
 - **`OrientationLock.UNKNOWN`** -- An unknown screen orientation lock. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
 
-> **Note** `OrientationLock.ALL` and `OrientationLock.PORTRAIT` are invalid on devices which not support `OrientationLock.PORTRAIT_DOWN`.
+> **Note** `OrientationLock.ALL` and `OrientationLock.PORTRAIT` are invalid on devices which don't support `OrientationLock.PORTRAIT_DOWN`.
 
 ### `ScreenOrientation.SizeClassIOS`
 

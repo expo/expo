@@ -13,6 +13,15 @@
 
 @implementation EXScreenOrientationViewController
 
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _defaultOrientationMask = UIInterfaceOrientationMaskPortrait;
+  }
+  
+  return self;
+}
+
 - (instancetype)initWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientationMask
 {
   if (self = [super init]) {

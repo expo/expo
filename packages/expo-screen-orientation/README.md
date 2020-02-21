@@ -37,12 +37,18 @@ npm install expo-screen-orientation
    with:
 
    ```objc
-   UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:UIInterfaceOrientationMaskPortrait]; // through parameter you can specify your default orientation mask.
+   UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] init]; // The default screen orientation will be set to `portrait`.
    ```
 
-   To get more information about available orientation masks, please check out [UIInterfaceOrientationMask](https://developer.apple.com/documentation/uikit/uiinterfaceorientationmask?language=objc)
+   or if you want to change the default screen orientation, with:
 
-> **Note** if you are using the custom view controller, this controller needs to extend the `EXScreenOrientationViewController`.
+   ```objc
+   UIViewController *rootViewController =  [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:UIInterfaceOrientationMaskPortrait]; // through parameter you can specify your default orientation mask.
+   ```
+
+   For more information about available orientation masks, check out [UIInterfaceOrientationMask](https://developer.apple.com/documentation/uikit/uiinterfaceorientationmask?language=objc)
+
+> **Note** if you are using a custom view controller, the controller will need to extend the `EXScreenOrientationViewController`.
 
 ### Configure for Android
 
