@@ -58,7 +58,7 @@
   "react-native-branch": "4.2.1",
   "react-native-gesture-handler": "~1.6.0",
   "react-native-maps": "0.26.1",
-  "react-native-reanimated": "~1.4.0",
+  "react-native-reanimated": "~1.7.0",
   "react-native-screens": "2.0.0-alpha.12",
   "react-native-svg": "9.13.3",
   "react-native-view-shot": "3.0.2",

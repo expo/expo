@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -996,6 +997,7 @@
 		E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionItem.h; sourceTree = "<group>"; };
 		E4381D58C24E4B2195CDD1F7 /* ReactNativePageView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = ReactNativePageView.h; sourceTree = "<group>"; };
 		E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSScreenStack.m; sourceTree = "<group>"; };
+		E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = REAUtils.h; sourceTree = "<group>"; };
 		E6E68AB99C5B4BA58B372F19 /* RNCWebViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCWebViewManager.m; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
 		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
@@ -1412,9 +1414,10 @@
 			isa = PBXGroup;
 			children = (
 				78C832A123545ECE00448582 /* REAModule.h */,
-				78C8329323545ECE00448582 /* REANodesManager.h */,
 				78C8326B23545ECE00448582 /* REAModule.m */,
+				78C8329323545ECE00448582 /* REANodesManager.h */,
 				78C832A223545ECE00448582 /* REANodesManager.m */,
+				E5E493D6EE6840CDB98CCBB5 /* REAUtils.h */,
 				78C8326C23545ECE00448582 /* Nodes */,
 				78C8329423545ECE00448582 /* Transitioning */,
 			);
@@ -1469,18 +1472,18 @@
 		78C8329423545ECE00448582 /* Transitioning */ = {
 			isa = PBXGroup;
 			children = (
-				78C8329523545ECE00448582 /* REATransitionManager.h */,
-				78C8329623545ECE00448582 /* REATransition.m */,
-				78C8329723545ECE00448582 /* REATransitionValues.m */,
-				78C8329823545ECE00448582 /* REATransitionAnimation.h */,
-				78C8329923545ECE00448582 /* REAAllTransitions.h */,
+				78C8329F23545ECE00448582 /* RCTConvert+REATransition.h */,
 				78C8329A23545ECE00448582 /* RCTConvert+REATransition.m */,
+				78C8329923545ECE00448582 /* REAAllTransitions.h */,
+				78C832A023545ECE00448582 /* REAAllTransitions.m */,
 				78C8329B23545ECE00448582 /* REATransition.h */,
+				78C8329623545ECE00448582 /* REATransition.m */,
+				78C8329823545ECE00448582 /* REATransitionAnimation.h */,
+				78C8329E23545ECE00448582 /* REATransitionAnimation.m */,
+				78C8329523545ECE00448582 /* REATransitionManager.h */,
 				78C8329C23545ECE00448582 /* REATransitionManager.m */,
 				78C8329D23545ECE00448582 /* REATransitionValues.h */,
-				78C8329E23545ECE00448582 /* REATransitionAnimation.m */,
-				78C8329F23545ECE00448582 /* RCTConvert+REATransition.h */,
-				78C832A023545ECE00448582 /* REAAllTransitions.m */,
+				78C8329723545ECE00448582 /* REATransitionValues.m */,
 			);
 			path = Transitioning;
 			sourceTree = "<group>";
@@ -2741,7 +2744,6 @@
 				7043DFA32283303800272D74 /* RNSVGPath.m in Sources */,
 				31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */,
 				2197FFB523C613A9003CA3B2 /* RNSharedElementContent.m in Sources */,
-				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
 				78C832B123545ECE00448582 /* REAAlwaysNode.m in Sources */,
 				78C832A823545ECE00448582 /* REAClockNodes.m in Sources */,
