@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
@@ -70,13 +69,6 @@ public final class UnsafeConnectionBuilder implements ConnectionBuilder {
         public void checkServerTrusted(X509Certificate[] certs, String authType) {
         }
       }
-  };
-
-  @SuppressLint("BadHostnameVerifier")
-  private static final HostnameVerifier ANY_HOSTNAME_VERIFIER = new HostnameVerifier() {
-    public boolean verify(String hostname, SSLSession session) {
-      return true;
-    }
   };
 
   @Nullable
@@ -121,8 +113,7 @@ public final class UnsafeConnectionBuilder implements ConnectionBuilder {
 
     if (conn instanceof HttpsURLConnection && TRUSTING_CONTEXT != null) {
       HttpsURLConnection httpsConn = (HttpsURLConnection) conn;
-      httpsConn.setSSLSocketFactory(TRUSTING_CONTEXT.getSocketFactory());
-      httpsConn.setHostnameVerifier(ANY_HOSTNAME_VERIFIER);
+      httpsConn.setSSLSocketFactory(TRUSTING_CONTEXT.getSocketFactory());      
     }
 
     return conn;
