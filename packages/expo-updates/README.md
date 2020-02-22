@@ -275,7 +275,7 @@ This method cannot be used in development mode, and the returned `Promise` will 
 
 #### Returns
 
-An `Promise` that resolves to an object with the following keys:
+A `Promise` that resolves to an object with the following keys:
 
 - **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
@@ -290,7 +290,7 @@ This method cannot be used in development mode, and the returned `Promise` will 
 
 #### Returns
 
-An `Promise` that resolves to an object with the following keys:
+A `Promise` that resolves to an object with the following keys:
 
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
