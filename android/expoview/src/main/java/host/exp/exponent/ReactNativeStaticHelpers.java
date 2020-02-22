@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.JavascriptException;
-import com.facebook.react.modules.network.OkHttpClientProvider;
-import com.facebook.react.modules.network.ReactCookieJarContainer;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +18,6 @@ import okhttp3.OkHttpClient;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
-import host.exp.exponent.ABIVersion;
 
 @DoNotStrip
 public class ReactNativeStaticHelpers {

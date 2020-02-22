@@ -1,5 +1,11 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.view.WindowManager;
+
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -9,8 +15,19 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
+  private final ReactApplicationContext mContext;
+  private final WindowManager mWindowManager;
+
+  public SafeAreaViewManager(ReactApplicationContext context) {
+    super();
+
+    mContext = context;
+    mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+  }
+
   @Override
   @NonNull
   public String getName() {
@@ -20,7 +37,7 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
   @Override
   @NonNull
   public SafeAreaView createViewInstance(@NonNull ThemedReactContext context) {
-    return new SafeAreaView(context);
+    return new SafeAreaView(context, mWindowManager);
   }
 
   @Override
@@ -40,5 +57,28 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
     return MapBuilder.<String, Object>builder()
         .put(InsetsChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", "onInsetsChange"))
         .build();
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedViewConstants() {
+    Activity activity = mContext.getCurrentActivity();
+    if (activity == null) {
+      return null;
+    }
+
+    View decorView = activity.getWindow().getDecorView();
+    if (decorView == null) {
+      return null;
+    }
+
+    EdgeInsets insets = SafeAreaUtils.getSafeAreaInsets(mWindowManager, decorView);
+    if (insets == null) {
+      return null;
+    }
+    return MapBuilder.<String, Object>of(
+        "initialWindowSafeAreaInsets",
+        SafeAreaUtils.edgeInsetsToJavaMap(insets));
+
   }
 }

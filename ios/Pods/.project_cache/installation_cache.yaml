@@ -5242,6 +5242,29 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseAnalytics: 0ff060930264d17d39eb55bf7723fdb8
+    CHECKSUM: b9efb5317c071cb10905d5a82734407e8fc7fd43
+    FILES:
+      - "../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
+      - "../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
+    PROJECT_NAME: EXFirebaseAnalytics
+    SPECS:
+      - EXFirebaseAnalytics (3.0.0)
+  EXFirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseCore: 1d808549b6223d57e1cc0b09101db157
+    CHECKSUM: 4e0976590135563e26af5050916879d5ee218f1b
+    FILES:
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.m"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.h"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.m"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/UMFirebaseCoreInterface.h"
+    PROJECT_NAME: EXFirebaseCore
+    SPECS:
+      - EXFirebaseCore (1.0.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: 54a701ae9a0214506a040344456fe670
@@ -5915,16 +5938,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c7d3cbd78b4f51b080ddae53f2b43c76
-      Release: c7d3cbd78b4f51b080ddae53f2b43c76
+      Debug: bbab5257f33750c78740075dde424cd6
+      Release: bbab5257f33750c78740075dde424cd6
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9acb2aad8f73622b9e6b3e209252c23e
-      Release: 9acb2aad8f73622b9e6b3e209252c23e
+      Debug: f7f81825aa87e87750f3c9d4bae52812
+      Release: f7f81825aa87e87750f3c9d4bae52812
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9acb2aad8f73622b9e6b3e209252c23e
-      Release: 9acb2aad8f73622b9e6b3e209252c23e
+      Debug: f7f81825aa87e87750f3c9d4bae52812
+      Release: f7f81825aa87e87750f3c9d4bae52812
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c

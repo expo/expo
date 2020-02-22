@@ -48,6 +48,8 @@ public class HomeActivity extends BaseExperienceActivity {
   @Inject
   ExponentManifest mExponentManifest;
 
+  //region Activity Lifecycle
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -66,6 +68,27 @@ public class HomeActivity extends BaseExperienceActivity {
 
     tryInstallLeakCanary(true);
   }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    SoLoader.init(this, false);
+
+    Analytics.logEvent("HOME_APPEARED");
+
+    registerForNotifications();
+  }
+
+  //endregion Activity Lifecycle
+
+  /**
+   * This method has been split out from onDestroy lifecycle method to {@link ReactNativeActivity#destroyReactInstanceManager()}
+   * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
+   * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
+   */
+  @Override
+  protected void destroyReactInstanceManager() {}
 
   private void tryInstallLeakCanary(boolean shouldAskForPermissions) {
     if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
@@ -87,17 +110,6 @@ public class HomeActivity extends BaseExperienceActivity {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     tryInstallLeakCanary(false);
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    SoLoader.init(this, false);
-
-    Analytics.logEvent("HOME_APPEARED");
-
-    registerForNotifications();
   }
 
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {

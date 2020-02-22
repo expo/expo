@@ -305,6 +305,29 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
+    CHECKSUM: b9efb5317c071cb10905d5a82734407e8fc7fd43
+    FILES:
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
+    PROJECT_NAME: EXFirebaseAnalytics
+    SPECS:
+      - EXFirebaseAnalytics (3.0.0)
+  EXFirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
+    CHECKSUM: 4e0976590135563e26af5050916879d5ee218f1b
+    FILES:
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.m"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.h"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.m"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/UMFirebaseCoreInterface.h"
+    PROJECT_NAME: EXFirebaseCore
+    SPECS:
+      - EXFirebaseCore (1.0.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: d8920f123f0cdc804585bfcef1a86386
@@ -787,6 +810,49 @@ CACHE_KEYS:
     SPECS:
       - FBSDKLoginKit (5.8.0)
       - FBSDKLoginKit/Login (5.8.0)
+  Firebase:
+    BUILD_SETTINGS_CHECKSUM:
+      Firebase: 043d6ce04946d5de6f1a25bee76f328d
+    CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
+    PROJECT_NAME: Firebase
+    SPECS:
+      - Firebase/Core (6.14.0)
+      - Firebase/CoreOnly (6.14.0)
+  FirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseAnalytics: d3b8372472720ab5e91b3a3adc59720a
+    CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
+    PROJECT_NAME: FirebaseAnalytics
+    SPECS:
+      - FirebaseAnalytics (6.1.7)
+  FirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCore: 9e46d904547d9ac25ab4b4514fc0a2f7
+    CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
+    PROJECT_NAME: FirebaseCore
+    SPECS:
+      - FirebaseCore (6.5.0)
+  FirebaseCoreDiagnostics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnostics: d94bfb53514b8d2ac93bd041c0ca0e12
+    CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+    PROJECT_NAME: FirebaseCoreDiagnostics
+    SPECS:
+      - FirebaseCoreDiagnostics (1.1.2)
+  FirebaseCoreDiagnosticsInterop:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnosticsInterop: 156db52ee23ec56ad2ede89ad1ee8a2b
+    CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+    PROJECT_NAME: FirebaseCoreDiagnosticsInterop
+    SPECS:
+      - FirebaseCoreDiagnosticsInterop (1.1.0)
+  FirebaseInstanceID:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseInstanceID: c417e45eb1ce3ddd5681ade464f26b8e
+    CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
+    PROJECT_NAME: FirebaseInstanceID
+    SPECS:
+      - FirebaseInstanceID (4.2.8)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -802,6 +868,27 @@ CACHE_KEYS:
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
+  GoogleAppMeasurement:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleAppMeasurement: 8edf625de9a660fae9e528eb6d244601
+    CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
+    PROJECT_NAME: GoogleAppMeasurement
+    SPECS:
+      - GoogleAppMeasurement (6.1.7)
+  GoogleDataTransport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransport: c52a5276024512707683f66e6cfe0966
+    CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+    PROJECT_NAME: GoogleDataTransport
+    SPECS:
+      - GoogleDataTransport (3.2.0)
+  GoogleDataTransportCCTSupport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransportCCTSupport: 1974efffec58f9b1b16d714da50b2d51
+    CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+    PROJECT_NAME: GoogleDataTransportCCTSupport
+    SPECS:
+      - GoogleDataTransportCCTSupport (1.2.3)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
@@ -809,6 +896,20 @@ CACHE_KEYS:
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
+  GoogleUtilities:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleUtilities: c7dbbc462e97d6f959d7b7bdd3d67f38
+    CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
+    PROJECT_NAME: GoogleUtilities
+    SPECS:
+      - GoogleUtilities/AppDelegateSwizzler (6.4.0)
+      - GoogleUtilities/Environment (6.4.0)
+      - GoogleUtilities/Logger (6.4.0)
+      - GoogleUtilities/MethodSwizzler (6.4.0)
+      - GoogleUtilities/Network (6.4.0)
+      - "GoogleUtilities/NSData+zlib (6.4.0)"
+      - GoogleUtilities/Reachability (6.4.0)
+      - GoogleUtilities/UserDefaults (6.4.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
@@ -825,14 +926,23 @@ CACHE_KEYS:
       - GTMSessionFetcher (1.3.0)
       - GTMSessionFetcher/Core (1.3.0)
       - GTMSessionFetcher/Full (1.3.0)
+  nanopb:
+    BUILD_SETTINGS_CHECKSUM:
+      nanopb: 576bb45f6f1262a9f9a409f37f3694b7
+    CHECKSUM: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+    PROJECT_NAME: nanopb
+    SPECS:
+      - nanopb (0.3.9011)
+      - nanopb/decode (0.3.9011)
+      - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 329c3ff29a3bdb9f4a24c5e27b001cb9
-      Release: 329c3ff29a3bdb9f4a24c5e27b001cb9
+      Debug: 9faa1868185e3c8e80fab9b0d0482f02
+      Release: 9faa1868185e3c8e80fab9b0d0482f02
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 388b275b7be525db9adacabfd614893e
-      Release: 388b275b7be525db9adacabfd614893e
+      Debug: dce4e621a25aaf1edaf2f92c2d45d931
+      Release: dce4e621a25aaf1edaf2f92c2d45d931
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

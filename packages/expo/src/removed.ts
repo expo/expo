@@ -47,6 +47,16 @@ Object.defineProperties(module.exports, {
       );
     },
   },
+  AuthSession: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { AuthSession } from 'expo' -> import * as AuthSession from 'expo-auth-session'`,
+        'AuthSession',
+        'expo-auth-session'
+      );
+    },
+  },
   Easing: {
     enumerable: true,
     get() {

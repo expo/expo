@@ -30,7 +30,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>${BARE_EXPO_FIREBASE_IOS_GOOGLE_APP_ID}</string>
-	<key>FIREBASE_DATABASE_URL</key>
+	<key>DATABASE_URL</key>
 	<string>${BARE_EXPO_FIREBASE_DATABASE_URL}</string>
 </dict>
 </plist>

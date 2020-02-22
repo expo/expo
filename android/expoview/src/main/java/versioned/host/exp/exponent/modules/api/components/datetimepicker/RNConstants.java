@@ -7,9 +7,11 @@ public final class RNConstants {
   public static final String ARG_MAXDATE = "maximumDate";
   public static final String ARG_IS24HOUR = "is24Hour";
   public static final String ARG_DISPLAY = "display";
+  public static final String ARG_NEUTRAL_BUTTON_LABEL = "neutralButtonLabel";
   public static final String ACTION_DATE_SET = "dateSetAction";
   public static final String ACTION_TIME_SET = "timeSetAction";
   public static final String ACTION_DISMISSED = "dismissedAction";
+  public static final String ACTION_NEUTRAL_BUTTON = "neutralButtonAction";
 
   /**
    * Minimum date supported by {@link DatePicker}, 01 Jan 1900

@@ -539,7 +539,6 @@ public class ReactAndroidCodeTransformer {
     return n;
   }
 
-
   private static Node showDevOptionsDialog(final MethodDeclaration n) {
     return mapBlockStatement(n, new StatementMapper() {
       @Override

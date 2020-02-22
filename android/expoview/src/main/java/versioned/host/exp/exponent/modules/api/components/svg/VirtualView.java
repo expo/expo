@@ -45,8 +45,6 @@ abstract public class VirtualView extends ReactViewGroup {
     */
     private static final double M_SQRT1_2l = 0.707106781186547524400844362104849039;
 
-    static final float MIN_OPACITY_FOR_DRAW = 0.01f;
-
     private static final float[] sRawMatrix = new float[]{
         1, 0, 0,
         0, 1, 0,
@@ -77,6 +75,7 @@ abstract public class VirtualView extends ReactViewGroup {
     final float mScale;
     private boolean mResponsible;
     private boolean mOnLayout;
+    String mDisplay;
     String mName;
 
     private SvgView svgView;
@@ -239,6 +238,12 @@ abstract public class VirtualView extends ReactViewGroup {
     @ReactProp(name = "name")
     public void setName(String name) {
         mName = name;
+        invalidate();
+    }
+
+    @ReactProp(name = "display")
+    public void setDisplay(String display) {
+        mDisplay = display;
         invalidate();
     }
 
@@ -552,37 +557,35 @@ abstract public class VirtualView extends ReactViewGroup {
             return;
         }
         mClientRect = rect;
-        if (mClientRect == null || (!mResponsible && !mOnLayout)) {
+        if (mClientRect == null) {
             return;
         }
-        int left = (int) Math.floor(mClientRect.left);
-        int top = (int) Math.floor(mClientRect.top);
         int width = (int) Math.ceil(mClientRect.width());
         int height = (int) Math.ceil(mClientRect.height());
-        if (mResponsible) {
-            int right = (int) Math.ceil(mClientRect.right);
-            int bottom = (int) Math.ceil(mClientRect.bottom);
-
-            if (!(this instanceof GroupView)) {
-                setLeft(left);
-                setTop(top);
-                setRight(right);
-                setBottom(bottom);
-            }
-            setMeasuredDimension(width, height);
+        int left = (int) Math.floor(mClientRect.left);
+        int top = (int) Math.floor(mClientRect.top);
+        int right = (int) Math.ceil(mClientRect.right);
+        int bottom = (int) Math.ceil(mClientRect.bottom);
+        setMeasuredDimension(width, height);
+        if (!(this instanceof GroupView)) {
+            setLeft(left);
+            setTop(top);
+            setRight(right);
+            setBottom(bottom);
         }
-        if (mOnLayout) {
-            EventDispatcher eventDispatcher = mContext
-                    .getNativeModule(UIManagerModule.class)
-                    .getEventDispatcher();
-            eventDispatcher.dispatchEvent(OnLayoutEvent.obtain(
-                    this.getId(),
-                    left,
-                    top,
-                    width,
-                    height
-            ));
+        if (!mOnLayout) {
+            return;
         }
+        EventDispatcher eventDispatcher = mContext
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher();
+        eventDispatcher.dispatchEvent(OnLayoutEvent.obtain(
+                this.getId(),
+                left,
+                top,
+                width,
+                height
+        ));
     }
 
     RectF getClientRect() {

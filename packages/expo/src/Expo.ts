@@ -16,7 +16,6 @@ export { AR };
 export { SplashScreen };
 export { Updates };
 export { default as AppLoading } from './launch/AppLoading';
-export { default as AuthSession } from './AuthSession';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore

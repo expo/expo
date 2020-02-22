@@ -71,6 +71,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
     ],
+    warnings: [
+      `NOTE: Any files in ${chalk.magenta(
+        'com.facebook.react'
+      )} will not be updated -- you'll need to add these to expoview manually!`,
+    ],
   },
   'react-native-reanimated': {
     repoUrl: 'https://github.com/software-mansion/react-native-reanimated.git',
@@ -90,7 +95,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     warnings: [
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
-      )} will not be updated -- you'll need to add these to ReactAndroid manually!`,
+      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-screens': {
@@ -116,9 +121,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
         targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'com.reactlibrary',
+        sourceAndroidPackage: 'io.expo.appearance',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],

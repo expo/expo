@@ -72,6 +72,18 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   return self;
 }
 
+- (void)dealloc
+{
+  // In very rare case EXCamera might be unmounted (and thus deallocated) after starting taking a photo,
+  // but still before callbacks from AVCapturePhotoCaptureDelegate are fired (that means before results from taking a photo are handled).
+  // This scenario leads to a state when AVCapturePhotoCaptureDelegate is `nil` and
+  // neither self.photoCapturedResolve nor self.photoCapturedResolve is called.
+  // To prevent hanging promise let's reject here.
+  if (_photoCapturedReject) {
+    _photoCapturedReject(@"E_IMAGE_CAPTURE_FAILED", @"Camera unmounted during taking photo process.", nil);
+  }
+}
+
 - (void)onReady:(NSDictionary *)event
 {
   if (_onCameraReady) {
@@ -333,6 +345,10 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_photoCapturedResolve) {
     reject(@"E_ANOTHER_CAPTURE", @"Another photo capture is already being processed. Await the first call.", nil);
+    return;
+  }
+  if (!_photoOutput) {
+    reject(@"E_IMAGE_CAPTURE_FAILED", @"Camera is not ready yet. Wait for 'onCameraReady' callback.", nil);
     return;
   }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];

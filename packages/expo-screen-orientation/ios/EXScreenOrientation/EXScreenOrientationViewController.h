@@ -5,6 +5,8 @@
 
 @interface EXScreenOrientationViewController : UIViewController
 
+- (instancetype)init;
+
 - (instancetype)initWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientationMask;
 
 @end

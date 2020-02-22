@@ -2,6 +2,7 @@
 
 #import "REACallFuncNode.h"
 #import "REAFunctionNode.h"
+#import "REAUtils.h"
 #import "REAParamNode.h"
 #import "REANodesManager.h"
 
@@ -16,6 +17,7 @@
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _whatNodeID = config[@"what"];
+    REA_LOG_ERROR_IF_NIL(_whatNodeID, @"Reanimated: First argument passed to callFunc node is either of wrong type or is missing.");
     _args = config[@"args"];
     _params = config[@"params"];
     _prevCallID = NULL;

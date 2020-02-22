@@ -12,6 +12,8 @@ import abi36_0_0.com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import abi36_0_0.host.exp.exponent.modules.internal.DevMenuModule;
 import abi36_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi36_0_0.org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
@@ -166,6 +168,9 @@ public class ExponentPackage implements ReactPackage {
       /* WHEN_VERSIONING_REMOVE_FROM_HERE
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
       WHEN_VERSIONING_REMOVE_TO_HERE */
+    } else {
+      // We need DevMenuModule only in non-kernel apps.
+      nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest));
     }
 
     if (isVerified) {
