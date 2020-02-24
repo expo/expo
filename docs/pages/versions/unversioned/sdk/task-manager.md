@@ -15,9 +15,11 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
 
 ## Configuration for standalone apps
+
+### Backroung modes on iOS
 
 `TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../guides/adhoc-builds/).
 
@@ -41,6 +43,12 @@ Example of `app.json` that enables background location and background fetch:
   }
 }
 ```
+
+For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, according to your needs.
+
+### AppDelegate
+
+Make sure
 
 ## API
 

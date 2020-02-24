@@ -17,11 +17,13 @@ PODS:
     - UMCore
   - EXApplication (2.0.0):
     - UMCore
-  - EXAppLoaderProvider (8.0.0)
   - EXAV (8.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
+  - EXBackgroundFetch (8.0.0):
+    - UMCore
+    - UMTaskManagerInterface
   - EXBarCodeScanner (8.0.0):
     - UMCore
     - UMImageLoaderInterface
@@ -158,6 +160,11 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (2.0.0):
     - UMCore
+  - EXTaskManager (8.0.0):
+    - UMAppLoader
+    - UMConstantsInterface
+    - UMCore
+    - UMTaskManagerInterface
   - EXUpdates (0.0.1-rc.0):
     - UMCore
   - EXWebBrowser (8.0.0):
@@ -471,6 +478,7 @@ PODS:
     - React
   - RNReanimated (1.7.0):
     - React
+  - UMAppLoader (1.0.0)
   - UMBarCodeScannerInterface (5.0.0)
   - UMCameraInterface (5.0.0)
   - UMConstantsInterface (5.0.0)
@@ -498,8 +506,8 @@ DEPENDENCIES:
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
-  - EXAppLoaderProvider (from `../../../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
+  - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
   - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
@@ -546,6 +554,7 @@ DEPENDENCIES:
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
+  - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -578,6 +587,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
+  - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
@@ -624,10 +634,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-app-auth/ios"
   EXApplication:
     :path: "../../../packages/expo-application/ios"
-  EXAppLoaderProvider:
-    :path: "../../../packages/expo-app-loader-provider/ios"
   EXAV:
     :path: "../../../packages/expo-av/ios"
+  EXBackgroundFetch:
+    :path: "../../../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: "../../../packages/expo-barcode-scanner/ios"
   EXBattery:
@@ -720,6 +730,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-sqlite/ios"
   EXStoreReview:
     :path: "../../../packages/expo-store-review/ios"
+  EXTaskManager:
+    :path: "../../../packages/expo-task-manager/ios"
   EXUpdates:
     :path: "../../../packages/expo-updates/ios"
   EXWebBrowser:
@@ -778,6 +790,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
+  UMAppLoader:
+    :path: "../../../packages/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
     :path: "../../../packages/unimodules-barcode-scanner-interface/ios"
   UMCameraInterface:
@@ -812,8 +826,8 @@ SPEC CHECKSUMS:
   EXAmplitude: 4ec33f8a9c1ba37797449870b4da40dbbbfbab8d
   EXAppAuth: bd859a5717613e72cc3cfbc2128e04b4f0e0ff5a
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
-  EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
   EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
+  EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
   EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
@@ -860,6 +874,7 @@ SPEC CHECKSUMS:
   EXSpeech: 3f7d29b3da9283637176f0fd8dbb1e9da59b2741
   EXSQLite: 220226a354912b100dfe913f5fe6f31762c8927e
   EXStoreReview: 6fc278b9e50805ce3f7a2b9f15b5f0addaa21b90
+  EXTaskManager: 46f97c9cf14cc372001cae8710e836d54f0f5a35
   EXUpdates: 4bb4c813dac48562f9640b5cb7c8283a60b0e68b
   EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
@@ -905,6 +920,7 @@ SPEC CHECKSUMS:
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+  UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
   UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
   UMConstantsInterface: bda5f8bd3403ad99e663eb3c4da685d063c5653c
@@ -919,6 +935,6 @@ SPEC CHECKSUMS:
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: f9b310a7da0a72b720dd3e0eaf31394e24c3f736
+PODFILE CHECKSUM: 162d0da014b56b6eed97501eff5e4f095cef06ea
 
 COCOAPODS: 1.8.4

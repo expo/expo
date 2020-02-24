@@ -12,7 +12,9 @@ import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -101,12 +103,20 @@ public class ExponentPackage implements ReactPackage {
       packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
-    if (delegate != null) {
-      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
-    } else {
-      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
-    }
+    mModuleRegistryAdapter = createModuleRegistryAdapter(delegate, singletonModules, packages);
   }
+
+  private ScopedModuleRegistryAdapter createModuleRegistryAdapter(ExponentPackageDelegate delegate, List<SingletonModule> singletonModules, List<Package> packages) {
+    ScopedModuleRegistryAdapter registryAdapter = null;
+    if (delegate != null) {
+      registryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    if (registryAdapter == null) {
+      registryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    return registryAdapter;
+  }
+
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();

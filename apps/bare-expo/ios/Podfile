@@ -14,7 +14,7 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 modules_path = '../../../node_modules'
 
 # Import the auto-linking packages
-require_relative "#{modules_path}/react-native-unimodules/cocoapods"
+require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
 require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
 
 target 'BareExpo' do

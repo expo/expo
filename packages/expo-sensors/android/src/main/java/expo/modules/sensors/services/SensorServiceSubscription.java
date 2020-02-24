@@ -42,7 +42,6 @@ public class SensorServiceSubscription implements org.unimodules.interfaces.sens
   }
 
   public void stop() {
-    assertSubscriptionIsAlive();
     if (mIsEnabled) {
       mIsEnabled = false;
       mSubscribableSensorService.onSubscriptionEnabledChanged(this);
@@ -50,9 +49,10 @@ public class SensorServiceSubscription implements org.unimodules.interfaces.sens
   }
 
   public void release() {
-    assertSubscriptionIsAlive();
-    mSubscribableSensorService.removeSubscription(this);
-    mHasBeenReleased = true;
+    if (!mHasBeenReleased) {
+      mSubscribableSensorService.removeSubscription(this);
+      mHasBeenReleased = true;
+    }
   }
 
   private void assertSubscriptionIsAlive() {

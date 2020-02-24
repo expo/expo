@@ -12,17 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -41,6 +37,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
@@ -456,6 +456,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
       builder.call("setCurrentActivity", this);
     }
+
+    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
+    builder.call("setInitialLifecycleState", LifecycleState.RESUMED);
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {

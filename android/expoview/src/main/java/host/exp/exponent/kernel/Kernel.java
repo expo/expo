@@ -54,7 +54,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
-import host.exp.exponent.headless.HeadlessAppLoader;
+import host.exp.exponent.headless.InternalHeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
@@ -740,8 +740,8 @@ public class Kernel extends KernelInterface {
       return sInstance.getBundleUrl();
     }
 
-    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
+    if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId);
     }
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {

@@ -993,7 +993,6 @@ PODS:
     - UMCore
   - EXApplication (2.0.0):
     - UMCore
-  - EXAppLoaderProvider (8.0.0)
   - EXAV (8.0.0):
     - UMCore
     - UMFileSystemInterface
@@ -1152,7 +1151,7 @@ PODS:
   - EXStoreReview (2.0.0):
     - UMCore
   - EXTaskManager (8.0.0):
-    - EXAppLoaderProvider
+    - UMAppLoader
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
@@ -1644,6 +1643,7 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
+  - UMAppLoader (1.0.0)
   - UMBarCodeScannerInterface (5.0.0)
   - UMCameraInterface (5.0.0)
   - UMConstantsInterface (5.0.0)
@@ -1901,7 +1901,6 @@ DEPENDENCIES:
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
-  - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
@@ -2011,6 +2010,7 @@ DEPENDENCIES:
   - ReactABI35_0_0/RCTWebSocket (from `./versioned-react-native/ABI35_0_0`)
   - ReactCommon/jscallinvoker (from `../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
+  - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../packages/unimodules-constants-interface/ios`)
@@ -2512,8 +2512,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
     :path: "../packages/expo-application/ios"
-  EXAppLoaderProvider:
-    :path: "../packages/expo-app-loader-provider/ios"
   EXAV:
     :path: "../packages/expo-av/ios"
   EXBackgroundFetch:
@@ -2668,6 +2666,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI35_0_0"
   ReactCommon:
     :path: "../react-native-lab/react-native/ReactCommon"
+  UMAppLoader:
+    :path: "../packages/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
     :path: "../packages/unimodules-barcode-scanner-interface/ios"
   UMCameraInterface:
@@ -2929,7 +2929,6 @@ SPEC CHECKSUMS:
   EXAppAuth: bd859a5717613e72cc3cfbc2128e04b4f0e0ff5a
   EXAppleAuthentication: 97736aa2f0af3f1b83744173f2960b5be8321932
   EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
-  EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
   EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
   EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
   EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
@@ -2979,7 +2978,7 @@ SPEC CHECKSUMS:
   EXSpeech: 3f7d29b3da9283637176f0fd8dbb1e9da59b2741
   EXSQLite: 220226a354912b100dfe913f5fe6f31762c8927e
   EXStoreReview: 6fc278b9e50805ce3f7a2b9f15b5f0addaa21b90
-  EXTaskManager: 6294f9e3f9d4a431655557f759ffebc53e1f9d0d
+  EXTaskManager: 46f97c9cf14cc372001cae8710e836d54f0f5a35
   EXVideoThumbnails: 6582acb7f78e11efdeae2895cd4d5574eec1cbcb
   EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
@@ -3036,6 +3035,7 @@ SPEC CHECKSUMS:
   ReactABI34_0_0: 8d48457d8b4a48990a7ec571ba66f257864877b9
   ReactABI35_0_0: a708ff5c90369b3be411033d07afc0ee072eb7dc
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
+  UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
   UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
   UMConstantsInterface: bda5f8bd3403ad99e663eb3c4da685d063c5653c

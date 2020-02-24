@@ -46,6 +46,10 @@ android {
   lintOptions {
     abortOnError false
   }
+  compileOptions {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -60,7 +64,11 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-task-manager-interface"
   unimodule "unimodules-constants-interface"
-  unimodule "expo-app-loader-provider"
+  unimodule "unimodules-app-loader"
+
 
   api "androidx.core:core:1.0.0"
+}
+repositories {
+    mavenCentral()
 }

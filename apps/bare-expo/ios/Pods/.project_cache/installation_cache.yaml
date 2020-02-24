@@ -77,18 +77,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
-  EXAppLoaderProvider:
-    BUILD_SETTINGS_CHECKSUM:
-      EXAppLoaderProvider: e974093d9aed91f7d71839ac005c168d
-    CHECKSUM: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
-    FILES:
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.h"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.m"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppLoaderInterface.h"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppRecordInterface.h"
-    PROJECT_NAME: EXAppLoaderProvider
-    SPECS:
-      - EXAppLoaderProvider (8.0.0)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: 145c0531e2c7438e612f4f31e07db048
@@ -113,6 +101,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXAV
     SPECS:
       - EXAV (8.0.0)
+  EXBackgroundFetch:
+    BUILD_SETTINGS_CHECKSUM:
+      EXBackgroundFetch: a5e0aec4c8a3ed87903824257d54d1ee
+    CHECKSUM: a99eac546ec3cf81701fdc739755c76e4a3e0619
+    FILES:
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
+    PROJECT_NAME: EXBackgroundFetch
+    SPECS:
+      - EXBackgroundFetch (8.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
@@ -735,6 +735,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXStoreReview
     SPECS:
       - EXStoreReview (2.0.0)
+  EXTaskManager:
+    BUILD_SETTINGS_CHECKSUM:
+      EXTaskManager: c89b8cc024ffb647f0baaef50ace5ac4
+    CHECKSUM: 46f97c9cf14cc372001cae8710e836d54f0f5a35
+    FILES:
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
+    PROJECT_NAME: EXTaskManager
+    SPECS:
+      - EXTaskManager (8.0.0)
   EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
       EXUpdates: 4607b0f75bd46d01ee0d14c14ccef45d
@@ -919,12 +937,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 80448970aa7e7ef1c7fd92d1b973ea87
-      Release: 80448970aa7e7ef1c7fd92d1b973ea87
+      Debug: 9faa1868185e3c8e80fab9b0d0482f02
+      Release: 9faa1868185e3c8e80fab9b0d0482f02
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 0c46c378911738d03bb75d3494febc0d
-      Release: 0c46c378911738d03bb75d3494febc0d
+      Debug: dce4e621a25aaf1edaf2f92c2d45d931
+      Release: dce4e621a25aaf1edaf2f92c2d45d931
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1789,6 +1807,18 @@ CACHE_KEYS:
     PROJECT_NAME: RNReanimated
     SPECS:
       - RNReanimated (1.7.0)
+  UMAppLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
+    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    FILES:
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
+    PROJECT_NAME: UMAppLoader
+    SPECS:
+      - UMAppLoader (1.0.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492
