@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -307,6 +308,10 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     try {
       imageFile = new File(ImagePickerFileUtils.generateOutputPath(mContext.getCacheDir(),
           "ImagePicker", mediaTypes.equals("Videos") ? ".mp4" : ".jpg"));
+      boolean fileExists = !imageFile.createNewFile();
+      if (fileExists) {
+        Log.w(getName(), String.format("File %s already exists.", imageFile.getAbsolutePath()));
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
