@@ -106,7 +106,8 @@ public class NotificationHelper {
 
   public static void getPushNotificationToken(
       final String deviceId,
-      final String projectId,
+      final String legacyExperienceId,
+      @Nullable final String projectId,
       final ExponentNetwork exponentNetwork,
       final ExponentSharedPreferences exponentSharedPreferences,
       final TokenListener listener) {
@@ -139,7 +140,12 @@ public class NotificationHelper {
           // TODO: possibly resolve naming ambiguity on backend around experienceId, possibly
           // should be named projectId or something similar now:
           // https://github.com/expo/expo/pull/7100
-          params.put("experienceId", projectId);
+          params.put("experienceId", legacyExperienceId);
+
+          if (projectId != null) {
+            params.put("projectId", projectId);
+          }
+
           params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
           params.put("deviceToken", sharedPreferencesToken);
           params.put("type", Constants.FCM_ENABLED ? "fcm" : "gcm");
@@ -372,7 +378,26 @@ public class NotificationHelper {
       final ExponentManifest exponentManifest,
       final Listener listener) {
     final ExponentNotificationManager manager = new ExponentNotificationManager(context);
-    final String experienceId = (String) details.get("experienceId");
+
+    // The experienceId field sent in push notification payloads corresponds to the id field
+    // in the manifest. This is used for scoping if scopeKey isn't present.
+    final String legacyExperienceId = (String) details.get("experienceId");
+
+    // The projectId must be either the scopeKey field or null! We use it to find the record
+    // matching the experience in ExponentDB. In ExponentDB the id field is determined by
+    // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
+    // back to using the id field.
+    //
+    // ***WARNING**
+    //
+    // If scopeKey is not included in the manifest but is included in notification payloads
+    // then this may break notifications and crash the app when a notification is received.
+    //
+    //
+    final String experienceId = details.get("projectId") != null ?
+      (String) details.get("projectId") :
+      legacyExperienceId;
+
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(
         context,
         ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));

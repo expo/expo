@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -60,7 +62,28 @@ public class PushNotificationHelper {
     NativeModuleDepsProvider.getInstance().inject(PushNotificationHelper.class, this);
   }
 
-  public void onMessageReceived(final Context context, final String experienceId, final String channelId, final String message, final String body, final String title, final String categoryId) {
+  public void onMessageReceived(
+    final Context context,
+    final String legacyExperienceId,
+    @Nullable final String projectId,
+    final String channelId,
+    final String message,
+    final String body,
+    final String title,
+    final String categoryId
+  ) {
+
+    // The projectId must be either the scopeKey field or null! We use it to find the record
+    // matching the experience in ExponentDB. In ExponentDB the id field is determined by
+    // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
+    // back to using the id field.
+    //
+    // ***WARNING**
+    //
+    // If scopeKey is not included in the manifest but is included in notification payloads
+    // then this may break notifications and crash the app when a notification is received.
+    //
+    final String experienceId = projectId != null ? projectId : legacyExperienceId;
     ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
