@@ -3,33 +3,33 @@ package host.exp.exponent.headless;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import android.util.SparseArray;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.soloader.SoLoader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
+import org.unimodules.apploader.AppLoaderProvider;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
-import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
-import expo.loaders.provider.interfaces.AppRecordInterface;
+import java.util.List;
+import java.util.Map;
+
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.taskManager.AppLoaderInterface;
+import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExpoActivityIds;
 import host.exp.expoview.Exponent;
@@ -39,7 +39,6 @@ import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
-import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
@@ -48,10 +47,10 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 // I've found it pretty hard to make just one implementation that can be used in both cases,
 // so I decided to go with a copy until we refactor these activity classes.
 
-public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate, ExponentPackageDelegate {
+public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate, ExponentPackageDelegate {
   private static String READY_FOR_BUNDLE = "headlessAppReadyForBundle";
 
-  private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
+  private static final SparseArray<String> sActivityIdToBundleUrl = new SparseArray<>();
 
   private JSONObject mManifest;
   private String mManifestUrl;
@@ -66,12 +65,12 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
   private AppLoaderProvider.Callback mCallback;
   private int mActivityId;
 
-  public HeadlessAppLoader(Context context) {
+  public InternalHeadlessAppLoader(Context context) {
     mContext = context;
   }
 
   public static boolean hasBundleUrlForActivityId(int activityId) {
-    return activityId < -1 && sActivityIdToBundleUrl.containsKey(activityId);
+    return activityId < -1 && sActivityIdToBundleUrl.get(activityId) != null;
   }
 
   public static String getBundleUrlForActivityId(int activityId) {
@@ -92,17 +91,14 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
       @Override
       public void onManifestCompleted(final JSONObject manifest) {
-        Exponent.getInstance().runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+        Exponent.getInstance().runOnUiThread(() -> {
+          try {
+            String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
 
-              sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
-              setManifest(mManifestUrl, manifest, bundleUrl);
-            } catch (JSONException e) {
-              mCallback.onComplete(false, new Exception(e.getMessage()));
-            }
+            sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
+            setManifest(mManifestUrl, manifest, bundleUrl);
+          } catch (JSONException e) {
+            mCallback.onComplete(false, new Exception(e.getMessage()));
           }
         });
       }
@@ -172,21 +168,18 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       }
     }
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mReactInstanceManager.isNotNull()) {
-          mReactInstanceManager.onHostDestroy();
-          mReactInstanceManager.assign(null);
-        }
+    runOnUiThread(() -> {
+      if (mReactInstanceManager.isNotNull()) {
+        mReactInstanceManager.onHostDestroy();
+        mReactInstanceManager.assign(null);
+      }
 
-        if (isDebugModeEnabled()) {
-          mJSBundlePath = "";
-          startReactInstance();
-        } else {
-          mIsReadyForBundle = true;
-          AsyncCondition.notify(READY_FOR_BUNDLE);
-        }
+      if (isDebugModeEnabled()) {
+        mJSBundlePath = "";
+        startReactInstance();
+      } else {
+        mIsReadyForBundle = true;
+        AsyncCondition.notify(READY_FOR_BUNDLE);
       }
     });
   }
@@ -213,7 +206,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     return ExponentManifest.isDebugModeEnabled(mManifest);
   }
 
-  public void soloaderInit() {
+  private void soloaderInit() {
     if (mDetachSdkVersion != null) {
       SoLoader.init(mContext, false);
     }
@@ -272,7 +265,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
     Exponent.getInstance().testPackagerStatus(isDebugModeEnabled(), mManifest, new Exponent.PackagerStatusCallback() {
       @Override
       public void onSuccess() {
-        mReactInstanceManager = startReactInstance(HeadlessAppLoader.this, mIntentUri, mDetachSdkVersion, reactPackages(), expoPackages());
+        mReactInstanceManager = startReactInstance(InternalHeadlessAppLoader.this, mIntentUri, mDetachSdkVersion, reactPackages(), expoPackages());
       }
 
       @Override
@@ -286,10 +279,9 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
                                       final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages) {
     String linkingUri = getLinkingUri();
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
-        MANIFEST_URL_KEY, mManifestUrl,
-        LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri,
-        IS_HEADLESS_KEY, true
+      MANIFEST_URL_KEY, mManifestUrl,
+      LINKING_URI_KEY, linkingUri,
+      INTENT_URI_KEY, mIntentUri
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
@@ -303,6 +295,9 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+
+    // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
+    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -343,7 +338,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||
-          host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
+        host.endsWith(".exp.host") || host.endsWith(".expo.io") || host.endsWith(".exp.direct") || host.endsWith(".expo.test"))) {
         List<String> pathSegments = uri.getPathSegments();
         Uri.Builder builder = uri.buildUpon();
         builder.path(null);

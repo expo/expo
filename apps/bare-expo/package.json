@@ -33,8 +33,6 @@
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
   },
   "excludedUnimodules": [
-    "expo-task-manager",
-    "expo-background-fetch",
     "expo-branch",
     "expo-camera",
     "expo-face-detector",
