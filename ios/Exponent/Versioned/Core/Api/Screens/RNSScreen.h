@@ -10,7 +10,9 @@ typedef NS_ENUM(NSInteger, RNSScreenStackPresentation) {
   RNSScreenStackPresentationModal,
   RNSScreenStackPresentationTransparentModal,
   RNSScreenStackPresentationContainedModal,
-  RNSScreenStackPresentationContainedTransparentModal
+  RNSScreenStackPresentationContainedTransparentModal,
+  RNSScreenStackPresentationFullScreenModal,
+  RNSScreenStackPresentationFormSheet
 };
 
 typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
@@ -39,10 +41,12 @@ typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
 
 @interface RNSScreenView : RCTView
 
+@property (nonatomic, copy) RCTDirectEventBlock onAppear;
 @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
 @property (weak, nonatomic) UIView<RNSScreenContainerDelegate> *reactSuperview;
 @property (nonatomic, retain) UIViewController *controller;
 @property (nonatomic) BOOL active;
+@property (nonatomic) BOOL gestureEnabled;
 @property (nonatomic) RNSScreenStackAnimation stackAnimation;
 @property (nonatomic) RNSScreenStackPresentation stackPresentation;
 
