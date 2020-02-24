@@ -91,7 +91,7 @@ If you'd rather handle this process on your own:
 
 7. You've already generated a new upload key and extracted the certificate, so move to step 3 and upload the public key certificate (the `.pem` file you received in step 2)
 
-If you want to create the upload certificate yourself, replace steps 2 and 3 from above with:
+If you want to create the upload certificate yourself, replace steps 1 and 2 from above with:
 
 1. Generate a new keystore
 
