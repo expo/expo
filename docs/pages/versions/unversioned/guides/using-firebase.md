@@ -6,9 +6,8 @@ title: Using Firebase
 
 ## Usage with Expo
 
-If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Firebase's Realtime Database, Firestore, Storage and Authentication (except phone auth). If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
-
-[Firebase Realtime Database](https://firebase.google.com/docs/database) is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
+If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication (except phone auth), Firestore, Database, Storage, Functions and Performance on React Native. Other modules like Analytics are not supported through the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk), but you can use [expo-firebase-analaytics](../../sdk/firebase-analytics) for that.
+If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
@@ -21,6 +20,7 @@ See the [official Firebase blog post announcing React Native compatibility](http
 - [Storing Data and Receiving Updates](#storing-data-and-receiving-updates)
 - [User Authentication](#user-authentication)
 - [Using Expo with Firestore](#using-expo-with-firestore)
+- [Recording events with Analytics](#recording-events-with-analytics)
 
 ## Firebase SDK Setup
 
@@ -38,7 +38,8 @@ const firebaseConfig = {
   apiKey: "<YOUR-API-KEY>",
   authDomain: "<YOUR-AUTH-DOMAIN>",
   databaseURL: "<YOUR-DATABASE-URL>",
-  storageBucket: "<YOUR-STORAGE-BUCKET>"
+  storageBucket: "<YOUR-STORAGE-BUCKET>",
+  measurementId: "<YOUR-MEASUREMENT-ID>"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -206,3 +207,21 @@ dbh.collection("characters").doc("mario").set({
 ```
 
 This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+
+## Recording events with Analytics
+
+In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
+
+`expo install expo-firebase-core expo-firebase-analytics`
+
+This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on the standard Expo client.
+
+To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](../../sdk/firebase-analytics) package.
+
+```javascript
+import * as Analytics from 'expo-firebase-analytics';
+
+Analytics.logEvent('hero_spotted', {
+  hero_name: 'Saitama'
+});
+```
