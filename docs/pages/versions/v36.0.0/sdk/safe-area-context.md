@@ -56,7 +56,7 @@ class ClassComponent extends React.Component {
 
 #### Before
 
-In a web-only app you would use CSS environment variables to get the size of the screen's safe area insets.
+In a web-only app, you would use CSS environment variables to get the size of the screen's safe area insets.
 
 `styles.css`
 
@@ -96,11 +96,11 @@ function App() {
 
 ### Web SSR
 
-If you are doing server side rendering on the web you can use `initialSafeAreaInsets` to inject insets value based on the device the user has, or simply pass zero values. Since insets measurement is async it will break rendering your page content otherwise.
+If you are doing server side rendering on the web, you can use `initialSafeAreaInsets` to inject values based on the device the user has, or simply pass zero. Otherwise, insets measurement will break rendering your page content since it is async.
 
 ### Optimization
 
-To speed up the initial render, you can import `initialWindowSafeAreaInsets` from this package and set as the `initialSafeAreaInsets` prop on the provider as described in Web SSR. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
+To speed up the initial render, you can import `initialWindowSafeAreaInsets` from this package and set it as the `initialSafeAreaInsets` prop on the provider as described in Web SSR. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
 
 ```js
 import { SafeAreaProvider, initialWindowSafeAreaInsets } from 'react-native-safe-area-context';
