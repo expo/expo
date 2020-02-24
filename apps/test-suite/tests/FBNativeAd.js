@@ -15,13 +15,16 @@ const {
   AdTriggerView,
 } = FacebookAds;
 
-AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+try {
+  AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+} catch (e) {
+  // AdSettings may not be available, shrug
+}
 
 export const name = 'NativeAd';
 
 // if tests didn't pass check placementId
 const placementId = '629712900716487_629713604049750';
-const adsManager = new NativeAdsManager(placementId);
 
 const variables = [
   'advertiserName',
@@ -68,7 +71,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('FacebookAds.NativeAd', () => {
     let nativeAd;
     t.beforeAll(async () => {
-      nativeAd = await mountAndWaitFor(<FullNativeAd adsManager={adsManager} />);
+      nativeAd = await mountAndWaitFor(
+        <FullNativeAd adsManager={new NativeAdsManager(placementId)} />
+      );
     });
     t.afterEach(async () => await cleanupPortal());
 
