@@ -6,7 +6,11 @@ import { mountAndWaitForWithTimeout } from './helpers';
 
 const { BannerAd, AdSettings } = FacebookAds;
 
-AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+try {
+  AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+} catch (e) {
+  // AdSettings may not be available, shrug
+}
 
 export const name = 'BannerAd';
 
