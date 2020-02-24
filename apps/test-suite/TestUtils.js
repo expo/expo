@@ -26,6 +26,18 @@ function optionalRequire(requirer) {
   }
 }
 
+// Both Location and TaskManager test suites define tasks in TaskManager.
+// Since tasks can only be defined during initialization phase (not as a result
+// of calling some function when the application is running, but rather in global scope),
+// we need to trigger code execution of these modules here (not in `getTestModules`
+// which is called in one of the components).
+const LocationTestScreen = optionalRequire(() => require('./tests/Location'));
+const TaskManagerTestScreen = optionalRequire(() => require('./tests/TaskManager'));
+// I have a hunch that optionalRequire doesn't work when *not* in global scope
+// since I had to move Camera screen import here too to get rid of an error
+// caused by missing native module.
+const CameraTestScreen = optionalRequire(() => require('./tests/Camera'));
+
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
@@ -45,7 +57,17 @@ export function getTestModules() {
   );
 
   // Universally tested APIs
-  modules.push(require('./tests/Random'), require('./tests/Crypto'));
+  modules.push(
+    require('./tests/Random'),
+    require('./tests/Crypto'),
+    require('./tests/KeepAwake'),
+    require('./tests/Blur'),
+    require('./tests/LinearGradient'),
+    require('./tests/Facebook'),
+    require('./tests/HTML'),
+    require('./tests/FirebaseCore'),
+    require('./tests/FirebaseAnalytics')
+  );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
@@ -58,7 +80,8 @@ export function getTestModules() {
       require('./tests/Localization'),
       require('./tests/SecureStore'),
       require('./tests/SMS'),
-      require('./tests/StoreReview')
+      require('./tests/StoreReview'),
+      require('./tests/NewNotifications')
     );
     return modules;
   }
@@ -67,7 +90,8 @@ export function getTestModules() {
     modules.push(
       require('./tests/Contacts'),
       // require('./tests/SVG'),
-      require('./tests/Localization')
+      require('./tests/Localization'),
+      optionalRequire(() => require('./tests/NewNotifications'))
     );
 
     if (browserSupportsWebGL()) {
@@ -96,7 +120,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd'))
+    optionalRequire(() => require('./tests/FBBannerAd')),
+    optionalRequire(() => require('./tests/NewNotifications'))
   );
 
   if (!isDeviceFarm()) {
@@ -110,14 +135,13 @@ export function getTestModules() {
     // Requires interaction (sign in popup)
     modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
-    modules.push(optionalRequire(() => require('./tests/Location')));
+    modules.push(LocationTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Has uncontrolled view controllers
     modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 
@@ -129,12 +153,13 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
     // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
-    modules.push(optionalRequire(() => require('./tests/TaskManager')));
+    modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
     // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Constants.isDevice && Platform.OS === 'android')
-      modules.push(optionalRequire(() => require('./tests/Camera')));
+    if (Constants.isDevice && Platform.OS === 'android') {
+      modules.push(CameraTestScreen);
+    }
   }
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));

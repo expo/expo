@@ -1,6 +1,6 @@
 ---
 title: TaskManager
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-task-manager"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-35/packages/expo-task-manager'
 ---
 
 An API that allows to manage tasks, especially these running while your app is in the background.
@@ -9,13 +9,21 @@ Some features of this module are used by other modules under the hood. Here is a
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ✅               | ✅         | ✅            | ✅  |
+
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. If you're using the bare workflow, React Native's [Headless JS](https://facebook.github.io/react-native/docs/headless-js-android) might suit your needs.
 
 ## Configuration for standalone apps
 
-`TaskManager` works out of the box in the Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+`TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../guides/adhoc-builds/).
+
+Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Example of `app.json` that enables background location and background fetch:
 
 ```json
@@ -127,21 +135,25 @@ Unregisters all tasks registered for the running app.
 
 Returns a promise that resolves as soon as all tasks are completely unregistered.
 
-## Examples
+## Example
 
 ```javascript
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
 export default class Component extends React.Component {
   onPress = async () => {
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
-    });
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status === 'granted') {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+      });
+    }
   };
 
   render() {

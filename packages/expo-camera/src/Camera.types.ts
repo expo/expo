@@ -17,6 +17,7 @@ export type RecordingOptions = {
   maxFileSize?: number;
   quality?: number | string;
   mute?: boolean;
+  mirror?: boolean;
 };
 
 export type CapturedPicture = {
@@ -46,9 +47,9 @@ export type Props = ViewProps & {
   pictureSize?: string;
   videoStabilizationMode?: number;
   onMountError?: (event: MountError) => void;
-  barCodeScannerSettings?: {};
+  barCodeScannerSettings?: object;
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
-  faceDetectorSettings?: {};
+  faceDetectorSettings?: object;
   onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 
@@ -69,10 +70,10 @@ export type NativeProps = {
   zoom?: number;
   whiteBalance?: number | string;
   pictureSize?: string;
-  barCodeScannerSettings?: {};
+  barCodeScannerSettings?: object;
   barCodeScannerEnabled?: boolean;
   faceDetectorEnabled?: boolean;
-  faceDetectorSettings?: {};
+  faceDetectorSettings?: object;
   // Android
   ratio?: string;
   useCamera2Api?: boolean;

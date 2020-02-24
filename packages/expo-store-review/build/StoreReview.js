@@ -1,6 +1,6 @@
+import { deprecate } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
-import { deprecate } from '@unimodules/core';
 import StoreReview from './ExpoStoreReview';
 /*
  * Determine if the platform has the capabilities to use `requestedReview`
@@ -52,10 +52,12 @@ export async function requestReview() {
  */
 export function storeUrl() {
     const { manifest } = Constants;
-    if (Platform.OS === 'ios' && manifest.ios) {
+    // eslint-disable-next-line no-undef
+    if (Platform.OS === 'ios' && manifest?.ios) {
         return manifest.ios.appStoreUrl;
+        // eslint-disable-next-line no-undef
     }
-    else if (Platform.OS === 'android' && manifest.android) {
+    else if (Platform.OS === 'android' && manifest?.android) {
         return manifest.android.playStoreUrl;
     }
     else {

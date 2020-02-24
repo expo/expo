@@ -72,6 +72,18 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   return self;
 }
 
+- (void)dealloc
+{
+  // In very rare case EXCamera might be unmounted (and thus deallocated) after starting taking a photo,
+  // but still before callbacks from AVCapturePhotoCaptureDelegate are fired (that means before results from taking a photo are handled).
+  // This scenario leads to a state when AVCapturePhotoCaptureDelegate is `nil` and
+  // neither self.photoCapturedResolve nor self.photoCapturedResolve is called.
+  // To prevent hanging promise let's reject here.
+  if (_photoCapturedReject) {
+    _photoCapturedReject(@"E_IMAGE_CAPTURE_FAILED", @"Camera unmounted during taking photo process.", nil);
+  }
+}
+
 - (void)onReady:(NSDictionary *)event
 {
   if (_onCameraReady) {
@@ -335,6 +347,10 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     reject(@"E_ANOTHER_CAPTURE", @"Another photo capture is already being processed. Await the first call.", nil);
     return;
   }
+  if (!_photoOutput) {
+    reject(@"E_IMAGE_CAPTURE_FAILED", @"Camera is not ready yet. Wait for 'onCameraReady' callback.", nil);
+    return;
+  }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
   [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
 
@@ -388,9 +404,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   NSData *imageData = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
-  CFDictionaryRef exifAttachments = CMGetAttachment(photoSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-  NSDictionary *metadata = (__bridge NSDictionary *)exifAttachments;
-  [self handleCapturedImageData:imageData exifMetadata:metadata options:options resolver:resolve];
+  
+  CGImageSourceRef sourceCGIImageRef = CGImageSourceCreateWithData((CFDataRef) imageData, NULL);
+  NSDictionary *sourceMetadata = (__bridge NSDictionary *) CGImageSourceCopyPropertiesAtIndex(sourceCGIImageRef, 0, NULL);
+  [self handleCapturedImageData:imageData metadata:sourceMetadata options:options resolver:resolve reject:reject];
+  CFRelease(sourceCGIImageRef);
 }
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output didFinishProcessingPhoto:(AVCapturePhoto *)photo error:(NSError *)error API_AVAILABLE(ios(11.0))
@@ -413,10 +431,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   NSData *imageData = [photo fileDataRepresentation];
-  [self handleCapturedImageData:imageData exifMetadata:photo.metadata[(NSString *)kCGImagePropertyExifDictionary] options:options resolver:resolve];
+  [self handleCapturedImageData:imageData metadata:photo.metadata options:options resolver:resolve reject:reject];
 }
 
-- (void)handleCapturedImageData:(NSData *)imageData exifMetadata:(NSDictionary *)exifMetadata options:(NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve
+- (void)handleCapturedImageData:(NSData *)imageData metadata:(NSDictionary *)metadata options:(NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
   UIImage *takenImage = [UIImage imageWithData:imageData];
   BOOL useFastMode = [options[@"fastMode"] boolValue];
@@ -424,49 +442,50 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     resolve(nil);
   }
 
-  CGImageRef takenCGImage = takenImage.CGImage;
-
   CGSize previewSize;
   if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
     previewSize = CGSizeMake(self.previewLayer.frame.size.height, self.previewLayer.frame.size.width);
   } else {
     previewSize = CGSizeMake(self.previewLayer.frame.size.width, self.previewLayer.frame.size.height);
   }
-
+  
+  CGImageRef takenCGImage = takenImage.CGImage;
   CGRect cropRect = CGRectMake(0, 0, CGImageGetWidth(takenCGImage), CGImageGetHeight(takenCGImage));
   CGRect croppedSize = AVMakeRectWithAspectRatioInsideRect(previewSize, cropRect);
   takenImage = [EXCameraUtils cropImage:takenImage toRect:croppedSize];
 
-  float quality = [options[@"quality"] floatValue];
-  NSData *takenImageData = UIImageJPEGRepresentation(takenImage, quality);
-
   NSString *path = [self.fileSystem generatePathInDirectory:[self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"] withExtension:@".jpg"];
+  float width = takenImage.size.width;
+  float height = takenImage.size.height;
+  NSData *processedImageData = nil;
+  float quality = [options[@"quality"] floatValue];
 
   NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-  response[@"uri"] = [EXCameraUtils writeImage:takenImageData toPath:path];
-  response[@"width"] = @(takenImage.size.width);
-  response[@"height"] = @(takenImage.size.height);
+  if ([options[@"exif"] boolValue]) {
+    NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:metadata[(NSString *)kCGImagePropertyExifDictionary] withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }];
+    updatedExif[(NSString *)kCGImagePropertyExifPixelYDimension] = @(width);
+    updatedExif[(NSString *)kCGImagePropertyExifPixelXDimension] = @(height);
+    response[@"exif"] = updatedExif;
+    
+    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
+    updatedMetadata[(NSString *)kCGImagePropertyExifDictionary] = updatedExif;
+    
+    // UIImage does not contain metadata information. We need to add them to CGImage manually.
+    processedImageData = [EXCameraUtils dataFromImage:takenImage withMetadata:updatedMetadata imageQuality:quality];
+  } else {
+    processedImageData = UIImageJPEGRepresentation(takenImage, quality);
+  }
+  
+  if (!processedImageData) {
+    return reject(@"E_IMAGE_SAVE_FAILED", @"Could not save the image.", nil);
+  }
+  
+  response[@"uri"] = [EXCameraUtils writeImage:processedImageData toPath:path];
+  response[@"width"] = @(width);
+  response[@"height"] = @(height);
 
   if ([options[@"base64"] boolValue]) {
-    response[@"base64"] = [takenImageData base64EncodedStringWithOptions:0];
-  }
-
-  if ([options[@"exif"] boolValue]) {
-    int imageRotation;
-    switch (takenImage.imageOrientation) {
-      case UIImageOrientationLeft:
-        imageRotation = 90;
-        break;
-      case UIImageOrientationRight:
-        imageRotation = -90;
-        break;
-      case UIImageOrientationDown:
-        imageRotation = 180;
-        break;
-      default:
-        imageRotation = 0;
-    }
-    [EXCameraUtils updateExifMetadata:exifMetadata withAdditionalData:@{ @"Orientation": @(imageRotation) } inResponse:response]; // TODO
+    response[@"base64"] = [processedImageData base64EncodedStringWithOptions:0];
   }
 
   if ([options[@"fastMode"] boolValue]) {
@@ -521,6 +540,12 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
     }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+
+    bool canBeMirrored = connection.isVideoMirroringSupported;
+    bool shouldBeMirrored = options[@"mirror"] && [options[@"mirror"] boolValue];
+    if (canBeMirrored && shouldBeMirrored) {
+      [connection setVideoMirrored:shouldBeMirrored];
+    }
 
     UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{

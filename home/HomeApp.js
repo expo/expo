@@ -1,6 +1,6 @@
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
-import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
@@ -10,8 +10,6 @@ import { Assets as StackAssets } from 'react-navigation-stack';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import url from 'url';
-
-import './menu/MenuView';
 
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
@@ -120,39 +118,31 @@ export default class App extends React.Component {
       theme = 'light';
     }
 
+    const backgroundColor = theme === 'dark' ? '#000000' : '#ffffff';
+
+    // Android below API 23 (Android 6.0) does not support 'dark-content' barStyle:
+    // - statusBar shouldn't be translucent
+    // - backgroundColor should be a color that would make status bar icons be visible
+    const translucent = !(Platform.OS === 'android' && Device.platformApiLevel < 23);
+    const statusBarBackgroundColor =
+      theme === 'dark' ? '#000000' : translucent ? '#ffffff' : '#00000088';
+
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor }]}>
         <ActionSheetProvider>
           <Navigation theme={theme} />
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && (
-          <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
-        )}
-        {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+        <StatusBar
+          translucent={translucent}
+          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+          backgroundColor={statusBarBackgroundColor}
+        />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: Constants.statusBarHeight,
-    ...Platform.select({
-      ios: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
-      },
-      android: {
-        backgroundColor: 'rgba(0,0,0,0.2)',
-      },
-    }),
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
+  container: { flex: 1 },
 });

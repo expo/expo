@@ -7,65 +7,66 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03210A18DDA0801E9E0ACDB66092FAA4 /* REACondNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D29D5796C8DAB25A8F48854DA71CBA14 /* REACondNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		07D6B44E553645C61D6D44002C8916D4 /* REAStyleNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 00DFB3D3470612108064EA516FDCCC26 /* REAStyleNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0AE6F667A6B9CE4FBFCFBBB4FA8650F3 /* REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 36FF58AE82E89AB4C3715349BAB696E5 /* REAPropsNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		0B3A4AAE09B19F2451DF590AFD88E875 /* RNReanimated-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 507AFF4D91A0D34D1CD0158E0BDCD596 /* RNReanimated-dummy.m */; };
-		14BDDD4E7FD37DF8ED9E189CE9D4CC76 /* REATransitionValues.h in Headers */ = {isa = PBXBuildFile; fileRef = AB8426CBA442E8680C61D76AFA27AE71 /* REATransitionValues.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		22EDC999B2EBB4BF8B68AAC89A59F99C /* REACondNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 723F0B33983B0E5F70541DEE13F53258 /* REACondNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		256CE34AFE55C310185B1C97B9E887C8 /* REAFunctionNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D241C7DC67B2ECBECEFE1A357204A498 /* REAFunctionNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2A6A362F290CAC036A9736F2C5728EEE /* REAEventNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BA686FCC8ECE8AFDD6E4BB911940586B /* REAEventNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		36AB0F53F2DB9629944BF1B89AEC5894 /* REACallFuncNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E7E1604F6EE1CA24D59D88FB9CE820C3 /* REACallFuncNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		37629355E9B79173261A2F8B28CB56AD /* REABlockNode.h in Headers */ = {isa = PBXBuildFile; fileRef = F3FEAE836F1E7D0896F1040798FC2799 /* REABlockNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3F9B2285E258F7E83C1B1F257014440E /* RCTConvert+REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CABA1E44DDC6991495210D4790378BB /* RCTConvert+REATransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4DCE79F5A34975B5979B64779EB7BB24 /* REAJSCallNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 84B1975C7A0ECD17CBCDFBAB64B24254 /* REAJSCallNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		51D0B7D5C080B67FFBD041FDF7B5634D /* REAAlwaysNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 12B5D06A053DFA33CD63C0B38323E227 /* REAAlwaysNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		60F45D4C3CA5C1E23A461AFE81AED7F7 /* REAOperatorNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 22B6EB670973B6C6869E15A44C36111D /* REAOperatorNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6688D7ECD7E3D081A460A0944C5E0150 /* REATransition.h in Headers */ = {isa = PBXBuildFile; fileRef = FFD3611510E287FCEA143D8D1E0BE859 /* REATransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6764DF65250618ECE4DE888B82329758 /* REAConcatNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F3D1649375A06E628B349441C6EAAF9 /* REAConcatNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		677D20686095465A54037FBBA59334F0 /* REANodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D60F76A6CFECA34A1477F8753A267E6 /* REANodesManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		67A9FA88DA2F611FC0B1A52A84E6C9E5 /* REAClockNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F75539A9890D079197E32DCD0F50DAC /* REAClockNodes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		6FCCC0F35BAF548E185301CEA7C35953 /* REANodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 112DCEE15E00ED151CCB479D141151DC /* REANodesManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		792276C5D80D560002541CD48673F99A /* REAFunctionNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 10A37D2DD51A9F58E969965ADC039F0E /* REAFunctionNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7A706FDA7877EB451132952C38A8E889 /* REANode.m in Sources */ = {isa = PBXBuildFile; fileRef = FADF700C5DDFE6F088F92F792C00FF32 /* REANode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7D634D2455E68389037BCECFA02E4586 /* REAValueNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 7331CD344CCA139738A54FA74F7BB9B6 /* REAValueNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7FF0F523AC4A097707CDF6F7C6A7CE34 /* READebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 05D42DD91D135C0E28F1B54D758B874C /* READebugNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		826B67D28EFCC23D483E7E777FCFDAEF /* REABlockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D092ACF1D39F9398A57E299D87392A4A /* REABlockNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		83C0AE66292D3B292A34A3DC12CC6086 /* REAAllTransitions.h in Headers */ = {isa = PBXBuildFile; fileRef = CD7EAD86F840DE7F9E2A1415D9E195A9 /* REAAllTransitions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		86C4D67B613FAD9055B6D03D109EC130 /* REAAlwaysNode.h in Headers */ = {isa = PBXBuildFile; fileRef = EC37E2B8B6AABB3968363DA67CF3E963 /* REAAlwaysNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		899DD7B6CBA0E396BF737ECD858B0323 /* REAClockNodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F321B1F1FEDEC57EC23B59CF68FEE23 /* REAClockNodes.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8B93E192DC7ACDCEAC162C6959D5BCBD /* RCTConvert+REATransition.h in Headers */ = {isa = PBXBuildFile; fileRef = C1DF39146A77946229C5EF7DD36FB69C /* RCTConvert+REATransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8F4B4424E569263346958E033A7C992D /* REAEventNode.h in Headers */ = {isa = PBXBuildFile; fileRef = D15DDDA1678E70EC4BA508A8850D2D88 /* REAEventNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		90618F3AF6AA21F7BBA9383B89D56FD3 /* REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D7BEEF07D2E5E4C9B8CC10DEA8B11B0 /* REATransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		94AE6F0801CCA8A9CA7C7D5F510B0023 /* REABezierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D42891F284B61E633C014AF4DBD4309 /* REABezierNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		953E47DB57F46D551364B908495A4350 /* REATransitionAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ED321244AD118FE9CAAEACC25B09F45 /* REATransitionAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9CCD3DDA22D681BCFF07E3DE876DD34C /* REACallFuncNode.m in Sources */ = {isa = PBXBuildFile; fileRef = C0B0ABABEDA467D14A6405882A7EF51B /* REACallFuncNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A22517D1A3ED3C046351D45587132423 /* REASetNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 133152BAD8617D28AC8EA3CB611D9897 /* REASetNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AB3C538A2478DCF7699E8FA3B465AAB3 /* REAParamNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A4C3DB04D96105017BC5D136B723892 /* REAParamNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B1D6AA101EA185F834AF5E4674256804 /* REAPropsNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B97341F392776A986C7908B428D75DA9 /* REAPropsNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B843BA40D0AD881A98EBE63AB41E7436 /* REATransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D39C64343D9011C3A9C59B2F7BAA21CC /* REATransitionManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		BC589728261AD69F828A62B1E4038CB3 /* REABezierNode.h in Headers */ = {isa = PBXBuildFile; fileRef = ECE5A012FF3039DBB3A78D94F59D454C /* REABezierNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BCC124EB0E40601747C5545EA52AD3C6 /* REAOperatorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A8F22CFF26353098C980EA08AE655E98 /* REAOperatorNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BD7604FEF90EF7334D031F7AFD528715 /* REATransformNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 77FA4A517BDBE92A09CD1C9DF463EA92 /* REATransformNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BE6B0DBE29C4B67138F54D3965E8FEA5 /* REANode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0728047436C93FE512691C44A6468A42 /* REANode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C06FF85B551973EE68B50415C7FF08FE /* REATransitionValues.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A3F4C05FC7A54D3F4F3297164BACE6 /* REATransitionValues.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C2AC107419514A44B305A391AEF6CE78 /* REAStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 16B3E472BD0F8040A4BB9B3356642B2E /* REAStyleNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C59BA9B421810B4884FFDFCED85B524D /* REAValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = B373C2CE25C9B705BC1ECB92B3C463F3 /* REAValueNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DB50750E3EC40EDC46A180B6FC675DF4 /* REAModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC89B114C7AEA3B3C7BBBFE38A76454 /* REAModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DC20EC470BE8B65BF3D6C50D25CB1466 /* REATransitionAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F91C1E574C578F077CD608463A9E904 /* REATransitionAnimation.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DF3F1B8B67B949603A44C8364FE922F6 /* REAAllTransitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 928F34BC10F62DF5C711E63AEEEC178B /* REAAllTransitions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		EBD9E7E4E0562CEB1068DF335FECDB3A /* REAParamNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 81DEF962C9BDEDF65394A34FE6F6D7DB /* REAParamNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EC4EFBB5A659A7EEADF6551AC8DE7B85 /* READebugNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 8772C708F55AD12E64DC55562124D2E7 /* READebugNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		ED0A0325B5C474BD92DEEC9666379DC9 /* REATransformNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 558CA8013F1B2419E9971E3AC36A8FBC /* REATransformNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		ED5A41844B9722FFB8E0EFA5257CEA7C /* REASetNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 24845B2113EB0800B6839BAC5FA9EAAF /* REASetNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		EFFD7B5077A0A6A2163D58D585A6C057 /* REAConcatNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 54AF50C3F89D3922F911E0F89A597378 /* REAConcatNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F2737F2C878E487DE0DE32A265A57CE3 /* REAModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7526D84BFB0C1038E91423A3F0CC4CD5 /* REAModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F6B787A0B4D1465A885FE8B13F93D7B1 /* REAJSCallNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 92BB076E1F41B7AB17487BA1FB68AB8B /* REAJSCallNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FB91BFE7C5EDDC092D51437010A1D9D7 /* REATransitionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B65397B607FAB12335DDE7BE86E40DC4 /* REATransitionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		001C0D4CAF4716222DEA8C66E38C6999 /* REAFunctionNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FFDB2CD5764FECF700C419BE1D79510 /* REAFunctionNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		008A630EA1E7EF8360A0EEF957479B3F /* REAModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9861E3ADB256FB2D187539B58330EF72 /* REAModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0DFE1C68CCF47FC41522FE6246D223D5 /* REABezierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A7398BAF53B73CFAD4408FBB8FB376A /* REABezierNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0F2ECD65BD51AC4DB25AA35F3D377FEA /* READebugNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C2BDFE2AE7ABAC2C0BC6AA6F6AC37F28 /* READebugNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		14FC39F93691A66C8F27F24895F2DD18 /* REAJSCallNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 07CD8309B8169E4E168695083EAE8AFF /* REAJSCallNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2616C344E7FB688CE253EB3CB4DE7DE5 /* READebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = C08A96A72BBCEAAF4C695F8EB19A91BE /* READebugNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2D28A6F26326035C82433D740F3AE061 /* REAClockNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = EC6923458009A43E331CAD3F07834EC7 /* REAClockNodes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		32E8697C296544E53D6128C3A5900704 /* REAAlwaysNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D6BE98B14C24355A06211F3039303E /* REAAlwaysNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		352466BF75589781A61860D8D718CAB2 /* REASetNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C4F20CF29769CC6FC0EF72030E19732D /* REASetNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37E31BA9755465ADE483B702D06BA769 /* REATransformNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 2DCFE6A10BFAE2733B96C541504716D7 /* REATransformNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		405857324EE20ED4EBF933C01542C3DE /* RCTConvert+REATransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 8274A85A519D65E883E78E2BD8A7A448 /* RCTConvert+REATransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		464816EDAF0CA7BE644CD3D526D52FC3 /* REAClockNodes.h in Headers */ = {isa = PBXBuildFile; fileRef = D1F493F19AD55C72ED45CAB33A99C23F /* REAClockNodes.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		473B5D397FB2CD7853BC927A92F766A7 /* REAEventNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CA60B4AA0634A5D5ECD3597E7659CCC7 /* REAEventNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		481F26CC6F0CE31F84192696131C6830 /* REAAllTransitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADE8B99D9CE847450D3A18623A93633 /* REAAllTransitions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4CF3EC11F3DDFA06E6D58FF90DCB5F4A /* REAConcatNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 87DDB1267FC5139E6A9AC3B6ABD2C758 /* REAConcatNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4E7ACD274C510C64AAD62FD4439868A5 /* REABezierNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 1FAE2886D9BA5515980174F412920A7F /* REABezierNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		51412DB697C7DC7A0960DE88689B893F /* REANodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B9813EC67DBF0CBD1038DA3F22E1E253 /* REANodesManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5291B7BC7237164C22FD39DE7B079517 /* REATransitionAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = E92536129402E075B8B94E8CB9CBFD6C /* REATransitionAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		52F73B2732C3FE633CC28B35248A493D /* REAOperatorNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 11356D2D66A5E151E63952AD4FFF25B2 /* REAOperatorNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		59C7AFE8CBA4DE3FAEE4817D0B4584CC /* REACondNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5508BA75CF704FB98AAF60AF062B69 /* REACondNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5B52CC58694AF5C40D4A513ACF32D9E5 /* REABlockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A469986C058C59F8A17371F919D340AF /* REABlockNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		61AC6D99062A8239D27612ABCB69B0E5 /* REANode.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F1CA98EDED8313A07D1B661B6EA4AA4 /* REANode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6E28650B74F6A8AF4324DFB70C5EF5A3 /* RCTConvert+REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBF0B6392E9566D150994D257EB0D56 /* RCTConvert+REATransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7017FDC011A63BF11C492029F52751FF /* REATransformNode.m in Sources */ = {isa = PBXBuildFile; fileRef = C8922B7F2030F3593F0EFBB22F794E64 /* REATransformNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		714554ADB7C1AD456C4A779FFF348E7F /* REAOperatorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 549C47FDE7A07F2C930ADE26859310EF /* REAOperatorNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		75251A8F3C6ABDCBBAA1509BC70190F0 /* REAValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 761AC8226822BF8FEE23EDD50DC4E2A0 /* REAValueNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7C4838B84C65509EC3B9D63A67EEDEC3 /* REAParamNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E4BE15FD272C2B79DCE8ECB4671B01 /* REAParamNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		839A2FAC7099CF5DB7C5F6955663D5E0 /* REAAllTransitions.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA32765B42C59BDCB3FD3F10AB96516 /* REAAllTransitions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		84A88F356CCD4491C7F773D0513DFC06 /* REACallFuncNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 68C116FB9E93C2A0D66F4CD1C2E4BA6F /* REACallFuncNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		85E2E7B03472F1697ED7753E81017FFC /* REANode.m in Sources */ = {isa = PBXBuildFile; fileRef = 71E242579D1EFF7A2511036C7CC295C6 /* REANode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8E2B8527AD30249F3C8CA382308B3F46 /* REAValueNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 69DCF0BFCC3B7A5B59FAC7E30DF77660 /* REAValueNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		95BD5F80003EEABF937D5C01D1A68BEB /* REABlockNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 48318073DC60AD81323767619183137C /* REABlockNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9A00845E8170CD210DC44406B4E3C64E /* REAModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D2AEF1B7D05E485000284ED0FEBF2B /* REAModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9A609504C1834EF8824A9185711E8D42 /* RNReanimated-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6365135C3ADB2A39F98C99777B459A8B /* RNReanimated-dummy.m */; };
+		9C2D5A6BB80798E2A67E030D0E3C581A /* REACondNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D77D5DC3FE2AD72C0B84CD975F870B70 /* REACondNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ACD644F45138F1613BAF5E82D75F0B0B /* REAEventNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A873D866F73CAF3BF3056C0153E1FFE /* REAEventNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B493B060FB3550C8C9A9CFFF503267BD /* REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D9E8AEEEBEE0D70F8FE599722EA5CB3 /* REATransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BD5CA01B4F432D38C050BE764A41D530 /* REAStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 35BFBB073DF038766F0D7CE04B9E5D02 /* REAStyleNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C16E086CC6753DB54C5AB5DDC252423F /* REATransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BD0CF80326138501D4F39B40299F7A3 /* REATransition.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C225CE38ED51A7EBA989B92536393275 /* REAConcatNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 0153E61490D6F06BD07DCA04F2531926 /* REAConcatNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C9BCF5783EDD829E851CC3BF78DA0100 /* REATransitionValues.h in Headers */ = {isa = PBXBuildFile; fileRef = AC157DBDD82CBC18563F1C63B660E4B3 /* REATransitionValues.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CAE618EB44203C59843A7C30DDEFDC4C /* REAPropsNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 09F99AE7643BB77121CA3A4145620690 /* REAPropsNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D287B7EB5BAB9E2C3B6059B60DB61D91 /* REAJSCallNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 202C79ABADFCB1762D5EEA3C2E073E5C /* REAJSCallNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D48E0CE675F13C55302F29711B311270 /* REASetNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A6336D4FBBC99F353FB7F978BA8D2591 /* REASetNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D65A91ACE2725DC1C3D8CBB2F288B28E /* REATransitionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 14BD7FEB2309587BCE60F9287BDEFFCE /* REATransitionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DC10C9AB5F06B5E0BE7B7B258C8347AB /* REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DC93AB7D7E3E65D795FDF7525568CA63 /* REAPropsNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DC9A5057070407DE3FAC74C9669D014E /* REACallFuncNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3D8F66B288E6523EAF2C9795B06250 /* REACallFuncNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DEDF64419815DE1AE06617312AB182BD /* REAParamNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C9A846F5A3677F5D24D7C154050C228 /* REAParamNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DEF5009324FF12AAD501939F40C49890 /* REAFunctionNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 92DDB831E3AA25897331253FCB4FB206 /* REAFunctionNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E269ED143ED3686F8F1825E31B2E7C1E /* REATransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D4D7F4896B3E07B34B92ABB3FD4EB09 /* REATransitionManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E65CF8DE28818D89F0197FF0FEA285BB /* REANodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 569FD72E73CF4D8A5FED6865288F8742 /* REANodesManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E7301058A914584CCF0AF0FA7AE66CAD /* REAAlwaysNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C1B686E9E0044808E3F733F6AEBFDA81 /* REAAlwaysNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F0382ADA53A0B22EE6D61C5290C544F0 /* REATransitionValues.m in Sources */ = {isa = PBXBuildFile; fileRef = E243FEB7CEAC4B0EBA1EABDD1F1C5E33 /* REATransitionValues.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F1A54754B31FE4496B28CE0190D15D0A /* REATransitionAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = C481645AC05C4D1470481C35FAEBD2B6 /* REATransitionAnimation.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F7E8FC5FDDAC1512BF07DB70D4F8E555 /* REAUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 23A493427FBDE76CF8D33A18CD6540A6 /* REAUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FEE071D0D59429719B37C7E80E284BC9 /* REAStyleNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FF8D3E832CA61A31B06412FEAB2DBE79 /* REAStyleNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C8526B40EC50E57CEE24B3CD55E051CE /* PBXContainerItemProxy */ = {
+		7948167ED8FF7B1E978E08033DBBE8A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5BC78EA900A7D77B835433B902F2234F /* React.xcodeproj */;
 			proxyType = 1;
@@ -75,69 +76,73 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00DFB3D3470612108064EA516FDCCC26 /* REAStyleNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAStyleNode.h; path = ios/Nodes/REAStyleNode.h; sourceTree = "<group>"; };
-		05D42DD91D135C0E28F1B54D758B874C /* READebugNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = READebugNode.m; path = ios/Nodes/READebugNode.m; sourceTree = "<group>"; };
-		0728047436C93FE512691C44A6468A42 /* REANode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REANode.h; path = ios/Nodes/REANode.h; sourceTree = "<group>"; };
-		10A37D2DD51A9F58E969965ADC039F0E /* REAFunctionNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAFunctionNode.h; path = ios/Nodes/REAFunctionNode.h; sourceTree = "<group>"; };
-		112DCEE15E00ED151CCB479D141151DC /* REANodesManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REANodesManager.m; path = ios/REANodesManager.m; sourceTree = "<group>"; };
-		12B5D06A053DFA33CD63C0B38323E227 /* REAAlwaysNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAAlwaysNode.m; path = ios/Nodes/REAAlwaysNode.m; sourceTree = "<group>"; };
-		133152BAD8617D28AC8EA3CB611D9897 /* REASetNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REASetNode.h; path = ios/Nodes/REASetNode.h; sourceTree = "<group>"; };
-		13A3F4C05FC7A54D3F4F3297164BACE6 /* REATransitionValues.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REATransitionValues.m; path = ios/Transitioning/REATransitionValues.m; sourceTree = "<group>"; };
-		16B3E472BD0F8040A4BB9B3356642B2E /* REAStyleNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAStyleNode.m; path = ios/Nodes/REAStyleNode.m; sourceTree = "<group>"; };
-		1A89541F1359E2E194FFFA0E22CB9CAE /* RNReanimated-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNReanimated-prefix.pch"; sourceTree = "<group>"; };
-		1D7BEEF07D2E5E4C9B8CC10DEA8B11B0 /* REATransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REATransition.m; path = ios/Transitioning/REATransition.m; sourceTree = "<group>"; };
-		22B6EB670973B6C6869E15A44C36111D /* REAOperatorNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAOperatorNode.m; path = ios/Nodes/REAOperatorNode.m; sourceTree = "<group>"; };
-		24845B2113EB0800B6839BAC5FA9EAAF /* REASetNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REASetNode.m; path = ios/Nodes/REASetNode.m; sourceTree = "<group>"; };
-		2CABA1E44DDC6991495210D4790378BB /* RCTConvert+REATransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+REATransition.m"; path = "ios/Transitioning/RCTConvert+REATransition.m"; sourceTree = "<group>"; };
-		2ED321244AD118FE9CAAEACC25B09F45 /* REATransitionAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REATransitionAnimation.m; path = ios/Transitioning/REATransitionAnimation.m; sourceTree = "<group>"; };
-		2F75539A9890D079197E32DCD0F50DAC /* REAClockNodes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAClockNodes.m; path = ios/Nodes/REAClockNodes.m; sourceTree = "<group>"; };
-		36FF58AE82E89AB4C3715349BAB696E5 /* REAPropsNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAPropsNode.m; path = ios/Nodes/REAPropsNode.m; sourceTree = "<group>"; };
-		3A4C3DB04D96105017BC5D136B723892 /* REAParamNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAParamNode.m; path = ios/Nodes/REAParamNode.m; sourceTree = "<group>"; };
-		3D60F76A6CFECA34A1477F8753A267E6 /* REANodesManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REANodesManager.h; path = ios/REANodesManager.h; sourceTree = "<group>"; };
-		507AFF4D91A0D34D1CD0158E0BDCD596 /* RNReanimated-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNReanimated-dummy.m"; sourceTree = "<group>"; };
-		54AF50C3F89D3922F911E0F89A597378 /* REAConcatNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAConcatNode.m; path = ios/Nodes/REAConcatNode.m; sourceTree = "<group>"; };
-		558CA8013F1B2419E9971E3AC36A8FBC /* REATransformNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REATransformNode.m; path = ios/Nodes/REATransformNode.m; sourceTree = "<group>"; };
+		0153E61490D6F06BD07DCA04F2531926 /* REAConcatNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAConcatNode.h; sourceTree = "<group>"; };
+		01D6BE98B14C24355A06211F3039303E /* REAAlwaysNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAAlwaysNode.m; sourceTree = "<group>"; };
+		07CD8309B8169E4E168695083EAE8AFF /* REAJSCallNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAJSCallNode.h; sourceTree = "<group>"; };
+		09F99AE7643BB77121CA3A4145620690 /* REAPropsNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAPropsNode.h; sourceTree = "<group>"; };
+		0D9E8AEEEBEE0D70F8FE599722EA5CB3 /* REATransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REATransition.m; sourceTree = "<group>"; };
+		11356D2D66A5E151E63952AD4FFF25B2 /* REAOperatorNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAOperatorNode.m; sourceTree = "<group>"; };
+		14BD7FEB2309587BCE60F9287BDEFFCE /* REATransitionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REATransitionManager.h; sourceTree = "<group>"; };
+		1BBF0B6392E9566D150994D257EB0D56 /* RCTConvert+REATransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+REATransition.m"; sourceTree = "<group>"; };
+		1FAE2886D9BA5515980174F412920A7F /* REABezierNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REABezierNode.h; sourceTree = "<group>"; };
+		202C79ABADFCB1762D5EEA3C2E073E5C /* REAJSCallNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAJSCallNode.m; sourceTree = "<group>"; };
+		23A493427FBDE76CF8D33A18CD6540A6 /* REAUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAUtils.h; path = ios/REAUtils.h; sourceTree = "<group>"; };
+		2ADE8B99D9CE847450D3A18623A93633 /* REAAllTransitions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAAllTransitions.m; sourceTree = "<group>"; };
+		2DCFE6A10BFAE2733B96C541504716D7 /* REATransformNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REATransformNode.h; sourceTree = "<group>"; };
+		35BFBB073DF038766F0D7CE04B9E5D02 /* REAStyleNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAStyleNode.m; sourceTree = "<group>"; };
+		3BD0CF80326138501D4F39B40299F7A3 /* REATransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REATransition.h; sourceTree = "<group>"; };
+		3D5508BA75CF704FB98AAF60AF062B69 /* REACondNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REACondNode.h; sourceTree = "<group>"; };
+		48318073DC60AD81323767619183137C /* REABlockNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REABlockNode.h; sourceTree = "<group>"; };
+		4A7398BAF53B73CFAD4408FBB8FB376A /* REABezierNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REABezierNode.m; sourceTree = "<group>"; };
+		4B3D8F66B288E6523EAF2C9795B06250 /* REACallFuncNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REACallFuncNode.m; sourceTree = "<group>"; };
+		549C47FDE7A07F2C930ADE26859310EF /* REAOperatorNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAOperatorNode.h; sourceTree = "<group>"; };
+		569FD72E73CF4D8A5FED6865288F8742 /* REANodesManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REANodesManager.h; path = ios/REANodesManager.h; sourceTree = "<group>"; };
 		5BC78EA900A7D77B835433B902F2234F /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
-		5F321B1F1FEDEC57EC23B59CF68FEE23 /* REAClockNodes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAClockNodes.h; path = ios/Nodes/REAClockNodes.h; sourceTree = "<group>"; };
-		6D42891F284B61E633C014AF4DBD4309 /* REABezierNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REABezierNode.m; path = ios/Nodes/REABezierNode.m; sourceTree = "<group>"; };
+		5D4D7F4896B3E07B34B92ABB3FD4EB09 /* REATransitionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REATransitionManager.m; sourceTree = "<group>"; };
+		6365135C3ADB2A39F98C99777B459A8B /* RNReanimated-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNReanimated-dummy.m"; sourceTree = "<group>"; };
+		68C116FB9E93C2A0D66F4CD1C2E4BA6F /* REACallFuncNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REACallFuncNode.h; sourceTree = "<group>"; };
+		69DCF0BFCC3B7A5B59FAC7E30DF77660 /* REAValueNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAValueNode.h; sourceTree = "<group>"; };
+		6C9A846F5A3677F5D24D7C154050C228 /* REAParamNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAParamNode.m; sourceTree = "<group>"; };
+		6F1CA98EDED8313A07D1B661B6EA4AA4 /* REANode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REANode.h; sourceTree = "<group>"; };
 		6F306256CCA26B3180C898860E34F788 /* libRNReanimated.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libRNReanimated.a; path = libRNReanimated.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F3D1649375A06E628B349441C6EAAF9 /* REAConcatNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAConcatNode.h; path = ios/Nodes/REAConcatNode.h; sourceTree = "<group>"; };
-		6F91C1E574C578F077CD608463A9E904 /* REATransitionAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REATransitionAnimation.h; path = ios/Transitioning/REATransitionAnimation.h; sourceTree = "<group>"; };
-		723F0B33983B0E5F70541DEE13F53258 /* REACondNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REACondNode.h; path = ios/Nodes/REACondNode.h; sourceTree = "<group>"; };
-		7331CD344CCA139738A54FA74F7BB9B6 /* REAValueNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAValueNode.h; path = ios/Nodes/REAValueNode.h; sourceTree = "<group>"; };
-		7526D84BFB0C1038E91423A3F0CC4CD5 /* REAModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAModule.h; path = ios/REAModule.h; sourceTree = "<group>"; };
-		77FA4A517BDBE92A09CD1C9DF463EA92 /* REATransformNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REATransformNode.h; path = ios/Nodes/REATransformNode.h; sourceTree = "<group>"; };
-		81DEF962C9BDEDF65394A34FE6F6D7DB /* REAParamNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAParamNode.h; path = ios/Nodes/REAParamNode.h; sourceTree = "<group>"; };
-		84B1975C7A0ECD17CBCDFBAB64B24254 /* REAJSCallNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAJSCallNode.h; path = ios/Nodes/REAJSCallNode.h; sourceTree = "<group>"; };
-		8772C708F55AD12E64DC55562124D2E7 /* READebugNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = READebugNode.h; path = ios/Nodes/READebugNode.h; sourceTree = "<group>"; };
-		8CC89B114C7AEA3B3C7BBBFE38A76454 /* REAModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAModule.m; path = ios/REAModule.m; sourceTree = "<group>"; };
-		928F34BC10F62DF5C711E63AEEEC178B /* REAAllTransitions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAAllTransitions.m; path = ios/Transitioning/REAAllTransitions.m; sourceTree = "<group>"; };
-		92BB076E1F41B7AB17487BA1FB68AB8B /* REAJSCallNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAJSCallNode.m; path = ios/Nodes/REAJSCallNode.m; sourceTree = "<group>"; };
-		A35AE48D779BF2F7E908192FD075E6F8 /* RNReanimated.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNReanimated.xcconfig; sourceTree = "<group>"; };
-		A8F22CFF26353098C980EA08AE655E98 /* REAOperatorNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAOperatorNode.h; path = ios/Nodes/REAOperatorNode.h; sourceTree = "<group>"; };
-		AB8426CBA442E8680C61D76AFA27AE71 /* REATransitionValues.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REATransitionValues.h; path = ios/Transitioning/REATransitionValues.h; sourceTree = "<group>"; };
-		B373C2CE25C9B705BC1ECB92B3C463F3 /* REAValueNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAValueNode.m; path = ios/Nodes/REAValueNode.m; sourceTree = "<group>"; };
-		B65397B607FAB12335DDE7BE86E40DC4 /* REATransitionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REATransitionManager.h; path = ios/Transitioning/REATransitionManager.h; sourceTree = "<group>"; };
-		B97341F392776A986C7908B428D75DA9 /* REAPropsNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAPropsNode.h; path = ios/Nodes/REAPropsNode.h; sourceTree = "<group>"; };
-		BA686FCC8ECE8AFDD6E4BB911940586B /* REAEventNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAEventNode.m; path = ios/Nodes/REAEventNode.m; sourceTree = "<group>"; };
-		C0B0ABABEDA467D14A6405882A7EF51B /* REACallFuncNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REACallFuncNode.m; path = ios/Nodes/REACallFuncNode.m; sourceTree = "<group>"; };
-		C1DF39146A77946229C5EF7DD36FB69C /* RCTConvert+REATransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+REATransition.h"; path = "ios/Transitioning/RCTConvert+REATransition.h"; sourceTree = "<group>"; };
-		CD7EAD86F840DE7F9E2A1415D9E195A9 /* REAAllTransitions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAAllTransitions.h; path = ios/Transitioning/REAAllTransitions.h; sourceTree = "<group>"; };
-		D092ACF1D39F9398A57E299D87392A4A /* REABlockNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REABlockNode.m; path = ios/Nodes/REABlockNode.m; sourceTree = "<group>"; };
-		D15DDDA1678E70EC4BA508A8850D2D88 /* REAEventNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAEventNode.h; path = ios/Nodes/REAEventNode.h; sourceTree = "<group>"; };
-		D241C7DC67B2ECBECEFE1A357204A498 /* REAFunctionNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAFunctionNode.m; path = ios/Nodes/REAFunctionNode.m; sourceTree = "<group>"; };
-		D29D5796C8DAB25A8F48854DA71CBA14 /* REACondNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REACondNode.m; path = ios/Nodes/REACondNode.m; sourceTree = "<group>"; };
-		D39C64343D9011C3A9C59B2F7BAA21CC /* REATransitionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REATransitionManager.m; path = ios/Transitioning/REATransitionManager.m; sourceTree = "<group>"; };
-		E7E1604F6EE1CA24D59D88FB9CE820C3 /* REACallFuncNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REACallFuncNode.h; path = ios/Nodes/REACallFuncNode.h; sourceTree = "<group>"; };
-		EC37E2B8B6AABB3968363DA67CF3E963 /* REAAlwaysNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAAlwaysNode.h; path = ios/Nodes/REAAlwaysNode.h; sourceTree = "<group>"; };
-		ECE5A012FF3039DBB3A78D94F59D454C /* REABezierNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REABezierNode.h; path = ios/Nodes/REABezierNode.h; sourceTree = "<group>"; };
-		F3FEAE836F1E7D0896F1040798FC2799 /* REABlockNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REABlockNode.h; path = ios/Nodes/REABlockNode.h; sourceTree = "<group>"; };
-		FADF700C5DDFE6F088F92F792C00FF32 /* REANode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REANode.m; path = ios/Nodes/REANode.m; sourceTree = "<group>"; };
-		FFD3611510E287FCEA143D8D1E0BE859 /* REATransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REATransition.h; path = ios/Transitioning/REATransition.h; sourceTree = "<group>"; };
+		71E242579D1EFF7A2511036C7CC295C6 /* REANode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REANode.m; sourceTree = "<group>"; };
+		761AC8226822BF8FEE23EDD50DC4E2A0 /* REAValueNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAValueNode.m; sourceTree = "<group>"; };
+		78D262FAD3630CFD6588017D2B01C997 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		79C59FE0C65A9B94D3EE947342DC6D6F /* RNReanimated-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNReanimated-prefix.pch"; sourceTree = "<group>"; };
+		7A873D866F73CAF3BF3056C0153E1FFE /* REAEventNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAEventNode.h; sourceTree = "<group>"; };
+		8274A85A519D65E883E78E2BD8A7A448 /* RCTConvert+REATransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+REATransition.h"; sourceTree = "<group>"; };
+		82D2AEF1B7D05E485000284ED0FEBF2B /* REAModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REAModule.m; path = ios/REAModule.m; sourceTree = "<group>"; };
+		87DDB1267FC5139E6A9AC3B6ABD2C758 /* REAConcatNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAConcatNode.m; sourceTree = "<group>"; };
+		8FFDB2CD5764FECF700C419BE1D79510 /* REAFunctionNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAFunctionNode.h; sourceTree = "<group>"; };
+		92DDB831E3AA25897331253FCB4FB206 /* REAFunctionNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAFunctionNode.m; sourceTree = "<group>"; };
+		9861E3ADB256FB2D187539B58330EF72 /* REAModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = REAModule.h; path = ios/REAModule.h; sourceTree = "<group>"; };
+		A469986C058C59F8A17371F919D340AF /* REABlockNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REABlockNode.m; sourceTree = "<group>"; };
+		A6336D4FBBC99F353FB7F978BA8D2591 /* REASetNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REASetNode.m; sourceTree = "<group>"; };
+		AC157DBDD82CBC18563F1C63B660E4B3 /* REATransitionValues.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REATransitionValues.h; sourceTree = "<group>"; };
+		B9813EC67DBF0CBD1038DA3F22E1E253 /* REANodesManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = REANodesManager.m; path = ios/REANodesManager.m; sourceTree = "<group>"; };
+		C08A96A72BBCEAAF4C695F8EB19A91BE /* READebugNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = READebugNode.m; sourceTree = "<group>"; };
+		C1B686E9E0044808E3F733F6AEBFDA81 /* REAAlwaysNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAAlwaysNode.h; sourceTree = "<group>"; };
+		C2BDFE2AE7ABAC2C0BC6AA6F6AC37F28 /* READebugNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = READebugNode.h; sourceTree = "<group>"; };
+		C481645AC05C4D1470481C35FAEBD2B6 /* REATransitionAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REATransitionAnimation.h; sourceTree = "<group>"; };
+		C4F20CF29769CC6FC0EF72030E19732D /* REASetNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REASetNode.h; sourceTree = "<group>"; };
+		C61E5EFD444ED7D08E9FB47410CD7231 /* RNReanimated.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RNReanimated.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C8922B7F2030F3593F0EFBB22F794E64 /* REATransformNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REATransformNode.m; sourceTree = "<group>"; };
+		C8E4BE15FD272C2B79DCE8ECB4671B01 /* REAParamNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAParamNode.h; sourceTree = "<group>"; };
+		CA60B4AA0634A5D5ECD3597E7659CCC7 /* REAEventNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAEventNode.m; sourceTree = "<group>"; };
+		D1F493F19AD55C72ED45CAB33A99C23F /* REAClockNodes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAClockNodes.h; sourceTree = "<group>"; };
+		D77D5DC3FE2AD72C0B84CD975F870B70 /* REACondNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REACondNode.m; sourceTree = "<group>"; };
+		DC93AB7D7E3E65D795FDF7525568CA63 /* REAPropsNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAPropsNode.m; sourceTree = "<group>"; };
+		E17997308FB9F7FB78CDEBE1EABAFE3E /* RNReanimated.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = RNReanimated.xcconfig; sourceTree = "<group>"; };
+		E243FEB7CEAC4B0EBA1EABDD1F1C5E33 /* REATransitionValues.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REATransitionValues.m; sourceTree = "<group>"; };
+		E92536129402E075B8B94E8CB9CBFD6C /* REATransitionAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REATransitionAnimation.m; sourceTree = "<group>"; };
+		EC6923458009A43E331CAD3F07834EC7 /* REAClockNodes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = REAClockNodes.m; sourceTree = "<group>"; };
+		EF85B0A8CC03C04FF48A393A0C91DBCC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		FAA32765B42C59BDCB3FD3F10AB96516 /* REAAllTransitions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAAllTransitions.h; sourceTree = "<group>"; };
+		FF8D3E832CA61A31B06412FEAB2DBE79 /* REAStyleNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = REAStyleNode.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		484B8370E39469D7C45C0F9B3AF2E3DA /* Frameworks */ = {
+		90422F6D3AEE12C0DF917E86E3AAB5E8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -147,6 +152,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03426BB0AAF888915E53479E55BBD7EA /* Transitioning */ = {
+			isa = PBXGroup;
+			children = (
+				8274A85A519D65E883E78E2BD8A7A448 /* RCTConvert+REATransition.h */,
+				1BBF0B6392E9566D150994D257EB0D56 /* RCTConvert+REATransition.m */,
+				FAA32765B42C59BDCB3FD3F10AB96516 /* REAAllTransitions.h */,
+				2ADE8B99D9CE847450D3A18623A93633 /* REAAllTransitions.m */,
+				3BD0CF80326138501D4F39B40299F7A3 /* REATransition.h */,
+				0D9E8AEEEBEE0D70F8FE599722EA5CB3 /* REATransition.m */,
+				C481645AC05C4D1470481C35FAEBD2B6 /* REATransitionAnimation.h */,
+				E92536129402E075B8B94E8CB9CBFD6C /* REATransitionAnimation.m */,
+				14BD7FEB2309587BCE60F9287BDEFFCE /* REATransitionManager.h */,
+				5D4D7F4896B3E07B34B92ABB3FD4EB09 /* REATransitionManager.m */,
+				AC157DBDD82CBC18563F1C63B660E4B3 /* REATransitionValues.h */,
+				E243FEB7CEAC4B0EBA1EABDD1F1C5E33 /* REATransitionValues.m */,
+			);
+			name = Transitioning;
+			path = ios/Transitioning;
+			sourceTree = "<group>";
+		};
 		1FB4F631D6A9458BE7EF2EC50553852F /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,82 +194,92 @@
 				1FB4F631D6A9458BE7EF2EC50553852F /* Dependencies */,
 				FD738B807E7FC5FEE4A4CFD53527786F /* Frameworks */,
 				3479C8C06014A251AF22BA74D8A1CF99 /* Products */,
-				6E0738B5A8142EF1008054556844AE70 /* RNReanimated */,
+				785066662A360109A8B89D51375BC73E /* RNReanimated */,
 			);
 			sourceTree = "<group>";
 		};
-		6E0738B5A8142EF1008054556844AE70 /* RNReanimated */ = {
+		5BE500908CD4C7C8FDAA2C7890F995E8 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				C1DF39146A77946229C5EF7DD36FB69C /* RCTConvert+REATransition.h */,
-				2CABA1E44DDC6991495210D4790378BB /* RCTConvert+REATransition.m */,
-				CD7EAD86F840DE7F9E2A1415D9E195A9 /* REAAllTransitions.h */,
-				928F34BC10F62DF5C711E63AEEEC178B /* REAAllTransitions.m */,
-				EC37E2B8B6AABB3968363DA67CF3E963 /* REAAlwaysNode.h */,
-				12B5D06A053DFA33CD63C0B38323E227 /* REAAlwaysNode.m */,
-				ECE5A012FF3039DBB3A78D94F59D454C /* REABezierNode.h */,
-				6D42891F284B61E633C014AF4DBD4309 /* REABezierNode.m */,
-				F3FEAE836F1E7D0896F1040798FC2799 /* REABlockNode.h */,
-				D092ACF1D39F9398A57E299D87392A4A /* REABlockNode.m */,
-				E7E1604F6EE1CA24D59D88FB9CE820C3 /* REACallFuncNode.h */,
-				C0B0ABABEDA467D14A6405882A7EF51B /* REACallFuncNode.m */,
-				5F321B1F1FEDEC57EC23B59CF68FEE23 /* REAClockNodes.h */,
-				2F75539A9890D079197E32DCD0F50DAC /* REAClockNodes.m */,
-				6F3D1649375A06E628B349441C6EAAF9 /* REAConcatNode.h */,
-				54AF50C3F89D3922F911E0F89A597378 /* REAConcatNode.m */,
-				723F0B33983B0E5F70541DEE13F53258 /* REACondNode.h */,
-				D29D5796C8DAB25A8F48854DA71CBA14 /* REACondNode.m */,
-				8772C708F55AD12E64DC55562124D2E7 /* READebugNode.h */,
-				05D42DD91D135C0E28F1B54D758B874C /* READebugNode.m */,
-				D15DDDA1678E70EC4BA508A8850D2D88 /* REAEventNode.h */,
-				BA686FCC8ECE8AFDD6E4BB911940586B /* REAEventNode.m */,
-				10A37D2DD51A9F58E969965ADC039F0E /* REAFunctionNode.h */,
-				D241C7DC67B2ECBECEFE1A357204A498 /* REAFunctionNode.m */,
-				84B1975C7A0ECD17CBCDFBAB64B24254 /* REAJSCallNode.h */,
-				92BB076E1F41B7AB17487BA1FB68AB8B /* REAJSCallNode.m */,
-				7526D84BFB0C1038E91423A3F0CC4CD5 /* REAModule.h */,
-				8CC89B114C7AEA3B3C7BBBFE38A76454 /* REAModule.m */,
-				0728047436C93FE512691C44A6468A42 /* REANode.h */,
-				FADF700C5DDFE6F088F92F792C00FF32 /* REANode.m */,
-				3D60F76A6CFECA34A1477F8753A267E6 /* REANodesManager.h */,
-				112DCEE15E00ED151CCB479D141151DC /* REANodesManager.m */,
-				A8F22CFF26353098C980EA08AE655E98 /* REAOperatorNode.h */,
-				22B6EB670973B6C6869E15A44C36111D /* REAOperatorNode.m */,
-				81DEF962C9BDEDF65394A34FE6F6D7DB /* REAParamNode.h */,
-				3A4C3DB04D96105017BC5D136B723892 /* REAParamNode.m */,
-				B97341F392776A986C7908B428D75DA9 /* REAPropsNode.h */,
-				36FF58AE82E89AB4C3715349BAB696E5 /* REAPropsNode.m */,
-				133152BAD8617D28AC8EA3CB611D9897 /* REASetNode.h */,
-				24845B2113EB0800B6839BAC5FA9EAAF /* REASetNode.m */,
-				00DFB3D3470612108064EA516FDCCC26 /* REAStyleNode.h */,
-				16B3E472BD0F8040A4BB9B3356642B2E /* REAStyleNode.m */,
-				77FA4A517BDBE92A09CD1C9DF463EA92 /* REATransformNode.h */,
-				558CA8013F1B2419E9971E3AC36A8FBC /* REATransformNode.m */,
-				FFD3611510E287FCEA143D8D1E0BE859 /* REATransition.h */,
-				1D7BEEF07D2E5E4C9B8CC10DEA8B11B0 /* REATransition.m */,
-				6F91C1E574C578F077CD608463A9E904 /* REATransitionAnimation.h */,
-				2ED321244AD118FE9CAAEACC25B09F45 /* REATransitionAnimation.m */,
-				B65397B607FAB12335DDE7BE86E40DC4 /* REATransitionManager.h */,
-				D39C64343D9011C3A9C59B2F7BAA21CC /* REATransitionManager.m */,
-				AB8426CBA442E8680C61D76AFA27AE71 /* REATransitionValues.h */,
-				13A3F4C05FC7A54D3F4F3297164BACE6 /* REATransitionValues.m */,
-				7331CD344CCA139738A54FA74F7BB9B6 /* REAValueNode.h */,
-				B373C2CE25C9B705BC1ECB92B3C463F3 /* REAValueNode.m */,
-				AB9576980BEF01470B529D868E9049B1 /* Support Files */,
-			);
-			name = RNReanimated;
-			path = RNReanimated;
-			sourceTree = "<group>";
-		};
-		AB9576980BEF01470B529D868E9049B1 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				A35AE48D779BF2F7E908192FD075E6F8 /* RNReanimated.xcconfig */,
-				507AFF4D91A0D34D1CD0158E0BDCD596 /* RNReanimated-dummy.m */,
-				1A89541F1359E2E194FFFA0E22CB9CAE /* RNReanimated-prefix.pch */,
+				E17997308FB9F7FB78CDEBE1EABAFE3E /* RNReanimated.xcconfig */,
+				6365135C3ADB2A39F98C99777B459A8B /* RNReanimated-dummy.m */,
+				79C59FE0C65A9B94D3EE947342DC6D6F /* RNReanimated-prefix.pch */,
 			);
 			name = "Support Files";
-			path = "../Target Support Files/RNReanimated";
+			path = "../../apps/bare-expo/ios/Pods/Target Support Files/RNReanimated";
+			sourceTree = "<group>";
+		};
+		766B6724BECA5F029024FDC8E50A5A26 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				78D262FAD3630CFD6588017D2B01C997 /* LICENSE */,
+				EF85B0A8CC03C04FF48A393A0C91DBCC /* README.md */,
+				C61E5EFD444ED7D08E9FB47410CD7231 /* RNReanimated.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		785066662A360109A8B89D51375BC73E /* RNReanimated */ = {
+			isa = PBXGroup;
+			children = (
+				9861E3ADB256FB2D187539B58330EF72 /* REAModule.h */,
+				82D2AEF1B7D05E485000284ED0FEBF2B /* REAModule.m */,
+				569FD72E73CF4D8A5FED6865288F8742 /* REANodesManager.h */,
+				B9813EC67DBF0CBD1038DA3F22E1E253 /* REANodesManager.m */,
+				23A493427FBDE76CF8D33A18CD6540A6 /* REAUtils.h */,
+				9318B6FE660EEEDB8056FDF06874CAC1 /* Nodes */,
+				766B6724BECA5F029024FDC8E50A5A26 /* Pod */,
+				5BE500908CD4C7C8FDAA2C7890F995E8 /* Support Files */,
+				03426BB0AAF888915E53479E55BBD7EA /* Transitioning */,
+			);
+			name = RNReanimated;
+			path = "../../../../node_modules/react-native-reanimated";
+			sourceTree = "<group>";
+		};
+		9318B6FE660EEEDB8056FDF06874CAC1 /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				C1B686E9E0044808E3F733F6AEBFDA81 /* REAAlwaysNode.h */,
+				01D6BE98B14C24355A06211F3039303E /* REAAlwaysNode.m */,
+				1FAE2886D9BA5515980174F412920A7F /* REABezierNode.h */,
+				4A7398BAF53B73CFAD4408FBB8FB376A /* REABezierNode.m */,
+				48318073DC60AD81323767619183137C /* REABlockNode.h */,
+				A469986C058C59F8A17371F919D340AF /* REABlockNode.m */,
+				68C116FB9E93C2A0D66F4CD1C2E4BA6F /* REACallFuncNode.h */,
+				4B3D8F66B288E6523EAF2C9795B06250 /* REACallFuncNode.m */,
+				D1F493F19AD55C72ED45CAB33A99C23F /* REAClockNodes.h */,
+				EC6923458009A43E331CAD3F07834EC7 /* REAClockNodes.m */,
+				0153E61490D6F06BD07DCA04F2531926 /* REAConcatNode.h */,
+				87DDB1267FC5139E6A9AC3B6ABD2C758 /* REAConcatNode.m */,
+				3D5508BA75CF704FB98AAF60AF062B69 /* REACondNode.h */,
+				D77D5DC3FE2AD72C0B84CD975F870B70 /* REACondNode.m */,
+				C2BDFE2AE7ABAC2C0BC6AA6F6AC37F28 /* READebugNode.h */,
+				C08A96A72BBCEAAF4C695F8EB19A91BE /* READebugNode.m */,
+				7A873D866F73CAF3BF3056C0153E1FFE /* REAEventNode.h */,
+				CA60B4AA0634A5D5ECD3597E7659CCC7 /* REAEventNode.m */,
+				8FFDB2CD5764FECF700C419BE1D79510 /* REAFunctionNode.h */,
+				92DDB831E3AA25897331253FCB4FB206 /* REAFunctionNode.m */,
+				07CD8309B8169E4E168695083EAE8AFF /* REAJSCallNode.h */,
+				202C79ABADFCB1762D5EEA3C2E073E5C /* REAJSCallNode.m */,
+				6F1CA98EDED8313A07D1B661B6EA4AA4 /* REANode.h */,
+				71E242579D1EFF7A2511036C7CC295C6 /* REANode.m */,
+				549C47FDE7A07F2C930ADE26859310EF /* REAOperatorNode.h */,
+				11356D2D66A5E151E63952AD4FFF25B2 /* REAOperatorNode.m */,
+				C8E4BE15FD272C2B79DCE8ECB4671B01 /* REAParamNode.h */,
+				6C9A846F5A3677F5D24D7C154050C228 /* REAParamNode.m */,
+				09F99AE7643BB77121CA3A4145620690 /* REAPropsNode.h */,
+				DC93AB7D7E3E65D795FDF7525568CA63 /* REAPropsNode.m */,
+				C4F20CF29769CC6FC0EF72030E19732D /* REASetNode.h */,
+				A6336D4FBBC99F353FB7F978BA8D2591 /* REASetNode.m */,
+				FF8D3E832CA61A31B06412FEAB2DBE79 /* REAStyleNode.h */,
+				35BFBB073DF038766F0D7CE04B9E5D02 /* REAStyleNode.m */,
+				2DCFE6A10BFAE2733B96C541504716D7 /* REATransformNode.h */,
+				C8922B7F2030F3593F0EFBB22F794E64 /* REATransformNode.m */,
+				69DCF0BFCC3B7A5B59FAC7E30DF77660 /* REAValueNode.h */,
+				761AC8226822BF8FEE23EDD50DC4E2A0 /* REAValueNode.m */,
+			);
+			name = Nodes;
+			path = ios/Nodes;
 			sourceTree = "<group>";
 		};
 		FD738B807E7FC5FEE4A4CFD53527786F /* Frameworks */ = {
@@ -257,37 +292,38 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FA17BC6DFB4B688FC2EB036AEB0FC891 /* Headers */ = {
+		B32AA211DCC0F0F7265CAB9EFD5228E1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B93E192DC7ACDCEAC162C6959D5BCBD /* RCTConvert+REATransition.h in Headers */,
-				83C0AE66292D3B292A34A3DC12CC6086 /* REAAllTransitions.h in Headers */,
-				86C4D67B613FAD9055B6D03D109EC130 /* REAAlwaysNode.h in Headers */,
-				BC589728261AD69F828A62B1E4038CB3 /* REABezierNode.h in Headers */,
-				37629355E9B79173261A2F8B28CB56AD /* REABlockNode.h in Headers */,
-				36AB0F53F2DB9629944BF1B89AEC5894 /* REACallFuncNode.h in Headers */,
-				899DD7B6CBA0E396BF737ECD858B0323 /* REAClockNodes.h in Headers */,
-				6764DF65250618ECE4DE888B82329758 /* REAConcatNode.h in Headers */,
-				22EDC999B2EBB4BF8B68AAC89A59F99C /* REACondNode.h in Headers */,
-				EC4EFBB5A659A7EEADF6551AC8DE7B85 /* READebugNode.h in Headers */,
-				8F4B4424E569263346958E033A7C992D /* REAEventNode.h in Headers */,
-				792276C5D80D560002541CD48673F99A /* REAFunctionNode.h in Headers */,
-				4DCE79F5A34975B5979B64779EB7BB24 /* REAJSCallNode.h in Headers */,
-				F2737F2C878E487DE0DE32A265A57CE3 /* REAModule.h in Headers */,
-				BE6B0DBE29C4B67138F54D3965E8FEA5 /* REANode.h in Headers */,
-				677D20686095465A54037FBBA59334F0 /* REANodesManager.h in Headers */,
-				BCC124EB0E40601747C5545EA52AD3C6 /* REAOperatorNode.h in Headers */,
-				EBD9E7E4E0562CEB1068DF335FECDB3A /* REAParamNode.h in Headers */,
-				B1D6AA101EA185F834AF5E4674256804 /* REAPropsNode.h in Headers */,
-				A22517D1A3ED3C046351D45587132423 /* REASetNode.h in Headers */,
-				07D6B44E553645C61D6D44002C8916D4 /* REAStyleNode.h in Headers */,
-				BD7604FEF90EF7334D031F7AFD528715 /* REATransformNode.h in Headers */,
-				6688D7ECD7E3D081A460A0944C5E0150 /* REATransition.h in Headers */,
-				DC20EC470BE8B65BF3D6C50D25CB1466 /* REATransitionAnimation.h in Headers */,
-				FB91BFE7C5EDDC092D51437010A1D9D7 /* REATransitionManager.h in Headers */,
-				14BDDD4E7FD37DF8ED9E189CE9D4CC76 /* REATransitionValues.h in Headers */,
-				7D634D2455E68389037BCECFA02E4586 /* REAValueNode.h in Headers */,
+				405857324EE20ED4EBF933C01542C3DE /* RCTConvert+REATransition.h in Headers */,
+				839A2FAC7099CF5DB7C5F6955663D5E0 /* REAAllTransitions.h in Headers */,
+				E7301058A914584CCF0AF0FA7AE66CAD /* REAAlwaysNode.h in Headers */,
+				4E7ACD274C510C64AAD62FD4439868A5 /* REABezierNode.h in Headers */,
+				95BD5F80003EEABF937D5C01D1A68BEB /* REABlockNode.h in Headers */,
+				84A88F356CCD4491C7F773D0513DFC06 /* REACallFuncNode.h in Headers */,
+				464816EDAF0CA7BE644CD3D526D52FC3 /* REAClockNodes.h in Headers */,
+				C225CE38ED51A7EBA989B92536393275 /* REAConcatNode.h in Headers */,
+				59C7AFE8CBA4DE3FAEE4817D0B4584CC /* REACondNode.h in Headers */,
+				0F2ECD65BD51AC4DB25AA35F3D377FEA /* READebugNode.h in Headers */,
+				ACD644F45138F1613BAF5E82D75F0B0B /* REAEventNode.h in Headers */,
+				001C0D4CAF4716222DEA8C66E38C6999 /* REAFunctionNode.h in Headers */,
+				14FC39F93691A66C8F27F24895F2DD18 /* REAJSCallNode.h in Headers */,
+				008A630EA1E7EF8360A0EEF957479B3F /* REAModule.h in Headers */,
+				61AC6D99062A8239D27612ABCB69B0E5 /* REANode.h in Headers */,
+				E65CF8DE28818D89F0197FF0FEA285BB /* REANodesManager.h in Headers */,
+				714554ADB7C1AD456C4A779FFF348E7F /* REAOperatorNode.h in Headers */,
+				7C4838B84C65509EC3B9D63A67EEDEC3 /* REAParamNode.h in Headers */,
+				CAE618EB44203C59843A7C30DDEFDC4C /* REAPropsNode.h in Headers */,
+				352466BF75589781A61860D8D718CAB2 /* REASetNode.h in Headers */,
+				FEE071D0D59429719B37C7E80E284BC9 /* REAStyleNode.h in Headers */,
+				37E31BA9755465ADE483B702D06BA769 /* REATransformNode.h in Headers */,
+				C16E086CC6753DB54C5AB5DDC252423F /* REATransition.h in Headers */,
+				F1A54754B31FE4496B28CE0190D15D0A /* REATransitionAnimation.h in Headers */,
+				D65A91ACE2725DC1C3D8CBB2F288B28E /* REATransitionManager.h in Headers */,
+				C9BCF5783EDD829E851CC3BF78DA0100 /* REATransitionValues.h in Headers */,
+				F7E8FC5FDDAC1512BF07DB70D4F8E555 /* REAUtils.h in Headers */,
+				8E2B8527AD30249F3C8CA382308B3F46 /* REAValueNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,16 +332,16 @@
 /* Begin PBXNativeTarget section */
 		E9E22639328ACC061EB56756AD5B4F57 /* RNReanimated */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 41A743D98C6267B2E5FE133709A6F06F /* Build configuration list for PBXNativeTarget "RNReanimated" */;
+			buildConfigurationList = 3383ADB393F46436250CBEBA48BC3F37 /* Build configuration list for PBXNativeTarget "RNReanimated" */;
 			buildPhases = (
-				FA17BC6DFB4B688FC2EB036AEB0FC891 /* Headers */,
-				31CF97443D01F1FDF65D8902F2CB7A7D /* Sources */,
-				484B8370E39469D7C45C0F9B3AF2E3DA /* Frameworks */,
+				B32AA211DCC0F0F7265CAB9EFD5228E1 /* Headers */,
+				C0CE8870F549F55CBFD1C5B064962E68 /* Sources */,
+				90422F6D3AEE12C0DF917E86E3AAB5E8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				49457D19A6FB1E7E61678DB86DB9A89C /* PBXTargetDependency */,
+				BFA1C5F6CA2AD24F58C6247955A955E9 /* PBXTargetDependency */,
 			);
 			name = RNReanimated;
 			productName = RNReanimated;
@@ -345,52 +381,75 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		31CF97443D01F1FDF65D8902F2CB7A7D /* Sources */ = {
+		C0CE8870F549F55CBFD1C5B064962E68 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F9B2285E258F7E83C1B1F257014440E /* RCTConvert+REATransition.m in Sources */,
-				DF3F1B8B67B949603A44C8364FE922F6 /* REAAllTransitions.m in Sources */,
-				51D0B7D5C080B67FFBD041FDF7B5634D /* REAAlwaysNode.m in Sources */,
-				94AE6F0801CCA8A9CA7C7D5F510B0023 /* REABezierNode.m in Sources */,
-				826B67D28EFCC23D483E7E777FCFDAEF /* REABlockNode.m in Sources */,
-				9CCD3DDA22D681BCFF07E3DE876DD34C /* REACallFuncNode.m in Sources */,
-				67A9FA88DA2F611FC0B1A52A84E6C9E5 /* REAClockNodes.m in Sources */,
-				EFFD7B5077A0A6A2163D58D585A6C057 /* REAConcatNode.m in Sources */,
-				03210A18DDA0801E9E0ACDB66092FAA4 /* REACondNode.m in Sources */,
-				7FF0F523AC4A097707CDF6F7C6A7CE34 /* READebugNode.m in Sources */,
-				2A6A362F290CAC036A9736F2C5728EEE /* REAEventNode.m in Sources */,
-				256CE34AFE55C310185B1C97B9E887C8 /* REAFunctionNode.m in Sources */,
-				F6B787A0B4D1465A885FE8B13F93D7B1 /* REAJSCallNode.m in Sources */,
-				DB50750E3EC40EDC46A180B6FC675DF4 /* REAModule.m in Sources */,
-				7A706FDA7877EB451132952C38A8E889 /* REANode.m in Sources */,
-				6FCCC0F35BAF548E185301CEA7C35953 /* REANodesManager.m in Sources */,
-				60F45D4C3CA5C1E23A461AFE81AED7F7 /* REAOperatorNode.m in Sources */,
-				AB3C538A2478DCF7699E8FA3B465AAB3 /* REAParamNode.m in Sources */,
-				0AE6F667A6B9CE4FBFCFBBB4FA8650F3 /* REAPropsNode.m in Sources */,
-				ED5A41844B9722FFB8E0EFA5257CEA7C /* REASetNode.m in Sources */,
-				C2AC107419514A44B305A391AEF6CE78 /* REAStyleNode.m in Sources */,
-				ED0A0325B5C474BD92DEEC9666379DC9 /* REATransformNode.m in Sources */,
-				90618F3AF6AA21F7BBA9383B89D56FD3 /* REATransition.m in Sources */,
-				953E47DB57F46D551364B908495A4350 /* REATransitionAnimation.m in Sources */,
-				B843BA40D0AD881A98EBE63AB41E7436 /* REATransitionManager.m in Sources */,
-				C06FF85B551973EE68B50415C7FF08FE /* REATransitionValues.m in Sources */,
-				C59BA9B421810B4884FFDFCED85B524D /* REAValueNode.m in Sources */,
-				0B3A4AAE09B19F2451DF590AFD88E875 /* RNReanimated-dummy.m in Sources */,
+				6E28650B74F6A8AF4324DFB70C5EF5A3 /* RCTConvert+REATransition.m in Sources */,
+				481F26CC6F0CE31F84192696131C6830 /* REAAllTransitions.m in Sources */,
+				32E8697C296544E53D6128C3A5900704 /* REAAlwaysNode.m in Sources */,
+				0DFE1C68CCF47FC41522FE6246D223D5 /* REABezierNode.m in Sources */,
+				5B52CC58694AF5C40D4A513ACF32D9E5 /* REABlockNode.m in Sources */,
+				DC9A5057070407DE3FAC74C9669D014E /* REACallFuncNode.m in Sources */,
+				2D28A6F26326035C82433D740F3AE061 /* REAClockNodes.m in Sources */,
+				4CF3EC11F3DDFA06E6D58FF90DCB5F4A /* REAConcatNode.m in Sources */,
+				9C2D5A6BB80798E2A67E030D0E3C581A /* REACondNode.m in Sources */,
+				2616C344E7FB688CE253EB3CB4DE7DE5 /* READebugNode.m in Sources */,
+				473B5D397FB2CD7853BC927A92F766A7 /* REAEventNode.m in Sources */,
+				DEF5009324FF12AAD501939F40C49890 /* REAFunctionNode.m in Sources */,
+				D287B7EB5BAB9E2C3B6059B60DB61D91 /* REAJSCallNode.m in Sources */,
+				9A00845E8170CD210DC44406B4E3C64E /* REAModule.m in Sources */,
+				85E2E7B03472F1697ED7753E81017FFC /* REANode.m in Sources */,
+				51412DB697C7DC7A0960DE88689B893F /* REANodesManager.m in Sources */,
+				52F73B2732C3FE633CC28B35248A493D /* REAOperatorNode.m in Sources */,
+				DEDF64419815DE1AE06617312AB182BD /* REAParamNode.m in Sources */,
+				DC10C9AB5F06B5E0BE7B7B258C8347AB /* REAPropsNode.m in Sources */,
+				D48E0CE675F13C55302F29711B311270 /* REASetNode.m in Sources */,
+				BD5CA01B4F432D38C050BE764A41D530 /* REAStyleNode.m in Sources */,
+				7017FDC011A63BF11C492029F52751FF /* REATransformNode.m in Sources */,
+				B493B060FB3550C8C9A9CFFF503267BD /* REATransition.m in Sources */,
+				5291B7BC7237164C22FD39DE7B079517 /* REATransitionAnimation.m in Sources */,
+				E269ED143ED3686F8F1825E31B2E7C1E /* REATransitionManager.m in Sources */,
+				F0382ADA53A0B22EE6D61C5290C544F0 /* REATransitionValues.m in Sources */,
+				75251A8F3C6ABDCBBAA1509BC70190F0 /* REAValueNode.m in Sources */,
+				9A609504C1834EF8824A9185711E8D42 /* RNReanimated-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		49457D19A6FB1E7E61678DB86DB9A89C /* PBXTargetDependency */ = {
+		BFA1C5F6CA2AD24F58C6247955A955E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = React;
-			targetProxy = C8526B40EC50E57CEE24B3CD55E051CE /* PBXContainerItemProxy */;
+			targetProxy = 7948167ED8FF7B1E978E08033DBBE8A0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		08B6A76F75FB0502B50F3FD6E8B945B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E17997308FB9F7FB78CDEBE1EABAFE3E /* RNReanimated.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNReanimated/RNReanimated-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNReanimated;
+				PRODUCT_NAME = RNReanimated;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		137F065A3038231BBAFA88DC8C111BB4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -455,53 +514,6 @@
 			};
 			name = Debug;
 		};
-		76DD48C51572C0A236C5E09BD97D3703 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A35AE48D779BF2F7E908192FD075E6F8 /* RNReanimated.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNReanimated/RNReanimated-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNReanimated;
-				PRODUCT_NAME = RNReanimated;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		886A5D45DF71AA47AAC58A305651014F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A35AE48D779BF2F7E908192FD075E6F8 /* RNReanimated.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/RNReanimated/RNReanimated-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RNReanimated;
-				PRODUCT_NAME = RNReanimated;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		BEB8E928535013CBB23588606F502118 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -562,14 +574,38 @@
 			};
 			name = Release;
 		};
+		FA6ABD185A79D41325B968C8C8684C32 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E17997308FB9F7FB78CDEBE1EABAFE3E /* RNReanimated.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNReanimated/RNReanimated-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RNReanimated;
+				PRODUCT_NAME = RNReanimated;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		41A743D98C6267B2E5FE133709A6F06F /* Build configuration list for PBXNativeTarget "RNReanimated" */ = {
+		3383ADB393F46436250CBEBA48BC3F37 /* Build configuration list for PBXNativeTarget "RNReanimated" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				886A5D45DF71AA47AAC58A305651014F /* Debug */,
-				76DD48C51572C0A236C5E09BD97D3703 /* Release */,
+				08B6A76F75FB0502B50F3FD6E8B945B0 /* Debug */,
+				FA6ABD185A79D41325B968C8C8684C32 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

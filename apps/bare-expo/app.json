@@ -3,18 +3,27 @@
   "displayName": "bare-expo",
   "expo": {
     "name": "BareExpo",
-    "slug": "expo-template-bare",
+    "slug": "bare-expo",
     "privacy": "unlisted",
-    "sdkVersion": "34.0.0",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
     "web": {
       "build": {
         "babel": {
           "root": "./",
-          "include": ["test-suite", "bare-expo"]
+          "include": ["test-suite", "native-component-list", "bare-expo"]
         }
       }
+    },
+    "android": {
+      "package": "dev.expo.payments"
+    },
+    "ios": {
+      "bundleIdentifier": "dev.expo.Payments"
+    },
+    "notification": {
+      "serviceWorkerPath": "/expo-service-worker.js",
+      "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
     }
   }
 }

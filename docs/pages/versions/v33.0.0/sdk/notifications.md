@@ -161,36 +161,6 @@ _Android only_. On Android 8.0+, deletes the notification channel with the given
 
 - **id (_string_)** -- ID string of the channel to delete.
 
-### Related types
-
-#### LocalNotification
-
-An object used to describe the local notification that you would like to present or schedule.
-
-- **title (_string_)** -- title text of the notification
-- **body (_string_)** -- body text of the notification.
-- **data (_optional_) (_object_)** -- any data that has been attached with the notification.
-- **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
-- **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
-  - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
-- **android (_optional_) (_object_)** -- notification configuration specific to Android.
-  - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
-  - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
-  - **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
-  - **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
-  - **link** (_optional_) (_string_) -- external link to open when notification is selected.
-
-#### ChannelAndroid
-
-An object used to describe an Android notification channel that you would like to create.
-
-- **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
-- **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
-- **sound (_optional_) (_boolean_)** -- if `true`, notifications posted to this channel will play a sound. Default: `false`.
-- **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
-- **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
-- **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
-
 ## App Icon Badge Number (iOS)
 
 ### `Notifications.getBadgeNumberAsync()`
@@ -222,3 +192,33 @@ A Promise that resolves to an object with the following fields:
 
 - **type (_string_)** -- Either "apns", "fcm", or "gcm".
 - **data (_string_)** -- The push token as a string.
+
+## Related types
+
+### LocalNotification
+
+An object used to describe the local notification that you would like to present or schedule.
+
+- **title (_string_)** -- title text of the notification
+- **body (_string_)** -- body text of the notification.
+- **data (_optional_) (_object_)** -- any data that has been attached with the notification.
+- **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
+- **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
+  - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+- **android (_optional_) (_object_)** -- notification configuration specific to Android.
+  - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
+  - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
+  - **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
+  - **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
+  - **link** (_optional_) (_string_) -- external link to open when notification is selected.
+
+### ChannelAndroid
+
+An object used to describe an Android notification channel that you would like to create.
+
+- **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
+- **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
+- **sound (_optional_) (_boolean_)** -- if `true`, notifications posted to this channel will play a sound. Default: `false`.
+- **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
+- **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
+- **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.

@@ -329,21 +329,6 @@ async function addVersionedActivitesToManifests(version: string) {
   const abiName = `abi${abiVersion}`;
   const majorVersion = semver.major(version);
 
-  const versionedAndroidManifestPath = path.join(
-    versionedExpoviewAbiPath(abiName),
-    'src/main/AndroidManifest.xml'
-  );
-
-  await transformFileAsync(
-    versionedAndroidManifestPath,
-    new RegExp('<!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->'),
-    `<activity
-      android:name="${abiName}.expo.modules.appauth.AppAuthBrowserActivity"
-      android:exported="false"
-      android:launchMode="singleTask"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>`
-  );
-
   await transformFileAsync(
     templateManifestPath,
     new RegExp('<!-- ADD DEV SETTINGS HERE -->'),

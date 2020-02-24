@@ -3,17 +3,17 @@ import { View } from 'react-native';
 import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 declare type ExponentVideoProps = {
     source: PlaybackNativeSource | null;
-    resizeMode?: Object;
+    resizeMode?: object;
     status?: PlaybackStatusToSet;
     useNativeControls?: boolean;
     onStatusUpdate?: (event: {
         nativeEvent: PlaybackStatus;
     }) => void;
     onReadyForDisplay?: (event: {
-        nativeEvent: Object;
+        nativeEvent: object;
     }) => void;
     onFullscreenUpdate?: (event: {
-        nativeEvent: Object;
+        nativeEvent: object;
     }) => void;
     onLoadStart: () => void;
     onLoad: (event: {
@@ -45,6 +45,9 @@ export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
+    componentDidMount(): void;
+    componentWillUnmount(): void;
+    onFullscreenChange: (event: any) => void;
     onStatusUpdate: () => Promise<void>;
     onLoadStart: () => void;
     onLoadedData: (event: any) => void;

@@ -19,5 +19,5 @@ Pod::Spec.new do |s|
   s.dependency 'UMCore'
   s.dependency 'UMFileSystemInterface'
   s.dependency 'UMCameraInterface'
-  s.dependency 'EXGL-CPP'
+  s.dependency 'EXGL_CPP'
 end

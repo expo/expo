@@ -4,15 +4,21 @@ sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
+Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
-Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_. Note that the barometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ❌     | ✅    |
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-## Usage
+## Example Usage
 
 <SnackInline label='Basic Barometer usage' templateId='barometer' dependencies={['expo-sensors']}>
 
@@ -70,25 +76,6 @@ export default class BarometerSensor extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  sensor: {
-    marginTop: 45,
-    paddingHorizontal: 10,
-  },
-});
 ```
 </SnackInline>
 
@@ -98,12 +85,11 @@ const styles = StyleSheet.create({
 import { Barometer } from 'expo-sensors';
 ```
 
-| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
-| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
-| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
-| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
-|         |
+<TableOfContentSection title='Methods' contents={['Barometer.isAvailableAsync()', 'Barometer.addListener((data: BarometerMeasurement) => void)', 'Barometer.removeAllListeners()']}/>
+
+<TableOfContentSection title='Types' contents={['BarometerMeasurement']} />
+
+## Methods
 
 ### `Barometer.isAvailableAsync()`
 
@@ -141,7 +127,7 @@ const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
 
 ### `Barometer.removeAllListeners()`
 
-Remove all listeners.
+Removes all listeners.
 
 ## Types
 
@@ -161,3 +147,11 @@ type BarometerMeasurement = {
 | ---------------- | -------------------- | -------- | --- | ------- | --- |
 | pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
 | relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+
+## Units and Providers
+
+| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
+| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
+| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |

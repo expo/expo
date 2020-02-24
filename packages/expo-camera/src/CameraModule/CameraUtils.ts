@@ -3,8 +3,8 @@ import invariant from 'invariant';
 
 import { PictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 import { requestUserMediaAsync } from './UserMediaManager';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 
 interface ConstrainLongRange {
   max?: number;

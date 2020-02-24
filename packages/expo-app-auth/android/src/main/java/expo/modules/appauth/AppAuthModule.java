@@ -316,22 +316,31 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
         authReqBuilder.setScope(scopesString);
       }
     }
+    try {
+      AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, responseType, Uri.parse(redirectUrl));
 
-    if (parameters != null) {
-      if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
-        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
-        parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+      if (scopes != null) {
+        String scopesString = Serialization.scopesToString(scopes);
+        if (scopesString != null) {
+          authReqBuilder.setScope(scopesString);
+        }
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
-        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
-        parameters.remove(AppAuthConstants.HTTPS.PROMPT);
+
+      if (parameters != null) {
+        if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
+          authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
+          parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
+          authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
+          parameters.remove(AppAuthConstants.HTTPS.PROMPT);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
+          authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
+          parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
+        }
+        authReqBuilder.setAdditionalParameters(parameters);
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
-        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
-        parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
-      }
-      authReqBuilder.setAdditionalParameters(parameters);
-    }
 
     if ("expo".equals(getAppOwnership())) {
       Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class)

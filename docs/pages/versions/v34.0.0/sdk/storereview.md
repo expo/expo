@@ -7,6 +7,12 @@ Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.
 
 > If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead. 
 
+#### Platform Compatibility
+
+| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
+| ------ | ---------- | ------ | ------ | ------ |
+| ✅     |  ✅     | ✅     | ✅     | ✅    |
+
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
@@ -49,7 +55,7 @@ const url = StoreReview.storeUrl()
 
 ### `StoreReview.hasAction()`
 
-This returns a boolean that let's you know if the module can preform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isSupported()` returns false.
+This returns a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isSupported()` returns false.
 
 #### Example
 

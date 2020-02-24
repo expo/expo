@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import * as React from 'react';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 import {
   NativeModulesProxy,
   UnavailabilityError,
   requireNativeViewManager,
 } from '@unimodules/core';
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 import {
   ComponentOrHandle,

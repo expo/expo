@@ -34,8 +34,8 @@ export async function batchProcessAllSourcesAsync(
   return done;
 }
 
-function readURLs(urls: string): Array<any> {
-  const result: Array<any> = [];
+function readURLs(urls: string): any[] {
+  const result: any[] = [];
   let match;
   while ((match = URL_REGEX.exec(urls)) !== null) {
     result.push(match[1]);

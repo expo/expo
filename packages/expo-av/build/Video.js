@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes, } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
+import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
-import ExpoVideoManager from './ExpoVideoManager';
 import { ResizeMode, } from './Video.types';
 export { ResizeMode, };
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
@@ -46,6 +46,7 @@ export default class Video extends React.Component {
     constructor(props) {
         super(props);
         this._nativeRef = React.createRef();
+        this._onPlaybackStatusUpdate = null;
         // Internal methods
         this._handleNewStatus = (status) => {
             if (this.state.showPoster &&
@@ -55,6 +56,9 @@ export default class Video extends React.Component {
             }
             if (this.props.onPlaybackStatusUpdate) {
                 this.props.onPlaybackStatusUpdate(status);
+            }
+            if (this._onPlaybackStatusUpdate) {
+                this._onPlaybackStatusUpdate(status);
             }
         };
         this._performOperationAndHandleStatusAsync = async (operation) => {
@@ -170,6 +174,10 @@ export default class Video extends React.Component {
     setNativeProps(nativeProps) {
         const nativeVideo = nullthrows(this._nativeRef.current);
         nativeVideo.setNativeProps(nativeProps);
+    }
+    setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
+        this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
+        this.getStatusAsync();
     }
     render() {
         const source = getNativeSourceFromSource(this.props.source) || undefined;

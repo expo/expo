@@ -3,6 +3,7 @@ export const colors = {
   border: '#ECECEC',
   grey: '#F3F3F3',
   darkGrey: 'rgba(153, 153, 165, 1)',
+  codeWhite: '#F8F8F2',
   white: '#FFFFFF',
   white80: 'rgba(255, 255, 255, 0.8)',
   white70: 'rgba(255, 255, 255, 0.7)',

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ import javax.inject.Inject;
 import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.Crypto;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.network.ExponentNetwork;
@@ -26,28 +29,40 @@ public class NativeModuleDepsProvider {
   private static final String TAG = NativeModuleDepsProvider.class.getSimpleName();
 
   @Inject
+  @DoNotStrip
   Context mContext;
 
   @Inject
+  @DoNotStrip
   Application mApplicationContext;
 
   @Inject
+  @DoNotStrip
   ExpoHandler mExpoHandler;
 
   @Inject
+  @DoNotStrip
   ExponentSharedPreferences mExponentSharedPreferences;
 
   @Inject
+  @DoNotStrip
   ExponentNetwork mExponentNetwork;
 
   @Inject
+  @DoNotStrip
   Crypto mCrypto;
 
   @Inject
+  @DoNotStrip
   ExponentManifest mExponentManifest;
 
   @Inject
+  @DoNotStrip
   ExpoKernelServiceRegistry mKernelServiceRegistry;
+
+  @Inject
+  @DoNotStrip
+  DevMenuManager mDevMenuManager;
 
   private Map<Class, Object> mClassesToInjectedObjects = new HashMap<>();
 

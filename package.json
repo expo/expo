@@ -23,15 +23,17 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.7.0-rc.2"
+    "react-native-unimodules": "~0.7.0"
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "eslint": "^6.6.0",
     "eslint-config-universe": "^2.0.0",
-    "expo-cli": "^3.9.0",
+    "expo-cli": "^3.11.1",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.19.0"
   },
-  "resolutions": {}
+  "resolutions": {
+    "@react-native-community/cli-platform-ios": "3.0.0"
+  }
 }

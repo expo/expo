@@ -4,5 +4,5 @@ declare type ShareOptions = {
     dialogTitle?: string;
 };
 export declare function isAvailableAsync(): Promise<boolean>;
-export declare function shareAsync(url: string, options?: ShareOptions): Promise<{}>;
+export declare function shareAsync(url: string, options?: ShareOptions): Promise<object>;
 export {};

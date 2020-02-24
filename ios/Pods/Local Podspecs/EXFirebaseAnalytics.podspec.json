@@ -1,0 +1,29 @@
+{
+  "name": "EXFirebaseAnalytics",
+  "version": "3.0.0",
+  "summary": "A universal module that interfaces with the native firebase analytics API",
+  "description": "A universal module that interfaces with the native firebase analytics API",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXFirebaseAnalytics/**/*.{h,m}",
+  "preserve_paths": "EXFirebaseAnalytics/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ],
+    "Firebase/Core": [
+      "6.14.0"
+    ],
+    "EXFirebaseCore": [
+
+    ]
+  }
+}

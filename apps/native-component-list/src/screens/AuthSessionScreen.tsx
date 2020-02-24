@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthSession } from 'expo';
+import * as AuthSession from 'expo-auth-session';
 
 import Constants from 'expo-constants';
 
@@ -73,7 +73,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
 
     const result = await AuthSession.startAsync({ authUrl });
     this.setState({ result });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

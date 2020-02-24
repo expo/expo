@@ -40,7 +40,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     isRefreshing: false,
   };
 
-  sections: Array<{ title: string, data: Array<() => JSX.Element> }>;
+  sections: Array<{ title: string; data: Array<() => JSX.Element> }>;
 
   _sectionList?: React.Component;
 
@@ -53,7 +53,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
       { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
       { title: 'Alert', data: [this._renderAlert] },
       { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-      { title: 'MaskView', data: [this._renderMaskView] },
       { title: 'Modal', data: [this._renderModal] },
       { title: 'Picker', data: [this._renderPicker] },
       { title: 'ProgressView', data: [this._renderProgressView] },
@@ -94,28 +93,15 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     setTimeout(() => {
       this.setState({ isRefreshing: false });
     }, 3000);
-  }
+  };
 
   _scrollToTop = () => {
     this._sectionList!.scrollTo({ x: 0, y: 0 });
-  }
-
-  _renderMaskView = () => {
-    return (
-      <View style={{ padding: 10, flexDirection: 'row' }}>
-        <Button onPress={() => this.props.navigation.navigate('BasicMaskExample')}>
-          Basic Mask
-        </Button>
-        <Button onPress={() => this.props.navigation.navigate('GLMaskExample')}>
-          Mask on top of GL
-        </Button>
-      </View>
-    );
-  }
+  };
 
   _renderModal = () => {
     return <ModalExample />;
-  }
+  };
 
   _renderRefreshControl = () => {
     return (
@@ -126,7 +112,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Text>
       </View>
     );
-  }
+  };
 
   _renderActionSheet = () => {
     const showActionSheet = () => {
@@ -165,7 +151,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={showShareSheet}>Share sheet</Button>
       </View>
     );
-  }
+  };
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -184,7 +170,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <ActivityIndicator size="large" animating={false} hidesWhenStopped={false} />
       </View>
     );
-  }
+  };
 
   _renderAlert = () => {
     const showPrompt = () => {
@@ -211,8 +197,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         style={{
           flexDirection: Layout.isSmallDevice ? 'column' : 'row',
           padding: 10,
-        }}
-      >
+        }}>
         <Button onPress={showPrompt}>Prompt for a value</Button>
 
         {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
@@ -220,7 +205,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={showAlert}>Give me some options</Button>
       </View>
     );
-  }
+  };
 
   _renderHorizontalScrollView = () => {
     const imageStyle = {
@@ -247,11 +232,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         />
       </ScrollView>
     );
-  }
+  };
 
   _renderPicker = () => {
     return <PickerExample />;
-  }
+  };
 
   _renderProgressView = () => {
     return (
@@ -262,11 +247,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <ProgressViewExample progressTintColor="yellow" initialProgress={0.8} />
       </View>
     );
-  }
+  };
 
   _renderSegmentedControl = () => {
     return <SegmentedControlExample />;
-  }
+  };
 
   _renderSlider = () => {
     return (
@@ -274,7 +259,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <SliderExample />
       </View>
     );
-  }
+  };
 
   _renderStatusBar = () => {
     const randomAnimation = () => {
@@ -296,11 +281,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={show}>Show</Button>
       </View>
     );
-  }
+  };
 
   _renderSwitch = () => {
     return <SwitchExample />;
-  }
+  };
 
   _renderText = () => {
     const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -319,11 +304,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Text>
       </View>
     );
-  }
+  };
 
   _renderTextInput = () => {
     return <TextInputExample />;
-  }
+  };
 
   _renderTouchables = () => {
     const buttonStyle = {
@@ -343,8 +328,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <TouchableHighlight
           underlayColor="rgba(1, 1, 255, 0.9)"
           style={buttonStyle}
-          onPress={() => {}}
-        >
+          onPress={() => {}}>
           <Text style={buttonText}>Highlight!</Text>
         </TouchableHighlight>
 
@@ -357,7 +341,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </TouchableBounce>
       </View>
     );
-  }
+  };
 
   // _renderView = () => {
   //   // Don't know what to put here
@@ -386,7 +370,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         }}
       />
     );
-  }
+  };
 
   _renderItem = ({ item }: { item: () => JSX.Element }) => item();
 
@@ -394,7 +378,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     <View style={styles.sectionHeader}>
       <Text>{section.title}</Text>
     </View>
-  )
+  );
 }
 
 class PickerExample extends React.Component {
@@ -408,8 +392,7 @@ class PickerExample extends React.Component {
       <Picker
         st
         selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}
-      >
+        onValueChange={lang => this.setState({ language: lang })}>
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />
@@ -428,7 +411,10 @@ interface ProgressViewExampleState {
   progress: number;
 }
 
-class ProgressViewExample extends React.Component<ProgressViewExampleProps, ProgressViewExampleState> {
+class ProgressViewExample extends React.Component<
+  ProgressViewExampleProps,
+  ProgressViewExampleState
+> {
   constructor(props: ProgressViewExampleProps) {
     super(props);
 
@@ -595,7 +581,7 @@ class TextInputExample extends React.Component {
   }
 }
 
-const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
+const Button: React.FunctionComponent<TouchableOpacityProps> = props => {
   return (
     <TouchableOpacity onPress={props.onPress} style={styles.button}>
       <Text style={styles.buttonText}>{props.children}</Text>

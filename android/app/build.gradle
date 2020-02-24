@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 117
-    versionName '2.12.2'
+    versionCode 120
+    versionName '2.14.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -121,7 +121,6 @@ dependencies {
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   implementation 'androidx.appcompat:appcompat:1.1.0'
-  implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
@@ -135,8 +134,6 @@ dependencies {
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
-  implementation "com.madgag.spongycastle:core:1.53.0.0"
-  implementation "com.madgag.spongycastle:prov:1.53.0.0"
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -198,7 +195,6 @@ dependencies {
 
   // ADD_NEW_SDKS_HERE
 
-
   // BEGIN_SDK_36
   implementation(project(':expoview-abi36_0_0'))
   // END_SDK_36
@@ -212,10 +208,6 @@ dependencies {
   implementation(project(':expoview-abi34_0_0'))
   // END_SDK_34
 
-  // BEGIN_SDK_33
-  implementation(project(':expoview-abi33_0_0'))
-  // END_SDK_33
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
 
@@ -224,7 +216,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
-  api 'com.facebook.react:react-native:33.0.0'
+  api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
@@ -239,6 +231,7 @@ dependencies {
         'expo-module-template',
         'expo-bluetooth',
         'expo-in-app-purchases',
+        'expo-notifications',
         'expo-payments-stripe',
         'expo-updates'
       ]

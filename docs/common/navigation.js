@@ -5,7 +5,7 @@ const packageVersion = require('../package.json').version;
 // - Each section is a top-level folder within the version directory
 // - The groups of sections are expressed only below, there is no representation of them in the filesystem
 const GROUPS = {
-  'The Basics': ['Introduction', 'Get Started', 'Next Steps'],
+  'The Basics': ['Introduction', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
   'Bare Workflow': ['Essentials'],
   'API Reference': ['Expo SDK', 'React Native'],
@@ -16,7 +16,7 @@ const sections = [
   {
     name: 'Introduction',
     reference: [
-      'What is Expo?',
+      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
@@ -27,6 +27,20 @@ const sections = [
   {
     name: 'Get Started',
     reference: ['Installation', 'Create a new app'],
+  },
+  {
+    name: 'Tutorial',
+    reference: [
+      'First steps',
+      'Styling text',
+      'Adding an image',
+      'Creating a button',
+      'Picking an image',
+      'Sharing the image',
+      'Handling platform differences',
+      'Configuring a splash screen and app icon',
+      'Learning more',
+    ],
   },
   {
     name: 'Next Steps',
@@ -235,6 +249,7 @@ const sections = [
 const ROOT = [
   'Introduction',
   'Get Started',
+  'Tutorial',
   'Fundamentals',
   'Guides',
   'Distributing Your App',

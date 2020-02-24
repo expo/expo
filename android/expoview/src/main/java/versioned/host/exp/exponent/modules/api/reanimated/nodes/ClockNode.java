@@ -1,7 +1,5 @@
 package versioned.host.exp.exponent.modules.api.reanimated.nodes;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.ReadableMap;
 import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
 

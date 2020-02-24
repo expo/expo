@@ -27,6 +27,10 @@ export declare type AppleAuthenticationSignInOptions = {
      * avoid replay attacks.
      */
     state?: string;
+    /**
+     * Data that is used to verify the uniqueness of a response and prevent replay attacks.
+     */
+    nonce?: string;
 };
 /**
  * The options you can supply when making a call to `AppleAuthentication.refreshAsync()`. You must

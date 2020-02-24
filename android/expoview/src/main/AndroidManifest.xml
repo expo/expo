@@ -23,6 +23,9 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
+    <!-- Used by react-native-netinfo module -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <!-- These require runtime permissions on M -->
     <!-- All of these must be in the blacklist in xdl/src/detach/AndroidShellApp.js as well -->
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -103,8 +106,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->
     </application>
 
 </manifest>

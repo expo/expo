@@ -21,6 +21,7 @@
 #import <React/RCTExceptionsManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTPackagerConnection.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
@@ -111,6 +112,15 @@ void EXRegisterScopedModule(Class moduleClass, ...)
      postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
 
+  // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
+  // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
+#if DEBUG || RCT_DEV
+  if ([self _isDevModeEnabledForBridge:bridge]) {
+    // Set the bundle url for the packager connection manually
+    [[RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+  }
+#endif
+
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]
    postNotificationName:RCTJavaScriptWillStartLoadingNotification object:bridge];
@@ -129,16 +139,30 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 {
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
-  NSMutableDictionary *items = [@{
-    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": isDevModeEnabled ? @YES : @NO },
-  } mutableCopy];
+  NSMutableDictionary *items = [NSMutableDictionary new];
+
+  if (isDevModeEnabled) {
+    items[@"dev-inspector"] = @{
+      @"label": devSettings.isElementInspectorShown ? @"Hide Element Inspector" : @"Show Element Inspector",
+      @"isEnabled": @YES
+    };
+  } else {
+    items[@"dev-inspector"] = @{
+      @"label": @"Element Inspector Unavailable",
+      @"isEnabled": @NO
+    };
+  }
+  
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
     };
   } else {
-    items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
+    items[@"dev-remote-debug"] =  @{
+      @"label": @"Remote Debugger Unavailable",
+      @"isEnabled": @NO
+    };
   }
 
   if (devSettings.isHotLoadingAvailable && isDevModeEnabled) {
@@ -147,19 +171,23 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       @"isEnabled": @YES,
     };
   } else {
-    NSMutableDictionary *hmrItem = [@{
+    items[@"dev-hmr"] =  @{
       @"label": @"Fast Refresh Unavailable",
       @"isEnabled": @NO,
       @"detail": @"Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh."
-    } mutableCopy];
-    items[@"dev-hmr"] =  hmrItem;
+    };
   }
 
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
-  if (perfMonitor) {
+  if (perfMonitor && isDevModeEnabled) {
     items[@"dev-perf-monitor"] = @{
       @"label": devSettings.isPerfMonitorShown ? @"Hide Performance Monitor" : @"Show Performance Monitor",
-      @"isEnabled": isDevModeEnabled ? @YES : @NO,
+      @"isEnabled": @YES,
+    };
+  } else {
+    items[@"dev-perf-monitor"] = @{
+      @"label": @"Performance Monitor Unavailable",
+      @"isEnabled": @NO,
     };
   }
 

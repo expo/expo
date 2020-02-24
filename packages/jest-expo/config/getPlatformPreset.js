@@ -1,24 +1,11 @@
 'use strict';
+const { getManagedExtensions } = require('@expo/config/paths');
+
 const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
-function getModuleFileExtensions(...platforms) {
-  let fileExtensions = [];
-
-  // Support both TypeScript and JavaScript
-  for (const extension of ['ts', 'tsx', 'js', 'jsx']) {
-    // Ensure order is correct: [platformA.js, platformB.js, js]
-    for (const platform of [...platforms, '']) {
-      fileExtensions.push([platform, extension].filter(Boolean).join('.'));
-    }
-  }
-  // Always add this last
-  fileExtensions.push('json');
-  return fileExtensions;
-}
-
 function getPlatformPreset(displayOptions, extensions) {
-  const moduleFileExtensions = getModuleFileExtensions(...extensions);
+  const moduleFileExtensions = getManagedExtensions(extensions);
   const testMatch = ['', ...extensions].reduce((arr, cur) => {
     const platformExtension = cur ? `.${cur}` : '';
     const sourceExtension = `.[jt]s?(x)`;

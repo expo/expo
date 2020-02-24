@@ -37,3 +37,7 @@ export function getReactNativeSubmoduleDir(): string {
 export function getVersionedReactNativeIosDir(): string {
   return path.join(getIosDir(), 'versioned-react-native');
 }
+
+export function getAppsDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'apps');
+}

@@ -207,6 +207,12 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     }
   }
 
+  private void maybeUpdate() {
+    if (getParent() != null) {
+      onUpdate();
+    }
+  }
+
   public ScreenStackHeaderSubview getConfigSubview(int index) {
     return mConfigSubviews[index];
   }
@@ -220,6 +226,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       mSubviewsCount--;
     }
     mConfigSubviews[index] = null;
+    maybeUpdate();
   }
 
   public void addConfigSubview(ScreenStackHeaderSubview child, int index) {
@@ -227,6 +234,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       mSubviewsCount++;
     }
     mConfigSubviews[index] = child;
+    maybeUpdate();
   }
 
   private TextView getTitleTextView() {

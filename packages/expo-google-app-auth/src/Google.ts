@@ -1,8 +1,7 @@
+import { CodedError } from '@unimodules/core';
 import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-
-import { CodedError } from '@unimodules/core';
 
 const isInExpo = Constants.appOwnership === 'expo';
 export type GoogleLogInConfig = {
@@ -24,7 +23,7 @@ export type GoogleLogInConfig = {
    */
   redirectUrl?: string;
   /* If no other client IDs are defined this will be used. */
-  clientId: string;
+  clientId?: string;
 };
 
 export type GoogleUser = {
@@ -70,6 +69,13 @@ function getPlatformGUID(config: GoogleLogInConfig) {
     throw new CodedError(
       'ERR_GOOGLE_CONFIG',
       'Keys for Android and iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials'
+    );
+  }
+
+  if (!platformClientId) {
+    throw new CodedError(
+      'ERR_GOOGLE_CONFIG',
+      'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.io/versions/latest/sdk/google/#loginasync'
     );
   }
 

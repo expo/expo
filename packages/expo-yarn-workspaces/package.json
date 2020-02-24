@@ -5,6 +5,7 @@
   "author": "Expo",
   "license": "MIT",
   "main": "index.js",
+  "private": true,
   "bin": {
     "expo-yarn-workspaces": "./bin/expo-yarn-workspaces.js"
   },

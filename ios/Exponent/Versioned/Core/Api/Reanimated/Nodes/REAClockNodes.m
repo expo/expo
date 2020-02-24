@@ -1,9 +1,12 @@
 #import "REAClockNodes.h"
+#import "REAUtils.h"
 #import "REANodesManager.h"
+#import "REAParamNode.h"
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
 
 @interface REAClockNode ()
 
-@property (nonatomic, readonly) BOOL isRunning;
 @property (nonatomic) NSNumber *lastTimestampMs;
 
 @end
@@ -55,14 +58,15 @@
 - (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
-    _clockNodeID = config[@"clock"];
+    _clockNodeID = [RCTConvert NSNumber:config[@"clock"]];
+    REA_LOG_ERROR_IF_NIL(_clockNodeID, @"Reanimated: First argument passed to clock node is either of wrong type or is missing.");
   }
   return self;
 }
 
-- (REAClockNode*)clockNode
+- (REANode*)clockNode
 {
-  return (REAClockNode*)[self.nodesManager findNodeByID:_clockNodeID];
+  return (REANode*)[self.nodesManager findNodeByID:_clockNodeID];
 }
 
 @end
@@ -71,7 +75,12 @@
 
 - (id)evaluate
 {
-  [[self clockNode] start];
+  REANode* node = [self clockNode];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    [(REAParamNode* )node start];
+  } else {
+    [(REAClockNode* )node start];
+  }
   return @(0);
 }
 
@@ -81,9 +90,15 @@
 
 - (id)evaluate
 {
-  [[self clockNode] stop];
+  REANode* node = [self clockNode];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    [(REAParamNode* )node stop];
+  } else {
+    [(REAClockNode* )node stop];
+  }
   return @(0);
 }
+
 
 @end
 
@@ -91,7 +106,11 @@
 
 - (id)evaluate
 {
-  return @([self clockNode].isRunning ? 1 : 0);
+  REANode* node = [self clockNode];
+  if ([node isKindOfClass:[REAParamNode class]]) {
+    return @(((REAParamNode* )node).isRunning ? 1 : 0);
+  }
+  return @([(REAClockNode* )node isRunning] ? 1 : 0);
 }
 
 @end

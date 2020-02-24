@@ -9,6 +9,7 @@ import com.facebook.react.uimanager.ViewManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class RNCAppearancePackage implements ReactPackage {
@@ -20,9 +21,9 @@ public class RNCAppearancePackage implements ReactPackage {
         return modules;
     }
 
-    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-        return Arrays.<ViewManager>asList(new RNCAppearanceManager());
+    @SuppressWarnings("rawtypes")
+    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+        return Collections.emptyList();
     }
 }

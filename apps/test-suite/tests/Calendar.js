@@ -31,7 +31,8 @@ async function getCalendarByIdAsync(calendarId) {
 async function pickCalendarSourceIdAsync() {
   if (Platform.OS === 'ios') {
     const sources = await Calendar.getSourcesAsync();
-    return sources && sources[0] && sources[0].id;
+    const mainSource = sources.find(source => source.name === 'iCloud') || sources[0];
+    return mainSource && mainSource.id;
   }
 }
 
@@ -70,6 +71,11 @@ async function createTestReminderAsync(calendarId) {
     startDate: new Date(2019, 3, 3, 9, 0, 0),
     dueDate: new Date(2019, 3, 3, 23, 59, 59),
   });
+}
+
+async function getFirstCalendarForRemindersAsync() {
+  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
+  return calendars[0] && calendars[0].id;
 }
 
 export async function test(t) {
@@ -161,8 +167,12 @@ export async function test(t) {
 
   function testCalendarSourceShape(source) {
     t.expect(source).toBeDefined();
-    t.expect(typeof source.name).toBe('string');
     t.expect(typeof source.type).toBe('string');
+
+    if (source.name !== null) {
+      // source.name can be null if it refers to the local (unnamed) calendar.
+      t.expect(typeof source.name).toBe('string');
+    }
 
     if (Platform.OS === 'ios') {
       t.expect(typeof source.id).toBe('string');
@@ -262,6 +272,18 @@ export async function test(t) {
           testCalendarShape(calendar);
         }
       });
+
+      if (Platform.OS === 'ios') {
+        t.it('returns an array of calendars for reminders', async () => {
+          const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
+
+          t.expect(Array.isArray(calendars)).toBeTruthy();
+
+          for (const calendar of calendars) {
+            t.expect(calendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+          }
+        });
+      }
 
       t.afterAll(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
@@ -528,23 +550,21 @@ export async function test(t) {
       });
 
       t.describe('createReminderAsync()', () => {
-        let calendarId;
+        let calendarId, reminderId;
 
         t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
+          calendarId = await getFirstCalendarForRemindersAsync();
         });
 
         t.it('creates a reminder', async () => {
-          const reminderId = await createTestReminderAsync(calendarId);
+          reminderId = await createTestReminderAsync(calendarId);
 
           t.expect(reminderId).toBeDefined();
           t.expect(typeof reminderId).toBe('string');
         });
 
         t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          await Calendar.deleteReminderAsync(reminderId);
         });
       });
 
@@ -552,9 +572,7 @@ export async function test(t) {
         let calendarId, reminderId;
 
         t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
+          calendarId = await getFirstCalendarForRemindersAsync();
           reminderId = await createTestReminderAsync(calendarId);
         });
 
@@ -573,7 +591,7 @@ export async function test(t) {
         });
 
         t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          await Calendar.deleteReminderAsync(reminderId);
         });
       });
 
@@ -581,9 +599,7 @@ export async function test(t) {
         let calendarId, reminderId;
 
         t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
+          calendarId = await getFirstCalendarForRemindersAsync();
           reminderId = await createTestReminderAsync(calendarId);
         });
 
@@ -596,7 +612,7 @@ export async function test(t) {
         });
 
         t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          await Calendar.deleteReminderAsync(reminderId);
         });
       });
 
@@ -604,25 +620,23 @@ export async function test(t) {
         let calendarId, reminderId;
 
         t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
+          calendarId = await getFirstCalendarForRemindersAsync();
           reminderId = await createTestReminderAsync(calendarId);
         });
 
         t.it('updates a reminder', async () => {
-          const newUrl = 'https://appjs.co';
-          const updatedReminderId = await Calendar.updateReminderAsync(reminderId, {
-            url: newUrl,
-          });
+          const dueDate = new Date();
+          dueDate.setMilliseconds(0);
+
+          const updatedReminderId = await Calendar.updateReminderAsync(reminderId, { dueDate });
           const reminder = await Calendar.getReminderAsync(updatedReminderId);
 
           t.expect(updatedReminderId).toBe(reminderId);
-          t.expect(reminder.url).toBe(newUrl);
+          t.expect(reminder.dueDate).toBe(dueDate.toISOString());
         });
 
         t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          await Calendar.deleteReminderAsync(reminderId);
         });
       });
 
@@ -630,9 +644,7 @@ export async function test(t) {
         let calendarId, reminderId;
 
         t.beforeAll(async () => {
-          calendarId = await createTestCalendarAsync({
-            entityType: Calendar.EntityTypes.REMINDER,
-          });
+          calendarId = await getFirstCalendarForRemindersAsync();
           reminderId = await createTestReminderAsync(calendarId);
         });
 
@@ -651,7 +663,7 @@ export async function test(t) {
         });
 
         t.afterAll(async () => {
-          await Calendar.deleteCalendarAsync(calendarId);
+          await Calendar.deleteReminderAsync(reminderId);
         });
       });
 

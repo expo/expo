@@ -3,7 +3,6 @@
 #import "EXApiV2Client+EXRemoteNotifications.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
-#import "EXProvisioningProfile.h"
 #import "EXRemoteNotificationManager.h"
 #import "NSData+EXRemoteNotifications.h"
 #import "EXUserNotificationCenter.h"
@@ -110,13 +109,24 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
 #pragma mark - scoped module delegate
 
-- (NSString *)apnsTokenStringForScopedModule:(__unused id)scopedModule
+- (void)getApnsTokenForScopedModule:(id)scopedModule
+                  completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
-  NSData *maybeToken = _currentAPNSToken ?: [NSUserDefaults.standardUserDefaults objectForKey:kEXCurrentAPNSTokenDefaultsKey];
-  if (maybeToken) {
-    return [maybeToken apnsTokenString];
+  if (_currentAPNSToken) {
+    handler([_currentAPNSToken apnsTokenString], nil);
+    return;
   }
-  return nil;
+
+  [_apnsTokenHandlers addObject:^(NSData * _Nullable apnsToken, NSError * _Nullable registrationError) {
+    if (registrationError) {
+      handler(nil, registrationError);
+    } else {
+      handler([apnsToken apnsTokenString], nil);
+    }
+  }];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [RCTSharedApplication() registerForRemoteNotifications];
+  });
 }
 
 - (void)getExpoPushTokenForScopedModule:(id)scopedModule

@@ -150,11 +150,11 @@ export declare type Container = {
     type: ContainerType;
 };
 export { PermissionStatus, PermissionResponse };
-export declare function shareContactAsync(contactId: string, message: string, shareOptions?: Object): Promise<any>;
+export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
-export declare function getContactByIdAsync(id: string, fields?: FieldType): Promise<Contact | undefined>;
-export declare function addContactAsync(contact: Contact, containerId: string): Promise<string>;
+export declare function getContactByIdAsync(id: string, fields?: FieldType[]): Promise<Contact | undefined>;
+export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 export declare function updateContactAsync(contact: Contact): Promise<string>;
 export declare function removeContactAsync(contactId: string): Promise<any>;
 export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | undefined>;
@@ -187,6 +187,7 @@ export declare const SOCIAL_PROFILES = "socialProfiles";
 export declare const IM_ADDRESSES = "instantMessageAddresses";
 export declare const URLS = "urlAddresses";
 export declare const DATES = "dates";
+export declare const RAW_DATES = "rawDates";
 export declare const RELATIONSHIPS = "relationships";
 export declare const Fields: {
     ID: string;

@@ -663,7 +663,7 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
     resolve(reminder.calendarItemIdentifier);
   } else {
     reject(@"E_REMINDER_NOT_SAVED",
-         [NSString stringWithFormat:@"Reminder with id %@ was not saved", reminder.calendarItemIdentifier],
+         [NSString stringWithFormat:@"Reminder with id %@ was not saved. %@", reminder.calendarItemIdentifier, error.description],
          error);
   }
 }
@@ -690,7 +690,7 @@ UM_EXPORT_METHOD_AS(deleteReminderAsync,
     resolve(nil);
   } else {
     reject(@"E_REMINDER_NOT_DELETED",
-         [NSString stringWithFormat:@"Reminder with id %@ could not be removed", reminderId],
+         [NSString stringWithFormat:@"Reminder with id %@ could not be removed. %@", reminderId, error.description],
          error);
   }
 }

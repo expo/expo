@@ -1,21 +1,25 @@
 ---
 title: AuthSession
-sourceCodeUrl: "https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthSession.ts"
+sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthSession.ts'
 ---
+
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
+<PlatformsSection android emulator ios simulator />
+
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-auth-session`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-auth-session).
 
 ## How web browser based authentication flows work
 
 The typical flow for browser-based authentication in mobile apps is as follows:
 
 - **Initiation**: the user presses a sign in button
-- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. *Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](../webbrowser/) API takes care of this.*
-- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../workflow/linking/)), *provided that the URL is in the whitelist of allowed redirect URLs*. Whitelisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
+- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](../webbrowser/) API takes care of this._
+- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../workflow/linking/)), _provided that the URL is in the whitelist of allowed redirect URLs_. Whitelisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
 ## What `AuthSession` does for you
@@ -36,7 +40,7 @@ How does this work? When you open an authentication session with `AuthSession`, 
 
 ## Security considerations
 
-If you are authenticating with a popular social provider, when you are ready to ship to production you should be sure that you do not directly request the access token for the user. Instead, most providers give an option to request a one-time code that can be combined with a secret key to request an access token. For an example of this flow, [see the *Confirming Identity* section in the Facebook Login documentation](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm).
+If you are authenticating with a popular social provider, when you are ready to ship to production you should be sure that you do not directly request the access token for the user. Instead, most providers give an option to request a one-time code that can be combined with a secret key to request an access token. For an example of this flow, [see the _Confirming Identity_ section in the Facebook Login documentation](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm).
 
 **Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
@@ -52,7 +56,7 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import { AuthSession } from 'expo';
 
 /* @info Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a> */
-const FB_APP_ID = 'YOUR_APP_ID'; 
+const FB_APP_ID = 'YOUR_APP_ID';
 /* @end */
 
 export default class App extends React.Component {
@@ -64,25 +68,32 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <Button title="Open FB Auth" onPress={this._handlePressAsync} />
-        /* @info In this example, show the authentication result after success. In a real application, this would be a weird thing to do, instead you would use this data to match the user with a user in your application and sign them in. */
-        {this.state.result ? (
-          <Text>{JSON.stringify(this.state.result)}</Text>
-        ) : null}
+        /* @info In this example, show the authentication result after success. In a real application,
+        this would be a weird thing to do, instead you would use this data to match the user with a user
+        in your application and sign them in. */
+        {this.state.result ? <Text>{JSON.stringify(this.state.result)}</Text> : null}
         /* @end */
       </View>
     );
   }
 
   _handlePressAsync = async () => {
-    let redirectUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl();/* @end */
+    let redirectUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
 
-    let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync/* @end */({
-      /* @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in) */ authUrl:/* @end */
+    let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync(
+      /* @end */ {
+        /* @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in) */ /* @end */
 
-        /* @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.*/`https://www.facebook.com/v2.8/dialog/oauth?response_type=token`/* @end */ +
-        `&client_id=${FB_APP_ID}` +
-        `&redirect_uri=${/* @info Be sure to call <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent'>encodeURIComponent</a> on any query parameters, or use a library such as <a href='https://github.com/ljharb/qs'>qs</a>. */encodeURIComponent(redirectUrl)/* @end */}`,
-    });
+        authUrl:
+          /* @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.*/ `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` /* @end */ +
+          `&client_id=${FB_APP_ID}` +
+          `&redirect_uri=${
+            /* @info Be sure to call <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent'>encodeURIComponent</a> on any query parameters, or use a library such as <a href='https://github.com/ljharb/qs'>qs</a>. */ encodeURIComponent(
+              redirectUrl
+            ) /* @end */
+          }`,
+      }
+    );
     this.setState({ result });
   };
 }
@@ -108,32 +119,92 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
 #### Arguments
 
--   **options (_object_)** --
+- **options (_object_)** --
 
-      A map of options:
+  A map of options:
 
-    -   **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
+  - **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-    -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
+  - **returnUrl (_string_)** -- The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`, for example, `exp://expo.io/@yourname/your-app-slug+expo-auth-session`). However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response. Hence, this method will throw an exception, if you don't provide `returnUrl`.
 
+  - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
 
 #### Returns
 
 Returns a Promise that resolves to a result object of the following form:
 
 - If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.
-- If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismissed' }`.
+- If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
 - If the authentication flow is successful, the result is `{type: 'success', params: Object, event: Object }`
 - If the authentication flow is returns an error, the result is `{type: 'error', params: Object, errorCode: string, event: Object }`
 - If you call `AuthSession.startAsync` more than once before the first call has returned, the result is `{type: 'locked'}`, because only one `AuthSession` can be in progress at any time.
 
 ### `AuthSession.dismiss()`
 
-Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession` then the Promise returned by the `AuthSession.startAsync` that initiated it resolves to `{ type: 'dismissed' }`.
+Cancels an active `AuthSession` if there is one. No return value, but if there is an active `AuthSession` then the Promise returned by the `AuthSession.startAsync` that initiated it resolves to `{ type: 'dismiss' }`.
 
 ### `AuthSession.getRedirectUrl()`
 
 Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`.
+
+> **Note** This method will throw an exception if you're using the bare workflow.
+
+## Usage in the bare React Native app
+
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+
+### Proxy Service
+
+This service is responsible for:
+
+- redirecting traffic from your application to the authentication service
+- redirecting response from the auth service to your application using a deep link
+
+To better understand how it works, check out this implementation in `node.js`:
+
+```js
+const http = require('http');
+const url = require('url');
+
+const PORT = PORT;
+const DEEP_LINK = DEEP_LINK_TO_YOUR_APPLICATION;
+
+function redirect(response, url) {
+  response.writeHead(302, {
+    Location: url,
+  });
+  response.end();
+}
+
+http
+  .createServer((request, response) => {
+    // get parameters from request
+    const parameters = url.parse(request.url, true).query;
+
+    // if parameters contain authServiceUrl, this request comes from the application
+    if (parameters.authServiceUrl) {
+      // redirect user to the authUrl
+      redirect(response, decodeURIComponent(parameters.authServiceUrl));
+      return;
+    }
+
+    // redirect response from the auth service to your application
+    redirect(response, DEEP_LINK);
+  })
+  .listen(PORT);
+```
+
+Client code which works with this service:
+
+```js
+const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
+const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
+const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
+const result = await AuthSession.startAsync({
+  authUrl,
+  returnUrl: YOUR_DEEP_LINK,
+});
+```
 
 ## Advanced usage
 

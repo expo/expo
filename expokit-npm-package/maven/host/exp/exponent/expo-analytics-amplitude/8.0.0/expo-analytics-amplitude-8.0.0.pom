@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo-analytics-amplitude</artifactId>
+  <version>8.0.0</version>
+  <packaging>aar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>com.amplitude</groupId>
+      <artifactId>android-sdk</artifactId>
+      <version>2.23.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.unimodules</groupId>
+      <artifactId>unimodules-core</artifactId>
+      <version>5.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

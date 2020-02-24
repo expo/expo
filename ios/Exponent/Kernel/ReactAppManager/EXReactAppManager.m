@@ -5,7 +5,6 @@
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
-#import "EXKernelDevKeyCommands.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
@@ -265,9 +264,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
 {
   // we allow the vanilla RN dev menu in some circumstances.
-  BOOL isDetached = [EXEnvironment sharedEnvironment].isDetached;
-  BOOL isStandardDevMenuAllowed = [EXKernelDevKeyCommands sharedInstance].isLegacyMenuBehaviorEnabled || isDetached;
-  
+  BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
   _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
 
   NSDictionary *params = @{
@@ -276,7 +273,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                            @"constants": @{
                                @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
                                @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
-                               @"installationId": [EXKernel deviceInstallUUID],
                                @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
                                @"manifest": _appRecord.appLoader.manifest,
                                @"appOwnership": [self _appOwnership],

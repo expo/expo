@@ -5,5 +5,5 @@ export declare function mayInitWithUrlAsync(url: string, browserPackage?: string
 export declare function coolDownAsync(browserPackage?: string): Promise<CoolDownResult>;
 export declare function openBrowserAsync(url: string, browserParams?: OpenBrowserOptions): Promise<BrowserResult>;
 export declare function dismissBrowser(): void;
-export declare function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult>;
+export declare function openAuthSessionAsync(url: string, redirectUrl: string, browserParams?: OpenBrowserOptions): Promise<AuthSessionResult>;
 export declare function dismissAuthSession(): void;

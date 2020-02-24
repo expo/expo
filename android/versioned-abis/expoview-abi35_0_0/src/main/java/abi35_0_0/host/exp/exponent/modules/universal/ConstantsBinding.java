@@ -46,16 +46,8 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     mManifest = manifest;
     mExperienceProperties = experienceProperties;
 
-    if (!manifest.has(ExponentManifest.MANIFEST_STATUS_BAR_COLOR)) {
-      int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        int statusBarHeightPixels = mContext.getResources().getDimensionPixelSize(resourceId);
-        // Convert from pixels to dip
-        mStatusBarHeight = convertPixelsToDp(statusBarHeightPixels, mContext);
-      }
-    } else {
-      mStatusBarHeight = 0;
-    }
+    int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    mStatusBarHeight = resourceId > 0 ? convertPixelsToDp(mContext.getResources().getDimensionPixelSize(resourceId), mContext) : 0;
   }
 
   @Nullable

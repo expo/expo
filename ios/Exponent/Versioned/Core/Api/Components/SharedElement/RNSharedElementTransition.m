@@ -191,15 +191,14 @@
     view.image = image;
 }
 
-- (void) didLoadContent:(id)content contentType:(RNSharedElementContentType)contentType node:(RNSharedElementNode*)node
+- (void) didLoadContent:(RNSharedElementContent*)content node:(id)node
 {
     // NSLog(@"didLoadContent: %@", content);
     RNSharedElementTransitionItem* item = [self findItemForNode:node];
     if (item == nil) return;
     item.content = content;
-    item.contentType = contentType;
-    if ((contentType == RNSharedElementContentTypeSnapshotImage) || (contentType == RNSharedElementContentTypeRawImage)) {
-        UIImage* image = content;
+    if ((content.type == RNSharedElementContentTypeSnapshotImage) || (content.type == RNSharedElementContentTypeRawImage)) {
+        UIImage* image = (UIImage*) content.data;
         if (_animation == RNSharedElementAnimationMove) {
             if (_primaryImageView.image == nil) {
                 [self updateViewWithImage:_primaryImageView image:image];
@@ -345,7 +344,7 @@
                                         @"contentWidth": @(contentLayout.size.width),
                                         @"contentHeight": @(contentLayout.size.height),
                                         },
-                                @"contentType": item.contentTypeName,
+                                @"contentType": item.content ? item.content.typeName : @"none",
                                 @"style": @{
                                         @"borderRadius": @(item.style.cornerRadius)
                                         }
@@ -367,14 +366,14 @@
     RNSharedElementStyle* startStyle = startItem.style;
     CGRect startLayout = startStyle ? [self normalizeLayout:startStyle.layout ancestor:startAncestor] : CGRectZero;
     CGRect startVisibleLayout = startStyle ? [self normalizeLayout:[startItem visibleLayoutForAncestor:startAncestor] ancestor:startAncestor] : CGRectZero;
-    CGRect startContentLayout = startStyle ? [self normalizeLayout:[startItem contentLayoutForContent:startItem.content contentType:startItem.contentType] ancestor:startAncestor] : CGRectZero;
+    CGRect startContentLayout = startStyle ? [self normalizeLayout:[startItem contentLayoutForContent:startItem.content] ancestor:startAncestor] : CGRectZero;
     UIEdgeInsets startClipInsets = [self getClipInsets:startLayout visibleLayout:startVisibleLayout];
     
     // Get end layout
     RNSharedElementStyle* endStyle = endItem.style;
     CGRect endLayout = endStyle ? [self normalizeLayout:endStyle.layout ancestor:endAncestor] : CGRectZero;
     CGRect endVisibleLayout = endStyle ? [self normalizeLayout:[endItem visibleLayoutForAncestor:endAncestor] ancestor:endAncestor] : CGRectZero;
-    CGRect endContentLayout = endStyle ?  [self normalizeLayout:[endItem contentLayoutForContent:(endItem.content ? endItem.content : startItem.content) contentType:(endItem.content ? endItem.contentType : startItem.contentType)] ancestor:endAncestor] : CGRectZero;
+    CGRect endContentLayout = endStyle ?  [self normalizeLayout:[endItem contentLayoutForContent:(endItem.content ? endItem.content : startItem.content)] ancestor:endAncestor] : CGRectZero;
     UIEdgeInsets endClipInsets = [self getClipInsets:endLayout visibleLayout:endVisibleLayout];
     
     // Get interpolated style & layout
@@ -436,7 +435,7 @@
     _innerClipView.layer.masksToBounds = _resize != RNSharedElementResizeNone;
     
     // Update content
-    UIView* contentView1 = (startItem.contentType == RNSharedElementContentTypeSnapshotView) ? startItem.content : _primaryImageView;
+    UIView* contentView1 = (startItem.content && startItem.content.type == RNSharedElementContentTypeSnapshotView) ? startItem.content.data : _primaryImageView;
     if (contentView1.superview != _innerClipView) [_innerClipView addSubview:contentView1];
     if (_animation == RNSharedElementAnimationMove) {
         
@@ -450,13 +449,13 @@
     }
     else {
         // Update content-view 2
-        UIView* contentView2 = (endItem.contentType == RNSharedElementContentTypeSnapshotView) ? endItem.content : _secondaryImageView;
+        UIView* contentView2 = (endItem.content && endItem.content.type == RNSharedElementContentTypeSnapshotView) ? endItem.content.data : _secondaryImageView;
         if (contentView2.superview != _innerClipView) [_innerClipView addSubview:contentView2];
         
         // In all other cases, animate and interpolate both the start- and
         // end views to look like each other
-        CGRect startContentLayout2 = startStyle ? [RNSharedElementTransitionItem contentLayoutFor:endStyle ? endContentLayout : startContentLayout content:startItem.content contentType:startItem.contentType contentMode:startStyle.contentMode reverse:YES] : CGRectZero;
-        CGRect endContentLayout1 = endStyle ? [RNSharedElementTransitionItem contentLayoutFor:startStyle ? startContentLayout : endContentLayout content:endItem.content contentType:endItem.contentType contentMode:endStyle.contentMode reverse:YES] : CGRectZero;
+        CGRect startContentLayout2 = startStyle ? [RNSharedElementContent layoutForRect:endStyle ? endContentLayout : startContentLayout content:startItem.content contentMode:startStyle.contentMode reverse:YES] : CGRectZero;
+        CGRect endContentLayout1 = endStyle ? [RNSharedElementContent layoutForRect:startStyle ? startContentLayout : endContentLayout content:endItem.content contentMode:endStyle.contentMode reverse:YES] : CGRectZero;
         
         // Calculate interpolated layout
         CGRect startInterpolatedContentLayout = [self getInterpolatedLayout:startContentLayout layout2:startContentLayout2 position:_nodePosition];
@@ -592,7 +591,7 @@
         //NSLog(@"reactSetFrame: %@", NSStringFromCGRect(frame));
         _reactFrameSet = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
-            for (RNSharedElementTransitionItem* item in _items) {
+            for (RNSharedElementTransitionItem* item in self->_items) {
                 if (item.needsLayout) {
                     item.needsLayout = NO;
                     [item.node requestStyle:self];
@@ -602,7 +601,7 @@
                     [item.node requestContent:self];
                 }
             }
-            _initialLayoutPassCompleted = YES;
+            self->_initialLayoutPassCompleted = YES;
             [self updateStyle];
             [self updateNodeVisibility];
         });

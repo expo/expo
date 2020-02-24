@@ -17,13 +17,24 @@ Starting in _SDK 33_ projects bootstrapped with the Expo CLI will have web suppo
 
 **Tips**
 
+- Startup faster in web-only mode by running `expo start:web`
 - You can also run `expo start --web` which will start Webpack immediately.
-- If your `app.json` only contains the `"web"` platform then Webpack will startup instead of Metro, this is the same as running `expo start --web-only`
 - Toggle the production environment variable with **`--no-dev`**. This will persist commands so remember to turn it off with **`--dev`**.
+- Test protected APIs like Camera and Sharing by using the `--https` or `--no-https` flags.
 
-## Create React App & React Native CLI
+## Frameworks
 
-Expo Unimodules aren't bound to the Expo SDK, you can use them in _any_ react.js project. Here is how to use the web portion of the modules in a project bootstrapped with either the React Native CLI (`react-native init`) or Create React App ([`create-react-app`](https://github.com/facebook/create-react-app)).
+The Expo Unimodules and dev-tools are highly composable and can be used in _any_ **react.js** project. Here are a few popular integrations:
+
+- [**Next.js:**](https://dev.to/evanbacon/next-js-expo-and-react-native-for-web-3kd9) Server Side Render your website and get incredible SEO.
+- [**Gatsby:**](https://dev.to/evanbacon/gatsby-react-native-for-web-expo-2kgc) Prerender your static-site.
+- [**Electron:**](https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36) Build native desktop apps for OSX, Windows, and Linux.
+- [**Storybook:**](https://github.com/expo/examples/tree/master/with-storybook) Create and test beautiful design languages.
+- [**React Native Community CLI (react-native init)**](https://github.com/expo/examples/tree/master/with-web-in-react-native-community-cli)
+
+### Create React App & React Native CLI
+
+ Here is how to use the web portion of the modules in a project bootstrapped with either the React Native CLI (`react-native init`) or Create React App ([`create-react-app`](https://github.com/facebook/create-react-app)).
 
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
 - Add web dependencies: `yarn add react-native-web react-dom expo`
@@ -106,7 +117,6 @@ To use Expo for both web and native:
 - Delete the `index.js` because `AppEntry` uses the `App.js` file in your root directory as the main component.
   - You don't need to invoke `ReactDOM.render` or `AppRegistry.registerComponent` because `AppEntry` will do this for you for each platform.
 
-Are we missing something here? Let us know on our [forums][forums] or on our [feature requests board][canny].
 
 [rnw]: https://github.com/necolas/react-native-web/
 [forums]: http://forums.expo.io/

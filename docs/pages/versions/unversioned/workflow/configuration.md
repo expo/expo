@@ -15,15 +15,9 @@ title: Configuration with app.json
 }
 ```
 
-`app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
-
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-## ExpoKit
-
-While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
-
-This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
+> 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit).
 
 ## Properties
 
@@ -43,6 +37,10 @@ A short description of what your app is and why it is great.
 
 **Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
 
+### `"backgroundColor"`
+
+The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff'`.
+
 ### `"owner"`
 
 The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
@@ -58,7 +56,7 @@ Valid values: `public`, `unlisted`
 
 ### `"version"`
 
-Your app version. On iOS, this corresponds to `CFBundleShortVersionString`, and the required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode`- read more about how to version your app [here](../../distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
 
 > **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
 
@@ -168,6 +166,7 @@ An array of file glob strings which point to assets that will be bundled within 
 ### `"androidStatusBar"`
 
 Configuration for the status bar on Android.
+For more details please navigate to [Configuring StatusBar](../../guides/configuring-statusbar).
 
 ```javascript
 {
@@ -175,14 +174,27 @@ Configuration for the status bar on Android.
     /*
       Configures the status-bar icons to have a light or dark color.
       Valid values: "light-content", "dark-content".
+      Defaults to "light-content".
     */
-    "barStyle": STRING,
+    "barStyle": "light-content" | "dark-content",
 
     /*
       Specifies the background color of the status bar.
-      Six-character hex color string, e.g., "#000000"
+      Six-character hex color string "#RRGGBB" (e.g. "#000000" for white) or eight-character hex color string "#RRGGBBAA" (e.g. "#00000077" for half-transparent white).
     */
-    "backgroundColor": STRING
+    "backgroundColor": STRING,
+
+    /**
+     * Instructs the system whether status bar should be visible or not.
+     * Defaults to false.
+     */
+    "hidden": BOOLEAN,
+
+    /**
+     * Specifies whether status bar should be translucent (whether it should be treated as a block element that will take up space on the device's screen and limit space available for the rest of your app to be rendered, or be treated as an element with "position = absolute" that is rendered above your app's content).
+     * Defaults to true (default iOS behavior - iOS status bar cannot be set translucent by the system).
+     */
+    "translucent": BOOLEAN
   }
 }
 ```
@@ -195,10 +207,13 @@ Configuration for the bottom navigation bar on Android.
 {
   "androidNavigationBar": {
     /*
-      Determines whether to show or hide the bottom navigation bar.
-      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+      Determines how and when the navigation bar is shown. For details, see https://developer.android.com/training/system-ui/immersive
+      "leanback" results in the navigation bar being hidden until the first touch gesture is registered
+      "immersive" results in the navigation bar being hidden until the user swipes up from the edge where the navigation bar is hidden
+      "sticky-immersive" is identical to "immersive" except that the navigation bar will be semi-transparent and will be hidden again after a short period of time
+      Valid values: "leanback", "immersive", "sticky-immersive"
     */
-    "visible": BOOLEAN,
+    "visible": STRING,
     /*
       Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
       Valid values: "light-content", "dark-content".
@@ -283,13 +298,7 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING,
-
-    /*
-     The URL-safe base64-encoded VAPID public key used for web push notifications.
-     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
-    */
-    "vapidPublicKey": STRING
+    "androidCollapsedTitle": STRING
   }
 }
 ```
@@ -377,6 +386,11 @@ Configuration for how and when the app should request OTA JavaScript updates
     "buildNumber": STRING,
 
     /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
+
+    /*
       Local path or remote URL to an image to use for your app's
       icon on iOS. If specified, this overrides the top-level "icon" key.
 
@@ -434,6 +448,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "associatedDomains": ARRAY,
+
+    /*
+      Location of the GoogleService-Info.plist file for configuring Firebase.
+    */
+    "googleServicesFile": STRING,
 
     /*
       A boolean indicating if the app uses iCloud Storage for DocumentPicker.
@@ -596,6 +615,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: this is set in `android/app/build.gradle`.
     */
     "versionCode": NUMBER,
+
+    /*
+      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+    */
+    "backgroundColor": STRING,
 
     /*
       Local path or remote url to an image to use for your app's icon on Android.
@@ -877,3 +901,40 @@ Configuration for how and when the app should request OTA JavaScript updates
   }
 }
 ```
+
+### `"web"`
+
+```javascript
+{
+  "web": {
+
+    /*
+      Extra web-specific configuration options.
+    */
+    "config": {
+
+      /*
+        Firebase web configuration.
+        Used by the expo-firebase packages on both web and native.
+        See here: https://firebase.google.com/docs/reference/js/firebase.html#initializeapp
+      */
+      "firebase": {
+        "apiKey": STRING,
+        "authDomain": STRING,
+        "databaseURL": STRING,
+        "projectId": STRING,
+        "storageBucket": STRING,
+        "messagingSenderId": STRING,
+        "appId": STRING,
+        "measurementId": STRING
+      }
+    }
+  }
+}
+```
+
+## ExpoKit
+
+While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
+
+This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.

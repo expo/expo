@@ -1,138 +1,173 @@
 PODS:
   - Amplitude-iOS (4.7.1)
   - Analytics (3.7.0)
-  - AppAuth (1.2.0):
-    - AppAuth/Core (= 1.2.0)
-    - AppAuth/ExternalUserAgent (= 1.2.0)
-  - AppAuth/Core (1.2.0)
-  - AppAuth/ExternalUserAgent (1.2.0)
+  - AppAuth (1.3.0):
+    - AppAuth/Core (= 1.3.0)
+    - AppAuth/ExternalUserAgent (= 1.3.0)
+  - AppAuth/Core (1.3.0)
+  - AppAuth/ExternalUserAgent (1.3.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAmplitude (7.0.0):
+  - EXAmplitude (8.0.0):
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
-  - EXAppAuth (7.0.0):
+  - EXAppAuth (8.0.0):
     - AppAuth (~> 1.2)
     - UMCore
-  - EXApplication (1.0.0):
+  - EXApplication (2.0.0):
     - UMCore
-  - EXAppLoaderProvider (7.0.0)
-  - EXAV (8.0.0-rc.1):
+  - EXAV (8.0.0):
     - UMCore
+    - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXBarCodeScanner (7.0.0):
+  - EXBackgroundFetch (8.0.0):
+    - UMCore
+    - UMTaskManagerInterface
+  - EXBarCodeScanner (8.0.0):
     - UMCore
     - UMImageLoaderInterface
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBattery (1.0.0):
+  - EXBattery (2.0.0):
     - UMCore
   - EXBluetooth (1.0.0):
     - UMCore
-  - EXBlur (7.0.0):
+  - EXBlur (8.0.0):
     - UMCore
-  - EXBrightness (7.0.0):
-    - UMCore
-    - UMPermissionsInterface
-  - EXCalendar (7.0.0):
+  - EXBrightness (8.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXCellular (1.0.0):
+  - EXCalendar (8.0.0):
     - UMCore
-  - EXConstants (8.0.0-rc.1):
+    - UMPermissionsInterface
+  - EXCellular (2.0.0):
+    - UMCore
+  - EXConstants (8.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (7.0.0):
+  - EXContacts (8.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXCrypto (7.0.0):
+  - EXCrypto (8.0.0):
     - UMCore
-  - EXDevice (1.0.0):
+  - EXDevice (2.0.0):
     - UMCore
-  - EXDocumentPicker (7.0.0):
+  - EXDocumentPicker (8.0.0):
     - UMCore
     - UMFileSystemInterface
   - EXErrorRecovery (1.0.0):
     - UMCore
-  - EXFileSystem (8.0.0-rc.0):
+  - EXFacebook (8.0.0):
+    - FBSDKCoreKit (~> 5.8.0)
+    - FBSDKLoginKit (~> 5.8.0)
+    - UMConstantsInterface
+    - UMCore
+  - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFont (7.0.0):
+  - EXFirebaseAnalytics (3.0.0):
+    - EXFirebaseCore
+    - Firebase/Core (= 6.14.0)
+    - UMCore
+  - EXFirebaseCore (1.0.0):
+    - Firebase/Core (= 6.14.0)
+    - UMCore
+  - EXFont (8.0.0):
     - UMCore
     - UMFontInterface
-  - EXGL (7.0.0):
-    - EXGL-CPP
+  - EXGL (8.0.0):
+    - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL-CPP (7.0.0):
-    - EXGL-CPP/UEXGL (= 7.0.0)
-  - EXGL-CPP/UEXGL (7.0.0)
-  - EXGoogleSignIn (7.0.0):
-    - GoogleSignIn (~> 5.0)
+  - EXGL_CPP (8.0.0):
+    - EXGL_CPP/EXGLContext (= 8.0.0)
+  - EXGL_CPP/EXGLContext (8.0.0)
+  - EXGoogleSignIn (8.0.0):
+    - GoogleSignIn (~> 5.0.2)
     - UMCore
-  - EXHaptics (8.0.0-rc.0):
+  - EXHaptics (8.0.0):
     - UMCore
-  - EXImageManipulator (8.0.0-rc.0):
+  - EXImageLoader (1.0.0):
+    - React-Core
+    - UMCore
+    - UMImageLoaderInterface
+  - EXImageManipulator (8.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (7.0.0):
+  - EXImagePicker (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXKeepAwake (7.0.0):
+    - UMPermissionsInterface
+  - EXKeepAwake (8.0.0):
     - UMCore
-  - EXLinearGradient (7.0.0):
+  - EXLinearGradient (8.0.0):
     - UMCore
-  - EXLocalAuthentication (7.0.0):
+  - EXLocalAuthentication (8.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXLocalization (7.0.0):
+  - EXLocalization (8.0.0):
     - UMCore
-  - EXMailComposer (7.0.0):
-    - UMCore
-    - UMFileSystemInterface
-  - EXMediaLibrary (8.0.0-rc.0):
+  - EXLocation (8.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXNetwork (1.0.0):
-    - UMCore
-  - EXPermissions (8.0.0-rc.0):
-    - UMCore
-    - UMPermissionsInterface
-  - EXPrint (7.0.0):
+    - UMTaskManagerInterface
+  - EXMailComposer (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXRandom (7.0.0):
+  - EXMediaLibrary (8.0.0):
     - UMCore
-  - EXSecureStore (7.0.0):
+    - UMPermissionsInterface
+  - EXNetwork (2.0.0):
     - UMCore
-  - EXSegment (7.0.0):
+  - EXNotifications (1.0.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXPermissions (8.0.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXPrint (8.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXRandom (8.0.0):
+    - UMCore
+  - EXScreenOrientation (1.0.0):
+    - React-Core
+    - UMCore
+  - EXSecureStore (8.0.0):
+    - UMCore
+  - EXSegment (8.0.0):
     - Analytics (~> 3.7)
     - UMConstantsInterface
     - UMCore
-  - EXSensors (7.0.0):
+  - EXSensors (8.0.0):
     - UMCore
     - UMSensorsInterface
-  - EXSharing (7.0.0):
+  - EXSharing (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXSMS (7.0.0):
+  - EXSMS (8.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXSpeech (7.0.0):
+  - EXSpeech (8.0.0):
     - UMCore
-  - EXSQLite (7.0.0):
+  - EXSQLite (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXStoreReview (1.0.0):
+  - EXStoreReview (2.0.0):
     - UMCore
+  - EXTaskManager (8.0.0):
+    - UMAppLoader
+    - UMConstantsInterface
+    - UMCore
+    - UMTaskManagerInterface
   - EXUpdates (0.0.1-rc.0):
     - UMCore
-  - EXWebBrowser (7.0.1):
+  - EXWebBrowser (8.0.0):
     - UMCore
   - FBLazyVector (0.61.4)
   - FBReactNativeSpec (0.61.4):
@@ -142,6 +177,46 @@ PODS:
     - React-Core (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/turbomodule/core (= 0.61.4)
+  - FBSDKCoreKit (5.8.0):
+    - FBSDKCoreKit/Basics (= 5.8.0)
+    - FBSDKCoreKit/Core (= 5.8.0)
+  - FBSDKCoreKit/Basics (5.8.0)
+  - FBSDKCoreKit/Core (5.8.0):
+    - FBSDKCoreKit/Basics
+  - FBSDKLoginKit (5.8.0):
+    - FBSDKLoginKit/Login (= 5.8.0)
+  - FBSDKLoginKit/Login (5.8.0):
+    - FBSDKCoreKit (~> 5.0)
+  - Firebase/Core (6.14.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 6.1.7)
+  - Firebase/CoreOnly (6.14.0):
+    - FirebaseCore (= 6.5.0)
+  - FirebaseAnalytics (6.1.7):
+    - FirebaseCore (~> 6.5)
+    - FirebaseInstanceID (~> 4.2)
+    - GoogleAppMeasurement (= 6.1.7)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
+    - nanopb (= 0.3.9011)
+  - FirebaseCore (6.5.0):
+    - FirebaseCoreDiagnostics (~> 1.0)
+    - FirebaseCoreDiagnosticsInterop (~> 1.0)
+    - GoogleUtilities/Environment (~> 6.4)
+    - GoogleUtilities/Logger (~> 6.4)
+  - FirebaseCoreDiagnostics (1.1.2):
+    - FirebaseCoreDiagnosticsInterop (~> 1.0)
+    - GoogleDataTransportCCTSupport (~> 1.0)
+    - GoogleUtilities/Environment (~> 6.2)
+    - GoogleUtilities/Logger (~> 6.2)
+    - nanopb (~> 0.3.901)
+  - FirebaseCoreDiagnosticsInterop (1.1.0)
+  - FirebaseInstanceID (4.2.8):
+    - FirebaseCore (~> 6.5)
+    - GoogleUtilities/Environment (~> 6.4)
+    - GoogleUtilities/UserDefaults (~> 6.4)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -152,10 +227,38 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - GoogleAppMeasurement (6.1.7):
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
+    - GoogleUtilities/MethodSwizzler (~> 6.0)
+    - GoogleUtilities/Network (~> 6.0)
+    - "GoogleUtilities/NSData+zlib (~> 6.0)"
+    - nanopb (= 0.3.9011)
+  - GoogleDataTransport (3.2.0)
+  - GoogleDataTransportCCTSupport (1.2.3):
+    - GoogleDataTransport (~> 3.2)
+    - nanopb (~> 0.3.901)
   - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleUtilities/AppDelegateSwizzler (6.4.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (6.4.0)
+  - GoogleUtilities/Logger (6.4.0):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (6.4.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (6.4.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (6.4.0)"
+  - GoogleUtilities/Reachability (6.4.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (6.4.0):
+    - GoogleUtilities/Logger
   - GTMAppAuth (1.0.0):
     - AppAuth/Core (~> 1.0)
     - GTMSessionFetcher (~> 1.1)
@@ -164,6 +267,11 @@ PODS:
   - GTMSessionFetcher/Core (1.3.0)
   - GTMSessionFetcher/Full (1.3.0):
     - GTMSessionFetcher/Core (= 1.3.0)
+  - nanopb (0.3.9011):
+    - nanopb/decode (= 0.3.9011)
+    - nanopb/encode (= 0.3.9011)
+  - nanopb/decode (0.3.9011)
+  - nanopb/encode (0.3.9011)
   - RCTRequired (0.61.4)
   - RCTTypeSafety (0.61.4):
     - FBLazyVector (= 0.61.4)
@@ -327,7 +435,9 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
   - React-jsinspector (0.61.4)
-  - react-native-safe-area-context (0.6.0):
+  - react-native-appearance (0.3.2):
+    - React
+  - react-native-safe-area-context (0.7.3):
     - React
   - React-RCTActionSheet (0.61.4):
     - React-Core/RCTActionSheetHeaders (= 0.61.4)
@@ -364,23 +474,26 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - RNGestureHandler (1.5.0):
+  - RNGestureHandler (1.6.0):
     - React
-  - RNReanimated (1.4.0):
+  - RNReanimated (1.7.0):
     - React
-  - UMBarCodeScannerInterface (4.0.0)
-  - UMCameraInterface (4.0.0)
-  - UMConstantsInterface (4.0.0)
-  - UMCore (5.0.0-rc.0)
-  - UMFileSystemInterface (4.0.0)
-  - UMFontInterface (4.0.0)
-  - UMImageLoaderInterface (5.0.0-rc.0)
-  - UMPermissionsInterface (4.0.0)
-  - UMReactNativeAdapter (5.0.0-rc.0):
+  - UMAppLoader (1.0.0)
+  - UMBarCodeScannerInterface (5.0.0)
+  - UMCameraInterface (5.0.0)
+  - UMConstantsInterface (5.0.0)
+  - UMCore (5.0.0)
+  - UMFileSystemInterface (5.0.0)
+  - UMFontInterface (5.0.0)
+  - UMImageLoaderInterface (5.0.0)
+  - UMPermissionsInterface (5.0.0):
+    - UMCore
+  - UMReactNativeAdapter (5.0.0):
     - React-Core
     - UMCore
     - UMFontInterface
-  - UMSensorsInterface (4.0.0)
+  - UMSensorsInterface (5.0.0)
+  - UMTaskManagerInterface (5.0.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -393,8 +506,8 @@ DEPENDENCIES:
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
-  - EXAppLoaderProvider (from `../../../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
+  - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXBattery (from `../../../packages/expo-battery/ios`)
   - EXBluetooth (from `../../../packages/expo-bluetooth/ios`)
@@ -408,24 +521,31 @@ DEPENDENCIES:
   - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
+  - EXFacebook (from `../../../packages/expo-facebook/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
+  - EXFirebaseAnalytics (from `../../../packages/expo-firebase-analytics/ios`)
+  - EXFirebaseCore (from `../../../packages/expo-firebase-core/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXGL (from `../../../packages/expo-gl/ios`)
-  - EXGL-CPP (from `../../../packages/expo-gl-cpp/cpp`)
+  - EXGL_CPP (from `../../../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../../../packages/expo-haptics/ios`)
+  - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../../../packages/expo-image-picker/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../../../packages/expo-localization/ios`)
+  - EXLocation (from `../../../packages/expo-location/ios`)
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
+  - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
+  - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - EXSecureStore (from `../../../packages/expo-secure-store/ios`)
   - EXSegment (from `../../../packages/expo-analytics-segment/ios`)
   - EXSensors (from `../../../packages/expo-sensors/ios`)
@@ -434,6 +554,7 @@ DEPENDENCIES:
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
+  - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../../../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -451,6 +572,7 @@ DEPENDENCIES:
   - React-jsi (from `../../../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../../../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../react-native-lab/react-native/ReactCommon/jsinspector`)
+  - react-native-appearance (from `../../../node_modules/react-native-appearance`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React-RCTActionSheet (from `../../../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../../react-native-lab/react-native/Libraries/NativeAnimation`)
@@ -463,8 +585,9 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../../../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
-  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
-  - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
+  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
+  - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
@@ -475,6 +598,7 @@ DEPENDENCIES:
   - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../../../packages/unimodules-sensors-interface/ios`)
+  - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -483,152 +607,135 @@ SPEC REPOS:
     - Analytics
     - AppAuth
     - boost-for-react-native
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseCoreDiagnostics
+    - FirebaseCoreDiagnosticsInterop
+    - FirebaseInstanceID
+    - GoogleAppMeasurement
+    - GoogleDataTransport
+    - GoogleDataTransportCCTSupport
     - GoogleSignIn
+    - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
+    - nanopb
     - ZXingObjC
 
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAmplitude:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-analytics-amplitude/ios"
+    :path: "../../../packages/expo-analytics-amplitude/ios"
   EXAppAuth:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-app-auth/ios"
+    :path: "../../../packages/expo-app-auth/ios"
   EXApplication:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-application/ios"
-  EXAppLoaderProvider:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-app-loader-provider/ios"
+    :path: "../../../packages/expo-application/ios"
   EXAV:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-av/ios"
+    :path: "../../../packages/expo-av/ios"
+  EXBackgroundFetch:
+    :path: "../../../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-barcode-scanner/ios"
+    :path: "../../../packages/expo-barcode-scanner/ios"
   EXBattery:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-battery/ios"
+    :path: "../../../packages/expo-battery/ios"
   EXBluetooth:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-bluetooth/ios"
+    :path: "../../../packages/expo-bluetooth/ios"
   EXBlur:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-blur/ios"
+    :path: "../../../packages/expo-blur/ios"
   EXBrightness:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-brightness/ios"
+    :path: "../../../packages/expo-brightness/ios"
   EXCalendar:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-calendar/ios"
+    :path: "../../../packages/expo-calendar/ios"
   EXCellular:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-cellular/ios"
+    :path: "../../../packages/expo-cellular/ios"
   EXConstants:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-constants/ios"
+    :path: "../../../packages/expo-constants/ios"
   EXContacts:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-contacts/ios"
+    :path: "../../../packages/expo-contacts/ios"
   EXCrypto:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-crypto/ios"
+    :path: "../../../packages/expo-crypto/ios"
   EXDevice:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-device/ios"
+    :path: "../../../packages/expo-device/ios"
   EXDocumentPicker:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-document-picker/ios"
+    :path: "../../../packages/expo-document-picker/ios"
   EXErrorRecovery:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-error-recovery/ios"
+    :path: "../../../packages/expo-error-recovery/ios"
+  EXFacebook:
+    :path: "../../../packages/expo-facebook/ios"
   EXFileSystem:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-file-system/ios"
+    :path: "../../../packages/expo-file-system/ios"
+  EXFirebaseAnalytics:
+    :path: "../../../packages/expo-firebase-analytics/ios"
+  EXFirebaseCore:
+    :path: "../../../packages/expo-firebase-core/ios"
   EXFont:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-font/ios"
+    :path: "../../../packages/expo-font/ios"
   EXGL:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-gl/ios"
-  EXGL-CPP:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-gl-cpp/cpp"
+    :path: "../../../packages/expo-gl/ios"
+  EXGL_CPP:
+    :path: "../../../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-google-sign-in/ios"
+    :path: "../../../packages/expo-google-sign-in/ios"
   EXHaptics:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-haptics/ios"
+    :path: "../../../packages/expo-haptics/ios"
+  EXImageLoader:
+    :path: "../../../packages/expo-image-loader/ios"
   EXImageManipulator:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-image-manipulator/ios"
+    :path: "../../../packages/expo-image-manipulator/ios"
   EXImagePicker:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-image-picker/ios"
+    :path: "../../../packages/expo-image-picker/ios"
   EXKeepAwake:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-keep-awake/ios"
+    :path: "../../../packages/expo-keep-awake/ios"
   EXLinearGradient:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-linear-gradient/ios"
+    :path: "../../../packages/expo-linear-gradient/ios"
   EXLocalAuthentication:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-local-authentication/ios"
+    :path: "../../../packages/expo-local-authentication/ios"
   EXLocalization:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-localization/ios"
+    :path: "../../../packages/expo-localization/ios"
+  EXLocation:
+    :path: "../../../packages/expo-location/ios"
   EXMailComposer:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-mail-composer/ios"
+    :path: "../../../packages/expo-mail-composer/ios"
   EXMediaLibrary:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-media-library/ios"
+    :path: "../../../packages/expo-media-library/ios"
   EXNetwork:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-network/ios"
+    :path: "../../../packages/expo-network/ios"
+  EXNotifications:
+    :path: "../../../packages/expo-notifications/ios"
   EXPermissions:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-permissions/ios"
+    :path: "../../../packages/expo-permissions/ios"
   EXPrint:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-print/ios"
+    :path: "../../../packages/expo-print/ios"
   EXRandom:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-random/ios"
+    :path: "../../../packages/expo-random/ios"
+  EXScreenOrientation:
+    :path: "../../../packages/expo-screen-orientation/ios"
   EXSecureStore:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-secure-store/ios"
+    :path: "../../../packages/expo-secure-store/ios"
   EXSegment:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-analytics-segment/ios"
+    :path: "../../../packages/expo-analytics-segment/ios"
   EXSensors:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-sensors/ios"
+    :path: "../../../packages/expo-sensors/ios"
   EXSharing:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-sharing/ios"
+    :path: "../../../packages/expo-sharing/ios"
   EXSMS:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-sms/ios"
+    :path: "../../../packages/expo-sms/ios"
   EXSpeech:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-speech/ios"
+    :path: "../../../packages/expo-speech/ios"
   EXSQLite:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-sqlite/ios"
+    :path: "../../../packages/expo-sqlite/ios"
   EXStoreReview:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-store-review/ios"
+    :path: "../../../packages/expo-store-review/ios"
+  EXTaskManager:
+    :path: "../../../packages/expo-task-manager/ios"
   EXUpdates:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-updates/ios"
+    :path: "../../../packages/expo-updates/ios"
   EXWebBrowser:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-web-browser/ios"
+    :path: "../../../packages/expo-web-browser/ios"
   FBLazyVector:
     :path: "../../../react-native-lab/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -655,8 +762,10 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../../../react-native-lab/react-native/ReactCommon/jsinspector"
+  react-native-appearance:
+    :path: "../../../node_modules/react-native-appearance"
   react-native-safe-area-context:
-    :podspec: "../../../node_modules/react-native-safe-area-context"
+    :path: "../../../node_modules/react-native-safe-area-context"
   React-RCTActionSheet:
     :path: "../../../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -678,101 +787,116 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../../../react-native-lab/react-native/ReactCommon"
   RNGestureHandler:
-    :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
+    :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
-    :podspec: "../../../node_modules/react-native-reanimated/RNReanimated.podspec"
+    :path: "../../../node_modules/react-native-reanimated"
+  UMAppLoader:
+    :path: "../../../packages/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-barcode-scanner-interface/ios"
+    :path: "../../../packages/unimodules-barcode-scanner-interface/ios"
   UMCameraInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-camera-interface/ios"
+    :path: "../../../packages/unimodules-camera-interface/ios"
   UMConstantsInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-constants-interface/ios"
+    :path: "../../../packages/unimodules-constants-interface/ios"
   UMCore:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/@unimodules/core/ios"
+    :path: "../../../packages/@unimodules/core/ios"
   UMFileSystemInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-file-system-interface/ios"
+    :path: "../../../packages/unimodules-file-system-interface/ios"
   UMFontInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-font-interface/ios"
+    :path: "../../../packages/unimodules-font-interface/ios"
   UMImageLoaderInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-image-loader-interface/ios"
+    :path: "../../../packages/unimodules-image-loader-interface/ios"
   UMPermissionsInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-permissions-interface/ios"
+    :path: "../../../packages/unimodules-permissions-interface/ios"
   UMReactNativeAdapter:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/@unimodules/react-native-adapter/ios"
+    :path: "../../../packages/@unimodules/react-native-adapter/ios"
   UMSensorsInterface:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/unimodules-sensors-interface/ios"
+    :path: "../../../packages/unimodules-sensors-interface/ios"
+  UMTaskManagerInterface:
+    :path: "../../../packages/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
-  AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
+  AppAuth: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
-  EXAppAuth: f133ab0dea7aa4504fd3ab1f37625e902f9d990f
-  EXApplication: af8850de5a2f8df18e94d05281a628e823699485
-  EXAppLoaderProvider: 5d348813a9cf09b03bbe5b8b55437bc1bfbddbd1
-  EXAV: 2fead9acfc39b4946ba9228d3a199e0704aec65d
-  EXBarCodeScanner: af6a390c5bfa0fca2b4372f9059cfa935855b85c
-  EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
+  EXAmplitude: 4ec33f8a9c1ba37797449870b4da40dbbbfbab8d
+  EXAppAuth: bd859a5717613e72cc3cfbc2128e04b4f0e0ff5a
+  EXApplication: 02dc93a122db1b173b0d91aa642e1c4f17511dd2
+  EXAV: cef471e07cfb7f303a1352af7293bf07e5c2b183
+  EXBackgroundFetch: a99eac546ec3cf81701fdc739755c76e4a3e0619
+  EXBarCodeScanner: fb53c68abafbf95b8db10dc3061c548f3495f2ee
+  EXBattery: 7db3342b3dd86ca76420af9afb49d44ac39e0eec
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
-  EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
-  EXBrightness: e43f02490c1dd40cc023a17363f48f90aa678301
-  EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
-  EXCellular: d9e0853ddc346bab7aa9fd96371b6ce4efdf7639
-  EXConstants: 372356a14e0c4610783252c077173370b1fb0b12
-  EXContacts: 5ec0cb83ea2ea68694eac97ddf2a5cfefb8e2286
-  EXCrypto: bfcc3236abe7a6f16017f79129f3dd85f9732778
-  EXDevice: fd3b1b55f2547b7d51e5e093569a1fb678cce946
-  EXDocumentPicker: 15acaac45e3c4060eff044cddceb6a8494fb58c1
+  EXBlur: d1604f66f89a9414f5ee65dfb23874437c1bb147
+  EXBrightness: 6e98b7eaca0bcfcd408253674f1761920391101b
+  EXCalendar: 6c59b64ce35df3c2e7f4c7dd44e57b88961428fa
+  EXCellular: ab9e5e461dfbde28f2d92485ad7ca5ae82874831
+  EXConstants: 4051b16c17ef3defa03c541d42811dc92b249146
+  EXContacts: 95e26905d2b552cc588ca63936fa5543880d9c27
+  EXCrypto: e3e85e9f48e37cf9018ed162c86b101f8a34e2c7
+  EXDevice: 106e1250d41a41f7f32f7ec3678aaf755733e8cc
+  EXDocumentPicker: 25d232d804087bd6fe88a74d7e582b295e5e69dd
   EXErrorRecovery: d36db99ec6a3808f313f01b0890eb443796dd1c2
-  EXFileSystem: 6ecb14b5c5557a5208d4474487d2eb1edef6892c
-  EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
-  EXGL: 4b21885aee37fb5f5230e05a62bba480fa886a3d
-  EXGL-CPP: da3c4f31ff50a34bd8184fadbf409806281b103d
-  EXGoogleSignIn: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
-  EXHaptics: 51c25ffefdda66b15feb0b0ac6b1615e2f401f16
-  EXImageManipulator: 78bfe480fdf7a7bb37913a387caef360e31a86dd
-  EXImagePicker: 63549baa9487f4b99c03163c5639ddede4c7be4e
-  EXKeepAwake: d4caf9a1a7691126ade4ca0b76592e93250a8f29
-  EXLinearGradient: ebfd46cb98a46330213e4945b96227d98f624054
-  EXLocalAuthentication: 3cf0ceb240c45dab0a0951687b95204f41b52cc9
-  EXLocalization: 3be3ee21f5af16cfecc1fbb33cac495f444b3ccc
-  EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
-  EXMediaLibrary: afa771d4df578966a65a3cd05c0a2f0f3b17441f
-  EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXPermissions: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
-  EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
-  EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
-  EXSecureStore: bf94958c936b2b9e3813509d2e7e6b8a263d40df
-  EXSegment: 4e56b4e62e245060b7b8fccaca389026e482ec90
-  EXSensors: 4e5fc288684fad094d16f6285b583b9194113bad
-  EXSharing: 6151a6e91b52675ac0cc30be64021c96d1811b1a
-  EXSMS: c5df5f35228de7f1f4b16da5e53f48af63b768e4
-  EXSpeech: 84b9f18230204d42573472b569b5fc1c592de803
-  EXSQLite: ddc1e6727bd7d36e649f07590fe3ae5511c1f039
-  EXStoreReview: 240aa065fa7674a68a73036029f20d6629ca31ad
+  EXFacebook: c10f77ea97b3003c29b4f0a49942acc1ba8330b5
+  EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
+  EXFirebaseAnalytics: b9efb5317c071cb10905d5a82734407e8fc7fd43
+  EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
+  EXFont: 6187b5ab46ee578d5f8e7f2ea092752e78772235
+  EXGL: 3add8ba2c89377285f57cda493d4bc50939b5300
+  EXGL_CPP: bcc2dbd197f3b2544fc8e4a62ea84be49242bef0
+  EXGoogleSignIn: a1b520381af8954aa3e9f1e84407c05b016ae479
+  EXHaptics: 24438d930bd1fbef68e9eec47facea5dc2dab8a9
+  EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
+  EXImageManipulator: 61b3def86d64350c7413c6a4ea5aacaef58211eb
+  EXImagePicker: aecd617c31562f41e85a0770bfce51a8b9d58bd1
+  EXKeepAwake: 66e9f80b6d129633725a0e42f8d285c229876811
+  EXLinearGradient: 75f302f9d6484267a3f6d3252df2e7a5f00e716a
+  EXLocalAuthentication: a6a7ca4285c2440a697f356cb529bf5ca2b83edd
+  EXLocalization: 6a3ec1e9dda2ec9ba9dcc4a29dd840e5e950115e
+  EXLocation: 3c75d012ca92eed94d4338778d79c49d1252393a
+  EXMailComposer: b9be58adaabb860fc8b722204ce27b33c7da5aad
+  EXMediaLibrary: 9281707de8f95cc391d242b614f493ab781030fa
+  EXNetwork: a52f713ced4b05a2634eb88a1f1f8678fcb8b69c
+  EXNotifications: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
+  EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
+  EXPrint: b20aef0e774d96e0ea6688b97d9e0c1d268b95ae
+  EXRandom: 3a6f6dce1997a40a7fc3bb00d18eabc380c51c2e
+  EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
+  EXSecureStore: 1448b90d665c9400aaaf6655fccb464da14698f6
+  EXSegment: d1f9b468c14c70b8dacad0730bb9dffaf2452010
+  EXSensors: 3f89e58576f6fd2d529b9f64eb98fd325e60fdb8
+  EXSharing: 5c9aa8f3cc1c117de74e50ccef862c52f57af2d7
+  EXSMS: 6b67daeb76b759934f4fae68437a0132570ddb5c
+  EXSpeech: 3f7d29b3da9283637176f0fd8dbb1e9da59b2741
+  EXSQLite: 220226a354912b100dfe913f5fe6f31762c8927e
+  EXStoreReview: 6fc278b9e50805ce3f7a2b9f15b5f0addaa21b90
+  EXTaskManager: 46f97c9cf14cc372001cae8710e836d54f0f5a35
   EXUpdates: 4bb4c813dac48562f9640b5cb7c8283a60b0e68b
-  EXWebBrowser: 18924c3d2a3a1aa95d413672f058beff589c80f4
+  EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
   FBReactNativeSpec: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
+  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+  FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
+  Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
+  FirebaseAnalytics: f68b9f3f1241385129ae0a83b63627fc420c05e5
+  FirebaseCore: 632e05cc5e1199d9147122c16d92305eb04c34bd
+  FirebaseCoreDiagnostics: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+  FirebaseCoreDiagnosticsInterop: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+  FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
+  GoogleDataTransport: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+  GoogleDataTransportCCTSupport: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
+  GoogleUtilities: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
+  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   RCTRequired: f3b3fb6f4723e8e52facb229d0c75fdc76773849
   RCTTypeSafety: 2ec60de6abb1db050b56ecc4b60188026078fd10
   React: 10e0130b57e55a7cd8c3dee37c1261102ce295f4
@@ -782,7 +906,8 @@ SPEC CHECKSUMS:
   React-jsi: ca921f4041505f9d5197139b2d09eeb020bb12e8
   React-jsiexecutor: 8dfb73b987afa9324e4009bdce62a18ce23d983c
   React-jsinspector: d15478d0a8ada19864aa4d1cc1c697b41b3fa92f
-  react-native-safe-area-context: d288138da2c800caa111f9352e9333f186a06ead
+  react-native-appearance: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
+  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   React-RCTActionSheet: 7369b7c85f99b6299491333affd9f01f5a130c22
   React-RCTAnimation: d07be15b2bd1d06d89417eb0343f98ffd2b099a7
   React-RCTBlob: 8e0b23d95c9baa98f6b0e127e07666aaafd96c34
@@ -793,21 +918,23 @@ SPEC CHECKSUMS:
   React-RCTText: 21934e0a51d522abcd0a275407e80af45d6fd9ec
   React-RCTVibration: 0f76400ee3cec6edb9c125da49fed279340d145a
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
-  RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
-  UMBarCodeScannerInterface: d5a6fdc98ed6241225b0a8432a7f4e2b397668bc
-  UMCameraInterface: 68870a3197fee85bd5afca5609ba4a5b7257d19d
-  UMConstantsInterface: d25b8e8887ca7aaf568c06caf08f4d40734ee4ef
-  UMCore: f621f9b27fea8ef661506b507f3a61ee3034cdee
-  UMFileSystemInterface: aadb9a67aa6470d7ebc06cf04dc54fee6781ac48
-  UMFontInterface: 2d3c128285086bbed3d2a650f1d698323ef3b25a
-  UMImageLoaderInterface: ea8fb13bd906a5473f71e33cf6b328905f7d4d59
-  UMPermissionsInterface: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
-  UMReactNativeAdapter: 5c60b27fffb09b29e846f462f1ce06975e69a1b6
-  UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
+  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+  UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
+  UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
+  UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
+  UMConstantsInterface: bda5f8bd3403ad99e663eb3c4da685d063c5653c
+  UMCore: 7ab08669a8bb2e61f557c1fe9784521cb5aa28e3
+  UMFileSystemInterface: 2ed004c9620f43f0b36b33c42ce668500850d6a4
+  UMFontInterface: 24fbc0a02ade6c60ad3ee3e2b5d597c8dcfc3208
+  UMImageLoaderInterface: 3976a14c588341228881ff75970fbabf122efca4
+  UMPermissionsInterface: 0f68a2e35b8951a03fa087e54f33bb2691bbf981
+  UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
+  UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
+  UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: bb25d5fe09ef4f8b117d20168f78980a7bee01f6
+PODFILE CHECKSUM: 162d0da014b56b6eed97501eff5e4f095cef06ea
 
 COCOAPODS: 1.8.4

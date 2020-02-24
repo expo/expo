@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
@@ -42,12 +43,15 @@ export async function loadSingleFontAsync(
 ): Promise<void> {
   const asset = input as Asset;
   if (!asset.downloadAsync) {
-    throw new Error('expo-font: loadSingleFontAsync expected asset of type Asset on native');
+    throw new CodedError(
+      `ERR_FONT_SOURCE`,
+      '`loadSingleFontAsync` expected resource of type `Asset` from expo-asset on native'
+    );
   }
 
   await asset.downloadAsync();
   if (!asset.downloaded) {
-    throw new Error(`Failed to download asset for font "${name}"`);
+    throw new CodedError(`ERR_DOWNLOAD`, `Failed to download asset for font "${name}"`);
   }
   await ExpoFontLoader.loadAsync(getNativeFontName(name), asset.localUri);
 }

@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL-CPP/UEXGL.h>
+#import <EXGL_CPP/UEXGL.h>
 #import <ABI35_0_0EXGL/ABI35_0_0EXGLContext.h>
 #import <ABI35_0_0UMCore/ABI35_0_0UMModuleRegistry.h>
 

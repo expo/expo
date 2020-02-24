@@ -1,12 +1,6 @@
 /* @flow */
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Platform,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,11 +19,8 @@ export default class ProfileScreen extends React.Component {
   static navigationOptions = ({ navigation, theme }) => {
     return {
       title: navigation.getParam('username', 'Profile'),
-      headerRight: navigation.getParam('username') ? (
-        <OptionsButton />
-      ) : (
-        <UserSettingsButton theme={theme} />
-      ),
+      headerRight: () =>
+        navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton theme={theme} />,
     };
   };
 

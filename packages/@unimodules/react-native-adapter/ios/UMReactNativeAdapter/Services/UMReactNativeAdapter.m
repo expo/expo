@@ -6,7 +6,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
@@ -36,7 +35,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider), @protocol(UMImageLoaderInterface)];
+  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider)];
 }
 
 # pragma mark - Lifecycle methods
@@ -170,24 +169,14 @@ UM_REGISTER_MODULE();
 {
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
-  } else { 
+  } else if (_bridge.runtime) {
     // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
     // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
     // WARNING: This is temporary solution that may break with new react-native releases.
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
   }
-}
-
-# pragma mark - UMImageLoader
-
-- (void)loadImageForURL:(NSURL *)imageURL
-      completionHandler:(UMImageLoaderCompletionBlock)completionHandler
-{
-   [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                       callback:^(NSError *error, UIImage *loadedImage) {
-                                         completionHandler(error, loadedImage);
-                                       }];
+  return nil;
 }
 
 # pragma mark - App state observing

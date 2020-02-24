@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
 export default {
@@ -65,7 +66,7 @@ export default {
       voiceURI: voice.voiceURI,
     }));
   },
-  async isSpeaking(): Promise<Boolean> {
+  async isSpeaking(): Promise<boolean> {
     return window.speechSynthesis.speaking;
   },
   async stop(): Promise<void> {

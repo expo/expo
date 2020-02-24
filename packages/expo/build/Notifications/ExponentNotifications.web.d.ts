@@ -14,7 +14,9 @@ declare const _default: {
     getExponentPushTokenAsync(): Promise<string>;
     getDevicePushTokenAsync(): Promise<{
         type: string;
-        data: Object;
+        data: object;
     }>;
+    getBadgeNumberAsync(): Promise<number>;
+    setBadgeNumberAsync(badgeNumber: number): Promise<void>;
 };
 export default _default;

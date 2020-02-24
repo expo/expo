@@ -3,15 +3,19 @@ import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import xcode from 'xcode';
+import semver from 'semver';
+import inquirer from 'inquirer';
 import glob from 'glob-promise';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
+import getPackageViewFromRegistryAsync, { PackageViewType } from '../utils/getPackageViewFromRegistryAsync';
 
 interface ActionOptions {
   list: boolean;
+  listOutdated: boolean;
   module: string;
   platform: 'ios' | 'android' | 'all';
   commit: string;
@@ -47,7 +51,7 @@ const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNati
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
-    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-gesture-handler.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -67,9 +71,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
     ],
+    warnings: [
+      `NOTE: Any files in ${chalk.magenta(
+        'com.facebook.react'
+      )} will not be updated -- you'll need to add these to expoview manually!`,
+    ],
   },
   'react-native-reanimated': {
-    repoUrl: 'https://github.com/kmagiera/react-native-reanimated.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-reanimated.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -86,11 +95,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     warnings: [
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
-      )} will not be updated -- you'll need to add these to ReactAndroid manually!`,
+      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-screens': {
-    repoUrl: 'https://github.com/kmagiera/react-native-screens.git',
+    repoUrl: 'https://github.com/software-mansion/react-native-screens.git',
     installableInManagedApps: true,
     semverPrefix: '~',
     steps: [
@@ -112,9 +121,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
         targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'com.reactlibrary',
+        sourceAndroidPackage: 'io.expo.appearance',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
@@ -211,9 +220,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-netinfo': {
+  '@react-native-community/netinfo': {
     repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    packageName: '@react-native-community/netinfo',
     installableInManagedApps: true,
     steps: [
       {
@@ -268,9 +276,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       ),
     ],
   },
-  'react-native-datetimepicker': {
+  '@react-native-community/datetimepicker': {
     repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-    packageName: '@react-native-community/datetimepicker',
     installableInManagedApps: true,
     steps: [
       {
@@ -283,9 +290,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-masked-view': {
+  '@react-native-community/masked-view': {
     repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
-    packageName: '@react-native-community/masked-view',
     installableInManagedApps: true,
     steps: [
       {
@@ -298,9 +304,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       }
     ],
   },
-  'react-native-viewpager': {
+  '@react-native-community/viewpager': {
     repoUrl: 'https://github.com/react-native-community/react-native-viewpager',
-    packageName: '@react-native-community/viewpager',
     installableInManagedApps: true,
     steps: [
       {
@@ -315,7 +320,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
-    packageName: 'react-native-shared-element',
     installableInManagedApps: true,
     steps: [
       {
@@ -465,51 +469,64 @@ async function copyFilesAsync(
   }
 }
 
-async function action(options: ActionOptions) {
-  if (options.list) {
-    const bundledNativeModules = await getBundledNativeModulesAsync();
+async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) {
+  const bundledNativeModules = await getBundledNativeModulesAsync();
+  const vendoredPackageNames = Object.keys(vendoredModulesConfig);
+  const packageViews: PackageViewType[] = await Promise.all(vendoredPackageNames.map(getPackageViewFromRegistryAsync));
 
-    for (const vendoredModuleName in vendoredModulesConfig) {
-      const moduleConfig = vendoredModulesConfig[vendoredModuleName];
-      const currentBundledVersion =
-        bundledNativeModules[moduleConfig.packageName || vendoredModuleName];
+  for (const packageName of vendoredPackageNames) {
+    const packageView = packageViews.shift() as PackageViewType;
+    const moduleConfig = vendoredModulesConfig[packageName];
+    const bundledVersion = bundledNativeModules[packageName];
+    const latestVersion = packageView.versions[packageView.versions.length - 1];
 
-      console.log(chalk.bold.green(vendoredModuleName));
-      console.log(chalk.yellow('>'), 'repository:', chalk.magenta(moduleConfig.repoUrl));
-      console.log(
-        chalk.yellow('>'),
-        'current bundled version:',
-        (currentBundledVersion ? chalk.cyan : chalk.gray)(currentBundledVersion)
-      );
+    if (!onlyOutdated || !bundledVersion || semver.gtr(latestVersion, bundledVersion)) {
+      console.log(chalk.bold.green(packageName));
+      console.log(`${chalk.yellow('>')} repository     : ${chalk.magenta(moduleConfig.repoUrl)}`);
+      console.log(`${chalk.yellow('>')} bundled version: ${(bundledVersion ? chalk.cyan : chalk.gray)(bundledVersion)}`);
+      console.log(`${chalk.yellow('>')} latest version : ${chalk.cyan(latestVersion)}`);
       console.log();
     }
+  }
+}
+
+async function askForModuleAsync(): Promise<string> {
+  const { moduleName } = await inquirer.prompt<{ moduleName: string }>([
+    {
+      type: 'list',
+      name: 'moduleName',
+      message: 'Which 3rd party module would you like to update?',
+      choices: Object.keys(vendoredModulesConfig),
+    },
+  ]);
+  return moduleName;
+}
+
+async function action(options: ActionOptions) {
+  if (options.list || options.listOutdated) {
+    await listAvailableVendoredModulesAsync(options.listOutdated);
     return;
   }
 
-  if (!options.module) {
-    throw new Error('Must be run with `--module <module_name>`.');
-  }
-
-  const moduleConfig = vendoredModulesConfig[options.module];
+  const moduleName = options.module || await askForModuleAsync();
+  const moduleConfig = vendoredModulesConfig[moduleName];
 
   if (!moduleConfig) {
     throw new Error(
-      `Config for module ${chalk.green(
-        options.module
-      )} not found. Run with \`--list\` to show a list of available 3rd party modules`
+      `Module \`${chalk.green(moduleName)}\` doesn't match any of currently supported 3rd party modules. Run with \`--list\` to show a list of modules.`
     );
   }
 
   moduleConfig.installableInManagedApps =
     moduleConfig.installableInManagedApps == null ? true : moduleConfig.installableInManagedApps;
 
-  const tmpDir = path.join(os.tmpdir(), options.module);
+  const tmpDir = path.join(os.tmpdir(), moduleName);
 
   // Cleanup tmp dir.
   await fs.remove(tmpDir);
 
   console.log(
-    `Cloning ${chalk.green(options.module)}${chalk.red('#')}${chalk.cyan(
+    `Cloning ${chalk.green(moduleName)}${chalk.red('#')}${chalk.cyan(
       options.commit
     )} from GitHub ...`
   );
@@ -642,11 +659,10 @@ async function action(options: ActionOptions) {
     };
 
     if (moduleConfig.installableInManagedApps) {
-      bundledNativeModules[name] = `${moduleConfig.semverPrefix || ''}${version}`;
+      const versionRange = `${moduleConfig.semverPrefix || ''}${version}`;
+      bundledNativeModules[name] = versionRange;
       console.log(
-        `Updated ${chalk.green(name)} version number in ${chalk.magenta(
-          'bundledNativeModules.json'
-        )}`
+        `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
       );
     } else if (bundledNativeModules[name]) {
       delete bundledNativeModules[name];
@@ -661,7 +677,7 @@ async function action(options: ActionOptions) {
 
   console.log(
     `\nFinished updating ${chalk.green(
-      options.module
+      moduleName
     )}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`
   );
 }
@@ -669,9 +685,10 @@ async function action(options: ActionOptions) {
 export default (program: Command) => {
   program
     .command('update-vendored-module')
-    .alias('update-module')
+    .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
+    .option('-o, --listOutdated', 'Shows a list of outdated 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
     .option(
       '-p, --platform <string>',

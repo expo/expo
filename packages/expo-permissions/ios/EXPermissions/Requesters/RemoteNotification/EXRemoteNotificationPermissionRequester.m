@@ -10,7 +10,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
-@property (nonatomic, weak) EXUserNotificationPermissionRequester* userNotificationPermissionRequester;
+@property (nonatomic, weak) id<UMPermissionsRequester> userNotificationPermissionRequester;
 @property (nonatomic, weak) dispatch_queue_t methodQueue;
 
 @end
@@ -22,7 +22,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
   return @"notifications";
 }
 
-- (instancetype)initWithUserNotificationPermissionRequester:(EXUserNotificationPermissionRequester *)userNotificationPermissionRequester
+- (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
                                             withMethodQueue:(dispatch_queue_t)methodQueue
 {
   if (self = [super init]) {

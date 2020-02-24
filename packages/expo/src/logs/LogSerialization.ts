@@ -14,7 +14,7 @@ type SerializedData = {
 export const EXPO_CONSOLE_METHOD_NAME = '__expoConsoleLog';
 
 async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<SerializedData> {
-  let serializedValues: ReadonlyArray<LogData>;
+  let serializedValues: readonly LogData[];
   let includesStack = false;
 
   if (_stackTraceLogsSupported()) {

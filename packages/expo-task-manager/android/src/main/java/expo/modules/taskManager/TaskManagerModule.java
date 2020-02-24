@@ -3,19 +3,17 @@ package expo.modules.taskManager;
 import android.content.Context;
 import android.os.Handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaskManagerModule extends ExportedModule {
-  static String EVENT_NAME = "TaskManager.executeTask";
-  static String E_TASK_SERVICE_NOT_FOUND = "E_TASK_SERVICE_NOT_FOUND";
 
   private TaskServiceInterface mTaskService;
   private TaskManagerInterface mTaskManagerInternal;
@@ -32,7 +30,7 @@ public class TaskManagerModule extends ExportedModule {
   @Override
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
-    constants.put("EVENT_NAME", EVENT_NAME);
+    constants.put("EVENT_NAME", TaskManagerInterface.EVENT_NAME);
     return constants;
   }
 
@@ -132,7 +130,7 @@ public class TaskManagerModule extends ExportedModule {
 
   private boolean checkTaskService(final Promise promise) {
     if (mTaskService == null) {
-      promise.reject(E_TASK_SERVICE_NOT_FOUND, "Unable to find TaskService singleton module in module registry.");
+      promise.reject(TaskManagerInterface.ERR_TASK_SERVICE_NOT_FOUND, "Unable to find TaskService singleton module in module registry.");
       return false;
     }
     return true;

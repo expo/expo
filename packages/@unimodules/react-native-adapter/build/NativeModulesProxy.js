@@ -7,12 +7,12 @@ if (NativeProxy) {
     Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
         NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
         NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
-            NativeModulesProxy[moduleName][methodInfo.name] = async (...args) => {
+            NativeModulesProxy[moduleName][methodInfo.name] = (...args) => {
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
-                    throw new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`);
+                    return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                return await NativeProxy.callMethod(moduleName, key, args);
+                return NativeProxy.callMethod(moduleName, key, args);
             };
         });
         // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)

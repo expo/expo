@@ -58,7 +58,7 @@ Valid values: `public`, `unlisted`
 
 ### `"version"`
 
-Your app version. On iOS, this corresponds to `CFBundleShortVersionString`, and the required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
+Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode`- read more about how to version your app [here](../../distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
 
 > **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
 
@@ -408,6 +408,11 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "associatedDomains": ARRAY,
+
+    /*
+      Location of the GoogleService-Info.plist file for configuring Firebase.
+    */
+    "googleServicesFile": STRING,
 
     /*
       A boolean indicating if the app uses iCloud Storage for DocumentPicker.

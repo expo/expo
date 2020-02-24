@@ -1,17 +1,23 @@
 ---
 title: MediaLibrary
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-media-library'
 ---
 
-Provides access to user's media library.
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-Requires `Permissions.CAMERA_ROLL` permissions.
+**`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
+
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+<InstallSection packageName="expo-media-library" />
 
-> **Note**: Not compatible with web.
+## Configuration
+
+In managed apps, `MediaLibrary` requires `Permissions.CAMERA_ROLL`.
 
 ## API
 
@@ -19,13 +25,21 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as MediaLibrary from 'expo-media-library';
 ```
 
+<TableOfContentSection title='Methods' contents={['MediaLibrary.requestPermissionsAsync()', 'MediaLibrary.getPermissionsAsync()', 'MediaLibrary.createAssetAsync(localUri)', 'MediaLibrary.saveToLibraryAsync(localUri)', 'MediaLibrary.getAssetsAsync(options)', 'MediaLibrary.getAssetInfoAsync(asset)', 'MediaLibrary.deleteAssetsAsync(assets)', 'MediaLibrary.getAlbumsAsync()', 'MediaLibrary.getAlbumAsync(albumName)', 'MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)', 'MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)', 'MediaLibrary.removeAssetsFromAlbumAsync(assets, album)', 'MediaLibrary.getMomentsAsync()', 'MediaLibrary.addListener(listener)', 'MediaLibrary.removeAllListeners()']} />
+
+<TableOfContentSection title='Types' contents={['Asset', 'Album']} />
+
+<TableOfContentSection title='Constants' contents={['MediaLibrary.MediaType', 'MediaLibrary.SortBy']} />
+
+## Methods
+
 ### `MediaLibrary.requestPermissionsAsync()`
 
 Asks the user to grant permissions for accessing media in user's media library. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -33,7 +47,7 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
@@ -46,7 +60,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
@@ -58,7 +72,7 @@ Saves the file at given `localUri` to the user's media library. On **iOS 11+**, 
 
 #### Arguments
 
-- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+- **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
 ### `MediaLibrary.getAssetsAsync(options)`
 

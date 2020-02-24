@@ -27,6 +27,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { Animated } from 'expo' -> import Animated from 'react-native-reanimated'`, 'Animated', 'react-native-reanimated');
         },
     },
+    AuthSession: {
+        enumerable: true,
+        get() {
+            removedModule(`import { AuthSession } from 'expo' -> import * as AuthSession from 'expo-auth-session'`, 'AuthSession', 'expo-auth-session');
+        },
+    },
     Easing: {
         enumerable: true,
         get() {
@@ -301,6 +307,12 @@ Object.defineProperties(module.exports, {
         enumerable: true,
         get() {
             removedModule(`import { Random } from 'expo' -> import * as Random from 'expo-random'`, 'Random', 'expo-random');
+        },
+    },
+    ScreenOrientation: {
+        enumerable: true,
+        get() {
+            removedModule(`import { ScreenOrientation } from 'expo' -> import * as ScreenOrientation from 'expo-screen-orientation'`, 'ScreenOrientation', 'expo-screen-orientation');
         },
     },
     SecureStore: {

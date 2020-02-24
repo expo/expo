@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <GoogleMobileVision/GoogleMobileVision.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <Firebase/Firebase.h>
 

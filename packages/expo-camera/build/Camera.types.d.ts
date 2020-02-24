@@ -14,6 +14,7 @@ export declare type RecordingOptions = {
     maxFileSize?: number;
     quality?: number | string;
     mute?: boolean;
+    mirror?: boolean;
 };
 export declare type CapturedPicture = {
     width: number;
@@ -45,9 +46,9 @@ export declare type Props = ViewProps & {
     pictureSize?: string;
     videoStabilizationMode?: number;
     onMountError?: (event: MountError) => void;
-    barCodeScannerSettings?: {};
+    barCodeScannerSettings?: object;
     onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
-    faceDetectorSettings?: {};
+    faceDetectorSettings?: object;
     onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 export declare type NativeProps = {
@@ -73,10 +74,10 @@ export declare type NativeProps = {
     zoom?: number;
     whiteBalance?: number | string;
     pictureSize?: string;
-    barCodeScannerSettings?: {};
+    barCodeScannerSettings?: object;
     barCodeScannerEnabled?: boolean;
     faceDetectorEnabled?: boolean;
-    faceDetectorSettings?: {};
+    faceDetectorSettings?: object;
     ratio?: string;
     useCamera2Api?: boolean;
 };
