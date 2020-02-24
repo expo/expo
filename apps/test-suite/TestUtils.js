@@ -26,6 +26,18 @@ function optionalRequire(requirer) {
   }
 }
 
+// Both Location and TaskManager test suites define tasks in TaskManager.
+// Since tasks can only be defined during initialization phase (not as a result
+// of calling some function when the application is running, but rather in global scope),
+// we need to trigger code execution of these modules here (not in `getTestModules`
+// which is called in one of the components).
+const LocationTestScreen = optionalRequire(() => require('./tests/Location'));
+const TaskManagerTestScreen = optionalRequire(() => require('./tests/TaskManager'));
+// I have a hunch that optionalRequire doesn't work when *not* in global scope
+// since I had to move Camera screen import here too to get rid of an error
+// caused by missing native module.
+const CameraTestScreen = optionalRequire(() => require('./tests/Camera'));
+
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
@@ -123,7 +135,7 @@ export function getTestModules() {
     // Requires interaction (sign in popup)
     modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
-    modules.push(optionalRequire(() => require('./tests/Location')));
+    modules.push(LocationTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Has uncontrolled view controllers
@@ -141,12 +153,13 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
     // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
-    modules.push(optionalRequire(() => require('./tests/TaskManager')));
+    modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
     // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Constants.isDevice && Platform.OS === 'android')
-      modules.push(optionalRequire(() => require('./tests/Camera')));
+    if (Constants.isDevice && Platform.OS === 'android') {
+      modules.push(CameraTestScreen);
+    }
   }
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
