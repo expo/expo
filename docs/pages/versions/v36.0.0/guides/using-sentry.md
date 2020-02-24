@@ -54,8 +54,8 @@ Sentry.init({
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your organization's short name here",
-            "project": "your project name here",
+            "organization": "your sentry organization's short name here",
+            "project": "your sentry project's name here",
             "authToken": "your auth token here",
             "url": "your sentry url here" // OPTIONAL- only necessary when self-hosting Sentry
           }
