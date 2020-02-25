@@ -31,7 +31,7 @@
     "expo-blur": "~8.0.0",
     "expo-brightness": "~8.0.0",
     "expo-calendar": "~8.0.0",
-    "expo-camera": "~8.0.0",
+    "expo-camera": "~8.1.0",
     "expo-constants": "~8.0.0",
     "expo-contacts": "~8.0.0",
     "expo-device": "~2.0.0",
