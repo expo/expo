@@ -55,6 +55,8 @@ public class ExponentGcmListenerService extends GcmListenerService {
 
     final String categoryId = bundle.getString("categoryId");
 
-    PushNotificationHelper.getInstance().onMessageReceived(this, experienceId, channelId, message, body, title, categoryId);
+    final String projectId = bundle.getString("expoProjectId");
+
+    PushNotificationHelper.getInstance().onMessageReceived(this, experienceId, projectId, channelId, message, body, title, categoryId);
   }
 }
