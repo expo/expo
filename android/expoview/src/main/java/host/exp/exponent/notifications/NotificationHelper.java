@@ -142,8 +142,9 @@ public class NotificationHelper {
           // https://github.com/expo/expo/pull/7100
           params.put("experienceId", legacyExperienceId);
 
+          // This corresponds to expoProjectId in manifest
           if (projectId != null) {
-            params.put("projectId", projectId);
+            params.put("expoProjectId", projectId);
           }
 
           params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
@@ -383,19 +384,18 @@ public class NotificationHelper {
     // in the manifest. This is used for scoping if scopeKey isn't present.
     final String legacyExperienceId = (String) details.get("experienceId");
 
-    // The projectId must be either the scopeKey field or null! We use it to find the record
+    // The projectId must be either the expoProjectId field or null! We use it to find the record
     // matching the experience in ExponentDB. In ExponentDB the id field is determined by
     // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
     // back to using the id field.
     //
     // ***WARNING**
     //
-    // If scopeKey is not included in the manifest but is included in notification payloads
+    // If expoProjectId is not included in the manifest but is included in notification payloads
     // then this may break notifications and crash the app when a notification is received.
     //
-    //
-    final String experienceId = details.get("projectId") != null ?
-      (String) details.get("projectId") :
+    final String experienceId = details.get("expoProjectId") != null ?
+      (String) details.get("expoProjectId") :
       legacyExperienceId;
 
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(

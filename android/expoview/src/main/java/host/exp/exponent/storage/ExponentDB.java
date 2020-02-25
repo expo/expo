@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import host.exp.expoview.Exponent;
 
 @Database(version = ExponentDB.VERSION)
 public class ExponentDB {
@@ -33,7 +34,13 @@ public class ExponentDB {
   public static void saveExperience(String manifestUrl, JSONObject manifest, String bundleUrl) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.id = ExponentManifest.getExperienceId(manifest);
+
+      // Use expoProjectId if available, otherwise use legacyExperienceId. These are the only two
+      // id fields that may be provided in notification payloads (no scopeKey) so we need to index on
+      // one of them rather than scopeKey.
+      final String legacyExperienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experience.id = manifest.optString("expoProjectId", legacyExperienceId);
+
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();

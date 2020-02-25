@@ -73,14 +73,14 @@ public class PushNotificationHelper {
     final String categoryId
   ) {
 
-    // The projectId must be either the scopeKey field or null! We use it to find the record
+    // The projectId must be either the expoProjectId field or null! We use it to find the record
     // matching the experience in ExponentDB. In ExponentDB the id field is determined by
     // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
     // back to using the id field.
     //
     // ***WARNING**
     //
-    // If scopeKey is not included in the manifest but is included in notification payloads
+    // If expoProjectId is not included in the manifest but is included in notification payloads
     // then this may break notifications and crash the app when a notification is received.
     //
     final String experienceId = projectId != null ? projectId : legacyExperienceId;

@@ -148,7 +148,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     try {
       String legacyExperienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-      String projectId = mManifest.optString(ExponentManifest.MANIFEST_SCOPE_KEY_KEY);
+      String projectId = mManifest.optString(ExponentManifest.MANIFEST_EXPO_PROJECT_ID_KEY);
       NotificationHelper.getPushNotificationToken(uuid, legacyExperienceId, projectId, mExponentNetwork, mExponentSharedPreferences, new NotificationHelper.TokenListener() {
         @Override
         public void onSuccess(String token) {
