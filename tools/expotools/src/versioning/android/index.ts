@@ -359,6 +359,27 @@ async function addVersionedActivitesToManifests(version: string) {
   );
 }
 
+async function registerNewVersionUnderSdkVersions(version: string) {
+  let fileString = await fs.readFile(sdkVersionsPath, 'utf8');
+  let jsConfig;
+    // read the existing json config and add the new version to the sdkVersions array
+  try {
+    jsConfig = JSON.parse(fileString);
+  } catch (e) {
+    console.log(
+      'Error parsing existing sdkVersions.json file, writing a new one...',
+      e
+    );
+    console.log('The erroneous file contents was:', fileString);
+    jsConfig = {
+      sdkVersions: [],
+    };
+  }
+  // apply changes
+  jsConfig.sdkVersions.push(version);
+  await fs.writeFile(sdkVersionsPath, JSON.stringify(jsConfig));
+}
+
 async function cleanUpAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
   const abiName = `abi${abiVersion}`;
@@ -445,15 +466,15 @@ async function cleanUpAsync(version: string) {
 }
 
 export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/7: Updating android/versioned-react-native...');
+  console.log(' 🛠   1/8: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/7: Finished\n\n');
+  console.log(' ✅  1/8: Finished\n\n');
 
-  console.log(' 🛠   2/7: Renaming JNI libs in android/versioned-react-native...');
+  console.log(' 🛠   2/8: Renaming JNI libs in android/versioned-react-native...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  2/7: Finished\n\n');
+  console.log(' ✅  2/8: Finished\n\n');
 
-  console.log(' 🛠   3/7: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   3/8: Building versioned ReactAndroid AAR...');
   await spawnAsync(
     './android-build-aar.sh',
     [version],
@@ -463,9 +484,9 @@ export async function addVersionAsync(version: string) {
       stdio: 'inherit',
     }
   );
-  console.log(' ✅  3/7: Finished\n\n');
+  console.log(' ✅  3/8: Finished\n\n');
 
-  console.log(' 🛠   4/7: Creating versioned expoview package...');
+  console.log(' 🛠   4/8: Creating versioned expoview package...');
   await spawnAsync(
     './android-copy-expoview.sh',
     [version],
@@ -474,17 +495,21 @@ export async function addVersionAsync(version: string) {
       cwd: SCRIPT_DIR,
     }
   );
-  console.log(' ✅  4/7: Finished\n\n');
+  console.log(' ✅  4/8: Finished\n\n');
 
-  console.log(' 🛠   5/7: Creating versioned unimodule packages...');
+  console.log(' 🛠   5/8: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  5/7: Finished\n\n');
+  console.log(' ✅  5/8: Finished\n\n');
 
-  console.log(' 🛠   6/7: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   6/8: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  6/7: Finished\n\n');
+  console.log(' ✅  6/8: Finished\n\n');
 
-  console.log(' 🛠   7/7: Misc cleanup...');
+  console.log(' 🛠   7/8: Registering new version under sdkVersions config...');
+  await registerNewVersionUnderSdkVersions(version);
+  console.log(' ✅  7/8: Finished\n\n');
+
+  console.log(' 🛠   8/8: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  7/7: Finished');
+  console.log(' ✅  8/8: Finished');
 }
