@@ -4,9 +4,7 @@ import './ErrorRecovery.fx';
 
 export const recoveredProps = _getRecoveredProps();
 
-export type ErrorRecoveryProps = {
-  [key: string]: any;
-};
+export type ErrorRecoveryProps = Record<string, any>;
 
 export function setRecoveryProps(props: ErrorRecoveryProps): void {
   setRecoveryPropsToSave(props);
