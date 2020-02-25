@@ -18,6 +18,7 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
+import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.permissions.NotificationPermissionsModule;
 import expo.modules.notifications.tokens.PushTokenManager;
 import expo.modules.notifications.tokens.PushTokenModule;
@@ -30,6 +31,7 @@ public class NotificationsPackage extends BasePackage {
         new PushTokenModule(context),
         new NotificationsEmitter(context),
         new NotificationsHandler(context),
+        new NotificationScheduler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
         new NotificationChannelManagerModule(context),
