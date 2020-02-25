@@ -1471,24 +1471,24 @@ CACHE_KEYS:
       - React-jsinspector (0.61.4)
   react-native-appearance:
     BUILD_SETTINGS_CHECKSUM:
-      react-native-appearance: 7404d29f4c015c0c51680f1bce6a4d8f
+      react-native-appearance: a65151d7252615fcc01dbb407fa5071d
     CHECKSUM: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
     FILES:
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
-      - "../../node_modules/react-native-appearance/LICENSE"
-      - "../../node_modules/react-native-appearance/README.md"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
+      - "../../../../node_modules/react-native-appearance/LICENSE"
+      - "../../../../node_modules/react-native-appearance/README.md"
     PROJECT_NAME: react-native-appearance
     SPECS:
       - react-native-appearance (0.3.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
-    CHECKSUM: d288138da2c800caa111f9352e9333f186a06ead
+    CHECKSUM: e200d4433aba6b7e60b52da5f37af11f7a0b0392
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.m"
@@ -1498,7 +1498,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (0.6.0)
+      - react-native-safe-area-context (0.7.3)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet: 5d86490d49e6cc964d1993e5c05e10db
@@ -1745,7 +1745,7 @@ CACHE_KEYS:
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1d95b7b88b09cb2c47f1f272532903e1
-    CHECKSUM: b2ab0b693dddd2339bd2f300e770f6302d2e960c
+    CHECKSUM: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -1789,6 +1789,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/ios/REAModule.m"
       - "../../../../node_modules/react-native-reanimated/ios/REANodesManager.h"
       - "../../../../node_modules/react-native-reanimated/ios/REANodesManager.m"
+      - "../../../../node_modules/react-native-reanimated/ios/REAUtils.h"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/RCTConvert+REATransition.h"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/RCTConvert+REATransition.m"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/REAAllTransitions.h"
@@ -1805,7 +1806,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.4.0)
+      - RNReanimated (1.7.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a

@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h
+../../../../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h
