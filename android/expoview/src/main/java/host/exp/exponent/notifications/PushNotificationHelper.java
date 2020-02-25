@@ -65,7 +65,7 @@ public class PushNotificationHelper {
   public void onMessageReceived(
     final Context context,
     final String legacyExperienceId,
-    @Nullable final String projectId,
+    @Nullable final String expoProjectId,
     final String channelId,
     final String message,
     final String body,
@@ -73,31 +73,29 @@ public class PushNotificationHelper {
     final String categoryId
   ) {
 
-    // The projectId must be either the expoProjectId field or null! We use it to find the record
-    // matching the experience in ExponentDB. In ExponentDB the id field is determined by
-    // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
-    // back to using the id field.
+    // ExponentDB is indexed by the manifest.expoProjectId or legacyExperienceId (manifest.id).
     //
     // ***WARNING**
     //
-    // If expoProjectId is not included in the manifest but is included in notification payloads
+    // If expoProjectId is *not* included in the manifest but *is* included in notification payloads
     // then this may break notifications and crash the app when a notification is received.
     //
-    final String experienceId = projectId != null ? projectId : legacyExperienceId;
-    ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
+    final String projectId = expoProjectId != null ? expoProjectId : legacyExperienceId;
+    ExponentDB.projectIdToExperience(projectId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
+          final String experienceId = ExponentManifest.getExperienceId(manifest);
           sendNotification(context, message, experienceId, channelId, experience.manifestUrl, manifest, body, title, categoryId);
         } catch (JSONException e) {
-          EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
+          EXL.e(TAG, "Couldn't deserialize JSON for id " + projectId);
         }
       }
 
       @Override
       public void onFailure() {
-        EXL.e(TAG, "No experience found for id " + experienceId);
+        EXL.e(TAG, "No experience found for id " + projectId);
       }
     });
   }
@@ -107,7 +105,7 @@ public class PushNotificationHelper {
                                 final String manifestUrl, final JSONObject manifest, final String body, final String title, final String categoryId) {
     final String name = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY);
     if (name == null) {
-      EXL.e(TAG, "No name found for experience id " + experienceId);
+      EXL.e(TAG, "No name found for id " + experienceId);
       return;
     }
 

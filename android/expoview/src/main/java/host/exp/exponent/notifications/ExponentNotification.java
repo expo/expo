@@ -20,8 +20,8 @@ public class ExponentNotification {
   public String actionType;
   public String inputText;
 
-  public ExponentNotification(final String experienceId, final String body, final int notificationId, final boolean isMultiple, final boolean isRemote) {
-    this.experienceId = experienceId;
+  public ExponentNotification(final String legacyExperienceId, final String body, final int notificationId, final boolean isMultiple, final boolean isRemote) {
+    this.experienceId = legacyExperienceId;
     this.body = body;
     this.notificationId = notificationId;
     this.isMultiple = isMultiple;

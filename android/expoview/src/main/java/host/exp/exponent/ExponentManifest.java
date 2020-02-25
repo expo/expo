@@ -723,6 +723,14 @@ public class ExponentManifest {
     }
   }
 
+  public static String getProjectId(final JSONObject manifest) throws JSONException {
+    if (manifest.has(ExponentManifest.MANIFEST_EXPO_PROJECT_ID_KEY)) {
+      return manifest.getString(ExponentManifest.MANIFEST_EXPO_PROJECT_ID_KEY);
+    } else {
+      return manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+    }
+  }
+
   public static String getExperienceId(final JSONObject manifest) throws JSONException {
     if (manifest.has(ExponentManifest.MANIFEST_SCOPE_KEY_KEY)) {
       return manifest.getString(ExponentManifest.MANIFEST_SCOPE_KEY_KEY);

@@ -35,12 +35,9 @@ public class ExponentDB {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
 
-      // Use expoProjectId if available, otherwise use legacyExperienceId. These are the only two
-      // id fields that may be provided in notification payloads (no scopeKey) so we need to index on
-      // one of them rather than scopeKey.
-      final String legacyExperienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-      experience.id = manifest.optString("expoProjectId", legacyExperienceId);
-
+      // Only the legacyExperienceId and expoProjectId may be provided in notification payloads, so
+      // we need to index on one of them rather than scopeKey.
+      experience.id = ExponentManifest.getProjectId(manifest);
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();
@@ -50,10 +47,10 @@ public class ExponentDB {
     }
   }
 
-  public static void experienceIdToExperience(String experienceId, final ExperienceResultListener listener) {
+  public static void projectIdToExperience(String projectId, final ExperienceResultListener listener) {
     SQLite.select()
         .from(ExperienceDBObject.class)
-        .where(ExperienceDBObject_Table.id.is(experienceId))
+        .where(ExperienceDBObject_Table.id.is(projectId))
         .async()
         .queryResultCallback(new QueryTransaction.QueryResultCallback<ExperienceDBObject>() {
           @Override

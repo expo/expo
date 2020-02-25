@@ -372,40 +372,13 @@ public class NotificationHelper {
     }
   }
 
-  public static void showNotification(
-      final Context context,
-      final int id,
-      final HashMap details,
-      final ExponentManifest exponentManifest,
-      final Listener listener) {
-    final ExponentNotificationManager manager = new ExponentNotificationManager(context);
-
-    // The experienceId field sent in push notification payloads corresponds to the id field
-    // in the manifest. This is used for scoping if scopeKey isn't present.
-    final String legacyExperienceId = (String) details.get("experienceId");
-
-    // The projectId must be either the expoProjectId field or null! We use it to find the record
-    // matching the experience in ExponentDB. In ExponentDB the id field is determined by
-    // ExponentManifest.getExperienceId(manifest) which will use scopeKey if available or fall
-    // back to using the id field.
-    //
-    // ***WARNING**
-    //
-    // If expoProjectId is not included in the manifest but is included in notification payloads
-    // then this may break notifications and crash the app when a notification is received.
-    //
-    final String experienceId = details.get("expoProjectId") != null ?
-      (String) details.get("expoProjectId") :
-      legacyExperienceId;
-
+  private static NotificationCompat.Builder createNotificationBuilder(final String experienceId, final HashMap data, final Context context, final ExponentNotificationManager manager) {
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(
-        context,
-        ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));
+      context,
+      ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));
 
     builder.setSmallIcon(Constants.isStandaloneApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon);
     builder.setAutoCancel(true);
-
-    final HashMap data = (HashMap) details.get("data");
 
     if (data.containsKey("channelId")) {
       String channelId = (String) data.get("channelId");
@@ -471,11 +444,11 @@ public class NotificationHelper {
     } else {
       // make a default channel so that people don't have to explicitly create a channel to see notifications
       createChannel(
-          context,
-          experienceId,
-          NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
-          context.getString(R.string.default_notification_channel_group),
-          new HashMap());
+        context,
+        experienceId,
+        NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
+        context.getString(R.string.default_notification_channel_group),
+        new HashMap());
     }
 
     if (data.containsKey("title")) {
@@ -487,7 +460,7 @@ public class NotificationHelper {
     if (data.containsKey("body")) {
       builder.setContentText((String) data.get("body"));
       builder.setStyle(new NotificationCompat.BigTextStyle().
-          bigText((String) data.get("body")));
+        bigText((String) data.get("body")));
     }
 
     if (data.containsKey("count")) {
@@ -498,7 +471,30 @@ public class NotificationHelper {
       builder.setOngoing((Boolean) data.get("sticky"));
     }
 
-    ExponentDB.experienceIdToExperience(experienceId, new ExponentDB.ExperienceResultListener() {
+    return builder;
+  }
+
+  public static void showNotification(
+      final Context context,
+      final int id,
+      final HashMap details,
+      final ExponentManifest exponentManifest,
+      final Listener listener) {
+    final ExponentNotificationManager manager = new ExponentNotificationManager(context);
+
+    final HashMap data = (HashMap) details.get("data");
+
+    // The experienceId field sent in push notification payloads corresponds to the id field in the
+    // manifest, which we cannot count on to be the same as the key used for scoping because we may
+    // have a scopeKey too. We need to get the experience from ExponentDB to extract the scopeKey
+    // if it is provided in order to correctly do things like interact with notification channels,
+    // which depends on the scopeKey if given.
+    final String legacyExperienceId = (String) details.get("experienceId");
+    final String projectId = details.get("expoProjectId") != null ?
+      (String) details.get("expoProjectId") :
+      legacyExperienceId;
+
+    ExponentDB.projectIdToExperience(projectId, new ExponentDB.ExperienceResultListener() {
       @Override
       public void onSuccess(final ExperienceDBObject experience) {
         new Thread(new Runnable() { /// use weak reference in the future
@@ -506,6 +502,10 @@ public class NotificationHelper {
           public void run() {
             try {
               JSONObject manifest = new JSONObject(experience.manifest);
+
+              // Get the scopeKey from the manifest
+              final String scopeKey = ExponentManifest.getExperienceId(manifest);
+              NotificationCompat.Builder builder = createNotificationBuilder(scopeKey, data, context, manager);
 
               Intent intent;
 
@@ -518,8 +518,7 @@ public class NotificationHelper {
               }
 
               final String body = data.containsKey("data") ? JSONUtils.getJSONString(data.get("data")) : "";
-
-              final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
+              final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(legacyExperienceId, body, id, false, false);
 
               intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
               intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
@@ -535,7 +534,7 @@ public class NotificationHelper {
                     Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
                     Intent intent = new Intent(context, activityClass);
                     intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
-                    final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
+                    final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(legacyExperienceId, body, id, false, false);
                     intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
                     intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
                     return intent;
@@ -560,13 +559,13 @@ public class NotificationHelper {
                       if (data.containsKey("icon")) {
                         builder.setLargeIcon(bitmap);
                       }
-                      manager.notify(experienceId, id, builder.build());
+                      manager.notify(scopeKey, id, builder.build());
                       EventBus.getDefault().post(notificationEvent);
                       listener.onSuccess(id);
                     }
                   });
             } catch (JSONException e) {
-              listener.onFailure(new Exception("Couldn't deserialize JSON for experience id " + experienceId));
+              listener.onFailure(new Exception("Couldn't deserialize JSON for id " + projectId));
             }
           }
         }).start();
@@ -574,7 +573,7 @@ public class NotificationHelper {
 
       @Override
       public void onFailure() {
-        listener.onFailure(new Exception("No experience found for id " + experienceId));
+        listener.onFailure(new Exception("No experience found for id " + projectId));
       }
     });
   }
