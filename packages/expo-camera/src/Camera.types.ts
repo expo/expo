@@ -57,7 +57,7 @@ export type CameraProps = ViewProps & {
   onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 
-export type CamerNativeProps = {
+export type CameraNativeProps = {
   pointerEvents?: any;
   style?: any;
   ref?: Function;

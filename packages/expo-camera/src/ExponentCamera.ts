@@ -1,9 +1,9 @@
 import { requireNativeViewManager } from '@unimodules/core';
 import * as React from 'react';
 
-import { CamerNativeProps } from './Camera.types';
+import { CameraNativeProps } from './Camera.types';
 
-const ExponentCamera: React.ComponentType<CamerNativeProps> = requireNativeViewManager(
+const ExponentCamera: React.ComponentType<CameraNativeProps> = requireNativeViewManager(
   'ExponentCamera'
 );
 

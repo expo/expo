@@ -4,13 +4,13 @@ import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 import {
   CameraCapturedPicture,
   CameraMountError,
-  CamerNativeProps,
+  CameraNativeProps,
   CameraPictureOptions,
 } from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
-export default class ExponentCamera extends React.Component<CamerNativeProps> {
+export default class ExponentCamera extends React.Component<CameraNativeProps> {
   video?: number | null;
   camera?: CameraModule;
 
@@ -26,7 +26,7 @@ export default class ExponentCamera extends React.Component<CamerNativeProps> {
     this._updateCameraProps(nextProps);
   }
 
-  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: CamerNativeProps) => {
+  _updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }: CameraNativeProps) => {
     const { camera } = this;
     if (!camera) {
       return;

@@ -6,7 +6,7 @@ import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 
 import {
   CameraCapturedPicture,
-  CamerNativeProps,
+  CameraNativeProps,
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
@@ -60,14 +60,14 @@ function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordi
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: CameraProps): CamerNativeProps {
+function ensureNativeProps(options?: CameraProps): CameraNativeProps {
   let props = options || {};
 
   if (!props || typeof props !== 'object') {
     props = {};
   }
 
-  const newProps: CamerNativeProps = mapValues(props, convertProp);
+  const newProps: CameraNativeProps = mapValues(props, convertProp);
 
   const propsKeys = Object.keys(newProps);
   // barCodeTypes is deprecated
@@ -320,7 +320,7 @@ export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camer
 
 export {
   CameraCapturedPicture,
-  CamerNativeProps,
+  CameraNativeProps,
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
