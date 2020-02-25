@@ -197,8 +197,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
               }
 
               if (EventBus.getDefault().isRegistered(this) && getAppOwnership().equals("expo")) {
-                mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
-                    "Cannot start a new task while another task is currently in progress");
+                mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Cannot start a new task while another task is currently in progress");
                 return;
               }
 
@@ -208,7 +207,8 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
                   redirectUrl,
                   scopes,
                   authorizationServiceConfiguration,
-                  params);
+                  params
+              );
             }
           },
           builder
@@ -221,12 +221,6 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       final Map<String, Object> options,
       final Promise promise
   ) {
-
-    // mUIManger nullability suggests there's no listener registered for Activity result
-    if (mUIManager == null) {
-      promise.reject("E_MISSING_MODULES", "Missing core modules. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
 
     mModuleRegistry.getModule(UIManager.class).runOnUiQueueThread(new Runnable() {
       @Override
@@ -245,8 +239,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
 
         Map<String, String> params = new HashMap<>();
         if (options.containsKey(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) && options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) instanceof Map) {
-          params = Serialization
-              .jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS));
+          params = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS));
         }
 
         Map<String, String> serviceConfig = null;
@@ -316,47 +309,42 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
         authReqBuilder.setScope(scopesString);
       }
     }
-    try {
-      AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, responseType, Uri.parse(redirectUrl));
 
-      if (scopes != null) {
-        String scopesString = Serialization.scopesToString(scopes);
-        if (scopesString != null) {
-          authReqBuilder.setScope(scopesString);
-        }
+    if (parameters != null) {
+      if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
+        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
+        parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
       }
-
-      if (parameters != null) {
-        if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
-          authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
-          parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
-        }
-        if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
-          authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
-          parameters.remove(AppAuthConstants.HTTPS.PROMPT);
-        }
-        if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
-          authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
-          parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
-        }
-        authReqBuilder.setAdditionalParameters(parameters);
+      if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
+        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
+        parameters.remove(AppAuthConstants.HTTPS.PROMPT);
       }
+      if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
+        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
+        parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
+      }
+      authReqBuilder.setAdditionalParameters(parameters);
+    }
 
     if ("expo".equals(getAppOwnership())) {
       Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class)
-          .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+              .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
 
       // TODO: Bacon: Prevent double register - this is fatal
       EventBus.getDefault().register(this);
 
       ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
 
-      if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
-        mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
-        return;
-      } else {
-        String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
-        postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
+      if (!"standalone".equals(constantsService.getAppOwnership())) {
+        if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
+
+          mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
+          return;
+        } else {
+          String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
+          postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
+        }
       }
 
       AuthorizationRequest authorizationRequest = authReqBuilder.build();
@@ -366,8 +354,11 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
       return;
     }
+
     // For standalone and bare-workflow
+
     AuthorizationRequest authorizationRequest = authReqBuilder.build();
+
     AuthorizationService authService = new AuthorizationService(getContext());
     Intent authIntent = authService.getAuthorizationRequestIntent(authorizationRequest);
     activity.startActivityForResult(authIntent, RC_EXPO_APP_AUTH);
@@ -399,7 +390,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
         connectionBuilder = UnsafeConnectionBuilder.INSTANCE;
       }
       AppAuthConfiguration authConfig = new AppAuthConfiguration.Builder().setConnectionBuilder(connectionBuilder)
-          .build();
+              .build();
 
       final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(data);
 
@@ -410,7 +401,6 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
 
   @Override
   public void onNewIntent(Intent intent) {
-
   }
 
   public void onEvent(AppAuthBrowserActivity.OAuthResultEvent event) {
@@ -420,6 +410,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       mAuthTask.reject(event.getException());
       return;
     }
+
     ConnectionBuilder connectionBuilder;
     if (mShouldMakeHTTPCalls.equals(false)) {
       connectionBuilder = DefaultConnectionBuilder.INSTANCE;
@@ -444,6 +435,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       Map<String, String> params,
       String clientSecret
   ) {
+
     String scopesString = null;
 
     if (scopes != null) {
