@@ -96,17 +96,12 @@ UM_EXPORT_METHOD_AS(executeAsync,
 }
 
 - (OIDServiceConfiguration *)_createServiceConfiguration:(NSDictionary *)serviceConfiguration {
-  NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
-  NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
-  NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
+  NSURL *authorizationEndpoint = [NSURL URLWithString:serviceConfiguration[@"authorizationEndpoint"]];
+  NSURL *tokenEndpoint = [NSURL URLWithString:serviceConfiguration[@"tokenEndpoint"]];
+  NSURL *registrationEndpoint = [NSURL URLWithString:serviceConfiguration[@"registrationEndpoint"]];
+  NSURL *endSessionEndpoint = [NSURL URLWithString:serviceConfiguration[@"endSessionEndpoint"]];
 
-  OIDServiceConfiguration *configuration =
-  [[OIDServiceConfiguration alloc]
-   initWithAuthorizationEndpoint:authorizationEndpoint
-   tokenEndpoint:tokenEndpoint
-   registrationEndpoint:registrationEndpoint];
-
-  return configuration;
+  return [[OIDServiceConfiguration alloc] initWithAuthorizationEndpoint:authorizationEndpoint tokenEndpoint:tokenEndpoint issuer:nil registrationEndpoint:registrationEndpoint endSessionEndpoint:endSessionEndpoint];
 }
 
 - (void)_authorizeWithConfiguration:(OIDServiceConfiguration *)configuration

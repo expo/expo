@@ -34,16 +34,15 @@ export async function fetchServiceConfigAsync(issuer) {
     if (!ExpoAppAuth.fetchServiceConfigAsync) {
         throw new UnavailabilityError('AppAuth', 'fetchServiceConfigAsync');
     }
-    const config = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
-    console.log('fetchServiceConfigAsync: raw: ', config);
+    const discoveryDoc = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
     return {
-        authorizationEndpoint: config.authorization_endpoint,
-        tokenEndpoint: config.token_endpoint,
-        revocationEndpoint: config.revocation_endpoint,
-        userInfoEndpoint: config.userinfo_endpoint,
-        endSessionEndpoint: config.end_session_endpoint,
-        registrationEndpoint: config.registration_endpoint,
-        discoveryDoc: config,
+        authorizationEndpoint: discoveryDoc.authorization_endpoint,
+        tokenEndpoint: discoveryDoc.token_endpoint,
+        revocationEndpoint: discoveryDoc.revocation_endpoint,
+        userInfoEndpoint: discoveryDoc.userinfo_endpoint,
+        endSessionEndpoint: discoveryDoc.end_session_endpoint,
+        registrationEndpoint: discoveryDoc.registration_endpoint,
+        discoveryDoc,
     };
 }
 export async function authAsync(props) {

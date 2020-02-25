@@ -157,7 +157,7 @@ import * as AppAuth from 'expo-app-auth';
 AppAuth.fetchServiceConfigAsync(issuer: string): Promise<AuthServiceConfig>
 ```
 
-Attempts to fetch the `AuthServiceConfig` and `discoveryDoc` from the provided issuer.
+Attempts to fetch the `AuthServiceConfig` from the provided issuer.
 
 #### Parameters
 
@@ -167,9 +167,9 @@ Attempts to fetch the `AuthServiceConfig` and `discoveryDoc` from the provided i
 
 #### Return
 
-| Type                                                                      | Description                                                           |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `AuthServiceConfig & { discoveryDoc: Record<string, string | string[]> }` | The `AuthServiceConfig` and raw JSON data returned as `discoveryDoc`. |
+| Type                | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| `AuthServiceConfig` | The `AuthServiceConfig` and raw JSON data returned as `discoveryDoc`. |
 
 #### Example
 
@@ -337,14 +337,14 @@ extends `OAuthBaseProps`, is used to create OAuth flows.
 
 ### `AuthServiceConfig`
 
-| Name                                             | Type                 | Description                                                                                                                      |
-| ------------------------------------------------ | -------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| tokenEndpoint                                    | `string`             | The OP's OAuth 2.0 Token Endpoint                                                                                                |
-| [authorizationEndpoint][d-authorizationendpoint] | `string | undefined` | The OP's OAuth 2.0 Authorization Endpoint                                                                                        |
-| [registrationEndpoint][d-registrationendpoint]   | `string | undefined` | The OP's Dynamic Client Registration Endpoint                                                                                    |
-| revocationEndpoint                               | `string | undefined` | The OAuth server used for revoking tokens                                                                                        |
-| userInfoEndpoint                                 | `string | undefined` | The OP's UserInfo Endpoint. This **must** use the `https` scheme and **may** contain port, path, and query parameter components. |
-|                                                  |
+| Name                                             | Type                                | Description                                                                                                                      |
+| ------------------------------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| tokenEndpoint                                    | `string`                            | The OP's OAuth 2.0 Token Endpoint                                                                                                |
+| [authorizationEndpoint][d-authorizationendpoint] | `string | undefined`                | The OP's OAuth 2.0 Authorization Endpoint                                                                                        |
+| [registrationEndpoint][d-registrationendpoint]   | `string | undefined`                | The OP's Dynamic Client Registration Endpoint                                                                                    |
+| revocationEndpoint                               | `string | undefined`                | The OAuth server used for revoking tokens                                                                                        |
+| userInfoEndpoint                                 | `string | undefined`                | The OP's UserInfo Endpoint. This **must** use the `https` scheme and **may** contain port, path, and query parameter components. |
+| discoveryDoc                                     | `Record<string, string | string[]>` | Raw discovery JSON.                                                                                                              |
 
 ### `OAuthParameters`
 

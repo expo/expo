@@ -5,6 +5,7 @@ export type AuthServiceConfig = {
   registrationEndpoint?: string;
   userInfoEndpoint?: string;
   endSessionEndpoint?: string;
+  discoveryDoc?: Record<string, string | string[]>;
 };
 
 /**
