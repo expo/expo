@@ -60,6 +60,8 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
+import host.exp.exponent.storage.ExperienceDBObject;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -536,18 +538,37 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (event.experienceId.equals(mExperienceIdString)) {
-      try {
-        RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
-        rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
+    final String projectId = event.getProjectId();
 
-        mReactInstanceManager.callRecursive("getCurrentReactContext")
-            .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-            .call("emit", "Exponent.notification", event.toWriteableMap(mDetachSdkVersion, "received"));
-      } catch (Throwable e) {
-        EXL.e(TAG, e);
+    ExponentDB.projectIdToExperience(projectId, new ExponentDB.ExperienceResultListener() {
+      @Override
+      public void onSuccess(ExperienceDBObject experience) {
+        try {
+          JSONObject manifest = new JSONObject(experience.manifest);
+          final String experienceId = ExponentManifest.getExperienceId(manifest);
+
+          if (experienceId.equals(mExperienceIdString)) {
+            try {
+              RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
+              rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
+
+              mReactInstanceManager.callRecursive("getCurrentReactContext")
+                .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+                .call("emit", "Exponent.notification", event.toWriteableMap(mDetachSdkVersion, "received"));
+            } catch (Throwable e) {
+              EXL.e(TAG, e);
+            }
+          }
+        } catch (JSONException e) {
+          EXL.e(TAG, "Couldn't deserialize JSON for id " + projectId);
+        }
       }
-    }
+
+      @Override
+      public void onFailure() {
+        EXL.e(TAG, "No experience found for id " + projectId);
+      }
+    });
   }
 
   public void handleOptions(KernelConstants.ExperienceOptions options) {

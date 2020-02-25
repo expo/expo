@@ -5,6 +5,7 @@ package host.exp.exponent.notifications;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.Nullable;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 
@@ -13,6 +14,7 @@ public class ExponentNotification {
   private static final String TAG = ExponentNotification.class.getSimpleName();
 
   public final String experienceId;
+  @Nullable public final String expoProjectId;
   public final String body;
   public final int notificationId;
   public final boolean isMultiple;
@@ -20,8 +22,9 @@ public class ExponentNotification {
   public String actionType;
   public String inputText;
 
-  public ExponentNotification(final String legacyExperienceId, final String body, final int notificationId, final boolean isMultiple, final boolean isRemote) {
+  public ExponentNotification(final String legacyExperienceId, @Nullable final String expoProjectId, final String body, final int notificationId, final boolean isMultiple, final boolean isRemote) {
     this.experienceId = legacyExperienceId;
+    this.expoProjectId = expoProjectId;
     this.body = body;
     this.notificationId = notificationId;
     this.isMultiple = isMultiple;
@@ -39,7 +42,9 @@ public class ExponentNotification {
       if (body == null) {
         body = object.optString(NotificationConstants.NOTIFICATION_MESSAGE_KEY, null);
       }
-      return new ExponentNotification(object.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY), body, object.getInt(NotificationConstants.NOTIFICATION_ID_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY));
+      final String legacyExperienceId = object.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY);
+      final String expoProjectId = object.optString(NotificationConstants.NOTIFICATION_EXPO_PROJECT_ID_KEY);
+      return new ExponentNotification(legacyExperienceId, expoProjectId, body, object.getInt(NotificationConstants.NOTIFICATION_ID_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY), object.getBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY));
     } catch (JSONException e) {
       EXL.e(TAG, e.toString());
       return null;
@@ -77,6 +82,14 @@ public class ExponentNotification {
     args.call("putString", NotificationConstants.NOTIFICATION_ACTION_TYPE, actionType);
     args.call("putString", NotificationConstants.NOTIFICATION_INPUT_TEXT, inputText);
     return args.get();
+  }
+
+  public String getProjectId() {
+    if (expoProjectId != null) {
+      return expoProjectId;
+    }
+
+    return experienceId;
   }
 
   public void setInputText(String inputText) {

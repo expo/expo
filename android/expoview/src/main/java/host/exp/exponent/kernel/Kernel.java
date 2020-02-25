@@ -465,7 +465,7 @@ public class Kernel extends KernelInterface {
           if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
             exponentNotification.setActionType(bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY));
             ExponentNotificationManager manager = new ExponentNotificationManager(mContext);
-            manager.cancel(exponentNotification.experienceId, exponentNotification.notificationId);
+            manager.cancelFromProjectId(exponentNotification.getProjectId(), exponentNotification.notificationId);
           }
           // Add remote input
           Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);

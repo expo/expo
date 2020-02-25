@@ -181,7 +181,9 @@ public class PushNotificationHelper {
 
         // Create notification object
         boolean isMultiple = mode == Mode.COLLAPSE && unreadNotifications.length() > 1;
-        final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, notificationId, isMultiple, true);
+        final String legacyExperienceId = manifest.optString(ExponentManifest.MANIFEST_ID_KEY);
+        final String expoProjectId = manifest.optString(ExponentManifest.MANIFEST_EXPO_PROJECT_ID_KEY);
+        final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(legacyExperienceId, expoProjectId, body, notificationId, isMultiple, true);
 
         // Create pending intent
         Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);

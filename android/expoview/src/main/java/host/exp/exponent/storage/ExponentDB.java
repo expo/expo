@@ -35,7 +35,7 @@ public class ExponentDB {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
 
-      // Only the legacyExperienceId and expoProjectId may be provided in notification payloads, so
+      // Only the legacy experienceId and expoProjectId may be provided in notification payloads, so
       // we need to index on one of them rather than scopeKey.
       experience.id = ExponentManifest.getProjectId(manifest);
       experience.manifestUrl = manifestUrl;

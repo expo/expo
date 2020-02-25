@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import host.exp.exponent.storage.ExperienceDBObject;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
 
@@ -192,6 +194,26 @@ public class ExponentNotificationManager {
     } catch (JSONException e) {
       e.printStackTrace();
     }
+  }
+
+  public void cancelFromProjectId(String projectId, int id) {
+    ExponentDB.projectIdToExperience(projectId, new ExponentDB.ExperienceResultListener() {
+      @Override
+      public void onSuccess(ExperienceDBObject experience) {
+        try {
+          JSONObject manifest = new JSONObject(experience.manifest);
+          final String experienceId = ExponentManifest.getExperienceId(manifest);
+          cancel(experienceId, id);
+        } catch (JSONException e) {
+          EXL.e(TAG, "Couldn't deserialize JSON for id " + projectId);
+        }
+      }
+
+      @Override
+      public void onFailure() {
+        EXL.e(TAG, "No experience found for id " + projectId);
+      }
+    });
   }
 
   public void cancel(String experienceId, int id) {
