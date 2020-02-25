@@ -1,9 +1,17 @@
-export type OAuthServiceConfiguration = {
-  revocationEndpoint?: string;
-  authorizationEndpoint?: string;
-  registrationEndpoint?: string;
+export type AuthServiceConfig = {
+  authorizationEndpoint: string;
   tokenEndpoint: string;
+  revocationEndpoint: string;
+  registrationEndpoint?: string;
+  userInfoEndpoint?: string;
+  endSessionEndpoint?: string;
 };
+
+/**
+ * Use `AuthServiceConfig` instead.
+ * @deprecated
+ */
+export type OAuthServiceConfiguration = AuthServiceConfig;
 
 /* ASCII string value that specifies how the Authorization Server displays the authentication and consent user interface pages to the End-User. */
 export type OAuthDisplayParameter = 'page' | 'popup' | 'touch' | 'wap';
@@ -99,8 +107,8 @@ export type OAuthParameters = {
 
 export type OAuthBaseProps = {
   clientId: string;
-  issuer: string;
-  serviceConfiguration?: OAuthServiceConfiguration;
+  issuer?: string;
+  serviceConfiguration?: AuthServiceConfig;
 };
 
 export type OAuthProps = OAuthBaseProps & {

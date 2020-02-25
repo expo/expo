@@ -43,6 +43,21 @@ UM_EXPORT_MODULE(ExpoAppAuth);
            };
 }
 
+UM_EXPORT_METHOD_AS(fetchServiceConfigAsync,
+                    fetchServiceConfigAsync:(NSDictionary *)options
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  NSString *issuer = options[@"issuer"];
+  [OIDAuthorizationService discoverServiceConfigurationForIssuer:[NSURL URLWithString:issuer] completion:^(OIDServiceConfiguration *_Nullable config, NSError *_Nullable error) {
+    if (config) {
+      resolve(config.discoveryDocument.discoveryDictionary);
+    } else {
+      EXrejectWithError(reject, error);
+    }
+  }];
+}
+
 UM_EXPORT_METHOD_AS(executeAsync,
                     executeAsync:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve

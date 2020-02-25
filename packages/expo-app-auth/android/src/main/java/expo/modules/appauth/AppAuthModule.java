@@ -195,6 +195,33 @@ public class AppAuthModule extends ExportedModule {
   }
 
   @ExpoMethod
+  public void fetchServiceConfigAsync(
+          final Map<String, Object> options,
+          final Promise promise
+  ) {
+    final String issuer = (String) options.get(AppAuthConstants.Props.ISSUER);
+    final Boolean shouldMakeHTTPCalls = options.containsKey(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) ? (Boolean) options.get(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) : false;
+    final ConnectionBuilder builder = shouldMakeHTTPCalls.equals(true) ? UnsafeConnectionBuilder.INSTANCE : DefaultConnectionBuilder.INSTANCE;
+
+    AuthorizationServiceConfiguration.fetchFromUrl(
+            Uri.parse(issuer).buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build(),
+            new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
+              public void onFetchConfigurationCompleted(
+                      @Nullable AuthorizationServiceConfiguration authorizationServiceConfiguration,
+                      @Nullable AuthorizationException authorizationException) {
+                if (authorizationException != null) {
+                  promise.reject(authorizationException);
+                  return;
+                }
+
+                promise.resolve(Serialization.serviceConfigNativeToJSON(authorizationServiceConfiguration));
+              }
+            },
+            builder
+    );
+  }
+
+  @ExpoMethod
   public void executeAsync(
       final Map<String, Object> options,
       final Promise promise

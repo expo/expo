@@ -30,6 +30,22 @@ async function _executeAsync(props) {
 export function getDefaultOAuthRedirect() {
     return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
 }
+export async function fetchServiceConfigAsync(issuer) {
+    if (!ExpoAppAuth.fetchServiceConfigAsync) {
+        throw new UnavailabilityError('AppAuth', 'fetchServiceConfigAsync');
+    }
+    const config = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
+    console.log('fetchServiceConfigAsync: raw: ', config);
+    return {
+        authorizationEndpoint: config.authorization_endpoint,
+        tokenEndpoint: config.token_endpoint,
+        revocationEndpoint: config.revocation_endpoint,
+        userInfoEndpoint: config.userinfo_endpoint,
+        endSessionEndpoint: config.end_session_endpoint,
+        registrationEndpoint: config.registration_endpoint,
+        discoveryDoc: config,
+    };
+}
 export async function authAsync(props) {
     if (!ExpoAppAuth.executeAsync) {
         throw new UnavailabilityError('expo-app-auth', 'authAsync');

@@ -1,9 +1,16 @@
-export declare type OAuthServiceConfiguration = {
-    revocationEndpoint?: string;
-    authorizationEndpoint?: string;
-    registrationEndpoint?: string;
+export declare type AuthServiceConfig = {
+    authorizationEndpoint: string;
     tokenEndpoint: string;
+    revocationEndpoint: string;
+    registrationEndpoint?: string;
+    userInfoEndpoint?: string;
+    endSessionEndpoint?: string;
 };
+/**
+ * Use `AuthServiceConfig` instead.
+ * @deprecated
+ */
+export declare type OAuthServiceConfiguration = AuthServiceConfig;
 export declare type OAuthDisplayParameter = 'page' | 'popup' | 'touch' | 'wap';
 export declare type OAuthPromptParameter = 'none' | 'login' | 'consent' | 'select_account';
 export declare type OAuthNonceParameter = string;
@@ -25,8 +32,8 @@ export declare type OAuthParameters = {
 };
 export declare type OAuthBaseProps = {
     clientId: string;
-    issuer: string;
-    serviceConfiguration?: OAuthServiceConfiguration;
+    issuer?: string;
+    serviceConfiguration?: AuthServiceConfig;
 };
 export declare type OAuthProps = OAuthBaseProps & {
     redirectUrl?: string;

@@ -26,8 +26,7 @@
            @"additionalParameters": UMNullIfNil([input additionalParameters]),
            @"idToken": UMNullIfNil([input idToken]),
            @"tokenType": UMNullIfNil([input tokenType]),
-           };
+  };
 }
-
 
 @end

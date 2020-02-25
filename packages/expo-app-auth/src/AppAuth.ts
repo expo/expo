@@ -7,6 +7,7 @@ import {
   OAuthRevokeOptions,
   OAuthServiceConfiguration,
   TokenResponse,
+  AuthServiceConfig,
 } from './AppAuth.types';
 import ExpoAppAuth from './ExpoAppAuth';
 
@@ -57,6 +58,27 @@ async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
 
 export function getDefaultOAuthRedirect(): string {
   return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
+}
+
+export async function fetchServiceConfigAsync(
+  issuer: string
+): Promise<AuthServiceConfig & { discoveryDoc: Record<string, string | string[]> }> {
+  if (!ExpoAppAuth.fetchServiceConfigAsync) {
+    throw new UnavailabilityError('AppAuth', 'fetchServiceConfigAsync');
+  }
+  const config = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
+
+  console.log('fetchServiceConfigAsync: raw: ', config);
+
+  return {
+    authorizationEndpoint: config.authorization_endpoint,
+    tokenEndpoint: config.token_endpoint,
+    revocationEndpoint: config.revocation_endpoint,
+    userInfoEndpoint: config.userinfo_endpoint,
+    endSessionEndpoint: config.end_session_endpoint,
+    registrationEndpoint: config.registration_endpoint,
+    discoveryDoc: config,
+  };
 }
 
 export async function authAsync(props: OAuthProps): Promise<TokenResponse> {

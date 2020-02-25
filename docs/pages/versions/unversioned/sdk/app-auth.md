@@ -147,9 +147,35 @@ import * as AppAuth from 'expo-app-auth';
 
 <TableOfContentSection title='Constants' contents={['AppAuth.OAuthRedirect', 'AppAuth.URLSchemes']} />
 
-<TableOfContentSection title='Types' contents={['TokenResponse', 'OAuthBaseProps', 'OAuthProps', 'OAuthRevokeOptions', 'OAuthServiceConfiguration', 'OAuthParameters', 'OAuthDisplayParameter', 'OAuthPromptParameter', 'OAuthNonceParameter', 'OAuthUILocalesParameter', 'OAuthIDTokenHintParamater', 'OAuthMaxAgeParameter', 'OAuthLoginHintParameter', 'OAuthACRValuesParameter']} />
+<TableOfContentSection title='Types' contents={['TokenResponse', 'OAuthBaseProps', 'OAuthProps', 'OAuthRevokeOptions', 'AuthServiceConfig', 'OAuthParameters', 'OAuthDisplayParameter', 'OAuthPromptParameter', 'OAuthNonceParameter', 'OAuthUILocalesParameter', 'OAuthIDTokenHintParamater', 'OAuthMaxAgeParameter', 'OAuthLoginHintParameter', 'OAuthACRValuesParameter']} />
 
 ## Methods
+
+### `AppAuth.fetchServiceConfigAsync()`
+
+```js
+AppAuth.fetchServiceConfigAsync(issuer: string): Promise<AuthServiceConfig>
+```
+
+Attempts to fetch the `AuthServiceConfig` and `discoveryDoc` from the provided issuer.
+
+#### Parameters
+
+| Name               | Type     | Description                                                      |
+| ------------------ | -------- | ---------------------------------------------------------------- |
+| [issuer][d-issuer] | `string` | URL using the `https` scheme with no query or fragment component |
+
+#### Return
+
+| Type                                                                      | Description                                                           |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `AuthServiceConfig & { discoveryDoc: Record<string, string | string[]> }` | The `AuthServiceConfig` and raw JSON data returned as `discoveryDoc`. |
+
+#### Example
+
+```js
+const serviceConfig = await AppAuth.fetchServiceConfigAsync('https://accounts.google.com');
+```
 
 ### `AppAuth.authAsync()`
 
@@ -281,26 +307,26 @@ Return value of the following `AppAuth` methods:
 
 ### `OAuthBaseProps`
 
-| Name                                                                                                                               | Type                        | Description                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| clientId                                                                                                                           | `string`                    | The client identifier                                                                                       |
-| [issuer](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6) | `string`                    | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
-| serviceConfiguration                                                                                                               | `OAuthServiceConfiguration` | specifies how to connect to a particular OAuth provider                                                     |
+| Name                 | Type                | Description                                                                                                 |
+| -------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| clientId             | `string`            | The client identifier                                                                                       |
+| [issuer][d-issuer]   | `string`            | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
+| serviceConfiguration | `AuthServiceConfig` | specifies how to connect to a particular OAuth provider                                                     |
 
 ### `OAuthProps`
 
 extends `OAuthBaseProps`, is used to create OAuth flows.
 
-| Name                                                                                                                               | Type                        | Description                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| clientId                                                                                                                           | `string`                    | The client identifier                                                                                       |
-| [issuer](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6) | `string`                    | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
-| serviceConfiguration                                                                                                               | `OAuthServiceConfiguration` | specifies how to connect to a particular OAuth provider                                                     |
-| clientSecret                                                                                                                       | `string | undefined`        | used to prove that identity of the client when exchaning an authorization code for an access token          |
-| [scopes](https://tools.ietf.org/html/rfc6749#section-3.3)                                                                          | `Array<string> | undefined` | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
-| redirectUrl                                                                                                                        | `string | undefined`        | The client's redirect URI. Default: `AppAuth.OAuthRedirect + ':/oauthredirect'`                             |
-| [additionalParameters](https://tools.ietf.org/html/rfc6749#section-3.1)                                                            | `OAuthParameters`           | Extra props passed to the OAuth server request                                                              |
-| canMakeInsecureRequests                                                                                                            | `boolean | undefined`       | **Android: Only** enables the use of HTTP requests                                                          |
+| Name                                           | Type                        | Description                                                                                                 |
+| ---------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| clientId                                       | `string`                    | The client identifier                                                                                       |
+| [issuer][d-issuer]                             | `string`                    | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
+| serviceConfiguration                           | `AuthServiceConfig`         | specifies how to connect to a particular OAuth provider                                                     |
+| clientSecret                                   | `string | undefined`        | used to prove that identity of the client when exchaning an authorization code for an access token          |
+| [scopes][d-scopes]                             | `Array<string> | undefined` | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
+| redirectUrl                                    | `string | undefined`        | The client's redirect URI. Default: `AppAuth.OAuthRedirect + ':/oauthredirect'`                             |
+| [additionalParameters][d-additionalparameters] | `OAuthParameters`           | Extra props passed to the OAuth server request                                                              |
+| canMakeInsecureRequests                        | `boolean | undefined`       | **Android: Only** enables the use of HTTP requests                                                          |
 
 ### `OAuthRevokeOptions`
 
@@ -309,14 +335,16 @@ extends `OAuthBaseProps`, is used to create OAuth flows.
 | token              | `string`  | The access token or refresh token to revoke                        |
 | isClientIdProvided | `boolean` | Denotes the availability of the Client ID for the token revocation |
 
-### `OAuthServiceConfiguration`
+### `AuthServiceConfig`
 
-| Name                                                                                                                                             | Type                 | Description                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- | ------------------------------------------------------------- |
-| [authorizationEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint)                                             | `string | undefined` | Optional URL of the OP's OAuth 2.0 Authorization Endpoint     |
-| [registrationEndpoint](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#ab6a4608552978d3bce67b93b45321555) | `string | undefined` | Optional URL of the OP's Dynamic Client Registration Endpoint |
-| revocationEndpoint                                                                                                                               | `string | undefined` | Optional URL of the OAuth server used for revoking tokens     |
-| tokenEndpoint                                                                                                                                    | `string`             | URL of the OP's OAuth 2.0 Token Endpoint                      |
+| Name                                             | Type                 | Description                                                                                                                      |
+| ------------------------------------------------ | -------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| tokenEndpoint                                    | `string`             | The OP's OAuth 2.0 Token Endpoint                                                                                                |
+| [authorizationEndpoint][d-authorizationendpoint] | `string | undefined` | The OP's OAuth 2.0 Authorization Endpoint                                                                                        |
+| [registrationEndpoint][d-registrationendpoint]   | `string | undefined` | The OP's Dynamic Client Registration Endpoint                                                                                    |
+| revocationEndpoint                               | `string | undefined` | The OAuth server used for revoking tokens                                                                                        |
+| userInfoEndpoint                                 | `string | undefined` | The OP's UserInfo Endpoint. This **must** use the `https` scheme and **may** contain port, path, and query parameter components. |
+|                                                  |
 
 ### `OAuthParameters`
 
@@ -418,3 +446,9 @@ type OAuthACRValuesParameter = string;
 ```
 
 Requested Authentication Context Class Reference values. Space-separated string that specifies the acr values that the Authorization Server is being requested to use for processing this Authentication Request, with the values appearing in order of preference. The Authentication Context Class satisfied by the authentication performed is returned as the acr Claim Value, as specified in Section 2. The acr Claim is requested as a Voluntary Claim by this parameter.
+
+[d-issuer]: http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6
+[d-authorizationendpoint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint
+[d-registrationendpoint]: http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#ab6a4608552978d3bce67b93b45321555
+[d-scopes]: https://tools.ietf.org/html/rfc6749#section-3.3
+[d-additionalparameters]: https://tools.ietf.org/html/rfc6749#section-3.1
