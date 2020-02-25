@@ -74,7 +74,7 @@
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
+- Go through another guide about [Quality Assurance](./Quality%20Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
 - Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` before versioning.
 
 ## 1.4. Versioning code for the new SDK
