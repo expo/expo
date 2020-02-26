@@ -343,8 +343,10 @@
 
 **How:**
 
+- Make sure you have the release branch checked out and have cherry-picked all appropriate docs changes from master that landed after the release branch was cut.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page.
-- Commit and push changes to `master` branch.
+- Commit and push changes to release branch.
+- Cherry pick this commit to `master` and push.
 - Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
 
 # Stage 7 - Snack
