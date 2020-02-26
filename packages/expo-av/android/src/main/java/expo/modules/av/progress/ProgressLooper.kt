@@ -63,6 +63,5 @@ class ProgressLooper(private val timeMachine: TimeMachine) {
     } else {
       (((timeMachine.time - nextExpectedTick) / interval) + 1) * interval
     }
-
-
+  
 }
