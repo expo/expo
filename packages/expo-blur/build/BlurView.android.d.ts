@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { BlurTint, Props } from './BlurView.types';
-export default class BlurView extends React.Component<Props> {
+import { BlurTint, BlurProps } from './BlurView.types';
+export default class BlurView extends React.Component<BlurProps> {
     static propTypes: {
         tint: PropTypes.Validator<BlurTint>;
         intensity: PropTypes.Validator<number>;

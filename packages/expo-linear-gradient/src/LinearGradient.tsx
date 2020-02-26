@@ -4,16 +4,16 @@ import { ColorPropType, Platform, View, ViewPropTypes, processColor } from 'reac
 
 import NativeLinearGradient from './NativeLinearGradient';
 
-type Props = {
+export type LinearGradientProps = {
   colors: string[];
   locations?: number[] | null;
-  start?: Point | null;
-  end?: Point | null;
+  start?: LinearGradienPoint | null;
+  end?: LinearGradienPoint | null;
 } & React.ComponentProps<typeof View>;
 
-type Point = { x: number; y: number } | [number, number];
+export type LinearGradienPoint = { x: number; y: number } | [number, number];
 
-export default class LinearGradient extends React.Component<Props> {
+export default class LinearGradient extends React.Component<LinearGradientProps> {
   static propTypes = {
     ...ViewPropTypes,
     colors: PropTypes.arrayOf(ColorPropType).isRequired,
@@ -45,7 +45,9 @@ export default class LinearGradient extends React.Component<Props> {
   }
 }
 
-function _normalizePoint(point: Point | null | undefined): [number, number] | undefined {
+function _normalizePoint(
+  point: LinearGradienPoint | null | undefined
+): [number, number] | undefined {
   if (!point) {
     return undefined;
   }

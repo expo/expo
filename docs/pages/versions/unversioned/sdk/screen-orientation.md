@@ -73,7 +73,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 ### Object Types
 
 - [`ScreenOrientation.PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
-- [`ScreenOrientation.OrientationInfo`](#screenorientationorientationinfo)
+- [`ScreenOrientation.ScreenOrientationInfo`](#screenorientationscreenorientationinfo)
 - [`ScreenOrientation.OrientationChangeEvent`](#screenorientationorientationchangeevent)
 - [`Subscription`](#subscription)
 
@@ -147,7 +147,7 @@ Gets the current screen orientation.
 
 #### Returns
 
-Returns a promise that resolves to an [`OrientationInfo`](#screenorientationorientationinfo) object value that reflects the current screen orientation.
+Returns a promise that resolves to an [`ScreenOrientationInfo`](#screenorientationscreenorientationinfo) object value that reflects the current screen orientation.
 
 #### Error Codes
 
@@ -269,7 +269,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 - **screenOrientationArrayIOS (Array[Orientation])**: An array of orientations to allow on the iOS platform (**iOS only**)
 - **screenOrientationLockWebOrientation (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
 
-### `ScreenOrientation.OrientationInfo`
+### `ScreenOrientation.ScreenOrientationInfo`
 
 - **orientation (_Orientation_)**: The current orientation of the device
 - **verticalSizeClass (_SizeClassIOS_)**: The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (**iOS only**)
@@ -278,7 +278,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 ### `ScreenOrientation.OrientationChangeEvent`
 
 - **orientationLock (_OrientationLock_)**: The current OrientationLock of the device.
-- **orientationInfo (_OrientationInfo_)**: The current OrientationInfo of the device.
+- **orientationInfo (_ScreenOrientationInfo_)**: The current ScreenOrientationInfo of the device.
 
 ### `Subscription`
 

@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions } from '../Camera.types';
+import { CameraPictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
@@ -260,7 +260,7 @@ class CameraModule {
     return null;
   }
 
-  public takePicture(config: PictureOptions): CapturedPicture {
+  public takePicture(config: CameraPictureOptions): CapturedPicture {
     const base64 = Utils.captureImage(this.videoElement, config);
 
     const capturedPicture: CapturedPicture = {

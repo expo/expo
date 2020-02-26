@@ -2,12 +2,11 @@ import { UnavailabilityError } from '@unimodules/core';
 import { NativeEventEmitter } from 'react-native';
 
 import ExponentSpeech from './ExponentSpeech';
-import { SpeechOptions, VoiceQuality, Voice } from './Speech.types';
+import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 
-export { VoiceQuality };
-export { Voice };
+export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice };
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;

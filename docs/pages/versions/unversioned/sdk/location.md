@@ -51,7 +51,7 @@ import * as Location from 'expo-location';
 
 <TableOfContentSection title='Geofencing Methods' contents={['Location.startGeofencingAsync(taskName, regions)', 'Location.stopGeofencingAsync(taskName)', 'Location.hasStartedGeofencingAsync(taskName)']} />
 
-<TableOfContentSection title='Types' contents={['Location', 'Region', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
+<TableOfContentSection title='Types' contents={['Location', 'LocationRegion', 'PermissionDetailsLocationIOS', 'PermissionDetailsLocationAndroid']} />
 
 <TableOfContentSection title='Enums' contents={['Location.Accuracy', 'Location.ActivityType', 'Location.GeofencingEventType', 'Location.GeofencingRegionState']} />
 
@@ -346,7 +346,7 @@ A promise resolving as soon as the task is registered.
 Geofencing task will be receiving following data:
 
 - **eventType : [Location.GeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#locationgeofencingeventtype).
-- **region : [Region](#type-region)** -- Object containing details about updated region. See [Region](#type-region) for more details.
+- **region : [LocationRegion](#type-location-region)** -- Object containing details about updated region. See [LocationRegion](#type-region) for more details.
 
 ```javascript
 import * as Location from 'expo-location';
@@ -403,9 +403,9 @@ Object of type `Location` contains following keys:
   - **speed (_number_)** -- The instantaneous speed of the device in meters per second.
 - **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
-### `Region`
+### `LocationRegion`
 
-Object of type `Region` includes following fields:
+Object of type `LocationRegion` includes following fields:
 
 - **identifier (_string_)** -- The identifier of the region object passed to `startGeofencingAsync` or auto-generated.
 - **latitude (_number_)** -- The latitude in degress of region's center point.

@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-declare type Props = {
+export declare type LinearGradientProps = {
     colors: string[];
     locations?: number[] | null;
-    start?: Point | null;
-    end?: Point | null;
+    start?: LinearGradienPoint | null;
+    end?: LinearGradienPoint | null;
 } & React.ComponentProps<typeof View>;
-declare type Point = {
+export declare type LinearGradienPoint = {
     x: number;
     y: number;
 } | [number, number];
-export default class LinearGradient extends React.Component<Props> {
+export default class LinearGradient extends React.Component<LinearGradientProps> {
     static propTypes: {
         colors: PropTypes.Validator<string[]>;
         locations: PropTypes.Requireable<(number | null | undefined)[]>;
@@ -75,4 +75,3 @@ export default class LinearGradient extends React.Component<Props> {
     };
     render(): JSX.Element;
 }
-export {};

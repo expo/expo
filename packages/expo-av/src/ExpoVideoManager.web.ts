@@ -1,4 +1,4 @@
-import { PlaybackStatus } from './AV';
+import { AVPlaybackStatus } from './AV';
 import ExponentAV from './ExponentAV';
 
 export default {
@@ -21,7 +21,7 @@ export default {
   async setFullscreen(
     element: HTMLMediaElement,
     isFullScreenEnabled: boolean
-  ): Promise<PlaybackStatus> {
+  ): Promise<AVPlaybackStatus> {
     if (isFullScreenEnabled) {
       await element.requestFullscreen();
     } else {

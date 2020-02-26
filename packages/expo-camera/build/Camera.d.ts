@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionResponse } from './Camera.types';
-export default class Camera extends React.Component<Props> {
+import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError } from './Camera.types';
+export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
     static Constants: {
@@ -91,7 +91,7 @@ export default class Camera extends React.Component<Props> {
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
-    static defaultProps: Props;
+    static defaultProps: CameraProps;
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
     _cameraHandle?: number | null;
@@ -102,10 +102,10 @@ export default class Camera extends React.Component<Props> {
     _lastEventsTimes: {
         [eventName: string]: Date;
     };
-    takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
+    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     getSupportedRatiosAsync(): Promise<string[]>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<string[]>;
-    recordAsync(options?: RecordingOptions): Promise<{
+    recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
     }>;
     stopRecording(): void;
@@ -131,3 +131,4 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 }, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+export { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError, };

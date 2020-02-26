@@ -22,7 +22,7 @@ declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
-type GLViewProps = {
+export type GLViewProps = {
   /**
    * Called when the OpenGL context is created, with the context object as a parameter. The context
    * object has an API mirroring WebGL's WebGLRenderingContext.
@@ -178,7 +178,7 @@ type WebGLObjectId = any;
 
 const idToObject = {};
 
-class WebGLObject {
+export class WebGLObject {
   id: WebGLObjectId;
 
   constructor(id: WebGLObjectId) {

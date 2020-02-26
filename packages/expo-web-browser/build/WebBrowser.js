@@ -1,6 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { AppState, Linking, Platform } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
+import { WebBrowserResultType, } from './WebBrowser.types';
+export { WebBrowserResultType, };
 const emptyCustomTabsPackages = {
     defaultBrowserPackage: undefined,
     preferredBrowserPackage: undefined,

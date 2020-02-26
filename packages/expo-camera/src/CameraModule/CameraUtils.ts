@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import invariant from 'invariant';
 
-import { PictureOptions } from './../Camera.types';
+import { CameraPictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
 import { requestUserMediaAsync } from './UserMediaManager';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
@@ -73,7 +73,10 @@ function ensureCaptureOptions(config: any): CaptureOptions {
 
 const DEFAULT_QUALITY = 0.92;
 
-export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOptions): string {
+export function captureImage(
+  video: HTMLVideoElement,
+  pictureOptions: CameraPictureOptions
+): string {
   const config = ensureCaptureOptions(pictureOptions);
   const { scale, imageType, quality = DEFAULT_QUALITY, isImageMirror } = config;
 
