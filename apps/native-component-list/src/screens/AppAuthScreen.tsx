@@ -1,15 +1,17 @@
 import * as AppAuth from 'expo-app-auth';
+import * as SecureStore from 'expo-secure-store';
 import React from 'react';
-import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, Platform } from 'react-native';
 
 const GUID = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9';
 const config = {
   issuer: 'https://accounts.google.com',
   clientId: `${GUID}.apps.googleusercontent.com`,
+  redirectUrl: Platform.select({ ios: 'host.exp.Exponent:/oauthredirect', android: undefined }),
   scopes: ['openid', 'profile'],
 };
 
-const StorageKey = '@Storage:Key';
+const StorageKey = 'StorageKey';
 
 async function signInAsync() {
   const authState = await AppAuth.authAsync(config);
@@ -26,7 +28,7 @@ async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
 }
 
 async function getCachedAuthAsync() {
-  const value = await AsyncStorage.getItem(StorageKey);
+  const value = await SecureStore.getItemAsync(StorageKey);
   const authState = JSON.parse(value!);
   console.log('getCachedAuthAsync', authState);
   if (authState) {
@@ -39,7 +41,7 @@ async function getCachedAuthAsync() {
 }
 
 async function cacheAuthAsync(authState: object) {
-  return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
+  return SecureStore.setItemAsync(StorageKey, JSON.stringify(authState));
 }
 
 function checkIfTokenExpired({ accessTokenExpirationDate }: { accessTokenExpirationDate: string }) {
@@ -52,11 +54,10 @@ async function signOutAsync({ accessToken }: { accessToken: string }) {
       token: accessToken,
       isClientIdProvided: true,
     });
-    await AsyncStorage.removeItem(StorageKey);
+    await SecureStore.deleteItemAsync(StorageKey);
     return;
   } catch (error) {
     alert('Failed to revoke token: ' + error.message);
-    return;
   }
 }
 
@@ -64,15 +65,25 @@ interface State {
   authState?: any;
 }
 
-export default class AuthSessionScreen extends React.Component<{}, State> {
+export default class AuthSessionScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'AuthSession',
   };
 
   readonly state: State = {};
 
-  componentDidMount() {
+  async componentDidMount() {
     this._getAuthAsync();
+
+    // const response = await fetch(`${config.issuer}/.well-known/openid-configuration`);
+    // const openidConfig = await response.json();
+    // console.log('local try: ', openidConfig);
+    try {
+      const serviceConfig = await AppAuth.fetchServiceConfigAsync(config.issuer);
+      console.log('Service Config: ', JSON.stringify(serviceConfig, null, 2));
+    } catch (error) {
+      console.log('Error getting service config: ', error, error.code);
+    }
   }
 
   _getAuthAsync = async () => {
@@ -82,7 +93,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  }
+  };
 
   _toggleAuthAsync = async () => {
     try {
@@ -96,7 +107,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  }
+  };
 
   get hasAuth() {
     return this.state.authState;
@@ -105,21 +116,27 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
   render() {
     const title = this.hasAuth ? 'Sign out' : 'Sign in';
     return (
-      <View style={styles.container}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <Button title={title} onPress={this._toggleAuthAsync} />
+        {this.hasAuth && (
+          <Button
+            title="Refresh"
+            onPress={async () => {
+              const authState = await refreshAuthAsync(this.state.authState);
+              this.setState({ authState });
+            }}
+          />
+        )}
         {this.hasAuth ? (
-          <Text style={styles.text}>
-            Result: {JSON.stringify(this.state.authState).slice(0, 50)}
-          </Text>
+          <Text style={styles.text}>Result: {JSON.stringify(this.state.authState, null, 2)}</Text>
         ) : null}
-      </View>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
