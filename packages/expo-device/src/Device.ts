@@ -75,14 +75,14 @@ export async function isSideLoadingEnabledAsync(): Promise<boolean> {
 
 export async function getPlatformFeaturesAsync(): Promise<string[]> {
   if (!ExpoDevice.getPlatformFeaturesAsync) {
-    return [];
+    throw new UnavailabilityError('expo-device', 'getPlatformFeaturesAsync');
   }
   return await ExpoDevice.getPlatformFeaturesAsync();
 }
 
 export async function hasPlatformFeatureAsync(feature: string): Promise<boolean> {
   if (!ExpoDevice.hasPlatformFeatureAsync) {
-    return false;
+    throw new UnavailabilityError('expo-device', 'hasPlatformFeatureAsync');
   }
   return await ExpoDevice.hasPlatformFeatureAsync(feature);
 }

@@ -1,6 +1,8 @@
-import React from 'react';
-import { ScrollView, View, Text, Button, Platform } from 'react-native';
+/* eslint-disable react/jsx-fragments */
 import * as Device from 'expo-device';
+import React from 'react';
+import { ScrollView, View, Button, Platform } from 'react-native';
+
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
@@ -98,12 +100,19 @@ export default class DeviceScreen extends React.Component {
         <DeviceConstants name="Device deviceName" value={Device.deviceName} />
         <DeviceConstants name="Device osInternalBuildId" value={Device.osInternalBuildId} />
         <DeviceMethods name="Device deviceType" method={Device.getDeviceTypeAsync} />
-        <DeviceMethods name="Device get system features" method={Device.getPlatformFeaturesAsync} />
-        <DeviceMethods name="Device get max memory" method={Device.getMaxMemoryAsync} />
-        <DeviceMethods
-          name="Device is sideloading enabled"
-          method={Device.isSideLoadingEnabledAsync}
-        />
+        {Platform.OS === 'android' && (
+          <>
+            <DeviceMethods
+              name="Device get system features"
+              method={Device.getPlatformFeaturesAsync}
+            />
+            <DeviceMethods name="Device get max memory" method={Device.getMaxMemoryAsync} />
+            <DeviceMethods
+              name="Device is sideloading enabled"
+              method={Device.isSideLoadingEnabledAsync}
+            />
+          </>
+        )}
         <DeviceMethods
           name="Device is rooted experimental"
           method={Device.isRootedExperimentalAsync}

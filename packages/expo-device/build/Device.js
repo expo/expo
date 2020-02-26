@@ -66,13 +66,13 @@ export async function isSideLoadingEnabledAsync() {
 }
 export async function getPlatformFeaturesAsync() {
     if (!ExpoDevice.getPlatformFeaturesAsync) {
-        return [];
+        throw new UnavailabilityError('expo-device', 'getPlatformFeaturesAsync');
     }
     return await ExpoDevice.getPlatformFeaturesAsync();
 }
 export async function hasPlatformFeatureAsync(feature) {
     if (!ExpoDevice.hasPlatformFeatureAsync) {
-        return false;
+        throw new UnavailabilityError('expo-device', 'hasPlatformFeatureAsync');
     }
     return await ExpoDevice.hasPlatformFeatureAsync(feature);
 }
