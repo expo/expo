@@ -24,7 +24,7 @@
 @property (nonatomic) BOOL hideShadow;
 @property (nonatomic) BOOL translucent;
 
-+ (void)willShowViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig*)config;
++ (void)willShowViewController:(UIViewController *)vc animated:(BOOL)animated withConfig:(RNSScreenStackHeaderConfig*)config;
 
 @end
 

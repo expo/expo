@@ -63,7 +63,7 @@
       break;
     }
   }
-  [RNSScreenStackHeaderConfig willShowViewController:viewController withConfig:config];
+  [RNSScreenStackHeaderConfig willShowViewController:viewController animated:animated withConfig:config];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -202,6 +202,11 @@
         [parentView.reactViewController addChildViewController:controller];
         [self addSubview:controller.view];
         [controller didMoveToParentViewController:parentView.reactViewController];
+        // On iOS pre 12 we observed that `willShowViewController` delegate method does not always
+        // get triggered when the navigation controller is instantiated. As the only thing we do in
+        // that delegate method is ask nav header to update to the current state it does not hurt to
+        // trigger that logic from here too such that we can be sure the header is properly updated.
+        [self navigationController:_controller willShowViewController:_controller.topViewController animated:NO];
         break;
       }
       parentView = (UIView *)parentView.reactSuperview;

@@ -41,15 +41,17 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private OnClickListener mBackClickListener = new OnClickListener() {
     @Override
     public void onClick(View view) {
-      ScreenStack stack = getScreenStack();
       ScreenStackFragment fragment = getScreenFragment();
-      if (stack.getRootScreen() == fragment.getScreen()) {
-        Fragment parentFragment = fragment.getParentFragment();
-        if (parentFragment instanceof ScreenStackFragment) {
-          ((ScreenStackFragment) parentFragment).dismiss();
+      if (fragment != null) {
+        ScreenStack stack = getScreenStack();
+        if (stack != null && stack.getRootScreen() == fragment.getScreen()) {
+          Fragment parentFragment = fragment.getParentFragment();
+          if (parentFragment instanceof ScreenStackFragment) {
+            ((ScreenStackFragment) parentFragment).dismiss();
+          }
+        } else {
+          fragment.dismiss();
         }
-      } else {
-        fragment.dismiss();
       }
     }
   };
