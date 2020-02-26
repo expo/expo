@@ -8,7 +8,7 @@ import Container from './container';
 import Navigation from './navigation';
 import NativeStack from './nativeStack';
 
-const SCREENS: { [key: string]: { screen: any; title: string } } = {
+const SCREENS: Record<string, { screen: any; title: string }> = {
   Container: { screen: Container, title: 'ScreenContainer example' },
   NativeStack: { screen: NativeStack, title: 'ScreenStack example' },
   Navigation: { screen: Navigation, title: 'React Navigation example' },
