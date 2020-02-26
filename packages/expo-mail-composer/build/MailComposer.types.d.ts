@@ -1,4 +1,4 @@
-export declare type ComposeOptions = {
+export declare type MailComposerOptions = {
     recipients?: string[];
     ccRecipients?: string[];
     bccRecipients?: string[];
@@ -7,7 +7,13 @@ export declare type ComposeOptions = {
     isHtml?: boolean;
     attachments?: string[];
 };
-export declare type ComposeResult = {
-    status: ComposeStatus;
+export declare type MailComposerResult = {
+    status: MailComposerStatus;
 };
-export declare type ComposeStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';
+export declare const MailComposerStatus: {
+    readonly UNDETERMINED: "undetermined";
+    readonly SENT: "sent";
+    readonly SAVED: "saved";
+    readonly CANCELLED: "cancelled";
+};
+export declare type MailComposerStatus = typeof MailComposerStatus[keyof typeof MailComposerStatus];

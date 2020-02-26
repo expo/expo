@@ -70,7 +70,7 @@ function convertProp(value, key) {
     }
     return value;
 }
-function _onPictureSaved({ nativeEvent }) {
+function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
     const callback = _PICTURE_SAVED_CALLBACKS[id];
     if (callback) {

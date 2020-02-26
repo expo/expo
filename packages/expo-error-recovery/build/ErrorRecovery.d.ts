@@ -1,6 +1,4 @@
 import './ErrorRecovery.fx';
-export declare const recoveredProps: Props | null;
-export declare type Props = {
-    [key: string]: any;
-};
-export declare function setRecoveryProps(props: Props): void;
+export declare const recoveredProps: Record<string, any> | null;
+export declare type ErrorRecoveryProps = Record<string, any>;
+export declare function setRecoveryProps(props: ErrorRecoveryProps): void;

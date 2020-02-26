@@ -1,7 +1,7 @@
 import React from 'react';
-import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
+import { CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions } from './Camera.types';
 import CameraModule from './CameraModule/CameraModule';
-export default class ExponentCamera extends React.Component<NativeProps> {
+export default class ExponentCamera extends React.Component<CameraNativeProps> {
     video?: number | null;
     camera?: CameraModule;
     state: {
@@ -9,16 +9,16 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     };
     componentWillUnmount(): void;
     componentWillReceiveProps(nextProps: any): void;
-    _updateCameraProps: ({ type, pictureSize, ...webCameraSettings }: NativeProps) => Promise<void>;
+    _updateCameraProps: ({ type, pictureSize, ...webCameraSettings }: CameraNativeProps) => Promise<void>;
     getCamera: () => CameraModule;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
-    takePicture: (options: PictureOptions) => Promise<CapturedPicture>;
+    takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
     getAvailableCameraTypesAsync: () => Promise<string[]>;
     resumePreview: () => Promise<void>;
     pausePreview: () => Promise<void>;
     onCameraReady: () => void;
     onMountError: ({ nativeEvent }: {
-        nativeEvent: MountError;
+        nativeEvent: CameraMountError;
     }) => void;
     _setRef: (ref: any) => void;
     render(): JSX.Element;

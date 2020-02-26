@@ -3,7 +3,7 @@ export declare type VideoThumbnailsResult = {
     width: number;
     height: number;
 };
-export declare type ThumbnailOptions = {
+export declare type VideoThumbnailsOptions = {
     quality?: number;
     time?: number;
     headers?: {

@@ -1,4 +1,4 @@
-export interface TrackingOptions {
+export interface AmplitudeTrackingOptions {
     disableAdid?: boolean;
     disableCarrier?: boolean;
     disableCity?: boolean;
@@ -29,4 +29,4 @@ export declare function logEventWithProperties(eventName: string, properties: {
     [name: string]: any;
 }): Promise<void>;
 export declare function setGroup(groupType: string, groupNames: string[]): Promise<void>;
-export declare function setTrackingOptions(options: TrackingOptions): any;
+export declare function setTrackingOptions(options: AmplitudeTrackingOptions): any;

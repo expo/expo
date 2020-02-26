@@ -1,5 +1,5 @@
-import { ComposeOptions, ComposeResult } from './MailComposer.types';
-export declare function composeAsync(options: ComposeOptions): Promise<ComposeResult>;
+import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
+export declare function composeAsync(options: MailComposerOptions): Promise<MailComposerResult>;
 /**
  * Can the device compose an email.
  * - Returns `true` on iOS when the device has a default email setup for sending mail.
