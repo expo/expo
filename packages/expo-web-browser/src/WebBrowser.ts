@@ -4,24 +4,37 @@ import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
   RedirectEvent,
-  OpenBrowserOptions,
-  AuthSessionResult,
-  CustomTabsBrowsersResults,
-  BrowserResult,
-  RedirectResult,
-  MayInitWithUrlResult,
-  WarmUpResult,
-  CoolDownResult,
+  WebBrowserOpenOptions,
+  WebBrowserAuthSessionResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserResult,
+  WebBrowserRedirectResult,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserWarmUpResult,
+  WebBrowserCoolDownResult,
+  WebBrowserResultType,
 } from './WebBrowser.types';
 
-const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
+export {
+  WebBrowserOpenOptions,
+  WebBrowserAuthSessionResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserResult,
+  WebBrowserRedirectResult,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserWarmUpResult,
+  WebBrowserCoolDownResult,
+  WebBrowserResultType,
+};
+
+const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
   defaultBrowserPackage: undefined,
   preferredBrowserPackage: undefined,
   browserPackages: [],
   servicePackages: [],
 };
 
-export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
+export async function getCustomTabsSupportingBrowsersAsync(): Promise<WebBrowserCustomTabsResults> {
   if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
     throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
   }
@@ -32,7 +45,7 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
   }
 }
 
-export async function warmUpAsync(browserPackage?: string): Promise<WarmUpResult> {
+export async function warmUpAsync(browserPackage?: string): Promise<WebBrowserWarmUpResult> {
   if (!ExponentWebBrowser.warmUpAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
@@ -46,7 +59,7 @@ export async function warmUpAsync(browserPackage?: string): Promise<WarmUpResult
 export async function mayInitWithUrlAsync(
   url: string,
   browserPackage?: string
-): Promise<MayInitWithUrlResult> {
+): Promise<WebBrowserMayInitWithUrlResult> {
   if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
   }
@@ -57,7 +70,7 @@ export async function mayInitWithUrlAsync(
   }
 }
 
-export async function coolDownAsync(browserPackage?: string): Promise<CoolDownResult> {
+export async function coolDownAsync(browserPackage?: string): Promise<WebBrowserCoolDownResult> {
   if (!ExponentWebBrowser.coolDownAsync) {
     throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
   }
@@ -70,8 +83,8 @@ export async function coolDownAsync(browserPackage?: string): Promise<CoolDownRe
 
 export async function openBrowserAsync(
   url: string,
-  browserParams: OpenBrowserOptions = {}
-): Promise<BrowserResult> {
+  browserParams: WebBrowserOpenOptions = {}
+): Promise<WebBrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
@@ -88,8 +101,8 @@ export function dismissBrowser(): void {
 export async function openAuthSessionAsync(
   url: string,
   redirectUrl: string,
-  browserParams: OpenBrowserOptions = {}
-): Promise<AuthSessionResult> {
+  browserParams: WebBrowserOpenOptions = {}
+): Promise<WebBrowserAuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
@@ -144,14 +157,14 @@ function _onAppStateChangeAndroid(state: AppStateStatus) {
 
 async function _openBrowserAndWaitAndroidAsync(
   startUrl: string,
-  browserParams: OpenBrowserOptions = {}
-): Promise<BrowserResult> {
+  browserParams: WebBrowserOpenOptions = {}
+): Promise<WebBrowserResult> {
   let appStateChangedToActive = new Promise(resolve => {
     _onWebBrowserCloseAndroid = resolve;
     AppState.addEventListener('change', _onAppStateChangeAndroid);
   });
 
-  let result: BrowserResult = { type: 'cancel' };
+  let result: WebBrowserResult = { type: 'cancel' };
   let { type } = await openBrowserAsync(startUrl, browserParams);
 
   if (type === 'opened') {
@@ -167,8 +180,8 @@ async function _openBrowserAndWaitAndroidAsync(
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
   returnUrl: string,
-  browserParams: OpenBrowserOptions = {}
-): Promise<AuthSessionResult> {
+  browserParams: WebBrowserOpenOptions = {}
+): Promise<WebBrowserAuthSessionResult> {
   if (_redirectHandler) {
     throw new Error(
       `The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`
@@ -213,7 +226,7 @@ function _stopWaitingForRedirect() {
   _redirectHandler = null;
 }
 
-function _waitForRedirectAsync(returnUrl: string): Promise<RedirectResult> {
+function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
   return new Promise(resolve => {
     _redirectHandler = (event: RedirectEvent) => {
       if (event.url.startsWith(returnUrl)) {

@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { View, createElement } from 'react-native';
 
-import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
 
 type ExponentVideoProps = {
-  source: PlaybackNativeSource | null;
+  source: AVPlaybackNativeSource | null;
   resizeMode?: object;
-  status?: PlaybackStatusToSet;
+  status?: AVPlaybackStatusToSet;
   useNativeControls?: boolean;
-  onStatusUpdate?: (event: { nativeEvent: PlaybackStatus }) => void;
+  onStatusUpdate?: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onReadyForDisplay?: (event: { nativeEvent: object }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
   onLoadStart: () => void;
-  onLoad: (event: { nativeEvent: PlaybackStatus }) => void;
+  onLoad: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
   // Required by react-native
   scaleX?: number;
