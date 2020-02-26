@@ -20,6 +20,7 @@ interface ActionOptions {
   platform: 'ios' | 'android' | 'all';
   commit: string;
   pbxproj: boolean;
+  semverPrefix: string;
 }
 
 interface VendoredModuleUpdateStep {
@@ -659,7 +660,9 @@ async function action(options: ActionOptions) {
     };
 
     if (moduleConfig.installableInManagedApps) {
-      const versionRange = `${moduleConfig.semverPrefix || ''}${version}`;
+      const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+      const versionRange = `${semverPrefix}${version}`;
+
       bundledNativeModules[name] = versionRange;
       console.log(
         `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
@@ -688,7 +691,7 @@ export default (program: Command) => {
     .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
-    .option('-o, --listOutdated', 'Shows a list of outdated 3rd party modules.', false)
+    .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
     .option(
       '-p, --platform <string>',
@@ -699,6 +702,11 @@ export default (program: Command) => {
       '-c, --commit <string>',
       'Git reference on which to checkout when copying 3rd party module.',
       'master'
+    )
+    .option(
+      '-s, --semver-prefix <string>',
+      'Setting this flag forces to use given semver prefix. Some modules may specify them by the config, but in case we want to update to alpha/beta versions we should use an empty prefix to be more strict.',
+      null
     )
     .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
     .asyncAction(action);

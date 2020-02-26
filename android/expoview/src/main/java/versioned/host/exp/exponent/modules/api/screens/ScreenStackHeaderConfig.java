@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -15,21 +16,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.views.text.ReactFontManager;
+
+import java.util.ArrayList;
 
 public class ScreenStackHeaderConfig extends ViewGroup {
 
-  private final ScreenStackHeaderSubview mConfigSubviews[] = new ScreenStackHeaderSubview[3];
-  private int mSubviewsCount = 0;
+  private final ArrayList<ScreenStackHeaderSubview> mConfigSubviews = new ArrayList<>(3);
   private String mTitle;
   private int mTitleColor;
   private String mTitleFontFamily;
-  private int mTitleFontSize;
+  private float mTitleFontSize;
   private int mBackgroundColor;
   private boolean mIsHidden;
-  private boolean mGestureEnabled = true;
   private boolean mIsBackButtonHidden;
   private boolean mIsShadowHidden;
+  private boolean mDestroyed;
   private int mTintColor;
   private final Toolbar mToolbar;
 
@@ -38,7 +41,18 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private OnClickListener mBackClickListener = new OnClickListener() {
     @Override
     public void onClick(View view) {
-      getScreenStack().dismiss(getScreenFragment());
+      ScreenStackFragment fragment = getScreenFragment();
+      if (fragment != null) {
+        ScreenStack stack = getScreenStack();
+        if (stack != null && stack.getRootScreen() == fragment.getScreen()) {
+          Fragment parentFragment = fragment.getParentFragment();
+          if (parentFragment instanceof ScreenStackFragment) {
+            ((ScreenStackFragment) parentFragment).dismiss();
+          }
+        } else {
+          fragment.dismiss();
+        }
+      }
     }
   };
 
@@ -47,6 +61,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     setVisibility(View.GONE);
 
     mToolbar = new Toolbar(context);
+    // reset content insets to be 0 to allow react position custom navbar views. Note that this does
+    // not affect platform native back button as toolbar does not apply left inset when navigation
+    // button is specified
+    mToolbar.setContentInsetsAbsolute(0, 0);
 
     // set primary color as background by default
     TypedValue tv = new TypedValue();
@@ -58,6 +76,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     // no-op
+  }
+
+  public void destroy() {
+    mDestroyed = true;
   }
 
   @Override
@@ -103,17 +125,17 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     return null;
   }
 
-  public boolean isDismissable() {
-    return mGestureEnabled;
-  }
-
   public void onUpdate() {
     Screen parent = (Screen) getParent();
     final ScreenStack stack = getScreenStack();
-    boolean isRoot = stack == null ? true : stack.getRootScreen() == parent;
     boolean isTop = stack == null ? true : stack.getTopScreen() == parent;
 
-    if (!mIsAttachedToWindow || !isTop) {
+    if (!mIsAttachedToWindow || !isTop || mDestroyed) {
+      return;
+    }
+
+    AppCompatActivity activity = (AppCompatActivity) getScreenFragment().getActivity();
+    if (activity == null) {
       return;
     }
 
@@ -128,12 +150,11 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       getScreenFragment().setToolbar(mToolbar);
     }
 
-    AppCompatActivity activity = (AppCompatActivity) getScreenFragment().getActivity();
     activity.setSupportActionBar(mToolbar);
     ActionBar actionBar = activity.getSupportActionBar();
 
     // hide back button
-    actionBar.setDisplayHomeAsUpEnabled(isRoot ? false : !mIsBackButtonHidden);
+    actionBar.setDisplayHomeAsUpEnabled(getScreenFragment().canNavigateBack() ? !mIsBackButtonHidden : false);
 
     // when setSupportActionBar is called a toolbar wrapper gets initialized that overwrites
     // navigation click listener. The default behavior set in the wrapper is to call into
@@ -174,9 +195,25 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     }
 
     // subviews
-    for (int i = 0; i < mSubviewsCount; i++) {
-      ScreenStackHeaderSubview view = mConfigSubviews[i];
+    for (int i = mToolbar.getChildCount() - 1; i >= 0; i--) {
+      if (mToolbar.getChildAt(i) instanceof ScreenStackHeaderSubview) {
+        mToolbar.removeViewAt(i);
+      }
+    }
+    for (int i = 0, size = mConfigSubviews.size(); i < size; i++) {
+      ScreenStackHeaderSubview view = mConfigSubviews.get(i);
       ScreenStackHeaderSubview.Type type = view.getType();
+
+      if (type == ScreenStackHeaderSubview.Type.BACK) {
+        // we special case BACK button header config type as we don't add it as a view into toolbar
+        // but instead just copy the drawable from imageview that's added as a first child to it.
+        View firstChild = view.getChildAt(0);
+        if (!(firstChild instanceof ImageView)) {
+          throw new JSApplicationIllegalArgumentException("Back button header config view should have Image as first child");
+        }
+        actionBar.setHomeAsUpIndicator(((ImageView) firstChild).getDrawable());
+        continue;
+      }
 
       Toolbar.LayoutParams params =
               new Toolbar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -192,48 +229,44 @@ public class ScreenStackHeaderConfig extends ViewGroup {
         case RIGHT:
           params.gravity = Gravity.RIGHT;
           break;
-        case TITLE:
-          params.width = LayoutParams.MATCH_PARENT;
-          mToolbar.setTitle(null);
         case CENTER:
+          params.width = LayoutParams.MATCH_PARENT;
           params.gravity = Gravity.CENTER_HORIZONTAL;
+          mToolbar.setTitle(null);
           break;
       }
 
       view.setLayoutParams(params);
-      if (view.getParent() == null) {
-        mToolbar.addView(view);
-      }
+      mToolbar.addView(view);
     }
   }
 
   private void maybeUpdate() {
-    if (getParent() != null) {
+    if (getParent() != null && !mDestroyed) {
       onUpdate();
     }
   }
 
   public ScreenStackHeaderSubview getConfigSubview(int index) {
-    return mConfigSubviews[index];
+    return mConfigSubviews.get(index);
   }
 
   public int getConfigSubviewsCount() {
-    return mSubviewsCount;
+    return mConfigSubviews.size();
   }
 
   public void removeConfigSubview(int index) {
-    if (mConfigSubviews[index] != null) {
-      mSubviewsCount--;
-    }
-    mConfigSubviews[index] = null;
+    mConfigSubviews.remove(index);
+    maybeUpdate();
+  }
+
+  public void removeAllConfigSubviews() {
+    mConfigSubviews.clear();
     maybeUpdate();
   }
 
   public void addConfigSubview(ScreenStackHeaderSubview child, int index) {
-    if (mConfigSubviews[index] == null) {
-      mSubviewsCount++;
-    }
-    mConfigSubviews[index] = child;
+    mConfigSubviews.add(index, child);
     maybeUpdate();
   }
 
@@ -258,7 +291,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     mTitleFontFamily = titleFontFamily;
   }
 
-  public void setTitleFontSize(int titleFontSize) {
+  public void setTitleFontSize(float titleFontSize) {
     mTitleFontSize = titleFontSize;
   }
 
@@ -276,10 +309,6 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   public void setHideShadow(boolean hideShadow) {
     mIsShadowHidden = hideShadow;
-  }
-
-  public void setGestureEnabled(boolean gestureEnabled) {
-    mGestureEnabled = gestureEnabled;
   }
 
   public void setHideBackButton(boolean hideBackButton) {
