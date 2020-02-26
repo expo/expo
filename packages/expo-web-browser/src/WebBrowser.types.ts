@@ -28,9 +28,26 @@ export type WebBrowserCustomTabsResults = {
   servicePackages: string[];
 };
 
+export const WebBrowserResultType = {
+  /**
+   * iOS only
+   */
+  CANCEL: 'cancel',
+  /**
+   * iOS only
+   */
+  DISMISS: 'dismiss',
+  /**
+   * Android only
+   */
+  OPENED: 'opened',
+} as const;
+
+export type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
+
 export type WebBrowserResult = {
   // cancel and dismiss are iOS only, opened is Android only
-  type: 'cancel' | 'dismiss' | 'opened';
+  type: WebBrowserResultType;
 };
 
 export type WebBrowserRedirectResult = {

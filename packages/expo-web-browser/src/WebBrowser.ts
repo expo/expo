@@ -12,6 +12,7 @@ import {
   WebBrowserMayInitWithUrlResult,
   WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserResultType,
 } from './WebBrowser.types';
 
 export {
@@ -23,6 +24,7 @@ export {
   WebBrowserMayInitWithUrlResult,
   WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserResultType,
 };
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {

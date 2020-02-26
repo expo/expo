@@ -12,4 +12,11 @@ export type MailComposerResult = {
   status: MailComposerStatus;
 };
 
-export type MailComposerStatus = 'undetermined' | 'sent' | 'saved' | 'cancelled';
+export const MailComposerStatus = {
+  UNDETERMINED: 'undetermined',
+  SENT: 'sent',
+  SAVED: 'saved',
+  CANCELLED: 'cancelled',
+} as const;
+
+export type MailComposerStatus = typeof MailComposerStatus[keyof typeof MailComposerStatus];
