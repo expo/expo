@@ -94,13 +94,56 @@
   return [_appRegistry objectForKey:recordId];
 }
 
+NSString *const SCOPE_KEY_PREFIX = @"sk_";
+
 // when reloading, for a brief period of time there are two records with the same experienceId in the registry
 - (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId
+{
+  if ([experienceId hasPrefix:SCOPE_KEY_PREFIX]) {
+    return [self newestRecordWithScopeKey:experienceId];
+  } else {
+    return [self newestRecordWithLegacyExperienceId:experienceId];
+  }
+}
+
+
+// when reloading, for a brief period of time there are two records with the same experienceId in the registry
+- (EXKernelAppRecord * _Nullable)newestRecordWithScopeKey:(NSString *)scopeKey
 {
   EXKernelAppRecord *recordToReturn;
   for (NSString *recordId in self.appEnumerator) {
     EXKernelAppRecord *record = [self recordForId:recordId];
-    if (record && record.experienceId && [record.experienceId isEqualToString:experienceId]) {
+    if (record && record.scopeKey && [record.scopeKey isEqualToString:scopeKey]) {
+      if (recordToReturn && [recordToReturn.timeCreated compare:record.timeCreated] == NSOrderedDescending) {
+        continue;
+      }
+      recordToReturn = record;
+    }
+  }
+  return recordToReturn;
+}
+
+- (EXKernelAppRecord * _Nullable)newestRecordWithExpoProjectId:(NSString *)expoProjectId
+{
+  EXKernelAppRecord *recordToReturn;
+  for (NSString *recordId in self.appEnumerator) {
+    EXKernelAppRecord *record = [self recordForId:recordId];
+    if (record && record.expoProjectId && [record.expoProjectId isEqualToString:expoProjectId]) {
+      if (recordToReturn && [recordToReturn.timeCreated compare:record.timeCreated] == NSOrderedDescending) {
+        continue;
+      }
+      recordToReturn = record;
+    }
+  }
+  return recordToReturn;
+}
+
+- (EXKernelAppRecord * _Nullable)newestRecordWithLegacyExperienceId:(NSString *)legacyExperienceId
+{
+  EXKernelAppRecord *recordToReturn;
+  for (NSString *recordId in self.appEnumerator) {
+    EXKernelAppRecord *record = [self recordForId:recordId];
+    if (record && record.legacyExperienceId && [record.legacyExperienceId isEqualToString:legacyExperienceId]) {
       if (recordToReturn && [recordToReturn.timeCreated compare:record.timeCreated] == NSOrderedDescending) {
         continue;
       }
@@ -129,19 +172,5 @@
   return @"EXKernelAppRegistry (empty)";
 }
 
-- (BOOL)isExperienceIdUnique:(NSString *)experienceId
-{
-  int count = 0;
-  for (NSString *recordId in self.appEnumerator) {
-    EXKernelAppRecord *appRecord = [self recordForId:recordId];
-    if (appRecord.experienceId && [appRecord.experienceId isEqualToString:experienceId]) {
-      count++;
-      if (count > 1) {
-        return NO;
-      }
-    }
-  }
-  return YES;
-}
 
 @end

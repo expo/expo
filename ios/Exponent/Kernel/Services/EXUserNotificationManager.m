@@ -59,6 +59,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 {
   BOOL shouldDisplayInForeground = NO;
 
+  // TODO: what if the notification is not for the visible app? :O it seems like we will not use the correct notification config in that case
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   if (visibleApp) {
     NSDictionary *visibleAppManifest = visibleApp.appLoader.manifest;

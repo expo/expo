@@ -170,12 +170,24 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return nil;
 }
 
+
 - (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord];
+
+  if (!destinationApp) {
+    // Need to search by expoProjectId or legacy experienceId, these are the only fields available on the notification payload
+    NSString *expoProjectId = notification.expoProjectId;
+
+    if (expoProjectId == nil) {
+      destinationApp = [_appRegistry newestRecordWithExpoProjectId:expoProjectId];
+    } else {
+      destinationApp = [_appRegistry newestRecordWithLegacyExperienceId:notification.experienceId];
+    }
+  }
 
   // This allows home app record to receive notification events as well.
-  if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {
+  if (!destinationApp && [_appRegistry.homeAppRecord.legacyExperienceId isEqualToString:notification.experienceId]) {
     destinationApp = _appRegistry.homeAppRecord;
   }
 
@@ -189,6 +201,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
     if (_browserController) {
       __weak typeof(self) weakSelf = self;
+
+      // TODO: probably don't use the legacy experienceId here?
       [_browserController getHistoryUrlForExperienceId:notification.experienceId completion:^(NSString *urlString) {
         if (urlString) {
           NSURL *url = [NSURL URLWithString:urlString];
@@ -250,6 +264,15 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return record;
 }
 
+- (EXKernelAppRecord *)standaloneAppRecord
+{
+  return [_appRegistry standaloneAppRecord];
+}
+
+- (EXKernelAppRecord *)newestAppRecordWithExperienceId:(NSString *)experienceId
+{
+  return [_appRegistry newestRecordWithExperienceId:experienceId];
+}
 
 - (void)reloadVisibleApp
 {

@@ -30,6 +30,9 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 + (instancetype)sharedInstance;
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
+- (EXKernelAppRecord *)standaloneAppRecord;
+- (EXKernelAppRecord *)newestAppRecordWithExperienceId:(NSString *)experienceId;
+
 - (void)switchTasks;
 - (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
 - (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache

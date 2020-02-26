@@ -6,6 +6,7 @@
 @interface EXPendingNotification ()
 
 @property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *expoProjectId;
 @property (nonatomic, strong) NSDictionary *body;
 @property (nonatomic, assign) BOOL isRemote;
 @property (nonatomic, assign) BOOL isFromBackground;
@@ -20,6 +21,7 @@
 {
   NSDictionary *payload = notification.request.content.userInfo ?: @{};
   return [self initWithExperienceId:payload[@"experienceId"]
+                      expoProjectId:payload[@"expoProjectId"]
                    notificationBody:payload[@"body"]
                            isRemote:[notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]
                    isFromBackground:NO
@@ -42,6 +44,7 @@
 }
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
+                       expoProjectId:(NSString * _Nullable)expoProjectId
                     notificationBody:(NSDictionary *)body
                             isRemote:(BOOL)isRemote
                     isFromBackground:(BOOL)isFromBackground
@@ -51,6 +54,7 @@
     _isRemote = isRemote;
     _isFromBackground = isFromBackground;
     _experienceId = experienceId;
+    _expoProjectId = expoProjectId;
     _body = body ?: @{};
     _actionId = actionId;
     _userText = userText;

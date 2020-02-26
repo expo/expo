@@ -55,7 +55,43 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return kEXKernelAppRecordStatusNew;
 }
 
+- (NSString * _Nullable)projectId
+{
+  return [self expoProjectId] ?: [self legacyExperienceId];
+}
+
 - (NSString * _Nullable)experienceId
+{
+  return [self scopeKey] ?: [self legacyExperienceId];
+}
+
+- (NSString * _Nullable)expoProjectId
+{
+  if (self.appLoader && self.appLoader.manifest) {
+    id expoProjectIdJsonValue = self.appLoader.manifest[@"expoProjectId"];
+    if (expoProjectIdJsonValue) {
+      RCTAssert([expoProjectIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an expoProjectId which is not a string: %@", expoProjectIdJsonValue);
+      return expoProjectIdJsonValue;
+    }
+  }
+  return nil;
+}
+
+- (NSString * _Nullable)scopeKey
+{
+  if (self.appLoader && self.appLoader.manifest) {
+    id scopeKeyJsonValue = self.appLoader.manifest[@"scopeKey"];
+    if (scopeKeyJsonValue) {
+      RCTAssert([scopeKeyJsonValue isKindOfClass:[NSString class]], @"Manifest contains a scopeKey which is not a string: %@", scopeKeyJsonValue);
+      return scopeKeyJsonValue;
+    } else {
+      return [self legacyExperienceId];
+    }
+  }
+  return nil;
+}
+
+- (NSString * _Nullable)legacyExperienceId
 {
   if (self.appLoader && self.appLoader.manifest) {
     id experienceIdJsonValue = self.appLoader.manifest[@"id"];

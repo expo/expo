@@ -38,8 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId;
 - (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId;
+- (EXKernelAppRecord * _Nullable)newestRecordWithLegacyExperienceId:(NSString *)legacyExperienceId;
+- (EXKernelAppRecord * _Nullable)newestRecordWithExpoProjectId:(NSString *)expoProjectId;
+- (EXKernelAppRecord * _Nullable)newestRecordWithScopeKey:(NSString *)scopeKey;
 - (NSEnumerator<id> *)appEnumerator; // does not include home
-- (BOOL)isExperienceIdUnique:(NSString *)experienceId;
 
 @end
 

@@ -3,6 +3,8 @@
 #import "EXApiV2Client+EXRemoteNotifications.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
+#import "EXKernelAppRecord.h"
+#import "EXAppLoader.h"
 #import "EXRemoteNotificationManager.h"
 #import "NSData+EXRemoteNotifications.h"
 #import "EXUserNotificationCenter.h"
@@ -145,9 +147,15 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
         return;
       }
 
+      NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
+      EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] standaloneAppRecord] ?: [[EXKernel sharedInstance] newestAppRecordWithExperienceId:experienceId];
+      NSDictionary *manifest = appRecord.appLoader.manifest;
+      NSString *legacyExperienceId = manifest[@"id"];
+      NSString *expoProjectId = manifest[@"expoProjectId"];
+
       if (self->_currentAPNSToken) {
-        NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
-        [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceId
+        [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:legacyExperienceId
+                                                      expoProjectId:expoProjectId
                                                         deviceToken:self->_currentAPNSToken
                                                   completionHandler:handler];
         return;
@@ -167,8 +175,8 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
         }
 
         if (apnsToken) {
-          NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
-          [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceId
+          [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:legacyExperienceId
+                                                        expoProjectId:expoProjectId
                                                           deviceToken:apnsToken
                                                     completionHandler:handler];
         } else {
