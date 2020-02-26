@@ -1,6 +1,18 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoAppAuth from './ExpoAppAuth';
+import { ExpoAuthorizationServiceConfiguration } from './ExpoAuthorizationServiceConfiguration';
+import { ExpoRequestor } from './ExpoRequestor';
+// AuthorizationServiceConfigurationJson
+export function createServiceConfig(options) {
+    return new ExpoAuthorizationServiceConfiguration({
+        authorization_endpoint: options.authorizationEndpoint,
+        token_endpoint: options.tokenEndpoint,
+        revocation_endpoint: options.revocationEndpoint,
+        end_session_endpoint: options.endSessionEndpoint,
+        userinfo_endpoint: options.userInfoEndpoint,
+    });
+}
 function isValidServiceConfiguration(config) {
     return !!(config &&
         typeof config.authorizationEndpoint === 'string' &&
@@ -25,16 +37,18 @@ async function _executeAsync(props) {
         props.redirectUrl = getDefaultOAuthRedirect();
     }
     assertValidProps(props);
+    // Ensure the service config is fetched in JS
+    if (props.issuer && !props.serviceConfiguration) {
+        props.serviceConfiguration = await fetchServiceConfigAsync(props.issuer);
+    }
     return await ExpoAppAuth.executeAsync(props);
 }
 export function getDefaultOAuthRedirect() {
     return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
 }
 export async function fetchServiceConfigAsync(issuer) {
-    if (!ExpoAppAuth.fetchServiceConfigAsync) {
-        throw new UnavailabilityError('AppAuth', 'fetchServiceConfigAsync');
-    }
-    const discoveryDoc = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
+    const serviceConfig = await ExpoAuthorizationServiceConfiguration.fetchFromIssuer(issuer);
+    const discoveryDoc = serviceConfig.discoveryDocument;
     return {
         authorizationEndpoint: discoveryDoc.authorization_endpoint,
         tokenEndpoint: discoveryDoc.token_endpoint,
@@ -137,4 +151,5 @@ function parseRetryTime(value) {
     return parsedDate.getTime() - now;
 }
 export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
+export { ExpoAuthorizationServiceConfiguration, ExpoRequestor };
 //# sourceMappingURL=AppAuth.js.map

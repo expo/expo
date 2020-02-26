@@ -48,7 +48,9 @@
     "unimodules-constants-interface": "*"
   },
   "dependencies": {
-    "invariant": "^2.2.4"
+    "@openid/appauth": "^1.2.6",
+    "invariant": "^2.2.4",
+    "react-native-url-polyfill": "^1.1.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",

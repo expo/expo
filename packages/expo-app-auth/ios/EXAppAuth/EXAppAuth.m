@@ -43,21 +43,6 @@ UM_EXPORT_MODULE(ExpoAppAuth);
            };
 }
 
-UM_EXPORT_METHOD_AS(fetchServiceConfigAsync,
-                    fetchServiceConfigAsync:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-  NSString *issuer = options[@"issuer"];
-  [OIDAuthorizationService discoverServiceConfigurationForIssuer:[NSURL URLWithString:issuer] completion:^(OIDServiceConfiguration *_Nullable config, NSError *_Nullable error) {
-    if (config) {
-      resolve(config.discoveryDocument.discoveryDictionary);
-    } else {
-      EXrejectWithError(reject, error);
-    }
-  }];
-}
-
 UM_EXPORT_METHOD_AS(executeAsync,
                     executeAsync:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
@@ -65,17 +50,11 @@ UM_EXPORT_METHOD_AS(executeAsync,
 {
   BOOL isRefresh = [options[@"isRefresh"] boolValue];
   NSDictionary *serviceConfiguration = options[@"serviceConfiguration"];
-  if (serviceConfiguration) {
-    OIDServiceConfiguration *service = [self _createServiceConfiguration:serviceConfiguration];
-    if (isRefresh) {
-      [self _refreshWithConfiguration:service options:options resolve:resolve reject:reject];
-    } else {
-      [self _authorizeWithConfiguration:service options:options resolve:resolve reject:reject];
-    }
+  OIDServiceConfiguration *service = [self _createServiceConfiguration:serviceConfiguration];
+  if (isRefresh) {
+    [self _refreshWithConfiguration:service options:options resolve:resolve reject:reject];
   } else {
-    NSString *issuer = options[@"issuer"];
-    OIDDiscoveryCallback callback = [self _getCallback:options isRefresh:isRefresh resolver:resolve rejecter:reject];
-    [OIDAuthorizationService discoverServiceConfigurationForIssuer:[NSURL URLWithString:issuer] completion:callback];
+    [self _authorizeWithConfiguration:service options:options resolve:resolve reject:reject];
   }
 }
 
@@ -197,21 +176,6 @@ UM_EXPORT_METHOD_AS(executeAsync,
   };
   [OIDAuthorizationService performTokenRequest:tokenRefreshRequest
                                       callback:callback];
-}
-
-- (OIDDiscoveryCallback)_getCallback:(NSDictionary *)options
-                           isRefresh:(BOOL)isRefresh
-                            resolver:(UMPromiseResolveBlock)resolve
-                            rejecter:(UMPromiseRejectBlock)reject
-{
-  return ^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
-    if (configuration) {
-      if (isRefresh) [self _refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
-      else [self _authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
-    } else {
-      EXrejectWithError(reject, error);
-    }
-  };
 }
 
 #pragma mark - Static

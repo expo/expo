@@ -10,8 +10,31 @@ import {
   AuthServiceConfig,
 } from './AppAuth.types';
 import ExpoAppAuth from './ExpoAppAuth';
+import { ExpoAuthorizationServiceConfiguration } from './ExpoAuthorizationServiceConfiguration';
+import { ExpoRequestor } from './ExpoRequestor';
 
 export * from './AppAuth.types';
+
+export type AuthServiceConfigJson = {
+  authorizationEndpoint: string;
+  tokenEndpoint: string;
+  revocationEndpoint: string;
+  endSessionEndpoint?: string;
+  userInfoEndpoint?: string;
+};
+
+// AuthorizationServiceConfigurationJson
+export function createServiceConfig(
+  options: AuthServiceConfigJson
+): ExpoAuthorizationServiceConfiguration {
+  return new ExpoAuthorizationServiceConfiguration({
+    authorization_endpoint: options.authorizationEndpoint,
+    token_endpoint: options.tokenEndpoint,
+    revocation_endpoint: options.revocationEndpoint,
+    end_session_endpoint: options.endSessionEndpoint,
+    userinfo_endpoint: options.userInfoEndpoint,
+  });
+}
 
 function isValidServiceConfiguration(config?: OAuthServiceConfiguration): boolean {
   return !!(
@@ -53,6 +76,12 @@ async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
     props.redirectUrl = getDefaultOAuthRedirect();
   }
   assertValidProps(props);
+
+  // Ensure the service config is fetched in JS
+  if (props.issuer && !props.serviceConfiguration) {
+    props.serviceConfiguration = await fetchServiceConfigAsync(props.issuer);
+  }
+
   return await ExpoAppAuth.executeAsync(props);
 }
 
@@ -61,10 +90,8 @@ export function getDefaultOAuthRedirect(): string {
 }
 
 export async function fetchServiceConfigAsync(issuer: string): Promise<AuthServiceConfig> {
-  if (!ExpoAppAuth.fetchServiceConfigAsync) {
-    throw new UnavailabilityError('AppAuth', 'fetchServiceConfigAsync');
-  }
-  const discoveryDoc = await ExpoAppAuth.fetchServiceConfigAsync({ issuer });
+  const serviceConfig = await ExpoAuthorizationServiceConfiguration.fetchFromIssuer(issuer);
+  const discoveryDoc = serviceConfig.discoveryDocument as any;
 
   return {
     authorizationEndpoint: discoveryDoc.authorization_endpoint,
@@ -188,3 +215,5 @@ function parseRetryTime(value: string): number {
 }
 
 export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
+
+export { ExpoAuthorizationServiceConfiguration, ExpoRequestor };
