@@ -18,24 +18,5 @@ export var IosAuthorizationStatus;
     IosAuthorizationStatus[IosAuthorizationStatus["AUTHORIZED"] = 2] = "AUTHORIZED";
     IosAuthorizationStatus[IosAuthorizationStatus["PROVISIONAL"] = 3] = "PROVISIONAL";
 })(IosAuthorizationStatus || (IosAuthorizationStatus = {}));
-export var AndroidImportance;
-(function (AndroidImportance) {
-    AndroidImportance[AndroidImportance["UNKNOWN"] = 0] = "UNKNOWN";
-    AndroidImportance[AndroidImportance["UNSPECIFIED"] = 1] = "UNSPECIFIED";
-    AndroidImportance[AndroidImportance["NONE"] = 2] = "NONE";
-    AndroidImportance[AndroidImportance["MIN"] = 3] = "MIN";
-    AndroidImportance[AndroidImportance["LOW"] = 4] = "LOW";
-    AndroidImportance[AndroidImportance["DEEFAULT"] = 5] = "DEEFAULT";
-    AndroidImportance[AndroidImportance["HIGH"] = 6] = "HIGH";
-    AndroidImportance[AndroidImportance["MAX"] = 7] = "MAX";
-})(AndroidImportance || (AndroidImportance = {}));
-export var AndroidInterruptionFilter;
-(function (AndroidInterruptionFilter) {
-    AndroidInterruptionFilter[AndroidInterruptionFilter["UNKNOWN"] = 0] = "UNKNOWN";
-    AndroidInterruptionFilter[AndroidInterruptionFilter["ALL"] = 1] = "ALL";
-    AndroidInterruptionFilter[AndroidInterruptionFilter["PRIORITY"] = 2] = "PRIORITY";
-    AndroidInterruptionFilter[AndroidInterruptionFilter["NONE"] = 3] = "NONE";
-    AndroidInterruptionFilter[AndroidInterruptionFilter["ALARMS"] = 4] = "ALARMS";
-})(AndroidInterruptionFilter || (AndroidInterruptionFilter = {}));
 export default NativeModulesProxy.ExpoNotificationPermissionsModule;
 //# sourceMappingURL=NotificationPermissionsModule.js.map

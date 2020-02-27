@@ -1,6 +1,6 @@
 import { Platform } from '@unimodules/core';
 import NotificationPermissionsModule from './NotificationPermissionsModule';
-export { AndroidImportance, AndroidInterruptionFilter, IosAlertStyle, IosAllowsPreviews, IosAuthorizationStatus, } from './NotificationPermissionsModule';
+export { IosAlertStyle, IosAllowsPreviews, IosAuthorizationStatus, } from './NotificationPermissionsModule';
 export async function getPermissionsAsync() {
     return await NotificationPermissionsModule.getPermissionsAsync();
 }

@@ -16,27 +16,10 @@ export declare enum IosAuthorizationStatus {
     AUTHORIZED = 2,
     PROVISIONAL = 3
 }
-export declare enum AndroidImportance {
-    UNKNOWN = 0,
-    UNSPECIFIED = 1,
-    NONE = 2,
-    MIN = 3,
-    LOW = 4,
-    DEEFAULT = 5,
-    HIGH = 6,
-    MAX = 7
-}
-export declare enum AndroidInterruptionFilter {
-    UNKNOWN = 0,
-    ALL = 1,
-    PRIORITY = 2,
-    NONE = 3,
-    ALARMS = 4
-}
 export interface NotificationPermissionsStatus extends PermissionResponse {
     android?: {
-        importance: AndroidImportance;
-        interruptionFilter?: AndroidInterruptionFilter;
+        importance: number;
+        interruptionFilter?: number;
     };
     ios?: {
         status: IosAuthorizationStatus;

@@ -6,8 +6,6 @@ import NotificationPermissionsModule, {
 } from './NotificationPermissionsModule';
 
 export {
-  AndroidImportance,
-  AndroidInterruptionFilter,
   IosAlertStyle,
   IosAllowsPreviews,
   IosAuthorizationStatus,
