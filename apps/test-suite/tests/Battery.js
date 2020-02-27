@@ -19,12 +19,6 @@ export async function test({ describe, it, expect, jasmine }) {
       );
     });
 
-    describe(`isSupported (deprecated)`, () => {
-      it('should be equal to the result of isAvailableAsync()', async () => {
-        expect(await Battery.isAvailableAsync()).toEqual(Battery.isSupported);
-      });
-    });
-
     const isAvailable = await Battery.isAvailableAsync();
 
     if (isAvailable) {
