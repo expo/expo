@@ -37,7 +37,6 @@
     _dismissedScreens = [NSMutableSet new];
     _controller = [[UINavigationController alloc] init];
     _controller.delegate = self;
-    _controller.interactivePopGestureRecognizer.delegate = self;
 
     // we have to initialize viewControllers with a non empty array for
     // largeTitle header to render in the opened state. If it is empty
@@ -201,6 +200,7 @@
       if (parentView.reactViewController) {
         [parentView.reactViewController addChildViewController:controller];
         [self addSubview:controller.view];
+        _controller.interactivePopGestureRecognizer.delegate = self;
         [controller didMoveToParentViewController:parentView.reactViewController];
         // On iOS pre 12 we observed that `willShowViewController` delegate method does not always
         // get triggered when the navigation controller is instantiated. As the only thing we do in
