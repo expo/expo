@@ -62,6 +62,11 @@ dependencies {
   unimodule 'unimodules-image-loader-interface'
 
   api 'androidx.core:core:1.1.0'
-  api 'me.leolin:ShortcutBadger:1.1.22@aar'
+  api 'androidx.lifecycle:lifecycle-runtime:2.2.0'
+  api 'androidx.lifecycle:lifecycle-process:2.2.0'
+  api 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+
   api 'com.google.firebase:firebase-messaging:20.1.0'
+
+  api 'me.leolin:ShortcutBadger:1.1.22@aar'
 }
