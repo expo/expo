@@ -414,6 +414,10 @@ RNReanimated:
   LABEL: RNReanimated
   PROJECT_PATH: RNReanimated.xcodeproj
   UUID: E9E22639328ACC061EB56756AD5B4F57
+RNScreens:
+  LABEL: RNScreens
+  PROJECT_PATH: RNScreens.xcodeproj
+  UUID: A72DB725A68697789F3F72BCF9C3A522
 UMAppLoader:
   LABEL: UMAppLoader
   PROJECT_PATH: UMAppLoader.xcodeproj

@@ -937,12 +937,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 9faa1868185e3c8e80fab9b0d0482f02
-      Release: 9faa1868185e3c8e80fab9b0d0482f02
+      Debug: 6bbe022d99f762e03850cf49af4f338d
+      Release: 6bbe022d99f762e03850cf49af4f338d
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: dce4e621a25aaf1edaf2f92c2d45d931
-      Release: dce4e621a25aaf1edaf2f92c2d45d931
+      Debug: f930f861b32718a2cf0a78587524f65d
+      Release: f930f861b32718a2cf0a78587524f65d
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1807,6 +1807,24 @@ CACHE_KEYS:
     PROJECT_NAME: RNReanimated
     SPECS:
       - RNReanimated (1.7.0)
+  RNScreens:
+    BUILD_SETTINGS_CHECKSUM:
+      RNScreens: d0a154f417562db98591a0dd7d1b9bf7
+    CHECKSUM: 2a9cd603bcebc34319c92e595283d760dd1f55f5
+    FILES:
+      - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenContainer.h"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenContainer.m"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenStack.h"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenStack.m"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h"
+      - "../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.m"
+      - "../../../../node_modules/react-native-screens/LICENSE"
+      - "../../../../node_modules/react-native-screens/README.md"
+    PROJECT_NAME: RNScreens
+    SPECS:
+      - RNScreens (2.1.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
