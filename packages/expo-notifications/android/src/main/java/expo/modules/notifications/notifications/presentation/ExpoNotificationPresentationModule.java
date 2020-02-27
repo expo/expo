@@ -1,23 +1,20 @@
 package expo.modules.notifications.notifications.presentation;
 
-import android.app.Notification;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.Map;
 
-import androidx.core.app.NotificationManagerCompat;
-import expo.modules.notifications.notifications.interfaces.NotificationBuilderFactory;
+import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 public class ExpoNotificationPresentationModule extends ExportedModule {
   private static final String EXPORTED_NAME = "ExpoNotificationPresenter";
-
-  private NotificationBuilderFactory mNotificationBuilderFactory;
 
   public ExpoNotificationPresentationModule(Context context) {
     super(context);
@@ -28,23 +25,20 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
     return EXPORTED_NAME;
   }
 
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mNotificationBuilderFactory = moduleRegistry.getModule(NotificationBuilderFactory.class);
-  }
-
   @ExpoMethod
-  public void presentNotificationAsync(String identifier, Map notificationSpec, Promise promise) {
-    if (mNotificationBuilderFactory == null) {
-      promise.reject("ERR_NOTIFICATION_BUILDER_UNAVAILABLE", "NotificationBuilder class could not be found.");
-      return;
-    }
+  public void presentNotificationAsync(String identifier, Map notificationSpec, final Promise promise) {
     JSONObject notificationRequest = new JSONObject(notificationSpec);
-    Notification notification = mNotificationBuilderFactory
-        .createBuilder(getContext())
-        .setNotificationRequest(notificationRequest)
-        .build();
-    NotificationManagerCompat.from(getContext()).notify(identifier, 0, notification);
-    promise.resolve(null);
+    BaseNotificationsService.enqueuePresent(getContext(), identifier, notificationRequest, null, new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
+          promise.resolve(null);
+        } else {
+          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);
+        }
+      }
+    });
   }
 }
