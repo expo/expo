@@ -1,7 +1,8 @@
 package expo.modules.notifications.notifications.interfaces;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONObject;
 
 /**
  * Interface used to register in {@link NotificationManager}
@@ -9,15 +10,17 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 public interface NotificationListener {
   /**
-   * Callback called when new remote message is received.
+   * Callback called when new notification is received.
    *
-   * @param message Received message
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
    */
-  void onMessage(RemoteMessage message);
+  void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger);
 
   /**
-   * Callback called when some pending messages are deleted.
+   * Callback called when some notifications are dropped.
    * See {@link FirebaseMessagingService#onDeletedMessages()}
    */
-  void onDeletedMessages();
+  void onNotificationsDropped();
 }

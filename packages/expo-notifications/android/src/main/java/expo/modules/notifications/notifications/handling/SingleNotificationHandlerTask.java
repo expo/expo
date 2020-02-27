@@ -6,17 +6,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
-import com.google.firebase.messaging.RemoteMessage;
-
 import org.json.JSONObject;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-import java.util.UUID;
-
-import expo.modules.notifications.notifications.RemoteMessageSerializer;
+import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 /**
@@ -45,7 +42,8 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
 
   private Context mContext;
   private EventEmitter mEventEmitter;
-  private RemoteMessage mRemoteMessage;
+  private JSONObject mNotificationRequest;
+  private NotificationTrigger mNotificationTrigger;
   private NotificationBehavior mBehavior;
   private NotificationsHandler mDelegate;
   private String mIdentifier;
@@ -57,21 +55,18 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
     }
   };
 
-  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, RemoteMessage remoteMessage, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, String identifier, JSONObject notificationRequest, NotificationTrigger trigger, NotificationsHandler delegate) {
     mContext = context;
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
-    mRemoteMessage = remoteMessage;
+    mNotificationRequest = notificationRequest;
+    mNotificationTrigger = trigger;
     mDelegate = delegate;
 
-    mIdentifier = remoteMessage.getMessageId();
-    if (mIdentifier == null) {
-      mIdentifier = UUID.randomUUID().toString();
-    }
+    mIdentifier = identifier;
   }
 
   /**
-   * @return Identifier of the task ({@link RemoteMessage#getMessageId()} or a random {@link UUID}
-   * if {@link RemoteMessage#getMessageId() is null.
+   * @return Identifier of the task.
    */
   /* package */ String getIdentifier() {
     return mIdentifier;
@@ -84,7 +79,7 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
   /* package */ void start() {
     Bundle eventBody = new Bundle();
     eventBody.putString("id", getIdentifier());
-    eventBody.putBundle("notification", RemoteMessageSerializer.toBundle(mRemoteMessage));
+    eventBody.putBundle("notification", NotificationSerializer.toBundle(mIdentifier, mNotificationRequest, mNotificationTrigger));
     mEventEmitter.emit(HANDLE_NOTIFICATION_EVENT_NAME, eventBody);
 
     HANDLER.postDelayed(mTimeoutRunnable, SECONDS_TO_TIMEOUT * 1000);
@@ -109,8 +104,7 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
     HANDLER.post(new Runnable() {
       @Override
       public void run() {
-        JSONObject notificationRequest = new JSONObject(mRemoteMessage.getData());
-        BaseNotificationsService.enqueuePresent(mContext, getIdentifier(), notificationRequest, mBehavior, new ResultReceiver(HANDLER) {
+        BaseNotificationsService.enqueuePresent(mContext, getIdentifier(), mNotificationRequest, mBehavior, new ResultReceiver(HANDLER) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
@@ -135,7 +129,7 @@ import expo.modules.notifications.notifications.service.BaseNotificationsService
   private void handleTimeout() {
     Bundle eventBody = new Bundle();
     eventBody.putString("id", getIdentifier());
-    eventBody.putBundle("notification", RemoteMessageSerializer.toBundle(mRemoteMessage));
+    eventBody.putBundle("notification", NotificationSerializer.toBundle(mIdentifier, mNotificationRequest, mNotificationTrigger));
     mEventEmitter.emit(HANDLE_NOTIFICATION_TIMEOUT_EVENT_NAME, eventBody);
 
     finish();
