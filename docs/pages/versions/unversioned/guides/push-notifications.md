@@ -41,7 +41,7 @@ export default async function registerForPushNotificationsAsync() {
     return;
   }
 
-  // Get the token that identifies this device
+  // Get the token that identifies this device, must be logged in via expo-cli if building on Expo client
   let token = await Notifications.getExpoPushTokenAsync();
 
   // POST the token to your backend server from where you can retrieve it to send push notifications.
