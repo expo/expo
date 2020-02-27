@@ -78,8 +78,12 @@ public class ExpoNotificationsService extends BaseNotificationsService {
 
   @Override
   protected void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
-    for (NotificationManager listener : getListeners()) {
-      listener.onNotificationReceived(identifier, request, trigger);
+    if (mIsAppInForeground) {
+      for (NotificationManager listener : getListeners()) {
+        listener.onNotificationReceived(identifier, request, trigger);
+      }
+    } else {
+      BaseNotificationsService.enqueuePresent(this, identifier, request, null, null);
     }
   }
 
