@@ -27,7 +27,7 @@ class ProgressLooper(private val timeMachine: TimeMachine) {
 
   private var listener: PlayerProgressListener? = null
 
-  fun changeListener(listener: PlayerProgressListener) {
+  fun setListener(listener: PlayerProgressListener) {
     this.listener = listener
   }
 
@@ -63,5 +63,5 @@ class ProgressLooper(private val timeMachine: TimeMachine) {
     } else {
       (((timeMachine.time - nextExpectedTick) / interval) + 1) * interval
     }
-  
+
 }
