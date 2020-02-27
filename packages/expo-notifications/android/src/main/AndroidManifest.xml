@@ -1,11 +1,20 @@
-<manifest package="expo.modules.notifications"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="expo.modules.notifications">
+
     <application>
         <service
             android:name=".FirebaseListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".notifications.service.ExpoNotificationsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+            <intent-filter android:order="-1">
+                <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
             </intent-filter>
         </service>
     </application>
