@@ -317,7 +317,7 @@ public class SQLiteModule extends ExportedModule {
       if (object instanceof String) {
         res[i] = unescapeBlob((String) object);
       } else if (object instanceof Boolean) {
-        res[i] = ((Boolean) object) ? "0" : "1";
+        res[i] = ((Boolean) object) ? "1" : "0";
       } else if (object instanceof Double) {
         res[i] = object.toString();
       } else if (object != null) {
