@@ -14,6 +14,7 @@ export type WebBrowserOpenOptions = {
 
   /** iOS only */
   controlsColor?: string;
+  readerMode?: boolean;
 
   // Web
   windowName?: string;

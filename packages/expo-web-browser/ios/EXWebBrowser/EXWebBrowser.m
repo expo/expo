@@ -89,13 +89,16 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   }
 
   NSURL *url = [[NSURL alloc] initWithString:authURL];
+  BOOL readerMode = [arguments[@"readerMode"] boolValue];
+  BOOL enableBarCollapsing = [arguments[@"enableBarCollapsing"] boolValue];
   SFSafariViewController *safariVC = nil;
   if (@available(iOS 11, *)) {
     SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc] init];
-    config.barCollapsingEnabled = [arguments[@"enableBarCollapsing"] boolValue];
+    config.barCollapsingEnabled = enableBarCollapsing;
+    config.entersReaderIfAvailable = readerMode;
     safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
   } else {
-    safariVC = [[SFSafariViewController alloc] initWithURL:url];
+    safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:readerMode];
   }
 
   if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
