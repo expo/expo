@@ -101,6 +101,19 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
     safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:readerMode];
   }
 
+  if (@available(iOS 11.0, *)) {
+    NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
+    if ([dismissButtonStyle isEqualToString:@"done"]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
+    }
+    else if ([dismissButtonStyle isEqualToString:@"close"]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
+    }
+    else if ([dismissButtonStyle isEqualToString:@"cancel"]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
+    }
+  }
+
   if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
     safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[WebBrowserToolbarColorKey]];
   }
