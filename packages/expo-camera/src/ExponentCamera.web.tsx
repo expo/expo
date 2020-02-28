@@ -22,7 +22,7 @@ export default class ExponentCamera extends React.Component<CameraNativeProps> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(nextProps) {
     this._updateCameraProps(nextProps);
   }
 
