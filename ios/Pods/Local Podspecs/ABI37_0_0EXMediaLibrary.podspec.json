@@ -1,0 +1,26 @@
+{
+  "name": "ABI37_0_0EXMediaLibrary",
+  "version": "8.0.0",
+  "summary": "Provides access to user's media library.",
+  "description": "Provides access to user's media library.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/media-library/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI37_0_0EXMediaLibrary/**/*.{h,m}",
+  "preserve_paths": "ABI37_0_0EXMediaLibrary/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI37_0_0UMCore": [
+
+    ],
+    "ABI37_0_0UMPermissionsInterface": [
+
+    ]
+  }
+}
