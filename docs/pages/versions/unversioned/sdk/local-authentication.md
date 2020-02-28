@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-local-aut
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import SnackEmbed from '~/components/plugins/SnackEmbed';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
@@ -68,12 +67,6 @@ Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the 
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
-#### Usage
-
-Since Android doesn't provide a default UI component, we've provided an example with one to help you get up and running:
-
-<SnackEmbed snackId="@charliecruzan/localauthentication35example" />
-
 ### `LocalAuthentication.cancelAuthenticate()`
 
-**(Android Only)** Cancels the fingerprint authentication flow. See usage in example snack above.
+**(Android Only)** Cancels authentication flow.
