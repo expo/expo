@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.screens;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -38,6 +39,9 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   private boolean mIsAttachedToWindow = false;
 
+  private int mDefaultStartInset;
+  private int mDefaultStartInsetWithNavigation;
+
   private OnClickListener mBackClickListener = new OnClickListener() {
     @Override
     public void onClick(View view) {
@@ -61,10 +65,8 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     setVisibility(View.GONE);
 
     mToolbar = new Toolbar(context);
-    // reset content insets to be 0 to allow react position custom navbar views. Note that this does
-    // not affect platform native back button as toolbar does not apply left inset when navigation
-    // button is specified
-    mToolbar.setContentInsetsAbsolute(0, 0);
+    mDefaultStartInset = mToolbar.getContentInsetStart();
+    mDefaultStartInsetWithNavigation = mToolbar.getContentInsetStartWithNavigation();
 
     // set primary color as background by default
     TypedValue tv = new TypedValue();
@@ -153,6 +155,14 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     activity.setSupportActionBar(mToolbar);
     ActionBar actionBar = activity.getSupportActionBar();
 
+    // Reset toolbar insets. By default we set symmetric inset for start and end to match iOS
+    // implementation where both right and left icons are offset from the edge by default. We also
+    // reset startWithNavigation inset which corresponds to the distance between navigation icon and
+    // title. If title isn't set we clear that value few lines below to give more space to custom
+    // center-mounted views.
+    mToolbar.setContentInsetStartWithNavigation(mDefaultStartInsetWithNavigation);
+    mToolbar.setContentInsetsRelative(mDefaultStartInset, mDefaultStartInset);
+
     // hide back button
     actionBar.setDisplayHomeAsUpEnabled(getScreenFragment().canNavigateBack() ? !mIsBackButtonHidden : false);
 
@@ -167,6 +177,12 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
     // title
     actionBar.setTitle(mTitle);
+    if (TextUtils.isEmpty(mTitle)) {
+      // if title is empty we set start  navigation inset to 0 to give more space to custom rendered
+      // views. When it is set to default it'd take up additional distance from the back button which
+      // would impact the position of custom header views rendered at the center.
+      mToolbar.setContentInsetStartWithNavigation(0);
+    }
     TextView titleTextView = getTitleTextView();
     if (mTitleColor != 0) {
       mToolbar.setTitleTextColor(mTitleColor);

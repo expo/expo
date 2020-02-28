@@ -51,7 +51,7 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
   public void dismiss(ScreenStackFragment screenFragment) {
     mDismissed.add(screenFragment);
-    onUpdate();
+    markUpdated();
   }
 
   public Screen getTopScreen() {
@@ -142,7 +142,7 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
   }
 
   @Override
-  protected void onUpdate() {
+  protected void performUpdate() {
     // remove all screens previously on stack
     for (ScreenStackFragment screen : mStack) {
       if (!mScreenFragments.contains(screen) || mDismissed.contains(screen)) {
@@ -194,10 +194,10 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
     if (!mStack.contains(newTop)) {
       // if new top screen wasn't on stack we do "open animation" so long it is not the very first screen on stack
-      if (mTopScreen != null) {
+      if (mTopScreen != null && newTop != null) {
         // there was some other screen attached before
         int transition = FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
-        switch (mTopScreen.getScreen().getStackAnimation()) {
+        switch (newTop.getScreen().getStackAnimation()) {
           case NONE:
             transition = FragmentTransaction.TRANSIT_NONE;
             break;

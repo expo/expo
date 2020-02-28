@@ -244,7 +244,22 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     onUpdate();
   }
 
-  protected void onUpdate() {
+  private final void onUpdate() {
+    if (mFragmentManager != null) {
+      // We double check if fragment manager have any pending transactions to run.
+      // In performUpdate we often check whether some fragments are added to
+      // manager to avoid adding them for the second time (which result in crash).
+      // By design performUpdate should be called at most once per frame, so this
+      // should never happen, but in case there are some pending transaction we
+      // need to flush them here such that Fragment#isAdded checks reflect the
+      // reality and that we don't have enqueued fragment add commands that will
+      // execute shortly and cause "Fragment already added" crash.
+      mFragmentManager.executePendingTransactions();
+    }
+    performUpdate();
+  }
+
+  protected void performUpdate() {
     // detach screens that are no longer active
     Set<Fragment> orphaned = new HashSet<>(mFragmentManager.getFragments());
     for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
