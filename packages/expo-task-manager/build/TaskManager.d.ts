@@ -26,11 +26,11 @@ export interface TaskManagerTaskBody {
     };
 }
 /**
- * An interface of already registered task.
+ * Represents an already registered task.
  */
 export interface TaskManagerTask {
     /**
-     * Name under which the task was registered.
+     * Name that the task is registered with.
      */
     taskName: string;
     /**
@@ -60,7 +60,7 @@ export declare type TaskManagerTaskExecutor = (body: TaskManagerTaskBody) => voi
  */
 export declare function defineTask(taskName: string, taskExecutor: TaskManagerTaskExecutor): void;
 /**
- * Used to check whether the task is already defined.
+ * Checks whether the task is already defined.
  *
  * @param taskName Name of the task.
  */
@@ -73,7 +73,7 @@ export declare function isTaskDefined(taskName: string): boolean;
  */
 export declare function isTaskRegisteredAsync(taskName: string): Promise<boolean>;
 /**
- * Method returning an `options` object that the task was registered with.
+ * Retrieves an `options` object for provided `taskName`.
  *
  * @param taskName Name of the task.
  */
@@ -85,7 +85,7 @@ export declare function getTaskOptionsAsync<TaskOptions>(taskName: string): Prom
  */
 export declare function getRegisteredTasksAsync(): Promise<TaskManagerTask[]>;
 /**
- * Method that unregisters the task. Tasks are usually registered by other modules (e.g. expo-location).
+ * Unregisters the task. Tasks are usually registered by other modules (e.g. expo-location).
  *
  * @param taskName Name of the task.
  */

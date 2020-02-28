@@ -25,7 +25,7 @@ export function defineTask(taskName, taskExecutor) {
     tasks.set(taskName, taskExecutor);
 }
 /**
- * Used to check whether the task is already defined.
+ * Checks whether the task is already defined.
  *
  * @param taskName Name of the task.
  */
@@ -46,7 +46,7 @@ export async function isTaskRegisteredAsync(taskName) {
     return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 /**
- * Method returning an `options` object that the task was registered with.
+ * Retrieves an `options` object for provided `taskName`.
  *
  * @param taskName Name of the task.
  */
@@ -69,7 +69,7 @@ export async function getRegisteredTasksAsync() {
     return ExpoTaskManager.getRegisteredTasksAsync();
 }
 /**
- * Method that unregisters the task. Tasks are usually registered by other modules (e.g. expo-location).
+ * Unregisters the task. Tasks are usually registered by other modules (e.g. expo-location).
  *
  * @param taskName Name of the task.
  */
