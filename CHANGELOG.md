@@ -10,7 +10,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
-- Add `readerMode` (iOS) and `enableDefaultShare` (Android) flags for `WebBrowser` ([#7218](https://github.com/expo/expo/pull/7218) by [@LinusU](https://github.com/LinusU)) & [@mczernek](https://github.com/mczernek))
+- Add `readerMode` (iOS) and `enableDefaultShare` (Android) flags for `WebBrowser` ([#7221](https://github.com/expo/expo/pull/7221) by [@LinusU](https://github.com/LinusU)) & [@mczernek](https://github.com/mczernek))
 
 ### 🐛 Bug fixes
 
