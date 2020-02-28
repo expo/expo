@@ -34,7 +34,6 @@ export default function App() {
       console.log('Digest: ', digest);
       /* Some crypto operation... */
     })();
-    runCrypto();
   }, []);
 
   return (
