@@ -77,18 +77,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXApplication
     SPECS:
       - EXApplication (2.0.0)
-  EXAppLoaderProvider:
-    BUILD_SETTINGS_CHECKSUM:
-      EXAppLoaderProvider: e974093d9aed91f7d71839ac005c168d
-    CHECKSUM: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
-    FILES:
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.h"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.m"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppLoaderInterface.h"
-      - "../../../../packages/expo-app-loader-provider/ios/EXAppLoaderProvider/Interfaces/EXAppRecordInterface.h"
-    PROJECT_NAME: EXAppLoaderProvider
-    SPECS:
-      - EXAppLoaderProvider (8.0.0)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: 145c0531e2c7438e612f4f31e07db048
@@ -113,6 +101,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXAV
     SPECS:
       - EXAV (8.0.0)
+  EXBackgroundFetch:
+    BUILD_SETTINGS_CHECKSUM:
+      EXBackgroundFetch: a5e0aec4c8a3ed87903824257d54d1ee
+    CHECKSUM: a99eac546ec3cf81701fdc739755c76e4a3e0619
+    FILES:
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetch.m"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h"
+      - "../../../../packages/expo-background-fetch/ios/EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m"
+    PROJECT_NAME: EXBackgroundFetch
+    SPECS:
+      - EXBackgroundFetch (8.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
       EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
@@ -305,6 +305,29 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
+    CHECKSUM: b9efb5317c071cb10905d5a82734407e8fc7fd43
+    FILES:
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
+      - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
+    PROJECT_NAME: EXFirebaseAnalytics
+    SPECS:
+      - EXFirebaseAnalytics (3.0.0)
+  EXFirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
+    CHECKSUM: 4e0976590135563e26af5050916879d5ee218f1b
+    FILES:
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.m"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.h"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.m"
+      - "../../../../packages/expo-firebase-core/ios/EXFirebaseCore/UMFirebaseCoreInterface.h"
+    PROJECT_NAME: EXFirebaseCore
+    SPECS:
+      - EXFirebaseCore (1.0.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: d8920f123f0cdc804585bfcef1a86386
@@ -394,6 +417,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXHaptics
     SPECS:
       - EXHaptics (8.0.0)
+  EXImageLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      EXImageLoader: 311389058db34474056fe2e893a52953
+    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    FILES:
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
+      - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
+    PROJECT_NAME: EXImageLoader
+    SPECS:
+      - EXImageLoader (1.0.0)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -516,16 +549,35 @@ CACHE_KEYS:
       - EXNetwork (2.0.0)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
-      EXNotifications: 42083d7be3b81dc87f399732a97ebffe
-    CHECKSUM: d654494e84df90927cca410ebac178c61553647b
+      EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
+    CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
     FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenListener.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenManager.m"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.h"
-      - "../../../../packages/expo-notifications/ios/EXNotifications/EXPushTokenModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
       - EXNotifications (1.0.0)
@@ -668,8 +720,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 220226a354912b100dfe913f5fe6f31762c8927e
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.0.0)
@@ -683,6 +735,24 @@ CACHE_KEYS:
     PROJECT_NAME: EXStoreReview
     SPECS:
       - EXStoreReview (2.0.0)
+  EXTaskManager:
+    BUILD_SETTINGS_CHECKSUM:
+      EXTaskManager: c89b8cc024ffb647f0baaef50ace5ac4
+    CHECKSUM: 46f97c9cf14cc372001cae8710e836d54f0f5a35
+    FILES:
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskExecutionRequest.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManager.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskManagerAppDelegate.m"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.h"
+      - "../../../../packages/expo-task-manager/ios/EXTaskManager/EXTaskService.m"
+    PROJECT_NAME: EXTaskManager
+    SPECS:
+      - EXTaskManager (8.0.0)
   EXUpdates:
     BUILD_SETTINGS_CHECKSUM:
       EXUpdates: 4607b0f75bd46d01ee0d14c14ccef45d
@@ -740,6 +810,49 @@ CACHE_KEYS:
     SPECS:
       - FBSDKLoginKit (5.8.0)
       - FBSDKLoginKit/Login (5.8.0)
+  Firebase:
+    BUILD_SETTINGS_CHECKSUM:
+      Firebase: 043d6ce04946d5de6f1a25bee76f328d
+    CHECKSUM: 0219bb4782eb1406f1b9b0628a2e625484ce910d
+    PROJECT_NAME: Firebase
+    SPECS:
+      - Firebase/Core (6.14.0)
+      - Firebase/CoreOnly (6.14.0)
+  FirebaseAnalytics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseAnalytics: d3b8372472720ab5e91b3a3adc59720a
+    CHECKSUM: f68b9f3f1241385129ae0a83b63627fc420c05e5
+    PROJECT_NAME: FirebaseAnalytics
+    SPECS:
+      - FirebaseAnalytics (6.1.7)
+  FirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCore: 9e46d904547d9ac25ab4b4514fc0a2f7
+    CHECKSUM: 632e05cc5e1199d9147122c16d92305eb04c34bd
+    PROJECT_NAME: FirebaseCore
+    SPECS:
+      - FirebaseCore (6.5.0)
+  FirebaseCoreDiagnostics:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnostics: d94bfb53514b8d2ac93bd041c0ca0e12
+    CHECKSUM: 511f4f3ed7d440bb69127e8b97c2bc8befae639e
+    PROJECT_NAME: FirebaseCoreDiagnostics
+    SPECS:
+      - FirebaseCoreDiagnostics (1.1.2)
+  FirebaseCoreDiagnosticsInterop:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseCoreDiagnosticsInterop: 156db52ee23ec56ad2ede89ad1ee8a2b
+    CHECKSUM: e9b1b023157e3a2fc6418b5cb601e79b9af7b3a0
+    PROJECT_NAME: FirebaseCoreDiagnosticsInterop
+    SPECS:
+      - FirebaseCoreDiagnosticsInterop (1.1.0)
+  FirebaseInstanceID:
+    BUILD_SETTINGS_CHECKSUM:
+      FirebaseInstanceID: c417e45eb1ce3ddd5681ade464f26b8e
+    CHECKSUM: ce993a3c3670a8f5d47ce371ac5d143c560608c5
+    PROJECT_NAME: FirebaseInstanceID
+    SPECS:
+      - FirebaseInstanceID (4.2.8)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -755,6 +868,27 @@ CACHE_KEYS:
     PROJECT_NAME: glog
     SPECS:
       - glog (0.3.5)
+  GoogleAppMeasurement:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleAppMeasurement: 8edf625de9a660fae9e528eb6d244601
+    CHECKSUM: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
+    PROJECT_NAME: GoogleAppMeasurement
+    SPECS:
+      - GoogleAppMeasurement (6.1.7)
+  GoogleDataTransport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransport: c52a5276024512707683f66e6cfe0966
+    CHECKSUM: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
+    PROJECT_NAME: GoogleDataTransport
+    SPECS:
+      - GoogleDataTransport (3.2.0)
+  GoogleDataTransportCCTSupport:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleDataTransportCCTSupport: 1974efffec58f9b1b16d714da50b2d51
+    CHECKSUM: 202d7cdf9c4a7d81a2bb7f7e7e1ba6faa421b1f2
+    PROJECT_NAME: GoogleDataTransportCCTSupport
+    SPECS:
+      - GoogleDataTransportCCTSupport (1.2.3)
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
@@ -762,6 +896,20 @@ CACHE_KEYS:
     PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.2)
+  GoogleUtilities:
+    BUILD_SETTINGS_CHECKSUM:
+      GoogleUtilities: c7dbbc462e97d6f959d7b7bdd3d67f38
+    CHECKSUM: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
+    PROJECT_NAME: GoogleUtilities
+    SPECS:
+      - GoogleUtilities/AppDelegateSwizzler (6.4.0)
+      - GoogleUtilities/Environment (6.4.0)
+      - GoogleUtilities/Logger (6.4.0)
+      - GoogleUtilities/MethodSwizzler (6.4.0)
+      - GoogleUtilities/Network (6.4.0)
+      - "GoogleUtilities/NSData+zlib (6.4.0)"
+      - GoogleUtilities/Reachability (6.4.0)
+      - GoogleUtilities/UserDefaults (6.4.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
@@ -778,14 +926,23 @@ CACHE_KEYS:
       - GTMSessionFetcher (1.3.0)
       - GTMSessionFetcher/Core (1.3.0)
       - GTMSessionFetcher/Full (1.3.0)
+  nanopb:
+    BUILD_SETTINGS_CHECKSUM:
+      nanopb: 576bb45f6f1262a9f9a409f37f3694b7
+    CHECKSUM: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+    PROJECT_NAME: nanopb
+    SPECS:
+      - nanopb (0.3.9011)
+      - nanopb/decode (0.3.9011)
+      - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: eecf7d1263b3ce3378ec9d3446115311
-      Release: eecf7d1263b3ce3378ec9d3446115311
+      Debug: 9faa1868185e3c8e80fab9b0d0482f02
+      Release: 9faa1868185e3c8e80fab9b0d0482f02
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: afa3e21077b9551248ae89a97600b432
-      Release: afa3e21077b9551248ae89a97600b432
+      Debug: dce4e621a25aaf1edaf2f92c2d45d931
+      Release: dce4e621a25aaf1edaf2f92c2d45d931
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1314,24 +1471,24 @@ CACHE_KEYS:
       - React-jsinspector (0.61.4)
   react-native-appearance:
     BUILD_SETTINGS_CHECKSUM:
-      react-native-appearance: 7404d29f4c015c0c51680f1bce6a4d8f
+      react-native-appearance: a65151d7252615fcc01dbb407fa5071d
     CHECKSUM: c2e0666225d999f7f0e7d9a9cb6c627c6e4c4b92
     FILES:
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
-      - "../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
-      - "../../node_modules/react-native-appearance/LICENSE"
-      - "../../node_modules/react-native-appearance/README.md"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProvider.m"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.h"
+      - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearanceProviderManager.m"
+      - "../../../../node_modules/react-native-appearance/LICENSE"
+      - "../../../../node_modules/react-native-appearance/README.md"
     PROJECT_NAME: react-native-appearance
     SPECS:
       - react-native-appearance (0.3.2)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
-    CHECKSUM: d288138da2c800caa111f9352e9333f186a06ead
+    CHECKSUM: e200d4433aba6b7e60b52da5f37af11f7a0b0392
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.m"
@@ -1341,7 +1498,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (0.6.0)
+      - react-native-safe-area-context (0.7.3)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet: 5d86490d49e6cc964d1993e5c05e10db
@@ -1546,7 +1703,7 @@ CACHE_KEYS:
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: c576e5ba26e85306cdd748939cafee55
-    CHECKSUM: 7add966bb5d90ee8cf38d4341f87814474357972
+    CHECKSUM: dde546180bf24af0b5f737c8ad04b6f3fa51609a
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.m"
@@ -1584,11 +1741,11 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-gesture-handler/README.md"
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.5.1)
+      - RNGestureHandler (1.6.0)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1d95b7b88b09cb2c47f1f272532903e1
-    CHECKSUM: b2ab0b693dddd2339bd2f300e770f6302d2e960c
+    CHECKSUM: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -1632,6 +1789,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/ios/REAModule.m"
       - "../../../../node_modules/react-native-reanimated/ios/REANodesManager.h"
       - "../../../../node_modules/react-native-reanimated/ios/REANodesManager.m"
+      - "../../../../node_modules/react-native-reanimated/ios/REAUtils.h"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/RCTConvert+REATransition.h"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/RCTConvert+REATransition.m"
       - "../../../../node_modules/react-native-reanimated/ios/Transitioning/REAAllTransitions.h"
@@ -1648,7 +1806,19 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.4.0)
+      - RNReanimated (1.7.0)
+  UMAppLoader:
+    BUILD_SETTINGS_CHECKSUM:
+      UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
+    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    FILES:
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.h"
+      - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
+    PROJECT_NAME: UMAppLoader
+    SPECS:
+      - UMAppLoader (1.0.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492

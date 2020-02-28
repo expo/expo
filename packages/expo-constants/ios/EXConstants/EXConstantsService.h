@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString * const kEXDeviceInstallUUIDKey;
+
 @interface EXConstantsService : NSObject <UMInternalModule, UMConstantsInterface>
 
 - (NSString *)buildVersion;
@@ -19,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)deviceModel;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
++ (NSString *)installationId;
 
 @end
 

@@ -1,6 +1,6 @@
 import qs from 'query-string';
 
-import { ComposeOptions, ComposeResult } from './MailComposer.types';
+import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
 
 function removeNullishValues(obj) {
   for (const propName in obj) {
@@ -24,7 +24,7 @@ export default {
   get name(): string {
     return 'ExpoMailComposer';
   },
-  async composeAsync(options: ComposeOptions): Promise<ComposeResult> {
+  async composeAsync(options: MailComposerOptions): Promise<MailComposerResult> {
     const email = removeNullishValues({
       cc: checkValue(options.ccRecipients),
       bcc: checkValue(options.bccRecipients),

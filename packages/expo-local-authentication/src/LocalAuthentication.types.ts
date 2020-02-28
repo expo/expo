@@ -5,8 +5,10 @@ export enum AuthenticationType {
   FACIAL_RECOGNITION = 2,
 }
 
-export type AuthOptions = {
+export type LocalAuthenticationOptions = {
   // iOS only
   promptMessage?: string;
+  cancelLabel?: string;
   fallbackLabel?: string;
+  disableDeviceFallback?: boolean;
 };

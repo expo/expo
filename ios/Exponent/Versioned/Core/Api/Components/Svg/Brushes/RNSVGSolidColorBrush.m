@@ -24,9 +24,22 @@
     return self;
 }
 
+- (instancetype)initWithNumber:(NSNumber *)number
+{
+    if ((self = [super init])) {
+        _color = CGColorRetain([RCTConvert CGColor:number]);
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     CGColorRelease(_color);
+}
+
+- (CGColorRef)getColorWithOpacity:(CGFloat)opacity
+{
+    return CGColorCreateCopyWithAlpha(_color, opacity * CGColorGetAlpha(_color));
 }
 
 - (BOOL)applyFillColor:(CGContextRef)context opacity:(CGFloat)opacity

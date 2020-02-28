@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI33_0_0/UMBarCodeScannerInterface/ABI33_0_0UMBarCodeScannerInterface/ABI33_0_0UMBarCodeScannerProviderInterface.h

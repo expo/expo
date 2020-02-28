@@ -1,8 +1,9 @@
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
@@ -139,8 +140,14 @@ export default {
   },
 
   // User passes set of actions titles.
-  createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
-    return ExponentNotifications.createCategoryAsync(categoryId, actions);
+  createCategoryAsync(
+    categoryId: string,
+    actions: ActionType[],
+    previewPlaceholder?: string
+  ): Promise<void> {
+    return Platform.OS === 'ios'
+      ? ExponentNotifications.createCategoryAsync(categoryId, actions, previewPlaceholder)
+      : ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
   deleteCategoryAsync(categoryId: string): Promise<void> {

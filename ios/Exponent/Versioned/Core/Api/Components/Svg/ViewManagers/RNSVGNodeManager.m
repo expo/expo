@@ -229,6 +229,10 @@ RCT_CUSTOM_SHADOW_PROPERTY(aspectRatio, id, RNSVGNode) {}
 
 RCT_CUSTOM_SHADOW_PROPERTY(overflow, id, RNSVGNode) {}
 RCT_CUSTOM_SHADOW_PROPERTY(display, id, RNSVGNode) {}
+RCT_CUSTOM_VIEW_PROPERTY(display, id, RNSVGNode)
+{
+    view.display = json;
+}
 
 RCT_CUSTOM_SHADOW_PROPERTY(direction, id, RNSVGNode) {}
 

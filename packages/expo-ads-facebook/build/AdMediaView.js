@@ -1,6 +1,6 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdMediaViewContext } from './withNativeAd';
 export default class AdMediaView extends React.Component {
     render() {

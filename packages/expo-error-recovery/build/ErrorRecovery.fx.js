@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
-import ExpoErrorRecovery from './ExpoErrorRecovery';
 import { getRecoveryPropsToSave } from './ErroRecoveryStore';
+import ExpoErrorRecovery from './ExpoErrorRecovery';
 if (Platform.OS !== 'web') {
     const globalHandler = ErrorUtils.getGlobalHandler();
     // ErrorUtils came from react-native

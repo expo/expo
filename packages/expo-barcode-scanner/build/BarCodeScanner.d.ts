@@ -1,8 +1,8 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ViewProps } from 'react-native';
-declare type BarCodeEvent = {
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+export declare type BarCodeEvent = {
     type: string;
     data: string;
     [key: string]: any;

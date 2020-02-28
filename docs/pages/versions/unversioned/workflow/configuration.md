@@ -39,7 +39,7 @@ A short description of what your app is and why it is great.
 
 ### `"backgroundColor"`
 
-The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff`.
+The background color for your app, behind any of your React views. This is also known as the root view background color. This value should be a 6 character long hex color string, eg: `'#000000'`. Default is white &mdash; `'#ffffff'`.
 
 ### `"owner"`
 
@@ -207,10 +207,13 @@ Configuration for the bottom navigation bar on Android.
 {
   "androidNavigationBar": {
     /*
-      Determines whether to show or hide the bottom navigation bar.
-      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+      Determines how and when the navigation bar is shown. For details, see https://developer.android.com/training/system-ui/immersive
+      "leanback" results in the navigation bar being hidden until the first touch gesture is registered
+      "immersive" results in the navigation bar being hidden until the user swipes up from the edge where the navigation bar is hidden
+      "sticky-immersive" is identical to "immersive" except that the navigation bar will be semi-transparent and will be hidden again after a short period of time
+      Valid values: "leanback", "immersive", "sticky-immersive"
     */
-    "visible": BOOLEAN,
+    "visible": STRING,
     /*
       Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
       Valid values: "light-content", "dark-content".
@@ -895,6 +898,37 @@ Configuration for how and when the app should request OTA JavaScript updates
         ]
       }
     ]
+  }
+}
+```
+
+### `"web"`
+
+```javascript
+{
+  "web": {
+
+    /*
+      Extra web-specific configuration options.
+    */
+    "config": {
+
+      /*
+        Firebase web configuration.
+        Used by the expo-firebase packages on both web and native.
+        See here: https://firebase.google.com/docs/reference/js/firebase.html#initializeapp
+      */
+      "firebase": {
+        "apiKey": STRING,
+        "authDomain": STRING,
+        "databaseURL": STRING,
+        "projectId": STRING,
+        "storageBucket": STRING,
+        "messagingSenderId": STRING,
+        "appId": STRING,
+        "measurementId": STRING
+      }
+    }
   }
 }
 ```

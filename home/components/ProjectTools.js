@@ -21,7 +21,9 @@ function clipboardMightBeOpenable(str: string): boolean {
   // @username/experience
   if (str.match(/^@\w+\/\w+/)) {
     return true;
-  } else if (str.match(/^exp:\/\//)) {
+  } else if (str.startsWith('exp://')) {
+    return true;
+  } else if (str.startsWith('https://expo.io') || str.startsWith('https://exp.host')) {
     return true;
   }
 
@@ -84,7 +86,7 @@ export default class ProjectTools extends React.Component {
     let clipboardContents = await Clipboard.getString();
 
     if (clipboardContents !== this.state.clipboardContents) {
-      requestIdleCallback(() => {
+      requestAnimationFrame(() => {
         this.setState({
           clipboardContents,
           displayOpenClipboardButton: clipboardMightBeOpenable(clipboardContents),

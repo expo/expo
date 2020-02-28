@@ -36,6 +36,7 @@ class RNSharedElementNode {
     private View mAncestorView;
     private boolean mIsParent;
     private ReadableMap mStyleConfig;
+    private RNSharedElementStyle mResolveStyle;
     private View mResolvedView;
     private int mRefCount;
     private int mHideRefCount;
@@ -53,6 +54,7 @@ class RNSharedElementNode {
         mAncestorView = ancestorView;
         mIsParent = isParent;
         mStyleConfig = styleConfig;
+        mResolveStyle = new RNSharedElementStyle(styleConfig, context);
         mContext = context;
         mRefCount = 1;
         mHideRefCount = 0;
@@ -105,7 +107,7 @@ class RNSharedElementNode {
         }
     }
 
-    private static View resolveView(View view) {
+    private static View resolveView(View view, RNSharedElementStyle style) {
         if (view == null) return null;
 
         // If the view is a ViewGroup and it contains exactly one
@@ -115,10 +117,18 @@ class RNSharedElementNode {
             if (viewGroup.getChildCount() == 1) {
                 View childView = viewGroup.getChildAt(0);
                 if (childView instanceof ImageView) {
-                    if ((childView.getLeft() == 0) &&
-                        (childView.getTop() == 0) &&
-                        (childView.getWidth() == viewGroup.getWidth()) &&
-                        (childView.getHeight() == viewGroup.getHeight())) {
+                    int left = childView.getLeft();
+                    int top = childView.getTop();
+                    int width = childView.getWidth();
+                    int height = childView.getHeight();
+                    int expectedLeft = Math.round(style.borderWidth);
+                    int expectedTop = Math.round(style.borderWidth);
+                    int expectedWidth = Math.round((float)viewGroup.getWidth() - (style.borderWidth * 2));
+                    int expectedHeight = Math.round((float)viewGroup.getHeight() - (style.borderWidth * 2));
+                    if (((left >= expectedLeft - 1) && (left <= expectedLeft + 1)) &&
+                        ((top >= expectedTop - 1) && (top <= expectedTop + 1)) &&
+                        ((width >= expectedWidth - 1) && (width <= expectedWidth + 1)) &&
+                        ((height >= expectedHeight - 1) && (height <= expectedHeight + 1))) {
                         return childView;
                     }
                 }
@@ -143,7 +153,7 @@ class RNSharedElementNode {
                 return null;
             }
         }
-        mResolvedView = RNSharedElementNode.resolveView(view);
+        mResolvedView = RNSharedElementNode.resolveView(view, mResolveStyle);
         return mResolvedView;
     }
 

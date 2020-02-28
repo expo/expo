@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdOptionsViewContext } from './withNativeAd';
 var NativeOrientation;
 (function (NativeOrientation) {

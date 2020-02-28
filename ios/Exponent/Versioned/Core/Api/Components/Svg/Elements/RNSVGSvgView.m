@@ -268,7 +268,7 @@
 
 - (NSString *)getDataURLwithBounds:(CGRect)bounds
 {
-    UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
+    UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 1);
     [self clearChildCache];
     [self drawRect:bounds];
     [self clearChildCache];

@@ -58,7 +58,7 @@ export interface PermissionResponse extends UMPermissionResponse {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 }
-interface LocationTaskOptions {
+export interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
     timeInterval?: number;
     distanceInterval?: number;
@@ -74,7 +74,7 @@ interface LocationTaskOptions {
         notificationColor?: string;
     };
 }
-interface Region {
+export interface LocationRegion {
     identifier?: string;
     latitude: number;
     longitude: number;
@@ -82,8 +82,8 @@ interface Region {
     notifyOnEnter?: boolean;
     notifyOnExit?: boolean;
 }
-declare type LocationCallback = (data: LocationData) => any;
-declare type HeadingCallback = (data: HeadingData) => any;
+export declare type LocationCallback = (data: LocationData) => any;
+export declare type LocationHeadingCallback = (data: HeadingData) => any;
 declare enum LocationAccuracy {
     Lowest = 1,
     Low = 2,
@@ -115,7 +115,7 @@ export declare function enableNetworkProviderAsync(): Promise<void>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
 export declare function getLastKnownPositionAsync(): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
-export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
+export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<{
     remove: () => void;
 }>;
 export declare function geocodeAsync(address: string): Promise<GeocodedLocation[]>;
@@ -134,7 +134,7 @@ export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;
-export declare function startGeofencingAsync(taskName: string, regions?: Region[]): Promise<void>;
+export declare function startGeofencingAsync(taskName: string, regions?: LocationRegion[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
 export declare function installWebGeolocationPolyfill(): void;

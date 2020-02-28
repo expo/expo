@@ -1,7 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
+
 import ExpoAmplitude from './ExpoAmplitude';
 
-interface TrackingOptions {
+export interface AmplitudeTrackingOptions {
   disableAdid?: boolean;
   disableCarrier?: boolean;
   disableCity?: boolean;
@@ -74,7 +75,7 @@ export function setGroup(groupType: string, groupNames: string[]): Promise<void>
   return ExpoAmplitude.setGroup(groupType, groupNames);
 }
 
-export function setTrackingOptions(options: TrackingOptions) {
+export function setTrackingOptions(options: AmplitudeTrackingOptions) {
   if (!ExpoAmplitude.setTrackingOptions) {
     throw new UnavailabilityError('Amplitude', 'setTrackingOptions');
   }

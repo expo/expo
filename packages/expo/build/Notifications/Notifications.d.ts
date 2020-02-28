@@ -3,7 +3,7 @@ import { Notification, LocalNotification, Channel, ActionType } from './Notifica
 export declare function emitNotification(notification: any): void;
 declare const _default: {
     _setInitialNotification(notification: Notification): void;
-    createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void>;
+    createCategoryAsync(categoryId: string, actions: ActionType[], previewPlaceholder?: string | undefined): Promise<void>;
     deleteCategoryAsync(categoryId: string): Promise<void>;
     getExpoPushTokenAsync(): Promise<string>;
     getDevicePushTokenAsync: (config: {

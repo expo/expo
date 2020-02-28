@@ -35,6 +35,8 @@ import com.facebook.react.views.text.ReactFontManager;
 
 import java.util.ArrayList;
 
+import java.text.Bidi;
+
 import javax.annotation.Nullable;
 
 import static android.graphics.Matrix.MTRANS_X;
@@ -91,7 +93,12 @@ class TSpanView extends TextView {
     void draw(Canvas canvas, Paint paint, float opacity) {
         if (mContent != null) {
             if (mInlineSize != null && mInlineSize.value != 0) {
-                drawWrappedText(canvas, paint);
+                if (setupFillPaint(paint, opacity * fillOpacity)) {
+                    drawWrappedText(canvas, paint);
+                }
+                if (setupStrokePaint(paint, opacity * strokeOpacity)) {
+                    drawWrappedText(canvas, paint);
+                }
             } else {
                 int numEmoji = emoji.size();
                 if (numEmoji > 0) {
@@ -140,28 +147,10 @@ class TSpanView extends TextView {
                 break;
         }
 
-        StaticLayout layout;
         boolean includeFontPadding = true;
         SpannableString text = new SpannableString(mContent);
         final double width = PropHelper.fromRelative(mInlineSize, canvas.getWidth(), 0, mScale, fontSize);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            layout = new StaticLayout(
-                    text,
-                    tp,
-                    (int)width,
-                    align,
-                    1.f,
-                    0.f,
-                    includeFontPadding);
-        } else {
-            layout = StaticLayout.Builder.obtain(text, 0, text.length(), tp, (int)width)
-                    .setAlignment(align)
-                    .setLineSpacing(0.f, 1.f)
-                    .setIncludePad(includeFontPadding)
-                    .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
-                    .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
-                    .build();
-        }
+        StaticLayout layout = getStaticLayout(tp, align, includeFontPadding, text, (int) width);
 
         int lineAscent = layout.getLineAscent(0);
 
@@ -173,6 +162,88 @@ class TSpanView extends TextView {
         canvas.translate(dx, dy);
         layout.draw(canvas);
         canvas.restore();
+    }
+
+    @SuppressWarnings("deprecation")
+    private StaticLayout getStaticLayout(TextPaint tp, Layout.Alignment align, boolean includeFontPadding, SpannableString text, int width) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return new StaticLayout(
+                    text,
+                    tp,
+                    width,
+                    align,
+                    1.f,
+                    0.f,
+                    includeFontPadding);
+        } else {
+            return StaticLayout.Builder.obtain(text, 0, text.length(), tp, width)
+                    .setAlignment(align)
+                    .setLineSpacing(0.f, 1.f)
+                    .setIncludePad(includeFontPadding)
+                    .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
+                    .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
+                    .build();
+        }
+    }
+
+
+    /**
+     * Implements visual to logical order converter.
+     *
+     * @author <a href="http://www.nesterovsky-bros.com">Nesterovsky bros</a>
+     *
+     * @param text an input text in visual order to convert.
+     * @return a String value in logical order.
+     */
+    public static String visualToLogical(String text)
+    {
+        if ((text == null) || (text.length() == 0))
+        {
+            return text;
+        }
+
+        Bidi bidi = new Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
+
+        if (bidi.isLeftToRight())
+        {
+            return text;
+        }
+
+        int count = bidi.getRunCount();
+        byte[] levels = new byte[count];
+        Integer[] runs = new Integer[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            levels[i] = (byte)bidi.getRunLevel(i);
+            runs[i] = i;
+        }
+
+        Bidi.reorderVisually(levels, 0, runs, 0, count);
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < count; i++)
+        {
+            int index = runs[i];
+            int start = bidi.getRunStart(index);
+            int end = bidi.getRunLimit(index);
+            int level = levels[index];
+
+            if ((level & 1) != 0)
+            {
+                for (; --end >= start;)
+                {
+                    result.append(text.charAt(end));
+                }
+            }
+            else
+            {
+                result.append(text, start, end);
+            }
+        }
+
+        return result.toString();
     }
 
     @Override
@@ -189,7 +260,7 @@ class TSpanView extends TextView {
         setupTextPath();
 
         pushGlyphContext();
-        mCachedPath = getLinePath(mContent, paint, canvas);
+        mCachedPath = getLinePath(visualToLogical(mContent), paint, canvas);
         popGlyphContext();
 
         return mCachedPath;
@@ -421,6 +492,7 @@ class TSpanView extends TextView {
             vertical alternates (OpenType feature: vert) must be enabled.
         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // String arabic = "'isol', 'fina', 'medi', 'init', 'rclt', 'mset', 'curs', ";
             if (allowOptionalLigatures) {
                 paint.setFontFeatureSettings(defaultFeatures + additionalLigatures + font.fontFeatureSettings);
             } else {

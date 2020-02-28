@@ -33,12 +33,6 @@ Object.defineProperty(exports, "AppLoading", {
     return _AppLoading.default;
   }
 });
-Object.defineProperty(exports, "AuthSession", {
-  enumerable: true,
-  get: function () {
-    return _AuthSession.default;
-  }
-});
 Object.defineProperty(exports, "DangerZone", {
   enumerable: true,
   get: function () {
@@ -465,17 +459,13 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.Logs = exports.AR = void 0;
+exports.Logs = exports.SplashScreen = exports.Updates = exports.AR = void 0;
 
 require("./Expo.fx");
 
 var AR = _interopRequireWildcard(require("./AR"));
 
 exports.AR = AR;
-
-var Logs = _interopRequireWildcard(require("./logs/Logs"));
-
-exports.Logs = Logs;
 
 var Updates = _interopRequireWildcard(require("./Updates/Updates"));
 
@@ -484,6 +474,10 @@ exports.Updates = Updates;
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
 exports.SplashScreen = SplashScreen;
+
+var Logs = _interopRequireWildcard(require("./logs/Logs"));
+
+exports.Logs = Logs;
 
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
@@ -494,8 +488,6 @@ var _Linking = _interopRequireDefault(require("./Linking/Linking"));
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
-
-var _AuthSession = _interopRequireDefault(require("./AuthSession"));
 
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
 

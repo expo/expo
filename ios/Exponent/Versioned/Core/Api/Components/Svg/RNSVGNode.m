@@ -36,6 +36,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 {
     if (self = [super init]) {
         self.opacity = 1;
+        self.opaque = false;
         self.matrix = CGAffineTransformIdentity;
         self.transforms = CGAffineTransformIdentity;
         self.invTransform = CGAffineTransformIdentity;
@@ -172,6 +173,16 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
     [self invalidate];
     _name = name;
+}
+
+- (void)setDisplay:(NSString *)display
+{
+    if ([display isEqualToString:_display]) {
+        return;
+    }
+
+    [self invalidate];
+    _display = display;
 }
 
 - (void)setOpacity:(CGFloat)opacity

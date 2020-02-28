@@ -1,6 +1,6 @@
+import { deprecate } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
-import { deprecate } from '@unimodules/core';
 import StoreReview from './ExpoStoreReview';
 /*
  * Determine if the platform has the capabilities to use `requestedReview`

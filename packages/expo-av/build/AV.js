@@ -1,5 +1,5 @@
-import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
+import { Asset } from 'expo-asset';
 import ExponentAV from './ExponentAV';
 // TODO add:
 //  disableFocusOnAndroid
