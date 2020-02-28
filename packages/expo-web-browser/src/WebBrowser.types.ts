@@ -14,6 +14,7 @@ export type WebBrowserOpenOptions = {
 
   /** iOS only */
   controlsColor?: string;
+  dismissButtonStyle?: 'done' | 'close' | 'cancel';
   readerMode?: boolean;
 
   // Web
