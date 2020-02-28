@@ -109,12 +109,13 @@
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md).
+- Go through another guide about [Quality Assurance](Quality%20Assurance.md.md).
 - Remember that you **must** go through the QA process for both the Expo client and a standalone app! (e.g. build `native-component-list` and `test-suite` as standalone apps). There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
-  **Android**:
-    - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
-  **iOS**:
-    - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
+- **Android**:
+  - The process for building a standalon
+e app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
+- **iOS**:
+  - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
 
 ## 2.2. Publish demo apps
 
