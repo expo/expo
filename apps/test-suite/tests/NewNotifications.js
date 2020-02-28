@@ -121,7 +121,7 @@ export async function test(t) {
           handleSuccess: event => {
             handleSuccessEvent = event;
           },
-          handleError: event => {
+          handleError: (...event) => {
             handleErrorEvent = event;
           },
         });
@@ -218,6 +218,7 @@ export async function test(t) {
               await waitFor(1000);
             }
             t.expect(handleErrorEvent).not.toBeNull();
+            t.expect(typeof handleErrorEvent[0]).toBe('string');
             t.expect(handleSuccessEvent).toBeNull();
           },
           10000
