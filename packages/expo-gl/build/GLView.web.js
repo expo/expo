@@ -168,9 +168,9 @@ export class GLView extends React.Component {
         delete domProps.ref;
         return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
     }
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps) {
         const { webglContextAttributes } = this.props;
-        if (this.canvas && webglContextAttributes !== nextProps.webglContextAttributes) {
+        if (this.canvas && webglContextAttributes !== prevProps.webglContextAttributes) {
             this.onContextLost(null);
             this.onContextRestored();
         }
