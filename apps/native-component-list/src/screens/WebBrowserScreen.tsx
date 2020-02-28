@@ -20,6 +20,8 @@ interface State {
   lastWarmedPackage?: string;
   barCollapsing: boolean;
   showInRecents: boolean;
+  readerMode: boolean;
+  enableDefaultShare: boolean;
 }
 
 export default class WebBrowserScreen extends React.Component<{}, State> {
@@ -53,6 +55,14 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     this.setState({ barCollapsing });
   };
 
+  readerModeSwitchChanged = (readerMode: boolean) => {
+    this.setState({ readerMode });
+  };
+
+  enableDefaultShareChanged = (enableDefaultShare: boolean) => {
+    this.setState({ enableDefaultShare });
+  };
+
   showPackagesAlert = async () => {
     const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
     Alert.alert('Result', JSON.stringify(result, null, 2));
@@ -67,7 +77,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  handleMayInitWithUrlClicke = async () => {
+  handleMayInitWithUrlClicked = async () => {
     const { selectedPackage: lastWarmedPackage } = this.state;
     this.setState({
       lastWarmedPackage,
@@ -89,8 +99,13 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
       showInRecents: this.state.showInRecents,
+      readerMode: this.state.readerMode,
+      enableDefaultShare: this.state.enableDefaultShare,
     };
-    const result = await WebBrowser.openBrowserAsync(url, args);
+    const result = await WebBrowser.openBrowserAsync(
+      'https://proandroiddev.com/say-no-to-baseactivity-and-basefragment-83b156ed8998?source=grid_home----c72404660798-----0-1-----------------18---39b94dfe_9ccf_4e8c_803f_bcf970042e56--',
+      args
+    );
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
@@ -109,15 +124,25 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
-      <View style={styles.label}>
-        <Text>Controls color (#rrggbb):</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="RRGGBB"
-          onChangeText={this.handleControlsColorInputChanged}
-          value={this.state.controlsColorText}
-        />
-      </View>
+      <>
+        <View style={styles.label}>
+          <Text>Controls color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="RRGGBB"
+            onChangeText={this.handleControlsColorInputChanged}
+            value={this.state.controlsColorText}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Reader mode</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.readerModeSwitchChanged}
+            value={this.state.readerMode}
+          />
+        </View>
+      </>
     );
 
   renderAndroidChoices = () =>
@@ -137,6 +162,14 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
             style={styles.switch}
             onValueChange={this.handleRecents}
             value={this.state.showInRecents}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Default share</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.enableDefaultShareChanged}
+            value={this.state.enableDefaultShare}
           />
         </View>
         <View style={styles.label}>
@@ -160,7 +193,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
         <Button style={styles.button} onPress={this.handleWarmUpClicked} title="Warm up." />
         <Button
           style={styles.button}
-          onPress={this.handleMayInitWithUrlClicke}
+          onPress={this.handleMayInitWithUrlClicked}
           title="May init with url."
         />
         <Button style={styles.button} onPress={this.handleCoolDownClicked} title="Cool down." />
