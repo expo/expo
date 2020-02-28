@@ -34,6 +34,7 @@ public class WebBrowserModule extends ExportedModule {
 
   private final static String SHOW_IN_RECENTS = "showInRecents";
 
+  private final static String DEFAULT_SHARE_MENU_ITEM_KEY = "enableDefaultShare";
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
   private static final String TAG = "ExpoWebBrowser";
@@ -162,6 +163,10 @@ public class WebBrowserModule extends ExportedModule {
     }
 
     builder.setShowTitle(arguments.getBoolean(SHOW_TITLE_KEY, false));
+
+    if (arguments.hasKey(DEFAULT_SHARE_MENU_ITEM_KEY) && options.getBoolean(KEY_DEFAULT_SHARE_MENU_ITEM)) {
+      builder.addDefaultShareMenuItem();
+    }
 
     Intent intent = builder.build().intent;
 

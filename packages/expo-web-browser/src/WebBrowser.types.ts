@@ -9,6 +9,7 @@ export type WebBrowserOpenOptions = {
   showTitle?: boolean;
 
   /** Android only */
+  enableDefaultShare?: boolean;
   showInRecents?: boolean;
 
   /** iOS only */
