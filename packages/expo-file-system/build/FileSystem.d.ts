@@ -3,6 +3,7 @@ import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProg
 export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, };
 export declare const documentDirectory: string | null;
 export declare const cacheDirectory: string | null;
+export declare const externalDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;
 export declare function getInfoAsync(fileUri: string, options?: {
     md5?: boolean;

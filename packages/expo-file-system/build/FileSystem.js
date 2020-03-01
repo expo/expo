@@ -17,6 +17,7 @@ function normalizeEndingSlash(p) {
 }
 export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documentDirectory);
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
+export const externalDirectory = normalizeEndingSlash(ExponentFileSystem.externalDirectory);
 export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
 export async function getInfoAsync(fileUri, options = {}) {
     if (!ExponentFileSystem.getInfoAsync) {

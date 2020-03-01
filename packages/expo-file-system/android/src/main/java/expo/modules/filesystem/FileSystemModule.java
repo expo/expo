@@ -102,6 +102,12 @@ public class FileSystemModule extends ExportedModule {
     constants.put("documentDirectory", Uri.fromFile(getContext().getFilesDir()).toString() + "/");
     constants.put("cacheDirectory", Uri.fromFile(getContext().getCacheDir()).toString() + "/");
     constants.put("bundleDirectory", "asset:///");
+    try {
+      constants.put("externalDirectory", Uri.fromFile(getContext().getExternalFilesDir(null)).toString() + "/");
+    } catch(Exception e) {
+      Log.w(TAG, "External Directory not available", e);
+      constants.put("externalDirectory", null);
+    }
 
     return constants;
   }

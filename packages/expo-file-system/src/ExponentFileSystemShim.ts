@@ -10,6 +10,9 @@ const platformModule: ExponentFileSystemModule = {
   get cacheDirectory(): string | null {
     return null;
   },
+  get externalDirectory(): string | null {
+    return null;
+  },
   get bundledAssets(): string | null {
     return null;
   },
