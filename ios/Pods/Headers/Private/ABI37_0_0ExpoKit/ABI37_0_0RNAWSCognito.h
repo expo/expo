@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/Cognito/ABI37_0_0RNAWSCognito.h

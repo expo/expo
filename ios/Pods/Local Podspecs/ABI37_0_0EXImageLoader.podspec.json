@@ -1,0 +1,29 @@
+{
+  "name": "ABI37_0_0EXImageLoader",
+  "version": "1.0.0",
+  "summary": "Image loader",
+  "description": "Image loader",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-loader",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ABI37_0_0EXImageLoader/**/*.{h,m}",
+  "preserve_paths": "ABI37_0_0EXImageLoader/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "ABI37_0_0React-Core": [
+
+    ],
+    "ABI37_0_0UMCore": [
+
+    ],
+    "ABI37_0_0UMImageLoaderInterface": [
+
+    ]
+  }
+}
