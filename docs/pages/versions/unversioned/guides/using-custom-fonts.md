@@ -19,7 +19,7 @@ If you load this up on a device, you should see something that looks like this:
 
 Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to 
 get the example working right, or if something is wrong. If the platform default font looks a little different 
-for you, that's fine; the platform default font varies from platform to platform.
+for you, that's fine; the platform default font can vary depending on the operating system and the device manufacturer (on Android).
 
 ## Getting a Font
 
