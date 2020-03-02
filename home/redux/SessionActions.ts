@@ -22,7 +22,7 @@ export default {
           await AuthApi.signOutAsync(session.sessionSecret);
         } catch (e) {
           // continue to clear out session in redux and local storage even if API logout fails
-          console.log({ e });
+          console.error('Something went wrong when signing out:', e);
         }
         await LocalStorage.removeSessionAsync();
         Analytics.track(Analytics.events.USER_LOGGED_OUT);
