@@ -52,8 +52,7 @@ export class Asset {
       this.height = height;
     }
 
-    // This only applies to assets that are bundled in Expo standalone apps
-    if (IS_MANAGED_ENV && hash) {
+    if (hash) {
       this.localUri = getEmbeddedAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
@@ -119,8 +118,6 @@ export class Asset {
     const metaHash = meta.hash;
     if (Asset.byHash[metaHash]) {
       return Asset.byHash[metaHash];
-    } else if (!IS_MANAGED_ENV && !Asset.byHash[metaHash]) {
-      throw new Error('Assets must be initialized with Asset.fromModule');
     }
 
     const { uri, hash } = AssetSources.selectAssetSource(meta);
