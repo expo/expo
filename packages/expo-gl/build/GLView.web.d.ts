@@ -37,7 +37,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static takeSnapshotAsync(gl: WebGLRenderingContext, options?: SnapshotOptions): Promise<GLSnapshot>;
     componentWillUnmount(): void;
     render(): JSX.Element;
-    componentWillReceiveProps(nextProps: any): void;
+    componentDidUpdate(prevProps: GLViewProps): void;
     private getGLContextOrReject;
     private onContextLost;
     private onContextRestored;
