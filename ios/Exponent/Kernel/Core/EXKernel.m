@@ -20,6 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static const NSString *kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";

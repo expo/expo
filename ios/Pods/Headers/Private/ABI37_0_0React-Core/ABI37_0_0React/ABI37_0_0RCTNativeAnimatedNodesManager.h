@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI37_0_0/ReactNative/Libraries/NativeAnimation/ABI37_0_0RCTNativeAnimatedNodesManager.h

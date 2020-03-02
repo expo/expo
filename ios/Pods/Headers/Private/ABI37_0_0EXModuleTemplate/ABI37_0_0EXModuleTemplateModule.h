@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/EXModuleTemplate/ABI37_0_0EXModuleTemplate/ABI37_0_0EXModuleTemplateModule.h

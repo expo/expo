@@ -1098,11 +1098,18 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       // For UMReactNativeAdapter
-      pattern: `s/${versionPrefix}UM${reactPodName}/${versionPrefix}UMReact/g`,
+      // Fix names with 'React' substring occurring twice - only first one should be prefixed
+      flags: '-Ei',
+      pattern: `s/${versionPrefix}UM([[:alpha:]]*)${reactPodName}/${versionPrefix}UM\\1React/g`,
     },
     {
       // For EXReactNativeAdapter
       pattern: `s/${versionPrefix}EX${reactPodName}/${versionPrefix}EXReact/g`,
+    },
+    {
+      // For EXConstants
+      pattern: `s/${versionPrefix}EXDeviceInstallUUIDKey/EXDeviceInstallUUIDKey/g`,
+      paths: 'Expo/EXConstants',
     },
     {
       // RCTPlatform exports version of React Native
