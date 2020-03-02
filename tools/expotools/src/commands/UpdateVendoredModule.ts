@@ -503,6 +503,29 @@ async function askForModuleAsync(): Promise<string> {
   return moduleName;
 }
 
+async function getPackageJsonPathsAsync(): Promise<string[]> {
+  const packageJsonPath = path.join(Directories.getAppsDir(), '**', 'package.json');
+  return await glob(packageJsonPath, { ignore: "**/node_modules/**" });
+}
+
+async function updateDependencyAsync(packgeJsonPath: string, dependencyName: string, newVersion: string): Promise<boolean> {
+  const jsonFile = new JsonFile(packgeJsonPath);
+  const packageJson = await jsonFile.readAsync();
+  
+  let dependencies = ((packageJson || {}).dependencies || {});
+  if (dependencies[dependencyName] !== undefined) {
+    if (dependencies[dependencyName] !== newVersion) {
+      console.log(
+        `${chalk.yellow('>')} ${chalk.green(packgeJsonPath)}: ${chalk.magentaBright(dependencies[dependencyName])} -> ${chalk.magentaBright(newVersion)}`
+      );
+      dependencies[dependencyName] = newVersion;
+      await jsonFile.writeAsync(packageJson);
+      return true;
+    }
+  }
+  return false;
+}
+
 async function action(options: ActionOptions) {
   if (options.list || options.listOutdated) {
     await listAvailableVendoredModulesAsync(options.listOutdated);
@@ -677,6 +700,29 @@ async function action(options: ActionOptions) {
     }
     return bundledNativeModules;
   });
+
+  const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
+    name: string;
+    version: string;
+  };
+  const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+
+  console.log(
+    `\nUpdating ${chalk.green(name)} in workspace projects...`
+  );
+ 
+  let needToRunYarn = false;
+  for (const path of await getPackageJsonPathsAsync()) {
+    const wasUpdated = await updateDependencyAsync(path, name, `${semverPrefix}${version}`);
+    needToRunYarn = needToRunYarn || wasUpdated;
+  }
+
+  if (needToRunYarn) {
+    console.log(`\nRunning \`${chalk.cyan(`yarn`)}\`...`);
+    await spawnAsync('yarn', [], {
+      cwd: Directories.getExpoRepositoryRootDir(),
+    });
+  }
 
   console.log(
     `\nFinished updating ${chalk.green(
