@@ -39,7 +39,8 @@
   "unimodulePeerDependencies": {
     "expo-constants": "*",
     "@unimodules/core": "*",
-    "expo-file-system": "*"
+    "expo-file-system": "*",
+    "expo-updates": "*"
   },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
