@@ -676,14 +676,14 @@ async function action(options: ActionOptions) {
     }
   }
 
-  await updateBundledNativeModulesAsync(async bundledNativeModules => {
-    const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
-      name: string;
-      version: string;
-    };
+  const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
+    name: string;
+    version: string;
+  };
+  const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
 
+  await updateBundledNativeModulesAsync(async bundledNativeModules => {
     if (moduleConfig.installableInManagedApps) {
-      const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
       const versionRange = `${semverPrefix}${version}`;
 
       bundledNativeModules[name] = versionRange;
@@ -700,12 +700,6 @@ async function action(options: ActionOptions) {
     }
     return bundledNativeModules;
   });
-
-  const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
-    name: string;
-    version: string;
-  };
-  const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
 
   console.log(
     `\nUpdating ${chalk.green(name)} in workspace projects...`
