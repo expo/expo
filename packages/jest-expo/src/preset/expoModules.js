@@ -404,6 +404,11 @@ module.exports = {
           { key: 4, argumentsCount: 1, name: 'getTaskOptionsAsync' },
           { key: 5, argumentsCount: 2, name: 'notifyTaskFinishedAsync' },
         ],
+        ExpoUpdates: [
+          { key: 0, argumentsCount: 0, name: 'checkForUpdateAsync' },
+          { key: 1, argumentsCount: 0, name: 'reload' },
+          { key: 2, argumentsCount: 0, name: 'fetchUpdateAsync' },
+        ],
         ExpoVideoManager: [{ key: 0, argumentsCount: 2, name: 'setFullscreen' }],
         ExpoVideoThumbnails: [{ key: 0, argumentsCount: 2, name: 'getThumbnail' }],
         ExpoWebBrowser: [
@@ -710,6 +715,13 @@ module.exports = {
           removeListeners: { type: 'function' },
           unregisterAllTasksAsync: { type: 'function' },
           unregisterTaskAsync: { type: 'function' },
+        },
+        ExpoUpdates: {
+          addListener: { type: 'function' },
+          checkForUpdateAsync: { type: 'function' },
+          fetchUpdateAsync: { type: 'function' },
+          reload: { type: 'function' },
+          removeListeners: { type: 'function' },
         },
         ExpoVideoManager: {
           ScaleAspectFill: { type: 'string' },
