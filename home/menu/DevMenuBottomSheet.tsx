@@ -1,7 +1,13 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import { Dimensions, EventSubscription, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Dimensions,
+  EventSubscription,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 import * as DevMenu from './DevMenuModule';
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
@@ -57,10 +63,12 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   }
 
   collapse = (): Promise<void> => {
+    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
+    this.ref.current && this.ref.current.snapTo(0);
     this.ref.current && this.ref.current.snapTo(0);
 
     // Use setTimeout until there is a better solution to execute something once the sheet is fully collapsed.
-    return new Promise(resolve => setTimeout(resolve, 200));
+    return new Promise(resolve => setTimeout(resolve, 300));
   };
 
   collapseAndClose = async () => {
@@ -69,6 +77,8 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   };
 
   expand = () => {
+    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
+    this.ref.current && this.ref.current.snapTo(1);
     this.ref.current && this.ref.current.snapTo(1);
   };
 
@@ -113,7 +123,8 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
         <View style={styles.bottomSheetContainer}>
           <TouchableWithoutFeedback onPress={this.collapseAndClose}>
             <Animated.View
-              style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]} />
+              style={[styles.bottomSheetBackground, { opacity: this.backgroundOpacity }]}
+            />
           </TouchableWithoutFeedback>
           <BottomSheet
             ref={this.ref}
