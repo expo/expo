@@ -33,7 +33,7 @@ In this example (which you can see if you [open the Snack in a dedicated window]
 
 ## Using the `useFonts` Hook
 
-The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedic van Putten. It is the easiest way to load custom fonts in modern React.
+The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedric van Putten. It is the easiest way to load custom fonts in modern React.
 
 To set it up, first add the library to your project, either by 
 
