@@ -1,14 +1,12 @@
 package expo.modules.notifications.notifications;
 
-import org.json.JSONObject;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.service.ExpoNotificationsService;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
@@ -61,18 +59,16 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
 
   /**
    * Used by {@link ExpoNotificationsService} to notify of new messages.
-   * Calls {@link NotificationListener#onNotificationReceived(String, JSONObject, NotificationTrigger)} on all values
+   * Calls {@link NotificationListener#onNotificationReceived(Notification)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger
+   * @param notification Notification received
    */
-  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+  public void onNotificationReceived(Notification notification) {
     for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
       NotificationListener listener = listenerReference.get();
       if (listener != null) {
-        listener.onNotificationReceived(identifier, request, trigger);
+        listener.onNotificationReceived(notification);
       }
     }
   }

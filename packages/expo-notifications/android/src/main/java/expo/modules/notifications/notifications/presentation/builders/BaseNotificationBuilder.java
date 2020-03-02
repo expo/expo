@@ -2,17 +2,16 @@ package expo.modules.notifications.notifications.presentation.builders;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationContent;
 
 /**
  * A foundation class for {@link NotificationBuilder} implementations. Takes care
- * of accepting {@link #mNotificationRequest} and {@link #mNotificationBehavior}.
+ * of accepting {@link #mNotificationContent} and {@link #mNotificationBehavior}.
  */
 public abstract class BaseNotificationBuilder implements NotificationBuilder {
-  private JSONObject mNotificationRequest;
+  private NotificationContent mNotificationContent;
   private NotificationBehavior mNotificationBehavior;
   private Context mContext;
 
@@ -21,8 +20,8 @@ public abstract class BaseNotificationBuilder implements NotificationBuilder {
   }
 
   @Override
-  public NotificationBuilder setNotificationRequest(JSONObject notificationRequest) {
-    mNotificationRequest = notificationRequest;
+  public NotificationBuilder setNotificationContent(NotificationContent notificationContent) {
+    mNotificationContent = notificationContent;
     return this;
   }
 
@@ -36,8 +35,8 @@ public abstract class BaseNotificationBuilder implements NotificationBuilder {
     return mContext;
   }
 
-  protected JSONObject getNotificationRequest() {
-    return mNotificationRequest;
+  protected NotificationContent getNotificationContent() {
+    return mNotificationContent;
   }
 
   protected NotificationBehavior getNotificationBehavior() {

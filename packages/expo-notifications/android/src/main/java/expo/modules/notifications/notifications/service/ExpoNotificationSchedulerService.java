@@ -9,25 +9,24 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.util.Log;
-import android.util.Pair;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
 import expo.modules.notifications.notifications.NotificationSerializer;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 /**
  * {@link JobIntentService} responsible for handling events related to scheduled notifications:
@@ -51,11 +50,10 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   public static final int SUCCESS_CODE = 0;
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
-  public static final String NOTIFICATIONS_KEY = "notifications";
+  public static final String NOTIFICATION_REQUESTS_KEY = "notificationRequests";
 
   private static final String NOTIFICATION_IDENTIFIER_KEY = "id";
   private static final String NOTIFICATION_REQUEST_KEY = "request";
-  private static final String NOTIFICATION_TRIGGER_KEY = "trigger";
   private static final String RECEIVER_KEY = "receiver";
 
   private static final int JOB_ID = ExpoNotificationSchedulerService.class.getName().hashCode();
@@ -74,26 +72,22 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   }
 
   /**
-   * See {@link #enqueueSchedule(Context, String, JSONObject, SchedulableNotificationTrigger, ResultReceiver)}
+   * See {@link #enqueueSchedule(Context, NotificationRequest, ResultReceiver)}
    */
-  public static void enqueueSchedule(Context context, String identifier, JSONObject notification, SchedulableNotificationTrigger trigger) {
-    enqueueSchedule(context, identifier, notification, trigger, null);
+  public static void enqueueSchedule(Context context, NotificationRequest notificationRequest) {
+    enqueueSchedule(context, notificationRequest, null);
   }
 
   /**
    * Schedule notification asynchronously.
    *
-   * @param context        Context this is being called from
-   * @param identifier     Notification identifier
-   * @param notification   Notification request
-   * @param trigger        Notification trigger (if null, trigger the notification immediately)
-   * @param resultReceiver Receiver to be called with the result
+   * @param context             Context this is being called from
+   * @param notificationRequest Notification request to schedule
+   * @param resultReceiver      Receiver to be called with the result
    */
-  public static void enqueueSchedule(Context context, String identifier, JSONObject notification, @Nullable SchedulableNotificationTrigger trigger, ResultReceiver resultReceiver) {
-    Intent intent = new Intent(NOTIFICATION_SCHEDULE_ACTION, getUriBuilderForIdentifier(identifier).appendPath("schedule").build());
-    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifier);
-    intent.putExtra(NOTIFICATION_REQUEST_KEY, notification.toString());
-    intent.putExtra(NOTIFICATION_TRIGGER_KEY, (Parcelable) trigger);
+  public static void enqueueSchedule(Context context, NotificationRequest notificationRequest, ResultReceiver resultReceiver) {
+    Intent intent = new Intent(NOTIFICATION_SCHEDULE_ACTION, getUriBuilderForIdentifier(notificationRequest.getIdentifier()).appendPath("schedule").build());
+    intent.putExtra(NOTIFICATION_REQUEST_KEY, (Parcelable) notificationRequest);
     intent.putExtra(RECEIVER_KEY, resultReceiver);
     enqueueWork(context, intent);
   }
@@ -165,9 +159,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
       if (NOTIFICATION_SCHEDULE_ACTION.equals(intent.getAction())) {
         scheduleNotification(
             this,
-            intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY),
-            new JSONObject(intent.getStringExtra(NOTIFICATION_REQUEST_KEY)),
-            intent.<SchedulableNotificationTrigger>getParcelableExtra(NOTIFICATION_TRIGGER_KEY)
+            intent.<NotificationRequest>getParcelableExtra(NOTIFICATION_REQUEST_KEY)
         );
       } else if (NOTIFICATION_TRIGGER_ACTION.equals(intent.getAction())) {
         onNotificationTriggered(this, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
@@ -175,7 +167,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
         removeNotification(this, intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
       } else if (NOTIFICATIONS_FETCH_ALL_ACTION.equals(intent.getAction())) {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(NOTIFICATIONS_KEY, fetchNotifications());
+        bundle.putParcelableArrayList(NOTIFICATION_REQUESTS_KEY, new ArrayList<>(fetchNotifications()));
         resultData = bundle;
       } else if (NOTIFICATION_REMOVE_ALL_ACTION.equals(intent.getAction())) {
         removeAllNotifications(this);
@@ -189,7 +181,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
       if (receiver != null) {
         receiver.send(SUCCESS_CODE, resultData);
       }
-    } catch (JSONException | IllegalArgumentException | NullPointerException | IOException e) {
+    } catch (IllegalArgumentException | NullPointerException | IOException e) {
       Log.e("expo-notifications", String.format("Action %s failed: %s.", intent.getAction(), e.getMessage()));
       e.printStackTrace();
 
@@ -207,12 +199,11 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    * @param context Context this is being called from
    */
   protected void setupNotifications(Context context) {
-    for (Map.Entry<String, Pair<JSONObject, SchedulableNotificationTrigger>> entry : mStore.getAllNotifications().entrySet()) {
-      String identifier = entry.getKey();
+    for (NotificationRequest request : mStore.getAllNotificationRequests()) {
       try {
-        scheduleNotification(context, identifier, entry.getValue().first, entry.getValue().second);
+        scheduleNotification(context, request);
       } catch (Exception e) {
-        Log.w("expo-notifications", String.format("Notification \"%s\" could not have been scheduled.", identifier));
+        Log.w("expo-notifications", String.format("Notification \"%s\" could not have been scheduled.", request.getIdentifier()));
       }
     }
   }
@@ -222,39 +213,40 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    *
    * @return List of serialized notifications
    */
-  protected ArrayList<Bundle> fetchNotifications() {
-    ArrayList<Bundle> notifications = new ArrayList<>();
-    for (Map.Entry<String, Pair<JSONObject, SchedulableNotificationTrigger>> entry : mStore.getAllNotifications().entrySet()) {
-      notifications.add(NotificationSerializer.toBundle(entry.getKey(), entry.getValue().first, entry.getValue().second));
-    }
-    return notifications;
+  protected Collection<NotificationRequest> fetchNotifications() {
+    return mStore.getAllNotificationRequests();
   }
 
   /**
    * Handle notification to schedule. If trigger is null, hands the request immediately to {@link BaseNotificationsService}.
    *
-   * @param context    Context this is being called from
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger or null if the notification should be handled immediately
+   * @param context             Context this is being called from
+   * @param notificationRequest Notification request
    */
-  protected void scheduleNotification(Context context, String identifier, JSONObject request, @Nullable SchedulableNotificationTrigger trigger) {
+  protected void scheduleNotification(Context context, NotificationRequest notificationRequest) {
+    NotificationTrigger trigger = notificationRequest.getTrigger();
+
     // If the trigger is empty, enqueue receive immediately and return.
-    if (trigger == null) {
-      BaseNotificationsService.enqueueReceive(context, identifier, request, null);
+    if (!(trigger instanceof SchedulableNotificationTrigger)) {
+      Notification notification = new Notification(notificationRequest);
+      BaseNotificationsService.enqueueReceive(context, notification, null);
       return;
     }
 
-    Date nextTriggerDate = trigger.nextTriggerDate();
+    SchedulableNotificationTrigger schedulableTrigger = (SchedulableNotificationTrigger) trigger;
+    String identifier = notificationRequest.getIdentifier();
+
+    Date nextTriggerDate = schedulableTrigger.nextTriggerDate();
 
     if (nextTriggerDate == null) {
+
       Log.d("expo-notifications", String.format("Notification \"%s\" will not trigger in the future, removing.", identifier));
       enqueueRemove(context, identifier);
       return;
     }
 
     try {
-      mStore.saveNotification(identifier, request, trigger);
+      mStore.saveNotificationRequest(notificationRequest);
       PendingIntent pendingIntent = getTriggerPendingIntent(context, identifier);
       AlarmManagerCompat.setExactAndAllowWhileIdle(mAlarmManager, AlarmManager.RTC_WAKEUP, nextTriggerDate.getTime(), pendingIntent);
     } catch (IOException e) {
@@ -275,10 +267,11 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    */
   protected void onNotificationTriggered(Context context, String identifier) throws IOException {
     try {
-      Pair<JSONObject, SchedulableNotificationTrigger> notification = mStore.getNotification(identifier);
-      BaseNotificationsService.enqueueReceive(context, identifier, notification.first, notification.second);
-      enqueueSchedule(context, identifier, notification.first, notification.second);
-    } catch (JSONException | ClassNotFoundException | InvalidClassException e) {
+      NotificationRequest notificationRequest = mStore.getNotificationRequest(identifier);
+      Notification notification = new Notification(notificationRequest);
+      BaseNotificationsService.enqueueReceive(context, notification);
+      enqueueSchedule(context, notificationRequest);
+    } catch (ClassNotFoundException | InvalidClassException e) {
       Log.e("expo-notifications", "An exception occurred while triggering notification " + identifier + ", removing. " + e.getMessage());
       e.printStackTrace();
       enqueueRemove(context, identifier);
@@ -293,7 +286,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    */
   protected void removeNotification(Context context, String identifier) {
     mAlarmManager.cancel(getTriggerPendingIntent(context, identifier));
-    mStore.removeNotification(identifier);
+    mStore.removeNotificationRequest(identifier);
   }
 
   /**
@@ -302,7 +295,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    * @param context Context this is being called from
    */
   protected void removeAllNotifications(Context context) {
-    for (String notificationId : mStore.removeAllNotifications()) {
+    for (String notificationId : mStore.removeAllNotificationRequests()) {
       mAlarmManager.cancel(getTriggerPendingIntent(context, notificationId));
     }
   }

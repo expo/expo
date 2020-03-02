@@ -2,7 +2,6 @@ package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -16,7 +15,7 @@ import java.util.Map;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
 
 /**
@@ -96,13 +95,11 @@ public class NotificationsHandler extends ExportedModule implements Notification
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger
+   * @param notification Notification received
    */
   @Override
-  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, identifier, request, trigger, this);
+  public void onNotificationReceived(Notification notification) {
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, notification, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
