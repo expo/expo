@@ -18,7 +18,7 @@ If you load this up on a device, you should see something that looks like this:
 <img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
 
 Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to 
-get the example working right, or if something is wrong. If the Platform Default font looks a little different 
+get the example working right, or if something is wrong. If the platform default font looks a little different 
 for you, that's fine; the platform default font varies from platform to platform.
 
 ## Getting a Font
