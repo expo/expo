@@ -19,9 +19,9 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
-import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
 
 /**
  * A notification service foundation handling incoming intents

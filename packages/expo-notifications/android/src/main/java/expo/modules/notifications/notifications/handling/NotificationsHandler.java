@@ -17,6 +17,7 @@ import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -28,6 +29,11 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
  */
 public class NotificationsHandler extends ExportedModule implements NotificationListener {
   private final static String EXPORTED_NAME = "ExpoNotificationsHandlerModule";
+
+  private static final String SHOULD_SHOW_ALERT_KEY = "shouldShowAlert";
+  private static final String SHOULD_PLAY_SOUND_KEY = "shouldPlaySound";
+  private static final String SHOULD_SET_BADGE_KEY = "shouldSetBadge";
+  private static final String PRIORITY_KEY = "priority";
 
   private NotificationManager mNotificationManager;
   private ModuleRegistry mModuleRegistry;
@@ -79,7 +85,11 @@ public class NotificationsHandler extends ExportedModule implements Notification
       promise.reject("ERR_NOTIFICATION_HANDLED", message);
       return;
     }
-    task.handleResponse(new ExpoNotificationBehavior(behavior), promise);
+    boolean shouldShowAlert = behavior.getBoolean(SHOULD_SHOW_ALERT_KEY);
+    boolean shouldPlaySound = behavior.getBoolean(SHOULD_PLAY_SOUND_KEY);
+    boolean shouldSetBadge = behavior.getBoolean(SHOULD_SET_BADGE_KEY);
+    String priorityOverride = behavior.getString(PRIORITY_KEY);
+    task.handleResponse(new NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priorityOverride), promise);
   }
 
   /**

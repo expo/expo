@@ -12,8 +12,8 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 import expo.modules.notifications.notifications.NotificationSerializer;
-import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
 
 /**

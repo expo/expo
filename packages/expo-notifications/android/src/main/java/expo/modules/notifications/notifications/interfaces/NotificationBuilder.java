@@ -4,6 +4,8 @@ import android.app.Notification;
 
 import org.json.JSONObject;
 
+import expo.modules.notifications.notifications.model.NotificationBehavior;
+
 /**
  * An object capable of building a {@link Notification} based
  * on a {@link JSONObject} spec.

@@ -4,8 +4,8 @@ import android.content.Context;
 
 import org.json.JSONObject;
 
-import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
 
 /**
  * A foundation class for {@link NotificationBuilder} implementations. Takes care
