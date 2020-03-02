@@ -71,27 +71,29 @@ See [here](https://developer.android.com/studio/publish/app-signing) to find mor
 
 #### If you're working on an existing app that uses an app signing key...
 
-> **Note:** Unless you built and deployed your app in 2017 or earlier, this probably does not apply to you.
+> **Note:** Unless you submitted your app to the Google Play Store in 2017 or earlier, this probably does not apply to you.
 
-Expo provides a command that will do everything for you- just run `expo opt-in-google-play-signing` from your project directory and follow the instructions. Afterwards, the old version of your keystore will be backed up to your working directory, and the credentials for that keystore will be printed in the CLI.
+Expo provides a command that will guide you through the entire process! Just run `expo opt-in-google-play-signing` from your project directory and follow the instructions. Afterwards, the old version of your keystore will be backed up to your working directory, and the credentials for that keystore will be printed in the CLI. As always, before you start, backup your keystore and credentials to a safe location.
 
 If you'd rather handle this process on your own:
 
-1. Run `expo build:android --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
+1. Backup your old keystore and credentials with `expo fetch:android:keystore`
 
-2. Run `expo fetch:android:upload-cert` which extracts the public certificate from the keystore into a `.pem` file
+2. Run `expo build:android --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
 
-3. Add the upload certificate to the [Google Play console](https://play.google.com/apps/publish/) under your application's `App Signing` tab
+3. Run `expo fetch:android:upload-cert` which extracts the public certificate from the keystore into a `.pem` file
 
-4. Open the dropdown for `(Advanced options) Provide the app signing key that Google Play uses for this app`
+4. Add the upload certificate to the [Google Play console](https://play.google.com/apps/publish/) under your application's `App Signing` tab
 
-5. Select `Export and upload a key (not using a Java keystore)`
+5. Open the dropdown for `(Advanced options) Provide the app signing key that Google Play uses for this app`
 
-6. Select the dropdown for `(Optional) Create a new upload key for increased security (recommended)`
+6. Select `Export and upload a key and certificate from a Java keystore`
 
-7. You've already generated a new upload key and extracted the certificate, so move to step 3 and upload the public key certificate (the `.pem` file you received in step 2)
+7. Generate `APP SIGNING KEY & CERTIFICATE ZIP` using `PEPK` tool and upload it.
 
-If you want to create the upload certificate yourself, replace steps 1 and 2 from above with:
+8. Select the dropdown for `(Optional) Create a new upload key for increased security (recommended)` and upload the public key certificate (the `.pem` file you received in step 3)
+
+If you want to create the upload certificate yourself, replace steps 2 and 3 from above with:
 
 1. Generate a new keystore
 
