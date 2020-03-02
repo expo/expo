@@ -62,7 +62,7 @@ Create the file `ios/<your-project-name>/Supporting/expo-config.plist` with the 
 <dict>
         <key>sdkVersion</key>
         <string>YOUR-APP-SDK-VERSION-HERE</string>
-        <key>remoteUrl</key>
+        <key>updateUrl</key>
         <string>YOUR-APP-URL-HERE</string>
 </dict>
 </plist>
@@ -242,7 +242,7 @@ On Android, you may also define these properties at runtime by passing a `Map` a
 
 | iOS plist / Android Map key | Android meta-data name | Description | Default | Required? |
 | --- | --- | --- | --- | --- |
-| `remoteUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
+| `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
 | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | Runtime version to send under the `Expo-Runtime-Version` header in the manifest request. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | Release channel to send under the `Expo-Release-Channel` header in the manifest request | `default` | ❌ |
