@@ -103,13 +103,13 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
 
   if (@available(iOS 11.0, *)) {
     NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
-    if ([dismissButtonStyle isEqualToString:@"done"]) {
+    if ([@"done" isEqualToString:dismissButtonStyle]) {
       safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
     }
-    else if ([dismissButtonStyle isEqualToString:@"close"]) {
+    else if ([@"close" isEqualToString:dismissButtonStyle]) {
       safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
     }
-    else if ([dismissButtonStyle isEqualToString:@"cancel"]) {
+    else if (["cancel" isEqualToString:dismissButtonStyle@]) {
       safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
     }
   }

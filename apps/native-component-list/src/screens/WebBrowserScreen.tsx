@@ -102,10 +102,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       readerMode: this.state.readerMode,
       enableDefaultShare: this.state.enableDefaultShare,
     };
-    const result = await WebBrowser.openBrowserAsync(
-      'https://proandroiddev.com/say-no-to-baseactivity-and-basefragment-83b156ed8998?source=grid_home----c72404660798-----0-1-----------------18---39b94dfe_9ccf_4e8c_803f_bcf970042e56--',
-      args
-    );
+    const result = await WebBrowser.openBrowserAsync('https://expo.io', args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
