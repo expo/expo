@@ -753,16 +753,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXTaskManager
     SPECS:
       - EXTaskManager (8.0.0)
-  EXUpdates:
-    BUILD_SETTINGS_CHECKSUM:
-      EXUpdates: 4607b0f75bd46d01ee0d14c14ccef45d
-    CHECKSUM: 4bb4c813dac48562f9640b5cb7c8283a60b0e68b
-    FILES:
-      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.h"
-      - "../../../../packages/expo-updates/ios/EXUpdates/EXUpdatesModule.m"
-    PROJECT_NAME: EXUpdates
-    SPECS:
-      - EXUpdates (0.0.1-rc.0)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: 8a03493ab01357acaad4113c212a979d
@@ -937,12 +927,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 6bbe022d99f762e03850cf49af4f338d
-      Release: 6bbe022d99f762e03850cf49af4f338d
+      Debug: a72feb9509b1afa5820c6069629d5c50
+      Release: a72feb9509b1afa5820c6069629d5c50
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: f930f861b32718a2cf0a78587524f65d
-      Release: f930f861b32718a2cf0a78587524f65d
+      Debug: 949995fb801a2adf1073e60370a6ea79
+      Release: 949995fb801a2adf1073e60370a6ea79
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1810,7 +1800,7 @@ CACHE_KEYS:
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens: d0a154f417562db98591a0dd7d1b9bf7
-    CHECKSUM: 2a9cd603bcebc34319c92e595283d760dd1f55f5
+    CHECKSUM: 812b79d384e2bea7eebc4ec981469160d4948fd5
     FILES:
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.h"
       - "../../../../node_modules/react-native-screens/ios/RNSScreen.m"
@@ -1824,7 +1814,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-screens/README.md"
     PROJECT_NAME: RNScreens
     SPECS:
-      - RNScreens (2.1.0)
+      - RNScreens (2.2.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
