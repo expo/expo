@@ -37,7 +37,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackEmbed snackId="@charliecruzan/basiclocationexample" />
+<SnackEmbed snackId="@lukaszkosmaty/basiclocationexample" />
 
 ## API
 
