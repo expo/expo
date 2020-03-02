@@ -61,6 +61,13 @@ android {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
   }
+
+  testOptions {
+    unitTests.all {
+      useJUnitPlatform()
+    }
+  }
+  
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
