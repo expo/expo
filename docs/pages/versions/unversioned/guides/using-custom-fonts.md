@@ -3,6 +3,7 @@ title: Using Custom Fonts
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
 operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you'll want to use your own fonts in your project. This guide will show you how to do that.
@@ -17,8 +18,8 @@ If you load this up on a device, you should see something that looks like this:
 
 <img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
 
-Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to 
-get the example working right, or if something is wrong. If the platform default font looks a little different 
+Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to
+get the example working right, or if something is wrong. If the platform default font looks a little different
 for you, that's fine; the platform default font can vary depending on the operating system and the device manufacturer (on Android).
 
 ## Getting a Font
@@ -35,20 +36,20 @@ In this example (which you can see if you [open the Snack in a dedicated window]
 
 The example in this guide uses the `useFonts` hook from the [`use-expo`](https://github.com/byCedric/use-expo) hooks library by Cedric van Putten. It is the easiest way to load custom fonts in modern React.
 
-To set it up, first add the library to your project, either by 
+To set it up, first add the library to your project, either by
 
 ```shell
 yarn add @use-expo/font
 ```
 
-or 
+or
 
 ```shell
 npm install --save @use-expo/font
 
 ```
 
-Once the library is installed, you can import the hook with 
+Once the library is installed, you can import the hook with
 
 ```javascript
 import { useFonts } from '@use-expo/font';
@@ -85,7 +86,7 @@ fonts will always be delivered to the user by the time your code is running. The
 
 ## Loading a remote font directly from the web
 
-In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they 
+In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they
 will be bundled with the download and available immediately. And you don't have to worry about CORS or other potential issues.
 
 But if you want to do it, it is also possible to load a remote font file directly from the web rather than from your project's assets.
@@ -96,7 +97,7 @@ Here is a minimal, complete example.
 
 <SnackEmbed snackId="@ccheever/remote-font-example" />
 
-> ⚠️ **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**  If you don't do this, your remote font might not load properly on the web platform.
+> ⚠️ **If loading remote fonts, make sure they are being served from an origin with CORS properly configured** If you don't do this, your remote font might not load properly on the web platform.
 
 ## Using `Font.loadAsync` directly
 
@@ -108,6 +109,48 @@ You can use that directly if you prefer, or if you want to have more fine-graine
 
 <SnackEmbed snackId="@ccheever/font.loadasync-example" />
 
+### Writing your own Hooks
+
+You can use the primitives in the `expo-font` library to write your own hooks if you want. Here is a basic implementation of a hook that works just like the `useFonts` library above.
+
+<SnackInline>
+
+```js
+import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+
+function useFonts(fontMap) {
+  let [fontsLoaded, setFontsLoaded] = useState(false);
+  (async () => {
+    await Font.loadAsync(fontMap);
+    setFontsLoaded(true);
+  })();
+  return [fontsLoaded];
+}
+
+export default () => {
+  let [fontsLoaded] = useFonts({
+    'Inter-Black': 'https://rsms.me/inter/font-files/Inter-Black.otf?v=3.12',
+    'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Platform Default</Text>
+        <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
+        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+      </View>
+    );
+  }
+};
+```
+
+</SnackInline>
 
 ## More on Font Formats
 
@@ -133,16 +176,15 @@ But, for reference, here is a table of which formats work on which platforms.
 | ------ | --- | --- | ------- |
 | ttf    | ✅  | ✅  | ✅      |
 | otf    | ✅  | ✅  | ✅      |
-| woff   | ✅  | ✅  |          |
-| woff2  | ✅  | ✅  |          | 
+| woff   | ✅  | ✅  |         |
+| woff2  | ✅  | ✅  |         |
 | dfont  |     |     | ✅      |
-| svg    | ✳️   |     |         |
-| eot    | ✳️   |     |         |
+| svg    | ✳️  |     |         |
+| eot    | ✳️  |     |         |
 | fon    |     |     |         |
 | bdf    |     |     |         |
 | ps     |     |     |         |
 | ttc    |     |     |         |
-
 
 ## Platform Built-in Fonts
 
@@ -152,10 +194,10 @@ If you are curious, [Nader Dabit](https://twitter.com/dabit3) maintains a [list 
 
 And on web, there are a number of generic font families that you can specify. Different users, browsers, and operating systems will be configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone will use San Francisco as its default for `sans-serif` while Microsoft Edge on Windows will use Arial, and Chrome on Android will typically use Roboto, though OnePlus phones will often use Slate, etc., etc..
 
-+ `sans-serif`
-+ `serif`
-+ `monospace`
-+ `fantasy`
-+ `cursive`
+- `sans-serif`
+- `serif`
+- `monospace`
+- `fantasy`
+- `cursive`
 
 In general, your safest bets are just to use the system default which will usually be an easy-to-read sans serif font that the user of any system should be familiar with; or to use your own custom font so you have precise control over what the user will see.
