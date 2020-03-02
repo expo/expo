@@ -1,5 +1,5 @@
-import * as Updates from '../Updates';
 import ExpoUpdates from '../ExpoUpdates';
+import * as Updates from '../Updates';
 
 const fakeManifest = {
   id: '@jester/test-app',
