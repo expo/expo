@@ -1,0 +1,3 @@
+SET /P STOREDPATH=<"%USERPROFILE%\.expo\PATH"
+SET PATH="\"%PATH%;%STOREDPATH%\""
+expo %*
