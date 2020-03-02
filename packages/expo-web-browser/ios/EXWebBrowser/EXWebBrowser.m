@@ -109,7 +109,7 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
     else if ([@"close" isEqualToString:dismissButtonStyle]) {
       safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
     }
-    else if (["cancel" isEqualToString:dismissButtonStyle@]) {
+    else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
       safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
     }
   }
