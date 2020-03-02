@@ -260,7 +260,8 @@ commands:
       - save_cache:
           key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
-            - ~/.cache/yarn # `yarn cache dir`
+            - /usr/local/share/.cache/yarn
+            - ~/Library/Caches/Yarn
   restore_gradle_cache:
     steps:
       - restore_cache:
@@ -378,6 +379,7 @@ workflows:
       # - android_test_suite:
       #     requires:
       #       - test_suite_publish
+      - android_unit_tests
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -450,11 +452,10 @@ workflows:
       - expo_client_build:
           requires:
             - expo_client_approve_build
-
   shell_app_nightly:
     triggers:
       - schedule:
-          cron: "20 5 * * 2,4,6"
+          cron: '20 5 * * 2,4,6'
           filters:
             branches:
               only:
@@ -726,31 +727,31 @@ jobs:
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
-# Disabled until further notice
-# See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-#   android_test_suite:
-#     executor: android
-#     steps:
-#       - setup
-#       - guard_sdk_tests
-#       - update_submodules
-#       - yarn_install:
-#           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-#       - yarn_install:
-#           working_directory: ~/expo/tools-public
-#       - restore_gradle_cache
-#       - run:
-#           name: Build APK, upload to Device Farm, follow device logs
-#           command: |
-#             nix-shell android/shell.nix --pure \
-#               --keep AWS_ACCESS_KEY_ID \
-#               --keep AWS_SECRET_ACCESS_KEY \
-#               --keep SSL_CERT_FILE \
-#               --keep FASTLANE_SKIP_UPDATE_CHECK \
-#               --keep FASTLANE_DISABLE_COLORS \
-#               --keep CI \
-#               --run "fastlane android devicefarm"
-#       - save_gradle_cache
+  # Disabled until further notice
+  # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+  #   android_test_suite:
+  #     executor: android
+  #     steps:
+  #       - setup
+  #       - guard_sdk_tests
+  #       - update_submodules
+  #       - yarn_install:
+  #           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+  #       - yarn_install:
+  #           working_directory: ~/expo/tools-public
+  #       - restore_gradle_cache
+  #       - run:
+  #           name: Build APK, upload to Device Farm, follow device logs
+  #           command: |
+  #             nix-shell android/shell.nix --pure \
+  #               --keep AWS_ACCESS_KEY_ID \
+  #               --keep AWS_SECRET_ACCESS_KEY \
+  #               --keep SSL_CERT_FILE \
+  #               --keep FASTLANE_SKIP_UPDATE_CHECK \
+  #               --keep FASTLANE_DISABLE_COLORS \
+  #               --keep CI \
+  #               --run "fastlane android devicefarm"
+  #       - save_gradle_cache
 
   client_android:
     executor: android
@@ -782,6 +783,32 @@ jobs:
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_ANDROID_WEBHOOK
+
+  android_unit_tests:
+    executor: android
+    steps:
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      - restore_gradle_cache
+      - run:
+          name: Android Unit tests
+          command: nix-shell android/shell.nix --run "expotools android-unit-tests"
+          working_directory: ~/expo
+      - save_gradle_cache
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/packages/.*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
 
   client_android_apk_release:
     executor: js
