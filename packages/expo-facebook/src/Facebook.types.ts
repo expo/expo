@@ -76,7 +76,7 @@ export type SDKInitOptions = {
    * Application ID used to initialize the FBSDK app.
    *
    * On Android and iOS if you don't provide this, Facebook SDK will try to use `appId` from Android and iOS.
-   * app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)).
+   * app resources (which in standalone apps you would define in `app.json`, in the Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)).
    * If it fails to find one, the promise will be rejected.
    */
   appId?: string;
