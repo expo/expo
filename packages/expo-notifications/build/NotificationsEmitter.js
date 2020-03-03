@@ -4,6 +4,7 @@ const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 export function addNotificationReceivedListener(listener) {
     return emitter.addListener(didReceiveNotificationEventName, listener);
 }
