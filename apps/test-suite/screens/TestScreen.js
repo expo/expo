@@ -34,6 +34,10 @@ export default class TestScreen extends React.Component {
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
     const selectedModules = getTestModules().filter(m => selectedTestNames.has(m.name));
 
+    if (!selectedModules.length) {
+      console.log('[TEST_SUITE]', 'No selected modules', selectedTestNames);
+    }
+
     this._runTests(selectedModules);
     this._isMounted = true;
   }
