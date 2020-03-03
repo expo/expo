@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param event The event to transform.
  * @return A transformed event, or nil if the transformation dropped the event.
  */
-- (GDTCOREvent *)transform:(GDTCOREvent *)event;
+- (nullable GDTCOREvent *)transform:(GDTCOREvent *)event;
 
 @end
 

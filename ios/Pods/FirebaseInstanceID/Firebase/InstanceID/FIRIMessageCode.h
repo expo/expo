@@ -55,10 +55,10 @@ typedef NS_ENUM(NSInteger, FIRInstanceIDMessageCode) {
   kFIRInstanceIDMessageCodeAuthServiceCheckinInProgress = 5004,
 
   // FIRInstanceIDBackupExcludedPlist.m
+  // Do NOT USE 6003
   kFIRInstanceIDMessageCodeBackupExcludedPlist000 = 6000,
   kFIRInstanceIDMessageCodeBackupExcludedPlist001 = 6001,
   kFIRInstanceIDMessageCodeBackupExcludedPlist002 = 6002,
-  kFIRInstanceIDMessageCodeBackupExcludedPlistInvalidPlistEnum = 6003,
   // FIRInstanceIDCheckinService.m
   kFIRInstanceIDMessageCodeService000 = 7000,
   kFIRInstanceIDMessageCodeService001 = 7001,

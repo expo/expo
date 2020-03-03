@@ -74,8 +74,7 @@
 /// clicks and notify the Google Mobile Ads SDK of clicks using
 /// +[GADMediatedNativeAdNotificationSource mediatedNativeAdDidRecordClick:]. If the adapter returns
 /// NO, the Google Mobile Ads SDK handles user clicks and notifies the adapter of clicks using
-/// -[GADMediatedNativeAdDelegate
-/// mediatedNativeAd:didRecordClickOnAssetWithName:view:viewController:].
+/// -[GADMediatedUnifiedNativeAd didRecordClickOnAssetWithName:view:viewController:].
 - (BOOL)handlesUserClicks;
 
 /// Indicates if the adapter handles user impressions tracking. If the adapter returns YES, the
@@ -83,7 +82,7 @@
 /// Google Mobile Ads SDK of impressions using +[GADMediatedNativeAdNotificationSource
 /// mediatedNativeAdDidRecordImpression:]. If the adapter returns NO, the Google Mobile Ads SDK
 /// tracks user impressions and notifies the adapter of impressions using
-/// -[GADMediatedNativeAdDelegate mediatedNativeAdDidRecordImpression:].
+/// -[GADMediatedUnifiedNativeAd didRecordImpression].
 - (BOOL)handlesUserImpressions;
 
 /// If your ad network handles multiple ad sizes for the same banner ad, implement this method to be

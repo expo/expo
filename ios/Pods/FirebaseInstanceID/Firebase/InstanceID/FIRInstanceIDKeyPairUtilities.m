@@ -30,13 +30,14 @@ NSString *FIRInstanceIDWebSafeBase64(NSData *data) {
   return [encoding encode:data];
 }
 
+// This is NOT used for cryptographic purpose for any encryption or decryption.
+// This is solely to generate a random unique string for instanceID.
 NSData *FIRInstanceIDSHA1(NSData *data) {
-  unsigned int outputLength = CC_SHA1_DIGEST_LENGTH;
-  unsigned char output[outputLength];
+  unsigned char output[CC_SHA1_DIGEST_LENGTH];
   unsigned int length = (unsigned int)[data length];
 
   CC_SHA1(data.bytes, length, output);
-  return [NSMutableData dataWithBytes:output length:outputLength];
+  return [NSMutableData dataWithBytes:output length:CC_SHA1_DIGEST_LENGTH];
 }
 
 NSDictionary *FIRInstanceIDKeyPairQuery(NSString *tag, BOOL addReturnAttr, BOOL returnData) {
@@ -66,6 +67,7 @@ NSString *FIRInstanceIDAppIdentity(FIRInstanceIDKeyPair *keyPair) {
     return nil;
   }
   NSData *publicKeyData = keyPair.publicKeyData;
+  // This is used to generate a unique random string, not for encryption/decryption.
   NSData *publicKeySHA1 = FIRInstanceIDSHA1(publicKeyData);
 
   const uint8_t *bytes = publicKeySHA1.bytes;
