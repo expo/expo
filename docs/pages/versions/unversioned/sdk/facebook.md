@@ -51,12 +51,12 @@ import * as Facebook from 'expo-facebook';
 
 Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
 
-- On native platforms you can optional provide an `appId` argument. 
+- On native platforms you can optional provide an `appId` argument.
   - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
   - The same resolution mechanism works for `appName`.
 - If you provide an explicit `appId`, it will override any other source.
 
-#### param object options
+#### Login Options
 
 A map of options:
 
@@ -118,14 +118,13 @@ Sets whether Facebook SDK should collect and attach `advertiser-id` to sent even
 
 In Expo, by default, collecting those IDs is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
 
-
 #### Example
 
 ```javascript
 async function logIn() {
   try {
-    await Facebook.initializeAsync({ 
-      appId: '<APP_ID>', 
+    await Facebook.initializeAsync({
+      appId: '<APP_ID>',
     });
     const {
       type,
@@ -159,13 +158,13 @@ Logs out of the currently authenticated session.
 
 Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
 
-You can use this method to check if the user should sign-in or not.
+You can use this method to check if the user should sign in or not.
 
-#### returns 
+#### Returns
 
 - `FacebookAuth` type:
 
-  - **token (_string_)** Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
+  - **token (_string_)** Access token for the authenticated session. This will provide access to use with Facebook Graph API.
   - **userID (_string_)** The ID of the user.
   - **appID (_string_)** Application ID used to initialize the FBSDK app.
   - **permissions (_string[] | undefined_)** List of granted permissions.
@@ -212,7 +211,7 @@ You can use the `fetch` API to get info about the user from the [Facebook Graph 
 // Get default info about the currently authenticated user.
 async function getUserAsync() {
   const { name } = await requestAsync({ path: 'me' });
-  console.log(`Hello ${name} 👋`)
+  console.log(`Hello ${name} 👋`);
 }
 
 // Request data from the Facebook Graph API.
