@@ -24,6 +24,7 @@
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) UIColor* shadowColor;
 - (instancetype)init;
+- (instancetype)initWithView:(UIView*) view;
 
 + (NSString*) stringFromTransform:(CATransform3D) transform;
 + (CATransform3D) getAbsoluteViewTransform:(UIView*) view;

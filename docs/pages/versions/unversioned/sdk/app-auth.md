@@ -3,6 +3,7 @@ title: AppAuth
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-app-auth'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -13,13 +14,11 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
 
-Currently, this module only supports on Android, and iOS. Web support is planned to be added. Track it here: [Web support in expo-app-auth](https://github.com/expo/expo/issues/6883).
-
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth).
+<InstallSection packageName="expo-app-auth" />
 
 ## Usage
 
@@ -27,7 +26,7 @@ Below is a set of example functions that demonstrate how to use `expo-app-auth` 
 
 <SnackInline>
 
-```tsx
+```js
 import React, { useEffect, useState } from 'react';
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 import * as AppAuth from 'expo-app-auth';
@@ -82,7 +81,7 @@ let config = {
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
 
-let StorageKey = '@PillarValley:GoogleOAuthKey';
+let StorageKey = '@MyApp:CustomGoogleOAuthKey';
 
 export async function signInAsync() {
   let authState = await AppAuth.authAsync(config);
@@ -135,6 +134,18 @@ export async function signOutAsync({ accessToken }) {
 ```
 
 </SnackInline>
+
+## Comparison
+
+There are a couple different methods for authenticating your app in React Native and Expo, this should help you know if `expo-app-auth` is right for your needs.
+
+### AuthSession
+
+The [`AuthSession`](./auth-session) API is built on top of [`expo-web-browser`](./webbrowser) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](./auth-session#security-considerations).
+
+### react-native-app-auth
+
+The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sand-boxed Expo client environment.
 
 ## API
 

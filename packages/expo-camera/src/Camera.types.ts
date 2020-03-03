@@ -1,7 +1,11 @@
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
-export type PictureOptions = {
+export type CameraPictureOptions = {
   quality?: number;
   base64?: boolean;
   exif?: boolean;
@@ -12,7 +16,7 @@ export type PictureOptions = {
   fastMode?: boolean;
 };
 
-export type RecordingOptions = {
+export type CameraRecordingOptions = {
   maxDuration?: number;
   maxFileSize?: number;
   quality?: number | string;
@@ -20,7 +24,7 @@ export type RecordingOptions = {
   mirror?: boolean;
 };
 
-export type CapturedPicture = {
+export type CameraCapturedPicture = {
   width: number;
   height: number;
   uri: string;
@@ -28,13 +32,13 @@ export type CapturedPicture = {
   exif?: any;
 };
 
-export type MountError = { message: string };
+export type CameraMountError = { message: string };
 
 export type BarCodeScanningResult = { type: string; data: string };
 
 export type FaceDetectionResult = { faces: any[] };
 
-export type Props = ViewProps & {
+export type CameraProps = ViewProps & {
   zoom?: number;
   ratio?: string;
   focusDepth?: number;
@@ -46,19 +50,19 @@ export type Props = ViewProps & {
   autoFocus?: string | boolean | number;
   pictureSize?: string;
   videoStabilizationMode?: number;
-  onMountError?: (event: MountError) => void;
+  onMountError?: (event: CameraMountError) => void;
   barCodeScannerSettings?: object;
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
   faceDetectorSettings?: object;
   onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 
-export type NativeProps = {
+export type CameraNativeProps = {
   pointerEvents?: any;
   style?: any;
   ref?: Function;
   onCameraReady?: Function;
-  onMountError?: ({ nativeEvent }: { nativeEvent: MountError }) => void;
+  onMountError?: ({ nativeEvent }: { nativeEvent: CameraMountError }) => void;
   onBarCodeScanned?: ({ nativeEvent }: { nativeEvent: BarCodeScanningResult }) => void;
   onFacesDetected?: ({ nativeEvent }: { nativeEvent: FaceDetectionResult }) => void;
   onFaceDetectionError?: Function;
@@ -79,4 +83,4 @@ export type NativeProps = {
   useCamera2Api?: boolean;
 };
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionExpiration };

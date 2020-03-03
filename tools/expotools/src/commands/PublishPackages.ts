@@ -750,7 +750,7 @@ async function _publishAsync(
 
       if (
         await _promptAsync(
-          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(`https://www.npmjs.com/package/${pkg.packageName}`)}.`
+          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(`https://www.npmjs.com/package/${pkg.packageName}?activeTab=versions`)}.`
         )
       ) {
         return { published: true };

@@ -54,7 +54,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
-import host.exp.exponent.headless.HeadlessAppLoader;
+import host.exp.exponent.headless.InternalHeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
@@ -167,7 +167,7 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel(AppCompatActivity activity) {
+  public void startJSKernel(Activity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
@@ -261,6 +261,7 @@ public class Kernel extends KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
+
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
                 .setCurrentActivity(getActivityContext())
@@ -284,6 +285,13 @@ public class Kernel extends KernelInterface {
 
             // Reset this flag if we crashed
             mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
+
+            // If we're opening an experience on the emulator from the cli then it's possible we can't show onboarding yet
+            // because home is still not initialized. For this case we can trigger it from here.
+            ExperienceActivity currentExperienceActivity = ExperienceActivity.getCurrentActivity();
+            if (currentExperienceActivity != null) {
+              currentExperienceActivity.maybeShowOnboarding();
+            }
           }
         });
       }
@@ -383,7 +391,7 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  private void openHomeActivity() {
+  public void openHomeActivity() {
     ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     for (ActivityManager.AppTask task : manager.getAppTasks()) {
       Intent baseIntent = task.getTaskInfo().baseIntent;
@@ -673,21 +681,11 @@ public class Kernel extends KernelInterface {
     task.bundleUrl = bundleUrl;
 
     manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
-    boolean isFirstRunFinished = mExponentSharedPreferences.getBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY);
 
-    // TODO: shouldShowNux used to be set to `!manifestUrl.equals(Constants.INITIAL_URL);`.
-    // This caused nux to show up in RNPlay. What's the right behavior here?
-    boolean shouldShowNux = !Constants.isStandaloneApp() && !KernelConfig.HIDE_NUX;
-    boolean loadNux = shouldShowNux && !isFirstRunFinished;
     JSONObject opts = new JSONObject();
-    opts.put(KernelConstants.OPTION_LOAD_NUX_KEY, loadNux);
 
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts);
-    }
-
-    if (loadNux) {
-      mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.NUX_HAS_FINISHED_FIRST_RUN_KEY, true);
     }
 
     WritableMap params = Arguments.createMap();
@@ -742,8 +740,8 @@ public class Kernel extends KernelInterface {
       return sInstance.getBundleUrl();
     }
 
-    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
+    if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId);
     }
 
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
@@ -1120,12 +1118,5 @@ public class Kernel extends KernelInterface {
         ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
-  }
-
-  private void goToHome() {
-    Intent startMain = new Intent(Intent.ACTION_MAIN);
-    startMain.addCategory(Intent.CATEGORY_HOME);
-    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    mContext.startActivity(startMain);
   }
 }

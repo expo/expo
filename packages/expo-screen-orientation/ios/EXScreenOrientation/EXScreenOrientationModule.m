@@ -49,7 +49,7 @@ UM_EXPORT_METHOD_AS(lockAsync,
     return reject(@"ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK", [NSString stringWithFormat:@"Invalid screen orientation lock %@", orientationLock], nil);
   }
   if (![EXScreenOrientationUtilities doesDeviceSupportOrientationMask:orientationMask]) {
-    return reject(@"ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK", [NSString stringWithFormat:@"This device does not support this orientation %@", orientationLock], nil);
+    return reject(@"ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK", [NSString stringWithFormat:@"This device does not support the requested orientation %@", orientationLock], nil);
   }
   
   [_screenOrientationRegistry setMask:orientationMask forModule:self];
@@ -66,7 +66,15 @@ UM_EXPORT_METHOD_AS(lockPlatformAsync,
   for (NSNumber *allowedOrientation in allowedOrientations) {
     UIInterfaceOrientation orientation = [EXScreenOrientationUtilities importOrientation:allowedOrientation];
     UIInterfaceOrientationMask orientationMask = [EXScreenOrientationUtilities maskFromOrientation:orientation];
+    if (!orientationMask) {
+      return reject(@"ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK", @"Invalid screen orientation lock.", nil);
+    }
+                                                                         
     allowedOrientationsMask = allowedOrientationsMask | orientationMask;
+  }
+  
+  if (![EXScreenOrientationUtilities doesDeviceSupportOrientationMask:allowedOrientationsMask]) {
+    return reject(@"ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK", @"This device does not support the requested orientation.", nil);
   }
   
   [_screenOrientationRegistry setMask:allowedOrientationsMask forModule:self];

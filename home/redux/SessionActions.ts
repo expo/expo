@@ -1,7 +1,7 @@
 import Analytics from '../api/Analytics';
-import LocalStorage from '../storage/LocalStorage';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
+import LocalStorage from '../storage/LocalStorage';
 
 export default {
   setSession(session) {
@@ -18,7 +18,12 @@ export default {
     return async dispatch => {
       const session = await LocalStorage.getSessionAsync();
       if (session) {
-        await AuthApi.signOutAsync(session.sessionSecret);
+        try {
+          await AuthApi.signOutAsync(session.sessionSecret);
+        } catch (e) {
+          // continue to clear out session in redux and local storage even if API logout fails
+          console.error('Something went wrong when signing out:', e);
+        }
         await LocalStorage.removeSessionAsync();
         Analytics.track(Analytics.events.USER_LOGGED_OUT);
       }

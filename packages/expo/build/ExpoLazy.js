@@ -33,12 +33,6 @@ Object.defineProperty(exports, "AppLoading", {
     return _AppLoading.default;
   }
 });
-Object.defineProperty(exports, "AuthSession", {
-  enumerable: true,
-  get: function () {
-    return _AuthSession.default;
-  }
-});
 Object.defineProperty(exports, "DangerZone", {
   enumerable: true,
   get: function () {
@@ -494,8 +488,6 @@ var _Linking = _interopRequireDefault(require("./Linking/Linking"));
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
-
-var _AuthSession = _interopRequireDefault(require("./AuthSession"));
 
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
 

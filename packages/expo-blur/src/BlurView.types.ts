@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-export type Props = {
+export type BlurProps = {
   tint: BlurTint;
   intensity: number;
 } & React.ComponentProps<typeof View>;

@@ -27,6 +27,7 @@ extern CGFloat const RNSVG_M_SQRT1_2l;
 extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 @property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *display;
 @property (nonatomic, assign) CGFloat opacity;
 @property (nonatomic, assign) RNSVGCGFCRule clipRule;
 @property (nonatomic, strong) NSString *clipPath;

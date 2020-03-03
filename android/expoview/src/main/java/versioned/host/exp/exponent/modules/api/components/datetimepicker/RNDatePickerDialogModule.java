@@ -10,17 +10,17 @@ package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.widget.DatePicker;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import android.widget.DatePicker;
 
 import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
@@ -37,11 +37,11 @@ public class RNDatePickerDialogModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public @Nonnull String getName() {
+  public @NonNull String getName() {
     return RNDatePickerDialogModule.FRAGMENT_TAG;
   }
 
-  private class DatePickerDialogListener implements OnDateSetListener, OnDismissListener {
+  private class DatePickerDialogListener implements OnDateSetListener, OnDismissListener, OnClickListener {
 
     private final Promise mPromise;
     private boolean mPromiseResolved = false;
@@ -68,6 +68,16 @@ public class RNDatePickerDialogModule extends ReactContextBaseJavaModule {
       if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_DISMISSED);
+        mPromise.resolve(result);
+        mPromiseResolved = true;
+      }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+        WritableMap result = new WritableNativeMap();
+        result.putString("action", RNConstants.ACTION_NEUTRAL_BUTTON);
         mPromise.resolve(result);
         mPromiseResolved = true;
       }
@@ -132,6 +142,7 @@ public class RNDatePickerDialogModule extends ReactContextBaseJavaModule {
     final DatePickerDialogListener listener = new DatePickerDialogListener(promise);
     fragment.setOnDismissListener(listener);
     fragment.setOnDateSetListener(listener);
+    fragment.setOnNeutralButtonActionListener(listener);
     fragment.show(fragmentManager, FRAGMENT_TAG);
   }
 
@@ -148,6 +159,9 @@ public class RNDatePickerDialogModule extends ReactContextBaseJavaModule {
     }
     if (options.hasKey(RNConstants.ARG_DISPLAY) && !options.isNull(RNConstants.ARG_DISPLAY)) {
       args.putString(RNConstants.ARG_DISPLAY, options.getString(RNConstants.ARG_DISPLAY));
+    }
+    if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
     }
     return args;
   }

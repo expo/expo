@@ -3,6 +3,7 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-barcode-scanner'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -12,31 +13,31 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+<InstallSection packageName="expo-barcode-scanner" />
 
 ## Supported formats
 
-| Bar code format | iOS   | Android |
-| --------------- | ----- | ------- |
-| aztec           | Yes   | Yes     |
-| codabar         | No    | Yes     |
-| code39          | Yes   | Yes     |
-| code93          | Yes   | Yes     |
-| code128         | Yes   | Yes     |
-| code39mod43     | Yes   | No      |
-| datamatrix      | Yes   | Yes     |
-| ean13           | Yes   | Yes     |
-| ean8            | Yes   | Yes     |
-| interleaved2of5 | Yes   | No      |
-| itf14           | Yes\* | Yes     |
-| maxicode        | No    | Yes     |
-| pdf417          | Yes   | Yes     |
-| rss14           | No    | Yes     |
-| rssexpanded     | No    | Yes     |
-| upc_a           | No    | Yes     |
-| upc_e           | Yes   | Yes     |
-| upc_ean         | No    | Yes     |
-| qr              | Yes   | Yes     |
+| Bar code format | iOS   | Android     |
+| --------------- | ----- | ----------- |
+| aztec           | Yes   | Yes         |
+| codabar         | No    | Yes         |
+| code39          | Yes   | Yes         |
+| code93          | Yes   | Yes         |
+| code128         | Yes   | Yes         |
+| code39mod43     | Yes   | No          |
+| datamatrix      | Yes   | Yes         |
+| ean13           | Yes   | Yes         |
+| ean8            | Yes   | Yes         |
+| interleaved2of5 | Yes   | use `itf14` |
+| itf14           | Yes\* | Yes         |
+| maxicode        | No    | Yes         |
+| pdf417          | Yes   | Yes         |
+| rss14           | No    | Yes         |
+| rssexpanded     | No    | Yes         |
+| upc_a           | No    | Yes         |
+| upc_e           | Yes   | Yes         |
+| upc_ean         | No    | Yes         |
+| qr              | Yes   | Yes         |
 
 > Important notes:
 >

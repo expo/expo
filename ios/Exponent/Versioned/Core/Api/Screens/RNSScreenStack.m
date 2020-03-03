@@ -9,7 +9,12 @@
 #import <React/RCTRootContentView.h>
 #import <React/RCTTouchHandler.h>
 
-@interface RNSScreenStackView () <UINavigationControllerDelegate, UIGestureRecognizerDelegate>
+@interface RNSScreenStackView () <UINavigationControllerDelegate, UIAdaptivePresentationControllerDelegate, UIGestureRecognizerDelegate>
+
+@property (nonatomic) NSMutableArray<UIViewController *> *presentedModals;
+@property (nonatomic) BOOL updatingModals;
+@property (nonatomic) BOOL scheduleModalsUpdate;
+
 @end
 
 @interface RNSScreenStackAnimator : NSObject <UIViewControllerAnimatedTransitioning>
@@ -17,11 +22,9 @@
 @end
 
 @implementation RNSScreenStackView {
-  BOOL _needUpdate;
   UINavigationController *_controller;
   NSMutableArray<RNSScreenView *> *_reactSubviews;
   NSMutableSet<RNSScreenView *> *_dismissedScreens;
-  NSMutableArray<UIViewController *> *_presentedModals;
   __weak RNSScreenStackManager *_manager;
 }
 
@@ -34,9 +37,6 @@
     _dismissedScreens = [NSMutableSet new];
     _controller = [[UINavigationController alloc] init];
     _controller.delegate = self;
-    _needUpdate = NO;
-    [self addSubview:_controller.view];
-    _controller.interactivePopGestureRecognizer.delegate = self;
 
     // we have to initialize viewControllers with a non empty array for
     // largeTitle header to render in the opened state. If it is empty
@@ -45,6 +45,11 @@
     [_controller setViewControllers:@[[UIViewController new]]];
   }
   return self;
+}
+
+- (UIViewController *)reactViewController
+{
+  return _controller;
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
@@ -57,16 +62,41 @@
       break;
     }
   }
-  [RNSScreenStackHeaderConfig willShowViewController:viewController withConfig:config];
+  [RNSScreenStackHeaderConfig willShowViewController:viewController animated:animated withConfig:config];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
   for (NSUInteger i = _reactSubviews.count; i > 0; i--) {
-    if ([viewController isEqual:[_reactSubviews objectAtIndex:i - 1].controller]) {
+    RNSScreenView *screenView = [_reactSubviews objectAtIndex:i - 1];
+    if ([viewController isEqual:screenView.controller]) {
       break;
-    } else {
-      [_dismissedScreens addObject:[_reactSubviews objectAtIndex:i - 1]];
+    } else if (screenView.stackPresentation == RNSScreenStackPresentationPush) {
+      [_dismissedScreens addObject:screenView];
+    }
+  }
+  if (self.onFinishTransitioning) {
+    self.onFinishTransitioning(nil);
+  }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  // We don't directly set presentation delegate but instead rely on the ScreenView's delegate to
+  // forward certain calls to the container (Stack).
+  UIView *screenView = presentationController.presentedViewController.view;
+  if ([screenView isKindOfClass:[RNSScreenView class]]) {
+    [_dismissedScreens addObject:(RNSScreenView *)screenView];
+    [_presentedModals removeObject:presentationController.presentedViewController];
+    if (self.onFinishTransitioning) {
+      // instead of directly triggering onFinishTransitioning this time we enqueue the event on the
+      // main queue. We do that because onDismiss event is also enqueued and we want for the transition
+      // finish event to arrive later than onDismiss (see RNSScreen#notifyDismiss)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.onFinishTransitioning) {
+          self.onFinishTransitioning(nil);
+        }
+      });
     }
   }
 }
@@ -77,7 +107,7 @@
   if (operation == UINavigationControllerOperationPush) {
     screen = (RNSScreenView *) toVC.view;
   } else if (operation == UINavigationControllerOperationPop) {
-   screen = (RNSScreenView *) fromVC.view;
+    screen = (RNSScreenView *) fromVC.view;
   }
   if (screen != nil && (screen.stackAnimation == RNSScreenStackAnimationFade || screen.stackAnimation == RNSScreenStackAnimationNone)) {
     return  [[RNSScreenStackAnimator alloc] initWithOperation:operation];
@@ -96,7 +126,9 @@
   RCTRootContentView *rootView = (RCTRootContentView *)parent;
   [rootView.touchHandler cancel];
 
-  return _controller.viewControllers.count > 1;
+  RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
+
+  return _controller.viewControllers.count > 1 && topScreen.gestureEnabled;
 }
 
 - (void)markChildUpdated
@@ -115,11 +147,13 @@
     RCTLogError(@"ScreenStack only accepts children of type Screen");
     return;
   }
+  subview.reactSuperview = self;
   [_reactSubviews insertObject:subview atIndex:atIndex];
 }
 
 - (void)removeReactSubview:(RNSScreenView *)subview
 {
+  subview.reactSuperview = nil;
   [_reactSubviews removeObject:subview];
   [_dismissedScreens removeObject:subview];
 }
@@ -131,47 +165,166 @@
 
 - (void)didUpdateReactSubviews
 {
-  // do nothing
-  [self updateContainer];
+  // we need to wait until children have their layout set. At this point they don't have the layout
+  // set yet, however the layout call is already enqueued on ui thread. Enqueuing update call on the
+  // ui queue will guarantee that the update will run after layout.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self updateContainer];
+  });
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  if (self.window) {
+    // when stack is attached to a window we do two things:
+    // 1) we run updateContainer – we do this because we want push view controllers to be installed
+    // before the VC is mounted. If we do that after it is added to parent the push updates operations
+    // are going to be blocked by UIKit.
+    // 2) we add navigation VS to parent – this is needed for the VC lifecycle events to be dispatched
+    // properly
+    // 3) we again call updateContainer – this time we do this to open modal controllers. Modals
+    // won't open in (1) because they require navigator to be added to parent. We handle that case
+    // gracefully in setModalViewControllers and can retry opening at any point.
+    [self updateContainer];
+    [self reactAddControllerToClosestParent:_controller];
+    [self updateContainer];
+  }
+}
+
+- (void)reactAddControllerToClosestParent:(UIViewController *)controller
+{
+  if (!controller.parentViewController) {
+    UIView *parentView = (UIView *)self.reactSuperview;
+    while (parentView) {
+      if (parentView.reactViewController) {
+        [parentView.reactViewController addChildViewController:controller];
+        [self addSubview:controller.view];
+        _controller.interactivePopGestureRecognizer.delegate = self;
+        [controller didMoveToParentViewController:parentView.reactViewController];
+        // On iOS pre 12 we observed that `willShowViewController` delegate method does not always
+        // get triggered when the navigation controller is instantiated. As the only thing we do in
+        // that delegate method is ask nav header to update to the current state it does not hurt to
+        // trigger that logic from here too such that we can be sure the header is properly updated.
+        [self navigationController:_controller willShowViewController:_controller.topViewController animated:NO];
+        break;
+      }
+      parentView = (UIView *)parentView.reactSuperview;
+    }
+    return;
+  }
 }
 
 - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
 {
+  // when there is no change we return immediately. This check is important because sometime we may
+  // accidently trigger modal dismiss if we don't verify to run the below code only when an actual
+  // change in the list of presented modal was made.
+  if ([_presentedModals isEqualToArray:controllers]) {
+    return;
+  }
+
   NSMutableArray<UIViewController *> *newControllers = [NSMutableArray arrayWithArray:controllers];
   [newControllers removeObjectsInArray:_presentedModals];
 
-  NSMutableArray<UIViewController *> *controllersToRemove = [NSMutableArray arrayWithArray:_presentedModals];
-  [controllersToRemove removeObjectsInArray:controllers];
-
-  // presenting new controllers
-  for (UIViewController *newController in newControllers) {
-    [_presentedModals addObject:newController];
-    if (_controller.presentedViewController != nil) {
-      [_controller.presentedViewController presentViewController:newController animated:YES completion:nil];
+  // find bottom-most controller that should stay on the stack for the duration of transition
+  NSUInteger changeRootIndex = 0;
+  UIViewController *changeRootController = _controller;
+  for (NSUInteger i = 0; i < MIN(_presentedModals.count, controllers.count); i++) {
+    if (_presentedModals[i] == controllers[i]) {
+      changeRootController = controllers[i];
+      changeRootIndex = i + 1;
     } else {
-      [_controller presentViewController:newController animated:YES completion:nil];
+      break;
     }
   }
 
-  // hiding old controllers
-  for (UIViewController *controller in [controllersToRemove reverseObjectEnumerator]) {
-    [_presentedModals removeObject:controller];
-    if (controller.presentedViewController != nil) {
-      UIViewController *restore = controller.presentedViewController;
-      UIViewController *parent = controller.presentingViewController;
-      [controller dismissViewControllerAnimated:NO completion:^{
-        [parent dismissViewControllerAnimated:NO completion:^{
-          [parent presentViewController:restore animated:NO completion:nil];
-        }];
-      }];
-    } else {
-      [controller.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+  // we verify that controllers added on top of changeRootIndex are all new. Unfortunately modal
+  // VCs cannot be reshuffled (there are some visual glitches when we try to dismiss then show as
+  // even non-animated dismissal has delay and updates the screen several times)
+  for (NSUInteger i = changeRootIndex; i < controllers.count; i++) {
+    if ([_presentedModals containsObject:controllers[i]]) {
+      RCTAssert(false, @"Modally presented controllers are being reshuffled, this is not allowed");
     }
+  }
+
+  // prevent re-entry
+  if (_updatingModals) {
+    _scheduleModalsUpdate = YES;
+    return;
+  }
+  _updatingModals = YES;
+
+  __weak RNSScreenStackView *weakSelf = self;
+
+  void (^afterTransitions)(void) = ^{
+    if (weakSelf.onFinishTransitioning) {
+      weakSelf.onFinishTransitioning(nil);
+    }
+    weakSelf.updatingModals = NO;
+    if (weakSelf.scheduleModalsUpdate) {
+      // if modals update was requested during setModalViewControllers we set scheduleModalsUpdate
+      // flag in order to perform updates at a later point. Here we are done with all modals
+      // transitions and check this flag again. If it was set, we reset the flag and execute updates.
+      weakSelf.scheduleModalsUpdate = NO;
+      [weakSelf updateContainer];
+    }
+  };
+
+  void (^finish)(void) = ^{
+    NSUInteger oldCount = weakSelf.presentedModals.count;
+    if (changeRootIndex < oldCount) {
+      [weakSelf.presentedModals
+       removeObjectsInRange:NSMakeRange(changeRootIndex, oldCount - changeRootIndex)];
+    }
+    BOOL isAttached = changeRootController.parentViewController != nil || changeRootController.presentingViewController != nil;
+    if (!isAttached || changeRootIndex >= controllers.count) {
+      // if change controller view is not attached, presenting modals will silently fail on iOS.
+      // In such a case we trigger controllers update from didMoveToWindow.
+      // We also don't run any present transitions if changeRootIndex is greater or equal to the size
+      // of new controllers array. This means that no new controllers should be presented.
+      afterTransitions();
+      return;
+    } else {
+      UIViewController *previous = changeRootController;
+      for (NSUInteger i = changeRootIndex; i < controllers.count; i++) {
+        UIViewController *next = controllers[i];
+        BOOL lastModal = (i == controllers.count - 1);
+        [previous presentViewController:next
+                               animated:lastModal
+                             completion:^{
+          [weakSelf.presentedModals addObject:next];
+          if (lastModal) {
+            afterTransitions();
+          };
+        }];
+        previous = next;
+      }
+    }
+  };
+
+  if (changeRootController.presentedViewController) {
+    [changeRootController
+     dismissViewControllerAnimated:(changeRootIndex == controllers.count)
+     completion:finish];
+  } else {
+    finish();
   }
 }
 
 - (void)setPushViewControllers:(NSArray<UIViewController *> *)controllers
 {
+  // when there is no change we return immediately
+  if ([_controller.viewControllers isEqualToArray:controllers]) {
+    return;
+  }
+
+  // if view controller is not yet attached to window we skip updates now and run them when view
+  // is attached
+  if (self.window == nil) {
+    return;
+  }
+
   UIViewController *top = controllers.lastObject;
   UIViewController *lastTop = _controller.viewControllers.lastObject;
 
@@ -219,7 +372,7 @@
   NSMutableArray<UIViewController *> *pushControllers = [NSMutableArray new];
   NSMutableArray<UIViewController *> *modalControllers = [NSMutableArray new];
   for (RNSScreenView *screen in _reactSubviews) {
-    if (![_dismissedScreens containsObject:screen]) {
+    if (![_dismissedScreens containsObject:screen] && screen.controller != nil) {
       if (pushControllers.count == 0) {
         // first screen on the list needs to be places as "push controller"
         [pushControllers addObject:screen.controller];
@@ -240,16 +393,23 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  [self reactAddControllerToClosestParent:_controller];
   _controller.view.frame = self.bounds;
+}
+
+- (void)invalidate
+{
+  for (UIViewController *controller in _presentedModals) {
+    [controller dismissViewControllerAnimated:NO completion:nil];
+  }
+  [_presentedModals removeAllObjects];
+  [_controller willMoveToParentViewController:nil];
+  [_controller removeFromParentViewController];
 }
 
 - (void)dismissOnReload
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    for (UIViewController *controller in self->_presentedModals) {
-      [controller dismissViewControllerAnimated:NO completion:nil];
-    }
+    [self invalidate];
   });
 }
 
@@ -261,8 +421,7 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_VIEW_PROPERTY(transitioning, NSInteger)
-RCT_EXPORT_VIEW_PROPERTY(progress, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
 
 - (UIView *)view
 {

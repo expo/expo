@@ -2,8 +2,6 @@
 #import <EXImagePicker/EXImagePickerCameraPermissionRequester.h>
 #import <EXImagePicker/EXImagePickerCameraRollPermissionRequester.h>
 
-#import <AssetsLibrary/AssetsLibrary.h>
-
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>

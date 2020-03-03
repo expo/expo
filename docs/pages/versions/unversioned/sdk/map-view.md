@@ -3,8 +3,8 @@ title: MapView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 **`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Client app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
@@ -13,7 +13,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-maps`. In bare apps, also follow the [react-native-maps linking and configuration instructions](https://github.com/react-native-community/react-native-maps).
+<InstallSection packageName="react-native-maps" href="https://github.com/react-native-community/react-native-maps" />
 
 ## Usage
 
@@ -46,13 +46,27 @@ If you have already integrated Google Sign In into your standalone app, this is 
   11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
   12. Press `Save` and then rebuild the app like in step 1.
 
-**Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
+#### Deploying to the Google Play Store
 
-**Note:** If you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+
+**Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
 
 ### Deploying Google Maps to a standalone app on iOS
 
-Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../../workflow/configuration#ios) in your project's app.json. **Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
+Apple Maps will work with no extra configuration. For Google Maps:
+
+1.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project, or select your existing project if you've already made one for this app.
+2.  Go to the project and enable the **Google Maps SDK for iOS**
+3.  Go back to <https://console.developers.google.com/apis/credentials> and click **Create Credentials**, then **API Key**.
+4.  In the modal that popped up, click **RESTRICT KEY**.
+5.  Choose the **iOS apps** radio button under **Key restriction**.
+6.  Under **Accept requests from an iOS application with one of these bundle identifiers**, click the **Add an item** button.
+7.  Add your `ios.bundleIdentifier` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the bundle ID field.
+8.  Copy the API key (the first text input on the page) into `app.json` under the `ios.config.googleMapsApiKey` field.
+9.  Press `Save` and then rebuild the app.
+
+**Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
 ### Deploying Google Maps to ExpoKit for iOS
 

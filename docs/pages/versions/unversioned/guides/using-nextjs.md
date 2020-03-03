@@ -334,9 +334,10 @@ You may want to intercept server requests, this will allow for that:
 
 ```js
 const { createServerAsync } = require('@expo/next-adapter');
+const { parse } = require('url');
 
 createServerAsync(projectRoot, {
-  handleRequest(res, req) {
+  handleRequest(req, res) {
     const parsedUrl = parse(req.url, true);
     const { pathname } = parsedUrl;
 

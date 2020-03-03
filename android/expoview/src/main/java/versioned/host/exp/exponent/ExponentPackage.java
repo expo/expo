@@ -12,7 +12,9 @@ import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -25,8 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
+import versioned.host.exp.exponent.modules.internal.DevMenuModule;
 import host.exp.exponent.kernel.ExperienceId;
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
@@ -58,7 +63,6 @@ import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
-import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaViewManager;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
@@ -99,12 +103,20 @@ public class ExponentPackage implements ReactPackage {
       packages = ExperiencePackagePicker.packages(manifest);
     }
     // Delegate may not be null only when the app is detached
-    if (delegate != null) {
-      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
-    } else {
-      mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
-    }
+    mModuleRegistryAdapter = createModuleRegistryAdapter(delegate, singletonModules, packages);
   }
+
+  private ScopedModuleRegistryAdapter createModuleRegistryAdapter(ExponentPackageDelegate delegate, List<SingletonModule> singletonModules, List<Package> packages) {
+    ScopedModuleRegistryAdapter registryAdapter = null;
+    if (delegate != null) {
+      registryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    if (registryAdapter == null) {
+      registryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
+    }
+    return registryAdapter;
+  }
+
 
   public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
@@ -167,6 +179,10 @@ public class ExponentPackage implements ReactPackage {
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
+    if (!mIsKernel && !Constants.isStandaloneApp()) {
+      // We need DevMenuModule only in non-home and non-standalone apps.
+      nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest));
+    }
 
     if (isVerified) {
       try {
@@ -186,7 +202,15 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
-        nativeModules.add(new ExpoAppearanceModule(reactContext));
+
+        // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
+        // when home's setting is set to automatic and the system theme is different
+        // than this supported by the experience in which we opened the dev menu.
+        if (mIsKernel) {
+          nativeModules.add(new RNCAppearanceModule(reactContext));
+        } else {
+          nativeModules.add(new ExpoAppearanceModule(reactContext));
+        }
 
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));

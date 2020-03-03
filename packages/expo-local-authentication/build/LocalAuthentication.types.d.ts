@@ -8,7 +8,7 @@ export declare enum AuthenticationType {
     FINGERPRINT = 1,
     FACIAL_RECOGNITION = 2
 }
-export declare type AuthOptions = {
+export declare type LocalAuthenticationOptions = {
     promptMessage?: string;
     cancelLabel?: string;
     fallbackLabel?: string;

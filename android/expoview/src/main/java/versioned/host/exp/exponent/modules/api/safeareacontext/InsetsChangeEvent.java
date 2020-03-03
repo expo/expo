@@ -24,13 +24,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    WritableMap insets = Arguments.createMap();
-    insets.putDouble("top", PixelUtil.toDIPFromPixel(mInsets.top));
-    insets.putDouble("right", PixelUtil.toDIPFromPixel(mInsets.right));
-    insets.putDouble("bottom", PixelUtil.toDIPFromPixel(mInsets.bottom));
-    insets.putDouble("left", PixelUtil.toDIPFromPixel(mInsets.left));
     WritableMap event = Arguments.createMap();
-    event.putMap("insets", insets);
+    event.putMap("insets", SafeAreaUtils.edgeInsetsToJsMap(mInsets));
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), event);
   }
 }

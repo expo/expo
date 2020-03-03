@@ -3,19 +3,17 @@ title: Location
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-location`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+<InstallSection packageName="expo-location" />
 
 ## Configuration
 
@@ -39,7 +37,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackEmbed snackId="@charliecruzan/basiclocationexample" />
+<SnackEmbed snackId="@lukaszkosmaty/basiclocationexample" />
 
 ## API
 

@@ -87,4 +87,11 @@ public class ExponentIntentModule extends IntentModule {
       super.canOpenURL(url, promise);
     }
   }
+
+  // We need to add this method, cause otherwise React Native won't export it.
+  // RN doesn't export methods from base classes.
+  @ReactMethod
+  public void openSettings(Promise promise) {
+    super.openSettings(promise);
+  }
 }

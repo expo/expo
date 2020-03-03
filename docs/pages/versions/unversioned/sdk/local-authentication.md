@@ -3,9 +3,8 @@ title: LocalAuthentication
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
-import SnackEmbed from '~/components/plugins/SnackEmbed';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
@@ -14,7 +13,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-local-authentication`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+<InstallSection packageName="expo-local-authentication" />
 
 ## API
 
@@ -54,8 +53,6 @@ Returns a promise resolving to boolean value indicating whether the device has s
 
 Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
-> **Note:** When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
-
 > **Note:** Apple requires apps which use FaceID to provide a description of why they use this API. If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription` in `app.json`, the module will authenticate using device passcode. For more information about usage descriptions on iOS, see [Deploying to App Stores](../../distribution/app-stores#system-permissions-dialogs-on-ios).
 
 #### Arguments
@@ -70,12 +67,6 @@ Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the 
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
-#### Usage
-
-Since Android doesn't provide a default UI component, we've provided an example with one to help you get up and running:
-
-<SnackEmbed snackId="@charliecruzan/localauthentication35example" />
-
 ### `LocalAuthentication.cancelAuthenticate()`
 
-**(Android Only)** Cancels the fingerprint authentication flow. See usage in example snack above.
+**(Android Only)** Cancels authentication flow.

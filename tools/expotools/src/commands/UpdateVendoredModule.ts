@@ -20,6 +20,7 @@ interface ActionOptions {
   platform: 'ios' | 'android' | 'all';
   commit: string;
   pbxproj: boolean;
+  semverPrefix: string;
 }
 
 interface VendoredModuleUpdateStep {
@@ -71,6 +72,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
     ],
+    warnings: [
+      `NOTE: Any files in ${chalk.magenta(
+        'com.facebook.react'
+      )} will not be updated -- you'll need to add these to expoview manually!`,
+    ],
   },
   'react-native-reanimated': {
     repoUrl: 'https://github.com/software-mansion/react-native-reanimated.git',
@@ -90,7 +96,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     warnings: [
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
-      )} will not be updated -- you'll need to add these to ReactAndroid manually!`,
+      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-screens': {
@@ -116,9 +122,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
         targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'com.reactlibrary',
+        sourceAndroidPackage: 'io.expo.appearance',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
@@ -654,7 +660,9 @@ async function action(options: ActionOptions) {
     };
 
     if (moduleConfig.installableInManagedApps) {
-      const versionRange = `${moduleConfig.semverPrefix || ''}${version}`;
+      const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+      const versionRange = `${semverPrefix}${version}`;
+
       bundledNativeModules[name] = versionRange;
       console.log(
         `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
@@ -683,7 +691,7 @@ export default (program: Command) => {
     .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
-    .option('-o, --listOutdated', 'Shows a list of outdated 3rd party modules.', false)
+    .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
     .option(
       '-p, --platform <string>',
@@ -694,6 +702,11 @@ export default (program: Command) => {
       '-c, --commit <string>',
       'Git reference on which to checkout when copying 3rd party module.',
       'master'
+    )
+    .option(
+      '-s, --semver-prefix <string>',
+      'Setting this flag forces to use given semver prefix. Some modules may specify them by the config, but in case we want to update to alpha/beta versions we should use an empty prefix to be more strict.',
+      null
     )
     .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
     .asyncAction(action);

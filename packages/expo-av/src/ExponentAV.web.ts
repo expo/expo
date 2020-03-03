@@ -1,8 +1,8 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 
-import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 
-function getStatusFromMedia(media?: HTMLMediaElement): PlaybackStatus {
+function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
   if (!media) {
     return {
       isLoaded: false,
@@ -17,7 +17,7 @@ function getStatusFromMedia(media?: HTMLMediaElement): PlaybackStatus {
     media.readyState > 2
   );
 
-  const status: PlaybackStatus = {
+  const status: AVPlaybackStatus = {
     isLoaded: true,
     uri: media.src,
     progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
@@ -41,7 +41,10 @@ function getStatusFromMedia(media?: HTMLMediaElement): PlaybackStatus {
   return status;
 }
 
-function setStatusForMedia(media: HTMLMediaElement, status: PlaybackStatusToSet): PlaybackStatus {
+function setStatusForMedia(
+  media: HTMLMediaElement,
+  status: AVPlaybackStatusToSet
+): AVPlaybackStatus {
   if (status.positionMillis !== undefined) {
     media.currentTime = status.positionMillis / 1000;
   }
@@ -84,29 +87,29 @@ export default {
   get name(): string {
     return 'ExponentAV';
   },
-  async getStatusForVideo(element: HTMLMediaElement): Promise<PlaybackStatus> {
+  async getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus> {
     return getStatusFromMedia(element);
   },
   async loadForVideo(
     element: HTMLMediaElement,
-    nativeSource: PlaybackNativeSource,
-    fullInitialStatus: PlaybackStatusToSet
-  ): Promise<PlaybackStatus> {
+    nativeSource: AVPlaybackNativeSource,
+    fullInitialStatus: AVPlaybackStatusToSet
+  ): Promise<AVPlaybackStatus> {
     return getStatusFromMedia(element);
   },
-  async unloadForVideo(element: HTMLMediaElement): Promise<PlaybackStatus> {
+  async unloadForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus> {
     return getStatusFromMedia(element);
   },
   async setStatusForVideo(
     element: HTMLMediaElement,
-    status: PlaybackStatusToSet
-  ): Promise<PlaybackStatus> {
+    status: AVPlaybackStatusToSet
+  ): Promise<AVPlaybackStatus> {
     return setStatusForMedia(element, status);
   },
   async replayVideo(
     element: HTMLMediaElement,
-    status: PlaybackStatusToSet
-  ): Promise<PlaybackStatus> {
+    status: AVPlaybackStatusToSet
+  ): Promise<AVPlaybackStatus> {
     return setStatusForMedia(element, status);
   },
   /* Audio */
@@ -117,8 +120,8 @@ export default {
   },
   async loadForSound(
     nativeSource: string | { uri: string; [key: string]: any },
-    fullInitialStatus: PlaybackStatusToSet
-  ): Promise<[HTMLMediaElement, PlaybackStatus]> {
+    fullInitialStatus: AVPlaybackStatusToSet
+  ): Promise<[HTMLMediaElement, AVPlaybackStatus]> {
     const source = typeof nativeSource === 'string' ? nativeSource : nativeSource.uri;
     const media = new Audio(source);
 
@@ -148,14 +151,14 @@ export default {
   },
   async setStatusForSound(
     element: HTMLMediaElement,
-    status: PlaybackStatusToSet
-  ): Promise<PlaybackStatus> {
+    status: AVPlaybackStatusToSet
+  ): Promise<AVPlaybackStatus> {
     return setStatusForMedia(element, status);
   },
   async replaySound(
     element: HTMLMediaElement,
-    status: PlaybackStatusToSet
-  ): Promise<PlaybackStatus> {
+    status: AVPlaybackStatusToSet
+  ): Promise<AVPlaybackStatus> {
     return setStatusForMedia(element, status);
   },
 

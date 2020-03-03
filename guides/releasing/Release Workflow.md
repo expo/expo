@@ -74,7 +74,7 @@
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
+- Go through another guide about [Quality Assurance](./Quality%20Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
 - Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` before versioning.
 
 ## 1.4. Versioning code for the new SDK
@@ -109,12 +109,17 @@
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md).
+- Go through another guide about [Quality Assurance](Quality%20Assurance.md.md).
 - Remember that you **must** go through the QA process for both the Expo client and a standalone app! (e.g. build `native-component-list` and `test-suite` as standalone apps). There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
-  **Android**:
-    - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
-  **iOS**:
-    - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
+- **Android**:
+  - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
+- **iOS**:
+  - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
+  > This is not currently possible to test `standalone`/`ejected to ExpoKit` app in `expo` repository scope.
+  > One way is to:
+  > - copy `apps/native-components-list`/`test-suite` app outside repository scope and perform `eject to ExpoKit`,
+  > - use ExpoKit commit hash in Podfile,
+  > - install each unimodule specified in `package.json` from specific commit hash.
 
 ## 2.2. Publish demo apps
 
@@ -153,7 +158,7 @@
 
 **How:**
 
-- Please follow another guide: [Generating Jest Mocks](Generating Jest Mocks.md).
+- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
 
 ## 3.3. Publishing prerelease packages
 
@@ -343,8 +348,10 @@
 
 **How:**
 
+- Make sure you have the release branch checked out and have cherry-picked all appropriate docs changes from master that landed after the release branch was cut.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page.
-- Commit and push changes to `master` branch.
+- Commit and push changes to release branch.
+- Cherry pick this commit to `master` and push.
 - Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
 
 # Stage 7 - Snack

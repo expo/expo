@@ -7,11 +7,12 @@
 #define RNSharedElementDelegate_h
 
 #import "RNSharedElementStyle.h"
+#import "RNSharedElementContent.h"
 #import "RNSharedElementTypes.h"
 
 @protocol RNSharedElementDelegate
 - (void) didLoadStyle:(RNSharedElementStyle*)style node:(id)node;
-- (void) didLoadContent:(id)content contentType:(RNSharedElementContentType)contentType node:(id)node;
+- (void) didLoadContent:(RNSharedElementContent*)content node:(id)node;
 @end
 
 #endif

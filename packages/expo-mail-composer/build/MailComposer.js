@@ -11,4 +11,5 @@ export async function composeAsync(options) {
 export async function isAvailableAsync() {
     return await ExpoMailComposer.isAvailableAsync();
 }
+export * from './MailComposer.types';
 //# sourceMappingURL=MailComposer.js.map

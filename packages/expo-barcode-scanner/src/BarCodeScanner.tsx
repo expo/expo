@@ -12,7 +12,7 @@ const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 
 const EVENT_THROTTLE_MS = 500;
 
-type BarCodeEvent = {
+export type BarCodeEvent = {
   type: string;
   data: string;
   [key: string]: any;

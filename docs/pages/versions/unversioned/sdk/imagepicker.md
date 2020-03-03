@@ -3,8 +3,8 @@ title: ImagePicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-picker'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import Video from '../../../../components/plugins/Video'
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
@@ -15,7 +15,7 @@ import Video from '../../../../components/plugins/Video'
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-picker`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-picker).
+<InstallSection packageName="expo-image-picker" />
 
 ## Usage
 

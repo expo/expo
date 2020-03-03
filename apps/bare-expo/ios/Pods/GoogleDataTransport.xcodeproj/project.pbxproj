@@ -1,0 +1,507 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04A9601BAA9F1637DBBB2EDDEA05A175 /* GDTCORTransformer_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C1408F5D907E906396A504A2412ED793 /* GDTCORTransformer_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		051C4089AD6CB364E5E9429D241AF489 /* GDTCORLifecycle.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C50A952EADD8B78353ECA70430BE29B /* GDTCORLifecycle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0C2C7D7B7778C9D793A8E17C31EF98ED /* GDTCORPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7FF26350629D73BD07975273B90835 /* GDTCORPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0C938074CCB7023B79B404EC2A15D74E /* GDTCORConsoleLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AEE158213B5A4BD98D52F705D9C8975 /* GDTCORConsoleLogger.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0D84BBDDD810A5E851625B258DAB0C1F /* GDTCORStorage_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 54932C60F4A8B0E5266411FBEA2700C8 /* GDTCORStorage_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0E08B2B86743A88E942BE21DB04CBE2C /* GDTCORClock.h in Headers */ = {isa = PBXBuildFile; fileRef = BBFA1899F660E38F4EACE35D4FCF96B0 /* GDTCORClock.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1018D5F886279DF0234F683FDBB8BDF0 /* GDTCORUploadCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = E4A19B2D03CB92B38413B2BF5573319B /* GDTCORUploadCoordinator.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A258D0C9AD57367818BDF7EEE659983 /* GDTCORTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = B2B571715FDF9FE991CF4078E2AD749A /* GDTCORTransformer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		238A41B488801EE5D8BB09C62E361757 /* GDTCORDataFuture.h in Headers */ = {isa = PBXBuildFile; fileRef = C949E5DB73259930BD83AF1CA893122B /* GDTCORDataFuture.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		280CA48310979896D52F9B04C9282F0D /* GDTCOREventDataObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 7ECC8A07715D1465B42968E904252390 /* GDTCOREventDataObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37D48FEF908EEC332A836091D57224E8 /* GDTCORUploadPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = C02F01D8D6752D4F994E757BF4762F35 /* GDTCORUploadPackage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3EA1B3667B09BB53FCB2B3EC6B772421 /* GDTCORTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = C79436E74D556E43B8C5A5142C92C073 /* GDTCORTransport.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		40965941592ADE9827F762E3D700F6F8 /* GDTCORPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = D2AF6FC2EE06B6C38E1109442B6998DA /* GDTCORPlatform.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		48AD4E28D0C7764213C43F96C4A9B189 /* GDTCORDataFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DF4F8A3BCBA4C0D085F677C0EDF2949 /* GDTCORDataFuture.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4984C4EEFEABB1C936EDD557481F6A73 /* GDTCORRegistrar_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = CAA5CE1A19207908032161D73D6960CD /* GDTCORRegistrar_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		556CC82CBD04A5B34EBC0C4AC17FCBE9 /* GoogleDataTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = EB083EEFED12404D11486ABD52842AC4 /* GoogleDataTransport.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		561BEB21E6AD86BA8FB4673AFDC41A5C /* GDTCORUploadPackage_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 621F49A4F48D7EAB7E8147CDB683E94B /* GDTCORUploadPackage_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5E4AB71D170B9E22B0A04DCF90B58FC0 /* GDTCORTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D144C8426598F3EA85E910A2B2F49B9 /* GDTCORTransport.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		637DB431002CC384ADC9932F8F5151DA /* GDTCOREventTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B7F531F6F7FF0036AC98859E9F45357 /* GDTCOREventTransformer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6901DDAD59A326ED58A221B98AB2EF6B /* GoogleDataTransport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E636EAA78A7A164996B1FBE4BABE948 /* GoogleDataTransport-dummy.m */; };
+		69FB55963D13FC8C1DBFE9A268508B47 /* GDTCORTargets.h in Headers */ = {isa = PBXBuildFile; fileRef = A7C5CF4DCA4E69EA02172F838C2A5B10 /* GDTCORTargets.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7C3E70A875AAB6554DF18F5C7A245917 /* GDTCORReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = D192B0692E9568CACF8B39EF474D7285 /* GDTCORReachability.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		84E61065D4EE7B932B4C2B071395C8A8 /* GDTCORAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = D7BFF81C0973E3E89BD8582008E4CFD7 /* GDTCORAssert.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9505FDB29B4F4907418696CBB041D55D /* GDTCORRegistrar.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E16D8B9A7812561529C9AB6E8B490A /* GDTCORRegistrar.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9538152CC7531700A38D035B0D41790B /* GDTCOREvent_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = BD0279C11AF14C35469D3D98878859B0 /* GDTCOREvent_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		99E811998D075FA79E865F36493D4A89 /* GDTCORRegistrar.h in Headers */ = {isa = PBXBuildFile; fileRef = B2E8ACFF1A0311789DA0ABF825CAF676 /* GDTCORRegistrar.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9F3783B8DC6905D26A7AFA1F51722582 /* GDTCORStoredEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 354E74DAD71684EEA6267BE9EF7ECD46 /* GDTCORStoredEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A08A47DD85BC4C0C72C3B469E1DEEE2D /* GDTCORTransport_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = BD7EA1816AFC1D4A363B0EEF9B262C63 /* GDTCORTransport_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A13DBC4CF501B9F47D67BFDE0FEA540C /* GDTCOREvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 173AF3E3F48654DAB70233B22EDDF6BC /* GDTCOREvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A27B5104E4A9B6F973BB96ADEFA7E6E4 /* GDTCORReachability_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 50449C1BF5D59F40E7EC643F059B5AE0 /* GDTCORReachability_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A36178F4E4A75E4D583635F9A2809BE2 /* GDTCORAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 61A67544AF5C17C8C9CB38F7CC0E9046 /* GDTCORAssert.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		AE762F28949812C61D408EB2BA89971E /* GDTCORStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 63520C9BDA8E8720EDF386F95AD94E2B /* GDTCORStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B301236662DEC0F7BF0E19F4483D52F2 /* GDTCORUploadCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = E43863EC90BE512BD3518187BDB4753A /* GDTCORUploadCoordinator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C6605DD42BC64EF80375C4BD7A5210BA /* GDTCORTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C00888FDA0B78DFEB5B196E22E30550 /* GDTCORTransformer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CA1CD11F76D3EE66602797E626E0143E /* GDTCORUploadPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2884B8A5736BFFA4660AF1967AA2D0B4 /* GDTCORUploadPackage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		CAD74C09D5ADE3AF4E104509FEAD2E00 /* GDTCORConsoleLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AD4B575869234A239E3B4C3586D1F0C /* GDTCORConsoleLogger.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CD8259EBA42FA9BD1A9BDED2ACC87AC8 /* GDTCORStoredEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = EFB01516797BCF5DDC214EBF5218D3DE /* GDTCORStoredEvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D101C0FDCF9DFB9D866CEC049A66B91C /* GDTCORClock.m in Sources */ = {isa = PBXBuildFile; fileRef = C6191228D4ED057327EA9BB0D56D5B70 /* GDTCORClock.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D17725EEA3AF09F9EDEA51968D58250F /* GDTCORUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = D40B57763398C2A0391F889712C65837 /* GDTCORUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DDE435A589CF71E579A4D6DDBD5DF9F2 /* GDTCORPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BE0E449DF0F3E2400FA195C0D8C949F /* GDTCORPlatform.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E278C661E1CE107727A6DA0211BE5C3A /* GDTCORReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 94AE306542F177513A1060BC5E3DB74E /* GDTCORReachability.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EB66540E11477CF5DC8E871059FE40E5 /* GDTCORLifecycle.h in Headers */ = {isa = PBXBuildFile; fileRef = C34AABEAFA05E1A9574C3257B7FD7DE3 /* GDTCORLifecycle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EE8B41D31A5580F768CE8A748CC4C88B /* GDTCOREvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F15C8CAC5B460BF8AF5654751938A64 /* GDTCOREvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FA1F234DB603B2E9B624679E1056756B /* GDTCORStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B213EFC9A19424EF1CEA95A08CEF4E3 /* GDTCORStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		173AF3E3F48654DAB70233B22EDDF6BC /* GDTCOREvent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCOREvent.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCOREvent.h; sourceTree = "<group>"; };
+		1C00888FDA0B78DFEB5B196E22E30550 /* GDTCORTransformer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORTransformer.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORTransformer.m; sourceTree = "<group>"; };
+		2884B8A5736BFFA4660AF1967AA2D0B4 /* GDTCORUploadPackage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORUploadPackage.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORUploadPackage.m; sourceTree = "<group>"; };
+		2D144C8426598F3EA85E910A2B2F49B9 /* GDTCORTransport.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORTransport.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORTransport.m; sourceTree = "<group>"; };
+		2DF4F8A3BCBA4C0D085F677C0EDF2949 /* GDTCORDataFuture.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORDataFuture.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORDataFuture.m; sourceTree = "<group>"; };
+		354E74DAD71684EEA6267BE9EF7ECD46 /* GDTCORStoredEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORStoredEvent.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORStoredEvent.m; sourceTree = "<group>"; };
+		3A7FF26350629D73BD07975273B90835 /* GDTCORPrioritizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORPrioritizer.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORPrioritizer.h; sourceTree = "<group>"; };
+		50449C1BF5D59F40E7EC643F059B5AE0 /* GDTCORReachability_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORReachability_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORReachability_Private.h; sourceTree = "<group>"; };
+		54932C60F4A8B0E5266411FBEA2700C8 /* GDTCORStorage_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORStorage_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORStorage_Private.h; sourceTree = "<group>"; };
+		5AD4B575869234A239E3B4C3586D1F0C /* GDTCORConsoleLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORConsoleLogger.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORConsoleLogger.h; sourceTree = "<group>"; };
+		5B213EFC9A19424EF1CEA95A08CEF4E3 /* GDTCORStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORStorage.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORStorage.m; sourceTree = "<group>"; };
+		5E636EAA78A7A164996B1FBE4BABE948 /* GoogleDataTransport-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleDataTransport-dummy.m"; sourceTree = "<group>"; };
+		61A67544AF5C17C8C9CB38F7CC0E9046 /* GDTCORAssert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORAssert.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORAssert.m; sourceTree = "<group>"; };
+		621F49A4F48D7EAB7E8147CDB683E94B /* GDTCORUploadPackage_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORUploadPackage_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORUploadPackage_Private.h; sourceTree = "<group>"; };
+		63520C9BDA8E8720EDF386F95AD94E2B /* GDTCORStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORStorage.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORStorage.h; sourceTree = "<group>"; };
+		6AEE158213B5A4BD98D52F705D9C8975 /* GDTCORConsoleLogger.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORConsoleLogger.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORConsoleLogger.m; sourceTree = "<group>"; };
+		6C50A952EADD8B78353ECA70430BE29B /* GDTCORLifecycle.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORLifecycle.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORLifecycle.m; sourceTree = "<group>"; };
+		7ECC8A07715D1465B42968E904252390 /* GDTCOREventDataObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCOREventDataObject.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCOREventDataObject.h; sourceTree = "<group>"; };
+		8BE0E449DF0F3E2400FA195C0D8C949F /* GDTCORPlatform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORPlatform.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORPlatform.m; sourceTree = "<group>"; };
+		94AE306542F177513A1060BC5E3DB74E /* GDTCORReachability.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORReachability.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORReachability.m; sourceTree = "<group>"; };
+		9B7F531F6F7FF0036AC98859E9F45357 /* GDTCOREventTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCOREventTransformer.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCOREventTransformer.h; sourceTree = "<group>"; };
+		9F15C8CAC5B460BF8AF5654751938A64 /* GDTCOREvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCOREvent.m; path = GoogleDataTransport/GDTCORLibrary/GDTCOREvent.m; sourceTree = "<group>"; };
+		A7C5CF4DCA4E69EA02172F838C2A5B10 /* GDTCORTargets.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTargets.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORTargets.h; sourceTree = "<group>"; };
+		A7E16D8B9A7812561529C9AB6E8B490A /* GDTCORRegistrar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORRegistrar.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORRegistrar.m; sourceTree = "<group>"; };
+		B2B571715FDF9FE991CF4078E2AD749A /* GDTCORTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTransformer.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORTransformer.h; sourceTree = "<group>"; };
+		B2E8ACFF1A0311789DA0ABF825CAF676 /* GDTCORRegistrar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORRegistrar.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORRegistrar.h; sourceTree = "<group>"; };
+		BBFA1899F660E38F4EACE35D4FCF96B0 /* GDTCORClock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORClock.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORClock.h; sourceTree = "<group>"; };
+		BC293C19A674F6FF9E7DC3443DE53715 /* libGoogleDataTransport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libGoogleDataTransport.a; path = libGoogleDataTransport.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD0279C11AF14C35469D3D98878859B0 /* GDTCOREvent_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCOREvent_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCOREvent_Private.h; sourceTree = "<group>"; };
+		BD7EA1816AFC1D4A363B0EEF9B262C63 /* GDTCORTransport_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTransport_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORTransport_Private.h; sourceTree = "<group>"; };
+		C02F01D8D6752D4F994E757BF4762F35 /* GDTCORUploadPackage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORUploadPackage.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORUploadPackage.h; sourceTree = "<group>"; };
+		C1408F5D907E906396A504A2412ED793 /* GDTCORTransformer_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTransformer_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORTransformer_Private.h; sourceTree = "<group>"; };
+		C34AABEAFA05E1A9574C3257B7FD7DE3 /* GDTCORLifecycle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORLifecycle.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORLifecycle.h; sourceTree = "<group>"; };
+		C6191228D4ED057327EA9BB0D56D5B70 /* GDTCORClock.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORClock.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORClock.m; sourceTree = "<group>"; };
+		C79436E74D556E43B8C5A5142C92C073 /* GDTCORTransport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORTransport.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORTransport.h; sourceTree = "<group>"; };
+		C949E5DB73259930BD83AF1CA893122B /* GDTCORDataFuture.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORDataFuture.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORDataFuture.h; sourceTree = "<group>"; };
+		CAA5CE1A19207908032161D73D6960CD /* GDTCORRegistrar_Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORRegistrar_Private.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORRegistrar_Private.h; sourceTree = "<group>"; };
+		D192B0692E9568CACF8B39EF474D7285 /* GDTCORReachability.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORReachability.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORReachability.h; sourceTree = "<group>"; };
+		D2AF6FC2EE06B6C38E1109442B6998DA /* GDTCORPlatform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORPlatform.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORPlatform.h; sourceTree = "<group>"; };
+		D40B57763398C2A0391F889712C65837 /* GDTCORUploader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORUploader.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORUploader.h; sourceTree = "<group>"; };
+		D7BFF81C0973E3E89BD8582008E4CFD7 /* GDTCORAssert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORAssert.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORAssert.h; sourceTree = "<group>"; };
+		E1EAD0BC8BE646941B43DF5AC3335414 /* GoogleDataTransport.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleDataTransport.xcconfig; sourceTree = "<group>"; };
+		E43863EC90BE512BD3518187BDB4753A /* GDTCORUploadCoordinator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GDTCORUploadCoordinator.m; path = GoogleDataTransport/GDTCORLibrary/GDTCORUploadCoordinator.m; sourceTree = "<group>"; };
+		E4A19B2D03CB92B38413B2BF5573319B /* GDTCORUploadCoordinator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORUploadCoordinator.h; path = GoogleDataTransport/GDTCORLibrary/Private/GDTCORUploadCoordinator.h; sourceTree = "<group>"; };
+		EB083EEFED12404D11486ABD52842AC4 /* GoogleDataTransport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GoogleDataTransport.h; path = GoogleDataTransport/GDTCORLibrary/Public/GoogleDataTransport.h; sourceTree = "<group>"; };
+		EFB01516797BCF5DDC214EBF5218D3DE /* GDTCORStoredEvent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GDTCORStoredEvent.h; path = GoogleDataTransport/GDTCORLibrary/Public/GDTCORStoredEvent.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F8FB07B8DD7C2D02B57691E42A59F488 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4CDF57B35506CE3F498EA9403F8BB04F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6698E9283D819CA023FDC87B8AD012B7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BC293C19A674F6FF9E7DC3443DE53715 /* libGoogleDataTransport.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1C4BA2BBC087F8941D237B2DE1D66F0 = {
+			isa = PBXGroup;
+			children = (
+				4CDF57B35506CE3F498EA9403F8BB04F /* Frameworks */,
+				E72803409A23F440F288E9F86FEBFC9A /* GoogleDataTransport */,
+				6698E9283D819CA023FDC87B8AD012B7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C007AA021D076FE64027562AA8158640 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				E1EAD0BC8BE646941B43DF5AC3335414 /* GoogleDataTransport.xcconfig */,
+				5E636EAA78A7A164996B1FBE4BABE948 /* GoogleDataTransport-dummy.m */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/GoogleDataTransport";
+			sourceTree = "<group>";
+		};
+		E72803409A23F440F288E9F86FEBFC9A /* GoogleDataTransport */ = {
+			isa = PBXGroup;
+			children = (
+				D7BFF81C0973E3E89BD8582008E4CFD7 /* GDTCORAssert.h */,
+				61A67544AF5C17C8C9CB38F7CC0E9046 /* GDTCORAssert.m */,
+				BBFA1899F660E38F4EACE35D4FCF96B0 /* GDTCORClock.h */,
+				C6191228D4ED057327EA9BB0D56D5B70 /* GDTCORClock.m */,
+				5AD4B575869234A239E3B4C3586D1F0C /* GDTCORConsoleLogger.h */,
+				6AEE158213B5A4BD98D52F705D9C8975 /* GDTCORConsoleLogger.m */,
+				C949E5DB73259930BD83AF1CA893122B /* GDTCORDataFuture.h */,
+				2DF4F8A3BCBA4C0D085F677C0EDF2949 /* GDTCORDataFuture.m */,
+				173AF3E3F48654DAB70233B22EDDF6BC /* GDTCOREvent.h */,
+				9F15C8CAC5B460BF8AF5654751938A64 /* GDTCOREvent.m */,
+				BD0279C11AF14C35469D3D98878859B0 /* GDTCOREvent_Private.h */,
+				7ECC8A07715D1465B42968E904252390 /* GDTCOREventDataObject.h */,
+				9B7F531F6F7FF0036AC98859E9F45357 /* GDTCOREventTransformer.h */,
+				C34AABEAFA05E1A9574C3257B7FD7DE3 /* GDTCORLifecycle.h */,
+				6C50A952EADD8B78353ECA70430BE29B /* GDTCORLifecycle.m */,
+				D2AF6FC2EE06B6C38E1109442B6998DA /* GDTCORPlatform.h */,
+				8BE0E449DF0F3E2400FA195C0D8C949F /* GDTCORPlatform.m */,
+				3A7FF26350629D73BD07975273B90835 /* GDTCORPrioritizer.h */,
+				D192B0692E9568CACF8B39EF474D7285 /* GDTCORReachability.h */,
+				94AE306542F177513A1060BC5E3DB74E /* GDTCORReachability.m */,
+				50449C1BF5D59F40E7EC643F059B5AE0 /* GDTCORReachability_Private.h */,
+				B2E8ACFF1A0311789DA0ABF825CAF676 /* GDTCORRegistrar.h */,
+				A7E16D8B9A7812561529C9AB6E8B490A /* GDTCORRegistrar.m */,
+				CAA5CE1A19207908032161D73D6960CD /* GDTCORRegistrar_Private.h */,
+				63520C9BDA8E8720EDF386F95AD94E2B /* GDTCORStorage.h */,
+				5B213EFC9A19424EF1CEA95A08CEF4E3 /* GDTCORStorage.m */,
+				54932C60F4A8B0E5266411FBEA2700C8 /* GDTCORStorage_Private.h */,
+				EFB01516797BCF5DDC214EBF5218D3DE /* GDTCORStoredEvent.h */,
+				354E74DAD71684EEA6267BE9EF7ECD46 /* GDTCORStoredEvent.m */,
+				A7C5CF4DCA4E69EA02172F838C2A5B10 /* GDTCORTargets.h */,
+				B2B571715FDF9FE991CF4078E2AD749A /* GDTCORTransformer.h */,
+				1C00888FDA0B78DFEB5B196E22E30550 /* GDTCORTransformer.m */,
+				C1408F5D907E906396A504A2412ED793 /* GDTCORTransformer_Private.h */,
+				C79436E74D556E43B8C5A5142C92C073 /* GDTCORTransport.h */,
+				2D144C8426598F3EA85E910A2B2F49B9 /* GDTCORTransport.m */,
+				BD7EA1816AFC1D4A363B0EEF9B262C63 /* GDTCORTransport_Private.h */,
+				E4A19B2D03CB92B38413B2BF5573319B /* GDTCORUploadCoordinator.h */,
+				E43863EC90BE512BD3518187BDB4753A /* GDTCORUploadCoordinator.m */,
+				D40B57763398C2A0391F889712C65837 /* GDTCORUploader.h */,
+				C02F01D8D6752D4F994E757BF4762F35 /* GDTCORUploadPackage.h */,
+				2884B8A5736BFFA4660AF1967AA2D0B4 /* GDTCORUploadPackage.m */,
+				621F49A4F48D7EAB7E8147CDB683E94B /* GDTCORUploadPackage_Private.h */,
+				EB083EEFED12404D11486ABD52842AC4 /* GoogleDataTransport.h */,
+				C007AA021D076FE64027562AA8158640 /* Support Files */,
+			);
+			name = GoogleDataTransport;
+			path = GoogleDataTransport;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0D581419F449B4FCE4EFF332E3F794A3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84E61065D4EE7B932B4C2B071395C8A8 /* GDTCORAssert.h in Headers */,
+				0E08B2B86743A88E942BE21DB04CBE2C /* GDTCORClock.h in Headers */,
+				CAD74C09D5ADE3AF4E104509FEAD2E00 /* GDTCORConsoleLogger.h in Headers */,
+				238A41B488801EE5D8BB09C62E361757 /* GDTCORDataFuture.h in Headers */,
+				A13DBC4CF501B9F47D67BFDE0FEA540C /* GDTCOREvent.h in Headers */,
+				9538152CC7531700A38D035B0D41790B /* GDTCOREvent_Private.h in Headers */,
+				280CA48310979896D52F9B04C9282F0D /* GDTCOREventDataObject.h in Headers */,
+				637DB431002CC384ADC9932F8F5151DA /* GDTCOREventTransformer.h in Headers */,
+				EB66540E11477CF5DC8E871059FE40E5 /* GDTCORLifecycle.h in Headers */,
+				40965941592ADE9827F762E3D700F6F8 /* GDTCORPlatform.h in Headers */,
+				0C2C7D7B7778C9D793A8E17C31EF98ED /* GDTCORPrioritizer.h in Headers */,
+				7C3E70A875AAB6554DF18F5C7A245917 /* GDTCORReachability.h in Headers */,
+				A27B5104E4A9B6F973BB96ADEFA7E6E4 /* GDTCORReachability_Private.h in Headers */,
+				99E811998D075FA79E865F36493D4A89 /* GDTCORRegistrar.h in Headers */,
+				4984C4EEFEABB1C936EDD557481F6A73 /* GDTCORRegistrar_Private.h in Headers */,
+				AE762F28949812C61D408EB2BA89971E /* GDTCORStorage.h in Headers */,
+				0D84BBDDD810A5E851625B258DAB0C1F /* GDTCORStorage_Private.h in Headers */,
+				CD8259EBA42FA9BD1A9BDED2ACC87AC8 /* GDTCORStoredEvent.h in Headers */,
+				69FB55963D13FC8C1DBFE9A268508B47 /* GDTCORTargets.h in Headers */,
+				1A258D0C9AD57367818BDF7EEE659983 /* GDTCORTransformer.h in Headers */,
+				04A9601BAA9F1637DBBB2EDDEA05A175 /* GDTCORTransformer_Private.h in Headers */,
+				3EA1B3667B09BB53FCB2B3EC6B772421 /* GDTCORTransport.h in Headers */,
+				A08A47DD85BC4C0C72C3B469E1DEEE2D /* GDTCORTransport_Private.h in Headers */,
+				1018D5F886279DF0234F683FDBB8BDF0 /* GDTCORUploadCoordinator.h in Headers */,
+				D17725EEA3AF09F9EDEA51968D58250F /* GDTCORUploader.h in Headers */,
+				37D48FEF908EEC332A836091D57224E8 /* GDTCORUploadPackage.h in Headers */,
+				561BEB21E6AD86BA8FB4673AFDC41A5C /* GDTCORUploadPackage_Private.h in Headers */,
+				556CC82CBD04A5B34EBC0C4AC17FCBE9 /* GoogleDataTransport.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		78B41281B6D2EAC6C3C75FFE5052E985 /* GoogleDataTransport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2809D068FF3398AA1C8238FA747FBE7 /* Build configuration list for PBXNativeTarget "GoogleDataTransport" */;
+			buildPhases = (
+				0D581419F449B4FCE4EFF332E3F794A3 /* Headers */,
+				523CFFF7F07D08D644780442300DB489 /* Sources */,
+				F8FB07B8DD7C2D02B57691E42A59F488 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GoogleDataTransport;
+			productName = GoogleDataTransport;
+			productReference = BC293C19A674F6FF9E7DC3443DE53715 /* libGoogleDataTransport.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		70488AE0197FA1D8AECC95F3D0C83D95 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = D3ABC61DAAE9240B79C666E308E867FE /* Build configuration list for PBXProject "GoogleDataTransport" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1C4BA2BBC087F8941D237B2DE1D66F0;
+			productRefGroup = 6698E9283D819CA023FDC87B8AD012B7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				78B41281B6D2EAC6C3C75FFE5052E985 /* GoogleDataTransport */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		523CFFF7F07D08D644780442300DB489 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A36178F4E4A75E4D583635F9A2809BE2 /* GDTCORAssert.m in Sources */,
+				D101C0FDCF9DFB9D866CEC049A66B91C /* GDTCORClock.m in Sources */,
+				0C938074CCB7023B79B404EC2A15D74E /* GDTCORConsoleLogger.m in Sources */,
+				48AD4E28D0C7764213C43F96C4A9B189 /* GDTCORDataFuture.m in Sources */,
+				EE8B41D31A5580F768CE8A748CC4C88B /* GDTCOREvent.m in Sources */,
+				051C4089AD6CB364E5E9429D241AF489 /* GDTCORLifecycle.m in Sources */,
+				DDE435A589CF71E579A4D6DDBD5DF9F2 /* GDTCORPlatform.m in Sources */,
+				E278C661E1CE107727A6DA0211BE5C3A /* GDTCORReachability.m in Sources */,
+				9505FDB29B4F4907418696CBB041D55D /* GDTCORRegistrar.m in Sources */,
+				FA1F234DB603B2E9B624679E1056756B /* GDTCORStorage.m in Sources */,
+				9F3783B8DC6905D26A7AFA1F51722582 /* GDTCORStoredEvent.m in Sources */,
+				C6605DD42BC64EF80375C4BD7A5210BA /* GDTCORTransformer.m in Sources */,
+				5E4AB71D170B9E22B0A04DCF90B58FC0 /* GDTCORTransport.m in Sources */,
+				B301236662DEC0F7BF0E19F4483D52F2 /* GDTCORUploadCoordinator.m in Sources */,
+				CA1CD11F76D3EE66602797E626E0143E /* GDTCORUploadPackage.m in Sources */,
+				6901DDAD59A326ED58A221B98AB2EF6B /* GoogleDataTransport-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		065F5903EF02F5164E5C2AEC8CB86A50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		50C03399891A4D087A808FA24686E0E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1EAD0BC8BE646941B43DF5AC3335414 /* GoogleDataTransport.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleDataTransport;
+				PRODUCT_NAME = GoogleDataTransport;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5E3A62FD41D650C74ECF6506598C451B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E1EAD0BC8BE646941B43DF5AC3335414 /* GoogleDataTransport.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = GoogleDataTransport;
+				PRODUCT_NAME = GoogleDataTransport;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		827EBA213EAD636327281EC98024F873 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D3ABC61DAAE9240B79C666E308E867FE /* Build configuration list for PBXProject "GoogleDataTransport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				827EBA213EAD636327281EC98024F873 /* Debug */,
+				065F5903EF02F5164E5C2AEC8CB86A50 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2809D068FF3398AA1C8238FA747FBE7 /* Build configuration list for PBXNativeTarget "GoogleDataTransport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E3A62FD41D650C74ECF6506598C451B /* Debug */,
+				50C03399891A4D087A808FA24686E0E8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 70488AE0197FA1D8AECC95F3D0C83D95 /* Project object */;
+}

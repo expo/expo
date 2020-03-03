@@ -1,5 +1,7 @@
 package versioned.host.exp.exponent.modules.api.reanimated.transitions;
 
+import androidx.transition.ChangeBounds;
+import androidx.transition.ChangeTransform;
 import androidx.transition.Fade;
 import androidx.transition.SidePropagation;
 import androidx.transition.Slide;
@@ -91,9 +93,11 @@ class TransitionUtils {
   }
 
   private static Transition inflateChange(ReadableMap config) {
-    ChangeTransition transition = new ChangeTransition();
-    configureTransition(transition, config);
-    return transition;
+    ChangeBounds changeBounds = new ChangeBounds();
+    ChangeTransform changeTransform = new ChangeTransform();
+    configureTransition(changeBounds, config);
+    configureTransition(changeTransform, config);
+    return new TransitionSet().addTransition(changeBounds).addTransition(changeTransform);
   }
 
   private static Visibility createTransition(String type) {

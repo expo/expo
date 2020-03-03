@@ -1,0 +1,23 @@
+{
+  "name": "unimodules-barcode-scanner-interface",
+  "version": "5.0.0",
+  "description": "An interface for bar code scanners",
+  "main": "index.js",
+  "keywords": [
+    "barcode-scanner",
+    "barcode",
+    "unimodules"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/unimodules-barcode-scanner-interface"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-barcode-scanner-interface",
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+}
