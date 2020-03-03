@@ -1,6 +1,6 @@
 {
   "name": "expo-network",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "main": "build/Network.js",
   "types": "build/Network.d.ts",
@@ -35,5 +35,5 @@
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

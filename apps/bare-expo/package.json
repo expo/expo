@@ -79,7 +79,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~36.0.0",
+    "expo": "~37.0.0",
     "expo-notifications": "~1.0.0",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
@@ -91,7 +91,7 @@
     "react-native-reanimated": "~1.7.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
-    "react-native-unimodules": "~0.7.0-rc.3",
+    "react-native-unimodules": "~0.8.0",
     "react-native-web": "^0.11.4",
     "react-navigation": "4.1.0-alpha.0",
     "react-navigation-tabs": "^2.7.0",
@@ -102,11 +102,11 @@
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
     "babel-plugin-module-resolver": "^4.0.0",
-    "babel-preset-expo": "~8.0.0",
+    "babel-preset-expo": "~8.1.0",
     "detox": "^14.8.4",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "~36.0.1",
+    "jest-expo": "~37.0.0",
     "jest-expo-puppeteer": "^0.0.0"
   }
 }
