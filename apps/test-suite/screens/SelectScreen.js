@@ -14,7 +14,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
-import { getTestModules } from '../TestUtils';
+import { getTestModules } from '../TestModules';
 
 const prefix = Platform.select({ default: 'md', ios: 'ios' });
 
