@@ -40,8 +40,8 @@ export async function test(
         const accessToken = await Facebook.getAccessTokenAsync();
         expect(accessToken).toBeDefined();
         await Facebook.logOutAsync();
-        const unauthAccessToken = await Facebook.getAccessTokenAsync();
-        expect(unauthAccessToken).toBe(null);
+        const unauthedAccessToken = await Facebook.getAccessTokenAsync();
+        expect(unauthedAccessToken).toBe(null);
       });
     } else {
       it(`does nothing in non-interactive environments`, async () => {});
