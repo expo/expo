@@ -8,7 +8,7 @@ RCT_EXPORT_MODULE(RNCAppearanceProvider)
 
 - (UIView *)view
 {
-  return [RNCAppearanceProvider new];
+  return [[RNCAppearanceProvider alloc] initWithBridge:self.bridge];
 }
 
 @end
