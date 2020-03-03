@@ -192,15 +192,15 @@ async function toggleAuthAsync() {
 
 ## Error Codes
 
-### `ERR_FB_INIT`
+### `ERR_FACEBOOK_UNINITIALIZED`
 
 Ensure `initializeAsync` has successfully resolved before attempting to use the FBSDK.
 
-### `ERR_FB_CONF`
+### `ERR_FACEBOOK_MISCONFIGURED`
 
 Failed to initialize the FBSDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native config files.
 
-### `ERR_FB_LOGIN`
+### `ERR_FACEBOOK_LOGIN`
 
 An error occurred while trying to log in to Facebook.
 
