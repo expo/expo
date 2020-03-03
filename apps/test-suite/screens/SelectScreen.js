@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
-import { getTestModules } from '../TestModules';
 
 const prefix = Platform.select({ default: 'md', ios: 'ios' });
 
@@ -75,7 +75,7 @@ export default class SelectScreen extends React.PureComponent {
   checkLinking = incomingTests => {
     if (incomingTests) {
       const testNames = incomingTests.split(',').map(v => v.trim());
-      const selected = this.modules.filter(m => testNames.includes(m.name));
+      const selected = this.modules.filter(m => testNames.includes(m.name)).map(m => m.name);
       if (!selected.length) {
         console.log('[TEST_SUITE]', 'No selected modules', testNames);
       }
@@ -141,14 +141,8 @@ export default class SelectScreen extends React.PureComponent {
     });
   };
 
-  _getSelected = () => {
-    const { selected } = this.state;
-    const selectedModules = this.modules.filter(m => selected.has(m.name));
-    return selectedModules;
-  };
-
   _navigateToTests = () => {
-    const selected = this._getSelected();
+    const { selected } = this.state;
     if (selected.length === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
