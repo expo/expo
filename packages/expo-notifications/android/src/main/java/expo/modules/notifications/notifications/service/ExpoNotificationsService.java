@@ -14,7 +14,6 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 /**
@@ -116,12 +115,12 @@ public class ExpoNotificationsService extends BaseNotificationsService {
   @Override
   protected void onNotificationPresent(expo.modules.notifications.notifications.model.Notification notification, NotificationBehavior behavior) {
     String tag = notification.getNotificationRequest().getIdentifier();
-    NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification.getNotificationRequest(), behavior));
+    NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification, behavior));
   }
 
-  protected android.app.Notification getNotification(NotificationRequest request, NotificationBehavior behavior) {
+  protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
     return new ExpoNotificationBuilder(this)
-        .setNotificationContent(request.getContent())
+        .setNotification(notification)
         .setAllowedBehavior(behavior)
         .build();
   }
