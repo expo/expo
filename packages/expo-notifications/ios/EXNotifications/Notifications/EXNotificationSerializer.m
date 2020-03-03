@@ -5,12 +5,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.modules.notifications.actions.DEFAULT";
+
 @implementation EXNotificationSerializer
 
 + (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSMutableDictionary *serializedResponse = [NSMutableDictionary dictionary];
-  serializedResponse[@"actionIdentifier"] = response.actionIdentifier ?: [NSNull null];
+  NSString *actionIdentifier = response.actionIdentifier;
+  if ([UNNotificationDefaultActionIdentifier isEqualToString:actionIdentifier]) {
+    actionIdentifier = EXNotificationResponseDefaultActionIdentifier;
+  }
+  serializedResponse[@"actionIdentifier"] = actionIdentifier;
   serializedResponse[@"notification"] = [self serializedNotification:response.notification];
   if ([response isKindOfClass:[UNTextInputNotificationResponse class]]) {
     UNTextInputNotificationResponse *textInputResponse = (UNTextInputNotificationResponse *)response;
