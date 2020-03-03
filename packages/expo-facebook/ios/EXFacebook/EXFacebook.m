@@ -80,8 +80,8 @@ UM_EXPORT_METHOD_AS(logOutAsync,
                     logOutAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
-  [loginMgr logOut];
+  FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
+  [loginManager logOut];
   resolve(nil);
 }
 
@@ -111,11 +111,11 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
   // FB SDK requires login to run on main thread
   // Needs to not race with other mutations of this global FB state
   dispatch_async(dispatch_get_main_queue(), ^{
-    FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
-    [loginMgr logOut];
+    FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
+    [loginManager logOut];
 
     @try {
-      [loginMgr logInWithPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+      [loginManager logInWithPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
           reject(EXFacebookLoginErrorDomain, @"Error with Facebook login", error);
           return;
