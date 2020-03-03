@@ -48,13 +48,13 @@
     "enzyme-to-json": "^3.4.0",
     "jest-canvas-mock": "^2.1.1",
     "jest-enzyme": "^7.1.0",
-    "jest-expo": "~36.0.1",
+    "jest-expo": "~37.0.0",
     "react-test-renderer": "~16.9.0"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
-    "babel-preset-expo": "~8.0.0",
+    "babel-preset-expo": "~8.1.0",
     "expo-module-scripts": "~1.2.0",
     "react": "16.9.0"
   },

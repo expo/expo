@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-analytics",
-  "version": "3.0.0",
+  "version": "2.1.0",
   "sideEffects": false,
   "description": "A universal module that interfaces with the native firebase analytics API",
   "main": "build/Analytics.js",
@@ -38,5 +38,5 @@
   "peerDependencies": {
     "expo-firebase-core": "*"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }
