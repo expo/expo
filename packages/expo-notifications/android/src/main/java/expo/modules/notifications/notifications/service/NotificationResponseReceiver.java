@@ -34,7 +34,16 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    NotificationResponse response = intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
-    BaseNotificationsService.enqueueResponseReceived(context, response);
+    openAppToForeground(context);
+    BaseNotificationsService.enqueueResponseReceived(context, intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY));
+  }
+
+  protected void openAppToForeground(Context context) {
+    Intent mainActivity = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+    if (mainActivity == null) {
+      Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.");
+      return;
+    }
+    context.startActivity(mainActivity);
   }
 }
