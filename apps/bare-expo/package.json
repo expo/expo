@@ -86,7 +86,7 @@
     "react": "16.9.0",
     "react-dom": "16.9.0",
     "react-native": "0.61.4",
-    "react-native-appearance": "^0.3.2",
+    "react-native-appearance": "~0.3.3",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-reanimated": "~1.7.0",
     "react-native-safe-area-context": "0.7.3",
