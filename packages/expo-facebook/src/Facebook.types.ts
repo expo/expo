@@ -75,7 +75,7 @@ export type SDKInitOptions = {
   /**
    * Application ID used to initialize the FBSDK app.
    *
-   * On native if you don't provide this, Facebook SDK will try to use `appId` from native
+   * On Android and iOS if you don't provide this, Facebook SDK will try to use `appId` from Android and iOS.
    * app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)).
    * If it fails to find one, the promise will be rejected.
    */
@@ -89,7 +89,10 @@ export type SDKInitOptions = {
   /**
    * Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)).
    * In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations.
-   * This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
+   *
+   * This method corresponds to:
+   * - [iOS disable auto events](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events)
+   * - [Android disable auto events](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events)
    */
   autoLogAppEvents?: boolean;
 };

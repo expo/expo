@@ -12,7 +12,7 @@ export async function logInWithReadPermissionsAsync(options) {
 /**
  * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
  *
- * You can use this method to check if the user should sign-in or not.
+ * You can use this method to check if the user should sign in or not.
  */
 export async function getAccessTokenAsync() {
     if (!ExponentFacebook.getAccessTokenAsync) {
