@@ -17,6 +17,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -89,6 +90,17 @@ public class NotificationsHandler extends ExportedModule implements Notification
     boolean shouldSetBadge = behavior.getBoolean(SHOULD_SET_BADGE_KEY);
     String priorityOverride = behavior.getString(PRIORITY_KEY);
     task.handleResponse(new NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priorityOverride), promise);
+  }
+
+  /**
+   * Callback called when {@link NotificationManager} gets notified of a new notification response.
+   * Does nothing.
+   *
+   * @param response Notification response received
+   */
+  @Override
+  public void onNotificationResponseReceived(NotificationResponse response) {
+    // do nothing, the response is received through emitter
   }
 
   /**
