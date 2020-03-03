@@ -38,5 +38,9 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".notifications.service.NotificationResponseReceiver"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 </manifest>

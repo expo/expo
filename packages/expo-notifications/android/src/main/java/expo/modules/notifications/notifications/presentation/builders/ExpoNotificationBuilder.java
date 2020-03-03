@@ -10,6 +10,9 @@ import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationContent;
 
+import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
+import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
+
 /**
  * {@link NotificationBuilder} interpreting a JSON request object.
  */
@@ -65,6 +68,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
       extras.putString(EXTRAS_BODY_KEY, content.getBody().toString());
       builder.setExtras(extras);
     }
+
+    builder.setContentIntent(getActionIntent(getContext(), DEFAULT_ACTION_IDENTIFIER, getNotification()));
 
     return builder;
   }
