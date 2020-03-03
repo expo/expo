@@ -30,7 +30,6 @@ UM_EXPORT_MODULE(ExpoNotificationsEmitter);
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
-  [self startObserving];
 }
 
 # pragma mark - UMEventEmitter
