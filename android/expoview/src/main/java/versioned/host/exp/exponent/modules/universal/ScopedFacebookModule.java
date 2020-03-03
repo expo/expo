@@ -75,7 +75,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   @Override
   public void logInWithReadPermissionsAsync(ReadableArguments config, Promise promise) {
     if (!mIsInitialized) {
-      promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
+      promise.reject("ERR_FACEBOOK_UNINITIALIZED", "Facebook SDK has not been initialized yet.");
     }
     super.logInWithReadPermissionsAsync(config, promise);
   }
@@ -83,7 +83,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   @Override
   public void getAccessTokenAsync(Promise promise) {
     if (!mIsInitialized) {
-      promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
+      promise.reject("ERR_FACEBOOK_UNINITIALIZED", "Facebook SDK has not been initialized yet.");
     }
     super.getAccessTokenAsync(promise);
   }
@@ -91,7 +91,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   @Override
   public void logOutAsync(final Promise promise) {
     if (!mIsInitialized) {
-      promise.reject("E_NO_INIT", "Facebook SDK has not been initialized yet.");
+      promise.reject("ERR_FACEBOOK_UNINITIALIZED", "Facebook SDK has not been initialized yet.");
     }
     super.logOutAsync(promise);
   }
