@@ -8,7 +8,7 @@ ABI37_0_0RCT_EXPORT_MODULE(ABI37_0_0RNCAppearanceProvider)
 
 - (UIView *)view
 {
-  return [ABI37_0_0RNCAppearanceProvider new];
+  return [[ABI37_0_0RNCAppearanceProvider alloc] initWithBridge:self.bridge];
 }
 
 @end
