@@ -9,10 +9,13 @@ export type WebBrowserOpenOptions = {
   showTitle?: boolean;
 
   /** Android only */
+  enableDefaultShareMenuItem?: boolean;
   showInRecents?: boolean;
 
   /** iOS only */
   controlsColor?: string;
+  dismissButtonStyle?: 'done' | 'close' | 'cancel';
+  readerMode?: boolean;
 
   // Web
   windowName?: string;
