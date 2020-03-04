@@ -464,7 +464,7 @@ async function _preparePublishAsync(
 
   const packageJson = require(path.join(pkg.path, 'package.json'));
   const packageView = await _getPackageViewFromRegistryAsync(pkg.packageName);
-  const currentVersion = packageView?.currentVersion;
+  const currentVersion = packageView?.currentVersion ?? null;
   const defaultVersion = _findDefaultVersion(packageJson, packageView, options);
   const maintainers = packageView ? await _getMaintainersAsync(pkg.packageName) : [];
   const isMaintainer = !packageView || maintainers.includes(options.npmProfile.name);
