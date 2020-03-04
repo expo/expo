@@ -2,6 +2,8 @@
 title: Account Permissions
 ---
 
+> Some features on this page are [available with a paid plan](https://expo.io/developer-services).
+
 When you're developing your project, multiple people on your team may
 need to release new versions or view the work in progress.  These
 capabilities can be accessed from https://expo.io/settings/permissions.
