@@ -342,7 +342,7 @@ async function _askForVersionAsync(
   packageView: PackageView | null,
   options: any
 ): Promise<string> {
-  if (options && options.version) {
+  if (options?.version) {
     if (
       semver.valid(options.version) &&
       (!currentVersion || semver.gt(options.version, currentVersion))
@@ -354,8 +354,7 @@ async function _askForVersionAsync(
     );
   }
   if (
-    packageView &&
-    packageView.publishedDate &&
+    packageView?.publishedDate &&
     (await _checkNativeChangesSinceAsync(pkg, packageView.publishedDate))
   ) {
     console.log(
@@ -465,7 +464,7 @@ async function _preparePublishAsync(
 
   const packageJson = require(path.join(pkg.path, 'package.json'));
   const packageView = await _getPackageViewFromRegistryAsync(pkg.packageName);
-  const currentVersion = packageView && packageView.currentVersion;
+  const currentVersion = packageView?.currentVersion;
   const defaultVersion = _findDefaultVersion(packageJson, packageView, options);
   const maintainers = packageView ? await _getMaintainersAsync(pkg.packageName) : [];
   const isMaintainer = !packageView || maintainers.includes(options.npmProfile.name);
@@ -659,7 +658,7 @@ async function _updateWorkspaceDependenciesAsync({
     for (const dependenciesKey of dependenciesKeys) {
       const dependencies = packageJson[dependenciesKey];
 
-      if (dependencies && dependencies[pkg.packageName]) {
+      if (dependencies?.[pkg.packageName]) {
         // Set app's dependency to the new version.
         await jsonFile.setAsync(`${dependenciesKey}.${pkg.packageName}`, `~${newVersion}`);
         console.log(
