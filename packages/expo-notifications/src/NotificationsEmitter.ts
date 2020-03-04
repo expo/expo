@@ -31,11 +31,11 @@ export function addNotificationResponseReceivedListener(
   );
 }
 
-export function removeSubscription(subscription: Subscription) {
+export function removeNotificationSubscription(subscription: Subscription) {
   emitter.removeSubscription(subscription);
 }
 
-export function removeAllListeners() {
+export function removeAllNotificationListeners() {
   emitter.removeAllListeners(didReceiveNotificationEventName);
   emitter.removeAllListeners(didDropNotificationsEventName);
   emitter.removeAllListeners(didReceiveNotificationResponseEventName);
