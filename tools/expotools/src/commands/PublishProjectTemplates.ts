@@ -54,9 +54,9 @@ async function shouldAssignLatestTagAsync(
 
 async function action(options) {
   if (!options.sdkVersion) {
-    const expoSdkVersion = (await JsonFile.readAsync(
+    const { version: expoSdkVersion } = await JsonFile.readAsync<{version: string}>(
       path.join(EXPO_DIR, 'packages/expo/package.json')
-    )).version;
+    );
     const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
       {
         type: 'input',

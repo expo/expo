@@ -79,5 +79,5 @@ export async function getNextSDKVersionAsync(platform: Platform): Promise<string
   if (!newestVersion) {
     return;
   }
-  return `${semver.major(semver.inc(newestVersion, 'major'))}.0.0`;
+  return `${semver.major(semver.inc(newestVersion, 'major')!)}.0.0`;
 }

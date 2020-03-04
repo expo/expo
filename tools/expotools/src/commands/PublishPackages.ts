@@ -281,9 +281,9 @@ function _findDefaultVersion(
     }
     if (_isPrereleaseVersion(defaultVersion)) {
       // options.release doesn't matter if the current version is also prerelease
-      return semver.inc(defaultVersion, 'prerelease', options.prerelease);
+      return semver.inc(defaultVersion, 'prerelease', options.prerelease)!;
     }
-    return semver.inc(defaultVersion, `pre${options.release}`, options.prerelease);
+    return semver.inc(defaultVersion, `pre${options.release}` as semver.ReleaseType, options.prerelease)!;
   }
   return packageView ? semver.inc(defaultVersion, options.release) : packageJson.version;
 }
