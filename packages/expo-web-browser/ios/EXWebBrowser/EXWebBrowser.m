@@ -89,13 +89,29 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   }
 
   NSURL *url = [[NSURL alloc] initWithString:authURL];
+  BOOL readerMode = [arguments[@"readerMode"] boolValue];
+  BOOL enableBarCollapsing = [arguments[@"enableBarCollapsing"] boolValue];
   SFSafariViewController *safariVC = nil;
   if (@available(iOS 11, *)) {
     SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc] init];
-    config.barCollapsingEnabled = [arguments[@"enableBarCollapsing"] boolValue];
+    config.barCollapsingEnabled = enableBarCollapsing;
+    config.entersReaderIfAvailable = readerMode;
     safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
   } else {
-    safariVC = [[SFSafariViewController alloc] initWithURL:url];
+    safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:readerMode];
+  }
+
+  if (@available(iOS 11.0, *)) {
+    NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
+    if ([@"done" isEqualToString:dismissButtonStyle]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
+    }
+    else if ([@"close" isEqualToString:dismissButtonStyle]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
+    }
+    else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
+      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
+    }
   }
 
   if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
