@@ -20,11 +20,6 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 <SnackEmbed snackId="@documentation/lottie-example" />
 
-## Caveats
-
-- The Lottie SDK currently lives under Expo's **DangerZone** namespace because it's implementation is still in Alpha.
-- Importing Lottie 3 files causes the previewer to crash without a visible error.
-
 ## Importing Lottie
 
  You can import it like this:
@@ -32,6 +27,11 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 ```javascript
 import LottieView from 'lottie-react-native';
 ```
+
+## Known Issues
+
+> The Lottie SDK is currently considered to be under Expo's "DangerZone" because it's implementation is still in Alpha.
+- Importing Lottie 3 files causes the previewer to crash without a visible error, because Expo relies on `lottie-react-native` v2.
 
 ## Using the Lottie API
 
