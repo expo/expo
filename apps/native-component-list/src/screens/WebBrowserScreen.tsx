@@ -100,7 +100,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       enableBarCollapsing: this.state.barCollapsing,
       showInRecents: this.state.showInRecents,
       readerMode: this.state.readerMode,
-      enableDefaultShare: this.state.enableDefaultShare,
+      enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
     const result = await WebBrowser.openBrowserAsync('https://expo.io', args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);

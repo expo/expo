@@ -7,7 +7,7 @@ export declare type WebBrowserOpenOptions = {
     enableBarCollapsing?: boolean;
     showTitle?: boolean;
     /** Android only */
-    enableDefaultShare?: boolean;
+    enableDefaultShareMenuItem?: boolean;
     showInRecents?: boolean;
     /** iOS only */
     controlsColor?: string;
