@@ -508,20 +508,29 @@ async function getPackageJsonPathsAsync(): Promise<string[]> {
   return await glob(packageJsonPath, { ignore: "**/node_modules/**" });
 }
 
-async function updateDependencyAsync(packgeJsonPath: string, dependencyName: string, newVersion: string): Promise<boolean> {
-  const jsonFile = new JsonFile(packgeJsonPath);
+async function updateWorkspaceDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+  const paths = await getPackageJsonPathsAsync();
+  const results = await Promise.all(paths.map(path => updateDependencyAsync(path, dependencyName, versionRange)));
+  return results.some(Boolean);
+}
+
+async function updateHomeDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+  const packageJsonPath = path.join(Directories.getExpoHomeJSDir(), 'package.json');
+  return await updateDependencyAsync(packageJsonPath, dependencyName, versionRange);
+}
+
+async function updateDependencyAsync(packageJsonPath: string, dependencyName: string, newVersionRange: string): Promise<boolean> {
+  const jsonFile = new JsonFile(packageJsonPath);
   const packageJson = await jsonFile.readAsync();
   
-  let dependencies = ((packageJson || {}).dependencies || {});
-  if (dependencies[dependencyName] !== undefined) {
-    if (dependencies[dependencyName] !== newVersion) {
-      console.log(
-        `${chalk.yellow('>')} ${chalk.green(packgeJsonPath)}: ${chalk.magentaBright(dependencies[dependencyName])} -> ${chalk.magentaBright(newVersion)}`
-      );
-      dependencies[dependencyName] = newVersion;
-      await jsonFile.writeAsync(packageJson);
-      return true;
-    }
+  const dependencies = ((packageJson || {}).dependencies || {});
+  if (dependencies[dependencyName] && dependencies[dependencyName] !== newVersionRange) {
+    console.log(
+      `${chalk.yellow('>')} ${chalk.green(packageJsonPath)}: ${chalk.magentaBright(dependencies[dependencyName])} -> ${chalk.magentaBright(newVersionRange)}`
+    );
+    dependencies[dependencyName] = newVersionRange;
+    await jsonFile.writeAsync(packageJson);
+    return true;
   }
   return false;
 }
@@ -676,16 +685,15 @@ async function action(options: ActionOptions) {
     }
   }
 
-  const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
+  const { name, version } = await JsonFile.readAsync<{
     name: string;
     version: string;
-  };
+  }>(path.join(tmpDir, 'package.json'));
   const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+  const versionRange = `${semverPrefix}${version}`;
 
   await updateBundledNativeModulesAsync(async bundledNativeModules => {
     if (moduleConfig.installableInManagedApps) {
-      const versionRange = `${semverPrefix}${version}`;
-
       bundledNativeModules[name] = versionRange;
       console.log(
         `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
@@ -704,18 +712,19 @@ async function action(options: ActionOptions) {
   console.log(
     `\nUpdating ${chalk.green(name)} in workspace projects...`
   );
- 
-  let needToRunYarn = false;
-  for (const path of await getPackageJsonPathsAsync()) {
-    const wasUpdated = await updateDependencyAsync(path, name, `${semverPrefix}${version}`);
-    needToRunYarn = needToRunYarn || wasUpdated;
-  }
+  const homeWasUpdated = await updateHomeDependencies(name, versionRange);
+  const workspaceWasUpdated = await updateWorkspaceDependencies(name, versionRange);
 
-  if (needToRunYarn) {
+  // We updated dependencies so we need to run yarn.
+  if (homeWasUpdated || workspaceWasUpdated) {
     console.log(`\nRunning \`${chalk.cyan(`yarn`)}\`...`);
     await spawnAsync('yarn', [], {
       cwd: Directories.getExpoRepositoryRootDir(),
     });
+  }
+
+  if (homeWasUpdated) {
+    console.log(`\nHome dependencies were updated. You need to publish the new dev home version.`);
   }
 
   console.log(
