@@ -57,7 +57,7 @@
       android:name=".LauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
-      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
+      android:theme="@android:style/Theme.Translucent.NoTitleBar">
       <!-- START LAUNCHER INTENT FILTERS -->
       <intent-filter>
         <data android:scheme="exp"/>
@@ -119,7 +119,7 @@
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light">
+      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
       <!-- START HOME INTENT FILTERS -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
