@@ -13,7 +13,7 @@ This is an API that works both on Android and iOS and can show static alerts. To
 
 | iOS | Android |
 | --- | --- |
-| ![iOS Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif) | ![Android Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif) |
+| ![iOS Alert Example](https://reactnative.dev/docs/assets/Alert/exampleios.gif) | ![Android Alert Example](https://reactnative.dev/docs/assets/Alert/exampleandroid.gif) |
 
 ## iOS
 

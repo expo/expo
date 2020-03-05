@@ -23,7 +23,7 @@ export default class DisplayAnImage extends Component {
         />
         <Image
           style={{ width: 50, height: 50 }}
-          source={{ uri: 'https://facebook.github.io/react-native/img/tiny_logo.png' }}
+          source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
         />
         <Image
           style={{ width: 66, height: 58 }}
