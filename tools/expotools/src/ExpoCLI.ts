@@ -2,17 +2,18 @@ import path from 'path';
 import process from 'process';
 import spawnAsync from '@expo/spawn-async';
 
+import { EXPO_DIR } from './Constants';
+
 type Options = {
   cwd?: string;
   root?: string;
-  stdio?: string;
-  useUnversioned: boolean;
+  stdio?: 'inherit' | 'pipe' | 'ignore';
 };
 
 export async function runExpoCliAsync(
   command: string,
   args: string[] = [],
-  options: Options = { useUnversioned: true }
+  options: Options = {}
 ): Promise<void> {
   let configArgs = options.root ? ['--config', path.resolve(options.root, 'app.json')] : [];
 
@@ -21,7 +22,7 @@ export async function runExpoCliAsync(
   process.on('SIGTERM', () => {});
 
   await spawnAsync('expo', [command, ...args, ...configArgs], {
-    cwd: options.cwd || options.root || process.cwd(),
+    cwd: options.cwd || options.root || EXPO_DIR,
     stdio: options.stdio || 'inherit',
     env: {
       ...process.env,

@@ -117,7 +117,6 @@ async function publishAppAsync(slug: string, url: string): Promise<void> {
   console.log(`Publishing ${chalk.green(slug)}...`);
 
   await XDL.publishProjectWithExpoCliAsync(EXPO_HOME_PATH, {
-    useUnversioned: false,
     userpass: {
       username: EXPO_HOME_DEV_ACCOUNT_USERNAME!,
       password: EXPO_HOME_DEV_ACCOUNT_PASSWORD!,
@@ -173,13 +172,12 @@ async function action(options: ActionOptions): Promise<void> {
   // Save the modified `appJson` to the file so it'll be used as a manifest.
   await appJsonFile.writeAsync(appJson);
 
-  const cliUsername = cliStateBackup && cliStateBackup.auth && cliStateBackup.auth.username;
+  const cliUsername = cliStateBackup?.auth?.username;
 
   if (cliUsername) {
     console.log(`Logging out from ${chalk.green(cliUsername)} account...`);
     await ExpoCLI.runExpoCliAsync('logout', [], {
-      cwd: Directories.getExpoRepositoryRootDir(),
-      stdio: 'pipe',
+      stdio: 'ignore',
     });
   }
 
