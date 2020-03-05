@@ -56,8 +56,7 @@ static dispatch_once_t directEventBlockImplementationOnceToken;
       const UMPropInfo *propInfo = ((const UMPropInfo *(*)(id, SEL))imp)(viewManagerClass, propInfoSelector);
       
       // Animated props contain extra information on how the prop can be set directly on the view.
-      // When a Animated.Value is updated using `useNativeDriver`, it will cause the prop to be set directly
-      // on the view, bypassing the view-manager.
+      // These props follow an optimized code-path that bypasses the view-manager.
       if (propInfo->viewPropType && propInfo->viewPropPath) {
         NSString *viewPropType = [NSString stringWithUTF8String:propInfo->viewPropType];
         NSString *viewPropPath = [NSString stringWithUTF8String:propInfo->viewPropPath];

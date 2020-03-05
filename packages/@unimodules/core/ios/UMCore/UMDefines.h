@@ -27,9 +27,11 @@
   UM_VIEW_PROPERTY_INFO(external_name, type, nil, nil) \
   - (void)UM_CONCAT(UM_PROPSETTERS_PREFIX, external_name):(type)value view:(viewClass *)view
 
-#define UM_VIEW_PROPERTY_ANIMATED(external_name, type, viewClass, viewPropPath, viewPropType) \
-  UM_VIEW_PROPERTY_INFO(external_name, type, #viewPropPath, #viewPropType) \
-  - (void)UM_CONCAT(UM_PROPSETTERS_PREFIX, external_name):(type)value view:(viewClass *)view
+#define UM_VIEW_PROPERTY_ANIMATED(external_name, type, viewClass) \
+  UM_VIEW_PROPERTY_INFO(external_name, type, #external_name, #type) \
+  - (void)UM_CONCAT(UM_PROPSETTERS_PREFIX, external_name):(type)value view:(viewClass *)view { \
+    view.external_name = value; \
+  }
 
 #define _UM_DEFINE_CUSTOM_LOAD(_custom_load_code) \
   extern void UMRegisterModule(Class); \
