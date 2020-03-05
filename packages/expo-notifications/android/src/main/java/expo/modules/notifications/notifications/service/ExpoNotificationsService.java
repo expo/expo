@@ -59,6 +59,16 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   }
 
+  @Override
+  protected void onNotificationDismiss(String identifier) {
+    NotificationManagerCompat.from(this).cancel(getNotificationTag(identifier, null), getNotificationId(identifier, null));
+  }
+
+  @Override
+  protected void onDismissAllNotifications() {
+    NotificationManagerCompat.from(this).cancelAll();
+  }
+
   /**
    * Callback called when the service is supposed to present a notification.
    *

@@ -44,6 +44,8 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String RECEIVER_KEY = "receiver";
 
   private static final String PRESENT_TYPE = "present";
+  private static final String DISMISS_TYPE = "dismiss";
+  private static final String DISMISS_ALL_TYPE = "dismissAll";
   private static final String RECEIVE_TYPE = "receive";
   private static final String DROPPED_TYPE = "dropped";
 
@@ -101,6 +103,32 @@ public abstract class BaseNotificationsService extends JobIntentService {
   }
 
   /**
+   * A helper function for dispatching a "dismiss notification" command to the service.
+   *
+   * @param context    Context where to start the service.
+   * @param identifier Notification identifier
+   */
+  public static void enqueueDismiss(Context context, @NonNull String identifier, @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION, getUriBuilderForIdentifier(identifier).appendPath("dismiss").build());
+    intent.putExtra(EVENT_TYPE_KEY, DISMISS_TYPE);
+    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifier);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * A helper function for dispatching a "dismiss all notifications" command to the service.
+   *
+   * @param context Context where to start the service.
+   */
+  public static void enqueueDismissAll(Context context, @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
    * A helper function for dispatching a "notifications dropped" command to the service.
    *
    * @param context Context where to start the service.
@@ -151,6 +179,10 @@ public abstract class BaseNotificationsService extends JobIntentService {
             new JSONObject(intent.getStringExtra(NOTIFICATION_REQUEST_KEY)),
             intent.<NotificationTrigger>getParcelableExtra(NOTIFICATION_TRIGGER_KEY)
         );
+      } else if (DISMISS_TYPE.equals(eventType)) {
+        onNotificationDismiss(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
+      } else if (DISMISS_ALL_TYPE.equals(eventType)) {
+        onDismissAllNotifications();
       } else if (DROPPED_TYPE.equals(eventType)) {
         onNotificationsDropped();
       } else {
@@ -191,6 +223,20 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param trigger    Notification trigger
    */
   protected void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+  }
+
+  /**
+   * Callback called when the service is supposed to dismiss a notification.
+   *
+   * @param identifier Notification identifier
+   */
+  protected void onNotificationDismiss(String identifier) {
+  }
+
+  /**
+   * Callback called when the service is supposed to dismiss all notifications.
+   */
+  protected void onDismissAllNotifications() {
   }
 
   /**
