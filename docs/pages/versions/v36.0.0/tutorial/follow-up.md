@@ -30,7 +30,7 @@ Read about [Modern JavaScript on React Native Express](http://www.reactnativeexp
 
 ## View and Text styles
 
-Read through the [View API reference](https://facebook.github.io/react-native/docs/view) and [Text API reference](https://facebook.github.io/react-native/docs/text) in the React Native documentation.
+Read through the [View API reference](https://reactnative.dev/docs/view) and [Text API reference](https://reactnative.dev/docs/text) in the React Native documentation.
 
 ### How to verify your learning
 
@@ -38,7 +38,7 @@ Read through the [View API reference](https://facebook.github.io/react-native/do
 
 ## Flexbox
 
-This is the way you position and size the components on your screen. Learn more about it in [Height & Width](https://facebook.github.io/react-native/docs/height-and-width) and [Layout with Flexbox](https://facebook.github.io/react-native/docs/flexbox) in the React Native documentation.
+This is the way you position and size the components on your screen. Learn more about it in [Height & Width](https://reactnative.dev/docs/height-and-width) and [Layout with Flexbox](https://reactnative.dev/docs/flexbox) in the React Native documentation.
 
 ### How to verify your learning
 

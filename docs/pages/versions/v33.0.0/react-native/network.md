@@ -43,7 +43,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
 
 ```javascript
 function getMoviesFromApiAsync() {
-  return fetch('https://facebook.github.io/react-native/movies.json')
+  return fetch('https://reactnative.dev/movies.json')
     .then(response => response.json())
     .then(responseJson => {
       return responseJson.movies;
@@ -59,7 +59,7 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
 ```javascript
 async function getMoviesFromApi() {
   try {
-    let response = await fetch('https://facebook.github.io/react-native/movies.json');
+    let response = await fetch('https://reactnative.dev/movies.json');
     let responseJson = await response.json();
     return responseJson.movies;
   } catch (error) {
@@ -81,7 +81,7 @@ export default class FetchExample extends React.Component {
   }
 
   componentDidMount() {
-    return fetch('https://facebook.github.io/react-native/movies.json')
+    return fetch('https://reactnative.dev/movies.json')
       .then(response => response.json())
       .then(responseJson => {
         this.setState(
@@ -123,7 +123,7 @@ export default class FetchExample extends React.Component {
 }
 ```
 
-> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to [add an App Transport Security exception](https://facebook.github.io/react-native/docs/integration-with-existing-apps/#test-your-integration). If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](https://facebook.github.io/react-native/docs/integration-with-existing-apps/#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
+> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to [add an App Transport Security exception](https://reactnative.dev/docs/integration-with-existing-apps/#test-your-integration). If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](https://reactnative.dev/docs/integration-with-existing-apps/#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
 
 ### Using Other Networking Libraries
 

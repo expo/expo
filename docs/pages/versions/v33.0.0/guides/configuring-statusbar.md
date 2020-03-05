@@ -47,7 +47,7 @@ Example:
 }
 ```
 
-### Use the [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html)
+### Use the [`StatusBar` API from React Native](https://reactnative.dev/docs/statusbar.html)
 
 The `StatusBar` API allows you to dynamically control the appearance of the status bar. You can use it as component, or as an API. Check the documentation on the React Native website for examples.
 

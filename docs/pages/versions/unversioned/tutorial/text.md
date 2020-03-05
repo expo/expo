@@ -59,7 +59,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      /* @info Set the style property with color and fontSize. There are many other styles available! Look at them in the <a href="https://facebook.github.io/react-native/docs/text#style" target="_blank">React Native Text API reference</a> sometime after you're done with this tutorial. */<Text style={{color: '#888', fontSize: 18}}> /* @end */
+      /* @info Set the style property with color and fontSize. There are many other styles available! Look at them in the <a href="https://reactnative.dev/docs/text#style" target="_blank">React Native Text API reference</a> sometime after you're done with this tutorial. */<Text style={{color: '#888', fontSize: 18}}> /* @end */
 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
 
 <br/>
 
-> 🎨 **Help, I'm not familiar with any color by the name "#888"!** `#888` is equal parts red, green, and blue, which creates a nice readable grey. React Native uses the same color format as the web, so it supports hex triplets (this is what `#888` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, and, uh, `peru` and `papayawhip`. [Read more about colors in React Native here](https://facebook.github.io/react-native/docs/colors).
+> 🎨 **Help, I'm not familiar with any color by the name "#888"!** `#888` is equal parts red, green, and blue, which creates a nice readable grey. React Native uses the same color format as the web, so it supports hex triplets (this is what `#888` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, and, uh, `peru` and `papayawhip`. [Read more about colors in React Native here](https://reactnative.dev/docs/colors).
 
-Good, that looks better! If you want to learn more about the other styles available on the Text component, [you can read more here](https://facebook.github.io/react-native/docs/text#style).
+Good, that looks better! If you want to learn more about the other styles available on the Text component, [you can read more here](https://reactnative.dev/docs/text#style).
 
 Next we're going to look at adding the logo, [let's continue on to looking at the Image component for that](../../tutorial/image/).

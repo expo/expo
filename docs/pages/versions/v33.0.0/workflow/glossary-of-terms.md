@@ -83,7 +83,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native
 
-"React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components." [Read more](https://facebook.github.io/react-native/).
+"React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components." [Read more](https://reactnative.dev/).
 
 ### Shell app
 

@@ -33,7 +33,7 @@ Sets the main component for Expo to use for your app.
 
 No return value.
 
-> **Note:** `registerRootComponent` is roughly equivalent to React Native's [AppRegistry.registerComponent](https://facebook.github.io/react-native/docs/appregistry.html), with some additional hooks to provide Expo specific functionality.
+> **Note:** `registerRootComponent` is roughly equivalent to React Native's [AppRegistry.registerComponent](https://reactnative.dev/docs/appregistry.html), with some additional hooks to provide Expo specific functionality.
 
 ## Common questions
 
