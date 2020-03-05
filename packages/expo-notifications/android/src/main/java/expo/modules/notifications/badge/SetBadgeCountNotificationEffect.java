@@ -1,17 +1,30 @@
-package expo.modules.notifications.notifications.presentation.effects;
+package expo.modules.notifications.badge;
 
 import android.app.Notification;
 import android.content.Context;
+import android.util.Log;
+
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.errors.CodedRuntimeException;
 
 import androidx.annotation.Nullable;
+import expo.modules.notifications.badge.interfaces.BadgeManager;
 import expo.modules.notifications.notifications.presentation.builders.BadgeSettingNotificationBuilder;
-import me.leolin.shortcutbadger.ShortcutBadger;
+import expo.modules.notifications.notifications.presentation.effects.BaseNotificationEffect;
 
 public class SetBadgeCountNotificationEffect extends BaseNotificationEffect {
   private static final String EXTRAS_BADGE_KEY = BadgeSettingNotificationBuilder.EXTRAS_BADGE_KEY;
 
+  private BadgeManager mBadgeManager;
+
   public SetBadgeCountNotificationEffect(Context context) {
     super(context);
+  }
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    super.onCreate(moduleRegistry);
+    mBadgeManager = moduleRegistry.getSingletonModule("BadgeManager", BadgeManager.class);
   }
 
   @Override
@@ -28,10 +41,16 @@ public class SetBadgeCountNotificationEffect extends BaseNotificationEffect {
   }
 
   private boolean applyBadgeFromNotification(Notification notification) {
-    if (notification.extras.get(EXTRAS_BADGE_KEY) != null) {
-      ShortcutBadger.applyCount(getContext().getApplicationContext(), notification.extras.getInt(EXTRAS_BADGE_KEY));
-      return true;
+    try {
+      if (notification.extras.get(EXTRAS_BADGE_KEY) != null && mBadgeManager != null) {
+        mBadgeManager.setBadgeCount(notification.extras.getInt(EXTRAS_BADGE_KEY));
+        return true;
+      }
+    } catch (CodedRuntimeException e) {
+      // We can't do anything but log the error and return false.
+      Log.e(e.getCode(), e.getMessage());
     }
+
     return false;
   }
 }

@@ -9,6 +9,8 @@ import org.unimodules.core.interfaces.SingletonModule;
 import java.util.Arrays;
 import java.util.List;
 
+import expo.modules.notifications.badge.BadgeModule;
+import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
@@ -24,6 +26,7 @@ public class NotificationsPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.asList(
+        new BadgeModule(context),
         new PushTokenModule(context),
         new NotificationsEmitter(context),
         new NotificationsHandler(context),
@@ -39,7 +42,8 @@ public class NotificationsPackage extends BasePackage {
   public List<SingletonModule> createSingletonModules(Context context) {
     return Arrays.asList(
         new PushTokenManager(),
-        new NotificationManager()
+        new NotificationManager(),
+        new ExpoBadgeManager(context)
     );
   }
 }
