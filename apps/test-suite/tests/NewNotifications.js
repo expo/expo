@@ -2,8 +2,9 @@
 
 import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system';
+import * as Notifications from 'expo-notifications';
 
 import * as TestUtils from '../TestUtils';
 import { waitFor } from './helpers';
@@ -276,6 +277,153 @@ export async function test(t) {
         });
       });
     });
+
+    t.describe('Notification channels', () => {
+      // Implementation detail!
+      const fallbackChannelId = 'expo_notifications_fallback_notification_channel';
+      const fallbackChannelName = 'Miscellaneous';
+      const testChannelId = 'test-channel-id';
+      const testChannel = {
+        name: 'Test channel',
+      };
+
+      t.describe('getNotificationChannelAsync()', () => {
+        t.it('returns null if there is no such channel', async () => {
+          const channel = await Notifications.getNotificationChannelAsync(
+            'non-existent-channel-id'
+          );
+          t.expect(channel).toBe(null);
+        });
+
+        // Test push notifications sent without a channel ID should create a fallback channel
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('returns an object if there is such channel', async () => {
+            const channel = await Notifications.getNotificationChannelAsync(fallbackChannelId);
+            t.expect(channel).toBeDefined();
+          });
+        }
+      });
+
+      t.describe('getNotificationChannelsAsync()', () => {
+        t.it('returns an array', async () => {
+          const channels = await Notifications.getNotificationChannelsAsync();
+          t.expect(channels).toEqual(t.jasmine.any(Array));
+        });
+
+        // Test push notifications sent without a channel ID should create a fallback channel
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('contains the fallback channel', async () => {
+            const channels = await Notifications.getNotificationChannelsAsync();
+            t.expect(channels).toContain(
+              t.jasmine.objectContaining({
+                // Implementation detail!
+                id: fallbackChannelId,
+                name: fallbackChannelName,
+              })
+            );
+          });
+        }
+      });
+
+      t.describe('setNotificationChannelAsync()', () => {
+        t.afterEach(async () => {
+          await Notifications.deleteNotificationChannelAsync(testChannelId);
+        });
+
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('returns the modified channel', async () => {
+            const channel = await Notifications.setNotificationChannelAsync(
+              testChannelId,
+              testChannel
+            );
+            t.expect(channel).toEqual(
+              t.jasmine.objectContaining({ ...testChannel, id: testChannelId })
+            );
+          });
+
+          t.it('creates a channel', async () => {
+            const preChannels = await Notifications.getNotificationChannelsAsync();
+            const channelSpec = t.jasmine.objectContaining({ ...testChannel, id: testChannelId });
+            t.expect(preChannels).not.toContain(channelSpec);
+            await Notifications.setNotificationChannelAsync(testChannelId, testChannel);
+            const postChannels = await Notifications.getNotificationChannelsAsync();
+            t.expect(postChannels).toContain(channelSpec);
+            t.expect(postChannels.length).toBeGreaterThan(preChannels.length);
+          });
+
+          t.it('sets custom properties', async () => {
+            const spec = {
+              name: 'Name',
+              importance: Notifications.AndroidImportance.MIN,
+              bypassDnd: true,
+              description: 'Test channel',
+              lightColor: '#FF231F7C',
+              lockscreenVisibility: Notifications.AndroidNotificationVisibility.SECRET,
+              showBadge: false,
+              soundUri: null,
+              audioAttributes: {
+                usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
+                contentType: Notifications.AndroidAudioContentType.SONIFICATION,
+                flags: {
+                  enforceAudibility: true,
+                  requestHardwareAudioVideoSynchronization: true,
+                },
+              },
+              vibrationPattern: [500, 500],
+              enableLights: true,
+              enableVibrate: true,
+            };
+            const channel = await Notifications.setNotificationChannelAsync(testChannelId, spec);
+            t.expect(channel).toEqual(t.jasmine.objectContaining({ ...spec, id: testChannelId }));
+          });
+
+          t.it('updates a channel', async () => {
+            await Notifications.setNotificationChannelAsync(testChannelId, {
+              name: 'Name before change',
+            });
+            await Notifications.setNotificationChannelAsync(testChannelId, {
+              name: 'Name after change',
+            });
+            const channels = await Notifications.getNotificationChannelsAsync();
+            t.expect(channels).toContain(
+              t.jasmine.objectContaining({
+                name: 'Name after change',
+                id: testChannelId,
+              })
+            );
+            t.expect(channels).not.toContain(
+              t.jasmine.objectContaining({
+                name: 'Name before change',
+                id: testChannelId,
+              })
+            );
+          });
+        } else {
+          t.it("doesn't throw an error", async () => {
+            await Notifications.setNotificationChannelAsync(testChannelId, testChannel);
+          });
+        }
+      });
+
+      t.describe('deleteNotificationChannelAsync()', () => {
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('deletes a channel', async () => {
+            const preChannels = await Notifications.getNotificationChannelsAsync();
+            const channelSpec = t.jasmine.objectContaining({ ...testChannel, id: testChannelId });
+            t.expect(preChannels).not.toContain(channelSpec);
+            await Notifications.setNotificationChannelAsync(testChannelId, testChannel);
+            const postChannels = await Notifications.getNotificationChannelsAsync();
+            await Notifications.deleteNotificationChannelAsync(testChannelId);
+            t.expect(postChannels).toContain(channelSpec);
+            t.expect(postChannels.length).toBeGreaterThan(preChannels.length);
+          });
+        } else {
+          t.it("doesn't throw an error", async () => {
+            await Notifications.deleteNotificationChannelAsync(testChannelId, testChannel);
+          });
+        }
+      });
+    });
   });
 }
 
@@ -293,6 +441,9 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify([
+      // No specific channel ID forces the package to create a fallback channel
+      // to present the notification on newer Android devices. One of the tests
+      // ensures that the fallback channel is created.
       {
         to: expoPushToken,
         title: 'Hello from Expo server!',
