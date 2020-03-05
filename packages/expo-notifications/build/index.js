@@ -9,6 +9,8 @@ export { default as getNotificationChannelGroupsAsync } from './getNotificationC
 export { default as getNotificationChannelGroupAsync } from './getNotificationChannelGroupAsync';
 export { default as setNotificationChannelGroupAsync } from './setNotificationChannelGroupAsync';
 export { default as deleteNotificationChannelGroupAsync } from './deleteNotificationChannelGroupAsync';
+export { default as getBadgeCountAsync } from './getBadgeCountAsync';
+export { default as setBadgeCountAsync } from './setBadgeCountAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';

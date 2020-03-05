@@ -4483,6 +4483,11 @@ badgin@^1.1.2:
   resolved "https://registry.yarnpkg.com/badgin/-/badgin-1.1.2.tgz#efd62c378338c85c208742d9e5b9d89c5fe658ae"
   integrity sha512-6B/t0+R9jJGA3dYHKC1kMlYH0sIuJoR+rzCBqmGYO2VziNWYgVYRGr2n3oAmoiIdHxbYWDOGLYUl61+x1ownOA==
 
+badgin@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/badgin/-/badgin-1.1.5.tgz#9038c5f3515226fadb39c1170fd749492820a1e8"
+  integrity sha512-pQw3iDLDCSy/hZ0VJUuwaqtvVNhx8uMHLwXIeWhRRO8ftMUQjGsQdLsitpvu73q9fGaPGcXI1fWb4f5/Vbf6/Q==
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
