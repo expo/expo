@@ -377,6 +377,24 @@ export async function test(t) {
             t.expect(channel).toEqual(t.jasmine.objectContaining({ ...spec, id: testChannelId }));
           });
 
+          t.it('assigns a channel to a group', async () => {
+            const groupId = 'test-group-id';
+            try {
+              await Notifications.setNotificationChannelGroupAsync(groupId, { name: 'Test group' });
+              const channel = await Notifications.setNotificationChannelAsync(testChannelId, {
+                ...testChannel,
+                groupId,
+              });
+              t.expect(channel.groupId).toBe(groupId);
+              const group = await Notifications.getNotificationChannelGroupAsync(groupId);
+              t.expect(group.channels).toContain(t.jasmine.objectContaining(testChannel));
+            } catch (e) {
+              await Notifications.deleteNotificationChannelAsync(testChannelId);
+              await Notifications.deleteNotificationChannelGroupAsync(groupId);
+              throw e;
+            }
+          });
+
           t.it('updates a channel', async () => {
             await Notifications.setNotificationChannelAsync(testChannelId, {
               name: 'Name before change',
@@ -420,6 +438,139 @@ export async function test(t) {
         } else {
           t.it("doesn't throw an error", async () => {
             await Notifications.deleteNotificationChannelAsync(testChannelId, testChannel);
+          });
+        }
+      });
+    });
+
+    t.describe('Notification channel groups', () => {
+      const testChannelGroupId = 'test-channel-group-id';
+      const testChannelGroup = { name: 'Test channel group' };
+
+      t.describe('getNotificationChannelGroupAsync()', () => {
+        t.it('returns null if there is no such channel group', async () => {
+          const channelGroup = await Notifications.getNotificationChannelGroupAsync(
+            'non-existent-channel-group-id'
+          );
+          t.expect(channelGroup).toBe(null);
+        });
+
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('returns an object if there is such channel group', async () => {
+            await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              testChannelGroup
+            );
+            const channel = await Notifications.getNotificationChannelGroupAsync(
+              testChannelGroupId
+            );
+            await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
+            t.expect(channel).toBeDefined();
+          });
+        }
+      });
+
+      t.describe('getNotificationChannelGroupsAsync()', () => {
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 28) {
+          t.it('returns an array', async () => {
+            const channels = await Notifications.getNotificationChannelGroupsAsync();
+            t.expect(channels).toEqual(t.jasmine.any(Array));
+          });
+
+          t.it('returns existing channel groups', async () => {
+            const channel = await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              testChannelGroup
+            );
+            const channels = await Notifications.getNotificationChannelGroupsAsync();
+            await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
+            t.expect(channels).toContain(channel);
+          });
+        } else {
+          t.it("doesn't throw an error", async () => {
+            await Notifications.getNotificationChannelGroupsAsync();
+          });
+        }
+      });
+
+      t.describe('setNotificationChannelGroupsAsync()', () => {
+        t.afterEach(async () => {
+          await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
+        });
+
+        if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
+          t.it('returns the modified channel group', async () => {
+            const group = await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              testChannelGroup
+            );
+            t.expect(group).toEqual(
+              t.jasmine.objectContaining({ ...testChannelGroup, id: testChannelGroupId })
+            );
+          });
+
+          t.it('creates a channel group', async () => {
+            const preChannelGroups = await Notifications.getNotificationChannelGroupsAsync();
+            const channelGroupSpec = t.jasmine.objectContaining({
+              ...testChannelGroup,
+              id: testChannelGroupId,
+            });
+            t.expect(preChannelGroups).not.toContain(channelGroupSpec);
+            await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              testChannelGroup
+            );
+            const postChannelGroups = await Notifications.getNotificationChannelGroupsAsync();
+            t.expect(postChannelGroups).toContain(channelGroupSpec);
+            t.expect(postChannelGroups.length).toBeGreaterThan(preChannelGroups.length);
+          });
+
+          t.it('sets custom properties', async () => {
+            const createSpec = {
+              name: 'Test channel group',
+              description: 'Used by `test-suite`',
+            };
+            const channelGroup = await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              createSpec
+            );
+            const groupSpec = { ...createSpec, id: testChannelGroupId };
+            if (Device.platformApiLevel < 28) {
+              // Groups descriptions is only supported on API 28+
+              delete groupSpec.description;
+            }
+            t.expect(channelGroup).toEqual(
+              t.jasmine.objectContaining({ ...groupSpec, id: testChannelGroupId })
+            );
+          });
+
+          t.it('updates a channel group', async () => {
+            await Notifications.setNotificationChannelGroupAsync(testChannelGroupId, {
+              name: 'Name before change',
+            });
+            await Notifications.setNotificationChannelGroupAsync(testChannelGroupId, {
+              name: 'Name after change',
+            });
+            const channelGroups = await Notifications.getNotificationChannelGroupsAsync();
+            t.expect(channelGroups).toContain(
+              t.jasmine.objectContaining({
+                name: 'Name after change',
+                id: testChannelGroupId,
+              })
+            );
+            t.expect(channelGroups).not.toContain(
+              t.jasmine.objectContaining({
+                name: 'Name before change',
+                id: testChannelGroupId,
+              })
+            );
+          });
+        } else {
+          t.it("doesn't throw an error", async () => {
+            await Notifications.setNotificationChannelGroupAsync(
+              testChannelGroupId,
+              testChannelGroup
+            );
           });
         }
       });

@@ -5,6 +5,10 @@ export { default as getNotificationChannelsAsync } from './getNotificationChanne
 export { default as getNotificationChannelAsync } from './getNotificationChannelAsync';
 export { default as setNotificationChannelAsync } from './setNotificationChannelAsync';
 export { default as deleteNotificationChannelAsync } from './deleteNotificationChannelAsync';
+export { default as getNotificationChannelGroupsAsync } from './getNotificationChannelGroupsAsync';
+export { default as getNotificationChannelGroupAsync } from './getNotificationChannelGroupAsync';
+export { default as setNotificationChannelGroupAsync } from './setNotificationChannelGroupAsync';
+export { default as deleteNotificationChannelGroupAsync } from './deleteNotificationChannelGroupAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
