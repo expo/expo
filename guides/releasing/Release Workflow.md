@@ -217,6 +217,7 @@
   - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
   - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it.
   - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).
+  - Once the processing is done, go to TestFlight section in App Store Connect, click on the new build and then click `Provide Export Compliance Information` button and select **"No"** in the dialog - we generally have not made changes to encryption.
   - Publish that build to TestFlight and send invitations to other testers. You should also do some smoke tests, for example against `native-component-list` published under `applereview` account.
 
 - **Android**:
@@ -254,7 +255,6 @@
 - **iOS**:
   - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
   - **Click Submit to send the new binary to Apple**. When prompted, give the following answers:
-    - “No”, we generally have not made changes to encryption (export compliance).
     - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
     - “Serve advertisements within the app” should not be checked.
 - **Android**:
