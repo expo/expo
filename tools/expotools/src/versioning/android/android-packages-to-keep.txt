@@ -1,3 +1,4 @@
 expo.modules.gl.cpp
 org.unimodules.interfaces.taskManager
+org.unimodules.core.interfaces.Consumer
 org.unimodules.core.interfaces.SingletonModule
