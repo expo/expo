@@ -4794,7 +4794,7 @@ CACHE_KEYS:
   ABI37_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0EXAdsAdMob: 76779b0ab155418a7c2e797651b0b64f
-    CHECKSUM: 29118f9294dee844c1a9672991d92adcbff99836
+    CHECKSUM: ff3bea280dfcbb9f77059cce42a269b7935e1ccf
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.m"
@@ -7122,7 +7122,7 @@ CACHE_KEYS:
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
-    CHECKSUM: 3e5722fab02ba964b13b2fc8336e4a466adf7bc3
+    CHECKSUM: 131803d2e78cc8e901c2afa72fb219dbc3e097bb
     FILES:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.m"
@@ -8090,10 +8090,10 @@ CACHE_KEYS:
   Google-Mobile-Ads-SDK:
     BUILD_SETTINGS_CHECKSUM:
       Google-Mobile-Ads-SDK: 539b9663c2ef324f98d2a11315beaf88
-    CHECKSUM: fac081606dbd438d8db57198b83ba8b5f875a601
+    CHECKSUM: f206aff290f26fde422495c6cd187e50efbed57e
     PROJECT_NAME: Google-Mobile-Ads-SDK
     SPECS:
-      - Google-Mobile-Ads-SDK (7.53.1)
+      - Google-Mobile-Ads-SDK (7.55.1)
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAPIClientForREST: 7bc2e43d860f0a8b8d74967265f714d1
