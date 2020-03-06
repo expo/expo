@@ -716,7 +716,7 @@ PODS:
     - Google-Mobile-Ads-SDK
   - ABI36_0_0EXAdsFacebook (7.0.0):
     - ABI36_0_0UMCore
-    - FBAudienceNetwork (= 5.5.0)
+    - FBAudienceNetwork (= 5.7.1)
   - ABI36_0_0EXAmplitude (7.0.0):
     - ABI36_0_0UMConstantsInterface
     - ABI36_0_0UMCore
@@ -1207,10 +1207,10 @@ PODS:
     - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (8.0.0):
-    - Google-Mobile-Ads-SDK (= 7.53.1)
+    - Google-Mobile-Ads-SDK (= 7.55.1)
     - UMCore
   - EXAdsFacebook (8.0.0):
-    - FBAudienceNetwork (= 5.5.0)
+    - FBAudienceNetwork (= 5.7.1)
     - UMCore
   - EXAmplitude (8.0.0):
     - Amplitude-iOS (~> 4.7.1)
@@ -1376,8 +1376,8 @@ PODS:
   - EXWebBrowser (8.0.0):
     - UMCore
   - Fabric (1.10.2)
-  - FBAudienceNetwork (5.5.0):
-    - FBSDKCoreKit/Basics (>= 5.2.1)
+  - FBAudienceNetwork (5.7.1):
+    - FBSDKCoreKit/Basics (>= 5.6.0)
   - FBLazyVector (0.61.4)
   - FBReactNativeSpec (0.61.4):
     - Folly (= 2018.10.22.00)
@@ -1478,7 +1478,7 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
-  - Google-Mobile-Ads-SDK (7.53.1):
+  - Google-Mobile-Ads-SDK (7.55.1):
     - GoogleAppMeasurement (~> 6.0)
   - GoogleAPIClientForREST/Core (1.3.10):
     - GTMSessionFetcher (>= 1.1.7)
@@ -3400,7 +3400,7 @@ SPEC CHECKSUMS:
   ABI35_0_0UMSensorsInterface: 265d8bca372b5055f5e7ae4953acfb625d811d18
   ABI35_0_0UMTaskManagerInterface: 5745765bc2634ccc1d7aef8ee5752757109521f6
   ABI36_0_0EXAdsAdMob: 13af16f02700390202cce5c88eb0d7d59347dc76
-  ABI36_0_0EXAdsFacebook: 2c614e29238d4443dd45c0364f451809e6245cea
+  ABI36_0_0EXAdsFacebook: 363afd305489fa0651347342604158aae274266b
   ABI36_0_0EXAmplitude: 28b99598484197ea07d9706ba4c10bf5db6bff1e
   ABI36_0_0EXAppAuth: 1a8416ee32dda2ef4172d6529df61ab071e5ab52
   ABI36_0_0EXAppleAuthentication: 41912b454af57052eda1c529e00a8a6421166faa
@@ -3499,8 +3499,8 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  EXAdsAdMob: 88919772255868d2fd97380fce3e6d0a90c42365
-  EXAdsFacebook: fa0f435b9d4457e52ca8e496a7a9f16fbcecc36c
+  EXAdsAdMob: 0004fc8687730fc2c8e54ec9d11cb382d1f9b044
+  EXAdsFacebook: af4b9769c728865312eecdf882ae280370719857
   EXAmplitude: 4ec33f8a9c1ba37797449870b4da40dbbbfbab8d
   EXAppAuth: bd859a5717613e72cc3cfbc2128e04b4f0e0ff5a
   EXAppleAuthentication: 7d20ab4397f595d22c2fe61ca6abfca16a346a72
@@ -3555,7 +3555,7 @@ SPEC CHECKSUMS:
   EXVideoThumbnails: 6582acb7f78e11efdeae2895cd4d5574eec1cbcb
   EXWebBrowser: db32607359fb7b55b7b7b91df32dd3d8355bb3b7
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
-  FBAudienceNetwork: 1ea26a004014ee6700dce1b7beb5e853887f498e
+  FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
   FBReactNativeSpec: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
@@ -3572,7 +3572,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
-  Google-Mobile-Ads-SDK: fac081606dbd438d8db57198b83ba8b5f875a601
+  Google-Mobile-Ads-SDK: f206aff290f26fde422495c6cd187e50efbed57e
   GoogleAPIClientForREST: 4acfffd77f1c3c8741b6be9eaed0e603278efbde
   GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
   GoogleDataTransport: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
