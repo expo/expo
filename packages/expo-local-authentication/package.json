@@ -41,6 +41,10 @@
     "@unimodules/core": "*",
     "unimodules-constants-interface": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
     "invariant": "^2.2.4"
   },
