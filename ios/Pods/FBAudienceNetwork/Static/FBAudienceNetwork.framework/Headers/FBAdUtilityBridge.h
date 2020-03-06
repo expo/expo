@@ -16,47 +16,25 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+/***
+ * This is a bridge file for Audience Network Unity SDK.
+ *
+ * Please refer to FBAdScreen.h for full documentation of the API.
+ *
+ * This file may be used to build your own Audience Network iOS SDK wrapper,
+ * but note that we don't support customisations of the Audience Network codebase.
+ *
+ ***/
 
-#import <FBAudienceNetwork/FBAdDefines.h>
+#import <FBAudienceNetwork/FBAdBridgeCommon.h>
 
-NS_ASSUME_NONNULL_BEGIN
+FB_EXTERN_C_BEGIN
 
-/// Represents the ad size.
-struct FBAdSize {
-    /// Internal size
-    CGSize size;
-};
+FB_EXPORT double FBAdUtilityBridgeGetDeviceWidth(void);
+FB_EXPORT double FBAdUtilityBridgeGetDeviceHeight(void);
+FB_EXPORT double FBAdUtilityBridgeGetWidth(void);
+FB_EXPORT double FBAdUtilityBridgeGetHeight(void);
 
-/// Represents the ad size.
-typedef struct FBAdSize FBAdSize;
+FB_EXPORT double FBAdUtilityBridgeConvertFromDeviceSize(double deviceSize);
 
-/**
-  DEPRECATED - Represents the fixed banner ad size - 320pt by 50pt.
- */
-FB_EXPORT FBAdSize const kFBAdSize320x50;
-
-/**
-  Represents the flexible banner ad size, where banner width depends on
- its container width, and banner height is fixed as 50pt.
- */
-FB_EXPORT FBAdSize const kFBAdSizeHeight50Banner;
-
-/**
-  Represents the flexible banner ad size, where banner width depends on
- its container width, and banner height is fixed as 90pt.
- */
-FB_EXPORT FBAdSize const kFBAdSizeHeight90Banner;
-
-/**
-  Represents the interstitial ad size.
- */
-FB_EXPORT FBAdSize const kFBAdSizeInterstitial;
-
-/**
-  Represents the flexible rectangle ad size, where width depends on
- its container width, and height is fixed as 250pt.
- */
-FB_EXPORT FBAdSize const kFBAdSizeHeight250Rectangle;
-
-NS_ASSUME_NONNULL_END
+FB_EXTERN_C_END

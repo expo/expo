@@ -2596,7 +2596,7 @@ CACHE_KEYS:
   ABI36_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0EXAdsFacebook: 3adddacf56f9fa99cb4d9ac81f2737d2
-    CHECKSUM: 2c614e29238d4443dd45c0364f451809e6245cea
+    CHECKSUM: 363afd305489fa0651347342604158aae274266b
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdIconViewManager.h"
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdIconViewManager.m"
@@ -4816,7 +4816,7 @@ CACHE_KEYS:
   ABI37_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0EXAdsFacebook: 57bf0f0607cca51c8c7696ccf3517d2d
-    CHECKSUM: 2b5d0da3cefa065d9f1d79d03985b809e5a5a599
+    CHECKSUM: 03663956df3e240105da0556957ad6bb57eef2c0
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsFacebook/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdIconViewManager.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsFacebook/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdIconViewManager.m"
@@ -7144,7 +7144,7 @@ CACHE_KEYS:
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsFacebook: 64173b3cb8e7fa2668fbaed42153e865
-    CHECKSUM: 26b241c83d1e0f80c52c1e3549581a9005194586
+    CHECKSUM: 3615ce0bf49b7dcabd53718fea9201224b489c43
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.m"
@@ -7954,10 +7954,10 @@ CACHE_KEYS:
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: a4ace8e29238a5d6827948993cc85524
-    CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
+    CHECKSUM: 33fc8c8c07c1cdbf5279784b73729c6410809daa
     PROJECT_NAME: FBAudienceNetwork
     SPECS:
-      - FBAudienceNetwork (5.5.0)
+      - FBAudienceNetwork (5.7.1)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector: 9aa2b0554ddaab9f6e72982d6af582cb
