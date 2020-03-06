@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,13 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
+import de.greenrobot.event.EventBus
 import host.exp.exponent.utils.ShakeDetector
 import host.exp.exponent.Constants
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
+import host.exp.exponent.experience.ReactNativeActivity
 import versioned.host.exp.exponent.ReactUnthemedRootView
 import java.util.*
 import javax.inject.Inject
@@ -47,6 +50,7 @@ class DevMenuManager {
 
   init {
     NativeModuleDepsProvider.getInstance().inject(DevMenuManager::class.java, this)
+    EventBus.getDefault().register(this)
   }
 
   //region publics
@@ -245,8 +249,37 @@ class DevMenuManager {
     }
   }
 
+  /**
+   * Receives events of type [ReactNativeActivity.ExperienceDoneLoadingEvent] once the experience finishes loading.
+   */
+  fun onEvent(event: ReactNativeActivity.ExperienceDoneLoadingEvent) {
+    (event.activity as? ExperienceActivity)?.let {
+      maybeShowWithOnboarding(it)
+    }
+  }
+
   //endregion publics
   //region internals
+
+  /**
+   * Says whether the dev menu should show onboarding view if this is the first time
+   * the user opens an experience, or he hasn't finished onboarding yet.
+   */
+  private fun shouldShowOnboarding(): Boolean {
+    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished()
+  }
+
+  /**
+   * Shows dev menu in given activity but only when the onboarding view should show up.
+   */
+  private fun maybeShowWithOnboarding(activity: ExperienceActivity) {
+    if (shouldShowOnboarding() && !isShownInActivity(activity)) {
+      // @tsapeta: We need a small delay to allow the experience to be fully rendered.
+      // Without the delay we were having some weird issues with style props being set on nonexistent shadow views.
+      // From the other side, it's good that we don't show it immediately so the user can see his app first.
+      Handler().postDelayed({ showInActivity(activity) }, 2000)
+    }
+  }
 
   /**
    * Starts [ShakeDetector] if it's not running yet.
