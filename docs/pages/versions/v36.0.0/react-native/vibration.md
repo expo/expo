@@ -15,6 +15,13 @@ In iOS, invoking `vibrate(duration)` will ignore the duration and vibrate for a 
 
 Repeatable vibration is also supported, the vibration will repeat with defined pattern until `cancel()` is called.
 
+
+Importing the `Vibration` library:
+
+```jsx
+import { Vibration } from 'react-native';
+```
+
 Example:
 
 ```jsx
