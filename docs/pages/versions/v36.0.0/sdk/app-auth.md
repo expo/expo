@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
-Many services that let you authenticate with them or login with them, like GitHub, Google, GitLab, etc., use the OAuth 2.0 protocol. It's the industry standard.
+Many services that let you authenticate with them or login with them, like GitHub, Google use the OAuth 2.0 protocol. It's the industry standard.
 
 If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
 
