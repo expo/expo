@@ -56,7 +56,7 @@
 ## 1.2. Update React Native
 
 **Why:** Each SDK version has its own version of React Native. If we're planning to update React Native version for the upcoming SDK then we need to update our fork of React Native and update `react-native-lab/react-native` submodule in this repo which is the source of truth for `react-native` version used throughout the repository.
-    
+
 **How:**
 
 - Go to `react-native-lab/react-native` submodule.
@@ -105,7 +105,7 @@
 | --------------------------------------------------------------------------- |
 | [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk) |
 
-**Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle. 
+**Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle.
 
 **How:**
 
@@ -115,11 +115,12 @@
   - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
 - **iOS**:
   - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
-  > This is not currently possible to test `standalone`/`ejected to ExpoKit` app in `expo` repository scope.
-  > One way is to:
-  > - copy `apps/native-components-list`/`test-suite` app outside repository scope and perform `eject to ExpoKit`,
-  > - use ExpoKit commit hash in Podfile,
-  > - install each unimodule specified in `package.json` from specific commit hash.
+    > This is not currently possible to test `standalone`/`ejected to ExpoKit` app in `expo` repository scope.
+    > One way is to:
+    >
+    > - copy `apps/native-components-list`/`test-suite` app outside repository scope and perform `eject to ExpoKit`,
+    > - use ExpoKit commit hash in Podfile,
+    > - install each unimodule specified in `package.json` from specific commit hash.
 
 ## 2.2. Publish demo apps
 
@@ -162,8 +163,8 @@
 
 ## 3.3. Publishing prerelease packages
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
+| Prerequisites                                                       |
+| ------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance](#21-versioned-quality-assurance) |
 
 **Why:** We need to publish prerelease versions of the packages so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release.
@@ -211,6 +212,7 @@
 **How:**
 
 - **iOS**:
+
   - Bump Expo client versions (CFBundleVersion, CFBundleShortVersionString) in `ios/Exponent/Supporting/Info.plist`.
   - We use `fastlane match` to sync our iOS credentials (certificates and provisioning profiles) - you will need them to properly archive and upload the distribution build to App Store Connect. Run `fastlane match appstore` from the project root folder to download them. You'll need to be authorized and have Google Cloud keys to do this, if you don't have them ask someone who has been publishing the client in the past.
   - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
@@ -226,7 +228,7 @@
   - Add a changelog for the new version in `fastlane/android/metadata/en-US/changelogs`. Commit to master and cherry-pick to the release branch.
   - Find the `client_android` CI job on the release branch. When it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - On the release branch, approve the `client_android_apk_release` build job.
-  - When ready to release to production, approve the `client_android_release_google_play` build job. Note that *this will release the new client in the Play Store* so only do this when everything else is ready!
+  - When ready to release to production, approve the `client_android_release_google_play` build job. Note that _this will release the new client in the Play Store_ so only do this when everything else is ready!
 
 ## 4.3. Making a simulator build
 
