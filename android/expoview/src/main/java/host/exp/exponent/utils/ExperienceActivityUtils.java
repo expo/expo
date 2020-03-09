@@ -147,7 +147,7 @@ public class ExperienceActivityUtils {
       if (normalizedStatusBarBackgroundColor == null || !ColorParser.isValid(normalizedStatusBarBackgroundColor)) {
         // backgroundColor is invalid or not set
         if (appliedStatusBarStyle.equals(STATUS_BAR_STYLE_LIGHT_CONTENT)) {
-          // appliedStatusBarStyle is "white-content" so background color should be semi transparent black
+          // appliedStatusBarStyle is "light-content" so background color should be semi transparent black
           setColor(Color.parseColor("#88000000"), activity);
         } else {
           // otherwise it has to be transparent
@@ -160,7 +160,7 @@ public class ExperienceActivityUtils {
   }
 
   /**
-   * If string is comforts to "#RRGGBBAA" format then it's converted into "#AARRGGBB" format.
+   * If the string conforms to the "#RRGGBBAA" format then it's converted into the "#AARRGGBB" format.
    * Otherwise noop.
    */
   private static String RGBAtoARGB(@Nullable String rgba) {

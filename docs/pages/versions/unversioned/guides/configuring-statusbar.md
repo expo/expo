@@ -115,7 +115,7 @@ Example:
     "hidden": false, // default value
     "translucent": true, // default value to align with default iOS behavior
     "barStyle": "light-content", // default value
-    "backgroundColor": "#00000000" // default value depends on "barStyle" value
+    "backgroundColor": "#00000000" // default value depends on "barStyle" value - fully-transparent when it is `dark-content` and semi-transparent black for `light-content` 
   },
   ...
 }
