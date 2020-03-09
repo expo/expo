@@ -4,7 +4,7 @@ import JsonFile from '@expo/json-file';
 
 import { TEMPLATES_DIR } from './Constants';
 
-interface Template {
+export interface Template {
   name: string;
   version: string;
   path: string;

@@ -6,8 +6,8 @@ import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 
 import { PACKAGES_DIR } from '../Constants';
-import { getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
-import { getNewestSDKVersionAsync } from '../ProjectVersions';
+import { Template, getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
+import { getNewestSDKVersionAsync, sdkVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
   sdkVersion?: string;
@@ -16,65 +16,146 @@ type ActionOptions = {
 const DEPENDENCIES_KEYS = ['dependencies', 'devDependencies', 'peerDependencies'];
 const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
 
-async function action(options: ActionOptions) {
-  const bundledNativeModules = require(BUNDLED_NATIVE_MODULES_PATH);
-  const templates = await getAvailableProjectTemplatesAsync();
+/**
+ * Finds target version range, that is usually `bundledModuleVersion` param,
+ * but in some specific cases we want to use different version range.
+ *
+ * @param targetVersionRange Version range that exists in `bundledNativeModules.json` file.
+ * @param currentVersion Version range that is currenty used in the template.
+ * @param sdkVersion SDK version string to which we're upgrading.
+ */
+function resolveTargetVersionRange(
+  targetVersionRange: string,
+  currentVersion: string,
+  sdkVersion: string
+) {
+  if (currentVersion === '*') {
+    return currentVersion;
+  }
+  if (/^https?:\/\/.*\/react-native\//.test(currentVersion)) {
+    return `https://github.com/expo/react-native/archive/sdk-${sdkVersion}.tar.gz`;
+  }
+  return targetVersionRange;
+}
 
-  // At this point of the release process all platform should have the same newest SDK version.
-  const sdkVersion = options.sdkVersion || await getNewestSDKVersionAsync('ios');
+/**
+ * Updates single project template.
+ *
+ * @param template Template object containing name and path.
+ * @param modulesToUpdate An object with module names to update and their version ranges.
+ * @param sdkVersion SDK version string to which we're upgrading.
+ */
+async function updateTemplateAsync(
+  template: Template,
+  modulesToUpdate: object,
+  sdkVersion: string
+): Promise<void> {
+  console.log(`Updating ${chalk.bold.green(template.name)}...`);
 
-  for (const template of templates) {
-    console.log(`Updating ${chalk.green(template.name)}...`);
+  const packageJsonPath = path.join(template.path, 'package.json');
+  const packageJson = require(packageJsonPath);
 
-    const packageJsonPath = path.join(template.path, 'package.json');
-    const appJsonPath = path.join(template.path, 'app.json');
+  for (const dependencyKey of DEPENDENCIES_KEYS) {
+    const dependencies = packageJson[dependencyKey];
 
-    const packageJson = require(packageJsonPath);
+    if (!dependencies) {
+      continue;
+    }
+    for (const dependencyName in dependencies) {
+      const currentVersion = dependencies[dependencyName];
+      const targetVersion = resolveTargetVersionRange(
+        modulesToUpdate[dependencyName],
+        currentVersion,
+        sdkVersion
+      );
 
-    for (const dependencyKey of DEPENDENCIES_KEYS) {
-      const dependencies = packageJson[dependencyKey];
-
-      if (dependencies) {
-        for (const dependencyName in dependencies) {
-          let targetVersion = bundledNativeModules[dependencyName];
-
-          if (dependencies[dependencyName] === '*') {
-            continue;
-          }
-          if (dependencyName === 'react-native' && /^https?:\/\//.test(dependencies[dependencyName])) {
-            // TODO(@tsapeta): Find the newest version for given major SDK version number.
-            targetVersion = `https://github.com/expo/react-native/archive/sdk-${sdkVersion}.tar.gz`;
-          }
-          if (targetVersion) {
-            console.log(chalk.yellow('>'), `Updating ${chalk.blue(dependencyName)} to ${chalk.cyan(targetVersion)}...`);
-            await JsonFile.setAsync(packageJsonPath, `${dependencyKey}.${dependencyName}`, targetVersion);
-          }
+      if (targetVersion) {
+        if (targetVersion === currentVersion) {
+          console.log(
+            chalk.yellow('>'),
+            `Current version ${chalk.cyan(targetVersion)} of ${chalk.blue(
+              dependencyName
+            )} is up-to-date.`
+          );
+        } else {
+          console.log(
+            chalk.yellow('>'),
+            `Updating ${chalk.blue(dependencyName)} from ${chalk.cyan(
+              currentVersion
+            )} to ${chalk.cyan(targetVersion)}...`
+          );
+          packageJson[dependencyKey][dependencyName] = targetVersion;
         }
       }
     }
+  }
+  await JsonFile.writeAsync(packageJsonPath, packageJson);
+}
 
-    if (sdkVersion && await fs.exists(appJsonPath)) {
-      console.log(chalk.yellow('>'), `Setting SDK version to ${chalk.cyan(sdkVersion)}...`);
-      await JsonFile.setAsync(appJsonPath, 'expo.sdkVersion', sdkVersion);
-    }
+/**
+ * Removes template's `yarn.lock` and runs `yarn`.
+ *
+ * @param templatePath Root path of the template.
+ */
+async function yarnTemplateAsync(templatePath: string): Promise<void> {
+  console.log(chalk.yellow('>'), 'Yarning...');
 
-    console.log(chalk.yellow('>'), 'Yarning...');
+  const yarnLockPath = path.join(templatePath, 'yarn.lock');
 
-    const yarnLockPath = path.join(template.path, 'yarn.lock');
+  if (await fs.exists(yarnLockPath)) {
+    // We do want to always install the newest possible versions that match bundledNativeModules versions,
+    // so let's remove yarn.lock before updating re-yarning dependencies.
+    await fs.remove(yarnLockPath);
+  }
+  await spawnAsync('yarn', [], {
+    stdio: 'ignore',
+    cwd: templatePath,
+    env: process.env,
+  });
+}
 
-    if (await fs.exists(yarnLockPath)) {
-      // We do want to always install the newest possible versions that match bundledNativeModules versions,
-      // so let's remove yarn.lock before updating re-yarning dependencies.
-      await fs.remove(yarnLockPath);
-    }
+/**
+ * Updates `sdkVersion` in template's `app.json` file.
+ *
+ * @param templatePath Root path of the template.
+ * @param sdkVersion SDK version string to which to upgrade.
+ */
+async function updateTemplateSdkVersionAsync(
+  templatePath: string,
+  sdkVersion: string
+): Promise<void> {
+  const appJsonPath = path.join(templatePath, 'app.json');
 
-    await spawnAsync('yarn', [], {
-      stdio: ['ignore', 'ignore', 'inherit'],
-      cwd: template.path,
-      env: process.env,
-    });
+  if (await fs.exists(appJsonPath)) {
+    console.log(chalk.yellow('>'), `Setting SDK version to ${chalk.cyan(sdkVersion)}...`);
+    await JsonFile.setAsync(appJsonPath, 'expo.sdkVersion', sdkVersion);
+  }
+}
 
-    console.log();
+async function action(options: ActionOptions) {
+  // At this point of the release process all platform should have the same newest SDK version.
+  const sdkVersion = options.sdkVersion ?? (await getNewestSDKVersionAsync('ios'));
+
+  if (!sdkVersion) {
+    throw new Error(
+      `Cannot infer current SDK version - please use ${chalk.gray('--sdkVersion')} flag.`
+    );
+  }
+
+  const bundledNativeModules = require(BUNDLED_NATIVE_MODULES_PATH);
+  const templates = await getAvailableProjectTemplatesAsync();
+  const expoVersion = await sdkVersionAsync();
+
+  const modulesToUpdate = {
+    ...bundledNativeModules,
+    expo: `~${expoVersion}`,
+  };
+
+  for (const template of templates) {
+    await updateTemplateAsync(template, modulesToUpdate, sdkVersion);
+    await updateTemplateSdkVersionAsync(template.path, sdkVersion);
+    await yarnTemplateAsync(template.path);
+    console.log(chalk.yellow('>'), chalk.green('Success!'), '\n');
   }
 }
 
@@ -82,7 +163,12 @@ export default (program: Command) => {
   program
     .command('update-project-templates')
     .alias('update-templates', 'upt')
-    .description('Updates dependencies of project templates to the versions that are defined in `bundledNativeModules.json` file.')
-    .option('-s, --sdkVersion [string]', 'SDK version for which the project templates should be updated. Defaults to the newest SDK version.')
+    .description(
+      'Updates dependencies of project templates to the versions that are defined in `bundledNativeModules.json` file.'
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version for which the project templates should be updated. Defaults to the newest SDK version.'
+    )
     .asyncAction(action);
 };
