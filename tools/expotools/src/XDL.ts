@@ -20,9 +20,9 @@ export async function publishProjectWithExpoCliAsync(
   process.env.EXPO_NO_DOCTOR = '1';
 
   const username =
-    (options.userpass && options.userpass.username) || process.env.EXPO_CI_ACCOUNT_USERNAME;
+    (options.userpass?.username) || process.env.EXPO_CI_ACCOUNT_USERNAME;
   const password =
-    (options.userpass && options.userpass.password) || process.env.EXPO_CI_ACCOUNT_PASSWORD;
+    (options.userpass?.password) || process.env.EXPO_CI_ACCOUNT_PASSWORD;
 
   if (username && password) {
     Log.collapsed('Logging in...');
