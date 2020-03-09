@@ -12,7 +12,7 @@ export interface NotificationSchedulerModule extends ProxyNativeModule {
     identifier: string,
     notificationRequest: NotificationRequest,
     trigger: NativeNotificationTrigger
-  ) => Promise<void>;
+  ) => Promise<string>;
   cancelScheduledNotificationAsync: (identifier: string) => Promise<void>;
 }
 

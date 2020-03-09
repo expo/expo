@@ -52,7 +52,7 @@ public class NotificationScheduler extends ExportedModule {
   }
 
   @ExpoMethod
-  public void scheduleNotificationAsync(String identifier, Map notificationSpec, ReadableArguments triggerParams, final Promise promise) {
+  public void scheduleNotificationAsync(final String identifier, Map notificationSpec, ReadableArguments triggerParams, final Promise promise) {
     try {
       JSONObject notificationRequest = new JSONObject(notificationSpec);
       ExpoNotificationSchedulerService.enqueueSchedule(getContext(), identifier, notificationRequest, triggerFromParams(triggerParams), new ResultReceiver(HANDLER) {
@@ -60,7 +60,7 @@ public class NotificationScheduler extends ExportedModule {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
           super.onReceiveResult(resultCode, resultData);
           if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
-            promise.resolve(null);
+            promise.resolve(identifier);
           } else {
             Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
             if (e == null) {

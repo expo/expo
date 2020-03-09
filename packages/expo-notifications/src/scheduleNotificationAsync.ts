@@ -1,4 +1,5 @@
 import { Platform } from '@unimodules/core';
+import uuidv4 from 'uuid/v4';
 
 import {
   IosNotificationRequestOptions,
@@ -26,23 +27,25 @@ export type NotificationTrigger = (DateTrigger | TimeIntervalTrigger) & {
 
 type PlatformSpecificOptions = IosNotificationRequestOptions | AndroidNotificationRequestOptions;
 export default async function scheduleNotificationAsync(
-  identifier: string,
   notification: NotificationRequest,
   trigger: NotificationTrigger
-): Promise<void> {
+): Promise<string> {
   // Remember current platform-specific options
   const platformSpecificOptions: PlatformSpecificOptions | undefined =
     notification[Platform.OS] ?? undefined;
   // Remove all known platform-specific options
-  const { ios, android, ...baseRequest } = notification;
+  const { ios, android, identifier, ...baseRequest } = notification;
   // Merge current platform-specific options
   const easyBodyNotificationSpec = { ...baseRequest, ...platformSpecificOptions };
   // Stringify `body`
   const { body, ...restNotificationSpec } = easyBodyNotificationSpec;
   const notificationSpec = { ...restNotificationSpec, body: JSON.stringify(body) };
 
+  // If identifier has not been provided, let's create one.
+  const notificationIdentifier = identifier ?? uuidv4();
+
   return await NotificationScheduler.scheduleNotificationAsync(
-    identifier,
+    notificationIdentifier,
     notificationSpec,
     parseTrigger(trigger[Platform.OS] ?? trigger)
   );

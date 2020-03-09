@@ -12,4 +12,4 @@ export declare type NotificationTrigger = (DateTrigger | TimeIntervalTrigger) & 
     ios?: IosNotificationTrigger;
     android?: AndroidNotificationTrigger;
 };
-export default function scheduleNotificationAsync(identifier: string, notification: NotificationRequest, trigger: NotificationTrigger): Promise<void>;
+export default function scheduleNotificationAsync(notification: NotificationRequest, trigger: NotificationTrigger): Promise<string>;

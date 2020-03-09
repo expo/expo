@@ -63,7 +63,7 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
         NSString *message = [NSString stringWithFormat:@"Failed to schedule notification. %@", error];
         reject(@"ERR_FAILED_TO_SCHEDULE", message, error);
       } else {
-        resolve(nil);
+        resolve(identifier);
       }
     }];
   } @catch (NSException *exception) {
