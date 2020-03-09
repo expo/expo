@@ -73,10 +73,8 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   checkLinking = incomingTests => {
-    setTimeout(() => {
-      const testNames = incomingTests.split(',').map(v => v.trim());
-      this.props.navigation.navigate('RunTests', { selected: new Set(testNames) });
-    }, 100);
+    const testNames = incomingTests.split(',').map(v => v.trim());
+    this.props.navigation.navigate('RunTests', { selected: new Set(testNames) });
   };
 
   _handleOpenURL = ({ url }) => {
