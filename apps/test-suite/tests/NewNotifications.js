@@ -798,6 +798,33 @@ export async function test(t) {
         10000
       );
     });
+
+    t.describe('cancelAllScheduledNotificationsAsync', () => {
+      const notification = { title: 'Scheduled, canceled notification' };
+
+      t.it(
+        'removes all scheduled notifications',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          for (let i = 0; i < 3; i += 1) {
+            await Notifications.scheduleNotificationAsync(
+              { identifier: `notification-${i}`, ...notification },
+              { seconds: 5 }
+            );
+          }
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+          subscription.remove();
+          const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+          t.expect(scheduledNotifications.length).toEqual(0);
+        },
+        10000
+      );
+    });
   });
 }
 
