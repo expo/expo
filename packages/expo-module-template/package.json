@@ -23,5 +23,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

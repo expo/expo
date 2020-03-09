@@ -41,6 +41,10 @@
     "@unimodules/core": "*",
     "unimodules-permissions-interface": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },

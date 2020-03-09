@@ -37,6 +37,9 @@
     "@unimodules/core": "*",
     "expo-constants": "*"
   },
+  "dependencies": {
+    "fbemitter": "^2.1.1"
+  },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   }
