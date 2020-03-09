@@ -2,6 +2,7 @@
 
 package host.exp.exponent.utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.pm.ActivityInfo;
@@ -31,6 +32,7 @@ public class ExperienceActivityUtils {
 
   private static final String TAG = ExperienceActivityUtils.class.getSimpleName();
   private static final String STATUS_BAR_STYLE_DARK_CONTENT = "dark-content";
+  private static final String STATUS_BAR_STYLE_LIGHT_CONTENT = "light-content";
 
   public static void updateOrientation(JSONObject manifest, Activity activity) {
     if (manifest == null) {
@@ -134,17 +136,41 @@ public class ExperienceActivityUtils {
 
       setTranslucent(statusBarTranslucent, activity);
 
-      if (statusBarBackgroundColor == null || !ColorParser.isValid(statusBarBackgroundColor)){
-        // if backgroundColor is invalid or not set then it has to be transparent
-        setColor(Color.TRANSPARENT, activity);
-      } else {
-        setColor(Color.parseColor(statusBarBackgroundColor), activity);
+      String appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
+      if (statusBarStyle != null) {
+        appliedStatusBarStyle = setStyle(statusBarStyle, activity);
       }
 
-      if (statusBarStyle != null) {
-        setStyle(statusBarStyle, activity);
+      // Color passed from manifest is in format '#RRGGBB(AA)' and Android uses '#AARRGGBB'
+      String normalizedStatusBarBackgroundColor = RGBAtoARGB(statusBarBackgroundColor);
+
+      if (normalizedStatusBarBackgroundColor == null || !ColorParser.isValid(normalizedStatusBarBackgroundColor)) {
+        // backgroundColor is invalid or not set
+        if (appliedStatusBarStyle.equals(STATUS_BAR_STYLE_LIGHT_CONTENT)) {
+          // appliedStatusBarStyle is "light-content" so background color should be semi transparent black
+          setColor(Color.parseColor("#88000000"), activity);
+        } else {
+          // otherwise it has to be transparent
+          setColor(Color.TRANSPARENT, activity);
+        }
+      } else {
+        setColor(Color.parseColor(normalizedStatusBarBackgroundColor), activity);
       }
     });
+  }
+
+  /**
+   * If the string conforms to the "#RRGGBBAA" format then it's converted into the "#AARRGGBB" format.
+   * Otherwise noop.
+   */
+  private static String RGBAtoARGB(@Nullable String rgba) {
+    if (rgba == null) {
+      return null;
+    }
+    if (rgba.startsWith("#") && rgba.length() == 9) {
+      return "#" + rgba.substring(7, 9) + rgba.substring(1, 7);
+    }
+    return rgba;
   }
 
   @UiThread
@@ -179,18 +205,24 @@ public class ExperienceActivityUtils {
     ViewCompat.requestApplyInsets(decorView);
   }
 
+  /**
+   * @return Effective style that is actually applied to the status bar.
+   */
   @UiThread
-  private static void setStyle(final String style, final Activity activity) {
+  private static String setStyle(final String style, final Activity activity) {
+    String appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       View decorView = activity.getWindow().getDecorView();
       int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
       if (style.equals(STATUS_BAR_STYLE_DARK_CONTENT)) {
         systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
       } else {
         systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
       }
       decorView.setSystemUiVisibility(systemUiVisibilityFlags);
     }
+    return appliedStatusBarStyle;
   }
 
   @UiThread
