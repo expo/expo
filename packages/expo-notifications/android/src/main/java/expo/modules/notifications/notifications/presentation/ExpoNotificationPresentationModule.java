@@ -41,4 +41,36 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
       }
     });
   }
+
+  @ExpoMethod
+  public void dismissNotificationAsync(String identifier, final Promise promise) {
+    BaseNotificationsService.enqueueDismiss(getContext(), identifier, new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
+          promise.resolve(null);
+        } else {
+          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATION_DISMISSAL_FAILED", "Notification could not be dismissed.", e);
+        }
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void dismissAllNotificationsAsync(final Promise promise) {
+    BaseNotificationsService.enqueueDismissAll(getContext(), new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
+          promise.resolve(null);
+        } else {
+          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e);
+        }
+      }
+    });
+  }
 }

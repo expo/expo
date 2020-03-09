@@ -607,6 +607,30 @@ export async function test(t) {
         t.expect(badgeCount).toBe(clearingCounter);
       });
     });
+
+    t.describe('dismissNotificationAsync()', () => {
+      t.it('resolves for a valid notification ID', async () => {
+        const identifier = 'test-id';
+        await Notifications.presentNotificationAsync({
+          identifier,
+          title: 'Sample title',
+          subtitle: 'What an event!',
+          message: 'An interesting event has just happened',
+          badge: 1,
+        });
+        await Notifications.dismissNotificationAsync(identifier);
+      });
+
+      t.it('resolves for an invalid notification ID', async () => {
+        await Notifications.dismissNotificationAsync('no-such-notification-id');
+      });
+    });
+
+    t.describe('dismissAllNotificationsAsync()', () => {
+      t.it('resolves', async () => {
+        await Notifications.dismissAllNotificationsAsync();
+      });
+    });
   });
 }
 
