@@ -214,11 +214,16 @@ public class ExperienceActivityUtils {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       View decorView = activity.getWindow().getDecorView();
       int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
-      if (style.equals(STATUS_BAR_STYLE_DARK_CONTENT)) {
-        systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
-      } else {
-        systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      switch (style) {
+        case STATUS_BAR_STYLE_LIGHT_CONTENT:
+          systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
+          break;
+        case STATUS_BAR_STYLE_DARK_CONTENT:
+        default:
+          systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
+          break;
       }
       decorView.setSystemUiVisibility(systemUiVisibilityFlags);
     }
