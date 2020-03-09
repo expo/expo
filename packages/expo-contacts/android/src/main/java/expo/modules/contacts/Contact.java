@@ -188,14 +188,8 @@ public class Contact {
 
     @Nullable
     public String getDisplayName() {
-      if (displayName == null) {
-        if (firstName != null) {
-          if (lastName != null) {
-            return String.format("%s %s", firstName, lastName).trim();
-          }
-
-          return firstName;
-        }
+      if (displayName == null && firstName != null) {
+        return lastName == null ? firstName : String.format("%s %s", firstName, lastName).trim();
       }
 
       return displayName;
