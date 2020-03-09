@@ -180,7 +180,8 @@ For more details please navigate to [Configuring StatusBar](../../guides/configu
 
     /*
       Specifies the background color of the status bar.
-      Six-character hex color string "#RRGGBB" (e.g. "#000000" for white) or eight-character hex color string "#RRGGBBAA" (e.g. "#00000077" for half-transparent white).
+      Six-character hex color string "#RRGGBB" (e.g. "#000000" for white) or eight-character hex color string "#RRGGBBAA" (e.g. "#00000088" for semi-transparent black).
+      Defaults to "#00000000" (transparent) for "dark-content" bar style and "#00000088" (semi-transparent black) for "light-content" bar style.
     */
     "backgroundColor": STRING,
 
