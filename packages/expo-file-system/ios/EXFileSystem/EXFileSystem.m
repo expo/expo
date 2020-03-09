@@ -566,25 +566,34 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   }
   sessionConfiguration.URLCache = nil;
   NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-  NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       reject(@"E_DOWNLOAD_FAILED",
              [NSString stringWithFormat:@"Could not download from '%@'", url],
              error);
       return;
     }
-    [data writeToFile:path atomically:YES];
+    
+    [[NSFileManager defaultManager] moveItemAtPath:location.path toPath:path error:&error];
+    if (error) {
+      reject(@"E_MOVED_FAILED",
+             [NSString stringWithFormat:@"Could not move the downloaded file from '%@' to '%@", location.path, path],
+             error);
+      return;
+    }
     
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
     if (options[@"md5"]) {
+      NSData* data = [NSData dataWithContentsOfFile:path];
       result[@"md5"] = [data md5String];
     }
     result[@"status"] = @([httpResponse statusCode]);
     result[@"headers"] = [httpResponse allHeaderFields];
     resolve(result);
   }];
+  
   [task resume];
 }
 
