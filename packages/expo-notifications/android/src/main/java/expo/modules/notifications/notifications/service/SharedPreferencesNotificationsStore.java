@@ -100,12 +100,15 @@ public class SharedPreferencesNotificationsStore {
     }
 
     // Remove invalid notifications
+    SharedPreferences.Editor editor = mSharedPreferences.edit();
     for (String key : allNotifications.keySet()) {
       Pair<JSONObject, SchedulableNotificationTrigger> pair = allNotifications.get(key);
       if (pair == null || pair.first == null || pair.second == null) {
         allNotifications.remove(key);
+        removeNotification(editor, key);
       }
     }
+    editor.apply();
 
     return allNotifications;
   }
@@ -131,10 +134,22 @@ public class SharedPreferencesNotificationsStore {
    * @param identifier Notification identifier
    */
   public void removeNotification(String identifier) {
-    mSharedPreferences.edit()
-        .remove(preferencesRequestKey(identifier))
-        .remove(preferencesTriggerKey(identifier))
-        .apply();
+    SharedPreferences.Editor editor = mSharedPreferences.edit();
+    removeNotification(editor, identifier);
+    editor.apply();
+  }
+
+  /**
+   * Perform notification removal on provided {@link SharedPreferences.Editor} instance. Can be reused
+   * to batch deletion.
+   *
+   * @param editor     Editor to apply changes onto
+   * @param identifier Notification identifier
+   * @return Returns a reference to the same Editor object, so you can
+   * chain put calls together.
+   */
+  private SharedPreferences.Editor removeNotification(SharedPreferences.Editor editor, String identifier) {
+    return editor.remove(preferencesRequestKey(identifier)).remove(preferencesTriggerKey(identifier));
   }
 
   /**
@@ -144,8 +159,7 @@ public class SharedPreferencesNotificationsStore {
     Set<String> notificationsKeys = getAllNotifications().keySet();
     SharedPreferences.Editor editor = mSharedPreferences.edit();
     for (String notificationId : notificationsKeys) {
-      editor.remove(preferencesRequestKey(notificationId))
-          .remove(preferencesTriggerKey(notificationId));
+      removeNotification(editor, notificationId);
     }
     editor.apply();
     return notificationsKeys;
