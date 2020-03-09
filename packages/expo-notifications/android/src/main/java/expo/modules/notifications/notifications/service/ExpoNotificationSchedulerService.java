@@ -243,7 +243,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
       PendingIntent pendingIntent = getTriggerPendingIntent(context, identifier);
       AlarmManagerCompat.setExactAndAllowWhileIdle(mAlarmManager, AlarmManager.RTC_WAKEUP, nextTriggerDate.getTime(), pendingIntent);
     } catch (IOException e) {
-      Log.e("expo-notifications", String.format("Could not have saved notification \"%s\": %s.", identifier, e.getMessage()));
+      Log.e("expo-notifications", String.format("Could not save notification \"%s\": %s.", identifier, e.getMessage()));
       e.printStackTrace();
     }
   }
