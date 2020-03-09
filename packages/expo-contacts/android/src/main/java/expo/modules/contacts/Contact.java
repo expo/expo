@@ -1,5 +1,6 @@
 package expo.modules.contacts;
 
+import android.net.Uri;
 import android.util.Log;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
@@ -181,6 +184,15 @@ public class Contact {
             return displayName;
         }
         return lastName;
+    }
+
+    @Nullable
+    public String getDisplayName() {
+      if (displayName == null && firstName != null) {
+        return lastName == null ? firstName : String.format("%s %s", firstName, lastName).trim();
+      }
+
+      return displayName;
     }
 
     public Contact(String contactId) {
@@ -466,7 +478,7 @@ public class Contact {
         contactData.add(notes);
 
         if (photoUri != null && !photoUri.isEmpty()) {
-            Bitmap photo = BitmapFactory.decodeFile(photoUri);
+            Bitmap photo = BitmapFactory.decodeFile(Uri.parse(photoUri).getPath());
 
             if (photo != null) {
                 ContentValues image = new ContentValues();
