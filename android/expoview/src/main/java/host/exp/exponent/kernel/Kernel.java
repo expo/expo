@@ -107,9 +107,6 @@ public class Kernel extends KernelInterface {
   @Inject
   Application mApplicationContext;
 
-  @Inject
-  DevMenuManager mDevMenuManager;
-
   private Activity mActivityContext;
 
   // Activities/Tasks
