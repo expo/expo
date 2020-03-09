@@ -36,10 +36,12 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*"
   },
   "dependencies": {
-    "expo-permissions": "~8.1.0"
+    "expo-permissions": "~8.1.0",
+    "uuid": "7.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
