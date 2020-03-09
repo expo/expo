@@ -181,50 +181,47 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       return;
     }
 
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (sErrorQueue.isEmpty()) {
-          return;
-        }
-
-        Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
-        boolean isFatal = result.first;
-        ExponentErrorMessage errorMessage = result.second;
-
-        if (!shouldShowErrorScreen(errorMessage)) {
-          return;
-        }
-
-        if (!isFatal) {
-          return;
-        }
-
-        // we don't ever want to show any Expo UI in a production standalone app
-        // so hard crash in this case
-        if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
-          throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
-        }
-
-        if (!isDebugModeEnabled()) {
-          removeViews();
-          mReactInstanceManager.assign(null);
-          mReactRootView.assign(null);
-        }
-
-        mIsCrashed = true;
-        mIsLoading = false;
-
-        Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        onError(intent);
-        intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
-        intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
-        intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
-        startActivity(intent);
-
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
+    runOnUiThread(() -> {
+      if (sErrorQueue.isEmpty()) {
+        return;
       }
+
+      Pair<Boolean, ExponentErrorMessage> result = sendErrorsToErrorActivity();
+      boolean isFatal = result.first;
+      ExponentErrorMessage errorMessage = result.second;
+
+      if (!shouldShowErrorScreen(errorMessage)) {
+        return;
+      }
+
+      if (!isFatal) {
+        return;
+      }
+
+      // we don't ever want to show any Expo UI in a production standalone app
+      // so hard crash in this case
+      if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
+        throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
+      }
+
+      if (!isDebugModeEnabled()) {
+        removeViews();
+        mReactInstanceManager.assign(null);
+        mReactRootView.assign(null);
+      }
+
+      mIsCrashed = true;
+      mIsLoading = false;
+
+      Intent intent = new Intent(BaseExperienceActivity.this, ErrorActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      onError(intent);
+      intent.putExtra(ErrorActivity.DEBUG_MODE_KEY, isDebugModeEnabled());
+      intent.putExtra(ErrorActivity.USER_ERROR_MESSAGE_KEY, errorMessage.userErrorMessage());
+      intent.putExtra(ErrorActivity.DEVELOPER_ERROR_MESSAGE_KEY, errorMessage.developerErrorMessage());
+      startActivity(intent);
+
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 

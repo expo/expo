@@ -52,7 +52,6 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.notifications.ExponentNotification;
@@ -342,7 +341,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onDoneLoading() {
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_LOADING_REACT_NATIVE);
     Analytics.sendTimedEvents(mManifestUrl);
-    maybeShowOnboarding();
   }
 
   /*
@@ -616,19 +614,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     PushNotificationHelper pushNotificationHelper = PushNotificationHelper.getInstance();
     if (pushNotificationHelper != null) {
       pushNotificationHelper.removeNotifications(this, unreadNotifications);
-    }
-  }
-
-  /**
-   * Shows the dev menu with onboarding view if this is the first time the user opens an experience,
-   * or he hasn't finished onboarding yet.
-   */
-  public void maybeShowOnboarding() {
-    boolean isOnboardingFinished = mDevMenuManager.isOnboardingFinished();
-    boolean shouldShowOnboarding = !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished;
-
-    if (shouldShowOnboarding) {
-      mDevMenuManager.showInActivity(this);
     }
   }
 
