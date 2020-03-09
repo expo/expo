@@ -8258,16 +8258,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 39bbad99466e76e3922e5eac0c109e14
-      Release: 39bbad99466e76e3922e5eac0c109e14
-  Pods-ExponentIntegrationTests:
-    BUILD_SETTINGS_CHECKSUM:
-      Debug: 7c24765241e0ffda52e125fa50e240e2
-      Release: 7c24765241e0ffda52e125fa50e240e2
+      Debug: e417df66dfb7506477b4c4bf28e726b3
+      Release: e417df66dfb7506477b4c4bf28e726b3
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7c24765241e0ffda52e125fa50e240e2
-      Release: 7c24765241e0ffda52e125fa50e240e2
+      Debug: aa1925f4a8ace089dcb30231c5466167
+      Release: aa1925f4a8ace089dcb30231c5466167
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -10307,16 +10303,6 @@ CACHE_KEYS:
     PROJECT_NAME: UMTaskManagerInterface
     SPECS:
       - UMTaskManagerInterface (5.1.0)
-  UMTestCore:
-    BUILD_SETTINGS_CHECKSUM:
-      UMTestCore: 6f0eb57220f61b3864d7c5f875c67d55
-    CHECKSUM: 6a5320bc6777dc3ad84c34e0501768c7a936be03
-    FILES:
-      - "../../packages/unimodules-test-core/ios/UMTestCore/UMTestCoreModule.h"
-      - "../../packages/unimodules-test-core/ios/UMTestCore/UMTestCoreModule.m"
-    PROJECT_NAME: UMTestCore
-    SPECS:
-      - UMTestCore (1.0.0)
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 4417ba62c1b7d0f6f80a542484dd287e

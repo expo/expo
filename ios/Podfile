@@ -72,10 +72,6 @@ target 'Exponent' do
   end
 
   # Test targets
-  target 'ExponentIntegrationTests' do
-    inherit! :search_paths
-  end
-
   target 'Tests' do
     inherit! :search_paths
   end

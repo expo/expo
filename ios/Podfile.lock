@@ -2160,8 +2160,6 @@ PODS:
     - UMFontInterface
   - UMSensorsInterface (5.1.0)
   - UMTaskManagerInterface (5.1.0)
-  - UMTestCore (1.0.0):
-    - UMCore
   - Yoga (1.14.0)
   - yogaABI34_0_0 (0.59.8.React)
   - yogaABI35_0_0 (0.59.8.React)
@@ -2625,7 +2623,6 @@ DEPENDENCIES:
   - "UMReactNativeAdapter (from `../packages/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../packages/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../packages/unimodules-task-manager-interface/ios`)
-  - UMTestCore (from `../packages/unimodules-test-core/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
   - yogaABI34_0_0 (from `./versioned-react-native/ABI34_0_0/ReactCommon/ABI34_0_0yoga`)
   - yogaABI35_0_0 (from `./versioned-react-native/ABI35_0_0/ReactCommon/ABI35_0_0yoga`)
@@ -3487,8 +3484,6 @@ EXTERNAL SOURCES:
     :path: "../packages/unimodules-sensors-interface/ios"
   UMTaskManagerInterface:
     :path: "../packages/unimodules-task-manager-interface/ios"
-  UMTestCore:
-    :path: "../packages/unimodules-test-core/ios"
   Yoga:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
   yogaABI34_0_0:
@@ -3941,12 +3936,11 @@ SPEC CHECKSUMS:
   UMReactNativeAdapter: 126da3486c1a1f11945b649d557d6c2ebb9407b2
   UMSensorsInterface: 48941f70175e2975af1a9386c6d6cb16d8126805
   UMTaskManagerInterface: cb890c79c63885504ddc0efd7a7d01481760aca2
-  UMTestCore: 6a5320bc6777dc3ad84c34e0501768c7a936be03
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 1ad7d91152f91ddd2964649ed0788db94a2df639
+PODFILE CHECKSUM: 54e81cb51856b231403bae0959a5d148b4634f30
 
 COCOAPODS: 1.8.4

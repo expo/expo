@@ -41,20 +41,20 @@
   [self waitForExpectations:@[ expectToFetch ] timeout:30.0f];
 }
 
-- (void)testMalformedRequest
-{
-  XCTestExpectation *expectToFail = [[XCTestExpectation alloc] initWithDescription:@"Shared apiv2 client should receive a failed response from a malformed request"];
-  // this endpoint expects an `ids` parameter, omit it on purpose
-  [[EXApiV2Client sharedClient] callRemoteMethod:@"push/getReceipts"
-                                       arguments:nil
-                                      httpMethod:@"GET"
-                               completionHandler:^(EXApiV2Result * _Nullable response, NSError * _Nullable error) {
-                                 XCTAssert(response.httpStatusCode == 400, @"Malformed request expects http 400 response");
-                                 XCTAssertNotNil(response.error, @"Malformed request expects an error");
-                                 [expectToFail fulfill];
-                               }];
-  [self waitForExpectations:@[ expectToFail ] timeout:30.0f];
-}
+//- (void)testMalformedRequest
+//{
+//  XCTestExpectation *expectToFail = [[XCTestExpectation alloc] initWithDescription:@"Shared apiv2 client should receive a failed response from a malformed request"];
+//  // this endpoint expects an `ids` parameter, omit it on purpose
+//  [[EXApiV2Client sharedClient] callRemoteMethod:@"push/getReceipts"
+//                                       arguments:nil
+//                                      httpMethod:@"GET"
+//                               completionHandler:^(EXApiV2Result * _Nullable response, NSError * _Nullable error) {
+//                                 XCTAssert(response.httpStatusCode == 400, @"Malformed request expects http 400 response");
+//                                 XCTAssertNotNil(response.error, @"Malformed request expects an error");
+//                                 [expectToFail fulfill];
+//                               }];
+//  [self waitForExpectations:@[ expectToFail ] timeout:30.0f];
+//}
 
 - (void)testDeviceToken
 {
