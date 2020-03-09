@@ -61,14 +61,14 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
       if (error) {
         NSString *message = [NSString stringWithFormat:@"Failed to schedule notification. %@", error];
-        reject(@"ERR_FAILED_TO_SCHEDULE", message, error);
+        reject(@"ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", message, error);
       } else {
         resolve(identifier);
       }
     }];
   } @catch (NSException *exception) {
     NSString *message = [NSString stringWithFormat:@"Failed to schedule notification. %@", exception];
-    reject(@"ERR_FAILED_TO_SCHEDULE", message, nil);
+    reject(@"ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", message, nil);
   }
 }
 

@@ -45,7 +45,7 @@ public class NotificationScheduler extends ExportedModule {
           promise.resolve(resultData.getParcelableArrayList(ExpoNotificationSchedulerService.NOTIFICATIONS_KEY));
         } else {
           Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
-          promise.reject("ERR_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e);
+          promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e);
         }
       }
     });
@@ -64,17 +64,17 @@ public class NotificationScheduler extends ExportedModule {
           } else {
             Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
             if (e == null) {
-              promise.reject("ERR_FAILED_TO_SCHEDULE", "Failed to schedule notification.");
+              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule notification.");
             } else {
-              promise.reject("ERR_FAILED_TO_SCHEDULE", "Failed to schedule the notification. " + e.getMessage(), e);
+              promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. " + e.getMessage(), e);
             }
           }
         }
       });
     } catch (InvalidArgumentException e) {
-      promise.reject("ERR_FAILED_TO_SCHEDULE", "Failed to schedule the notification. " + e.getMessage(), e);
+      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. " + e.getMessage(), e);
     } catch (NullPointerException e) {
-      promise.reject("ERR_FAILED_TO_SCHEDULE", "Failed to schedule the notification. Encountered unexpected null value. " + e.getMessage(), e);
+      promise.reject("ERR_NOTIFICATIONS_FAILED_TO_SCHEDULE", "Failed to schedule the notification. Encountered unexpected null value. " + e.getMessage(), e);
     }
   }
 
@@ -88,7 +88,7 @@ public class NotificationScheduler extends ExportedModule {
           promise.resolve(null);
         } else {
           Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
-          promise.reject("ERR_FAILED_TO_CANCEL", "Failed to cancel notification.", e);
+          promise.reject("ERR_NOTIFICATIONS_FAILED_TO_CANCEL", "Failed to cancel notification.", e);
         }
       }
     });
