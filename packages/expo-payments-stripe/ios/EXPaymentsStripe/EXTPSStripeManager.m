@@ -23,6 +23,7 @@ NSString * const kErrorKeyDeviceNotSupportsNativePay = @"deviceNotSupportsNative
 NSString * const kErrorKeyNoPaymentRequest = @"noPaymentRequest";
 NSString * const kErrorKeyNoMerchantIdentifier = @"noMerchantIdentifier";
 NSString * const kErrorKeyNoAmount = @"noAmount";
+NSString * const kSalesTaxLabel = @"SALES TAX";
 
 API_AVAILABLE(ios(11.0))
 //  We define a new type whose reference is going to hold the completion block received in 'didSelectShippingContact' delegate method. This block is called after new taxes are received from React native code in 'updateTaxes' method in order to reflect them in apple pay sheet.
@@ -127,7 +128,7 @@ UM_EXPORT_METHOD_AS(deviceSupportsApplePay, deviceSupportsApplePay:(UMPromiseRes
 - (void)updateTaxes:(NSNumber *)taxes {
     // We find the TAX item in Apple pay sheet and update its value with tax received in 'taxes' function paramter
     for (PKPaymentSummaryItem *item in paymentSummaryItems) {
-        if([item.label isEqualToString:@"SALES TAX"]) {
+        if([item.label isEqualToString:kSalesTaxLabel]) {
             item.amount = [NSDecimalNumber decimalNumberWithString:[taxes stringValue]];
         }
     }
@@ -174,6 +175,7 @@ UM_EXPORT_METHOD_AS(cancelApplePayRequest, cancelApplePayRequest:(UMPromiseResol
         promiseResolver = resolve;
         [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
     } else {
+        [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
         resolve(nil);
     }
 }
@@ -662,6 +664,8 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
     applePayCompletion = completion;
     
     STPAPIClient *stripeAPIClient = [self newAPIClient];
+  
+  @try {
     
     [stripeAPIClient createTokenWithPayment:payment completion:^(STPToken * _Nullable token, NSError * _Nullable error) {
         requestIsCompleted = YES;
@@ -684,6 +688,17 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
             [self resolvePromise:result];
         }
     }];
+  }
+  @catch (NSException *exception) {
+    // prod mode: createTokenWithPayment will throw an exception complaining about the stripe key
+    applePayStripeError = exception;
+    [[self getViewController] dismissViewControllerAnimated:YES completion:^{
+      [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
+      [self rejectPromiseWithCode:exception.name message:exception.reason];
+      [self resetPromiseCallbacks];
+      requestIsCompleted = YES;
+    }];
+  }
 }
 
 
@@ -731,6 +746,9 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
 -(void)setShippingAddress:(NSDictionary *)address onCart:(NSString *)cartId{
     NSDictionary *shippingAddress = @{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"};
     setShippingAddressVariables[@"shippingAddress"] = shippingAddress;
+    // backend will not update the database with this partial address if context variable is present in the payload - this is a todo for BE
+    // otherwise the next time when the apple pay sheet is instantiated we will have incomplete address
+    setShippingAddressVariables[@"context"] = @"TAX_CALCULATION";
     [self callGraphqlApiWithQuery:setShippingAddressQuery andVariables:setShippingAddressVariables];
 }
 
@@ -777,7 +795,7 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
             self->cartId = twoStepBuyResponse[@"id"];
             price = twoStepBuyResponse[@"price"];
         }
-        NSNumber *tax = [NSNumber numberWithFloat:([ price[@"taxedPrice"] floatValue]- [ price[@"totalPrice"] floatValue])/100];
+        NSNumber *tax = [NSNumber numberWithFloat:([ (price[@"taxedPrice"] == [NSNull null] ? price[@"totalPrice"]: price[@"taxedPrice"]) floatValue]- [ price[@"totalPrice"] floatValue])/100];
         [self updateTaxes:tax];
     }];
     
