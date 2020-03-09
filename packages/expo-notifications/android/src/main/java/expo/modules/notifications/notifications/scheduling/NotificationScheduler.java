@@ -94,6 +94,22 @@ public class NotificationScheduler extends ExportedModule {
     });
   }
 
+  @ExpoMethod
+  public void cancelAllScheduledNotificationsAsync(final Promise promise) {
+    ExpoNotificationSchedulerService.enqueueRemoveAll(getContext(), new ResultReceiver(HANDLER) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
+          promise.resolve(null);
+        } else {
+          Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATIONS_FAILED_TO_CANCEL", "Failed to cancel all notifications.", e);
+        }
+      }
+    });
+  }
+
   @Nullable
   protected SchedulableNotificationTrigger triggerFromParams(@Nullable ReadableArguments params) throws InvalidArgumentException {
     if (params == null) {

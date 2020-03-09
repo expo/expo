@@ -79,6 +79,13 @@ UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
   resolve(nil);
 }
 
+UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
+                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
+  resolve(nil);
+}
+
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
 {
   NSString *triggerType = params[notificationTriggerTypeKey];

@@ -38,6 +38,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   private static final String NOTIFICATION_TRIGGER_ACTION = "expo.modules.notifications.TRIGGER_EVENT";
   private static final String NOTIFICATIONS_FETCH_ALL_ACTION = "expo.modules.notifications.FETCH_ALL";
   private static final String NOTIFICATION_REMOVE_ACTION = "expo.modules.notifications.REMOVE_EVENT";
+  private static final String NOTIFICATION_REMOVE_ALL_ACTION = "expo.modules.notifications.REMOVE_ALL_EVENTS";
 
   private static final List<String> SETUP_ACTIONS = Arrays.asList(
       Intent.ACTION_BOOT_COMPLETED,
@@ -119,6 +120,18 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   }
 
   /**
+   * Cancel all scheduled notifications and remove them from the storage asynchronously.
+   *
+   * @param context        Context this is being called from
+   * @param resultReceiver Receiver to be called with the result
+   */
+  public static void enqueueRemoveAll(Context context, ResultReceiver resultReceiver) {
+    Intent intent = new Intent(NOTIFICATION_REMOVE_ALL_ACTION);
+    intent.putExtra(RECEIVER_KEY, resultReceiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
    * Enqueue work to this {@link JobIntentService}.
    *
    * @param context Context this is being called from
@@ -164,6 +177,8 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(NOTIFICATIONS_KEY, fetchNotifications());
         resultData = bundle;
+      } else if (NOTIFICATION_REMOVE_ALL_ACTION.equals(intent.getAction())) {
+        removeAllNotifications(this);
       } else if (SETUP_ACTIONS.contains(intent.getAction())) {
         setupNotifications(this);
       } else {
@@ -279,6 +294,17 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   protected void removeNotification(Context context, String identifier) {
     mAlarmManager.cancel(getTriggerPendingIntent(context, identifier));
     mStore.removeNotification(identifier);
+  }
+
+  /**
+   * Remove all notifications from storage and cancel any pending alarms.
+   *
+   * @param context Context this is being called from
+   */
+  protected void removeAllNotifications(Context context) {
+    for (String notificationId : mStore.removeAllNotifications()) {
+      mAlarmManager.cancel(getTriggerPendingIntent(context, notificationId));
+    }
   }
 
   /**

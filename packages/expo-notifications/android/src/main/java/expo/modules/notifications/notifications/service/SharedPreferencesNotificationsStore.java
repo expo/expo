@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
@@ -133,6 +135,20 @@ public class SharedPreferencesNotificationsStore {
         .remove(preferencesRequestKey(identifier))
         .remove(preferencesTriggerKey(identifier))
         .apply();
+  }
+
+  /**
+   * Removes all notification infos, returning removed IDs.
+   */
+  public Collection<String> removeAllNotifications() {
+    Set<String> notificationsKeys = getAllNotifications().keySet();
+    SharedPreferences.Editor editor = mSharedPreferences.edit();
+    for (String notificationId : notificationsKeys) {
+      editor.remove(preferencesRequestKey(notificationId))
+          .remove(preferencesTriggerKey(notificationId));
+    }
+    editor.apply();
+    return notificationsKeys;
   }
 
   /**

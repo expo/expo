@@ -14,6 +14,7 @@ export interface NotificationSchedulerModule extends ProxyNativeModule {
     trigger: NativeNotificationTrigger
   ) => Promise<string>;
   cancelScheduledNotificationAsync: (identifier: string) => Promise<void>;
+  cancelAllScheduledNotificationsAsync: () => Promise<void>;
 }
 
 export default (NativeModulesProxy.ExpoNotificationScheduler as any) as NotificationSchedulerModule;

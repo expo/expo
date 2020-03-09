@@ -16,6 +16,7 @@ export { default as setBadgeCountAsync } from './setBadgeCountAsync';
 export { default as getAllScheduledNotificationsAsync } from './getAllScheduledNotificationsAsync';
 export { default as scheduleNotificationAsync } from './scheduleNotificationAsync';
 export { default as cancelScheduledNotificationAsync } from './cancelScheduledNotificationAsync';
+export { default as cancelAllScheduledNotificationsAsync } from './cancelAllScheduledNotificationsAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
