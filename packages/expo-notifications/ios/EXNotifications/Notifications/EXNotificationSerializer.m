@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content];
+  serializedRequest[@"notification"] = [self serializedNotificationContent:request.content];
   serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
   return serializedRequest;
 }
@@ -116,9 +116,9 @@ NS_ASSUME_NONNULL_BEGIN
     UNLocationNotificationTrigger *locationTrigger = (UNLocationNotificationTrigger *)trigger;
     serializedTrigger[@"region"] = [self serializedRegion:locationTrigger.region];
   } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
-    serializedTrigger[@"type"] = @"timeInterval";
+    serializedTrigger[@"type"] = @"interval";
     UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
-    serializedTrigger[@"timeInterval"] = @(timeIntervalTrigger.timeInterval);
+    serializedTrigger[@"value"] = @(timeIntervalTrigger.timeInterval);
   } else {
     serializedTrigger[@"type"] = @"unknown";
   }
