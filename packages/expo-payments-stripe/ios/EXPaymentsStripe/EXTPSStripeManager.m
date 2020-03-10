@@ -169,14 +169,13 @@ UM_EXPORT_METHOD_AS(completeApplePayRequest, completeApplePayRequest:(UMPromiseR
     }
 }
 
-UM_EXPORT_METHOD_AS(cancelApplePayRequest, cancelApplePayRequest:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(cancelApplePayRequestAsync, cancelApplePayRequest:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
     if (applePayCompletion) {
         promiseResolver = resolve;
         [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
     } else {
-        [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
-        resolve(nil);
+      resolve(nil);
     }
 }
 
@@ -387,6 +386,7 @@ UM_EXPORT_METHOD_AS(paymentRequestWithCardForm, paymentRequestWithCardForm:(NSDi
     navigationController.navigationBar.stp_theme = theme;
     [[self getViewController] presentViewController:navigationController animated:YES completion:nil];
 }
+
 
 UM_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSArray *)items
                     withOptions:(NSDictionary *)options
@@ -746,8 +746,7 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
 -(void)setShippingAddress:(NSDictionary *)address onCart:(NSString *)cartId{
     NSDictionary *shippingAddress = @{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"};
     setShippingAddressVariables[@"shippingAddress"] = shippingAddress;
-    // backend will not update the database with this partial address if context variable is present in the payload - this is a todo for BE
-    // otherwise the next time when the apple pay sheet is instantiated we will have incomplete address
+    // backend will not update the database with this partial address with if context variable is present in the payload
     setShippingAddressVariables[@"context"] = @"TAX_CALCULATION";
     [self callGraphqlApiWithQuery:setShippingAddressQuery andVariables:setShippingAddressVariables];
 }
