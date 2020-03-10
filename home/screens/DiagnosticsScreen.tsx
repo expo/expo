@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { ThemeContext } from 'react-navigation';
+import { useTheme } from 'react-navigation';
 import { BaseButton } from 'react-native-gesture-handler';
 
 import ScrollView from '../components/NavigationScrollView';
@@ -8,75 +8,68 @@ import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 import { StyledText } from '../components/Text';
 
-class ShadowButton extends React.Component {
-  static contextType = ThemeContext;
-
-  state = {
-    scale: new Animated.Value(1),
-  };
-
-  _handleGestureStateChange = active => {
-    if (active) {
-      Animated.spring(this.state.scale, { toValue: 0.95 }).start();
-    } else {
-      Animated.spring(this.state.scale, { toValue: 1 }).start();
-    }
-  };
-
-  render() {
-    return (
-      <BaseButton
-        onPress={this.props.onPress}
-        onActiveStateChange={this._handleGestureStateChange}
-        style={{
-          paddingHorizontal: 15,
-          paddingTop: 15,
-          paddingBottom: 15,
-          marginTop: -5,
-        }}>
-        <Animated.View
-          style={{
-            backgroundColor: this.context === 'light' ? '#fff' : Colors.dark.cardBackground,
-            padding: 15,
-            borderRadius: 10,
-            shadowOffset: { width: 0, height: 0 },
-            shadowColor: '#000',
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-            transform: [{ scale: this.state.scale }],
-          }}>
-          {this.props.children}
-        </Animated.View>
-      </BaseButton>
-    );
-  }
-}
-
-export default class DiagnosticsScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Diagnostics',
-  };
-
-  render() {
-    return (
-      <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
-          <AudioDiagnostic navigation={this.props.navigation} />
-          {Environment.IsIOSRestrictedBuild ? (
-            <ForegroundLocationDiagnostic navigation={this.props.navigation} />
-          ) : (
-            <BackgroundLocationDiagnostic navigation={this.props.navigation} />
-          )}
-          <GeofencingDiagnostic navigation={this.props.navigation} />
-        </ScrollView>
-      </View>
-    );
-  }
-}
-
-function AudioDiagnostic(props) {
+export default function DiagnosticsScreen({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Audio')}>
+    <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
+        <AudioDiagnostic navigation={navigation} />
+        {Environment.IsIOSRestrictedBuild ? (
+          <ForegroundLocationDiagnostic navigation={navigation} />
+        ) : (
+          <BackgroundLocationDiagnostic navigation={navigation} />
+        )}
+        <GeofencingDiagnostic navigation={navigation} />
+      </ScrollView>
+    </View>
+  );
+}
+
+DiagnosticsScreen.navigationOptions = {
+  title: 'Diagnostics',
+};
+
+type ShadowButtonProps = {
+  children: any,
+  onPress: (pointerInside: boolean) => void
+}
+
+function ShadowButton({ onPress, children }: ShadowButtonProps) {
+  const theme = useTheme();
+  const [scale, setScale] = useState(new Animated.Value(1));
+
+  return (
+    <BaseButton
+      onPress={onPress}
+      onActiveStateChange={active => {
+        Animated.spring(scale, { toValue: active ? 0.95 : 1 }).start();
+      }}
+      style={{
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 15,
+        marginTop: -5,
+      }}>
+      <Animated.View
+        style={{
+          backgroundColor: theme === 'light' ? '#fff' : Colors.dark.cardBackground,
+          padding: 15,
+          borderRadius: 10,
+          shadowOffset: { width: 0, height: 0 },
+          shadowColor: '#000',
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          transform: [{ scale }],
+        }}
+      >
+        {children}
+      </Animated.View>
+    </BaseButton>
+  );
+}
+
+function AudioDiagnostic({ navigation }) {
+  return (
+    <ShadowButton onPress={() => navigation.navigate('Audio')}>
       <StyledText style={styles.titleText}>Audio</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS you can play audio
@@ -88,9 +81,9 @@ function AudioDiagnostic(props) {
   );
 }
 
-function BackgroundLocationDiagnostic(props) {
+function BackgroundLocationDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+    <ShadowButton onPress={() => navigation.navigate('Location')}>
       <StyledText style={styles.titleText}>Background location</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS it's possible to track your location when an app is foregrounded, backgrounded, or
@@ -101,9 +94,9 @@ function BackgroundLocationDiagnostic(props) {
   );
 }
 
-function ForegroundLocationDiagnostic(props) {
+function ForegroundLocationDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+    <ShadowButton onPress={() => navigation.navigate('Location')}>
       <StyledText style={styles.titleText}>Location (when app in use)</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS, there are different permissions for tracking your location. This diagnostic allows
@@ -115,9 +108,9 @@ function ForegroundLocationDiagnostic(props) {
   );
 }
 
-function GeofencingDiagnostic(props) {
+function GeofencingDiagnostic({ navigation }) {
   return (
-    <ShadowButton onPress={() => props.navigation.navigate('Geofencing')}>
+    <ShadowButton onPress={() => navigation.navigate('Geofencing')}>
       <StyledText style={styles.titleText}>Geofencing</StyledText>
       <StyledText style={styles.bodyText}>
         You can fire actions when your device enters specific geographical regions represented by a
