@@ -1,30 +1,17 @@
 import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
-import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';
+import {
+  Listener,
+  LocalAssets,
+  Manifest,
+  UpdateCheckResult,
+  UpdateEvent,
+  UpdateFetchResult,
+} from './Updates.types';
 
-export enum UpdateEventType {
-  UPDATE_AVAILABLE = 'updateAvailable',
-  NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
-  ERROR = 'error',
-}
-
-// TODO(eric): move source of truth for manifest type to this module
-type Manifest = typeof Constants.manifest;
-
-type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest: Manifest };
-
-type UpdateFetchResult = { isNew: false } | { isNew: true; manifest: Manifest };
-
-type Listener<E> = (event: E) => void;
-
-type UpdateEvent =
-  | { type: UpdateEventType.NO_UPDATE_AVAILABLE }
-  | { type: UpdateEventType.UPDATE_AVAILABLE; manifest: Manifest }
-  | { type: UpdateEventType.ERROR; message: string };
-
-type LocalAssets = { [remoteUrl: string]: string };
+export * from './Updates.types';
 
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const manifest: Manifest | object = ExpoUpdates.manifest ?? {};
