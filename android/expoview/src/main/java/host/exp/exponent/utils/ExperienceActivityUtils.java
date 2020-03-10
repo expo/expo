@@ -2,11 +2,9 @@
 
 package host.exp.exponent.utils;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
 
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.expoview.R;
@@ -125,6 +124,8 @@ public class ExperienceActivityUtils {
     @Nullable JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
     @Nullable String statusBarStyle = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE) : null;
     @Nullable String statusBarBackgroundColor = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR, null) : null;
+
+    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
     boolean statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN, false);
     boolean statusBarTranslucent = statusBarOptions == null || statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_TRANSLUCENT, true);
 
@@ -136,10 +137,7 @@ public class ExperienceActivityUtils {
 
       setTranslucent(statusBarTranslucent, activity);
 
-      String appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
-      if (statusBarStyle != null) {
-        appliedStatusBarStyle = setStyle(statusBarStyle, activity);
-      }
+      String appliedStatusBarStyle = setStyle(statusBarStyle, activity, sdkVersion);
 
       // Color passed from manifest is in format '#RRGGBB(AA)' and Android uses '#AARRGGBB'
       String normalizedStatusBarBackgroundColor = RGBAtoARGB(statusBarBackgroundColor);
@@ -209,16 +207,32 @@ public class ExperienceActivityUtils {
    * @return Effective style that is actually applied to the status bar.
    */
   @UiThread
-  private static String setStyle(final String style, final Activity activity) {
+  private static String setStyle(@Nullable final String style, final Activity activity, String sdkVersion) {
     String appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       View decorView = activity.getWindow().getDecorView();
       int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
-      if (style.equals(STATUS_BAR_STYLE_DARK_CONTENT)) {
-        systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
-      } else {
-        systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+      switch (style != null ? style : "") {
+        case STATUS_BAR_STYLE_LIGHT_CONTENT:
+          systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
+          break;
+        case STATUS_BAR_STYLE_DARK_CONTENT:
+          systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
+          break;
+        default:
+          // TODO: remove this once SDK36 is phased out
+          if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("37.0.0")) {
+            // defaults to "light-content" on pre SDK37
+            systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
+          } else {
+            // default to "dark-content" since SDK37
+            systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT;
+          }
+          break;
       }
       decorView.setSystemUiVisibility(systemUiVisibilityFlags);
     }
@@ -294,8 +308,8 @@ public class ExperienceActivityUtils {
           EXL.e(TAG, e);
         }
       }
-    
-    
+
+
       // Set visibility of navigation bar
       String navBarVisible = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
       if (navBarVisible != null) {
@@ -315,11 +329,11 @@ public class ExperienceActivityUtils {
             flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
             break;
         }
-      
+
         decorView.setSystemUiVisibility(flags);
       }
     }
-  
+
 
     public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
       String colorString;
