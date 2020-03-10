@@ -2,7 +2,7 @@
 title: Account Permissions
 ---
 
-> Some features on this page are [available with a paid plan](https://expo.io/developer-services).
+> Some features on this page require [Developer Services](https://expo.io/developer-services).
 
 When you're developing your project, multiple people on your team may
 need to release new versions or view the work in progress.  These
@@ -29,4 +29,3 @@ to your app.json to take advantage of the Publish permission.
 ### View
 Users with View permission will be able to load projects through the Expo
 client as if they were the primary account owner of the account.
-
