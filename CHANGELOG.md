@@ -50,6 +50,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - **`expo`**: Removed `ScreenOrientation` from the `expo` package and extracted into `expo-screen-orientation` unimodule. ([#6760](https://github.com/expo/expo/pull/6760) by [@lukmccall](https://github.com/lukmccall))
 - Removed `Orientation.PORTRAIT` and `Orientation.LANDSCAPE` from `ScreenOrientation` in favor of their more specific versions. ([#6760](https://github.com/expo/expo/pull/6760) by [@lukmccall](https://github.com/lukmccall))
 - `LocalAuthentication.authenticateAsync` will now display Android's UI component to prompt the user to authenticate. ([#6846](https://github.com/expo/expo/pull/6846) by [@LinusU](https://github.com/LinusU))
+- `StatusBar` on Android has `dark-content` by default to match iOS. ([#7317](https://github.com/expo/expo/pull/7317) [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
 
