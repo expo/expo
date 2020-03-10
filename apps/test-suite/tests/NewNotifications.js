@@ -886,8 +886,8 @@ export async function test(t) {
                   userInteractionTimeout = null;
                 }
                 await Notifications.scheduleNotificationAsync(
-                  identifier,
                   {
+                    identifier,
                     title: 'Hello from the application!',
                     message:
                       'You can now return to the app and let the test know the notification has been shown.',
