@@ -5,8 +5,10 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
+import { Alert, AppState } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import { isInteractive } from '../utils/Environment';
 import { waitFor } from './helpers';
 
 export const name = 'expo-notifications';
@@ -121,7 +123,7 @@ export async function test(t) {
           handleSuccess: event => {
             handleSuccessEvent = event;
           },
-          handleError: event => {
+          handleError: (...event) => {
             handleErrorEvent = event;
           },
         });
@@ -218,6 +220,7 @@ export async function test(t) {
               await waitFor(1000);
             }
             t.expect(handleErrorEvent).not.toBeNull();
+            t.expect(typeof handleErrorEvent[0]).toBe('string');
             t.expect(handleSuccessEvent).toBeNull();
           },
           10000
@@ -825,6 +828,95 @@ export async function test(t) {
         10000
       );
     });
+
+    const onlyInteractiveDescribe = isInteractive ? t.describe : t.xdescribe;
+    onlyInteractiveDescribe('when the app is in background', () => {
+      let subscription = null;
+      let handleNotificationSpy = null;
+      let handleSuccessSpy = null;
+      let handleErrorSpy = null;
+      let notificationReceivedSpy = null;
+
+      t.beforeEach(async () => {
+        handleNotificationSpy = t.jasmine.createSpy('handleNotificationSpy');
+        handleSuccessSpy = t.jasmine.createSpy('handleSuccessSpy');
+        handleErrorSpy = t.jasmine.createSpy('handleErrorSpy').and.callFake((...args) => {
+          console.log(args);
+        });
+        notificationReceivedSpy = t.jasmine.createSpy('notificationReceivedSpy');
+        Notifications.setNotificationHandler({
+          handleNotification: handleNotificationSpy,
+          handleSuccess: handleSuccessSpy,
+          handleError: handleErrorSpy,
+        });
+        subscription = Notifications.addNotificationReceivedListener(notificationReceivedSpy);
+      });
+
+      t.afterEach(() => {
+        if (subscription) {
+          subscription.remove();
+          subscription = null;
+        }
+        Notifications.setNotificationHandler(null);
+        handleNotificationSpy = null;
+        handleSuccessSpy = null;
+        handleErrorSpy = null;
+        notificationReceivedSpy = null;
+      });
+
+      t.it(
+        'shows the notification',
+        // without async-await the code is executed immediately after opening the screen
+        async () =>
+          await new Promise((resolve, reject) => {
+            const secondsToTimeout = 5;
+            let notificationSent = false;
+            Alert.alert(`Please move the app to the background and wait for 5 seconds`);
+            let userInteractionTimeout = null;
+            async function handleStateChange(state) {
+              const identifier = 'test-interactive-notification';
+              if (state === 'background' && !notificationSent) {
+                if (userInteractionTimeout) {
+                  clearInterval(userInteractionTimeout);
+                  userInteractionTimeout = null;
+                }
+                await Notifications.scheduleNotificationAsync(
+                  identifier,
+                  {
+                    title: 'Hello from the application!',
+                    message:
+                      'You can now return to the app and let the test know the notification has been shown.',
+                  },
+                  { seconds: 1 }
+                );
+                notificationSent = true;
+              } else if (state === 'active' && notificationSent) {
+                const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
+                t.expect(notificationWasShown).toBeTruthy();
+                t.expect(handleNotificationSpy).not.toHaveBeenCalled();
+                t.expect(handleSuccessSpy).not.toHaveBeenCalled();
+                t.expect(handleErrorSpy).not.toHaveBeenCalledWith(identifier);
+                t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+                AppState.removeEventListener('change', handleStateChange);
+                resolve();
+              }
+            }
+            userInteractionTimeout = setTimeout(() => {
+              console.warn(
+                "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+              );
+              AppState.removeEventListener('change', handleStateChange);
+              Alert.alert(
+                'Scheduled notification test was skipped',
+                `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
+              );
+              resolve();
+            }, secondsToTimeout * 1000);
+            AppState.addEventListener('change', handleStateChange);
+          }),
+        30000
+      );
+    });
   });
 }
 
@@ -876,4 +968,28 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       throw new Error(`API error has occurred: ${receipt.details.error}`);
     }
   }
+}
+
+function askUserYesOrNo(title, message = '') {
+  return new Promise((resolve, reject) => {
+    try {
+      Alert.alert(
+        title,
+        message,
+        [
+          {
+            text: 'No',
+            onPress: () => resolve(false),
+          },
+          {
+            text: 'Yes',
+            onPress: () => resolve(true),
+          },
+        ],
+        { onDismiss: () => resolve(false) }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
 }

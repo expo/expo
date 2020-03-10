@@ -38,10 +38,10 @@ export function setNotificationHandler(handler) {
             catch (error) {
                 // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
                 // eslint-disable-next-line
-                handler.handleError?.(error);
+                handler.handleError?.(id, error);
             }
         });
-        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(new NotificationTimeoutError(id, notification)));
+        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, notification)));
     }
 }
 //# sourceMappingURL=NotificationsHandler.js.map
