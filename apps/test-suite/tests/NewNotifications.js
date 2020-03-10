@@ -680,7 +680,12 @@ export async function test(t) {
 
     t.describe('scheduleNotificationAsync', () => {
       const identifier = 'test-scheduled-notification';
-      const notification = { title: 'Scheduled notification' };
+      const notification = {
+        title: 'Scheduled notification',
+        body: { key: 'value' },
+        badge: 2,
+        vibrate: [100, 100, 100, 100, 100, 100],
+      };
 
       t.afterEach(async () => {
         await Notifications.cancelScheduledNotificationAsync(identifier);
