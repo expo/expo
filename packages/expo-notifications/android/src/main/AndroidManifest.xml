@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="expo.modules.notifications">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application>
         <service
             android:name=".FirebaseListenerService"
@@ -17,5 +19,24 @@
                 <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".notifications.service.ExpoNotificationSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".notifications.service.ScheduledAlarmReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="expo.modules.notifications.TRIGGER_EVENT" />
+
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
