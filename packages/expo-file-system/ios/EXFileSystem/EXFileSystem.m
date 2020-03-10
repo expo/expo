@@ -569,7 +569,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       reject(@"E_DOWNLOAD_FAILED",
-             [NSString stringWithFormat:@"Could not download from '%@'", url],
+             [NSString stringWithFormat:@"Could not download from '%@'.", url],
              error);
       return;
     }
@@ -577,7 +577,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
     [[NSFileManager defaultManager] moveItemAtPath:location.path toPath:path error:&error];
     if (error) {
       reject(@"E_MOVED_FAILED",
-             [NSString stringWithFormat:@"Could not move the downloaded file from '%@' to '%@", location.path, path],
+             [NSString stringWithFormat:@"Could not move the downloaded file from '%@' to '%@'.", location.path, path],
              error);
       return;
     }
@@ -592,6 +592,41 @@ UM_EXPORT_METHOD_AS(downloadAsync,
     result[@"status"] = @([httpResponse statusCode]);
     result[@"headers"] = [httpResponse allHeaderFields];
     resolve(result);
+  }];
+  
+  [task resume];
+}
+
+UM_EXPORT_METHOD_AS(uploadAsync,
+                    uploadAsync:(NSString *)file
+                          toUrl:(NSString *)urlString
+                    withOptions:(NSDictionary *)options
+                       resolver:(UMPromiseResolveBlock)resolve
+                       rejecter:(UMPromiseRejectBlock)reject)
+{
+  NSMutableURLRequest *url = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+  [url setHTTPMethod:[self _importHttpMethod:options[@"httpMethod"]]];
+  
+  NSURL *fileUrl = [NSURL URLWithString:file];
+  
+  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
+  if (headerDict != nil) {
+    sessionConfiguration.HTTPAdditionalHeaders = headerDict;
+  }
+  sessionConfiguration.URLCache = nil;
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+  
+  NSURLSessionUploadTask *task = [session uploadTaskWithRequest:url fromFile:fileUrl completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    if (error) {
+      reject(@"E_UPLOADED_FILE",
+             [NSString stringWithFormat:@"Could not uplad '%@' to '%@'.", fileUrl.path, url.URL.path],
+             error);
+      return;
+    }
+    
+    resolve(nil);
   }];
   
   [task resume];
@@ -683,6 +718,18 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 #pragma mark - Internal methods
+
+- (NSString *)_importHttpMethod:(NSNumber *)httpMethod
+{
+  if ([httpMethod isEqual:@1]) {
+    return @"PUT";
+  }
+  if ([httpMethod isEqual:@2]) {
+    return @"PATCH";
+  }
+  
+  return @"POST";
+}
 
 - (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url withScopedPath:(NSString *)scopedPath withUUID:(NSString *)uuid withOptions:(NSDictionary *)options withResumeData:(NSData * _Nullable)resumeData withResolver:(UMPromiseResolveBlock)resolve withRejecter:(UMPromiseRejectBlock)reject
 {

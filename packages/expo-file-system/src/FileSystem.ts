@@ -14,6 +14,8 @@ import {
   ReadingOptions,
   WritingOptions,
   ProgressEvent,
+  UploadOptions,
+  FileSystemHttpMethods,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -35,6 +37,8 @@ export {
   ReadingOptions,
   WritingOptions,
   ProgressEvent,
+  UploadOptions,
+  FileSystemHttpMethods,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {
@@ -157,14 +161,25 @@ export async function getTotalDiskCapacityAsync(): Promise<number> {
 }
 
 export async function downloadAsync(
-  uri: string,
   fileUri: string,
+  uri: string,
   options: DownloadOptions = {}
 ): Promise<DownloadResult> {
   if (!ExponentFileSystem.downloadAsync) {
     throw new UnavailabilityError('expo-file-system', 'downloadAsync');
   }
   return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+}
+
+export async function uploadAsync(
+  fileUri: string,
+  url: string,
+  options: UploadOptions = {}
+): Promise<void> {
+  if (!ExponentFileSystem.uploadAsync) {
+    throw new UnavailabilityError('expo-file-system', 'uploadAsync');
+  }
+  return await ExponentFileSystem.uploadAsync(fileUri, url, options);
 }
 
 export function createDownloadResumable(

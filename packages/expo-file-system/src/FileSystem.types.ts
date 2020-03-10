@@ -11,6 +11,11 @@ export type DownloadResult = {
   md5?: string;
 };
 
+export type UploadOptions = {
+  headers?: { [name: string]: string };
+  httpMethod?: FileSystemHttpMethods;
+};
+
 export type DownloadProgressCallback = (data: DownloadProgressData) => void;
 
 export type DownloadProgressData = {
@@ -48,6 +53,12 @@ export enum EncodingType {
   Base64 = 'base64',
 }
 
+export enum FileSystemHttpMethods {
+  POST = 0,
+  PUT = 1,
+  PATCH = 2,
+}
+
 export type ReadingOptions = {
   encoding?: EncodingType | 'utf8' | 'base64';
   position?: number;
@@ -83,6 +94,7 @@ export interface ExponentFileSystemModule {
   readonly makeDirectoryAsync?: PlatformMethod;
   readonly readDirectoryAsync?: PlatformMethod;
   readonly downloadAsync?: PlatformMethod;
+  readonly uploadAsync?: PlatformMethod;
   readonly downloadResumableStartAsync?: PlatformMethod;
   readonly downloadResumablePauseAsync?: PlatformMethod;
   readonly getContentUriAsync?: PlatformMethod;
