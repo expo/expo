@@ -174,7 +174,7 @@ For more details please navigate to [Configuring StatusBar](../../guides/configu
     /*
       Configures the status-bar icons to have a light or dark color.
       Valid values: "light-content", "dark-content".
-      Defaults to "light-content".
+      Defaults to "dark-content".
     */
     "barStyle": "light-content" | "dark-content",
 
