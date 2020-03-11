@@ -3,7 +3,7 @@
     "name": "Blank Template (TypeScript)",
     "slug": "expo-template-blank-typescript",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
+    "sdkVersion": "37.0.0",
     "platforms": [
       "ios",
       "android",
