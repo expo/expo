@@ -13,6 +13,7 @@ const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScree
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
+const ExpoImage = optionalRequire(() => require('../screens/ExpoImageScreen'));
 const GestureHandlerList = optionalRequire(() => require('../screens/GestureHandlerListScreen'));
 const GestureHandlerPinch = optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
 const GestureHandlerSwipeable = optionalRequire(() =>
@@ -49,6 +50,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   BlurView,
   Camera,
   DateTimePicker,
+  ExpoImage,
   GL,
   ...GLScreens,
   GestureHandlerPinch,
