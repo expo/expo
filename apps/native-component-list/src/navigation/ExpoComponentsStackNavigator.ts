@@ -3,6 +3,7 @@ import createStackNavigator from './createStackNavigator';
 import StackConfig from './StackConfig';
 import { Screens } from './ExpoComponents';
 import SafeAreaNavigationWrapper from './SafeAreaNavigationWrapper';
+import LoadAssetsNavigationWrapper from './LoadAssetsNavigationWrapper';
 
 const ExpoComponentsStackNavigator = createStackNavigator(
   {
@@ -12,4 +13,4 @@ const ExpoComponentsStackNavigator = createStackNavigator(
   StackConfig
 );
 
-export default SafeAreaNavigationWrapper(ExpoComponentsStackNavigator);
+export default LoadAssetsNavigationWrapper(SafeAreaNavigationWrapper(ExpoComponentsStackNavigator));
