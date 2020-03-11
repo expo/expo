@@ -11,6 +11,12 @@ import androidx.annotation.NonNull;
 public class ExpoImageManager extends SimpleViewManager<View> {
   private static final String REACT_CLASS = "ExpoImage";
 
+  private RequestManager mRequestManager;
+
+  public ExpoImageManager(ReactApplicationContext applicationContext) {
+    mRequestManager = Glide.with(applicationContext);
+  }
+
   @NonNull
   @Override
   public String getName() {
