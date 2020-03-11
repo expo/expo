@@ -608,6 +608,8 @@ CACHE_KEYS:
       expo-image: bcbb57a3ee11d42bb8c5a75d69a0418f
     CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
+      - "../../../../packages/expo-image/ios/EXImageView.h"
+      - "../../../../packages/expo-image/ios/EXImageView.m"
       - "../../../../packages/expo-image/ios/EXImageViewManager.h"
       - "../../../../packages/expo-image/ios/EXImageViewManager.m"
       - "../../../../packages/expo-image/README.md"
