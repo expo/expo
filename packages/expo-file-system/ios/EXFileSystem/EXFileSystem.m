@@ -536,13 +536,13 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
 }
 
 UM_EXPORT_METHOD_AS(downloadAsync,
-                    downloadAsyncWithUrl:(NSString *)uriString
+                    downloadAsyncWithUrl:(NSString *)urlString
                     withLocalURI:(NSString *)localUriString
                     withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURL *url = [NSURL URLWithString:uriString];
+  NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
   if (!([self checkIfFileDirExists:localUri.path])) {
     reject(@"E_FILESYSTEM_WRONG_DESTINATION",
@@ -557,15 +557,9 @@ UM_EXPORT_METHOD_AS(downloadAsync,
     return;
   }
   NSString *path = localUri.path;
-  
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-  if (headerDict != nil) {
-    sessionConfiguration.HTTPAdditionalHeaders = headerDict;
-  }
-  sessionConfiguration.URLCache = nil;
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+
+  NSURLSession *session = [self _createSessionWithHeaders:options[@"headers"]];
+
   NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       reject(@"E_DOWNLOAD_FAILED",
@@ -582,15 +576,13 @@ UM_EXPORT_METHOD_AS(downloadAsync,
       return;
     }
     
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
+    NSMutableDictionary *result = [self _parseServerResponse:response];
     result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
     if (options[@"md5"]) {
       NSData* data = [NSData dataWithContentsOfFile:path];
       result[@"md5"] = [data md5String];
     }
-    result[@"status"] = @([httpResponse statusCode]);
-    result[@"headers"] = [httpResponse allHeaderFields];
     resolve(result);
   }];
   
@@ -598,35 +590,42 @@ UM_EXPORT_METHOD_AS(downloadAsync,
 }
 
 UM_EXPORT_METHOD_AS(uploadAsync,
-                    uploadAsync:(NSString *)file
+                    uploadAsync:(NSString *)fileUriString
                           toUrl:(NSString *)urlString
                     withOptions:(NSDictionary *)options
                        resolver:(UMPromiseResolveBlock)resolve
                        rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSMutableURLRequest *url = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-  [url setHTTPMethod:[self _importHttpMethod:options[@"httpMethod"]]];
-  
-  NSURL *fileUrl = [NSURL URLWithString:file];
-  
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-  if (headerDict != nil) {
-    sessionConfiguration.HTTPAdditionalHeaders = headerDict;
+  NSURL *fileUri = [NSURL URLWithString:fileUriString];
+  if (![fileUri.scheme isEqualToString:@"file"]) {
+    reject(@"E_FILESYSTEM_PERMISSIONS",
+           [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
+           nil);
+    return;
   }
-  sessionConfiguration.URLCache = nil;
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+  if (!([self _checkIfFileExists:fileUri.path])) {
+    reject(@"E_FILE_NOT_EXISTS",
+           [NSString stringWithFormat:@"File '%@' does not exist.", fileUri],
+           nil);
+    return;
+  }
   
-  NSURLSessionUploadTask *task = [session uploadTaskWithRequest:url fromFile:fileUrl completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+  NSURLSession *session = [self _createSessionWithHeaders:options[@"headers"]];
+  NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+  [urlRequest setHTTPMethod:[self _importHttpMethod:options[@"httpMethod"]]];
+
+  NSURLSessionUploadTask *task = [session uploadTaskWithRequest:urlRequest fromFile:fileUri completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       reject(@"E_UPLOADED_FILE",
-             [NSString stringWithFormat:@"Could not uplad '%@' to '%@'.", fileUrl.path, url.URL.path],
+             [NSString stringWithFormat:@"Could not upload '%@' to '%@'.", fileUri, urlRequest.URL],
              error);
       return;
     }
     
-    resolve(nil);
+    NSMutableDictionary *result = [self _parseServerResponse:response];
+    result[@"body"] = [[NSString alloc] initWithData:data encoding:[self _importBodyEncoding:options[@"bodyEncoding"]]];
+    
+    resolve(result);
   }];
   
   [task resume];
@@ -718,6 +717,65 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 #pragma mark - Internal methods
+
+- (BOOL)_checkIfFileExists:(NSString *)path
+{
+  return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+- (NSStringEncoding)_importBodyEncoding:(NSNumber *)encoding
+{
+  static NSDictionary *encodingMap = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    encodingMap = @{
+      @(1) : @(NSASCIIStringEncoding),
+      @(2) : @(NSNEXTSTEPStringEncoding),
+      @(3) : @(NSJapaneseEUCStringEncoding),
+      @(4) : @(NSISOLatin1StringEncoding),
+      @(5) : @(NSSymbolStringEncoding),
+      @(6) : @(NSNonLossyASCIIStringEncoding),
+      @(7) : @(NSShiftJISStringEncoding),
+      @(8) : @(NSISOLatin2StringEncoding),
+      @(9) : @(NSUnicodeStringEncoding),
+      @(10): @(NSWindowsCP1251StringEncoding),
+      @(11): @(NSWindowsCP1252StringEncoding),
+      @(12): @(NSWindowsCP1253StringEncoding),
+      @(13): @(NSWindowsCP1254StringEncoding),
+      @(14): @(NSWindowsCP1250StringEncoding),
+      @(15): @(NSISO2022JPStringEncoding),
+      @(16): @(NSMacOSRomanStringEncoding),
+      @(17): @(NSUTF16BigEndianStringEncoding),
+      @(18): @(NSUTF16LittleEndianStringEncoding),
+      @(19): @(NSUTF32StringEncoding),
+      @(20): @(NSUTF32BigEndianStringEncoding),
+      @(21): @(NSUTF32LittleEndianStringEncoding),
+    };
+  });
+  
+  return [encodingMap[encoding] integerValue] ?: NSUTF8StringEncoding;
+}
+
+- (NSMutableDictionary *)_parseServerResponse:(NSURLResponse *)response
+{
+  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  result[@"status"] = @([httpResponse statusCode]);
+  result[@"headers"] = [httpResponse allHeaderFields];
+  
+  return result;
+}
+
+- (NSURLSession *)_createSessionWithHeaders:(NSDictionary * _Nullable)headers
+{
+  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  if (headers != nil) {
+    sessionConfiguration.HTTPAdditionalHeaders = headers;
+  }
+  sessionConfiguration.URLCache = nil;
+  return [NSURLSession sessionWithConfiguration:sessionConfiguration];
+}
 
 - (NSString *)_importHttpMethod:(NSNumber *)httpMethod
 {
@@ -865,7 +923,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 - (BOOL)checkIfFileDirExists:(NSString *)path
 {
   NSString *dir = [path stringByDeletingLastPathComponent];
-  return [[NSFileManager defaultManager] fileExistsAtPath:dir];
+  return [self _checkIfFileExists:dir];
 }
 
 #pragma mark - Class methods

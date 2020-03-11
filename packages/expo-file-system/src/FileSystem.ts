@@ -16,6 +16,7 @@ import {
   ProgressEvent,
   UploadOptions,
   FileSystemHttpMethods,
+  FileSystemBodyEncoding,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -39,6 +40,7 @@ export {
   ProgressEvent,
   UploadOptions,
   FileSystemHttpMethods,
+  FileSystemBodyEncoding,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {
