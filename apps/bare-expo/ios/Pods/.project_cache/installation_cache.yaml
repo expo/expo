@@ -605,8 +605,8 @@ CACHE_KEYS:
       - EXPermissions (8.1.0)
   expo-image:
     BUILD_SETTINGS_CHECKSUM:
-      expo-image: 4e752d99c9882fa54e191563bc722904
-    CHECKSUM: 4604962f2fb3daadcdaa7abccf87bc581ad1c387
+      expo-image: bcbb57a3ee11d42bb8c5a75d69a0418f
+    CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
       - "../../../../packages/expo-image/ios/EXImageViewManager.h"
       - "../../../../packages/expo-image/ios/EXImageViewManager.m"
@@ -944,12 +944,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: be3735c28d4deb5a38ca11304c27a607
-      Release: be3735c28d4deb5a38ca11304c27a607
+      Debug: 816f15a05b128cfbab101cc7184d9687
+      Release: 816f15a05b128cfbab101cc7184d9687
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 6d8223063e5ad8a039f77b294b0927dc
-      Release: 6d8223063e5ad8a039f77b294b0927dc
+      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
+      Release: e6aedfaad570c1e1a2e18b3c4a18be48
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1832,6 +1832,14 @@ CACHE_KEYS:
     PROJECT_NAME: RNScreens
     SPECS:
       - RNScreens (2.2.0)
+  SDWebImage:
+    BUILD_SETTINGS_CHECKSUM:
+      SDWebImage: 77937f139d5c03d5c73744a96408a279
+    CHECKSUM: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
+    PROJECT_NAME: SDWebImage
+    SPECS:
+      - SDWebImage (5.6.0)
+      - SDWebImage/Core (5.6.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
