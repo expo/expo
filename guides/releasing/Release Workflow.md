@@ -258,7 +258,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Run `et publish-packages --tag next` to publish all packages as `rc` versions and as `next` tag.
+- Run `et legacy-publish-packages --tag next` to publish all packages as `rc` versions and as `next` tag.
 - TODO: add information about how to bump the version numbers, if the script does not take care of this. For now talk to @tsapeta
 
 ## 3.4. Publishing `next` project templates

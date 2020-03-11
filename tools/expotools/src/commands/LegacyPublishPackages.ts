@@ -1060,8 +1060,8 @@ async function publishPackagesAsync(argv: any): Promise<void> {
 
 export default (program: Command) => {
   program
-    .command('publish-packages')
-    .alias('pub-pkg', 'pp')
+    .command('legacy-publish-packages')
+    .alias('leg-pub-pkg', 'lpp')
     .option('-l, --list-packages', 'Lists all packages the script can publish.')
     .option(
       '-t, --tag [string]',
@@ -1115,14 +1115,14 @@ updating Android and iOS projects for Expo Client, committing changes that were 
       `
 
 To publish packages as release candidates, you might want to use something like:
-${chalk.gray('>')} ${chalk.italic.cyan('et publish-packages --tag="next" --prerelease')}
+${chalk.gray('>')} ${chalk.italic.cyan('et legacy-publish-packages --tag="next" --prerelease')}
 
 If you want to publish just specific packages:
-${chalk.gray('>')} ${chalk.italic.cyan('et publish-packages --scope="expo-gl,expo-gl-cpp"')}
+${chalk.gray('>')} ${chalk.italic.cyan('et legacy-publish-packages --scope="expo-gl,expo-gl-cpp"')}
 
 If you want to publish a package with specific version:
 ${chalk.gray('>')} ${chalk.italic.cyan(
-        'et publish-packages --version="1.2.3" --scope="expo-permissions"'
+        'et legacy-publish-packages --version="1.2.3" --scope="expo-permissions"'
       )}`
     )
     .asyncAction(publishPackagesAsync);
