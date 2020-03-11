@@ -42,6 +42,12 @@ const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
 const HTML = optionalRequire(() => require('../screens/HTMLElementsScreen'));
+const Image = optionalRequire(() => require('../screens/Image/ImageScreen'));
+const ImageScreens = (optionalRequire(() =>
+  require('../screens/Image/ImageScreens')
+) as unknown) as {
+  [key: string]: React.ComponentType;
+};
 
 const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
@@ -57,6 +63,8 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   GestureHandlerList,
   GestureHandlerSwipeable,
   HTML,
+  Image,
+  ...ImageScreens,
   ReanimatedImagePreview,
   ReanimatedProgress,
   Gif,
