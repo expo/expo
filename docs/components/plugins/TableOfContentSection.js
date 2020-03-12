@@ -55,7 +55,7 @@ const STYLES_EXTERNAL_LINK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.colors.black80};
+  color: ${Constants.expoColors.gray[900]};
   :hover {
     color: ${Constants.colors.expoLighter};
   }
@@ -69,7 +69,7 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.primary[100]};
+  background-color: ${Constants.expoColors.gray[200]};
   border-radius: 2px;
   vertical-align: middle;
   overflow-x: scroll;
