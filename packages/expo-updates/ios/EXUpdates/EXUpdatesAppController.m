@@ -70,6 +70,12 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return self;
 }
 
+- (void)setConfiguration:(NSDictionary *)configuration
+{
+  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:setConfiguration should not be called after start");
+  [EXUpdatesConfig.sharedInstance loadConfigFromDictionary:configuration];
+}
+
 - (void)start
 {
   NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
