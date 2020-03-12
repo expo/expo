@@ -1,6 +1,8 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, SectionList, View, Text } from 'react-native';
 import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import HeaderButtons from 'react-navigation-header-buttons';
 
 import Colors from '../../constants/Colors';
 import ImageTestListItem from './ImageTestListItem';
@@ -14,6 +16,20 @@ export default class ImageAllTestsScreen extends React.Component<NavigationScree
   static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
     return {
       title: imageTests.name,
+      headerRight: (
+        <HeaderButtons IconComponent={MaterialIcons} iconSize={25}>
+          <HeaderButtons.Item
+            title="list"
+            iconName="list"
+            onPress={() =>
+              navigation.push('ImageTests', {
+                // @ts-ignore
+                tests: imageTests,
+              })
+            }
+          />
+        </HeaderButtons>
+      ),
     };
   };
 
