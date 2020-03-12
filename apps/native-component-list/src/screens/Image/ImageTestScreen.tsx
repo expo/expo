@@ -1,9 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import ExpoImage from 'expo-image';
 import * as React from 'react';
-import { StyleSheet, View, Animated, Image as ExpoImage } from 'react-native';
+import { StyleSheet, View, Animated } from 'react-native';
 import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
 import HeaderButtons from 'react-navigation-header-buttons';
-//import ExpoImage from 'expo-image';
 
 import AnimationBar from './AnimationBar';
 import CompareBar from './CompareBar';

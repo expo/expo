@@ -1,16 +1,8 @@
+import ExpoImage from 'expo-image';
 import * as React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Animated,
-  Dimensions,
-  Image as ExpoImage,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 
-//import ExpoImage from 'expo-image';
 import { Colors } from '../../constants';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
