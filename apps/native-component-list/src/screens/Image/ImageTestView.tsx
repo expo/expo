@@ -17,6 +17,7 @@ export default class ImageTestView extends React.PureComponent<PropsType> {
         <ImageComponent
           style={[styles.image, style]}
           source={source || require('../../../assets/images/exponent-icon.png')}
+          resizeMode="cover"
           {...otherImageProps}
         />
       </View>
@@ -34,6 +35,5 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
-    resizeMode: 'cover',
   },
 });

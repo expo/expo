@@ -11,7 +11,7 @@ import ImageEventsView from './ImageEventsView';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest } from './types';
+import { ImageTest, ImageTestGroup } from './types';
 
 const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
@@ -26,12 +26,28 @@ let compareEnabled: boolean = false;
 export default class ImageTestScreen extends React.Component<NavigationScreenProps, StateType> {
   static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
     const test: ImageTest = navigation.getParam('test');
-    const onRefresh = navigation.getParam('onRefresh');
+    const sepIdx = test.name.indexOf(':');
+    const title =
+      sepIdx >= 0 && test.name.length > 12 ? test.name.substring(sepIdx + 1) : test.name;
     return {
-      title: test.name,
+      title,
       headerRight: (
-        <HeaderButtons IconComponent={MaterialIcons} iconSize={25} color="blue">
-          <HeaderButtons.Item title="refresh" iconName="refresh" onPress={onRefresh} />
+        <HeaderButtons IconComponent={MaterialIcons} iconSize={25}>
+          <HeaderButtons.Item
+            title="refresh"
+            iconName="refresh"
+            onPress={navigation.getParam('onRefresh')}
+          />
+          <HeaderButtons.Item
+            title="previous"
+            iconName="arrow-back"
+            onPress={navigation.getParam('onPrevious')}
+          />
+          <HeaderButtons.Item
+            title="next"
+            iconName="arrow-forward"
+            onPress={navigation.getParam('onNext')}
+          />
         </HeaderButtons>
       ),
     };
@@ -47,12 +63,36 @@ export default class ImageTestScreen extends React.Component<NavigationScreenPro
     const { navigation } = this.props;
     navigation.setParams({
       onRefresh: this.onRefresh,
+      onPrevious: this.onPrevious,
+      onNext: this.onNext,
     });
   }
 
   onRefresh = () => {
     this.setState({
       viewKey: '' + Date.now(),
+    });
+  };
+
+  onPrevious = () => {
+    const { navigation } = this.props;
+    const test: ImageTest = navigation.getParam('test');
+    const tests: ImageTestGroup = navigation.getParam('tests');
+    const idx = tests ? tests.tests.indexOf(test) : -1;
+    const newIdx = idx <= 0 ? tests.tests.length - 1 : idx - 1;
+    navigation.setParams({
+      test: tests.tests[newIdx],
+    });
+  };
+
+  onNext = () => {
+    const { navigation } = this.props;
+    const test: ImageTest = navigation.getParam('test');
+    const tests: ImageTestGroup = navigation.getParam('tests');
+    const idx = tests ? tests.tests.indexOf(test) : -1;
+    const newIdx = idx >= tests.tests.length - 1 ? 0 : idx + 1;
+    navigation.setParams({
+      test: tests.tests[newIdx],
     });
   };
 
@@ -128,8 +168,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     bottom: 12,
-  },
-  headerButton: {
-    marginRight: 16,
   },
 });

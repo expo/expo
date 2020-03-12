@@ -9,31 +9,31 @@ const imageTests: ImageTestGroup = {
       props: {},
     },
     {
-      name: `Resize mode "cover"`,
+      name: `Resize mode: cover`,
       props: {
         resizeMode: 'cover',
       },
     },
     {
-      name: `Resize mode "contain"`,
+      name: `Resize mode: contain`,
       props: {
         resizeMode: 'contain',
       },
     },
     {
-      name: `Resize mode "stretch"`,
+      name: `Resize mode: stretch`,
       props: {
         resizeMode: 'stretch',
       },
     },
     {
-      name: `Resize mode "center"`,
+      name: `Resize mode: center`,
       props: {
         resizeMode: 'center',
       },
     },
     {
-      name: `Resize mode "repeat"`,
+      name: `Resize mode: repeat`,
       props: {
         resizeMode: 'repeat',
       },
@@ -71,7 +71,7 @@ const imageTests: ImageTestGroup = {
       }),
     },
     {
-      name: 'Border radius (separate corners)',
+      name: 'Border radius: separate corners',
       props: ({ range }: ImageTestPropsFnInput) => ({
         style: {
           borderTopLeftRadius: range(0, 25),
@@ -84,7 +84,7 @@ const imageTests: ImageTestGroup = {
       }),
     },
     {
-      name: 'Borders (separate edges)',
+      name: 'Borders: separate edges',
       props: ({ range }: ImageTestPropsFnInput) => ({
         style: {
           borderLeftWidth: range(0, 25),

@@ -35,6 +35,7 @@ export default class ImageTestsScreen extends React.Component<NavigationScreenPr
 
   onPressItem = (test: ImageTest | ImageTestGroup) => {
     const { navigation } = this.props;
+    const tests: ImageTestGroup = navigation.getParam('tests') || imageTests;
     // @ts-ignore
     if (test.tests) {
       navigation.push('ImageTests', {
@@ -44,6 +45,7 @@ export default class ImageTestsScreen extends React.Component<NavigationScreenPr
     } else {
       navigation.push('ImageTest', {
         test,
+        tests,
       });
     }
   };
