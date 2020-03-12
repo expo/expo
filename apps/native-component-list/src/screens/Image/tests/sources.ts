@@ -2,7 +2,7 @@ import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 import images from './images';
 
 const imageTests: ImageTestGroup = {
-  name: 'Source',
+  name: 'Sources',
   tests: [
     {
       name: `require(1.jpg)`,
