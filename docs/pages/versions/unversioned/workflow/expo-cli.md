@@ -275,8 +275,6 @@ Alias: `expo i`
 | `--npm` | Use npm to install dependencies. The default when Yarn is not installed. |
 | `--yarn` | Use Yarn to install dependencies. The default when Yarn is installed. |
 | `--name` [name] | The name of your app visible on the home screen. |
-| `--android-package` [name] | The package name for your Android app. |
-| `--ios-bundle-identifier` [name] | The bundle identifier for your iOS app. |
 
 </p>
 </details>
