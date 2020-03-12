@@ -45,7 +45,7 @@ export default class ImageTestsScreen extends React.Component<NavigationScreenPr
     } else {
       navigation.push('ImageTest', {
         test,
-        tests,
+        tests: tests.tests,
       });
     }
   };

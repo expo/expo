@@ -11,7 +11,7 @@ import ImageEventsView from './ImageEventsView';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest, ImageTestGroup } from './types';
+import { ImageTest } from './types';
 
 const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
@@ -77,22 +77,22 @@ export default class ImageTestScreen extends React.Component<NavigationScreenPro
   onPrevious = () => {
     const { navigation } = this.props;
     const test: ImageTest = navigation.getParam('test');
-    const tests: ImageTestGroup = navigation.getParam('tests');
-    const idx = tests ? tests.tests.indexOf(test) : -1;
-    const newIdx = idx <= 0 ? tests.tests.length - 1 : idx - 1;
+    const tests: ImageTest[] = navigation.getParam('tests');
+    const idx = tests ? tests.indexOf(test) : -1;
+    const newIdx = idx <= 0 ? tests.length - 1 : idx - 1;
     navigation.setParams({
-      test: tests.tests[newIdx],
+      test: tests[newIdx],
     });
   };
 
   onNext = () => {
     const { navigation } = this.props;
     const test: ImageTest = navigation.getParam('test');
-    const tests: ImageTestGroup = navigation.getParam('tests');
-    const idx = tests ? tests.tests.indexOf(test) : -1;
-    const newIdx = idx >= tests.tests.length - 1 ? 0 : idx + 1;
+    const tests: ImageTest[] = navigation.getParam('tests');
+    const idx = tests ? tests.indexOf(test) : -1;
+    const newIdx = idx >= tests.length - 1 ? 0 : idx + 1;
     navigation.setParams({
-      test: tests.tests[newIdx],
+      test: tests[newIdx],
     });
   };
 

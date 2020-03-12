@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { ImageProps } from './types';
 
 type PropsType = {
+  style?: ViewStyle;
   imageProps: ImageProps;
   ImageComponent: React.ComponentType<any>;
 };
@@ -15,7 +16,7 @@ export default class ImageTestView extends React.PureComponent<PropsType> {
     return (
       <View style={styles.container}>
         <ImageComponent
-          style={[styles.image, style]}
+          style={[styles.image, this.props.style, style]}
           source={source || require('../../../assets/images/exponent-icon.png')}
           resizeMode="cover"
           {...otherImageProps}
