@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,cAAc,CAAC;AAEtD,MAAM,SAAS,GAAG,sBAAsB,CAAC,WAAW,CAAC,CAAC;AAEtD,eAAe,SAAS,CAAC","sourcesContent":["import { requireNativeComponent } from 'react-native';\n\nconst ExpoImage = requireNativeComponent('ExpoImage');\n\nexport default ExpoImage;\n"]}

@@ -603,6 +603,17 @@ CACHE_KEYS:
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.1.0)
+  expo-image:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-image: 4e752d99c9882fa54e191563bc722904
+    CHECKSUM: 4604962f2fb3daadcdaa7abccf87bc581ad1c387
+    FILES:
+      - "../../../../packages/expo-image/ios/EXImageViewManager.h"
+      - "../../../../packages/expo-image/ios/EXImageViewManager.m"
+      - "../../../../packages/expo-image/README.md"
+    PROJECT_NAME: expo-image
+    SPECS:
+      - expo-image (1.0.0-alpha.0)
   EXPrint:
     BUILD_SETTINGS_CHECKSUM:
       EXPrint: f73e095f89524fa02c72b0692bb1f272
@@ -933,12 +944,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a72feb9509b1afa5820c6069629d5c50
-      Release: a72feb9509b1afa5820c6069629d5c50
+      Debug: be3735c28d4deb5a38ca11304c27a607
+      Release: be3735c28d4deb5a38ca11304c27a607
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 949995fb801a2adf1073e60370a6ea79
-      Release: 949995fb801a2adf1073e60370a6ea79
+      Debug: 6d8223063e5ad8a039f77b294b0927dc
+      Release: 6d8223063e5ad8a039f77b294b0927dc
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666

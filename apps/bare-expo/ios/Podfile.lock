@@ -130,6 +130,8 @@ PODS:
   - EXPermissions (8.1.0):
     - UMCore
     - UMPermissionsInterface
+  - expo-image (1.0.0-alpha.0):
+    - React
   - EXPrint (8.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -543,6 +545,7 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
+  - expo-image (from `../../../packages/expo-image`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
@@ -708,6 +711,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../../../packages/expo-permissions/ios"
+  expo-image:
+    :path: "../../../packages/expo-image"
   EXPrint:
     :path: "../../../packages/expo-print/ios"
   EXRandom:
@@ -863,6 +868,7 @@ SPEC CHECKSUMS:
   EXNetwork: b8cfa4936341d260779043acc4c366904decef0d
   EXNotifications: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
+  expo-image: 4604962f2fb3daadcdaa7abccf87bc581ad1c387
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
   EXRandom: cafbaebd177d38a4c4ee514e75824245e6fc2046
   EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
@@ -935,6 +941,6 @@ SPEC CHECKSUMS:
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 162d0da014b56b6eed97501eff5e4f095cef06ea
+PODFILE CHECKSUM: 906f1ea1c36394f5973bce618df69ebb619c5da7
 
 COCOAPODS: 1.8.4
