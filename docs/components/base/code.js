@@ -32,7 +32,7 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.colors.black80};
+  color: ${Constants.expoColors.primary[900]};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.9rem;
   white-space: pre-wrap;
@@ -43,7 +43,8 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.colors.blackRussian};
+  background-color: ${Constants.expoColors.primary[100]};
+  border-radius: 2px;
   vertical-align: middle;
   overflow-x: scroll;
 

@@ -69,7 +69,8 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.colors.blackRussian};
+  background-color: ${Constants.expoColors.primary[100]};
+  border-radius: 2px;
   vertical-align: middle;
   overflow-x: scroll;
 
