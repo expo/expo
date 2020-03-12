@@ -185,9 +185,10 @@
 
 **How:**
 
-- On a new branch, check all `expo-template-*` packages under `templates` directory and bump dependencies versions wherever possible. Use versions stored in `packages/expo/bundledNativeModules.json` for vendored libs like `react-native-gesture-handler`.
-- Run `et publish-templates` and answer to questions it asks. Prerelease versions should be tagged as `next` and not `latest`.
-- Create a pull request from your branch to `master`. Make sure a reviewer will cherry-pick that commit to the release branch as well.
+- On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
+- Test these project templates in Expo client or by building them (bare workflow) - you don't have to use `expo init` at this point, just `expo start` them locally.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. Prerelease versions should be tagged as `next` and not `latest`.
+- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
 # Stage 4 - Expo client
 
@@ -340,9 +341,10 @@
 
 **How:**
 
-- On a new branch, check all `expo-template-*` packages under `templates` directory and bump dependencies versions wherever possible. Use versions stored in `packages/expo/bundledNativeModules.json` for vendored libs like `react-native-gesture-handler`.
-- Run `et publish-templates` and answer to questions it asks.
-- Create a pull request from your branch to `master`. Make sure a reviewer will cherry-pick that commit to the release branch as well.
+- On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. Final versions should be tagged as `latest` on NPM.
+- Test these project templates in Expo client or by building them (bare workflow) - use `expo init` at this point.
+- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
 ## 6.3. Generate and deploy new docs
 
