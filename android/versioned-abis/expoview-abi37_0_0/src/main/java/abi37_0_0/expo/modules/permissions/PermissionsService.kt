@@ -287,8 +287,13 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     mAskAsyncListener = null
     mAskAsyncRequestedPermissions = null
 
-    // invoke actual asking for permissions
-    askForManifestPermissions(askAsyncRequestedPermissions, askAsyncListener)
+    if (askAsyncRequestedPermissions.isNotEmpty()) {
+      // invoke actual asking for permissions
+      askForManifestPermissions(askAsyncRequestedPermissions, askAsyncListener)
+    } else {
+      // user asked only for Manifest.permission.WRITE_SETTINGS
+      askAsyncListener.onResult(mutableMapOf())
+    }
   }
 
   override fun onHostPause() = Unit

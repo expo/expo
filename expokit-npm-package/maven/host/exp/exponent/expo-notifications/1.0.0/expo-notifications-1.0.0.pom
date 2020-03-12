@@ -14,6 +14,30 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>androidx.lifecycle</groupId>
+      <artifactId>lifecycle-runtime</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.lifecycle</groupId>
+      <artifactId>lifecycle-process</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>androidx.lifecycle</groupId>
+      <artifactId>lifecycle-common-java8</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.firebase</groupId>
+      <artifactId>firebase-messaging</artifactId>
+      <version>20.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>me.leolin</groupId>
       <artifactId>ShortcutBadger</artifactId>
       <version>1.1.22</version>
@@ -25,12 +49,6 @@
           <groupId>*</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.google.firebase</groupId>
-      <artifactId>firebase-messaging</artifactId>
-      <version>20.1.0</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.unimodules</groupId>
