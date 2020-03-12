@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 
 + (instancetype)sharedInstance;
 
+- (void)loadConfigFromDictionary:(NSDictionary *)config;
+
 @end
 
 NS_ASSUME_NONNULL_END
