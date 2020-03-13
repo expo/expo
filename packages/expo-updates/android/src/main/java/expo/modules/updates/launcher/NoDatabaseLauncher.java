@@ -18,15 +18,19 @@ import expo.modules.updates.manifest.Manifest;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
 
-public class EmergencyLauncher implements Launcher {
+public class NoDatabaseLauncher implements Launcher {
 
-  private static final String TAG = EmergencyLauncher.class.getSimpleName();
+  private static final String TAG = NoDatabaseLauncher.class.getSimpleName();
 
   private static final String ERROR_LOG_FILENAME = "expo-error.log";
 
   private Map<AssetEntity, String> mLocalAssetFiles;
 
-  public EmergencyLauncher(final Context context, final Exception fatalException) {
+  public NoDatabaseLauncher(Context context) {
+    this(context, null);
+  }
+
+  public NoDatabaseLauncher(final Context context, final @Nullable Exception fatalException) {
     Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
     mLocalAssetFiles = new HashMap<>();
     for (AssetEntity asset : embeddedManifest.getAssetEntityList()) {
@@ -36,9 +40,11 @@ public class EmergencyLauncher implements Launcher {
       );
     }
 
-    AsyncTask.execute(() -> {
-      writeErrorToLog(context, fatalException);
-    });
+    if (fatalException != null) {
+      AsyncTask.execute(() -> {
+        writeErrorToLog(context, fatalException);
+      });
+    }
   }
 
   public @Nullable UpdateEntity getLaunchedUpdate() {
