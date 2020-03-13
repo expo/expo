@@ -149,12 +149,15 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
-            <Banner />
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider value={{version: this._version}}>
-            {this.props.children}
+            <DocumentationPageContext.Provider value={{ version: this._version }}>
+              {this.props.children}
             </DocumentationPageContext.Provider>
-            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} sourceCodeUrl={this.props.sourceCodeUrl} />
+            <DocumentationFooter
+              title={this.props.title}
+              asPath={this.props.asPath}
+              sourceCodeUrl={this.props.sourceCodeUrl}
+            />
           </div>
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
