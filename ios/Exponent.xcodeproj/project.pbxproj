@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -335,6 +334,7 @@
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		812A359F127C4F16ADF43BF5 /* RNHelpshift.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C02AD60F1240DBB5681166 /* RNHelpshift.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1019,6 +1019,8 @@
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E302B72D21CC45708B5EA228 /* RNHelpshift.h */ = {isa = PBXFileReference; name = "RNHelpshift.h"; path = "RNHelpshift.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D6C02AD60F1240DBB5681166 /* RNHelpshift.m */ = {isa = PBXFileReference; name = "RNHelpshift.m"; path = "RNHelpshift.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2027,6 +2029,7 @@
 				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
 				6999211AF26A46738FB9E106 /* MaskedView */,
 				69CAB43F632147D3A686A75B /* ViewPager */,
+				FE8E300170774167A91A99B1 /* Helpshift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2298,6 +2301,16 @@
 				3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */,
 			);
 			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
+		FE8E300170774167A91A99B1 /* Helpshift */ = {
+			isa = PBXGroup;
+			children = (
+				E302B72D21CC45708B5EA228 /* RNHelpshift.h */,
+				D6C02AD60F1240DBB5681166 /* RNHelpshift.m */,
+			);
+			name = Helpshift;
+			path = Helpshift;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2921,6 +2934,7 @@
 				2E50A3637BCE4846A8676DEC /* ReactViewPagerManager.m in Sources */,
 				4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */,
 				66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */,
+				812A359F127C4F16ADF43BF5 /* RNHelpshift.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
