@@ -1,5 +1,9 @@
 [
   {
+    "name": "Helpshift",
+    "version": "7.6.3"
+  },
+  {
     "name": "Amplitude-iOS",
     "version": "~> 4.7.1"
   },
