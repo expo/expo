@@ -22,6 +22,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'BlurView',
       'Camera',
       'DateTimePicker',
+      'ExpoImage',
       'FacebookAds',
       'GestureHandlerList',
       'GestureHandlerPinch',
