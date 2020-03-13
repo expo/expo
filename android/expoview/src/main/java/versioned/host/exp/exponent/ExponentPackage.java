@@ -47,6 +47,8 @@ import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedVi
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
+import versioned.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftModule;
+import versioned.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftPackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.components.viewpager.RNCViewPagerPackage;
@@ -187,6 +189,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
         nativeModules.add(new ExpoAppearanceModule(reactContext));
+        nativeModules.add(new RNHelpshiftModule(reactContext));
 
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
@@ -228,7 +231,8 @@ public class ExponentPackage implements ReactPackage {
         new RNDateTimePickerPackage(),
         new RNCMaskedViewPackage(),
         new RNCViewPagerPackage(),
-        new ExpoAppearancePackage()
+        new ExpoAppearancePackage(),
+        new RNHelpshiftPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
