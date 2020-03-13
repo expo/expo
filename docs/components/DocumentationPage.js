@@ -16,7 +16,6 @@ import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScr
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import Banner from './Banner';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;
