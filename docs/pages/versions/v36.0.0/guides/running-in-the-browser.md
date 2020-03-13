@@ -11,7 +11,7 @@ As of SDK 33 you can use Expo to create web apps that run in the browser using t
 Starting in _SDK 33_ projects bootstrapped with the Expo CLI will have web support from the start. To add web support to an existing Expo app you can do the following:
 
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
-- Add web dependencies: `yarn add react-native-web react-dom`
+- Add web dependencies: `yarn add react-native-web@0.11.7 react-dom`
   - Ensure your project has at least `expo@^33.0.0` installed.
 - Start your project with `expo start` then press `w` to start Webpack and open the project in the browser.
 
