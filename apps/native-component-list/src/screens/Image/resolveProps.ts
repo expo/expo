@@ -40,12 +40,17 @@ let firstTimeStamp: number = 0;
 
 function event(name: string, logCallback?: LogCallback): ImageTestEventHandler {
   return (...args) => {
-    const event = args[0];
-    const { timeStamp, nativeEvent } = event;
-    firstTimeStamp = firstTimeStamp || timeStamp;
-    const msec = (timeStamp - firstTimeStamp) % 60000;
-    const message = `${msec} ${name}: ${JSON.stringify(nativeEvent)}`;
-    if (logCallback) logCallback(message);
+    try {
+      const event = args[0];
+      const { timeStamp, nativeEvent } = event;
+      firstTimeStamp = firstTimeStamp || timeStamp;
+      const msec = (timeStamp - firstTimeStamp) % 60000;
+      const message = `${msec} ${name}: ${JSON.stringify(nativeEvent)}`;
+      if (logCallback) logCallback(message);
+    } catch (err) {
+      const message = `${name}: ${err.message}`;
+      if (logCallback) logCallback(message);
+    }
   };
 }
 

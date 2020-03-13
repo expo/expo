@@ -1,5 +1,5 @@
-import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
-import images from './images';
+import { images } from '../images';
+import { ImageTestGroup } from '../types';
 
 const imageTests: ImageTestGroup = {
   name: 'Sources',
