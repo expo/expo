@@ -388,6 +388,7 @@ workflows:
             branches:
               only:
                 - /sdk-\d+/
+                - /sdk-\d+-.*/
                 - /.*all-ci.*/
       - shell_app_ios_build:
           requires:
