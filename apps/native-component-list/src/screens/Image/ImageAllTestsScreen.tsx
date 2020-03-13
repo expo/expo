@@ -5,6 +5,7 @@ import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation'
 import HeaderButtons from 'react-navigation-header-buttons';
 
 import Colors from '../../constants/Colors';
+import { addSelectedComponentChangeListener } from './ImageComponents';
 import ImageTestListItem from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest } from './types';
@@ -12,7 +13,17 @@ import { ImageTest } from './types';
 // @ts-ignore
 const flattenedTests = imageTests.tests.map(test => (test.tests ? test.tests : [test])).flat();
 
-export default class ImageAllTestsScreen extends React.Component<NavigationScreenProps> {
+type StateType = {
+  reloadCount: number;
+};
+
+export default class ImageAllTestsScreen extends React.Component<NavigationScreenProps, StateType> {
+  listener: any;
+
+  state: StateType = {
+    reloadCount: 0,
+  };
+
   static navigationOptions: NavigationScreenConfig<object> = ({ navigation }) => {
     return {
       title: imageTests.name,
@@ -32,6 +43,20 @@ export default class ImageAllTestsScreen extends React.Component<NavigationScree
       ),
     };
   };
+
+  componentDidMount() {
+    const { reloadCount } = this.state;
+    this.listener = addSelectedComponentChangeListener(() => {
+      this.setState({
+        reloadCount: reloadCount + 1,
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    this.listener();
+    this.listener = undefined;
+  }
 
   renderItem = ({ item }: any) => {
     const test: ImageTest = item;
@@ -60,7 +85,7 @@ export default class ImageAllTestsScreen extends React.Component<NavigationScree
     }));
 
     return (
-      <View style={styles.container}>
+      <View key={`key${this.state.reloadCount}`} style={styles.container}>
         <SectionList
           style={styles.content}
           sections={sections}
