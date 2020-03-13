@@ -23,6 +23,7 @@
     ]
   },
   "dependencies": {
+    "helpshift-react-native": "https://github.com/brexhq/helpshift-react-native",
     "react-native-unimodules": "~0.7.0"
   },
   "devDependencies": {

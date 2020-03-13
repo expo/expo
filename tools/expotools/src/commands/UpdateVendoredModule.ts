@@ -295,7 +295,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/maskedview',
         sourceAndroidPackage: 'org.reactnative.maskedview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      }
+      },
     ],
   },
   'react-native-viewpager': {
@@ -310,7 +310,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/viewpager',
         sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
-      }
+      },
     ],
   },
   'react-native-shared-element': {
@@ -325,6 +325,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/sharedelement',
         sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
+      },
+    ],
+  },
+  'helpshift-react-native': {
+    repoUrl: 'https://github.com/brexhq/helpshift-react-native',
+    packageName: 'helpshift-react-native',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/Helpshift',
+        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        targetAndroidPath: 'modules/api/components/helpshift',
+        sourceAndroidPackage: 'com.helpshift.reactlibrary',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.helpshift',
       },
     ],
   },
