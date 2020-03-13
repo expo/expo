@@ -132,6 +132,7 @@ PODS:
     - UMPermissionsInterface
   - expo-image (1.0.0-alpha.0):
     - React
+    - SDWebImage (~> 5.0)
   - EXPrint (8.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -480,6 +481,9 @@ PODS:
     - React
   - RNScreens (2.2.0):
     - React
+  - SDWebImage (5.6.0):
+    - SDWebImage/Core (= 5.6.0)
+  - SDWebImage/Core (5.6.0)
   - UMAppLoader (1.0.0)
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
@@ -626,6 +630,7 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - nanopb
+    - SDWebImage
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -868,7 +873,7 @@ SPEC CHECKSUMS:
   EXNetwork: b8cfa4936341d260779043acc4c366904decef0d
   EXNotifications: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
-  expo-image: 4604962f2fb3daadcdaa7abccf87bc581ad1c387
+  expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
   EXRandom: cafbaebd177d38a4c4ee514e75824245e6fc2046
   EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
@@ -926,6 +931,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
+  SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
   UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d

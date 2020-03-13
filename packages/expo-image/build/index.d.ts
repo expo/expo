@@ -1,2 +1,2 @@
-declare const ExpoImage: any;
-export default ExpoImage;
+import Image from './Image';
+export default Image;

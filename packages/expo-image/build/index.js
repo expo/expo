@@ -1,4 +1,3 @@
-import { requireNativeComponent } from 'react-native';
-const ExpoImage = requireNativeComponent('ExpoImage');
-export default ExpoImage;
+import Image from './Image';
+export default Image;
 //# sourceMappingURL=index.js.map

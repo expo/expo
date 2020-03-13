@@ -44,6 +44,7 @@
     "expo-google-app-auth": "~8.1.0",
     "expo-google-sign-in": "~8.1.0",
     "expo-haptics": "~8.1.0",
+    "expo-image": "~1.0.0-alpha.0",
     "expo-image-manipulator": "~8.1.0",
     "expo-image-picker": "~8.1.0",
     "expo-intent-launcher": "~8.1.0",

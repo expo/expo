@@ -17,6 +17,9 @@
   "dependencies": {
     "React": [
 
+    ],
+    "SDWebImage": [
+      "~> 5.0"
     ]
   }
 }
