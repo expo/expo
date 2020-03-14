@@ -47,8 +47,8 @@ export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<void>
  * the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that
  * Facebook support is initialized properly.
  *
- * - On native platforms you can optional provide an `appId` argument.
- *   - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+ * - On native platforms you can optionally provide an `appId` argument.
+ *   - If you don't provide `appId`, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
  *   - The same resolution mechanism works for `appName`.
  * - If you provide an explicit `appId`, it will override any other source.
  *
