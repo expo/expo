@@ -159,10 +159,10 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
     @"declinedPermissions": [input.declinedPermissions allObjects],
     @"expiredPermissions": [input.expiredPermissions allObjects],
     
-    @"expires": @([input.expirationDate timeIntervalSince1970] * 1000),
-    @"dataAccessExpires": @([input.dataAccessExpirationDate timeIntervalSince1970] * 1000),
+    @"expirationDate": @([input.expirationDate timeIntervalSince1970] * 1000),
+    @"dataAccessExpirationDate": @([input.dataAccessExpirationDate timeIntervalSince1970] * 1000),
 
-    @"refresh": @([input.refreshDate timeIntervalSince1970] * 1000),
+    @"refreshDate": @([input.refreshDate timeIntervalSince1970] * 1000),
   };
 }
 

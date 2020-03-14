@@ -21,7 +21,9 @@ export async function logInWithReadPermissionsAsync(
     options = {};
   }
 
-  return ExponentFacebook.logInWithReadPermissionsAsync(options);
+  return transformFacebookLoginResult(
+    await ExponentFacebook.logInWithReadPermissionsAsync(options)
+  );
 }
 
 /**
@@ -34,18 +36,18 @@ export async function getAccessTokenAsync(): Promise<FacebookAuth | null> {
     throw new UnavailabilityError('Facebook', 'getAccessTokenAsync');
   }
 
-  return await ExponentFacebook.getAccessTokenAsync();
+  return transformFacebookAuth(await ExponentFacebook.getAccessTokenAsync());
 }
 
 /**
  * Logs out of the currently authenticated session.
  */
-export async function logOutAsync() {
+export async function logOutAsync(): Promise<void> {
   if (!ExponentFacebook.logOutAsync) {
     throw new UnavailabilityError('Facebook', 'logOutAsync');
   }
 
-  return await ExponentFacebook.logOutAsync();
+  await ExponentFacebook.logOutAsync();
 }
 
 /**
@@ -61,11 +63,11 @@ export async function logOutAsync() {
  *
  * @param enabled Whether automatic events logging of the Facebook SDK should be enabled
  */
-export async function setAutoLogAppEventsEnabledAsync(enabled: boolean) {
+export async function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void> {
   if (!ExponentFacebook.setAutoLogAppEventsEnabledAsync) {
     throw new UnavailabilityError('Facebook', 'setAutoLogAppEventsEnabledAsync');
   }
-  return await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
+  await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
 }
 
 /**
@@ -83,11 +85,11 @@ export async function setAutoLogAppEventsEnabledAsync(enabled: boolean) {
  *
  * @param enabled Whether autoinitialization of the Facebook SDK should be enabled
  */
-export async function setAutoInitEnabledAsync(enabled: boolean) {
+export async function setAutoInitEnabledAsync(enabled: boolean): Promise<void> {
   if (!ExponentFacebook.setAutoInitEnabledAsync) {
     throw new UnavailabilityError('Facebook', 'setAutoInitEnabledAsync');
   }
-  return await ExponentFacebook.setAutoInitEnabledAsync(enabled);
+  await ExponentFacebook.setAutoInitEnabledAsync(enabled);
 }
 
 /**
@@ -106,7 +108,7 @@ export async function setAutoInitEnabledAsync(enabled: boolean) {
 export async function initializeAsync(
   optionsOrAppId: FacebookInitializationOptions | string,
   appName?: string
-) {
+): Promise<void> {
   if (!ExponentFacebook.initializeAsync) {
     throw new UnavailabilityError('Facebook', 'initializeAsync');
   }
@@ -123,7 +125,7 @@ export async function initializeAsync(
     options = optionsOrAppId;
   }
 
-  return await ExponentFacebook.initializeAsync(options);
+  await ExponentFacebook.initializeAsync(options);
 }
 
 /**
@@ -139,9 +141,32 @@ export async function initializeAsync(
  * and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK methods.
  * @param enabled Whether `advertiser-id` should be collected
  */
-export async function setAdvertiserIDCollectionEnabledAsync(enabled: boolean) {
+export async function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void> {
   if (!ExponentFacebook.setAdvertiserIDCollectionEnabledAsync) {
     throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
   }
-  return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+  await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+}
+
+function transformFacebookLoginResult(input: FacebookLoginResult): FacebookLoginResult {
+  if (input.type === 'cancel') return input;
+
+  return {
+    ...input,
+    refreshDate:
+      typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+    dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+    expirationDate: new Date(input.expirationDate),
+  };
+}
+
+function transformFacebookAuth(input: any): FacebookAuth | null {
+  if (!input) return input;
+  return {
+    ...input,
+    refreshDate:
+      typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+    dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+    expirationDate: new Date(input.expirationDate),
+  };
 }

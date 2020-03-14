@@ -96,9 +96,9 @@ Otherwise, returns `{ type: 'success' } & FacebookAuth`.
   - **permissions (_string[] | undefined_)** List of granted permissions.
   - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
   - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
-  - **expires (_number_)** Gets the time in milliseconds at which the `token` expires.
-  - **dataAccessExpires (_number_)** Time in milliseconds at which the current user data access expires.
-  - **refresh (_number | undefined_)** The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+  - **expirationDate (_Date_)** Gets the time at which the `token` expires.
+  - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
+  - **refreshDate (_Date | undefined_)** The last time the `token` was refreshed (or when it was first obtained).
   - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
   - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
   - **graphDomain (_string | undefined_)** A website domain within the Graph API.
@@ -132,7 +132,7 @@ async function logIn() {
     const {
       type,
       token,
-      expires,
+      expirationDate,
       permissions,
       declinedPermissions,
     } = await Facebook.logInWithReadPermissionsAsync({
@@ -173,9 +173,9 @@ You can use this method to check if the user should sign in or not.
   - **permissions (_string[] | undefined_)** List of granted permissions.
   - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
   - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
-  - **expires (_number_)** Gets the time in milliseconds at which the `token` expires.
-  - **dataAccessExpires (_number_)** Time in milliseconds at which the current user data access expires.
-  - **refresh (_number | undefined_)** The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+  - **expirationDate (_Date_)** Gets the time at which the `token` expires.
+  - **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
+  - **refreshDate (_Date | undefined_)** Last time the `token` was refreshed (or when it was first obtained).
   - **tokenSource (_string | undefined_)** Android: Indicates how this `token` was obtained.
   - **signedRequest (_string | undefined_)** A valid raw signed request as a string.
   - **graphDomain (_string | undefined_)** A website domain within the Graph API.

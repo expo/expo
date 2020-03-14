@@ -7,7 +7,7 @@ export async function logInWithReadPermissionsAsync(options) {
     if (!options || typeof options !== 'object') {
         options = {};
     }
-    return ExponentFacebook.logInWithReadPermissionsAsync(options);
+    return transformFacebookLoginResult(await ExponentFacebook.logInWithReadPermissionsAsync(options));
 }
 /**
  * Returns the `FacebookAuth` object if a user is authenticated, and `null` if no valid authentication exists.
@@ -18,7 +18,7 @@ export async function getAccessTokenAsync() {
     if (!ExponentFacebook.getAccessTokenAsync) {
         throw new UnavailabilityError('Facebook', 'getAccessTokenAsync');
     }
-    return await ExponentFacebook.getAccessTokenAsync();
+    return transformFacebookAuth(await ExponentFacebook.getAccessTokenAsync());
 }
 /**
  * Logs out of the currently authenticated session.
@@ -27,7 +27,7 @@ export async function logOutAsync() {
     if (!ExponentFacebook.logOutAsync) {
         throw new UnavailabilityError('Facebook', 'logOutAsync');
     }
-    return await ExponentFacebook.logOutAsync();
+    await ExponentFacebook.logOutAsync();
 }
 /**
  * Sets whether Facebook SDK should log app events. App events involve eg. app installs,
@@ -46,7 +46,7 @@ export async function setAutoLogAppEventsEnabledAsync(enabled) {
     if (!ExponentFacebook.setAutoLogAppEventsEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAutoLogAppEventsEnabledAsync');
     }
-    return await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
+    await ExponentFacebook.setAutoLogAppEventsEnabledAsync(enabled);
 }
 /**
  * Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg.
@@ -67,7 +67,7 @@ export async function setAutoInitEnabledAsync(enabled) {
     if (!ExponentFacebook.setAutoInitEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAutoInitEnabledAsync');
     }
-    return await ExponentFacebook.setAutoInitEnabledAsync(enabled);
+    await ExponentFacebook.setAutoInitEnabledAsync(enabled);
 }
 /**
  * Calling this method ensures that the SDK is initialized.
@@ -95,7 +95,7 @@ export async function initializeAsync(optionsOrAppId, appName) {
     else {
         options = optionsOrAppId;
     }
-    return await ExponentFacebook.initializeAsync(options);
+    await ExponentFacebook.initializeAsync(options);
 }
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
@@ -114,6 +114,26 @@ export async function setAdvertiserIDCollectionEnabledAsync(enabled) {
     if (!ExponentFacebook.setAdvertiserIDCollectionEnabledAsync) {
         throw new UnavailabilityError('Facebook', 'setAdvertiserIDCollectionEnabledAsync');
     }
-    return await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+    await ExponentFacebook.setAdvertiserIDCollectionEnabledAsync(enabled);
+}
+function transformFacebookLoginResult(input) {
+    if (input.type === 'cancel')
+        return input;
+    return {
+        ...input,
+        refreshDate: typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+        dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+        expirationDate: new Date(input.expirationDate),
+    };
+}
+function transformFacebookAuth(input) {
+    if (!input)
+        return input;
+    return {
+        ...input,
+        refreshDate: typeof input.refreshDate === 'number' ? new Date(input.refreshDate) : input.refreshDate,
+        dataAccessExpirationDate: new Date(input.dataAccessExpirationDate),
+        expirationDate: new Date(input.expirationDate),
+    };
 }
 //# sourceMappingURL=Facebook.js.map

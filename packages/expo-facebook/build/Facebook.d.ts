@@ -10,7 +10,7 @@ export declare function getAccessTokenAsync(): Promise<FacebookAuth | null>;
 /**
  * Logs out of the currently authenticated session.
  */
-export declare function logOutAsync(): Promise<any>;
+export declare function logOutAsync(): Promise<void>;
 /**
  * Sets whether Facebook SDK should log app events. App events involve eg. app installs,
  * app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events)
@@ -24,7 +24,7 @@ export declare function logOutAsync(): Promise<any>;
  *
  * @param enabled Whether automatic events logging of the Facebook SDK should be enabled
  */
-export declare function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<any>;
+export declare function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>;
 /**
  * Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg.
  * fetching app settings from Facebook or a profile of the logged in user.
@@ -40,7 +40,7 @@ export declare function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promi
  *
  * @param enabled Whether autoinitialization of the Facebook SDK should be enabled
  */
-export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
+export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<void>;
 /**
  * Calling this method ensures that the SDK is initialized.
  * You have to call this method before calling any method that uses
@@ -54,7 +54,7 @@ export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
  *
  * @param options The options used to configure how Facebook is initialized
  */
-export declare function initializeAsync(optionsOrAppId: FacebookInitializationOptions | string, appName?: string): Promise<any>;
+export declare function initializeAsync(optionsOrAppId: FacebookInitializationOptions | string, appName?: string): Promise<void>;
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
  * and Android Advertising ID, automatically. Advertiser IDs let you identify and target specific customers.
@@ -68,4 +68,4 @@ export declare function initializeAsync(optionsOrAppId: FacebookInitializationOp
  * and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK methods.
  * @param enabled Whether `advertiser-id` should be collected
  */
-export declare function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<any>;
+export declare function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>;

@@ -24,17 +24,17 @@ export type FacebookAuth = {
    */
   expiredPermissions?: string[];
   /**
-   * Gets the time in milliseconds at which the `token` expires.
+   * Gets the time at which the `token` expires.
    */
-  expires: number;
+  expirationDate: Date;
   /**
-   * Time in milliseconds at which the current user data access expires.
+   * Time at which the current user data access expires.
    */
-  dataAccessExpires: number;
+  dataAccessExpirationDate: Date;
   /**
-   * The last time in milliseconds the `token` was refreshed (or when it was first obtained).
+   * The last time the `token` was refreshed (or when it was first obtained).
    */
-  refresh?: number;
+  refreshDate?: Date;
 
   /**
    * Android: Indicates how this `token` was obtained.
