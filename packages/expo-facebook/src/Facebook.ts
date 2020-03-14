@@ -1,7 +1,12 @@
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
-import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
+import {
+  FacebookAuth,
+  FacebookLoginResult,
+  FacebookOptions,
+  FacebookInitializationOptions,
+} from './Facebook.types';
 
 export { FacebookLoginResult, FacebookOptions, FacebookAuth };
 
@@ -98,12 +103,15 @@ export async function setAutoInitEnabledAsync(enabled: boolean) {
  *
  * @param options The options used to configure how Facebook is initialized
  */
-export async function initializeAsync(optionsOrAppId: InitOptions | string, appName?: string) {
+export async function initializeAsync(
+  optionsOrAppId: FacebookInitializationOptions | string,
+  appName?: string
+) {
   if (!ExponentFacebook.initializeAsync) {
     throw new UnavailabilityError('Facebook', 'initializeAsync');
   }
 
-  let options: InitOptions = {};
+  let options: FacebookInitializationOptions = {};
 
   if (typeof optionsOrAppId === 'string') {
     options.appId = optionsOrAppId;

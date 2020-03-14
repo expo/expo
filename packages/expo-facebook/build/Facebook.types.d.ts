@@ -64,7 +64,7 @@ export declare type SDKScriptURLOptions = {
      */
     domain?: string;
 };
-export declare type SDKInitOptions = {
+export declare type SDKInitializationOptions = {
     /**
      * Application ID used to initialize the FBSDK app.
      *
@@ -89,10 +89,10 @@ export declare type SDKInitOptions = {
      */
     autoLogAppEvents?: boolean;
 };
-export declare type NativeInitOptions = {
+export declare type NativeInitializationOptions = {
     /**
      * An optional Facebook App Name argument for iOS and Android.
      */
     appName?: string;
 };
-export declare type InitOptions = SDKScriptURLOptions & SDKInitOptions & NativeInitOptions;
+export declare type FacebookInitializationOptions = SDKScriptURLOptions & SDKInitializationOptions & NativeInitializationOptions;

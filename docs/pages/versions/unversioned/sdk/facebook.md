@@ -47,7 +47,7 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 import * as Facebook from 'expo-facebook';
 ```
 
-### `Facebook.initializeAsync(options: InitOptions): Promise<void>`
+### `Facebook.initializeAsync(options: FacebookInitializationOptions): Promise<void>`
 
 Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the FBSDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
 
@@ -60,7 +60,7 @@ Calling this method ensures that the SDK is initialized. You have to call this m
 
 A map of options:
 
-- `InitOptions` type:
+- `FacebookInitializationOptions` type:
 
   - **appId (_string | undefined_)** Application ID used to initialize the FBSDK app. On Android and iOS if you don't provide this, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in the Expo client are unavailable, and in bare apps you configure yourself according to Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If it fails to find one, the promise will be rejected.
   - **version (_string | undefined_)** Selects the [version of FBSDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.

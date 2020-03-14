@@ -1,4 +1,4 @@
-import { FacebookAuth, FacebookLoginResult, FacebookOptions, InitOptions } from './Facebook.types';
+import { FacebookAuth, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
 export { FacebookLoginResult, FacebookOptions, FacebookAuth };
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
@@ -54,7 +54,7 @@ export declare function setAutoInitEnabledAsync(enabled: boolean): Promise<any>;
  *
  * @param options The options used to configure how Facebook is initialized
  */
-export declare function initializeAsync(optionsOrAppId: InitOptions | string, appName?: string): Promise<any>;
+export declare function initializeAsync(optionsOrAppId: FacebookInitializationOptions | string, appName?: string): Promise<any>;
 /**
  * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
  * and Android Advertising ID, automatically. Advertiser IDs let you identify and target specific customers.
