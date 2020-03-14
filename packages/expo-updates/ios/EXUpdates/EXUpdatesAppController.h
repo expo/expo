@@ -60,6 +60,14 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
 + (instancetype)sharedInstance;
 
 /**
+ Overrides the configuration values specified in Expo.plist with the ones provided in this
+ dictionary. This method can be used if any of these values should be determined at runtime
+ instead of buildtime. If used, this method must be called before any other method on the
+ shared instance of EXUpdatesAppController.
+ */
+- (void)setConfiguration:(NSDictionary *)configuration;
+
+/**
  Starts the update process to launch a previously-loaded update and (if configured to do so)
  check for a new update from the server. This method should be called as early as possible in
  the application's lifecycle.

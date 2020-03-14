@@ -16,7 +16,9 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(String identifier, JSONObject notification, @Nullable NotificationTrigger trigger) {
@@ -75,6 +77,13 @@ public class NotificationSerializer {
     if (trigger instanceof FirebaseNotificationTrigger) {
       bundle.putString("type", "push");
       bundle.putBundle("remoteMessage", RemoteMessageSerializer.toBundle(((FirebaseNotificationTrigger) trigger).getRemoteMessage()));
+    } else if (trigger instanceof TimeIntervalTrigger) {
+      bundle.putString("type", "interval");
+      bundle.putBoolean("repeats", ((TimeIntervalTrigger) trigger).isRepeating());
+      bundle.putLong("value", ((TimeIntervalTrigger) trigger).getTimeInterval());
+    } else if (trigger instanceof DateTrigger) {
+      bundle.putString("type", "date");
+      bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
     } else {
       bundle.putString("type", "unknown");
     }

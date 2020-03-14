@@ -149,7 +149,7 @@ async function findAndPrintVersionReferencesInSourceFilesAsync(version: string):
 
 export async function removeVersionAsync(version: string) {
   const abiName = `abi${version.replace(/\./g, '_')}`;
-  const sdkMajorVersion = semver.major(version);
+  const sdkMajorVersion = `${semver.major(version)}`;
 
   console.log(`Removing SDK version ${chalk.cyan(version)} for ${chalk.blue('Android')}...`);
 

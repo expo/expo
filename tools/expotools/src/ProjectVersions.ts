@@ -43,7 +43,7 @@ export async function getHomeSDKVersionAsync(): Promise<string> {
   const homeAppJsonPath = path.join(EXPO_DIR, 'home', 'app.json');
   const appJson = (await JsonFile.readAsync(homeAppJsonPath, { json5: true })) as any;
 
-  if (appJson && appJson.expo && appJson.expo.sdkVersion) {
+  if (appJson?.expo?.sdkVersion) {
     return appJson.expo.sdkVersion as string;
   }
   throw new Error(`Home's SDK version not found!`);
@@ -79,5 +79,5 @@ export async function getNextSDKVersionAsync(platform: Platform): Promise<string
   if (!newestVersion) {
     return;
   }
-  return `${semver.major(semver.inc(newestVersion, 'major'))}.0.0`;
+  return `${semver.major(semver.inc(newestVersion, 'major')!)}.0.0`;
 }

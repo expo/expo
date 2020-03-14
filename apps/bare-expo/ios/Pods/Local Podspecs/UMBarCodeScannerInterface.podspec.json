@@ -1,6 +1,6 @@
 {
   "name": "UMBarCodeScannerInterface",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "summary": "An interface for bar code scanners",
   "description": "An interface for bar code scanners",
   "license": "MIT",

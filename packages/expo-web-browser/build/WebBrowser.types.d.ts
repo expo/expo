@@ -7,9 +7,12 @@ export declare type WebBrowserOpenOptions = {
     enableBarCollapsing?: boolean;
     showTitle?: boolean;
     /** Android only */
+    enableDefaultShareMenuItem?: boolean;
     showInRecents?: boolean;
     /** iOS only */
     controlsColor?: string;
+    dismissButtonStyle?: 'done' | 'close' | 'cancel';
+    readerMode?: boolean;
     windowName?: string;
     windowFeatures?: string;
 };

@@ -178,6 +178,10 @@ EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj
   UUID: 488F0C19AB92FC4B503EB55CC688FCF5
+expo-image:
+  LABEL: expo-image
+  PROJECT_PATH: expo-image.xcodeproj
+  UUID: 3D9EF1DD98EB7E08A487963855D70CFB
 EXPrint:
   LABEL: EXPrint
   PROJECT_PATH: EXPrint.xcodeproj
@@ -418,6 +422,10 @@ RNScreens:
   LABEL: RNScreens
   PROJECT_PATH: RNScreens.xcodeproj
   UUID: A72DB725A68697789F3F72BCF9C3A522
+SDWebImage:
+  LABEL: SDWebImage
+  PROJECT_PATH: SDWebImage.xcodeproj
+  UUID: 4ECF4E662EEBE4FA58102FF984D920CC
 UMAppLoader:
   LABEL: UMAppLoader
   PROJECT_PATH: UMAppLoader.xcodeproj

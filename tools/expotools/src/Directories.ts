@@ -30,6 +30,10 @@ export function getAndroidDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'android');
 }
 
+export function getTemplatesDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'templates');
+}
+
 export function getReactNativeSubmoduleDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'react-native-lab', 'react-native');
 }

@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '36.0.0'
+version = '37.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -149,12 +149,12 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:36.0.0'
+  api 'com.facebook.react:react-native:37.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      exclude      : ['expo-module-template', 'expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
+      exclude      : ['expo-module-template', 'expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'expo-notifications']
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -179,6 +179,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_37
+  api 'host.exp:reactandroid-abi37_0_0:1.0.0'
+  // END_SDK_37
   // BEGIN_SDK_36
   api 'host.exp:reactandroid-abi36_0_0:1.0.0'
   // END_SDK_36
@@ -217,13 +220,13 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:16.1.0'
-  api 'com.google.android.gms:play-services-analytics:16.0.8'
-  api 'com.google.android.gms:play-services-maps:16.1.0'
-  api 'com.google.android.gms:play-services-auth:16.0.1'
-  api 'com.google.android.gms:play-services-location:16.0.0'
-  api 'com.google.android.gms:play-services-fitness:16.0.1'
-  api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
+  api 'com.google.android.gms:play-services-gcm:17.0.0'
+  api 'com.google.android.gms:play-services-analytics:17.0.0'
+  api 'com.google.android.gms:play-services-maps:17.0.0'
+  api 'com.google.android.gms:play-services-auth:17.0.0'
+  api 'com.google.android.gms:play-services-location:17.0.0'
+  api 'com.google.android.gms:play-services-fitness:17.0.0'
+  api 'com.google.android.gms:play-services-wallet:17.0.0' //may need 10.+
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -243,8 +246,8 @@ dependencies {
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
   api 'com.google.android.material:material:1.1.0'
 
-  api 'com.google.firebase:firebase-core:16.0.9'
-  api 'com.google.firebase:firebase-messaging:18.0.0'
+  api 'com.google.firebase:firebase-core:17.2.3'
+  api 'com.google.firebase:firebase-messaging:20.1.2'
   api 'com.google.maps.android:android-maps-utils:0.5'
   api 'com.jakewharton:butterknife:10.2.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'

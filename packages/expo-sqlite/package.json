@@ -38,6 +38,10 @@
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
     "@expo/websql": "^1.0.1",
     "@types/websql": "^0.0.27",

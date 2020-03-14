@@ -68,12 +68,15 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
 - **browserParams (_object_)** (_optional_) --
   A dictionary with following key-value pairs:
 
-  - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
-  - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
-  - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
+  - **dismissButtonStyle (_optional_) (_string_)** -- (_iOS only_) The style of the dismiss button. Should be one of: `done`, `close`, or `cancel`.
+  - **enableBarCollapsing (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website.
+  - **enableDefaultShare (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether a default share item should be added to the menu.
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
+  - **readerMode (_optional_) (_boolean_)** -- (_iOS only_) a boolean determining whether Safari should enter Reader mode, if it is available.
+  - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
+  - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar.
+  - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 

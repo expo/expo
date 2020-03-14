@@ -78,7 +78,7 @@ class Package {
     }
     const buildGradle = fs.readFileSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'), 'utf8');
     const match = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m);
-    return (match && match[1]) ? match[1] : null;
+    return match?.[1] ?? null;
   }
 
   isUnimodule() {

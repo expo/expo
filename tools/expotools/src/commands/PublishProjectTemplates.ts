@@ -7,33 +7,9 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
 import { Directories } from '../expotools';
+import { getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
-
-interface Template {
-  name: string;
-  version: string;
-  path: string;
-}
-
-async function getAvailableProjectTemplatesAsync(): Promise<Template[]> {
-  const templatesPath = path.join(EXPO_DIR, 'templates');
-  const templates = await fs.readdir(templatesPath);
-
-  return Promise.all<Template>(
-    templates.map(async template => {
-      const packageJson = await JsonFile.readAsync(
-        path.join(templatesPath, template, 'package.json')
-      );
-
-      return {
-        name: packageJson.name,
-        version: packageJson.version,
-        path: path.join(templatesPath, template),
-      };
-    })
-  );
-}
 
 async function shouldAssignLatestTagAsync(
   templateName: string,
@@ -54,9 +30,9 @@ async function shouldAssignLatestTagAsync(
 
 async function action(options) {
   if (!options.sdkVersion) {
-    const expoSdkVersion = (await JsonFile.readAsync(
+    const { version: expoSdkVersion } = await JsonFile.readAsync<{version: string}>(
       path.join(EXPO_DIR, 'packages/expo/package.json')
-    )).version;
+    );
     const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
       {
         type: 'input',

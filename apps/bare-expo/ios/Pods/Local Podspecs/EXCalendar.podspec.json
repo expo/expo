@@ -1,6 +1,6 @@
 {
   "name": "EXCalendar",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "summary": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "license": "MIT",

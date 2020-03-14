@@ -9,11 +9,16 @@ import org.unimodules.core.interfaces.SingletonModule;
 import java.util.Arrays;
 import java.util.List;
 
+import expo.modules.notifications.badge.BadgeModule;
+import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
+import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
+import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
+import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.permissions.NotificationPermissionsModule;
 import expo.modules.notifications.tokens.PushTokenManager;
 import expo.modules.notifications.tokens.PushTokenModule;
@@ -22,12 +27,16 @@ public class NotificationsPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.asList(
+        new BadgeModule(context),
         new PushTokenModule(context),
         new NotificationsEmitter(context),
         new NotificationsHandler(context),
+        new NotificationScheduler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
-        new ExpoNotificationPresentationModule(context)
+        new NotificationChannelManagerModule(context),
+        new ExpoNotificationPresentationModule(context),
+        new NotificationChannelGroupManagerModule(context)
     );
   }
 
@@ -35,7 +44,8 @@ public class NotificationsPackage extends BasePackage {
   public List<SingletonModule> createSingletonModules(Context context) {
     return Arrays.asList(
         new PushTokenManager(),
-        new NotificationManager()
+        new NotificationManager(),
+        new ExpoBadgeManager(context)
     );
   }
 }

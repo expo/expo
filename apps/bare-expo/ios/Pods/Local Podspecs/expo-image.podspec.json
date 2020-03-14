@@ -1,0 +1,25 @@
+{
+  "name": "expo-image",
+  "version": "1.0.0-alpha.0",
+  "summary": "A cross-platform, performant image component for React Native and Expo with Web support",
+  "description": "A cross-platform, performant image component for React Native and Expo with Web support",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/image/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "React": [
+
+    ],
+    "SDWebImage": [
+      "~> 5.0"
+    ]
+  }
+}

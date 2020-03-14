@@ -36,7 +36,12 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "unimodules-barcode-scanner-interface": "*"
+    "unimodules-barcode-scanner-interface": "*",
+    "unimodules-permissions-interface": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "lodash": "^4.6.0",

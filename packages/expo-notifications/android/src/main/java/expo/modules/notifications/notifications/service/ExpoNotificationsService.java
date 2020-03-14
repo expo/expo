@@ -9,7 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.WeakHashMap;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
@@ -45,10 +50,40 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     }
   }
 
+  private boolean mIsAppInForeground = false;
+
+  private LifecycleObserver mObserver = new DefaultLifecycleObserver() {
+    @Override
+    public void onResume(@NonNull LifecycleOwner owner) {
+      mIsAppInForeground = true;
+    }
+
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
+      mIsAppInForeground = false;
+    }
+  };
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    ProcessLifecycleOwner.get().getLifecycle().addObserver(mObserver);
+  }
+
+  @Override
+  public void onDestroy() {
+    ProcessLifecycleOwner.get().getLifecycle().removeObserver(mObserver);
+    super.onDestroy();
+  }
+
   @Override
   protected void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
-    for (NotificationManager listener : getListeners()) {
-      listener.onNotificationReceived(identifier, request, trigger);
+    if (mIsAppInForeground) {
+      for (NotificationManager listener : getListeners()) {
+        listener.onNotificationReceived(identifier, request, trigger);
+      }
+    } else {
+      BaseNotificationsService.enqueuePresent(this, identifier, request, null, null);
     }
   }
 
@@ -57,6 +92,16 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     for (NotificationManager listener : getListeners()) {
       listener.onNotificationsDropped();
     }
+  }
+
+  @Override
+  protected void onNotificationDismiss(String identifier) {
+    NotificationManagerCompat.from(this).cancel(getNotificationTag(identifier, null), getNotificationId(identifier, null));
+  }
+
+  @Override
+  protected void onDismissAllNotifications() {
+    NotificationManagerCompat.from(this).cancelAll();
   }
 
   /**
