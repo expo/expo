@@ -92,7 +92,7 @@ Otherwise, returns `{ type: 'success' } & FacebookAuth`.
 
   - **token (_string_)** Access token for the authenticated session. This'll provide access to use with Facebook Graph API.
   - **userId (_string_)** The ID of the user.
-  - **appID (_string_)** Application ID used to initialize the FBSDK app.
+  - **appId (_string_)** Application ID used to initialize the FBSDK app.
   - **permissions (_string[] | undefined_)** List of granted permissions.
   - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
   - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
@@ -169,7 +169,7 @@ You can use this method to check if the user should sign in or not.
 
   - **token (_string_)** Access token for the authenticated session. This will provide access to use with Facebook Graph API.
   - **userId (_string_)** The ID of the user.
-  - **appID (_string_)** Application ID used to initialize the FBSDK app.
+  - **appId (_string_)** Application ID used to initialize the FBSDK app.
   - **permissions (_string[] | undefined_)** List of granted permissions.
   - **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
   - **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.

@@ -78,7 +78,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     Bundle response = new Bundle();
     response.putString("token", accessToken.getToken());
     response.putString("userId", accessToken.getUserId());
-    response.putString("appID", accessToken.getApplicationId());
+    response.putString("appId", accessToken.getApplicationId());
 
     response.putStringArrayList("permissions", new ArrayList<>(accessToken.getPermissions()));
     response.putStringArrayList("declinedPermissions", new ArrayList<>(accessToken.getDeclinedPermissions()));

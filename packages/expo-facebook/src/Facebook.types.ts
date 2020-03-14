@@ -10,7 +10,7 @@ export type FacebookAuth = {
   /**
    * Application ID used to initialize the FBSDK app.
    */
-  appID: string;
+  appId: string;
   /**
    * List of granted permissions.
    */
