@@ -76,7 +76,7 @@ A map of options:
 Prompts the user to log into Facebook and grants your app permission
 to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
 
-#### param object options
+#### Initialization Options
 
 A map of options:
 
