@@ -152,7 +152,7 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
 
   return @{
     @"token": input.tokenString,
-    @"userID": input.userID,
+    @"userId": input.userID,
     @"appID": input.appID,
 
     @"permissions": [input.permissions allObjects],

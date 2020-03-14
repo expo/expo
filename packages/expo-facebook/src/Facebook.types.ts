@@ -6,7 +6,7 @@ export type FacebookAuth = {
   /**
    * The ID of the user.
    */
-  userID: string;
+  userId: string;
   /**
    * Application ID used to initialize the FBSDK app.
    */
