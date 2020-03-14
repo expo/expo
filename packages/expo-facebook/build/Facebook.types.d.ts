@@ -57,14 +57,14 @@ export declare type FacebookLoginResult = {
 export declare type FacebookOptions = {
     permissions?: string[];
 };
-export declare type SDKScriptURLOptions = {
+export declare type FacebookSDKScriptURLOptions = {
     /**
      * Android: Sets the base Facebook domain to use when making Web requests.
      * Defaults to: 'connect.facebook.net'
      */
     domain?: string;
 };
-export declare type SDKInitializationOptions = {
+export declare type FacebookSDKInitializationOptions = {
     /**
      * Application ID used to initialize the FBSDK app.
      *
@@ -89,10 +89,10 @@ export declare type SDKInitializationOptions = {
      */
     autoLogAppEvents?: boolean;
 };
-export declare type NativeInitializationOptions = {
+export declare type FacebookNativeInitializationOptions = {
     /**
      * An optional Facebook App Name argument for iOS and Android.
      */
     appName?: string;
 };
-export declare type FacebookInitializationOptions = SDKScriptURLOptions & SDKInitializationOptions & NativeInitializationOptions;
+export declare type FacebookInitializationOptions = FacebookSDKScriptURLOptions & FacebookSDKInitializationOptions & FacebookNativeInitializationOptions;

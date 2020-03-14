@@ -63,7 +63,7 @@ export type FacebookOptions = {
   permissions?: string[];
 };
 
-export type SDKScriptURLOptions = {
+export type FacebookSDKScriptURLOptions = {
   /**
    * Android: Sets the base Facebook domain to use when making Web requests.
    * Defaults to: 'connect.facebook.net'
@@ -71,7 +71,7 @@ export type SDKScriptURLOptions = {
   domain?: string;
 };
 
-export type SDKInitializationOptions = {
+export type FacebookSDKInitializationOptions = {
   /**
    * Application ID used to initialize the FBSDK app.
    *
@@ -97,13 +97,13 @@ export type SDKInitializationOptions = {
   autoLogAppEvents?: boolean;
 };
 
-export type NativeInitializationOptions = {
+export type FacebookNativeInitializationOptions = {
   /**
    * An optional Facebook App Name argument for iOS and Android.
    */
   appName?: string;
 };
 
-export type FacebookInitializationOptions = SDKScriptURLOptions &
-  SDKInitializationOptions &
-  NativeInitializationOptions;
+export type FacebookInitializationOptions = FacebookSDKScriptURLOptions &
+  FacebookSDKInitializationOptions &
+  FacebookNativeInitializationOptions;
