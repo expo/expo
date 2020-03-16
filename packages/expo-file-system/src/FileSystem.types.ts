@@ -4,18 +4,25 @@ export type DownloadOptions = {
   headers?: { [name: string]: string };
 };
 
-export type DownloadResult = {
-  uri: string;
-  status: number;
+export type HttpResult = {
   headers: { [name: string]: string };
-  md5?: string;
+  status: number;
+  MINEType: string | null;
 };
 
-export type UploadOptions = {
+export type DownloadResult = {
+  uri: string;
+  md5?: string;
+} & HttpResult;
+
+export type FileSystemUploadOptions = {
   headers?: { [name: string]: string };
   httpMethod?: FileSystemHttpMethods;
-  bodyEncoding?: FileSystemBodyEncoding;
 };
+
+export type FileSystemUploadResult = {
+  body: string;
+} & HttpResult;
 
 export type DownloadProgressCallback = (data: DownloadProgressData) => void;
 
@@ -58,31 +65,6 @@ export enum FileSystemHttpMethods {
   POST = 0,
   PUT = 1,
   PATCH = 2,
-}
-
-export enum FileSystemBodyEncoding {
-  UTF8 = 0,
-  ASCII = 1,
-  NEXTSTEP = 2,
-  JapaneseEUC = 3,
-  ISOLatin1 = 4,
-  Symbol = 5,
-  NonLossyASCII = 6,
-  ShiftJIS = 7,
-  ISOLatin2 = 8,
-  Unicode = 9,
-  WindowsCP1251 = 10,
-  WindowsCP1252 = 11,
-  WindowsCP1253 = 12,
-  WindowsCP1254 = 13,
-  WindowsCP1250 = 14,
-  ISO2022JP = 15,
-  MacOSRoman = 16,
-  UTF16BigEndian = 17,
-  UTF16LittleEndian = 18,
-  UTF32 = 19,
-  UTF32BigEndian = 20,
-  UTF32LittleEndian = 21,
 }
 
 export type ReadingOptions = {

@@ -14,9 +14,9 @@ import {
   ReadingOptions,
   WritingOptions,
   ProgressEvent,
-  UploadOptions,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
   FileSystemHttpMethods,
-  FileSystemBodyEncoding,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -38,9 +38,9 @@ export {
   ReadingOptions,
   WritingOptions,
   ProgressEvent,
-  UploadOptions,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
   FileSystemHttpMethods,
-  FileSystemBodyEncoding,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {
@@ -176,8 +176,8 @@ export async function downloadAsync(
 export async function uploadAsync(
   fileUri: string,
   url: string,
-  options: UploadOptions = {}
-): Promise<void> {
+  options: FileSystemUploadOptions = {}
+): Promise<FileSystemUploadResult> {
   if (!ExponentFileSystem.uploadAsync) {
     throw new UnavailabilityError('expo-file-system', 'uploadAsync');
   }

@@ -7497,8 +7497,6 @@ CACHE_KEYS:
       EXFileSystem: 6443c018843c511523c78eca36d52515
     CHECKSUM: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
     FILES:
-      - "../../packages/expo-file-system/ios/EXFileSystem/EXDownloadDelegate.h"
-      - "../../packages/expo-file-system/ios/EXFileSystem/EXDownloadDelegate.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.h"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFileSystem.h"
@@ -7507,6 +7505,14 @@ CACHE_KEYS:
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemAssetLibraryHandler.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemLocalFileHandler.h"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemLocalFileHandler.m"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.h"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.m"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.h"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.m"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionUploadTaskDelegate.h"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionUploadTaskDelegate.m"
+      - "../../packages/expo-file-system/ios/EXFileSystem/NSData+EXFileSystem.h"
+      - "../../packages/expo-file-system/ios/EXFileSystem/NSData+EXFileSystem.m"
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.1.0)

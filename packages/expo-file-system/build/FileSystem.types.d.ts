@@ -5,21 +5,26 @@ export declare type DownloadOptions = {
         [name: string]: string;
     };
 };
-export declare type DownloadResult = {
-    uri: string;
-    status: number;
+export declare type HttpResult = {
     headers: {
         [name: string]: string;
     };
-    md5?: string;
+    status: number;
+    MINEType: string | null;
 };
-export declare type UploadOptions = {
+export declare type DownloadResult = {
+    uri: string;
+    md5?: string;
+} & HttpResult;
+export declare type FileSystemUploadOptions = {
     headers?: {
         [name: string]: string;
     };
     httpMethod?: FileSystemHttpMethods;
-    bodyEncoding?: FileSystemBodyEncoding;
 };
+export declare type FileSystemUploadResult = {
+    body: string;
+} & HttpResult;
 export declare type DownloadProgressCallback = (data: DownloadProgressData) => void;
 export declare type DownloadProgressData = {
     totalBytesWritten: number;
@@ -54,30 +59,6 @@ export declare enum FileSystemHttpMethods {
     POST = 0,
     PUT = 1,
     PATCH = 2
-}
-export declare enum FileSystemBodyEncoding {
-    UTF8 = 0,
-    ASCII = 1,
-    NEXTSTEP = 2,
-    JapaneseEUC = 3,
-    ISOLatin1 = 4,
-    Symbol = 5,
-    NonLossyASCII = 6,
-    ShiftJIS = 7,
-    ISOLatin2 = 8,
-    Unicode = 9,
-    WindowsCP1251 = 10,
-    WindowsCP1252 = 11,
-    WindowsCP1253 = 12,
-    WindowsCP1254 = 13,
-    WindowsCP1250 = 14,
-    ISO2022JP = 15,
-    MacOSRoman = 16,
-    UTF16BigEndian = 17,
-    UTF16LittleEndian = 18,
-    UTF32 = 19,
-    UTF32BigEndian = 20,
-    UTF32LittleEndian = 21
 }
 export declare type ReadingOptions = {
     encoding?: EncodingType | 'utf8' | 'base64';

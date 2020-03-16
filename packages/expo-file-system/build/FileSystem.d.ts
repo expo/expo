@@ -1,6 +1,6 @@
 import { EventEmitter, Subscription } from '@unimodules/core';
-import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, UploadOptions, FileSystemHttpMethods, FileSystemBodyEncoding } from './FileSystem.types';
-export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, UploadOptions, FileSystemHttpMethods, FileSystemBodyEncoding, };
+import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods } from './FileSystem.types';
+export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods, };
 export declare const documentDirectory: string | null;
 export declare const cacheDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;
@@ -30,7 +30,7 @@ export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
 export declare function downloadAsync(fileUri: string, uri: string, options?: DownloadOptions): Promise<DownloadResult>;
-export declare function uploadAsync(fileUri: string, url: string, options?: UploadOptions): Promise<void>;
+export declare function uploadAsync(fileUri: string, url: string, options?: FileSystemUploadOptions): Promise<FileSystemUploadResult>;
 export declare function createDownloadResumable(uri: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string): DownloadResumable;
 export declare class DownloadResumable {
     _uuid: string;
