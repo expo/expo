@@ -5,25 +5,45 @@
 
 static NSString * const sourceUriKey = @"uri";
 
+@interface EXImageView ()
+
+@property (nonatomic, strong) NSURL *imageURL;
+
+@end
+
 @implementation EXImageView
 
 - (void)dealloc
 {
   // Stop any active operations or downloads
-  [self sd_setImageWithURL:nil];
+  [self sd_cancelCurrentImageLoad];
 }
 
 # pragma mark -  Custom prop setters
 
 - (void)setSource:(NSDictionary *)source
 {
-  NSURL *imageURL = [RCTConvert NSURL:source[sourceUriKey]];
+  _imageURL = [RCTConvert NSURL:source[sourceUriKey]];
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  if ([changedProps containsObject:@"source"]) {
+    [self updateImage];
+  }
+}
+
+- (void)updateImage
+{
+  // We want to call onError, onLoadEnd for the previous image load
+  // before calling onLoadStart for the next image load.
+  [self sd_cancelCurrentImageLoad];
 
   if (self.onLoadStart) {
     self.onLoadStart(@{});
   }
 
-  [self sd_setImageWithURL:imageURL
+  [self sd_setImageWithURL:_imageURL
           placeholderImage:nil
                    options:0
                   progress:[self progressBlock]

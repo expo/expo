@@ -2,6 +2,7 @@
 
 #import <SDWebImage/SDWebImage.h>
 #import <React/RCTComponent.h>
+#import <React/UIView+React.h>
 
 typedef NS_ENUM(NSInteger, EXImageCacheTypeEnum) {
   EXImageCacheUnknown = 0,
@@ -19,5 +20,7 @@ typedef NS_ENUM(NSInteger, EXImageCacheTypeEnum) {
 @property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
 - (void)setSource:(NSDictionary *)sourceMap;
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
 
 @end
