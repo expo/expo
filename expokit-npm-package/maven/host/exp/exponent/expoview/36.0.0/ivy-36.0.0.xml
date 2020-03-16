@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="36.0.0" status="integration" publication="20200127144600"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="36.0.0" status="integration" publication="20200316103918"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -201,6 +201,10 @@
       <artifact name="crashlytics" type="aar" ext="aar" conf="api"/>
     </dependency>
     <dependency org="de.greenrobot" name="eventbus" rev="2.4.0" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="design" rev="28.0.0" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="recyclerview-v7" rev="28.0.0" conf="api-&gt;default"/>
+    <dependency org="com.android.support" name="cardview-v7" rev="28.0.0" conf="api-&gt;default"/>
+    <dependency org="com.helpshift" name="android-helpshift-aar" rev="7.6.3" conf="api-&gt;default"/>
     <dependency org="com.squareup.picasso" name="picasso" rev="2.5.2" conf="api-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-gcm" rev="16.1.0" conf="api-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-analytics" rev="16.0.8" conf="api-&gt;default"/>
@@ -367,21 +371,26 @@
     <dependency org="com.crashlytics.sdk.android" name="answers" rev="1.4.7" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.crashlytics.sdk.android" name="beta" rev="1.2.10" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="de.greenrobot" name="eventbus" rev="2.4.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.material" name="material" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-core-ui" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-core-utils" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.documentfile" name="documentfile" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.localbroadcastmanager" name="localbroadcastmanager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.print" name="print" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.coordinatorlayout" name="coordinatorlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.slidingpanelayout" name="slidingpanelayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.transition" name="transition" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.cardview" name="cardview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.recyclerview" name="recyclerview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.helpshift" name="android-helpshift-aar" rev="7.6.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.squareup.picasso" name="picasso" rev="2.5.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-gcm" rev="16.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-base" rev="16.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-basement" rev="16.2.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.media" name="media" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.legacy" name="legacy-support-core-utils" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.documentfile" name="documentfile" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.localbroadcastmanager" name="localbroadcastmanager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.print" name="print" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.legacy" name="legacy-support-core-ui" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.coordinatorlayout" name="coordinatorlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.slidingpanelayout" name="slidingpanelayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-tasks" rev="16.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-iid" rev="16.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-stats" rev="16.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -408,10 +417,6 @@
     <dependency org="net.openid" name="appauth" rev="0.7.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.browser" name="browser" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.airbnb.android" name="lottie" rev="2.5.6" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.material" name="material" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.transition" name="transition" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.cardview" name="cardview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.recyclerview" name="recyclerview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.firebase" name="firebase-core" rev="16.0.9" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.firebase" name="firebase-analytics" rev="16.5.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.android.gms" name="play-services-measurement" rev="16.5.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
