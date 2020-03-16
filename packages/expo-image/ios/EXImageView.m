@@ -19,9 +19,66 @@ static NSString * const sourceUriKey = @"uri";
 {
   NSURL *imageURL = [RCTConvert NSURL:source[sourceUriKey]];
 
-  [self sd_setImageWithURL:imageURL];
+  if (self.onLoadStart) {
+    self.onLoadStart(@{});
+  }
+
+  [self sd_setImageWithURL:imageURL
+          placeholderImage:nil
+                   options:0
+                  progress:[self progressBlock]
+                 completed:[self completionBlock]];
 }
 
+- (SDImageLoaderProgressBlock)progressBlock
+{
+  __weak EXImageView *weakSelf = self;
+  return ^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+    __strong EXImageView *strongSelf = weakSelf;
+    if (!strongSelf) {
+      // Nothing to do
+      return;
+    }
+
+    if (strongSelf.onProgress) {
+      strongSelf.onProgress(@{
+        @"loaded": @(receivedSize),
+        @"total": @(expectedSize)
+      });
+    }
+  };
+}
+
+- (SDExternalCompletionBlock)completionBlock
+{
+  __weak EXImageView *weakSelf = self;
+  return ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    __strong EXImageView *strongSelf = weakSelf;
+    if (!strongSelf) {
+      // Nothing to do
+      return;
+    }
+
+    if (error && strongSelf.onError) {
+      strongSelf.onError(@{
+        @"error": error.localizedDescription
+      });
+    } else if (image && strongSelf.onLoad) {
+      strongSelf.onLoad(@{
+        @"cacheType": @([self convertToCacheTypeEnum:cacheType]),
+        @"source": @{
+            @"url": imageURL.absoluteString,
+            @"width": @(image.size.width),
+            @"height": @(image.size.height)
+        }
+      });
+    }
+
+    if (strongSelf.onLoadEnd) {
+      strongSelf.onLoadEnd(@{});
+    }
+  };
+}
 
 - (EXImageCacheTypeEnum)convertToCacheTypeEnum:(SDImageCacheType)imageCacheType
 {
