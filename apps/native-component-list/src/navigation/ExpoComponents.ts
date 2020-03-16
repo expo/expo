@@ -13,7 +13,6 @@ const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScree
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
-const ExpoImage = optionalRequire(() => require('../screens/ExpoImageScreen'));
 const GestureHandlerList = optionalRequire(() => require('../screens/GestureHandlerListScreen'));
 const GestureHandlerPinch = optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
 const GestureHandlerSwipeable = optionalRequire(() =>
@@ -42,6 +41,12 @@ const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
 const HTML = optionalRequire(() => require('../screens/HTMLElementsScreen'));
+const Image = optionalRequire(() => require('../screens/Image/ImageScreen'));
+const ImageScreens = (optionalRequire(() =>
+  require('../screens/Image/ImageScreens')
+) as unknown) as {
+  [key: string]: React.ComponentType;
+};
 
 const optionalScreens: { [key: string]: React.ComponentType | null } = {
   AdMob,
@@ -50,13 +55,14 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   BlurView,
   Camera,
   DateTimePicker,
-  ExpoImage,
   GL,
   ...GLScreens,
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
   HTML,
+  Image,
+  ...ImageScreens,
   ReanimatedImagePreview,
   ReanimatedProgress,
   Gif,
