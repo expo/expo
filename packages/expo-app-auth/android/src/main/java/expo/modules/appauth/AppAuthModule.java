@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationException;
@@ -20,6 +21,11 @@ import net.openid.appauth.TokenResponse;
 import net.openid.appauth.connectivity.ConnectionBuilder;
 import net.openid.appauth.connectivity.DefaultConnectionBuilder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.greenrobot.event.EventBus;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -29,13 +35,6 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import androidx.annotation.Nullable;
-import de.greenrobot.event.EventBus;
 
 public class AppAuthModule extends ExportedModule implements ActivityEventListener {
   private static final String TAG = "ExpoAppAuth";
@@ -54,7 +53,6 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-
     if (mModuleRegistry != null) {
       mUIManager = mModuleRegistry.getModule(UIManager.class);
       if (!getAppOwnership().equals("expo")) {
@@ -89,8 +87,9 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
         Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
         Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT)
-            ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
-            : null);
+          ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
+          : null
+    );
   }
 
   private void refreshAsync(
@@ -162,8 +161,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       Map<String, String> serviceConfig
   ) {
     if (EventBus.getDefault().isRegistered(this) && getAppOwnership().equals("expo")) {
-      mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
-          "Cannot start a new task while another task is currently in progress");
+      mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Cannot start a new task while another task is currently in progress");
       return;
     }
 
@@ -195,7 +193,6 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
                 mAuthTask.reject(authorizationException);
                 return;
               }
-
               if (EventBus.getDefault().isRegistered(this) && getAppOwnership().equals("expo")) {
                 mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Cannot start a new task while another task is currently in progress");
                 return;
@@ -292,8 +289,16 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       final Map<String, String> parameters
   ) {
 
+    String responseType = ResponseTypeValues.CODE;
+    if (parameters.containsKey("response_type")) {
+      String responseTypeString = parameters.remove("response_type");
+      if ("token".equals(responseTypeString)) {
+        responseType = ResponseTypeValues.TOKEN;
+      } else if ("id_token".equals(responseTypeString)) {
+        responseType = ResponseTypeValues.ID_TOKEN;
+      }
+    }
     Activity activity;
-
     try {
       activity = getCurrentActivity();
     } catch (Exception error) {
@@ -301,106 +306,62 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       return;
     }
 
-    AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, ResponseTypeValues.CODE, Uri.parse(redirectUrl));
+    try {
+      AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, responseType, Uri.parse(redirectUrl));
 
-    if (scopes != null) {
-      String scopesString = Serialization.scopesToString(scopes);
-      if (scopesString != null) {
-        authReqBuilder.setScope(scopesString);
+      if (scopes != null) {
+        String scopesString = Serialization.scopesToString(scopes);
+        if (scopesString != null) {
+          authReqBuilder.setScope(scopesString);
+        }
       }
-    }
 
-    if (parameters != null) {
-      if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
-        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
-        parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+      if (parameters != null) {
+        if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
+          authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
+          parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
+          authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
+          parameters.remove(AppAuthConstants.HTTPS.PROMPT);
+        }
+        if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
+          authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
+          parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
+        }
+        authReqBuilder.setAdditionalParameters(parameters);
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
-        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
-        parameters.remove(AppAuthConstants.HTTPS.PROMPT);
-      }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
-        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
-        parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
-      }
-      authReqBuilder.setAdditionalParameters(parameters);
-    }
+      
+      if ("expo".equals(getAppOwnership())) {
+        Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-    if ("expo".equals(getAppOwnership())) {
-      Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class)
-              .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        // TODO: Bacon: Prevent double register - this is fatal
+        EventBus.getDefault().register(this);
 
-
-      // TODO: Bacon: Prevent double register - this is fatal
-      EventBus.getDefault().register(this);
-
-      ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
-
-      if (!"standalone".equals(constantsService.getAppOwnership())) {
+        ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
         if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
-
           mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
           return;
         } else {
           String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
           postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
         }
-      }
 
-      AuthorizationRequest authorizationRequest = authReqBuilder.build();
-      int hash = authorizationRequest.hashCode();
-      PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, 0);
-      AuthorizationService authorizationService = new AuthorizationService(activity, authConfig);
-      authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
-      return;
-    }
-
-    // For standalone and bare-workflow
-
-    AuthorizationRequest authorizationRequest = authReqBuilder.build();
-
-    AuthorizationService authService = new AuthorizationService(getContext());
-    Intent authIntent = authService.getAuthorizationRequestIntent(authorizationRequest);
-    activity.startActivityForResult(authIntent, RC_EXPO_APP_AUTH);
-  }
-
-  String getAppOwnership() {
-    ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
-    return constantsService.getAppOwnership();
-  }
-
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (!mAuthTask.running()) {
-      return;
-    }
-    if (requestCode == RC_EXPO_APP_AUTH) {
-
-      AuthorizationException error = AuthorizationException.fromIntent(data);
-      if (error != null) {
-        mAuthTask.reject(error);
+        AuthorizationRequest authorizationRequest = authReqBuilder.build();
+        int hash = authorizationRequest.hashCode();
+        PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, 0);
+        AuthorizationService authorizationService = new AuthorizationService(activity, authConfig);
+        authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
         return;
       }
-
-
-      ConnectionBuilder connectionBuilder;
-      if (mShouldMakeHTTPCalls.equals(false)) {
-        connectionBuilder = DefaultConnectionBuilder.INSTANCE;
-      } else {
-        connectionBuilder = UnsafeConnectionBuilder.INSTANCE;
-      }
-      AppAuthConfiguration authConfig = new AppAuthConfiguration.Builder().setConnectionBuilder(connectionBuilder)
-              .build();
-
-      final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(data);
-
-      TokenRequest tokenReq = authResponse.createTokenExchangeRequest(mAdditionalParametersMap);
-      performTokenReq(tokenReq, authConfig, mClientSecret);
+      // For standalone and bare-workflow
+      AuthorizationRequest authorizationRequest = authReqBuilder.build();
+      AuthorizationService authorizationService = new AuthorizationService(getContext());
+      Intent authorizationIntent = authorizationService.getAuthorizationRequestIntent(authorizationRequest);
+      activity.startActivityForResult(authorizationIntent, RC_EXPO_APP_AUTH);
+    } catch (Exception e) {
+      mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Encountered exception when trying to start auth request: " + e.getMessage());
     }
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
   }
 
   public void onEvent(AppAuthBrowserActivity.OAuthResultEvent event) {
@@ -467,5 +428,43 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
     } else {
       authorizationService.performTokenRequest(tokenReq, getTokenCallback());
     }
+  }
+
+  String getAppOwnership() {
+    ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
+    return constantsService.getAppOwnership();
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (!mAuthTask.running()) {
+      return;
+    }
+
+    if (requestCode == RC_EXPO_APP_AUTH) {
+      AuthorizationException error = AuthorizationException.fromIntent(data);
+      if (error != null) {
+        mAuthTask.reject(error);
+        return;
+      }
+
+      ConnectionBuilder connectionBuilder;
+      if (mShouldMakeHTTPCalls.equals(false)) {
+        connectionBuilder = DefaultConnectionBuilder.INSTANCE;
+      } else {
+        connectionBuilder = UnsafeConnectionBuilder.INSTANCE;
+      }
+
+      AppAuthConfiguration authConfig = new AppAuthConfiguration.Builder().setConnectionBuilder(connectionBuilder).build();
+
+      final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(data);
+
+      TokenRequest tokenReq = authResponse.createTokenExchangeRequest(mAdditionalParametersMap);
+      performTokenReq(tokenReq, authConfig, mClientSecret);
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
   }
 }
