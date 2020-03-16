@@ -80,7 +80,7 @@ public class UpdatesModule extends ExportedModule {
     try {
       UpdatesController controller = UpdatesController.getInstance();
       if (!controller.getUpdatesConfiguration().isEnabled()) {
-        promise.reject("ERR_UPDATES_RELOAD", "You cannot reload when expo-updates is not enabled.");
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot reload when expo-updates is not enabled.");
         return;
       }
 
@@ -109,7 +109,7 @@ public class UpdatesModule extends ExportedModule {
     try {
       final UpdatesController controller = UpdatesController.getInstance();
       if (!controller.getUpdatesConfiguration().isEnabled()) {
-        promise.reject("ERR_UPDATES_CHECK", "You cannot check for updates when expo-updates is not enabled.");
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot check for updates when expo-updates is not enabled.");
         return;
       }
 
@@ -156,7 +156,7 @@ public class UpdatesModule extends ExportedModule {
     try {
       final UpdatesController controller = UpdatesController.getInstance();
       if (!controller.getUpdatesConfiguration().isEnabled()) {
-        promise.reject("ERR_UPDATES_FETCH", "You cannot fetch updates when expo-updates is not enabled.");
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot fetch updates when expo-updates is not enabled.");
         return;
       }
 
