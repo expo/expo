@@ -18,14 +18,20 @@ import expo.modules.image.events.ImageLoadEndEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
 import expo.modules.image.events.ImageProgressEvent;
+import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
+import expo.modules.image.okhttp.OkHttpClientResponseInterceptor;
 
 public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   private static final String REACT_CLASS = "ExpoImage";
 
   private RequestManager mRequestManager;
+  private OkHttpClientProgressInterceptor mProgressInterceptor;
+  private OkHttpClientResponseInterceptor mResponseInterceptor;
 
   public ExpoImageViewManager(ReactApplicationContext applicationContext) {
     mRequestManager = Glide.with(applicationContext);
+    mProgressInterceptor = OkHttpClientProgressInterceptor.getInstance();
+    mResponseInterceptor = OkHttpClientResponseInterceptor.getInstance();
   }
 
   @NonNull
@@ -58,7 +64,7 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @NonNull
   @Override
   public ExpoImageView createViewInstance(@NonNull ThemedReactContext context) {
-    return new ExpoImageView(context, mRequestManager);
+    return new ExpoImageView(context, mRequestManager, mProgressInterceptor, mResponseInterceptor);
   }
 
   @Override
