@@ -21,7 +21,9 @@ import androidx.appcompat.widget.AppCompatImageView;
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
 import expo.modules.image.okhttp.OkHttpClientResponseInterceptor;
 import expo.modules.image.okhttp.ResponseListener;
+import okhttp3.MediaType;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 @SuppressLint("ViewConstructor")
 public class ExpoImageView extends AppCompatImageView implements ResponseListener, ProgressListener {
@@ -32,6 +34,7 @@ public class ExpoImageView extends AppCompatImageView implements ResponseListene
   private RequestManager mRequestManager;
   private ReadableMap mSourceMap;
   private GlideUrl mLoadedSource;
+  private MediaType mMediaType;
 
   public ExpoImageView(ReactContext context, RequestManager requestManager, OkHttpClientProgressInterceptor progressInterceptor, OkHttpClientResponseInterceptor responseInterceptor) {
     super(context);
@@ -58,6 +61,7 @@ public class ExpoImageView extends AppCompatImageView implements ResponseListene
       mLoadedSource = null;
     } else if (!sourceToLoad.equals(mLoadedSource)) {
       mLoadedSource = sourceToLoad;
+      mMediaType = null;
       mResponseInterceptor.registerResponseListener(sourceToLoad.toStringUrl(), this);
       mProgressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), this);
       mRequestManager
@@ -82,6 +86,10 @@ public class ExpoImageView extends AppCompatImageView implements ResponseListene
 
   @Override
   public void onResponse(String requestUrl, Response response) {
+    ResponseBody body = response.body();
+    if (body != null && requestUrl.equals(mLoadedSource.toStringUrl())) {
+      mMediaType = body.contentType();
+    }
   }
 
   @Override
