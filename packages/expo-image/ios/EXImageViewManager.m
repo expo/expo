@@ -9,6 +9,12 @@ RCT_EXPORT_MODULE(ExpoImage)
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 
+RCT_EXPORT_VIEW_PROPERTY(onLoadStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
+
 - (UIView *)view
 {
   return [[EXImageView alloc] init];
