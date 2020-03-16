@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -15,6 +16,8 @@ public class ExpoImageView extends AppCompatImageView {
   private static final String SOURCE_URI_KEY = "uri";
 
   private RequestManager mRequestManager;
+  private ReadableMap mSourceMap;
+  private GlideUrl mLoadedSource;
 
   public ExpoImageView(ReactContext context, RequestManager requestManager) {
     super(context);
@@ -27,15 +30,31 @@ public class ExpoImageView extends AppCompatImageView {
   }
 
   /* package */ void setSource(@Nullable ReadableMap sourceMap) {
-    if (sourceMap == null || sourceMap.getString(SOURCE_URI_KEY) == null) {
+    mSourceMap = sourceMap;
+  }
+
+  /* package */ void onAfterUpdateTransaction() {
+    GlideUrl sourceToLoad = createUrlFromSourceMap(mSourceMap);
+
+    if (sourceToLoad == null) {
       mRequestManager.clear(this);
       setImageDrawable(null);
-      return;
+      mLoadedSource = null;
+    } else if (!sourceToLoad.equals(mLoadedSource)) {
+      mLoadedSource = sourceToLoad;
+      mRequestManager
+          .load(sourceToLoad)
+          .into(this);
+    }
+  }
+
+  @Nullable
+  protected GlideUrl createUrlFromSourceMap(@Nullable ReadableMap sourceMap) {
+    if (sourceMap == null || sourceMap.getString(SOURCE_URI_KEY) == null) {
+      return null;
     }
 
-    mRequestManager
-        .load(sourceMap.getString(SOURCE_URI_KEY))
-        .into(this);
+    return new GlideUrl(sourceMap.getString(SOURCE_URI_KEY));
   }
 
   /* package */ void onDrop() {
