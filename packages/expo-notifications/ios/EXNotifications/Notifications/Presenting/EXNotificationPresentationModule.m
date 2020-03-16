@@ -35,6 +35,23 @@ UM_EXPORT_METHOD_AS(presentNotificationAsync,
   }];
 }
 
+UM_EXPORT_METHOD_AS(dismissNotificationAsync,
+                    dismissNotificationWithIdentifier:(NSString *)identifier
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[identifier]];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
+                    dismissAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
+  resolve(nil);
+}
+
 # pragma mark - UMModuleRegistryConsumer
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry

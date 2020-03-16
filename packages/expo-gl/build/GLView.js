@@ -100,7 +100,7 @@ class WebGLRenderingContext {
 class WebGL2RenderingContext extends WebGLRenderingContext {
 }
 const idToObject = {};
-class WebGLObject {
+export class WebGLObject {
     constructor(id) {
         if (idToObject[id]) {
             throw new Error(`WebGL object with underlying EXGLObjectId '${id}' already exists!`);

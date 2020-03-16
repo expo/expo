@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { BlurTint, Props } from './BlurView.types';
-export default class BlurView extends React.Component<Props> {
+import { BlurTint, BlurProps } from './BlurView.types';
+export default class BlurView extends React.Component<BlurProps> {
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
         onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;

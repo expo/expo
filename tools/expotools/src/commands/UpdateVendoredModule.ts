@@ -20,6 +20,7 @@ interface ActionOptions {
   platform: 'ios' | 'android' | 'all';
   commit: string;
   pbxproj: boolean;
+  semverPrefix: string;
 }
 
 interface VendoredModuleUpdateStep {
@@ -502,6 +503,38 @@ async function askForModuleAsync(): Promise<string> {
   return moduleName;
 }
 
+async function getPackageJsonPathsAsync(): Promise<string[]> {
+  const packageJsonPath = path.join(Directories.getAppsDir(), '**', 'package.json');
+  return await glob(packageJsonPath, { ignore: "**/node_modules/**" });
+}
+
+async function updateWorkspaceDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+  const paths = await getPackageJsonPathsAsync();
+  const results = await Promise.all(paths.map(path => updateDependencyAsync(path, dependencyName, versionRange)));
+  return results.some(Boolean);
+}
+
+async function updateHomeDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+  const packageJsonPath = path.join(Directories.getExpoHomeJSDir(), 'package.json');
+  return await updateDependencyAsync(packageJsonPath, dependencyName, versionRange);
+}
+
+async function updateDependencyAsync(packageJsonPath: string, dependencyName: string, newVersionRange: string): Promise<boolean> {
+  const jsonFile = new JsonFile(packageJsonPath);
+  const packageJson = await jsonFile.readAsync();
+  
+  const dependencies = ((packageJson || {}).dependencies || {});
+  if (dependencies[dependencyName] && dependencies[dependencyName] !== newVersionRange) {
+    console.log(
+      `${chalk.yellow('>')} ${chalk.green(packageJsonPath)}: ${chalk.magentaBright(dependencies[dependencyName])} -> ${chalk.magentaBright(newVersionRange)}`
+    );
+    dependencies[dependencyName] = newVersionRange;
+    await jsonFile.writeAsync(packageJson);
+    return true;
+  }
+  return false;
+}
+
 async function action(options: ActionOptions) {
   if (options.list || options.listOutdated) {
     await listAvailableVendoredModulesAsync(options.listOutdated);
@@ -652,14 +685,15 @@ async function action(options: ActionOptions) {
     }
   }
 
-  await updateBundledNativeModulesAsync(async bundledNativeModules => {
-    const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
-      name: string;
-      version: string;
-    };
+  const { name, version } = await JsonFile.readAsync<{
+    name: string;
+    version: string;
+  }>(path.join(tmpDir, 'package.json'));
+  const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+  const versionRange = `${semverPrefix}${version}`;
 
+  await updateBundledNativeModulesAsync(async bundledNativeModules => {
     if (moduleConfig.installableInManagedApps) {
-      const versionRange = `${moduleConfig.semverPrefix || ''}${version}`;
       bundledNativeModules[name] = versionRange;
       console.log(
         `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
@@ -676,6 +710,24 @@ async function action(options: ActionOptions) {
   });
 
   console.log(
+    `\nUpdating ${chalk.green(name)} in workspace projects...`
+  );
+  const homeWasUpdated = await updateHomeDependencies(name, versionRange);
+  const workspaceWasUpdated = await updateWorkspaceDependencies(name, versionRange);
+
+  // We updated dependencies so we need to run yarn.
+  if (homeWasUpdated || workspaceWasUpdated) {
+    console.log(`\nRunning \`${chalk.cyan(`yarn`)}\`...`);
+    await spawnAsync('yarn', [], {
+      cwd: Directories.getExpoRepositoryRootDir(),
+    });
+  }
+
+  if (homeWasUpdated) {
+    console.log(`\nHome dependencies were updated. You need to publish the new dev home version.`);
+  }
+
+  console.log(
     `\nFinished updating ${chalk.green(
       moduleName
     )}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`
@@ -688,7 +740,7 @@ export default (program: Command) => {
     .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
-    .option('-o, --listOutdated', 'Shows a list of outdated 3rd party modules.', false)
+    .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
     .option(
       '-p, --platform <string>',
@@ -699,6 +751,11 @@ export default (program: Command) => {
       '-c, --commit <string>',
       'Git reference on which to checkout when copying 3rd party module.',
       'master'
+    )
+    .option(
+      '-s, --semver-prefix <string>',
+      'Setting this flag forces to use given semver prefix. Some modules may specify them by the config, but in case we want to update to alpha/beta versions we should use an empty prefix to be more strict.',
+      null
     )
     .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
     .asyncAction(action);

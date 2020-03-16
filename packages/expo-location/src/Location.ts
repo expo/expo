@@ -76,7 +76,7 @@ export interface PermissionResponse extends UMPermissionResponse {
   android?: PermissionDetailsLocationAndroid;
 }
 
-interface LocationTaskOptions {
+export interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
   distanceInterval?: number;
@@ -96,7 +96,7 @@ interface LocationTaskOptions {
   };
 }
 
-interface Region {
+export interface LocationRegion {
   identifier?: string;
   latitude: number;
   longitude: number;
@@ -108,8 +108,8 @@ interface Region {
 type Subscription = {
   remove: () => void;
 };
-type LocationCallback = (data: LocationData) => any;
-type HeadingCallback = (data: HeadingData) => any;
+export type LocationCallback = (data: LocationData) => any;
+export type LocationHeadingCallback = (data: HeadingData) => any;
 
 enum LocationAccuracy {
   Lowest = 1,
@@ -152,7 +152,7 @@ function _getCurrentWatchId() {
 }
 
 let watchCallbacks: {
-  [watchId: number]: LocationCallback | HeadingCallback;
+  [watchId: number]: LocationCallback | LocationHeadingCallback;
 } = {};
 
 let deviceEventSubscription: Subscription | null;
@@ -235,7 +235,7 @@ export async function getHeadingAsync(): Promise<HeadingData> {
 }
 
 export async function watchHeadingAsync(
-  callback: HeadingCallback
+  callback: LocationHeadingCallback
 ): Promise<{ remove: () => void }> {
   // Check if there is already a compass event watch.
   if (headingEventSub) {
@@ -541,7 +541,7 @@ export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<
 
 // --- Geofencing
 
-function _validateRegions(regions: Region[]) {
+function _validateRegions(regions: LocationRegion[]) {
   if (!regions || regions.length === 0) {
     throw new Error(
       'Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions'
@@ -564,7 +564,7 @@ function _validateRegions(regions: Region[]) {
 
 export async function startGeofencingAsync(
   taskName: string,
-  regions: Region[] = []
+  regions: LocationRegion[] = []
 ): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);

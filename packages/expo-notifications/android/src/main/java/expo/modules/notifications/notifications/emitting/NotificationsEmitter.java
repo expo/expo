@@ -3,15 +3,15 @@ package expo.modules.notifications.notifications.emitting;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.google.firebase.messaging.RemoteMessage;
-
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-import expo.modules.notifications.notifications.RemoteMessageSerializer;
+import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 public class NotificationsEmitter extends ExportedModule implements NotificationListener {
   private final static String EXPORTED_NAME = "ExpoNotificationsEmitter";
@@ -47,15 +47,17 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   }
 
   /**
-   * Callback called when {@link NotificationManager} gets notified of a new message.
+   * Callback called when {@link NotificationManager} gets notified of a new notification.
    * Emits a {@link NotificationsEmitter#NEW_MESSAGE_EVENT_NAME} event.
    *
-   * @param message New remote message.
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
    */
   @Override
-  public void onMessage(RemoteMessage message) {
+  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
     if (mEventEmitter != null) {
-      mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, RemoteMessageSerializer.toBundle(message));
+      mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(identifier, request, trigger));
     }
   }
 
@@ -64,7 +66,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
    * Emits a {@link NotificationsEmitter#MESSAGES_DELETED_EVENT_NAME} event.
    */
   @Override
-  public void onDeletedMessages() {
+  public void onNotificationsDropped() {
     if (mEventEmitter != null) {
       mEventEmitter.emit(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY);
     }

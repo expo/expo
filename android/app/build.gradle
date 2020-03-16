@@ -178,7 +178,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:36.0.0@aar') {
+  implementation('host.exp.exponent:expoview:37.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -194,6 +194,11 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_37
+  implementation(project(':expoview-abi37_0_0'))
+  // END_SDK_37
 
   // BEGIN_SDK_36
   implementation(project(':expoview-abi36_0_0'))

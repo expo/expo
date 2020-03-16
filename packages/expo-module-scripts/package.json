@@ -30,15 +30,15 @@
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",
     "@types/jest": "^24.0.11",
-    "babel-preset-expo": "~8.0.0",
+    "babel-preset-expo": "~8.1.0",
     "commander": "^2.19.0",
     "eslint-config-universe": "^2.1.0",
     "find-yarn-workspace-root": "^1.2.1",
     "glob": "^7.1.3",
-    "jest-expo": "~36.0.1",
+    "jest-expo": "~37.0.0",
     "jest-expo-enzyme": "^1.0.0",
     "ts-jest": "~24.0.2",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

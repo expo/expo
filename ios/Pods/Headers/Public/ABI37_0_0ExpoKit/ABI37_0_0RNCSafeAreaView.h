@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/Api/SafeAreaContext/ABI37_0_0RNCSafeAreaView.h

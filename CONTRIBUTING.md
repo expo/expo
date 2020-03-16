@@ -29,7 +29,10 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 ## 📦 Download and Setup
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
-2. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
+2. Prepare for Nix installation: `./scripts/create-nix-volume`.
+3. Restart your computer
+4. Install Nix: `curl https://nixos.org/nix/install | sh`
+5. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
@@ -128,7 +131,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 To help keep CI green, please make sure of the following:
 
-- Remember to add a concise description of the change to [CHANGELOG.md](/CHANGELOG.md). This is especially helpful for breaking changes!
+- Remember to add a concise description of any user-facing changes to `CHANGELOG.md` file in the package you've changed or [root's CHANGELOG.md](/CHANGELOG.md) if your changes don't apply to any package. This is especially helpful for breaking changes!
 - If you modified anything in `packages/`:
   - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
   - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.

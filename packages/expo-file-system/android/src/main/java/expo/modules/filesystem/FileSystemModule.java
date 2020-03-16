@@ -187,8 +187,8 @@ public class FileSystemModule extends ExportedModule {
         Bundle result = new Bundle();
         try {
           InputStream is = "content".equals(uri.getScheme()) ?
-              getContext().getContentResolver().openInputStream(uri) :
-              openAssetInputStream(uri);
+            getContext().getContentResolver().openInputStream(uri) :
+            openAssetInputStream(uri);
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -319,7 +319,7 @@ public class FileSystemModule extends ExportedModule {
             promise.resolve(null);
           } else {
             promise.reject("E_FILE_NOT_FOUND",
-                "File '" + uri + "' could not be deleted because it could not be found");
+              "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
       } else {
@@ -354,7 +354,7 @@ public class FileSystemModule extends ExportedModule {
           promise.resolve(null);
         } else {
           promise.reject("E_FILE_NOT_MOVED",
-              "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+            "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
@@ -424,7 +424,7 @@ public class FileSystemModule extends ExportedModule {
           promise.resolve(null);
         } else {
           promise.reject("E_DIRECTORY_NOT_CREATED",
-              "Directory '" + uri + "' could not be created or already exists.");
+            "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
@@ -451,7 +451,7 @@ public class FileSystemModule extends ExportedModule {
           promise.resolve(result);
         } else {
           promise.reject("E_DIRECTORY_NOT_READ",
-              "Directory '" + uri + "' could not be read.");
+            "Directory '" + uri + "' could not be read.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
@@ -573,9 +573,7 @@ public class FileSystemModule extends ExportedModule {
       checkIfFileDirExists(fileUri);
       if ("file".equals(fileUri.getScheme())) {
         File file = uriToFile(fileUri);
-        Bundle result = new Bundle();
-        result.putString("uri", contentUriFromFile(file).toString());
-        promise.resolve(result);
+        promise.resolve(contentUriFromFile(file).toString());
       } else {
         promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
       }
@@ -634,17 +632,17 @@ public class FileSystemModule extends ExportedModule {
       };
 
       OkHttpClient client =
-          getOkHttpClient().newBuilder()
-              .addNetworkInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                  Response originalResponse = chain.proceed(chain.request());
-                  return originalResponse.newBuilder()
-                      .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                      .build();
-                }
-              })
-              .build();
+        getOkHttpClient().newBuilder()
+          .addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+              Response originalResponse = chain.proceed(chain.request());
+              return originalResponse.newBuilder()
+                .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                .build();
+            }
+          })
+          .build();
 
       Request.Builder requestBuilder = new Request.Builder();
       if (isResume) {
@@ -785,8 +783,8 @@ public class FileSystemModule extends ExportedModule {
       // multiple values for the same header
       if (responseHeaders.get(headerName) != null) {
         responseHeaders.putString(
-            headerName,
-            responseHeaders.getString(headerName) + ", " + headers.value(i));
+          headerName,
+          responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -861,10 +859,10 @@ public class FileSystemModule extends ExportedModule {
   private synchronized OkHttpClient getOkHttpClient() {
     if (mClient == null) {
       OkHttpClient.Builder builder =
-          new OkHttpClient.Builder()
-              .connectTimeout(60, TimeUnit.SECONDS)
-              .readTimeout(60, TimeUnit.SECONDS)
-              .writeTimeout(60, TimeUnit.SECONDS);
+        new OkHttpClient.Builder()
+          .connectTimeout(60, TimeUnit.SECONDS)
+          .readTimeout(60, TimeUnit.SECONDS)
+          .writeTimeout(60, TimeUnit.SECONDS);
 
       CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
       if (cookieHandler != null) {
@@ -920,7 +918,7 @@ public class FileSystemModule extends ExportedModule {
         throw new IOException("Unable to delete directory " + file + ".");
       }
     } else if (!file.delete()) {
-      throw new IOException( "Unable to delete file: " + file);
+      throw new IOException("Unable to delete file: " + file);
     }
   }
 }

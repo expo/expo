@@ -23,9 +23,8 @@
 @property (nonatomic) BOOL hideBackButton;
 @property (nonatomic) BOOL hideShadow;
 @property (nonatomic) BOOL translucent;
-@property (nonatomic) BOOL gestureEnabled;
 
-+ (void)willShowViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig*)config;
++ (void)willShowViewController:(UIViewController *)vc animated:(BOOL)animated withConfig:(RNSScreenStackHeaderConfig*)config;
 
 @end
 
@@ -34,6 +33,7 @@
 @end
 
 typedef NS_ENUM(NSInteger, RNSScreenStackHeaderSubviewType) {
+  RNSScreenStackHeaderSubviewTypeBackButton,
   RNSScreenStackHeaderSubviewTypeLeft,
   RNSScreenStackHeaderSubviewTypeRight,
   RNSScreenStackHeaderSubviewTypeTitle,

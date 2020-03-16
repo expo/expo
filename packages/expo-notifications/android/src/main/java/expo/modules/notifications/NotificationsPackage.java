@@ -4,44 +4,39 @@ import android.content.Context;
 
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.Arrays;
 import java.util.List;
 
+import expo.modules.notifications.badge.BadgeModule;
+import expo.modules.notifications.badge.ExpoBadgeManager;
 import expo.modules.notifications.installationid.InstallationIdProvider;
 import expo.modules.notifications.notifications.NotificationManager;
-import expo.modules.notifications.notifications.channels.ExpoNotificationChannelsManager;
+import expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule;
+import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
-import expo.modules.notifications.notifications.presentation.ExpoNotificationBuilderFactory;
-import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationEffectsManager;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
-import expo.modules.notifications.notifications.presentation.effects.SetBadgeCountNotificationEffect;
+import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.permissions.NotificationPermissionsModule;
 import expo.modules.notifications.tokens.PushTokenManager;
 import expo.modules.notifications.tokens.PushTokenModule;
 
 public class NotificationsPackage extends BasePackage {
   @Override
-  public List<InternalModule> createInternalModules(Context context) {
-    return Arrays.asList(
-        new ExpoNotificationBuilderFactory(),
-        new ExpoNotificationPresentationEffectsManager(),
-        new SetBadgeCountNotificationEffect(context)
-    );
-  }
-
-  @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.asList(
+        new BadgeModule(context),
         new PushTokenModule(context),
         new NotificationsEmitter(context),
         new NotificationsHandler(context),
+        new NotificationScheduler(context),
         new InstallationIdProvider(context),
         new NotificationPermissionsModule(context),
-        new ExpoNotificationPresentationModule(context)
+        new NotificationChannelManagerModule(context),
+        new ExpoNotificationPresentationModule(context),
+        new NotificationChannelGroupManagerModule(context)
     );
   }
 
@@ -50,7 +45,7 @@ public class NotificationsPackage extends BasePackage {
     return Arrays.asList(
         new PushTokenManager(),
         new NotificationManager(),
-        new ExpoNotificationChannelsManager(context)
+        new ExpoBadgeManager(context)
     );
   }
 }

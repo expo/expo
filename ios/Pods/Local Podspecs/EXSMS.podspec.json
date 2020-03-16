@@ -1,6 +1,6 @@
 {
   "name": "EXSMS",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "summary": "Provides access to the system's UI/app for sending SMS messages.",
   "description": "Provides access to the system's UI/app for sending SMS messages.",
   "license": "MIT",

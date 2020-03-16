@@ -56,7 +56,7 @@
 ## 1.2. Update React Native
 
 **Why:** Each SDK version has its own version of React Native. If we're planning to update React Native version for the upcoming SDK then we need to update our fork of React Native and update `react-native-lab/react-native` submodule in this repo which is the source of truth for `react-native` version used throughout the repository.
-    
+
 **How:**
 
 - Go to `react-native-lab/react-native` submodule.
@@ -74,7 +74,7 @@
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
+- Go through another guide about [Quality Assurance](./Quality%20Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
 - Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` before versioning.
 
 ## 1.4. Versioning code for the new SDK
@@ -105,16 +105,22 @@
 | --------------------------------------------------------------------------- |
 | [1.4. Versioning code for the new SDK](#14-versioning-code-for-the-new-sdk) |
 
-**Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle. 
+**Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle.
 
 **How:**
 
-- Go through another guide about [Quality Assurance](Quality Assurance.md).
+- Go through another guide about [Quality Assurance](Quality%20Assurance.md.md).
 - Remember that you **must** go through the QA process for both the Expo client and a standalone app! (e.g. build `native-component-list` and `test-suite` as standalone apps). There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
-  **Android**:
-    - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
-  **iOS**:
-    - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
+- **Android**:
+  - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
+- **iOS**:
+  - The easiest way for now is to eject to ExpoKit and then build the resulting project. ExpoKit is not yet published (there is no new tag on GitHub) so use the current commit hash instead in `Podfile` under ExpoKit dependency.
+    > This is not currently possible to test `standalone`/`ejected to ExpoKit` app in `expo` repository scope.
+    > One way is to:
+    >
+    > - copy `apps/native-components-list`/`test-suite` app outside repository scope and perform `eject to ExpoKit`,
+    > - use ExpoKit commit hash in Podfile,
+    > - install each unimodule specified in `package.json` from specific commit hash.
 
 ## 2.2. Publish demo apps
 
@@ -153,12 +159,12 @@
 
 **How:**
 
-- Please follow another guide: [Generating Jest Mocks](Generating Jest Mocks.md).
+- Please follow another guide: [Generating Jest Mocks](Generating%20Jest%20Mocks.md).
 
 ## 3.3. Publishing prerelease packages
 
-| Prerequisites                                             |
-| --------------------------------------------------------- |
+| Prerequisites                                                       |
+| ------------------------------------------------------------------- |
 | [2.1. Versioned Quality Assurance](#21-versioned-quality-assurance) |
 
 **Why:** We need to publish prerelease versions of the packages so that we're able to prepare and test new project templates and people using bare workflow can use and test these packages before the final release.
@@ -179,9 +185,10 @@
 
 **How:**
 
-- On a new branch, check all `expo-template-*` packages under `templates` directory and bump dependencies versions wherever possible. Use versions stored in `packages/expo/bundledNativeModules.json` for vendored libs like `react-native-gesture-handler`.
-- Run `et publish-templates` and answer to questions it asks. Prerelease versions should be tagged as `next` and not `latest`.
-- Create a pull request from your branch to `master`. Make sure a reviewer will cherry-pick that commit to the release branch as well.
+- On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
+- Test these project templates in Expo client or by building them (bare workflow) - you don't have to use `expo init` at this point, just `expo start` them locally.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. Prerelease versions should be tagged as `next` and not `latest`.
+- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
 # Stage 4 - Expo client
 
@@ -206,12 +213,14 @@
 **How:**
 
 - **iOS**:
+
   - Bump Expo client versions (CFBundleVersion, CFBundleShortVersionString) in `ios/Exponent/Supporting/Info.plist`.
-  - As of latest time of writing, Xcode's "automatic provisioning" isn't working well with fastlane, so you might want to switch to manual provisioning in your working copy of Exponent.xcodeproj.
-  - Apple seems to invalidate our provisioning profiles whenever somebody new gets added or removed from the team. If you are using manual provisioning, it is sometimes helpful to log in, clear invalid profiles, and create/download a new one. If you do this, please name the profile something very specific, like 'Expo Client App Store August 20 2018'!
+  - We use `fastlane match` to sync our iOS credentials (certificates and provisioning profiles) - you will need them to properly archive and upload the distribution build to App Store Connect. Run `fastlane match appstore` from the project root folder to download them. You'll need to be authorized and have Google Cloud keys to do this, if you don't have them ask someone who has been publishing the client in the past.
   - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
+  - Make sure that production home app is published and new JS bundles are up-to-date - they're gonna be bundled within the binary and used at the first app run (before the client downloads an OTA update).
   - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it.
   - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).
+  - Once the processing is done, go to TestFlight section in App Store Connect, click on the new build and then click `Provide Export Compliance Information` button and select **"No"** in the dialog - we generally have not made changes to encryption.
   - Publish that build to TestFlight and send invitations to other testers. You should also do some smoke tests, for example against `native-component-list` published under `applereview` account.
 
 - **Android**:
@@ -220,7 +229,7 @@
   - Add a changelog for the new version in `fastlane/android/metadata/en-US/changelogs`. Commit to master and cherry-pick to the release branch.
   - Find the `client_android` CI job on the release branch. When it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - On the release branch, approve the `client_android_apk_release` build job.
-  - When ready to release to production, approve the `client_android_release_google_play` build job. Note that *this will release the new client in the Play Store* so only do this when everything else is ready!
+  - When ready to release to production, approve the `client_android_release_google_play` build job. Note that _this will release the new client in the Play Store_ so only do this when everything else is ready!
 
 ## 4.3. Making a simulator build
 
@@ -249,7 +258,6 @@
 - **iOS**:
   - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
   - **Click Submit to send the new binary to Apple**. When prompted, give the following answers:
-    - “No”, we generally have not made changes to encryption (export compliance).
     - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
     - “Serve advertisements within the app” should not be checked.
 - **Android**:
@@ -333,9 +341,10 @@
 
 **How:**
 
-- On a new branch, check all `expo-template-*` packages under `templates` directory and bump dependencies versions wherever possible. Use versions stored in `packages/expo/bundledNativeModules.json` for vendored libs like `react-native-gesture-handler`.
-- Run `et publish-templates` and answer to questions it asks.
-- Create a pull request from your branch to `master`. Make sure a reviewer will cherry-pick that commit to the release branch as well.
+- On master branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. Final versions should be tagged as `latest` on NPM.
+- Test these project templates in Expo client or by building them (bare workflow) - use `expo init` at this point.
+- If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
 ## 6.3. Generate and deploy new docs
 
@@ -343,8 +352,10 @@
 
 **How:**
 
+- Make sure you have the release branch checked out and have cherry-picked all appropriate docs changes from master that landed after the release branch was cut.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page.
-- Commit and push changes to `master` branch.
+- Commit and push changes to release branch.
+- Cherry pick this commit to `master` and push.
 - Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
 
 # Stage 7 - Snack

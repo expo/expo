@@ -17,27 +17,27 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Supported formats
 
-| Bar code format | iOS   | Android |
-| --------------- | ----- | ------- |
-| aztec           | Yes   | Yes     |
-| codabar         | No    | Yes     |
-| code39          | Yes   | Yes     |
-| code93          | Yes   | Yes     |
-| code128         | Yes   | Yes     |
-| code39mod43     | Yes   | No      |
-| datamatrix      | Yes   | Yes     |
-| ean13           | Yes   | Yes     |
-| ean8            | Yes   | Yes     |
-| interleaved2of5 | Yes   | No      |
-| itf14           | Yes\* | Yes     |
-| maxicode        | No    | Yes     |
-| pdf417          | Yes   | Yes     |
-| rss14           | No    | Yes     |
-| rssexpanded     | No    | Yes     |
-| upc_a           | No    | Yes     |
-| upc_e           | Yes   | Yes     |
-| upc_ean         | No    | Yes     |
-| qr              | Yes   | Yes     |
+| Bar code format | iOS   | Android     |
+| --------------- | ----- | ----------- |
+| aztec           | Yes   | Yes         |
+| codabar         | No    | Yes         |
+| code39          | Yes   | Yes         |
+| code93          | Yes   | Yes         |
+| code128         | Yes   | Yes         |
+| code39mod43     | Yes   | No          |
+| datamatrix      | Yes   | Yes         |
+| ean13           | Yes   | Yes         |
+| ean8            | Yes   | Yes         |
+| interleaved2of5 | Yes   | use `itf14` |
+| itf14           | Yes\* | Yes         |
+| maxicode        | No    | Yes         |
+| pdf417          | Yes   | Yes         |
+| rss14           | No    | Yes         |
+| rssexpanded     | No    | Yes         |
+| upc_a           | No    | Yes         |
+| upc_e           | Yes   | Yes         |
+| upc_ean         | No    | Yes         |
+| qr              | Yes   | Yes         |
 
 > Important notes:
 >

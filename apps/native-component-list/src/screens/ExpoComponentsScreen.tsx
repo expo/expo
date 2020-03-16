@@ -29,6 +29,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'Gif',
       'GL',
       'HTML',
+      'Image',
       'LinearGradient',
       'Lottie',
       'Maps',

@@ -32,7 +32,7 @@ import * as IntentLauncher from 'expo-intent-launcher';
 
 <TableOfContentSection title='Methods' contents={['IntentLauncher.startActivityAsync(activityAction, intentParams)']} />
 
-<TableOfContentSection title='Types' contents={['IntentParams', 'IntentResult']} />
+<TableOfContentSection title='Types' contents={['IntentLauncherParams', 'IntentLauncherResult']} />
 
 <TableOfContentSection title='Enums' contents={['ResultCode']} />
 
@@ -45,15 +45,15 @@ Starts the specified activity. The method will return a promise which resolves w
 #### Arguments
 
 - **activityAction (_string_)** -- The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**
-- **intentParams ([`IntentParams`](#typeintentparams))** -- An object of intent parameters.
+- **intentParams ([`IntentLauncherParams`](#typeintentlauncherparams))** -- An object of intent parameters.
 
 #### Returns
 
-A promise resolving to an object of type [IntentResult](#typeintentresult).
+A promise resolving to an object of type [IntentLauncherResult](#typeintentlauncherresult).
 
 ## Types
 
-### `IntentParams`
+### `IntentLauncherParams`
 
 | Key         |  Type  | Description                                                                                                                                                                                                                       |
 | ----------- | :----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -65,7 +65,7 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 | packageName | string | Package name used as an identifier of ComponentName. Set this only if you want to explicitly set the component to handle the intent.                                                                                              |
 | className   | string | Class name of the ComponentName.                                                                                                                                                                                                  |
 
-### `IntentResult`
+### `IntentLauncherResult`
 
 | Key        |  Type  | Description                                                                               |
 | ---------- | :----: | ----------------------------------------------------------------------------------------- |

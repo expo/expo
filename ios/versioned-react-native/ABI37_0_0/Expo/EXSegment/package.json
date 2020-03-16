@@ -1,0 +1,46 @@
+{
+  "name": "expo-analytics-segment",
+  "version": "8.0.0",
+  "description": "Expo module that provides access to Segment mobile analytics",
+  "main": "build/Segment.js",
+  "types": "build/Segment.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "segment",
+    "analytics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-analytics-segment"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/segment/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "~8.0.0",
+    "expo-module-scripts": "~1.2.0"
+  },
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+}

@@ -178,6 +178,10 @@ EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj
   UUID: 488F0C19AB92FC4B503EB55CC688FCF5
+expo-image:
+  LABEL: expo-image
+  PROJECT_PATH: expo-image.xcodeproj
+  UUID: 3D9EF1DD98EB7E08A487963855D70CFB
 EXPrint:
   LABEL: EXPrint
   PROJECT_PATH: EXPrint.xcodeproj
@@ -406,10 +410,6 @@ ReactCommon:
   LABEL: ReactCommon
   PROJECT_PATH: ReactCommon.xcodeproj
   UUID: 2610D146B211EB79FECF83D4FA5AB36D
-RNCAsyncStorage:
-  LABEL: RNCAsyncStorage
-  PROJECT_PATH: RNCAsyncStorage.xcodeproj
-  UUID: 67B87A0A71A334A77129363BDFF7DC94
 RNGestureHandler:
   LABEL: RNGestureHandler
   PROJECT_PATH: RNGestureHandler.xcodeproj
@@ -418,6 +418,14 @@ RNReanimated:
   LABEL: RNReanimated
   PROJECT_PATH: RNReanimated.xcodeproj
   UUID: E9E22639328ACC061EB56756AD5B4F57
+RNScreens:
+  LABEL: RNScreens
+  PROJECT_PATH: RNScreens.xcodeproj
+  UUID: A72DB725A68697789F3F72BCF9C3A522
+SDWebImage:
+  LABEL: SDWebImage
+  PROJECT_PATH: SDWebImage.xcodeproj
+  UUID: 4ECF4E662EEBE4FA58102FF984D920CC
 UMAppLoader:
   LABEL: UMAppLoader
   PROJECT_PATH: UMAppLoader.xcodeproj

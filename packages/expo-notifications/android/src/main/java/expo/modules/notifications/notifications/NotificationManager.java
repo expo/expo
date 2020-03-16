@@ -1,7 +1,6 @@
 package expo.modules.notifications.notifications;
 
-import com.google.firebase.messaging.RemoteMessage;
-
+import org.json.JSONObject;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
@@ -9,6 +8,8 @@ import java.util.WeakHashMap;
 
 import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.service.ExpoNotificationsService;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
   private static final String SINGLETON_NAME = "NotificationManager";
@@ -22,9 +23,9 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
-    // Registers this singleton instance in static FirebaseListenerService listeners collection.
+    // Registers this singleton instance in static ExpoNotificationsService listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
-    FirebaseListenerService.addNotificationListener(this);
+    ExpoNotificationsService.addListener(this);
   }
 
   @Override
@@ -59,31 +60,33 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   }
 
   /**
-   * Used by {@link FirebaseListenerService} to notify of new messages.
-   * Calls {@link NotificationListener#onMessage(RemoteMessage)} on all values
+   * Used by {@link ExpoNotificationsService} to notify of new messages.
+   * Calls {@link NotificationListener#onNotificationReceived(String, JSONObject, NotificationTrigger)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    *
-   * @param message New remote message
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
    */
-  public void onMessage(RemoteMessage message) {
+  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
     for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
       NotificationListener listener = listenerReference.get();
       if (listener != null) {
-        listener.onMessage(message);
+        listener.onNotificationReceived(identifier, request, trigger);
       }
     }
   }
 
   /**
-   * Used by {@link FirebaseListenerService} to notify of message deletion event.
-   * Calls {@link NotificationListener#onDeletedMessages()} on all values
+   * Used by {@link ExpoNotificationsService} to notify of message deletion event.
+   * Calls {@link NotificationListener#onNotificationsDropped()} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
    */
-  public void onDeletedMessages() {
+  public void onNotificationsDropped() {
     for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
       NotificationListener listener = listenerReference.get();
       if (listener != null) {
-        listener.onDeletedMessages();
+        listener.onNotificationsDropped();
       }
     }
   }

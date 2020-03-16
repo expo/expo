@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
@@ -54,5 +54,5 @@
     "@babel/core": "^7.6.4",
     "jest": "^24.8.0"
   },
-  "gitHead": "bd8343719d83600fe938913173eefb0bb6a8bf60"
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

@@ -19,7 +19,7 @@ export default function BatteryScreen() {
         Battery.isLowPowerModeEnabledAsync(),
       ]);
 
-      setIsAvailable(isAvailable && false);
+      setIsAvailable(isAvailable || false);
       setBatteryLevel(batteryLevel);
       setBatteryState(batteryState);
       setLowPowerMode(lowPowerMode);

@@ -2,8 +2,7 @@ package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
 
-import com.google.firebase.messaging.RemoteMessage;
-
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -15,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
-import expo.modules.notifications.notifications.interfaces.NotificationBehavior;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -80,18 +79,20 @@ public class NotificationsHandler extends ExportedModule implements Notification
       promise.reject("ERR_NOTIFICATION_HANDLED", message);
       return;
     }
-    task.handleResponse(new ArgumentsNotificationBehavior(behavior), promise);
+    task.handleResponse(new ExpoNotificationBehavior(behavior), promise);
   }
 
   /**
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
-   * @param message Received message
+   * @param identifier Notification identifier
+   * @param request    Notification request
+   * @param trigger    Notification trigger
    */
   @Override
-  public void onMessage(RemoteMessage message) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, message, this);
+  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, identifier, request, trigger, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }
@@ -102,7 +103,7 @@ public class NotificationsHandler extends ExportedModule implements Notification
    * Apps get notified of this event by {@link NotificationsEmitter}.
    */
   @Override
-  public void onDeletedMessages() {
+  public void onNotificationsDropped() {
     // do nothing
   }
 
@@ -114,45 +115,5 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   void onTaskFinished(SingleNotificationHandlerTask task) {
     mTasksMap.remove(task.getIdentifier());
-  }
-
-  /**
-   * An implementation of {@link NotificationBehavior} capable of
-   * "deserialization" of behavior objects with which the app responds.
-   * <p>
-   * Used in {@link #handleNotificationAsync(String, ReadableArguments, Promise)}
-   * to pass the behavior to {@link SingleNotificationHandlerTask}.
-   */
-  class ArgumentsNotificationBehavior extends NotificationBehavior {
-    private static final String SHOULD_SHOW_ALERT_KEY = "shouldShowAlert";
-    private static final String SHOULD_PLAY_SOUND_KEY = "shouldPlaySound";
-    private static final String SHOULD_SET_BADGE_KEY = "shouldSetBadge";
-    private static final String PRIORITY_KEY = "priority";
-
-    private ReadableArguments mArguments;
-
-    ArgumentsNotificationBehavior(ReadableArguments arguments) {
-      mArguments = arguments;
-    }
-
-    @Override
-    public boolean shouldShowAlert() {
-      return mArguments.getBoolean(SHOULD_SHOW_ALERT_KEY);
-    }
-
-    @Override
-    public boolean shouldPlaySound() {
-      return mArguments.getBoolean(SHOULD_PLAY_SOUND_KEY);
-    }
-
-    @Override
-    public boolean shouldSetBadge() {
-      return mArguments.getBoolean(SHOULD_SET_BADGE_KEY);
-    }
-
-    @Override
-    public String getPriorityOverride() {
-      return mArguments.getString(PRIORITY_KEY);
-    }
   }
 }

@@ -50,7 +50,7 @@ export type PlatformOrientationInfo = {
   screenOrientationLockWeb?: WebOrientationLock;
 };
 
-export type OrientationInfo = {
+export type ScreenOrientationInfo = {
   orientation: Orientation;
   verticalSizeClass?: SizeClassIOS;
   horizontalSizeClass?: SizeClassIOS;
@@ -60,5 +60,5 @@ export type OrientationChangeListener = (event: OrientationChangeEvent) => void;
 
 export type OrientationChangeEvent = {
   orientationLock: OrientationLock;
-  orientationInfo: OrientationInfo;
+  orientationInfo: ScreenOrientationInfo;
 };

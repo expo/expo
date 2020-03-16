@@ -2,6 +2,7 @@
 
 package host.exp.exponent.experience;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -76,6 +77,16 @@ import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMIS
 public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity  {
 
   public static class ExperienceDoneLoadingEvent {
+    private Activity mActivity;
+
+    ExperienceDoneLoadingEvent(Activity activity) {
+      super();
+      mActivity = activity;
+    }
+
+    public Activity getActivity() {
+      return mActivity;
+    }
   }
 
   // Override
@@ -254,12 +265,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (!mIsLoading) {
       return;
     }
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        hideLoadingScreen();
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
-      }
+    runOnUiThread(() -> {
+      hideLoadingScreen();
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 

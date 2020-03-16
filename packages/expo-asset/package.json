@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.0.0",
+  "version": "8.1.1",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,18 +37,25 @@
     "preset": "expo-module-scripts/ios"
   },
   "unimodulePeerDependencies": {
-    "expo-constants": "*",
     "@unimodules/core": "*",
-    "expo-file-system": "*"
+    "expo-constants": "*",
+    "expo-file-system": "*",
+    "expo-updates": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
+    "expo-updates": "~0.0.1-rc.1",
     "path-browserify": "^1.0.0",
+    "invariant": "^2.2.4",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
+  "gitHead": "d766e90826c0d45eb1190bf91aed6dd5ca551512"
 }

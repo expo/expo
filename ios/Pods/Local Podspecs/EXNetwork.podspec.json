@@ -1,6 +1,6 @@
 {
   "name": "EXNetwork",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "summary": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "license": "MIT",

@@ -1,4 +1,3 @@
-import { PermissionStatus } from 'unimodules-permissions-interface';
 export var MediaTypeOptions;
 (function (MediaTypeOptions) {
     MediaTypeOptions["All"] = "All";
@@ -19,5 +18,4 @@ export var VideoExportPreset;
     VideoExportPreset[VideoExportPreset["HEVC_1920x1080"] = 9] = "HEVC_1920x1080";
     VideoExportPreset[VideoExportPreset["HEVC_3840x2160"] = 10] = "HEVC_3840x2160";
 })(VideoExportPreset || (VideoExportPreset = {}));
-export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.types.js.map

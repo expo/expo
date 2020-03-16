@@ -32,9 +32,9 @@ function getAppVersion() {
 }
 
 async function getSdkVersionAsync() {
-  const expoSdkVersion = (await JsonFile.readAsync(
+  const { version: expoSdkVersion} = await JsonFile.readAsync<{version: string}>(
     path.join(EXPO_DIR, 'packages/expo/package.json')
-  )).version;
+  );
   return `${semver.major(expoSdkVersion)}.0.0`;
 }
 

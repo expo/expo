@@ -1,6 +1,8 @@
 import ExpoLocalization from './ExpoLocalization';
 import { Localization } from './Localization.types';
 
+export { Localization };
+
 // Web, Android, and some iOS values use `-`. This will convert the iOS values that use `_`
 // https://github.com/expo/expo/blob/21ae94bae2e8369992050c433a00699d425b35bd/packages/expo/src/Localization.ts#L112-L114
 const parseLocale = (locale: string): string => locale.replace('_', '-');

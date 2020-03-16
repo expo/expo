@@ -9,7 +9,18 @@ import {
   IAPResponseCode,
   InAppPurchase,
   InAppPurchaseState,
+  IAPItemDetails,
 } from './InAppPurchases.types';
+
+export {
+  InAppPurchase,
+  InAppPurchaseState,
+  IAPResponseCode,
+  IAPErrorCode,
+  IAPItemType,
+  IAPQueryResponse,
+  IAPItemDetails,
+};
 
 const errors = {
   ALREADY_CONNECTED: 'Already connected to App Store',
@@ -22,8 +33,6 @@ const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 
 let connected = false;
 let purchaseUpdatedSubscription: Subscription;
-
-export { InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType };
 
 export async function connectAsync(): Promise<IAPQueryResponse> {
   if (connected) {

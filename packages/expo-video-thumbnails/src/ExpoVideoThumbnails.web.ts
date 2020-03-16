@@ -1,4 +1,4 @@
-import { ThumbnailOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
+import { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
 
 export default {
   get name(): string {
@@ -6,7 +6,7 @@ export default {
   },
   async getThumbnailAsync(
     sourceFilename: string,
-    options: ThumbnailOptions = {}
+    options: VideoThumbnailsOptions = {}
   ): Promise<VideoThumbnailsResult> {
     throw new Error('ExpoVideoThumbnails not supported on Expo Web');
   },

@@ -1,14 +1,23 @@
 {
   "name": "expo-updates",
-  "version": "0.0.1-rc.0",
-  "description": "ExpoUpdates standalone module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {},
+  "version": "0.0.1-rc.1",
+  "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
+  "main": "build/Updates.js",
+  "types": "build/Updates.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
-    "expo-updates"
+    "updates"
   ],
   "repository": {
     "type": "git",
@@ -20,9 +29,19 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-updates",
-  "peerDependencies": {
-    "@unimodules/core": "~1.0.0"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/updates/",
+  "jest": {
+    "preset": "expo-module-scripts/ios"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "expo-constants": "*"
+  },
+  "dependencies": {
+    "fbemitter": "^2.1.1"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "~1.2.0"
+  },
+  "gitHead": "d766e90826c0d45eb1190bf91aed6dd5ca551512"
 }

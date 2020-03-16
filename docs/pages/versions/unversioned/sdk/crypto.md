@@ -119,8 +119,8 @@ const digest = await Crypto.digestStringAsync(
 | [SHA256][sha-def] | string | `256` bits  | ✅                  | ✅     | ✅         | ✅     |
 | [SHA384][sha-def] | string | `384` bits  | ✅                  | ✅     | ✅         | ✅     |
 | [SHA512][sha-def] | string | `512` bits  | ✅                  | ✅     | ✅         | ✅     |
-| MD2               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
-| MD4               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
+| MD2               | string | `128` bits  | ❌                  | ✅     | ❌         | ❌     |
+| MD4               | string | `128` bits  | ❌                  | ✅     | ❌         | ❌     |
 | MD5               | string | `128` bits  | ❌                  | ✅     | ✅         | ❌     |
 
 ### `CryptoEncoding`

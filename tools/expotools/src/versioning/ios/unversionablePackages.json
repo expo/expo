@@ -1,4 +1,6 @@
 [
   "expo-branch",
-  "expo-gl-cpp"
+  "expo-gl-cpp",
+  "expo-notifications",
+  "expo-updates"
 ]

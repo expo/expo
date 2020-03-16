@@ -82,7 +82,7 @@ export default class ExponentCamera extends React.Component {
             this.camera.stopAsync();
         }
     }
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(nextProps) {
         this._updateCameraProps(nextProps);
     }
     render() {

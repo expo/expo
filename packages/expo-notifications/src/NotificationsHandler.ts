@@ -26,7 +26,7 @@ export interface NotificationBehavior extends BaseNotificationBehavior {
 export interface NotificationHandler {
   handleNotification: (notification: Notification) => Promise<NotificationBehavior>;
   handleSuccess?: (notificationId: string) => void;
-  handleError?: (error: NotificationHandlingError) => void;
+  handleError?: (notificationId: string, error: NotificationHandlingError) => void;
 }
 
 type HandleNotificationEvent = {
@@ -73,7 +73,7 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
         } catch (error) {
           // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
           // eslint-disable-next-line
-          handler.handleError?.(error);
+          handler.handleError?.(id, error);
         }
       }
     );
@@ -81,7 +81,7 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
     handleTimeoutSubscription = notificationEmitter.addListener<HandleNotificationTimeoutEvent>(
       handleNotificationTimeoutEventName,
       ({ id, notification }) =>
-        handler.handleError?.(new NotificationTimeoutError(id, notification))
+        handler.handleError?.(id, new NotificationTimeoutError(id, notification))
     );
   }
 }

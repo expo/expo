@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 
-import { BlurTint, Props } from './BlurView.types';
+import { BlurTint, BlurProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
-export default class BlurView extends React.Component<Props> {
+export default class BlurView extends React.Component<BlurProps> {
   static propTypes = {
     tint: PropTypes.oneOf(['light', 'default', 'dark']),
     ...ViewPropTypes,

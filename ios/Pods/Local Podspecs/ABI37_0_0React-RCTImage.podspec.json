@@ -1,0 +1,31 @@
+{
+  "name": "ABI37_0_0React-RCTImage",
+  "version": "0.61.4",
+  "summary": "A React component for displaying different types of images.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "documentation_url": "https://facebook.github.io/react-native/docs/image",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "*.{m}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "ABI37_0_0RCTImage",
+  "dependencies": {
+    "ABI37_0_0React-Core/RCTImageHeaders": [
+      "0.61.4"
+    ],
+    "ABI37_0_0React-RCTNetwork": [
+      "0.61.4"
+    ]
+  }
+}
