@@ -41,6 +41,16 @@ android {
   lintOptions {
     abortOnError false
   }
+  sourceSets {
+    main {
+      java {
+        if (safeExtGet("excludeAppGlideModule", false)) {
+          srcDir "src"
+          exclude "**/ExpoImageAppGlideModule.java"
+        }
+      }
+    }
+  }
 }
 
 repositories {
