@@ -39,7 +39,7 @@
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
   <string name="persistent_notification_channel_desc">Persistent notifications that provide debug info about open experiences</string>
-
+  <string name="hs__conversation_header">Chat</string>
   <string-array name="currency_array">
       <item>Currency (optional)</item>
       <item>Unspecified</item>

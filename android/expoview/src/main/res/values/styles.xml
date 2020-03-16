@@ -150,4 +150,23 @@
       <item name="android:gravity">center_vertical</item>
   </style>
 
+  <style name="MyCustomHelpshiftTheme" parent="Helpshift.Theme.Light.DarkActionBar"> 
+      <item name="colorAccent">#E9794B</item>
+      <item name="colorPrimary">#383839</item>
+      <item name="colorPrimaryDark">#232526</item>
+      <item name="android:windowBackground">@color/windowBackground</item>
+      <item name="android:textColorPrimary">#171717</item>
+      <item name="android:textColorSecondary">#8B8B8B</item>
+      <item name="hs__chatBubbleAdminText">#171717</item>
+      <item name="hs__chatBubbleAdminLink">#171717</item>
+      <item name="hs__chatBubbleAdminBackgroundColor">#E7E7E7</item>
+      <item name="hs__chatBubbleUserText">#FFFFFF</item>
+      <item name="hs__chatBubbleUserLink">#FFFFFF</item>
+      <item name="hs__chatBubbleUserBackgroundColor">#454545</item>
+      <item name="hs__composeBackgroundColor">#FFFFFF</item>
+      <item name="hs__selectableOptionColor">#E9794B</item>
+  </style>
+
+  <style name="Helpshift.Theme.Base" parent="MyCustomHelpshiftTheme"/>
+
 </resources>

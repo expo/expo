@@ -17,4 +17,5 @@
   <color name="white_background">#FFFFFF</color>    
   <color name="splashBackground">#FFFFFF</color>
   <color name="iconBackground">#FFFFFF</color>
+  <color name="windowBackground">#F9F9F9</color>
 </resources>
