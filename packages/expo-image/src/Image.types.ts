@@ -11,7 +11,7 @@ export interface ImageLoadEventData {
     url: string;
     width: number;
     height: number;
-    mediaType?: string;
+    mediaType?: string | null;
   };
 }
 
@@ -22,4 +22,12 @@ export interface ImageLoadProgressEventData {
 
 export interface ImageErrorEventData {
   error: string;
+  ios?: {
+    code: number;
+    domain: string;
+    description: string;
+    helpAnchor: string | null;
+    failureReason: string | null;
+    recoverySuggestion: string | null;
+  };
 }

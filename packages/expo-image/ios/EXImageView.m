@@ -61,7 +61,15 @@ static NSString * const sourceUriKey = @"uri";
 
     if (error && strongSelf.onError) {
       strongSelf.onError(@{
-        @"error": error.localizedDescription
+        @"error": error.localizedDescription,
+        @"ios": @{
+            @"code": @(error.code),
+            @"domain": error.domain,
+            @"description": error.localizedDescription,
+            @"helpAnchor": error.helpAnchor ?: [NSNull null],
+            @"failureReason": error.localizedFailureReason ?: [NSNull null],
+            @"recoverySuggestion": error.localizedRecoverySuggestion ?: [NSNull null]
+        }
       });
     } else if (image && strongSelf.onLoad) {
       strongSelf.onLoad(@{
@@ -69,7 +77,8 @@ static NSString * const sourceUriKey = @"uri";
         @"source": @{
             @"url": imageURL.absoluteString,
             @"width": @(image.size.width),
-            @"height": @(image.size.height)
+            @"height": @(image.size.height),
+            @"mediaType": [self sdImageFormatToMediaType:image.sd_imageFormat] ?: [NSNull null]
         }
       });
     }
@@ -96,6 +105,41 @@ static NSString * const sourceUriKey = @"uri";
     // All in all, we map other SDImageCacheType values to EXImageCacheUnknown.
     default:
       return EXImageCacheUnknown;
+  }
+}
+
+- (nullable NSString *)sdImageFormatToMediaType:(SDImageFormat)imageFormat
+{
+  switch (imageFormat) {
+    case SDImageFormatUndefined:
+      return nil;
+    case SDImageFormatJPEG:
+      return @"image/jpeg";
+    case SDImageFormatPNG:
+      return @"image/png";
+    case SDImageFormatGIF:
+      return @"image/gif";
+    case SDImageFormatTIFF:
+      return @"image/tiff";
+    case SDImageFormatWebP:
+      return @"image/webp";
+    case SDImageFormatHEIC:
+      return @"image/heic";
+    case SDImageFormatHEIF:
+      return @"image/heif";
+    case SDImageFormatPDF:
+      return @"application/pdf";
+    case SDImageFormatSVG:
+      return @"image/svg+xml";
+    default:
+      // On one hand we could remove this clause
+      // and always ensure that we have handled
+      // all supported formats (by erroring compilation
+      // otherwise). On the other hand, we do support
+      // overriding SDWebImage version, so expo-image
+      // shouldn't fail to compile on SDWebImage versions
+      // with
+      return nil;
   }
 }
 
