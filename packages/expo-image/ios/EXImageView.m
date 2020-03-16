@@ -22,4 +22,24 @@ static NSString * const sourceUriKey = @"uri";
   [self sd_setImageWithURL:imageURL];
 }
 
+
+- (EXImageCacheTypeEnum)convertToCacheTypeEnum:(SDImageCacheType)imageCacheType
+{
+  switch (imageCacheType) {
+    case SDImageCacheTypeNone:
+      return EXImageCacheNone;
+    case SDImageCacheTypeDisk:
+      return EXImageCacheDisk;
+    case SDImageCacheTypeMemory:
+      return EXImageCacheMemory;
+    // The only other known SDImageCacheType value
+    // is SDImageCacheTypeAll, which:
+    // 1. doesn't make sense in the context of completion block,
+    // 2. shouldn't ever end up as an argument to completion block.
+    // All in all, we map other SDImageCacheType values to EXImageCacheUnknown.
+    default:
+      return EXImageCacheUnknown;
+  }
+}
+
 @end

@@ -3,6 +3,13 @@
 #import <SDWebImage/SDWebImage.h>
 #import <React/RCTComponent.h>
 
+typedef NS_ENUM(NSInteger, EXImageCacheTypeEnum) {
+  EXImageCacheUnknown = 0,
+  EXImageCacheNone,
+  EXImageCacheDisk,
+  EXImageCacheMemory
+};
+
 @interface EXImageView : SDAnimatedImageView
 
 @property (nonatomic, copy) RCTDirectEventBlock onLoadStart;
