@@ -20,6 +20,6 @@ public class ExpoImagePackage implements ReactPackage {
   @NonNull
   @Override
   public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-    return Collections.<ViewManager>singletonList(new ExpoImageManager(reactContext));
+    return Collections.<ViewManager>singletonList(new ExpoImageViewManager(reactContext));
   }
 }
