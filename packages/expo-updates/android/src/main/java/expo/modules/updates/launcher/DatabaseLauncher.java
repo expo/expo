@@ -18,9 +18,9 @@ import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 
-public class LauncherWithSelectionPolicy implements Launcher {
+public class DatabaseLauncher implements Launcher {
 
-  private static final String TAG = LauncherWithSelectionPolicy.class.getSimpleName();
+  private static final String TAG = DatabaseLauncher.class.getSimpleName();
 
   private File mUpdatesDirectory;
   private SelectionPolicy mSelectionPolicy;
@@ -35,7 +35,7 @@ public class LauncherWithSelectionPolicy implements Launcher {
 
   private LauncherCallback mCallback = null;
 
-  public LauncherWithSelectionPolicy(File updatesDirectory, SelectionPolicy selectionPolicy) {
+  public DatabaseLauncher(File updatesDirectory, SelectionPolicy selectionPolicy) {
     mUpdatesDirectory = updatesDirectory;
     mSelectionPolicy = selectionPolicy;
   }
@@ -58,7 +58,7 @@ public class LauncherWithSelectionPolicy implements Launcher {
 
   public synchronized void launch(UpdatesDatabase database, Context context, LauncherCallback callback) {
     if (mCallback != null) {
-      throw new AssertionError("LauncherWithSelectionPolicy has already started. Create a new instance in order to launch a new version.");
+      throw new AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.");
     }
     mCallback = callback;
     mLaunchedUpdate = getLaunchableUpdate(database);

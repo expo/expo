@@ -17,7 +17,7 @@ import java.util.Date;
 
 import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.entity.AssetEntity;
-import expo.modules.updates.launcher.EmergencyLauncher;
+import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import okhttp3.CacheControl;
@@ -207,7 +207,7 @@ public class FileDownloader {
     String releaseChannel = UpdatesController.getInstance().getUpdatesConfiguration().getReleaseChannel();
     requestBuilder = requestBuilder.header("Expo-Release-Channel", releaseChannel);
 
-    String previousFatalError = EmergencyLauncher.consumeErrorLog(context);
+    String previousFatalError = NoDatabaseLauncher.consumeErrorLog(context);
     if (previousFatalError != null) {
       // some servers can have max length restrictions for headers,
       // so we restrict the length of the string to 1024 characters --
