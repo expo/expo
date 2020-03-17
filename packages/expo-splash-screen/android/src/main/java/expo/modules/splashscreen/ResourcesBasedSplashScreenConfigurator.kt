@@ -15,9 +15,7 @@ class ResourcesBasedSplashScreenConfigurator : SplashScreenConfigurator {
 
   override fun configureImageView(context: Context, imageView: ImageView, resizeMode: SplashScreenImageResizeMode) {
     when (resizeMode) {
-      SplashScreenImageResizeMode.NATIVE -> {
-        imageView.setImageResource(R.drawable.splashscreen)
-      }
+      SplashScreenImageResizeMode.NATIVE,
       SplashScreenImageResizeMode.COVER,
       SplashScreenImageResizeMode.CONTAIN -> {
         imageView.setImageResource(R.drawable.splashscreen_image)

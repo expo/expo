@@ -40,9 +40,8 @@ object SplashScreen: SingletonModule {
     }
 
     val controller = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenConfigurator)
-    controller.showSplashScreen(successCallback)
-
     controllers[activity] = controller
+    controller.showSplashScreen(successCallback)
   }
 
   /**

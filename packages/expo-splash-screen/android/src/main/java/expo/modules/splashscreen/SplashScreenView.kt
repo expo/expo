@@ -2,6 +2,7 @@ package expo.modules.splashscreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -12,7 +13,7 @@ class SplashScreenView(
   resizeMode: SplashScreenImageResizeMode,
   splashScreenConfigurator: SplashScreenConfigurator
 ) : RelativeLayout(context) {
-  val imageView: ImageView
+  private val imageView: ImageView
 
   init {
     imageView = ImageView(context).also { view ->

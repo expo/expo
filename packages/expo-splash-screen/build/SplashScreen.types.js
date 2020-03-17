@@ -1,1 +1,0 @@
-//# sourceMappingURL=SplashScreen.types.js.map

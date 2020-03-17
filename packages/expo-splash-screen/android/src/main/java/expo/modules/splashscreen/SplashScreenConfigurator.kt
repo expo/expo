@@ -2,14 +2,17 @@ package expo.modules.splashscreen
 
 import android.content.Context
 import android.widget.ImageView
+import androidx.annotation.ColorInt
 
 /**
- * This interface is responsible for providing resources for proper SplashScreen configuration.
+ * This interface is responsible for providing resources for proper SplashScreenView configuration.
  */
 interface SplashScreenConfigurator {
   /**
-   * Provide color that would be set as a background of splash screen.
+   * Provide color that would be set as a background of splash screen view.
+   * @return [ColorInt]
    */
+  @ColorInt
   fun getBackgroundColor(context: Context): Int
   
   /**

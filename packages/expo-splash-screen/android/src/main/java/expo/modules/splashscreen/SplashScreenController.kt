@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
@@ -19,7 +20,7 @@ class SplashScreenController(
   private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenConfigurator)
   private val handler = Handler()
 
-  private var state = State.NO_ROOT_VIEW
+  private var rootViewState = RootViewState.NO_ROOT_VIEW
   private var autoHideEnabled = true
   private var splashScreenShown = false
 
@@ -27,8 +28,8 @@ class SplashScreenController(
 
   // region public lifecycle
 
-  fun showSplashScreen(successCallback: () -> Unit) {
-    weakActivity.get()!!.runOnUiThread {
+  fun showSplashScreen(successCallback: () -> Unit = Noop) {
+    weakActivity.get()?.runOnUiThread {
       contentView.addView(splashScreenView)
       splashScreenShown = true
       successCallback()
@@ -38,38 +39,27 @@ class SplashScreenController(
 
   fun preventAutoHide(successCallback: () -> Unit, failureCallback: (reason: String) -> Unit) {
     if (!autoHideEnabled) {
-      return failureCallback("Native SplashScreen autohiding is already prevented.")
+      return failureCallback("Native splash screen autohiding is already prevented.")
     }
 
     autoHideEnabled = false
     successCallback()
   }
 
-  fun hideSplashScreen(successCallback: () -> Unit, failureCallback: (reason: String) -> Unit) {
+  fun hideSplashScreen(
+      successCallback: () -> Unit = Noop,
+      failureCallback: (reason: String) -> Unit = Noop
+  ) {
     if (!splashScreenShown) {
-      return failureCallback("Native SplashScreen is already hidden.")
+      return failureCallback("Native splash screen is already hidden.")
     }
 
-    if (weakActivity.get()!!.isFinishing || weakActivity.get()!!.isDestroyed) {
+    val activity = weakActivity.get()
+    if (activity?.isFinishing == true || activity?.isDestroyed == true) {
       return failureCallback("Activity is not operable.")
     }
 
-    hide(successCallback)
-  }
-
-  // endregion
-
-  // region private lifecycle
-
-  private fun reshow() {
-    weakActivity.get()!!.runOnUiThread {
-      contentView.addView(splashScreenView)
-      splashScreenShown = true
-    }
-  }
-
-  private fun hide(successCallback: () -> Unit) {
-    weakActivity.get()!!.runOnUiThread {
+    weakActivity.get()?.runOnUiThread {
       contentView.removeView(splashScreenView)
       autoHideEnabled = true
       splashScreenShown = false
@@ -80,9 +70,13 @@ class SplashScreenController(
   // endregion
 
   /**
-   * Searches for RootView that comforts class given via [SplashScreen.show].
+   * Searches for RootView that comforts to class given via [SplashScreen.show].
+   * If [rootView] is already found this method is noop.
    */
   private fun searchForRootView() {
+    if (rootView != null) {
+      return
+    }
     // RootView is successfully found in first check (nearly impossible for first call)
     findRootView(contentView)?.let { return@searchForRootView handleRootView(it) }
     handler.postDelayed({ searchForRootView() }, SEARCH_FOR_ROOT_VIEW_INTERVAL)
@@ -102,30 +96,28 @@ class SplashScreenController(
 
   private fun handleRootView(view: ViewGroup) {
     rootView = view
-    state = State.ROOT_VIEW_NO_CHILDREN
-    if (rootView!!.childCount > 0) {
-      state = State.ROOT_VIEW_HAS_CHILDREN
+    rootViewState = RootViewState.ROOT_VIEW_NO_CHILDREN
+    if ((rootView?.childCount ?: 0) > 0) {
+      rootViewState = RootViewState.ROOT_VIEW_HAS_CHILDREN
       if (autoHideEnabled) {
-        hide { }
+        hideSplashScreen()
       }
     }
     view.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View, child: View) {
-        // TO BE DISCUSSED: mechanism for detecting reloading view hierarchy (reload button)
-        // Known cases:
-        // - ?
-        if (rootView!!.childCount == 0) {
-          state = State.ROOT_VIEW_NO_CHILDREN
-          reshow()
+        // TODO: ensure mechanism for detecting reloading view hierarchy works (reload button)
+        if (rootView?.childCount == 0) {
+          rootViewState = RootViewState.ROOT_VIEW_NO_CHILDREN
+          showSplashScreen()
         }
       }
 
       override fun onChildViewAdded(parent: View, child: View) {
         // react only to first child
-        if (rootView!!.childCount == 1) {
-          state = State.ROOT_VIEW_HAS_CHILDREN
+        if (rootView?.childCount == 1) {
+          rootViewState = RootViewState.ROOT_VIEW_HAS_CHILDREN
           if (autoHideEnabled) {
-            hide { }
+            hideSplashScreen()
           }
         }
       }
@@ -133,12 +125,12 @@ class SplashScreenController(
   }
 
   /**
-   * Indicates state of SplashScreen.
+   * Indicates state of the root view that SplashScreen is operating on.
    */
-  private enum class State {
+  private enum class RootViewState {
     /**
-     * InitialState
-     * Looking for RootView that comforts RootView class provided via [SplashScreen.show]
+     * Initial state
+     * Looking for RootView that comforts to RootView class provided via [SplashScreen.show]
      */
     NO_ROOT_VIEW,
     /**
@@ -153,4 +145,7 @@ class SplashScreenController(
   }
 }
 
-class NoContentViewException : Exception("ContentView is not yet available. Call 'SplashScreen.show(...)' once 'setContentView()' is called.")
+object Noop : () -> Unit, (String) -> Unit {
+  override fun invoke() {}
+  override fun invoke(reason: String) {}
+}

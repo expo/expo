@@ -67,10 +67,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
-repositories {
-  mavenCentral()
-}
-
 dependencies {
   unimodule 'unimodules-core'
   implementation 'androidx.appcompat:appcompat:1.1.0'
