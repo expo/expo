@@ -28,6 +28,11 @@ NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
         embeddedManifest = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest];
+        if (!embeddedManifest.updateId) {
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                         reason:@"The embedded manifest is invalid. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
+                                       userInfo:@{}];
+        }
       }
     }
   });
