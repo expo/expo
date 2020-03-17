@@ -7507,6 +7507,8 @@ CACHE_KEYS:
       - "../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemLocalFileHandler.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.h"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.m"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionResumableDownloadTaskDelegate.h"
+      - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionResumableDownloadTaskDelegate.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.h"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.m"
       - "../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionUploadTaskDelegate.h"

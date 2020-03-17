@@ -6,12 +6,10 @@
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
                      withReject:(UMPromiseRejectBlock)reject
-        withSessionTaskRegister:(id<EXSessionTaskRegister>)taskRegister
 {
   if (self = [super init]) {
     _resolve = resolve;
     _reject = reject;
-    _taskRegister = taskRegister;
   }
   
   return self;

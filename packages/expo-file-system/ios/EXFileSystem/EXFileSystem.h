@@ -5,9 +5,9 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UMCore/UMEventEmitter.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <EXFileSystem/EXSessionTaskDelegate.h>
+#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
 
-@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface, EXSessionTaskRegister>
+@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface, EXResumalbeTaskRegister>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;

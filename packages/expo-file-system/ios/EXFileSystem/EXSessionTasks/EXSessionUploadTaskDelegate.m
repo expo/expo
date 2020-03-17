@@ -13,32 +13,24 @@
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
                      withReject:(UMPromiseRejectBlock)reject
-        withSessionTaskRegister:(id<EXSessionTaskRegister>)taskRegister
 {
-  if (self = [super initWithResolve:resolve withReject:reject withSessionTaskRegister:taskRegister]) {
+  if (self = [super initWithResolve:resolve withReject:reject]) {
     _responseData = [[NSMutableData alloc] init];
   }
   
   return self;
 }
 
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+  if (!data.length) {
+    return;
+  }
+  [_responseData appendData:data];
+}
+
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
-{
-  [self _handleSessionUploadTask:(NSURLSessionUploadTask *)task withError:error];
-  [self.taskRegister onSessionCompleted:session];
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    if (!data.length) {
-        return;
-    }
-
-    [_responseData appendData:data];
-}
-
-- (void)_handleSessionUploadTask:(NSURLSessionUploadTask *)uploadTask withError:(NSError *)error
 {
   if (error) {
     self.reject(@"E_UNABLE_TO_UPLOAD_FILE.",
@@ -46,10 +38,11 @@ didCompleteWithError:(NSError *)error
           error);
     return;
   }
-  
+  NSURLSessionUploadTask *uploadTask = (NSURLSessionUploadTask *)task;
   NSMutableDictionary *result = [self parseServerResponse:uploadTask.response];
   result[@"body"] = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
   
   self.resolve(result);
 }
+
 @end

@@ -20,31 +20,9 @@
 
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
-@interface EXDownloadResumable : NSObject
-
-@property (nonatomic, strong) NSString *uuid;
-@property (nonatomic, strong) NSURLSession *session;
-
-@end
-
-@implementation EXDownloadResumable
-
-- (instancetype)initWithId:(NSString *)uuid
-               withSession:(NSURLSession *)session
-{
-  if ((self = [super init])) {
-    _uuid = uuid;
-    _session = session;
-    
-  }
-  return self;
-}
-
-@end
-
 @interface EXFileSystem ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable *> *resumableDownloads;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSession *> *resumableDownloads;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -545,14 +523,13 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   
   EXSessionDownloadTaskDelegate* taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
                                                                                             withReject:reject
-                                                                               withSessionTaskRegister:self
                                                                                       withLocalFileUrl:localUri
                                                                                          withServerUrl:url
                                                                                          withMd5Option:[options[@"md5"] boolValue] ?: false];
   
-  NSURLSession *session = [self _createBackgroundSession:[[NSUUID UUID] UUIDString] withDelegate:taskDelegate withHeaders:options[@"headers"]];
+  NSURLSession *session = [self _createBackgroundSession:taskDelegate withHeaders:options[@"headers"]];
   NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
-
+  
   [task resume];
 }
 
@@ -577,11 +554,9 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     return;
   }
   
-  EXSessionUploadTaskDelegate* taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve
-                                                                                        withReject:reject
-                                                                           withSessionTaskRegister:self];
+  EXSessionUploadTaskDelegate* taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve withReject:reject];
   
-  NSURLSession *session = [self _createBackgroundSession:[[NSUUID UUID] UUIDString] withDelegate:taskDelegate withHeaders:options[@"headers"]];
+  NSURLSession *session = [self _createBackgroundSession:taskDelegate withHeaders:options[@"headers"]];
   NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
   [urlRequest setHTTPMethod:[self _importHttpMethod:options[@"httpMethod"]]];
 
@@ -635,13 +610,13 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  EXDownloadResumable *downloadResumable = (EXDownloadResumable *)self.resumableDownloads[uuid];
-  if (downloadResumable == nil) {
+  NSURLSession *session = self.resumableDownloads[uuid];
+  if (session == nil) {
     reject(@"E_UNABLE_TO_PAUSE",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
            nil);
   } else {
-    [downloadResumable.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
+    [session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
       NSURLSessionDownloadTask *downloadTask = [downloadTasks firstObject];
       if (downloadTask) {
         [downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
@@ -676,9 +651,9 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
-- (NSURLSession *)_createBackgroundSession:(NSString * _Nonnull)uuid withDelegate:(id<NSURLSessionDelegate>)delegate withHeaders:(NSDictionary  * _Nullable )headers
+- (NSURLSession *)_createBackgroundSession:(id<NSURLSessionDelegate>)delegate withHeaders:(NSDictionary  * _Nullable )headers
 {
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:uuid];
+  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   if (headers != nil) {
     sessionConfiguration.HTTPAdditionalHeaders = headers;
@@ -749,18 +724,17 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
     }
   };
   
-  EXSessionDownloadTaskDelegate *downloadDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
-                                                                                                withReject:reject
-                                                                                   withSessionTaskRegister:self
-                                                                                          withLocalFileUrl:fileUrl
-                                                                                             withServerUrl:url
-                                                                                             withMd5Option:[options[@"md5"] boolValue] ?: false
-                                                                                       withOnWriteCallback:onWrite];
+  EXSessionResumableDownloadTaskDelegate *downloadDelegate = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
+                                                                                                                  withReject:reject
+                                                                                                            withLocalFileUrl:fileUrl
+                                                                                                               withServerUrl:url
+                                                                                                               withMd5Option:[options[@"md5"] boolValue] ?: false
+                                                                                                         withOnWriteCallback:onWrite
+                                                                                                                    withUUID:(NSString *)uuid
+                                                                                                   withResumalbeTaskRegister:self];
   
-  NSURLSession *session = [self _createBackgroundSession:uuid withDelegate:downloadDelegate withHeaders:options[@"headers"]];
-  
-  EXDownloadResumable *downloadResumable = [[EXDownloadResumable alloc] initWithId:uuid withSession:session];
-  self.resumableDownloads[downloadResumable.uuid] = downloadResumable;
+  NSURLSession *session = [self _createBackgroundSession:downloadDelegate withHeaders:options[@"headers"]];
+  self.resumableDownloads[uuid] = session;
   
   NSURLSessionDownloadTask *downloadTask;
   if (resumeData) {
@@ -876,14 +850,8 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - EXSessionTaskRegister
 
-- (void)onSessionCompleted:(NSURLSession *)session {
-  NSArray *keys = [_resumableDownloads allKeys];
-  
-  for (int i = 0 ; i < [keys count]; i++) {
-    if (_resumableDownloads[keys[i]].session == session) {
-      [_resumableDownloads removeObjectForKey:keys[i]];
-    }
-  }
+- (void)onTaskCompleted:(NSString *)uuid {
+  [_resumableDownloads removeObjectForKey:uuid];
 }
 
 @end
