@@ -70,6 +70,7 @@ public class EmbeddedLoader {
         sEmbeddedManifest = ManifestFactory.getManifest(context, new JSONObject(manifestString));
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
+        throw new AssertionError("The embedded manifest is invalid or could not be read. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
       }
     }
 
