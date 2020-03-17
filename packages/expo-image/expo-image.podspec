@@ -29,5 +29,6 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
 
   s.dependency 'SDWebImage', sd_web_image_version
+  s.dependency 'SDWebImageSVGKitPlugin', '~> 1.2'
 
 end
