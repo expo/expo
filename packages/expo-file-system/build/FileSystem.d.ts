@@ -1,6 +1,6 @@
 import { EventEmitter, Subscription } from '@unimodules/core';
-import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods } from './FileSystem.types';
-export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods, };
+import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods, FileSystemSessionType } from './FileSystem.types';
+export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, FileSystemUploadOptions, FileSystemUploadResult, FileSystemHttpMethods, FileSystemSessionType, };
 export declare const documentDirectory: string | null;
 export declare const cacheDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;

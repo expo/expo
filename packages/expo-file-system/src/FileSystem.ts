@@ -17,6 +17,7 @@ import {
   FileSystemUploadOptions,
   FileSystemUploadResult,
   FileSystemHttpMethods,
+  FileSystemSessionType,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -41,6 +42,7 @@ export {
   FileSystemUploadOptions,
   FileSystemUploadResult,
   FileSystemHttpMethods,
+  FileSystemSessionType,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {

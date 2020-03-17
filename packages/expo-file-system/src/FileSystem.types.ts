@@ -1,7 +1,13 @@
+export enum FileSystemSessionType {
+  FOREGROUND = 0,
+  BACKGROUND = 1,
+}
+
 export type DownloadOptions = {
   md5?: boolean;
   cache?: boolean;
   headers?: { [name: string]: string };
+  sessionType?: FileSystemSessionType;
 };
 
 export type HttpResult = {
@@ -18,6 +24,7 @@ export type DownloadResult = {
 export type FileSystemUploadOptions = {
   headers?: { [name: string]: string };
   httpMethod?: FileSystemHttpMethods;
+  sessionType?: FileSystemSessionType;
 };
 
 export type FileSystemUploadResult = {

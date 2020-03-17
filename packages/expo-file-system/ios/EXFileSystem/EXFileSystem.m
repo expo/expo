@@ -527,7 +527,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
                                                                                          withServerUrl:url
                                                                                          withMd5Option:[options[@"md5"] boolValue] ?: false];
   
-  NSURLSession *session = [self _createBackgroundSession:taskDelegate withHeaders:options[@"headers"]];
+  NSURLSession *session = [self _createSession:taskDelegate withOptions:options];
   NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
   
   [task resume];
@@ -556,7 +556,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
   
   EXSessionUploadTaskDelegate* taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve withReject:reject];
   
-  NSURLSession *session = [self _createBackgroundSession:taskDelegate withHeaders:options[@"headers"]];
+  NSURLSession *session = [self _createSession:taskDelegate withOptions:options];
   NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
   [urlRequest setHTTPMethod:[self _importHttpMethod:options[@"httpMethod"]]];
 
@@ -651,18 +651,29 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
-- (NSURLSession *)_createBackgroundSession:(id<NSURLSessionDelegate>)delegate withHeaders:(NSDictionary  * _Nullable )headers
-{
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  if (headers != nil) {
-    sessionConfiguration.HTTPAdditionalHeaders = headers;
-  }
-  sessionConfiguration.URLCache = nil;
+- (NSURLSession *)_createSession:(id<NSURLSessionDelegate>)delegate withOptions:(NSDictionary *)options {
+  NSNumber *sessionType = options[@"sessionType"] ?: 0;
   
-  return [NSURLSession sessionWithConfiguration:sessionConfiguration
-                                       delegate:delegate
-                                  delegateQueue:[NSOperationQueue mainQueue]];
+  NSURLSessionConfiguration *sessionConfiguration;
+
+  if (sessionType == 0) {
+    // foreground session
+    sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  } else {
+    // background session
+    sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
+  }
+  
+  NSDictionary *headers = options[@"headers"];
+  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+   if (headers != nil) {
+     sessionConfiguration.HTTPAdditionalHeaders = headers;
+   }
+   sessionConfiguration.URLCache = nil;
+   
+   return [NSURLSession sessionWithConfiguration:sessionConfiguration
+                                        delegate:delegate
+                                   delegateQueue:[NSOperationQueue mainQueue]];
 }
 
 - (BOOL)_checkIfFileExists:(NSString *)path
@@ -733,7 +744,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                                                                                                                     withUUID:(NSString *)uuid
                                                                                                    withResumalbeTaskRegister:self];
   
-  NSURLSession *session = [self _createBackgroundSession:downloadDelegate withHeaders:options[@"headers"]];
+  NSURLSession *session = [self _createSession:downloadDelegate withOptions:options];
   self.resumableDownloads[uuid] = session;
   
   NSURLSessionDownloadTask *downloadTask;
