@@ -336,6 +336,7 @@
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		FC20834C24217BA400D86BCD /* HelpshiftCustomConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC20834B24217BA400D86BCD /* HelpshiftCustomConfig.plist */; };
 		FC56A4B4241FC0F100D58D19 /* Gotham-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC56A4B2241FC0EF00D58D19 /* Gotham-Bold.otf */; };
 		FC56A4B5241FC0F100D58D19 /* Gotham-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC56A4B3241FC0F100D58D19 /* Gotham-Book.otf */; };
 /* End PBXBuildFile section */
@@ -1023,6 +1024,7 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
+		FC20834B24217BA400D86BCD /* HelpshiftCustomConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = HelpshiftCustomConfig.plist; sourceTree = "<group>"; };
 		FC56A4B2241FC0EF00D58D19 /* Gotham-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Bold.otf"; sourceTree = "<group>"; };
 		FC56A4B3241FC0F100D58D19 /* Gotham-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Book.otf"; sourceTree = "<group>"; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1966,6 +1968,7 @@
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				FC20834B24217BA400D86BCD /* HelpshiftCustomConfig.plist */,
 				B5EF826C1F55B8F100FC7424 /* launch_background_image.png */,
 				B5EF826D1F55B8F100FC7424 /* launch_icon.png */,
 				B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */,
@@ -2477,6 +2480,7 @@
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
+				FC20834C24217BA400D86BCD /* HelpshiftCustomConfig.plist in Resources */,
 				F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
