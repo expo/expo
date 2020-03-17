@@ -92,7 +92,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
   if (!EXUpdatesConfig.sharedInstance.updateUrl) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL."
+                                   reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
 
