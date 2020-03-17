@@ -60,9 +60,9 @@ Create the file `ios/<your-project-name>/Supporting/Expo.plist` with the followi
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-        <key>sdkVersion</key>
+        <key>EXUpdatesSDKVersion</key>
         <string>YOUR-APP-SDK-VERSION-HERE</string>
-        <key>updateUrl</key>
+        <key>EXUpdatesURL</key>
         <string>YOUR-APP-URL-HERE</string>
 </dict>
 </plist>
