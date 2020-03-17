@@ -8,10 +8,12 @@ import abi37_0_0.com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import abi37_0_0.com.facebook.react.bridge.Promise;
 import abi37_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi37_0_0.com.facebook.react.bridge.ReactMethod;
+import abi37_0_0.com.facebook.react.bridge.ReadableArray;
 import abi37_0_0.com.facebook.react.modules.intent.IntentModule;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -88,10 +90,17 @@ public class ExponentIntentModule extends IntentModule {
     }
   }
 
-  // We need to add this method, cause otherwise React Native won't export it.
-  // RN doesn't export methods from base classes.
+  /**
+   * We need to add these methods because otherwise React Native won't export them.
+   * RN doesn't export methods from base classes
+   */
   @ReactMethod
   public void openSettings(Promise promise) {
     super.openSettings(promise);
+  }
+
+  @ReactMethod
+  public void sendIntent(String action, @Nullable ReadableArray extras, Promise promise) {
+    super.sendIntent(action, extras, promise);
   }
 }
