@@ -242,6 +242,7 @@ On Android, you may also define these properties at runtime by passing a `Map` a
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Description | Default | Required? |
 | --- | --- | --- | --- | --- | --- |
+| `EXUpdatesEnabled` | `enabled` | `expo.modules.updates.ENABLED` | Whether updates are enabled. Setting this to `false` disables all update functionality, all module methods, and forces the app to load with the manifest and assets bundled into the app binary. | `true` | ❌ |
 | `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | URL to the remote server where the app should check for updates | (none) | ✅ |
 | `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 | `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | Runtime version to send under the `Expo-Runtime-Version` header in the manifest request. | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |

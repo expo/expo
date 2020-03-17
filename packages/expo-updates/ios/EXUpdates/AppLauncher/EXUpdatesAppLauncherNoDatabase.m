@@ -1,14 +1,14 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAsset.h>
-#import <EXUpdates/EXUpdatesEmergencyAppLauncher.h>
+#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
 
-@interface EXUpdatesEmergencyAppLauncher ()
+@interface EXUpdatesAppLauncherNoDatabase ()
 
 @property (nullable, nonatomic, strong, readwrite) EXUpdatesUpdate *launchedUpdate;
 @property (nullable, nonatomic, strong, readwrite) NSURL *launchAssetUrl;
@@ -16,9 +16,9 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
 
 @end
 
-@implementation EXUpdatesEmergencyAppLauncher
+@implementation EXUpdatesAppLauncherNoDatabase
 
-- (void)launchUpdateWithFatalError:(NSError *)error;
+- (void)launchUpdate
 {
   _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifest];
   if (_launchedUpdate) {
@@ -33,7 +33,11 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
     }
     _assetFilesMap = assetFilesMap;
   }
-  
+}
+
+- (void)launchUpdateWithFatalError:(NSError *)error;
+{
+  [self launchUpdate];
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     [self _writeErrorToLog:error];
   });
