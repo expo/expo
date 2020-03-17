@@ -260,7 +260,7 @@ public class UpdatesController {
     }
 
     if (mUpdatesConfiguration.getUpdateUrl() == null) {
-      throw new AssertionError("expo-updates is enabled, but no valid updateUrl is configured. Please set a valid URL in AndroidManifest.xml or when initializing UpdatesController.");
+      throw new AssertionError("expo-updates is enabled, but no valid updateUrl is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
     }
 
     boolean shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(mUpdatesConfiguration, context);
