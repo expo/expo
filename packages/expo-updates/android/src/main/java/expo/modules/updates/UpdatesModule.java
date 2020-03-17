@@ -78,7 +78,13 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void reload(final Promise promise) {
     try {
-      UpdatesController.getInstance().relaunchReactApplication(getContext(), new Launcher.LauncherCallback() {
+      UpdatesController controller = UpdatesController.getInstance();
+      if (!controller.getUpdatesConfiguration().isEnabled()) {
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot reload when expo-updates is not enabled.");
+        return;
+      }
+
+      controller.relaunchReactApplication(getContext(), new Launcher.LauncherCallback() {
         @Override
         public void onFailure(Exception e) {
           Log.e(TAG, "Failed to relaunch application", e);
@@ -102,6 +108,11 @@ public class UpdatesModule extends ExportedModule {
   public void checkForUpdateAsync(final Promise promise) {
     try {
       final UpdatesController controller = UpdatesController.getInstance();
+      if (!controller.getUpdatesConfiguration().isEnabled()) {
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot check for updates when expo-updates is not enabled.");
+        return;
+      }
+
       FileDownloader.downloadManifest(controller.getUpdateUrl(), getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
@@ -144,6 +155,10 @@ public class UpdatesModule extends ExportedModule {
   public void fetchUpdateAsync(final Promise promise) {
     try {
       final UpdatesController controller = UpdatesController.getInstance();
+      if (!controller.getUpdatesConfiguration().isEnabled()) {
+        promise.reject("ERR_UPDATES_DISABLED", "You cannot fetch updates when expo-updates is not enabled.");
+        return;
+      }
 
       AsyncTask.execute(() -> {
         UpdatesDatabase database = controller.getDatabase();

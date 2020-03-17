@@ -14,6 +14,7 @@ public class UpdatesConfiguration {
 
   private static final String TAG = UpdatesConfiguration.class.getSimpleName();
 
+  public static final String UPDATES_CONFIGURATION_ENABLED_KEY = "enabled";
   public static final String UPDATES_CONFIGURATION_UPDATE_URL_KEY = "updateUrl";
   public static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY = "releaseChannel";
   public static final String UPDATES_CONFIGURATION_SDK_VERSION_KEY = "sdkVersion";
@@ -30,12 +31,17 @@ public class UpdatesConfiguration {
     ALWAYS,
   }
 
+  private boolean mIsEnabled;
   private Uri mUpdateUrl;
   private String mSdkVersion;
   private String mRuntimeVersion;
   private String mReleaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE;
   private int mLaunchWaitMs = UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE;
   private CheckAutomaticallyConfiguration mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
+
+  public boolean isEnabled() {
+    return mIsEnabled;
+  }
 
   public Uri getUpdateUrl() {
     return mUpdateUrl;
@@ -68,6 +74,7 @@ public class UpdatesConfiguration {
       String urlString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATE_URL");
       mUpdateUrl = urlString == null ? null : Uri.parse(urlString);
 
+      mIsEnabled = ai.metaData.getBoolean("expo.modules.updates.EXPO_UPDATES_ENABLED", true);
       mRuntimeVersion = ai.metaData.getString("expo.modules.updates.EXPO_RUNTIME_VERSION");
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
@@ -87,6 +94,11 @@ public class UpdatesConfiguration {
   }
 
   public UpdatesConfiguration loadValuesFromMap(Map<String, Object> map) {
+    Boolean isEnabledFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_ENABLED_KEY, Boolean.class);
+    if (isEnabledFromMap != null) {
+      mIsEnabled = isEnabledFromMap;
+    }
+
     Uri updateUrlFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.class);
     if (updateUrlFromMap != null) {
       mUpdateUrl = updateUrlFromMap;

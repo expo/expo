@@ -3,7 +3,7 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesEmergencyAppLauncher.h>
+#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
@@ -28,7 +28,6 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
-@property (nonatomic, readwrite, assign) BOOL isEnabled;
 
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, strong) NSTimer *timer;
@@ -62,7 +61,6 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] init];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
-    _isEnabled = NO;
     _isReadyToLaunch = NO;
     _isTimerFinished = NO;
     _hasLaunched = NO;
@@ -79,7 +77,24 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 - (void)start
 {
   NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
-  _isEnabled = YES;
+
+  if (!EXUpdatesConfig.sharedInstance.isEnabled) {
+    EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
+    _launcher = launcher;
+    [launcher launchUpdate];
+
+    if (_delegate) {
+      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+    }
+
+    return;
+  }
+
+  if (!EXUpdatesConfig.sharedInstance.updateUrl) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL."
+                                 userInfo:@{}];
+  }
 
   NSError *fsError;
   _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
@@ -332,7 +347,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   _isEmergencyLaunch = YES;
   _hasLaunched = YES;
 
-  EXUpdatesEmergencyAppLauncher *launcher = [[EXUpdatesEmergencyAppLauncher alloc] init];
+  EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
   [launcher launchUpdateWithFatalError:error];
 

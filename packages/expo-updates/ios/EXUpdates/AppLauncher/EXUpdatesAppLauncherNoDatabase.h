@@ -4,8 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesEmergencyAppLauncher : NSObject <EXUpdatesAppLauncher>
+@interface EXUpdatesAppLauncherNoDatabase : NSObject <EXUpdatesAppLauncher>
 
+- (void)launchUpdate;
 - (void)launchUpdateWithFatalError:(NSError *)error;
 + (nullable NSString *)consumeError;
 
