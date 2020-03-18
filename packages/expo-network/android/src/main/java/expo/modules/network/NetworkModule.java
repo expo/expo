@@ -205,8 +205,8 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
           macAddress = buf.toString();
           if (!macAddress.isEmpty()) {
             promise.resolve(macAddress);
+            break;
           }
-          break;
         }
         if (macAddress.isEmpty()) {
           //catch undefined network interface name
