@@ -1,7 +1,7 @@
 {
   "name": "expo-splash-screen",
   "version": "1.0.0",
-  "description": "Expo module that allows you to show native SplashScreen/LaunchScreen view before your app is ready to display it's content.",
+  "description": "Provides a module that allow keeping the native Splash Screen visible until you choose to hide it.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {

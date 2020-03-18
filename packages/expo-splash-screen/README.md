@@ -5,14 +5,14 @@
 ## Content
 
 - [📜	CHANGELOG](./CHANGELOG.md)
-- [🚀 Features](./features)
+- [🚀 Features](#-features)
 - [📚 API](#-api)
-- [⭐️ Examples](#-examples)
+- [🗒 Examples](#-examples)
 - [💻 Installation in managed Expo projects](#-installation-in-managed-expo-projects)
 - [🖥 Installation in bare React Native projects](#-installation-in-bare-react-native-projects)
-  - [📱 Configure for iOS](#-configure-for-ios)
-  - [🤖 Configure for Android](#-configure-for-android)
-- [👏 Contributing](#-contribting)
+  - [📱 Configure iOS](#-configure-ios)
+  - [🤖 Configure Android](#-configure-android)
+- [👏 Contributing](#-contributing)
 - [❓ Known issues](#-known-issues)
 - [🏅 Hall of fame](#-hall-of-fame)
 
@@ -28,7 +28,7 @@ Scale the image uniformly (maintain the image's aspect ratio) so that both dimen
 
 | Android                                                   | iOS                                                        |
 |-----------------------------------------------------------|------------------------------------------------------------|
-| <img src="https://i.imgur.com/xu9vvDA.gif" width="200" /> | <img src="https://i.imgur.com/xu9vvDA.gif" width="200" />  |
+| <img src="./assets/demo-android-contain.gif" height="350" /> | <img src="./assets/demo-ios-contain.gif" height="350" />  |
 
 #### `COVER` resize mode
 
@@ -36,19 +36,20 @@ Scale the image uniformly (maintain the image's aspect ratio) so that both dimen
 
 | Android                                                   | iOS                                                        |
 |-----------------------------------------------------------|------------------------------------------------------------|
-| <img src="https://i.imgur.com/tDkINlr.gif" width="200" /> | <img src="https://i.imgur.com/tDkINlr.gif" width="200" />  |
+| <img src="./assets/demo-android-cover.gif" height="350" /> | <img src="./assets/demo-ios-cover.gif" height="350" />  |
 
 #### `NATIVE` resize mode
 
 Android only.
-Using this resize mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image during launching, so the application will present the given image centered on the screen.
+Using this resize mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up.
+Android (unlike iOS) does not support stretching the provided image during launching phase, so the application will present the given image centered on the screen at it's original dimensions.
 
 | Android                                                   |
 |-----------------------------------------------------------|
-| <img src="https://i.imgur.com/Mwt4NPX.gif" width="200" /> |
+| <img src="./assets/demo-android-native.gif" height="350" /> |
 
 Selecting this resize mode requires some more work to be done in native configuration.
-Please take a look at [`res/drawable/splashscreen.xml`](#res/drawable/splashscreen.xml) section and [`res/drawable/splashscreen_background.png`](#res/drawable/splashscreen_background.png) section.
+Please take a look at [`res/drawable/splashscreen.xml`](#resdrawablesplashscreenxml) section and [`res/drawable/splashscreen_background.png`](#resdrawablesplashscreen_backgroundpng) section.
 
 ## 📚 API
 
@@ -56,11 +57,11 @@ Please take a look at [`res/drawable/splashscreen.xml`](#res/drawable/splashscre
 import * as SplashScreen from 'expo-splash-screen';
 ```
 
-The native splash screen that is controlled via this modules autohides once ReactNative-controlled view hierarchy is mounted. That means that upon first `render` of you application that returns any renderable view component native splash screen will hide. This default behavior can be prevented by calling [`SplashScreen.preventAutoHideAsync()`](#splashScreen.preventAutoHideAsync) and later on [`SplashScreen.hideAsync()`](#splashscree.hideasync). 
+The native splash screen that is controlled via this modules autohides once ReactNative-controlled view hierarchy is mounted. That means that upon first `render` of you application that returns any renderable view component native splash screen will hide. This default behavior can be prevented by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) and later on [`SplashScreen.hideAsync()`](#splashscreenhideasync). 
 
 ### `SplashScreen.preventAutoHideAsync()`
 
-Makes the native splash screen stay visible until [`SplashScreen.hideAsync()`](#splashscree.hideasync) is called. This method must be called before any ReactNative-controlled view hierarchy is rendered (either in global scope of your main component or when component renders `null` at the beginning - see [Examples section](#examples)).
+Makes the native splash screen stay visible until [`SplashScreen.hideAsync()`](#splashscreenhideasync) is called. This method must be called before any ReactNative-controlled view hierarchy is rendered (either in global scope of your main component or when component renders `null` at the beginning - see [Examples section](#-examples)).
 
 Preventing default autohiding might come in handy if your application needs to prepare/download some resources and/or make some API calls before first `render` returning some actual view hierarchy with data can be made.
 
@@ -71,14 +72,14 @@ A `Promise` that resolves when preventing autohiding makes sense.
 
 ### `SplashScreen.hideAsync()`
 
-Hides the native splash screen. Works only if native splash screen has been previously prevented from autohiding by calling [`SplashScreen.preventAutoHideAsync()`](#splashScreen.preventAutoHideAsync) method.
+Hides the native splash screen. Works only if native splash screen has been previously prevented from autohiding by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) method.
 
 #### Returns
 
 A `Promise` that resolves when `hideAsync` call makes any sense.
 `Promise` rejections most likely means that native splash screen is already hidden (either by previously called `hideAsync` or not calling `preventAutoHideAsync` in the first place).
 
-## ⭐️ Examples
+## 🗒 Examples
 
 ### `SplashScreen.preventAutoHideAsync()` in global scope  
 
@@ -207,11 +208,91 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-splash-screen
 ```
 
-### 📱 Configure for iOS
+### 📱 Configure iOS
 
 Run `pod install` in the `ios` directory after installing the package.
 
-### 🤖 Configure for Android
+To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) you have to provide either `SplashScreen.storyboard` file or `SplashScreen.xib` file and configure your XCode project accordingly.
+
+Below guide presents how to configure your project in XCode to use single image file as a splash screen with usage of `.storyboard` filetype (configuration for `.xib` filetype is analogues).
+
+#### `Images.xcassets`
+
+First you need to provide the image file that would serve as a splash screen.
+
+1. In your XCode project open `Images.xcassets` file.
+2. In content panel add `New image set` and name it `SplashScreen`.
+3. Provide splash screen image you've prepared (you have to provide it in three different scales).
+
+<img src="./assets/configuration-ios-addImagesXcassets.png" height="350" />
+
+#### `SplashScreen.storyboard`
+
+This is an actual splash screen definition and would used by the system to render your splash screen.
+
+1. Create `SplashScreen.storyboard` file.
+2. Add `View Controller` to newly created `.storyboard` file:
+    - open `Library` (`+` button on the top-right),
+    - find `View Controller` element,
+    - drag-and-drop it to the `.storyboard` file.
+
+<img src="./assets/configuration-ios-addViewControllerToStoryboard.png" height="350" />
+
+3. Add `Image View` to `View Controller`:
+    - first remove other `View` element from `View Controller`,
+    - open `Library` (`+` button on the top-right),
+    - find `Image View` element,
+    - drag-and-drop it as a `View Controller` child in view hierarchy inspector.
+
+<img src="./assets/configuration-ios-addImageViewToStoryboard.png" height="350" />
+  
+4. Set `Storyboard ID` to `SplashScreenViewController`:
+    - select `View Controller` in view hierarchy inspector,
+    - navigate to `Identity Inspector` in the right panel,
+    - and set `Storyboard ID` to `SplashScreenViewController`.
+
+<img src="./assets/configuration-ios-addStoryboardID.png" height="350" />
+
+5. Configure `Image View` source:
+    - select `Image View` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - select `SplashScreen` in `Image` parameter).
+
+<img src="./assets/configuration-ios-configureImageView.png" height="350" />
+
+6. Configure `Background` of `Image View`:
+    - select `Image View` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - configure `Background` parameter:
+        - To provide `#RRGGBB` value you need to select `Custom` option and in the `Colors Popup` that appeared you need to navigate to the second tab and choose `RGB Sliders` from dropdown select.
+
+<img src="./assets/configuration-ios-selectBackgroundColor.png" height="350" />
+
+#### `ImageView`'s `ContentMode`
+
+This is the way your image would be presented on the screen.
+
+1. Open `SplashScreen.storyboard` and select `Image View` from `View Controller`.
+2. Navigate to `Attributes Inspector` in the right panel and locate `Content Mode`.
+3. Select one of the following:
+    - `Aspect Fit` to obtain [CONTAIN resize mode](#contain-resize-mode),
+    - `Aspect Fill` to obtain [COVER resize mode](#cover-resize-mode).
+4. You can always choose other options to achieve different image positioning and scaling.
+
+<img src="./assets/configuration-ios-selectImageViewContentMode.png" height="350" />
+
+#### Launch Screen File
+
+Newly created `SplashScreen.storyboard` needs to be marked as `Launch Screen File` in your XCode project to be presented from the very beginning of you application launch.
+
+1. Select your project in `Project Navigator`
+2. Select your project name from `TARGETS` panel and navigate to `General` tab.
+3. Locate `App Icons and Launch Images` section and `Launch Screen File` option.
+4. Select or enter `SplashScreen` as the value for located option.
+
+<img src="./assets/configuration-ios-selectLaunchScreen.png" height="350" />
+
+### 🤖 Configure Android
 
 To achieve fully-native splash screen behavior `expo-splash-screen` needs to be hooked into native view hierarchy and consume some resources that have to placed under `/android/app/src/res` directory.
 
@@ -339,13 +420,13 @@ To achieve proper scaling of your splash screen image on every device you should
 - `res/drawable-xxhdpi` - scale 3x - resources for extra-extra-high-density (xxhdpi) screens (~480dpi).
 - `res/drawable-xxxhdpi` - scale 4x - resources for extra-extra-extra-high-density (xxxhdpi) uses (~640dpi).
 
-Each of above mentioned directories should contain the same `splashscreen_image.png` file, but with different resolution (scale factors above).
+Each of directories mentioned above should contain the same `splashscreen_image.png` file, but with different resolution (pay attention to scale factors).
 
-# 👏 Contributing
+## 👏 Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
 
-# ❓ Known issues
+## ❓ Known issues
 
 ### iOS caching
 
@@ -356,9 +437,9 @@ Splash Screens on iOS apps can sometimes encounter a caching issue where the pre
 See `NATIVE` mode preview above.
 This one will be addressed ASAP.
 
-# 🏅 Hall Of Fame
+## 🏅 Hall Of Fame
 
-This module is based on solid work (many thank for that 👏):
+This module is based on a solid work from (many thank for that 👏):
 - [react-native-splash-screen](https://github.com/crazycodeboy/react-native-splash-screen)
 - [react-native-bootsplash](https://github.com/zoontek/react-native-bootsplash)
 - [react-native-make](https://github.com/bamlab/react-native-make)
