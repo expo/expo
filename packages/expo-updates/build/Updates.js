@@ -61,7 +61,7 @@ function _emitEvent(params) {
     _emitter.emit('Expo.updatesEvent', newParams);
 }
 export function addListener(listener) {
-    let emitter = _getEmitter();
+    const emitter = _getEmitter();
     return emitter.addListener('Expo.updatesEvent', listener);
 }
 //# sourceMappingURL=Updates.js.map

@@ -6,7 +6,7 @@ export default class AdIconView extends React.Component {
     render() {
         return (<AdIconViewContext.Consumer>
         {(contextValue) => {
-            let context = nullthrows(contextValue);
+            const context = nullthrows(contextValue);
             return <NativeAdIconView {...this.props} ref={context.nativeRef}/>;
         }}
       </AdIconViewContext.Consumer>);
