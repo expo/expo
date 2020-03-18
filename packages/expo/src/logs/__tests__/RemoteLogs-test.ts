@@ -24,24 +24,24 @@ afterAll(() => {
 
 describe(`remote console logging`, () => {
   it(`removes internal console stack frames from the reported stack trace`, async () => {
-    let fetchBarrier = new Promise(resolve => {
+    const fetchBarrier = new Promise(resolve => {
       (global.fetch as jest.Mock).mockImplementationOnce(async () => {
         resolve();
         return { status: 200 };
       });
     });
-    let mockConsole = RemoteConsole.createRemoteConsole(mockOriginalConsole);
+    const mockConsole = RemoteConsole.createRemoteConsole(mockOriginalConsole);
 
     mockConsole.error('oh no');
     await fetchBarrier;
     await __waitForEmptyLogQueueAsync();
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
-    let requestBody = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
+    const requestBody = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
     expect(Array.isArray(requestBody)).toBe(true);
     expect(requestBody.length).toBe(1);
 
-    let logEntry = requestBody[0];
+    const logEntry = requestBody[0];
     expect(logEntry.includesStack).toBe(true);
     expect(logEntry.body[0].message).toBe('oh no');
     // TODO: Change the stack trace capturing to happen synchronously with the console.error call

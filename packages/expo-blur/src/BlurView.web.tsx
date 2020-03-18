@@ -17,7 +17,7 @@ export default class BlurView extends React.Component<BlurProps> {
   };
 
   render() {
-    let { tint, intensity, style = {}, ...props } = this.props;
+    const { tint, intensity, style = {}, ...props } = this.props;
 
     const blurStyle = getBlurStyle({ tint, intensity });
 

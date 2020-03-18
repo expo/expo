@@ -131,7 +131,7 @@ describe(`importing Expo`, () => {
     const warn = console.warn;
 
     global.console.warn = str => {
-      let tst = (str || '') + '';
+      const tst = (str || '') + '';
       if (!tst.includes('No native')) {
         warn.apply(console, [str]);
       }

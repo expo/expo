@@ -61,14 +61,14 @@ it(`only lets you call startAsync once at a time`, async () => {
     });
   });
 
-  let parallelStartAsyncCalls = Promise.all([
+  const parallelStartAsyncCalls = Promise.all([
     AuthSession.startAsync({ authUrl, returnUrl }),
     AuthSession.startAsync({ authUrl, returnUrl }),
   ]);
 
   jest.runAllTimers();
 
-  let [first, second] = await parallelStartAsyncCalls;
+  const [first, second] = await parallelStartAsyncCalls;
   expect(first).toEqual(normalResponse);
   expect(second).toEqual(lockedResponse);
   expect(console.warn).toHaveBeenCalledWith(expect.stringMatching(/Only one AuthSession/));
@@ -80,12 +80,12 @@ it(`returns success with params on redirect`, async () => {
   const returnUrl = 'https://example-return.io/+';
   const returnUrlWithParams = `${returnUrl}?id=42#token=abc123`;
 
-  let authSessionPromise = AuthSession.startAsync({
+  const authSessionPromise = AuthSession.startAsync({
     authUrl,
     returnUrl,
   });
   emitLinkingEvent('url', { url: returnUrlWithParams });
-  let result = await authSessionPromise;
+  const result = await authSessionPromise;
 
   expect(result.type).toEqual('success');
   expect((result as any).params).toEqual({ token: 'abc123', id: '42' });
@@ -96,7 +96,7 @@ it(`returns error when errorCode is present`, async () => {
 
   const authUrl = 'http://example.io';
   const returnUrl = 'https://example-return.io/+';
-  let authSessionPromise = AuthSession.startAsync({
+  const authSessionPromise = AuthSession.startAsync({
     authUrl,
     returnUrl,
   });
@@ -104,7 +104,7 @@ it(`returns error when errorCode is present`, async () => {
   const returnUrlWithParams = `${returnUrl}?errorCode=nope&id=42`;
   emitLinkingEvent('url', { url: returnUrlWithParams });
 
-  let result = await authSessionPromise;
+  const result = await authSessionPromise;
   expect(result.type).toEqual('error');
   expect((result as any).errorCode).toEqual('nope');
   expect((result as any).params).toEqual({ id: '42' });
@@ -129,13 +129,13 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
   const returnUrl = 'https://example-return.io/+';
   const returnUrlWithParams = `${returnUrl}?id=42#token=abc123`;
 
-  let authSessionPromise = AuthSession.startAsync({
+  const authSessionPromise = AuthSession.startAsync({
     authUrl,
     returnUrl,
   });
   emitLinkingEvent('url', { url: returnUrlWithParams });
 
-  let result = await authSessionPromise;
+  const result = await authSessionPromise;
 
   expect(result.type).not.toEqual('locked');
 });
