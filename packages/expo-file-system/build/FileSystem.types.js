@@ -1,7 +1,7 @@
 export var FileSystemSessionType;
 (function (FileSystemSessionType) {
-    FileSystemSessionType[FileSystemSessionType["FOREGROUND"] = 0] = "FOREGROUND";
-    FileSystemSessionType[FileSystemSessionType["BACKGROUND"] = 1] = "BACKGROUND";
+    FileSystemSessionType[FileSystemSessionType["BACKGROUND"] = 0] = "BACKGROUND";
+    FileSystemSessionType[FileSystemSessionType["FOREGROUND"] = 1] = "FOREGROUND";
 })(FileSystemSessionType || (FileSystemSessionType = {}));
 export var EncodingType;
 (function (EncodingType) {

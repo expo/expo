@@ -1,6 +1,6 @@
 export declare enum FileSystemSessionType {
-    FOREGROUND = 0,
-    BACKGROUND = 1
+    BACKGROUND = 0,
+    FOREGROUND = 1
 }
 export declare type DownloadOptions = {
     md5?: boolean;

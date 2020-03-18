@@ -1,13 +1,13 @@
 export enum FileSystemSessionType {
-  FOREGROUND = 0,
-  BACKGROUND = 1,
+  BACKGROUND = 0,
+  FOREGROUND = 1,
 }
 
 export type DownloadOptions = {
   md5?: boolean;
   cache?: boolean;
   headers?: { [name: string]: string };
-  sessionType?: FileSystemSessionType;
+  sessionType?: FileSystemSessionType; // iOS only
 };
 
 export type HttpResult = {

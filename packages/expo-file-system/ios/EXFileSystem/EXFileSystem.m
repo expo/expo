@@ -657,11 +657,11 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   NSURLSessionConfiguration *sessionConfiguration;
 
   if (sessionType == 0) {
-    // foreground session
-    sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  } else {
     // background session
     sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
+  } else {
+    // foreground session
+    sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
   }
   
   NSDictionary *headers = options[@"headers"];
@@ -751,15 +751,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    if (options[@"headers"]) {
-      NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-      for (NSString *key in headerDict) {
-        NSString *value = (NSString *) [headerDict objectForKey:key];
-        [request addValue:value forHTTPHeaderField:key];
-      }
-    }
-    downloadTask = [session downloadTaskWithRequest:request];
+    downloadTask = [session downloadTaskWithURL:url];
   }
   [downloadTask resume];
 }
