@@ -194,8 +194,10 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
             macAddress = "";
           }
           StringBuilder buf = new StringBuilder();
-          for (byte aMac : mac) {
-            buf.append(String.format("%02X:", aMac));
+          if (mac != null) {
+            for (byte aMac : mac) {
+              buf.append(String.format("%02X:", aMac));
+            }
           }
           if (buf.length() > 0) {
             buf.deleteCharAt(buf.length() - 1);
