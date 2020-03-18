@@ -1,16 +1,7 @@
 package abi37_0_0.expo.modules.network;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.nio.ByteOrder;
-import java.security.AccessControlException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import android.content.Context;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -23,11 +14,18 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.List;
+
 import abi37_0_0.org.unimodules.core.ExportedModule;
 import abi37_0_0.org.unimodules.core.ModuleRegistry;
 import abi37_0_0.org.unimodules.core.Promise;
-import abi37_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi37_0_0.org.unimodules.core.interfaces.ActivityProvider;
+import abi37_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi37_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
 
 public class NetworkModule extends ExportedModule implements RegistryLifecycleListener {
@@ -194,8 +192,10 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
             macAddress = "";
           }
           StringBuilder buf = new StringBuilder();
-          for (byte aMac : mac) {
-            buf.append(String.format("%02X:", aMac));
+          if (mac != null) {
+            for (byte aMac : mac) {
+              buf.append(String.format("%02X:", aMac));
+            }
           }
           if (buf.length() > 0) {
             buf.deleteCharAt(buf.length() - 1);
@@ -203,8 +203,8 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
           macAddress = buf.toString();
           if (!macAddress.isEmpty()) {
             promise.resolve(macAddress);
+            break;
           }
-          break;
         }
         if (macAddress.isEmpty()) {
           //catch undefined network interface name
