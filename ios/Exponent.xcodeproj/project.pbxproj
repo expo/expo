@@ -336,10 +336,9 @@
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
-		FC0D13712421946500749A18 /* HelpshiftCustomConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC0D136D2421946000749A18 /* HelpshiftCustomConfig.plist */; };
-		FC0D13722421946500749A18 /* HelpshiftCustomLocalization.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FC0D136E2421946200749A18 /* HelpshiftCustomLocalization.bundle */; };
-		FC0D13732421946500749A18 /* Gotham-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC0D136F2421946300749A18 /* Gotham-Book.otf */; };
-		FC0D13742421946500749A18 /* Gotham-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC0D13702421946500749A18 /* Gotham-Bold.otf */; };
+		FC067B662421A65B00960C5E /* Gotham-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC067B632421A65900960C5E /* Gotham-Bold.otf */; };
+		FC067B672421A65B00960C5E /* Gotham-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC067B642421A65A00960C5E /* Gotham-Book.otf */; };
+		FC067B682421A65B00960C5E /* HelpshiftCustomConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC067B652421A65B00960C5E /* HelpshiftCustomConfig.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1025,10 +1024,9 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
-		FC0D136D2421946000749A18 /* HelpshiftCustomConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = HelpshiftCustomConfig.plist; sourceTree = "<group>"; };
-		FC0D136E2421946200749A18 /* HelpshiftCustomLocalization.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HelpshiftCustomLocalization.bundle; sourceTree = "<group>"; };
-		FC0D136F2421946300749A18 /* Gotham-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Book.otf"; sourceTree = "<group>"; };
-		FC0D13702421946500749A18 /* Gotham-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Bold.otf"; sourceTree = "<group>"; };
+		FC067B632421A65900960C5E /* Gotham-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Bold.otf"; sourceTree = "<group>"; };
+		FC067B642421A65A00960C5E /* Gotham-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Book.otf"; sourceTree = "<group>"; };
+		FC067B652421A65B00960C5E /* HelpshiftCustomConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = HelpshiftCustomConfig.plist; sourceTree = "<group>"; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1969,11 +1967,10 @@
 		B5E49B521D1346FA00AA6436 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				FC0D13702421946500749A18 /* Gotham-Bold.otf */,
-				FC0D136F2421946300749A18 /* Gotham-Book.otf */,
-				FC0D136D2421946000749A18 /* HelpshiftCustomConfig.plist */,
-				FC0D136E2421946200749A18 /* HelpshiftCustomLocalization.bundle */,
 				B5EF826C1F55B8F100FC7424 /* launch_background_image.png */,
+				FC067B632421A65900960C5E /* Gotham-Bold.otf */,
+				FC067B642421A65A00960C5E /* Gotham-Book.otf */,
+				FC067B652421A65B00960C5E /* HelpshiftCustomConfig.plist */,
 				B5EF826D1F55B8F100FC7424 /* launch_icon.png */,
 				B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */,
 				B5E49B541D1346FA00AA6436 /* Exponent-Prefix.pch */,
@@ -2466,21 +2463,20 @@
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
 				B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */,
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
+				FC067B672421A65B00960C5E /* Gotham-Book.otf in Resources */,
+				FC067B662421A65B00960C5E /* Gotham-Bold.otf in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
-				FC0D13732421946500749A18 /* Gotham-Book.otf in Resources */,
 				F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */,
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
-				FC0D13722421946500749A18 /* HelpshiftCustomLocalization.bundle in Resources */,
+				FC067B682421A65B00960C5E /* HelpshiftCustomConfig.plist in Resources */,
 				F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
-				FC0D13712421946500749A18 /* HelpshiftCustomConfig.plist in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
-				FC0D13742421946500749A18 /* Gotham-Bold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
