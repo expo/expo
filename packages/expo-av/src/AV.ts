@@ -106,7 +106,7 @@ export function getNativeSourceFromSource(
     };
   }
 
-  let asset: Asset | null = _getAssetFromPlaybackSource(source);
+  const asset: Asset | null = _getAssetFromPlaybackSource(source);
   if (asset != null) {
     uri = asset.localUri || asset.uri;
   } else if (
@@ -194,7 +194,7 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(
   }
 
   // Download first if necessary.
-  let asset = _getAssetFromPlaybackSource(source);
+  const asset = _getAssetFromPlaybackSource(source);
   if (downloadFirst && asset) {
     // TODO we can download remote uri too once @nikki93 has integrated this into Asset
     await asset.downloadAsync();

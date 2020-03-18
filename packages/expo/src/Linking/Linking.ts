@@ -43,7 +43,7 @@ function _removeTrailingSlashAndQueryString(url: string) {
 
 function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   let scheme = 'exp';
-  let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+  const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
 
   if (Constants.appOwnership === 'standalone' && manifestScheme) {
     scheme = manifestScheme;
@@ -75,13 +75,13 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   // merge user-provided query params with any that were already in the hostUri
   // e.g. release-channel
   let queryString = '';
-  let queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
+  const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
   if (queryStringMatchResult) {
     hostUri = queryStringMatchResult[1];
     queryString = queryStringMatchResult[2];
     let paramsFromHostUri = {};
     try {
-      let parsedParams = qs.parse(queryString);
+      const parsedParams = qs.parse(queryString);
       if (typeof parsedParams === 'object') {
         paramsFromHostUri = parsedParams;
       }
@@ -111,10 +111,10 @@ function parse(url: string): ParsedURL {
   for (const param in parsed.query) {
     parsed.query[param] = decodeURIComponent(parsed.query[param]!);
   }
-  let queryParams = parsed.query;
+  const queryParams = parsed.query;
 
-  let hostUri = HOST_URI || '';
-  let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
+  const hostUri = HOST_URI || '';
+  const hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
 
   let path = parsed.pathname || null;
   let hostname = parsed.hostname || null;
@@ -174,7 +174,7 @@ interface ExpoLinking extends LinkingStatic {
 }
 
 // @ts-ignore fix this...
-let newLinking = new Linking.constructor();
+const newLinking = new Linking.constructor();
 
 newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;

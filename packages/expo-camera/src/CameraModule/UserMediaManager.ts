@@ -1,8 +1,8 @@
 /* eslint-env browser */
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
-export let userMediaRequested: boolean = false;
-export let mountedInstances: any[] = [];
+export const userMediaRequested: boolean = false;
+export const mountedInstances: any[] = [];
 
 async function requestLegacyUserMediaAsync(props): Promise<any[]> {
   const optionalSource = id => ({ optional: [{ sourceId: id }] });

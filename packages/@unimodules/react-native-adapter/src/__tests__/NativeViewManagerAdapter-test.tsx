@@ -32,14 +32,14 @@ describe('requireNativeViewManager', () => {
 
   it(`partitions props into React Native and custom props`, () => {
     const TestView = requireNativeViewManager('ExpoTestView');
-    let testRenderer = TestRenderer.create(
+    const testRenderer = TestRenderer.create(
       <TestView testID="test" custom="hello">
         <TestView />
       </TestView>
     );
-    let testInstance = testRenderer.root;
+    const testInstance = testRenderer.root;
     // NOTE: update this test if the naming scheme of the native adapter components changes
-    let testNativeComponent = testInstance.findByType('ViewManagerAdapter_ExpoTestView' as any);
+    const testNativeComponent = testInstance.findByType('ViewManagerAdapter_ExpoTestView' as any);
     expect(testNativeComponent).toBeDefined();
 
     // React Native props

@@ -114,7 +114,7 @@ export function getIdealConstraints(
   width?: number | ConstrainLongRange,
   height?: number | ConstrainLongRange
 ): MediaStreamConstraints {
-  let preferredConstraints: MediaStreamConstraints = {
+  const preferredConstraints: MediaStreamConstraints = {
     audio: false,
     video: {},
   };

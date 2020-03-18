@@ -107,7 +107,7 @@ describe(`Localization defines constants`, () => {
     const result = Localization.isoCurrencyCodes;
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
-    for (let iso of result) {
+    for (const iso of result) {
       expect(typeof iso).toBe('string');
       expect(iso.length > 0).toBe(true);
     }

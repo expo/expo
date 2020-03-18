@@ -101,7 +101,7 @@ function _emitEvent(params): void {
 }
 
 export function addListener(listener: Function): EventSubscription {
-  let emitter = _getEmitter();
+  const emitter = _getEmitter();
   return emitter.addListener('Exponent.updatesEvent', listener);
 }
 
