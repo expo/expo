@@ -32,6 +32,7 @@ public class AppLoaderProvider {
         createLoader(name, context);
       } catch (Exception e) {
         Log.e("Expo", "Cannot initialize app loader. " + e.getMessage());
+        e.printStackTrace();
         return null;
       }
     }
