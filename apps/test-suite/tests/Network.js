@@ -60,16 +60,17 @@ export async function test(t) {
   });
   t.describe(`Network.getMacAddressAsync()`, () => {
     if (!isDeviceFarm()) {
-      t.it(`throws an error when no network interface name is passed in`, async () => {
+      t.it(`returns valid Mac address when pass in null as network interface name`, async () => {
+        let macAddress;
         let error;
         try {
-          await Network.getMacAddressAsync();
+          macAddress = await Network.getMacAddressAsync();
         } catch (e) {
           error = e;
         }
-        t.expect(error).toBeDefined();
-        t.expect(`${error}`).toContain('undefined');
-        t.expect(`${error}`).toContain('interface');
+        t.expect(typeof error).toEqual('undefined');
+        t.expect(macAddress).toBeDefined();
+        t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
       });
     }
     if (Platform.OS === 'android') {
