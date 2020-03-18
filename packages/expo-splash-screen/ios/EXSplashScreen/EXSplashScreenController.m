@@ -10,7 +10,6 @@
 @property (nonatomic, strong) UIView *splashScreenView;
 @property (nonatomic, strong) Class rootViewClass;
 @property (nonatomic, weak) UIView *rootView;
-@property (nonatomic, strong) dispatch_queue_t queue;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
@@ -21,7 +20,6 @@
 @implementation EXSplashScreenController
 
 - (instancetype)initWithViewController:(UIViewController *)viewController
-                            resizeMode:(EXSplashScreenImageResizeMode)resizeMode
               splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
 {
   if (self = [super init]) {
@@ -29,8 +27,6 @@
     _autoHideEnabled = YES;
     _splashScreenShown = NO;
     _appContentAppeared = NO;
-    _queue = dispatch_queue_create("io.expo.splashscreen", NULL);
-    _splashScreenView = [splashScreenViewProvider createSplashScreenView:resizeMode];
   }
   return self;
 }
@@ -99,7 +95,7 @@
 {
   if (!_appContentAppeared) {
     _autoHideEnabled = YES;
-    _appContentAppeared = FALSE;
+    _appContentAppeared = NO;
     [self showWithCallback:nil];
   }
 }

@@ -70,7 +70,7 @@ class SplashScreenController(
   // endregion
 
   /**
-   * Searches for RootView that comforts to class given via [SplashScreen.show].
+   * Searches for RootView that conforms to class given via [SplashScreen.show].
    * If [rootView] is already found this method is noop.
    */
   private fun searchForRootView() {
@@ -130,7 +130,7 @@ class SplashScreenController(
   private enum class RootViewState {
     /**
      * Initial state
-     * Looking for RootView that comforts to RootView class provided via [SplashScreen.show]
+     * Looking for RootView that conforms to RootView class provided via [SplashScreen.show]
      */
     NO_ROOT_VIEW,
     /**

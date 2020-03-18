@@ -30,15 +30,10 @@ UM_EXPORT_METHOD_AS(hideAsync,
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    UIViewController* currentViewController = self.utilities.currentViewController;
-    
-    if (!currentViewController) {
-      reject(@"ERR_SPLASH_SCREEN", @"No valid ViewController.", nil);
-    }
-    
-    [[self splashScreenService] hide:currentViewController
-                     successCallback:^{ resolve(nil); }
-                     failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN", message, nil); }];
+    UIViewController *currentViewController = self.utilities.currentViewController;
+    [[self splashScreenService] hideSplashScreenFor:currentViewController
+                                    successCallback:^{ resolve(nil); }
+                                    failureCallback:^(NSString *message){ reject(@"ERR_CANNOT_HIDE", message, nil); }];
   });
 }
 
@@ -49,15 +44,10 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    UIViewController* currentViewController = self.utilities.currentViewController;
-
-    if (!currentViewController) {
-      reject(@"ERR_SPLASH_SCREEN", @"No valid ViewController.", nil);
-    }
-
-    [[self splashScreenService] preventAutoHide:currentViewController
-                                successCallback:^{ resolve(nil); }
-                                failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN", message, nil); }];
+    UIViewController *currentViewController = self.utilities.currentViewController;
+    [[self splashScreenService] preventSplashScreenAutoHideFor:currentViewController
+                                               successCallback:^{ resolve(nil); }
+                                               failureCallback:^(NSString *message){ reject(@"ERR_CANNOT_PREVENT_AUTOHIDE", message, nil); }];
   });
 }
 
@@ -73,10 +63,7 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     UIViewController* currentViewController = self.utilities.currentViewController;
-
-    if (currentViewController) {
-      [[self splashScreenService] onAppContentDidAppear:currentViewController];
-    }
+    [[self splashScreenService] onAppContentDidAppear:currentViewController];
   });
 }
 
@@ -86,26 +73,19 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     UIViewController* currentViewController = self.utilities.currentViewController;
-
-    if (currentViewController) {
-      [[self splashScreenService] onAppContentWillReload:currentViewController];
-    }
+    [[self splashScreenService] onAppContentWillReload:currentViewController];
   });
 }
 
 # pragma mark - internals
 
 /**
- * Tries to obtain singletomn module that is registered as "SplashScreen".
- * Silent agreement is that registered module comforts to "EXSplashScreenService" interface.
+ * Tries to obtain singleton module that is registered as "SplashScreen".
+ * Silent agreement is that registered module conforms to "EXSplashScreenService" protocol.
  */
-- (EXSplashScreenService * _Nullable)splashScreenService
+- (id <EXSplashScreenService>)splashScreenService
 {
-  id service = [self.moduleRegistry getSingletonModuleForName:@"SplashScreen"];
-  if (service) {
-    return (EXSplashScreenService *) service;
-  }
-  return nil;
+  return [self.moduleRegistry getSingletonModuleForName:@"SplashScreen"];
 }
 
 @end

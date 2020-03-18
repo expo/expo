@@ -4,14 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, EXSplashScreenImageResizeMode) {
-  EXSplashScreenImageResizeMode_CONTAIN = 0,
-  EXSplashScreenImageResizeMode_COVER = 1
-};
-
 @protocol EXSplashScreenViewProvider
 
-- (UIView *)createSplashScreenView:(EXSplashScreenImageResizeMode)resizeMode;
+- (UIView *)createSplashScreenView;
 
 @end
 

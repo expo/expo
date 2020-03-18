@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithViewController:(UIViewController *)viewController
-                            resizeMode:(EXSplashScreenImageResizeMode)resizeMode
               splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider;
 
 - (void)showWithCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString *message))failureCallback;

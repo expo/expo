@@ -5,7 +5,8 @@
 
 @implementation EXSplashScreenViewNativeProvider
 
-- (nonnull UIView *)createSplashScreenView:(EXSplashScreenImageResizeMode)resizeMode {
+- (nonnull UIView *)createSplashScreenView
+{
   @try {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SplashScreen" bundle:[NSBundle mainBundle]];
     UIViewController *splashScreenViewController = [storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
@@ -18,13 +19,12 @@
   @try {
     NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"SplashScreen" owner:self options:nil];
     UIView *splashScreenView = views.firstObject;
-//    splashScreenView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     return splashScreenView;
   } @catch (NSException *_) {
     UMLogInfo(@"Expo SplashScreen.xib is missing.");
   }
   
-  @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"No SplashScreen.xib or SplashScreen.storyboard is available" userInfo:nil];
+  @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work." userInfo:nil];
 }
 
 @end
