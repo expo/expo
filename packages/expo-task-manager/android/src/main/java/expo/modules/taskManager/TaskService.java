@@ -270,7 +270,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @Override
   public boolean isStartedByHeadlessLoader(String appId) {
-    return getAppLoader().isRunning(appId);
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      return appLoader.isRunning(appId);
+    }
+    return false;
   }
 
   public void handleIntent(Intent intent) {
@@ -645,8 +649,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appId) {
-    if (getAppLoader().invalidateApp(appId)) {
-      sHeadlessTaskManagers.remove(appId);
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      if (getAppLoader().invalidateApp(appId)) {
+        sHeadlessTaskManagers.remove(appId);
+      }
     }
   }
 
