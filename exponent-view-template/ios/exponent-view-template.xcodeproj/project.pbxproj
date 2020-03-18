@@ -19,6 +19,10 @@
 		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
 		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-exponent-view-template.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */; };
+		FC69699D24225B1F00450BCF /* HelpshiftCustomLocalization.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FC69699924225B1B00450BCF /* HelpshiftCustomLocalization.bundle */; };
+		FC69699E24225B1F00450BCF /* Gotham-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC69699A24225B1C00450BCF /* Gotham-Book.otf */; };
+		FC69699F24225B1F00450BCF /* Gotham-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FC69699B24225B1D00450BCF /* Gotham-Bold.otf */; };
+		FC6969A024225B1F00450BCF /* HelpshiftCustomConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC69699C24225B1F00450BCF /* HelpshiftCustomConfig.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +43,10 @@
 		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-exponent-view-template.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC69699924225B1B00450BCF /* HelpshiftCustomLocalization.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HelpshiftCustomLocalization.bundle; sourceTree = "<group>"; };
+		FC69699A24225B1C00450BCF /* Gotham-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Book.otf"; sourceTree = "<group>"; };
+		FC69699B24225B1D00450BCF /* Gotham-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Bold.otf"; sourceTree = "<group>"; };
+		FC69699C24225B1F00450BCF /* HelpshiftCustomConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = HelpshiftCustomConfig.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +118,10 @@
 				B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */,
 				B501732A1DC01252003445D9 /* EXShell.plist */,
 				B56386661DB9994300A0598C /* EXSDKVersions.plist */,
+				FC69699B24225B1D00450BCF /* Gotham-Bold.otf */,
+				FC69699A24225B1C00450BCF /* Gotham-Book.otf */,
+				FC69699C24225B1F00450BCF /* HelpshiftCustomConfig.plist */,
+				FC69699924225B1B00450BCF /* HelpshiftCustomLocalization.bundle */,
 				B563865C1DB96A5E00A0598C /* Info.plist */,
 				B563865E1DB96A5E00A0598C /* main.m */,
 			);
@@ -162,6 +174,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -180,12 +193,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC69699F24225B1F00450BCF /* Gotham-Bold.otf in Resources */,
 				B5693E911FABD46800307FA4 /* launch_background_image.png in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
 				B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */,
+				FC69699D24225B1F00450BCF /* HelpshiftCustomLocalization.bundle in Resources */,
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				B5693E921FABD46800307FA4 /* launch_icon.png in Resources */,
+				FC69699E24225B1F00450BCF /* Gotham-Book.otf in Resources */,
 				B5693E8E1FABD16A00307FA4 /* LaunchScreen.xib in Resources */,
+				FC6969A024225B1F00450BCF /* HelpshiftCustomConfig.plist in Resources */,
 				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
