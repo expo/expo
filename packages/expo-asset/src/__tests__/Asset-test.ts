@@ -56,22 +56,22 @@ describe(`source resolution with React Native`, () => {
 it(`creates assets from metadata`, () => {
   const { Asset } = require('../index');
 
-  let asset = Asset.fromMetadata(mockImageMetadata);
+  const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.hash).toBe('cafecafecafecafecafecafecafecafe');
 });
 
 it(`interns assets by hash`, () => {
   const { Asset } = require('../index');
 
-  let asset1 = Asset.fromMetadata(mockImageMetadata);
-  let asset2 = Asset.fromMetadata(mockImageMetadata);
+  const asset1 = Asset.fromMetadata(mockImageMetadata);
+  const asset2 = Asset.fromMetadata(mockImageMetadata);
   expect(asset1).toBe(asset2);
 });
 
 it(`creates assets from URIs`, () => {
   const { Asset } = require('../index');
 
-  let asset = Asset.fromURI('https://example.com/image.png');
+  const asset = Asset.fromURI('https://example.com/image.png');
   expect(asset.uri).toBe('https://example.com/image.png');
   expect(asset.type).toBe('png');
   expect(asset.hash).toBeNull();
@@ -80,23 +80,23 @@ it(`creates assets from URIs`, () => {
 it(`creates assets from data URIs`, () => {
   const { Asset } = require('../index');
 
-  let asset = Asset.fromURI('data:text/html;base64,dGVzdA%3D%3D');
+  const asset = Asset.fromURI('data:text/html;base64,dGVzdA%3D%3D');
   expect(asset.type).toBe('html');
 });
 
 it.skip(`supports non-Base64 data URIs`, () => {
   const { Asset } = require('../index');
 
-  let asset = Asset.fromURI('data:,test');
+  const asset = Asset.fromURI('data:,test');
   expect(asset.type).toBe('txt');
 });
 
 it(`interns assets by URI`, () => {
   const { Asset } = require('../index');
 
-  let uri = 'data:,Hello%2C%20World!';
-  let asset1 = Asset.fromURI(uri);
-  let asset2 = Asset.fromURI(uri);
+  const uri = 'data:,Hello%2C%20World!';
+  const asset1 = Asset.fromURI(uri);
+  const asset2 = Asset.fromURI(uri);
   expect(asset1).toBe(asset2);
 });
 
@@ -106,7 +106,7 @@ it(`creates assets from virtual modules`, () => {
   const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
   getAssetByID.mockReturnValueOnce(mockImageMetadata);
 
-  let asset = Asset.fromModule(1);
+  const asset = Asset.fromModule(1);
   expect(asset.hash).toBe('cafecafecafecafecafecafecafecafe');
 });
 
@@ -123,7 +123,7 @@ it(`downloads uncached assets`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
-  let asset = Asset.fromMetadata(mockImageMetadata);
+  const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.localUri).toBeNull();
 
   FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
@@ -141,7 +141,7 @@ it(`throws when the file's checksum does not match`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
-  let asset = Asset.fromMetadata(mockImageMetadata);
+  const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.localUri).toBeNull();
 
   FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
@@ -153,7 +153,7 @@ it(`uses the local filesystem's cache directory for downloads`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
-  let asset = Asset.fromMetadata(mockImageMetadata);
+  const asset = Asset.fromMetadata(mockImageMetadata);
   FileSystem.getInfoAsync.mockReturnValueOnce({
     exists: true,
     md5: mockImageMetadata.hash,
@@ -167,7 +167,7 @@ it(`coalesces downloads`, async () => {
   const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
-  let asset = Asset.fromMetadata(mockImageMetadata);
+  const asset = Asset.fromMetadata(mockImageMetadata);
   FileSystem.getInfoAsync.mockReturnValue({ exists: false });
   FileSystem.downloadAsync.mockReturnValue({ md5: mockImageMetadata.hash });
 
@@ -183,7 +183,7 @@ if (Platform.OS === 'web') {
       const ImageAssets = require('../ImageAssets');
       const { Asset } = require('../index');
 
-      let asset = Asset.fromMetadata(mockImageMetadata);
+      const asset = Asset.fromMetadata(mockImageMetadata);
       ImageAssets.getImageInfoAsync.mockResolvedValueOnce({
         width: 120,
         height: 180,
@@ -222,7 +222,7 @@ describe('embedding', () => {
   it(`considers embedded assets to be downloaded`, () => {
     const { Asset } = require('../index');
 
-    let asset = Asset.fromMetadata({
+    const asset = Asset.fromMetadata({
       ...mockImageMetadata,
       hash: 'test1',
       type: 'png',

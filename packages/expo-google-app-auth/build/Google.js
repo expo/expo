@@ -75,7 +75,7 @@ export async function logInAsync(config) {
     const scopes = [...new Set(requiredScopes)];
     const guid = getPlatformGUID(config);
     const clientId = `${guid}.apps.googleusercontent.com`;
-    let redirectUrl = config.redirectUrl
+    const redirectUrl = config.redirectUrl
         ? config.redirectUrl
         : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
     try {

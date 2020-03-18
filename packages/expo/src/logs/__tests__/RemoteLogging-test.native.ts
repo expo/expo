@@ -95,7 +95,7 @@ it(`continues sending logs after a serialization failure`, async () => {
 
 describe('addTransportErrorListener', () => {
   let subscription;
-  let mockListener = jest.fn();
+  const mockListener = jest.fn();
 
   beforeAll(() => {
     subscription = RemoteLogging.addTransportErrorListener(mockListener);

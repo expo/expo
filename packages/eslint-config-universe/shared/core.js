@@ -112,6 +112,7 @@ module.exports = {
     'no-with': 'warn',
     'object-shorthand': 'warn',
     'operator-linebreak': ['warn', 'after', { overrides: { '?': 'before', ':': 'before' } }],
+    'prefer-const': ['warn', { destructuring: 'all', ignoreReadBeforeAssign: true }],
     'prefer-promise-reject-errors': 'warn',
     'prefer-rest-params': 'warn',
     'prefer-spread': 'warn',

@@ -110,7 +110,7 @@ async function _subscribeUserToPushAsync(): Promise<object> {
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  let notificationIcon = (Constants.manifest.notification || {}).icon;
+  const notificationIcon = (Constants.manifest.notification || {}).icon;
   await registration.active.postMessage(
     JSON.stringify({ fromExpoWebClient: { notificationIcon } })
   );

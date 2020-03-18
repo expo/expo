@@ -30,7 +30,7 @@ function _removeTrailingSlashAndQueryString(url) {
 }
 function makeUrl(path = '', queryParams = {}) {
     let scheme = 'exp';
-    let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+    const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
     if (Constants.appOwnership === 'standalone' && manifestScheme) {
         scheme = manifestScheme;
     }
@@ -58,13 +58,13 @@ function makeUrl(path = '', queryParams = {}) {
     // merge user-provided query params with any that were already in the hostUri
     // e.g. release-channel
     let queryString = '';
-    let queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
+    const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
     if (queryStringMatchResult) {
         hostUri = queryStringMatchResult[1];
         queryString = queryStringMatchResult[2];
         let paramsFromHostUri = {};
         try {
-            let parsedParams = qs.parse(queryString);
+            const parsedParams = qs.parse(queryString);
             if (typeof parsedParams === 'object') {
                 paramsFromHostUri = parsedParams;
             }
@@ -90,9 +90,9 @@ function parse(url) {
     for (const param in parsed.query) {
         parsed.query[param] = decodeURIComponent(parsed.query[param]);
     }
-    let queryParams = parsed.query;
-    let hostUri = HOST_URI || '';
-    let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
+    const queryParams = parsed.query;
+    const hostUri = HOST_URI || '';
+    const hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
     let path = parsed.pathname || null;
     let hostname = parsed.hostname || null;
     let scheme = parsed.protocol || null;
@@ -138,7 +138,7 @@ async function parseInitialURLAsync() {
     return parse(initialUrl);
 }
 // @ts-ignore fix this...
-let newLinking = new Linking.constructor();
+const newLinking = new Linking.constructor();
 newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;

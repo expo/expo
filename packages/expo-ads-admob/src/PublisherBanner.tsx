@@ -99,7 +99,7 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
-    let additionalRequestParams: { [key: string]: string } = {
+    const additionalRequestParams: { [key: string]: string } = {
       ...this.props.additionalRequestParams,
     };
     if (!this.props.servePersonalizedAds) {

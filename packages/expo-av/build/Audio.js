@@ -13,7 +13,7 @@ const _isValueValid = (value, validValues) => {
     return validValues.filter(validValue => validValue === value).length > 0;
 };
 const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
-    for (let key in defaultAudioMode) {
+    for (const key in defaultAudioMode) {
         if (!userAudioMode.hasOwnProperty(key)) {
             userAudioMode[key] = defaultAudioMode[key];
         }

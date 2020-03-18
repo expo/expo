@@ -46,7 +46,7 @@ module.exports = function(api, options = {}) {
 };
 
 function getAliasPlugin() {
-  let aliases = {};
+  const aliases = {};
 
   if (hasModule('@expo/vector-icons')) {
     aliases['react-native-vector-icons'] = '@expo/vector-icons';

@@ -5,7 +5,7 @@ export class ManagedSessionUrlProvider {
     getDefaultReturnUrl() {
         let scheme = 'exp';
         let path = ManagedSessionUrlProvider.SESSION_PATH;
-        let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+        const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
         if (Constants.appOwnership === 'standalone' && manifestScheme) {
             scheme = manifestScheme;
         }
@@ -34,7 +34,7 @@ export class ManagedSessionUrlProvider {
         return encodeURI(`${scheme}://${hostUri}${path}`);
     }
     getStartUrl(authUrl, returnUrl) {
-        let queryString = qs.stringify({
+        const queryString = qs.stringify({
             authUrl,
             returnUrl,
         });

@@ -23,7 +23,7 @@ jest.mock('expo-constants', () => ({
 }));
 
 it(`serializes simple log messages`, async () => {
-  let result = await LogSerialization.serializeLogDataAsync(
+  const result = await LogSerialization.serializeLogDataAsync(
     ['hi', 1, true, 0, '', null, false, undefined],
     'info'
   );
@@ -32,7 +32,7 @@ it(`serializes simple log messages`, async () => {
 });
 
 it(`serializes nested objects`, async () => {
-  let result = await LogSerialization.serializeLogDataAsync(
+  const result = await LogSerialization.serializeLogDataAsync(
     [{ outer: { inner: [[], {}] } }],
     'info'
   );
@@ -41,22 +41,25 @@ it(`serializes nested objects`, async () => {
 });
 
 it(`serializes cyclic objects`, async () => {
-  let object: { [key: string]: any } = {};
+  const object: { [key: string]: any } = {};
   object.self = object;
-  let result = await LogSerialization.serializeLogDataAsync([object], 'info');
+  const result = await LogSerialization.serializeLogDataAsync([object], 'info');
   expect(result.body).toMatchSnapshot();
   expect(result.body[0]).toMatch('Circular');
   expect(result.includesStack).toBeFalsy();
 });
 
 it(`serializes functions`, async () => {
-  let result = await LogSerialization.serializeLogDataAsync([function test() {}, () => {}], 'info');
+  const result = await LogSerialization.serializeLogDataAsync(
+    [function test() {}, () => {}],
+    'info'
+  );
   expect(result.body).toEqual(['[Function test]', '[Function anonymous]']);
   expect(result.includesStack).toBeFalsy();
 });
 
 it(`serializes symbols`, async () => {
-  let result = await LogSerialization.serializeLogDataAsync(
+  const result = await LogSerialization.serializeLogDataAsync(
     [Symbol('test'), Symbol.iterator],
     'info'
   );
@@ -65,7 +68,7 @@ it(`serializes symbols`, async () => {
 });
 
 it(`serializes promises`, async () => {
-  let result = await LogSerialization.serializeLogDataAsync(
+  const result = await LogSerialization.serializeLogDataAsync(
     [Promise.resolve('test'), Promise.reject(new Error('Expected'))],
     'info'
   );
@@ -82,7 +85,7 @@ it(`serializes React elements`, async () => {
     }
   }
 
-  let result = await LogSerialization.serializeLogDataAsync([<TestComponent />], 'info');
+  const result = await LogSerialization.serializeLogDataAsync([<TestComponent />], 'info');
   expect(Array.isArray(result.body)).toBe(true);
   expect(result.includesStack).toBeFalsy();
 });
@@ -100,8 +103,8 @@ it(`serializes React components (refs)`, async () => {
     }
   }
 
-  let testRenderer = TestRenderer.create(<TestComponent />);
-  let result = await LogSerialization.serializeLogDataAsync(
+  const testRenderer = TestRenderer.create(<TestComponent />);
+  const result = await LogSerialization.serializeLogDataAsync(
     [testRenderer.root.instance.child],
     'info'
   );
@@ -112,8 +115,8 @@ it(`serializes React components (refs)`, async () => {
 
 describe('with stack trace support in Expo CLI', () => {
   it(`includes a symbolicated stack trace when logging an error`, async () => {
-    let mockError = _getMockError('Test error');
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
+    const mockError = _getMockError('Test error');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -124,8 +127,8 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`can symbolicate errors from V8`, async () => {
-    let mockError = _getMockV8Error('Test error');
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
+    const mockError = _getMockV8Error('Test error');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -136,7 +139,7 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`includes a symbolicated stack trace when warning`, async () => {
-    let result = await LogSerialization.serializeLogDataAsync(['warning message'], 'warn');
+    const result = await LogSerialization.serializeLogDataAsync(['warning message'], 'warn');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -147,7 +150,7 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`includes a symbolicated stack trace when erroring`, async () => {
-    let result = await LogSerialization.serializeLogDataAsync(['error message'], 'error');
+    const result = await LogSerialization.serializeLogDataAsync(['error message'], 'error');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -158,8 +161,8 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`uses the provided error's stack trace when erroring`, async () => {
-    let mockError = _getMockError('Test error');
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'error');
+    const mockError = _getMockError('Test error');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'error');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -169,8 +172,8 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`symbolicates unhandled promise rejections`, async () => {
-    let warningMessage = _getMockUnhandledPromiseRejection();
-    let result = await LogSerialization.serializeLogDataAsync([warningMessage], 'warn');
+    const warningMessage = _getMockUnhandledPromiseRejection();
+    const result = await LogSerialization.serializeLogDataAsync([warningMessage], 'warn');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -181,18 +184,18 @@ describe('with stack trace support in Expo CLI', () => {
   });
 
   it(`doesn't fail if the error has no stack frames`, async () => {
-    let mockError = new Error('Test error');
+    const mockError = new Error('Test error');
     mockError.stack = mockError.stack!.split('\n')[0];
 
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
     expect(result).toMatchSnapshot();
   });
 
   it(`doesn't fail if the error stack property is missing`, async () => {
-    let mockError = new Error('Test error');
+    const mockError = new Error('Test error');
     mockError.stack = undefined;
 
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'info');
     expect(result).toMatchSnapshot();
   });
 
@@ -201,8 +204,8 @@ describe('with stack trace support in Expo CLI', () => {
       throw new Error('Intentional symbolication error');
     });
 
-    let mockError = _getMockError('Test error');
-    let result = await LogSerialization.serializeLogDataAsync([mockError], 'error');
+    const mockError = _getMockError('Test error');
+    const result = await LogSerialization.serializeLogDataAsync([mockError], 'error');
     expect(symbolicateStackTrace).toHaveBeenCalledTimes(1);
 
     expect(Array.isArray(result.body)).toBe(true);
@@ -232,14 +235,14 @@ describe(`without stack trace support in Expo CLI`, () => {
   });
 
   it(`doesn't capture a stack trace`, async () => {
-    let result = await LogSerialization.serializeLogDataAsync(['oh no'], 'error');
+    const result = await LogSerialization.serializeLogDataAsync(['oh no'], 'error');
     expect(result.includesStack).toBeFalsy();
     expect(symbolicateStackTrace).not.toHaveBeenCalled();
   });
 });
 
 function _getMockError(message) {
-  let error = new Error(message);
+  const error = new Error(message);
   error.stack = `_exampleFunction@/home/test/project/App.js:125:13
 _depRunCallbacks@/home/test/project/node_modules/dep/index.js:77:45
 tryCallTwo@/home/test/project/node_modules/react-native/node_modules/promise/lib/core.js:45:5
@@ -248,8 +251,8 @@ doResolve@/home/test/project/node_modules/react-native/node_modules/promise/lib/
 }
 
 function _getMockV8Error(message) {
-  let error = new Error(message);
-  let mockStack = `
+  const error = new Error(message);
+  const mockStack = `
   at _exampleFunction (/home/test/project/App.js:125:13)
   at _depRunCallbacks (/home/test/project/node_modules/dep/index.js:77:45)
   at tryCallTwo (/home/test/project/node_modules/react-native/node_modules/promise/lib/core.js:45:5)

@@ -84,7 +84,7 @@ export async function presentFormAsync(contactId, contact, formOptions = {}) {
         throw new UnavailabilityError('Contacts', 'presentFormAsync');
     }
     if (Platform.OS === 'ios') {
-        let adjustedOptions = formOptions;
+        const adjustedOptions = formOptions;
         if (contactId) {
             if (contact) {
                 contact = undefined;

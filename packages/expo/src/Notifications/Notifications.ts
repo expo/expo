@@ -92,14 +92,14 @@ function _validateNotification(notification) {
   }
 }
 
-let ASYNC_STORAGE_PREFIX = '__expo_internal_channel_';
+const ASYNC_STORAGE_PREFIX = '__expo_internal_channel_';
 // TODO: remove this before releasing
 // this will always be `true` for SDK 28+
-let IS_USING_NEW_BINARY = typeof ExponentNotifications.createChannel === 'function';
+const IS_USING_NEW_BINARY = typeof ExponentNotifications.createChannel === 'function';
 
 async function _legacyReadChannel(id: string): Promise<Channel | null> {
   try {
-    let channelString = await AsyncStorage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
+    const channelString = await AsyncStorage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
     if (channelString) {
       return JSON.parse(channelString);
     }
@@ -114,9 +114,9 @@ function _legacyDeleteChannel(id: string): Promise<void> {
 if (Platform.OS === 'android') {
   AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
-      let keys = await AsyncStorage.getAllKeys();
+      const keys = await AsyncStorage.getAllKeys();
       if (keys && keys.length) {
-        let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
+        const filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
         await AsyncStorage.multiRemove(filteredKeys);
       }
       callback && callback();
@@ -205,7 +205,7 @@ export default {
     notification: LocalNotification
   ): Promise<LocalNotificationId> {
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
+    const nativeNotification = _processNotification(notification);
 
     if (Platform.OS !== 'android') {
       return await ExponentNotifications.presentLocalNotification(nativeNotification);
@@ -250,7 +250,7 @@ export default {
 
     // Validate and process the notification data
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
+    const nativeNotification = _processNotification(notification);
 
     // Validate `options.time`
     if (options.time) {
@@ -438,7 +438,7 @@ export default {
     }
 
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
+    const nativeNotification = _processNotification(notification);
 
     return ExponentNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
   },
@@ -455,7 +455,7 @@ export default {
     }
 
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
+    const nativeNotification = _processNotification(notification);
 
     return ExponentNotifications.scheduleNotificationWithTimer(nativeNotification, options);
   },
