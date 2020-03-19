@@ -69,16 +69,17 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('FacebookAds.NativeAd', () => {
+    const mountAndWaitFor = (child, propName = 'onAdLoaded') =>
+      originalMountAndWaitFor(child, propName, setPortalChild);
+
     let nativeAd;
+
     t.beforeAll(async () => {
       nativeAd = await mountAndWaitFor(
         <FullNativeAd adsManager={new NativeAdsManager(placementId)} />
       );
     });
     t.afterEach(async () => await cleanupPortal());
-
-    const mountAndWaitFor = (child, propName = 'onAdLoaded') =>
-      originalMountAndWaitFor(child, propName, setPortalChild);
 
     t.describe('when given a valid placementId', () => {
       t.it('nativeAd properly mounted', async () => {
