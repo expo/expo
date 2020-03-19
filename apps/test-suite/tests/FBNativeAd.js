@@ -82,7 +82,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     t.afterEach(async () => await cleanupPortal());
 
     t.describe('when given a valid placementId', () => {
-      t.it('nativeAd properly mounted', async () => {
+      t.it('nativeAd properly mounted', () => {
         t.expect(nativeAd).not.toBeNull();
         t.expect(typeof nativeAd).toEqual('object');
       });
