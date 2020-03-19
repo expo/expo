@@ -1,24 +1,29 @@
-import * as React from "react";
-import { act, create } from "react-test-renderer";
-import App from "../App";
 
-// mocks expo related configuration
-jest.mock("expo", () => ({
-  AppLoading: "AppLoading",
+import * as React from 'react';
+import { act, create } from 'react-test-renderer';
+
+import App from '../App';
+
+jest.mock('expo', () => ({
   Linking: {
-    makeUrl: () => "/"
-  }
+    makeUrl: () => '/',
+  },
+  SplashScreen: {
+    preventAutoHide: () => 'preventAutoHide',
+    hide: () => 'hide',
+  },
 }));
 
-// mocks navigation component
 jest.mock("../navigation/BottomTabNavigator", () => "BottomTabNavigator");
 
-describe("App", () => {
+describe('App', () => {
   jest.useFakeTimers();
+
   let tree;
-  it(`renders correctly`, () => {
-    act(() => {
-      tree = create(<App skipLoadingScreen/>);
+  it(`renders correctly`, async () => {
+    // act is used to prevent snapshot returning null
+    await act(async () => {
+      tree = await create(<App />);
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });

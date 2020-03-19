@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest -u --watchAll"
+    "test": "jest --watchAll"
   },
   "jest": {
     "preset": "jest-expo"
