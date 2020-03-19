@@ -20,7 +20,7 @@ export interface Calendar {
   allowsModifications: boolean;
   allowedAvailabilities: string[];
   isPrimary?: boolean; // Android
-  name?: string; // Android
+  name?: string | null; // Android
   ownerAccount?: string; // Android
   timeZone?: string; // Android
   allowedReminders?: string[]; // Android
