@@ -147,9 +147,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
 const styles = StyleSheet.create({
   bottomSheetContainer: {
     flex: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 30,
   },
   bottomSheetBackground: {
     flex: 1,
