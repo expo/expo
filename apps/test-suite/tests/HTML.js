@@ -77,7 +77,6 @@ const viewElements = {
   Main,
   Section,
   Nav,
-  BR,
   HR,
   Footer,
   Table,
@@ -110,6 +109,16 @@ export async function test(
           await mountAndWaitFor(<Element>Test contents</Element>);
         });
       }
+
+      it(`renders BR inside a P element`, async () => {
+        await mountAndWaitFor(
+          <P>
+            Test contents, line break
+            <BR />
+            and the rest of the contents
+          </P>
+        );
+      });
     });
     describe('Views', () => {
       for (const elementName of Object.keys(viewElements)) {
