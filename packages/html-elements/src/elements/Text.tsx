@@ -34,10 +34,6 @@ export const BlockQuote = forwardRef(({ style, cite, ...props }: BlockQuoteProps
   return <View {...props} style={[styles.blockQuote, style]} ref={ref} />;
 }) as ComponentType<BlockQuoteProps>;
 
-export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.br, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
-
 export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
   return <Text {...props} style={[styles.mark, style]} ref={ref} />;
 }) as ComponentType<TextProps>;
@@ -87,10 +83,6 @@ const styles = StyleSheet.create({
   },
   blockQuote: {
     marginVertical: em(1),
-  },
-  br: {
-    width: 0,
-    height: em(0.5),
   },
   s: {
     textDecorationLine: 'line-through',

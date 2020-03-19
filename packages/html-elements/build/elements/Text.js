@@ -23,9 +23,6 @@ export const Q = forwardRef(({ children, cite, style, ...props }, ref) => {
 export const BlockQuote = forwardRef(({ style, cite, ...props }, ref) => {
     return <View {...props} style={[styles.blockQuote, style]} ref={ref}/>;
 });
-export const BR = forwardRef(({ style, ...props }, ref) => {
-    return <Text {...props} style={[styles.br, style]} ref={ref}/>;
-});
 export const Mark = forwardRef(({ style, ...props }, ref) => {
     return <Text {...props} style={[styles.mark, style]} ref={ref}/>;
 });
@@ -67,10 +64,6 @@ const styles = StyleSheet.create({
     },
     blockQuote: {
         marginVertical: em(1),
-    },
-    br: {
-        width: 0,
-        height: em(0.5),
     },
     s: {
         textDecorationLine: 'line-through',
