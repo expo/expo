@@ -3,6 +3,8 @@
 @import UIKit;
 
 #import "ABI36_0_0EXDisabledDevLoadingView.h"
+#import "ABI36_0_0EXDevSettings.h"
+
 
 @implementation ABI36_0_0EXDisabledDevLoadingView {
   BOOL _isObserving;
@@ -12,14 +14,19 @@
 
 ABI36_0_0RCT_EXPORT_METHOD(hide)
 {
-  if (_isObserving) {
+ 
+  ABI36_0_0RCTDevSettings *settings = [[super bridge] devSettings];
+  BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
+  if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:hide" body:@{}];
   }
 }
 
 ABI36_0_0RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
-  if (_isObserving) {
+  ABI36_0_0RCTDevSettings *settings = [[super bridge] devSettings];
+  BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
+  if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:showMessage" body:@{@"message":message}];
   }
 }
