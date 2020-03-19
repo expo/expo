@@ -87,7 +87,7 @@ Gets the specified network interface's Mac address. On Android, it requires [`an
 
 #### Arguments (Android Only)
 
-- **interfaceName (_string_)** -- A string representing interface name (`eth0`, `wlan0`) or `null`, meaning the method should fetch the MAC address of the first available interface. (On iOS this argument is ignored.) If undefined interface name passed in, the method would reject the promise with corresponding message.
+- **interfaceName (_string | null_)** -- A string representing interface name (`eth0`, `wlan0`) or `null` (default), meaning the method should fetch the MAC address of the first available interface. (On iOS this argument is ignored.)
 
 #### Returns
 
