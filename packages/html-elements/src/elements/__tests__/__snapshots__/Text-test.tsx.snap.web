@@ -14,19 +14,6 @@ exports[`renders B 1`] = `
 </div>
 `;
 
-exports[`renders BR 1`] = `
-<div
-  className="css-text-901oao"
-  dir="auto"
-  style={
-    Object {
-      "height": "0.5em",
-      "width": "0px",
-    }
-  }
-/>
-`;
-
 exports[`renders BlockQuote 1`] = `
 <div
   className="css-view-1dbjc4n"

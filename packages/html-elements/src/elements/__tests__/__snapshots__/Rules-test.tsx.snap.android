@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders BR 1`] = `
+<Text>
+  
+
+</Text>
+`;
+
 exports[`renders HR 1`] = `
 <View
   style={

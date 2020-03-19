@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders BR 1`] = `<br />`;
+
 exports[`renders HR 1`] = `<hr />`;
