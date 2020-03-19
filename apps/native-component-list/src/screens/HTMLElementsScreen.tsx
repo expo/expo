@@ -100,6 +100,11 @@ function TextArticle() {
         Anchor
       </A>
       <P>Paragraph</P>
+      <P>
+        Lorem ipsum BR incoming
+        <BR />
+        here we are after BR
+      </P>
       <B>Bold</B>
       <Strong>Strong</Strong>
       <Mark>Mark</Mark>
