@@ -419,7 +419,7 @@ export async function test(t) {
               await retryForStatus(sound, { isBuffering: false });
               const status = await sound.getStatusAsync();
               // Android is slow and we have to take it into account when checking recording duration.
-              t.expect(status.durationMillis).toBeGreaterThan(recordingDuration * (7 / 10));
+              t.expect(status.durationMillis).toBeGreaterThan(recordingDuration * (6 / 10));
               t.expect(sound).toBeDefined();
             } catch (err) {
               error = err;

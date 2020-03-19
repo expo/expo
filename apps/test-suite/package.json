@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@expo/html-elements": "^0.0.0-alpha.5",
     "async-retry": "^1.1.4",
     "expo": "~37.0.0",
     "expo-ads-admob": "~8.1.0",
