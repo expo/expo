@@ -27,6 +27,7 @@
     _autoHideEnabled = YES;
     _splashScreenShown = NO;
     _appContentAppeared = NO;
+    _splashScreenView = [splashScreenViewProvider createSplashScreenView];
   }
   return self;
 }
