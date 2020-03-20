@@ -24,7 +24,7 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   id updateId = manifest[@"releaseId"];
   id commitTime = manifest[@"commitTime"];
   id bundleUrlString = manifest[@"bundleUrl"];
-  id assets = manifest[@"bundledAssets"];
+  id assets = manifest[@"bundledAssets"] ?: @[];
 
   id sdkVersion = manifest[@"sdkVersion"];
   id runtimeVersion = manifest[@"runtimeVersion"];
@@ -42,7 +42,7 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
   NSAssert([commitTime isKindOfClass:[NSString class]], @"commitTime should be a string");
   NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
-  NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  NSAssert([assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
