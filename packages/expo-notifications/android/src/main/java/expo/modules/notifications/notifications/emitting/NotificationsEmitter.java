@@ -3,7 +3,6 @@ package expo.modules.notifications.notifications.emitting;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
@@ -11,7 +10,7 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
 
 public class NotificationsEmitter extends ExportedModule implements NotificationListener {
   private final static String EXPORTED_NAME = "ExpoNotificationsEmitter";
@@ -50,14 +49,12 @@ public class NotificationsEmitter extends ExportedModule implements Notification
    * Callback called when {@link NotificationManager} gets notified of a new notification.
    * Emits a {@link NotificationsEmitter#NEW_MESSAGE_EVENT_NAME} event.
    *
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger
+   * @param notification Notification received
    */
   @Override
-  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
+  public void onNotificationReceived(Notification notification) {
     if (mEventEmitter != null) {
-      mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(identifier, request, trigger));
+      mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification));
     }
   }
 

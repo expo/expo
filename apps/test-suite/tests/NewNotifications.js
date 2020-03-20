@@ -657,7 +657,7 @@ export async function test(t) {
         t.expect(notifications).toContain(
           t.jasmine.objectContaining({
             identifier,
-            notification: t.jasmine.objectContaining(notification),
+            content: t.jasmine.objectContaining(notification),
             trigger: t.jasmine.objectContaining({
               repeats: false,
               value: trigger.seconds,
