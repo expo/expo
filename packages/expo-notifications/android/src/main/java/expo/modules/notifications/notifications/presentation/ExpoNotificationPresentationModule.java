@@ -42,7 +42,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
         if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
           promise.resolve(null);
         } else {
-          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          Exception e = (Exception) resultData.getSerializable(BaseNotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);
         }
       }
