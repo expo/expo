@@ -11,11 +11,13 @@ import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 
 public class NotificationsEmitter extends ExportedModule implements NotificationListener {
   private final static String EXPORTED_NAME = "ExpoNotificationsEmitter";
 
   private final static String NEW_MESSAGE_EVENT_NAME = "onDidReceiveNotification";
+  private final static String NEW_RESPONSE_EVENT_NAME = "onDidReceiveNotificationResponse";
   private final static String MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted";
 
   private NotificationManager mNotificationManager;
@@ -55,6 +57,19 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   public void onNotificationReceived(Notification notification) {
     if (mEventEmitter != null) {
       mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification));
+    }
+  }
+
+  /**
+   * Callback called when {@link NotificationManager} gets notified of a new notification response.
+   * Emits a {@link NotificationsEmitter#NEW_RESPONSE_EVENT_NAME} event.
+   *
+   * @param response Notification response received
+   */
+  @Override
+  public void onNotificationResponseReceived(NotificationResponse response) {
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response));
     }
   }
 

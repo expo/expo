@@ -3,6 +3,7 @@ package expo.modules.notifications.notifications.service;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
 /**
@@ -35,6 +36,8 @@ public class ExpoNotificationsService extends BaseNotificationsService {
    */
   protected static WeakHashMap<NotificationManager, WeakReference<NotificationManager>> sListenersReferences = new WeakHashMap<>();
 
+  protected static Collection<NotificationResponse> sPendingNotificationResponses = new ArrayList<>();
+
   /**
    * Used only by {@link NotificationManager} instances. If you look for a place to register
    * your listener, use {@link NotificationManager} singleton module.
@@ -50,6 +53,13 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     if (!sListenersReferences.containsKey(listener)) {
       WeakReference<NotificationManager> listenerReference = new WeakReference<>(listener);
       sListenersReferences.put(listener, listenerReference);
+      if (!sPendingNotificationResponses.isEmpty()) {
+        Iterator<NotificationResponse> responseIterator = sPendingNotificationResponses.iterator();
+        while (responseIterator.hasNext()) {
+          listener.onNotificationResponseReceived(responseIterator.next());
+          responseIterator.remove();
+        }
+      }
     }
   }
 
@@ -107,6 +117,18 @@ public class ExpoNotificationsService extends BaseNotificationsService {
     NotificationManagerCompat.from(this).cancelAll();
   }
 
+  @Override
+  protected void onNotificationResponseReceived(NotificationResponse response) {
+    Collection<NotificationManager> listeners = getListeners();
+    if (listeners.isEmpty()) {
+      sPendingNotificationResponses.add(response);
+    } else {
+      for (NotificationManager listener : listeners) {
+        listener.onNotificationResponseReceived(response);
+      }
+    }
+  }
+
   /**
    * Callback called when the service is supposed to present a notification.
    *
@@ -116,12 +138,12 @@ public class ExpoNotificationsService extends BaseNotificationsService {
   @Override
   protected void onNotificationPresent(expo.modules.notifications.notifications.model.Notification notification, NotificationBehavior behavior) {
     String tag = notification.getNotificationRequest().getIdentifier();
-    NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification.getNotificationRequest(), behavior));
+    NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification, behavior));
   }
 
-  protected android.app.Notification getNotification(NotificationRequest request, NotificationBehavior behavior) {
+  protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {
     return new ExpoNotificationBuilder(this)
-        .setNotificationContent(request.getContent())
+        .setNotification(notification)
         .setAllowedBehavior(behavior)
         .build();
   }
