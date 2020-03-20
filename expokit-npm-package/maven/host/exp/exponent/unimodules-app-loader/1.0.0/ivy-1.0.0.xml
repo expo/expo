@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="unimodules-app-loader" revision="1.0.0" status="integration" publication="20200311160830"/>
+  <info organisation="host.exp.exponent" module="unimodules-app-loader" revision="1.0.0" status="integration" publication="20200320110406"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>

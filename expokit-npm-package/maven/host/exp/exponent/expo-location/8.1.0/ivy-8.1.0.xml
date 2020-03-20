@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-location" revision="8.1.0" status="integration" publication="20200311160338"/>
+  <info organisation="host.exp.exponent" module="expo-location" revision="8.1.0" status="integration" publication="20200320110337"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
