@@ -66,7 +66,7 @@ dependencies {
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
 
-  api 'androidx.core:core:1.1.0'
+  api 'androidx.core:core:1.2.0'
   api 'androidx.lifecycle:lifecycle-runtime:2.2.0'
   api 'androidx.lifecycle:lifecycle-process:2.2.0'
   api 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
