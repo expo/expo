@@ -3,10 +3,14 @@ package expo.modules.notifications.notifications;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.service.ExpoNotificationsService;
 
 public class NotificationManager implements SingletonModule, expo.modules.notifications.notifications.interfaces.NotificationManager {
@@ -17,6 +21,7 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
    * is already registered and to iterate over on new token.
    */
   private WeakHashMap<NotificationListener, WeakReference<NotificationListener>> mListenerReferenceMap;
+  private Collection<NotificationResponse> mPendingNotificationResponses = new ArrayList<>();
 
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
@@ -43,6 +48,13 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
     if (!mListenerReferenceMap.containsKey(listener)) {
       WeakReference<NotificationListener> listenerReference = new WeakReference<>(listener);
       mListenerReferenceMap.put(listener, listenerReference);
+      if (!mPendingNotificationResponses.isEmpty()) {
+        Iterator<NotificationResponse> responseIterator = mPendingNotificationResponses.iterator();
+        while (responseIterator.hasNext()) {
+          listener.onNotificationResponseReceived(responseIterator.next());
+          responseIterator.remove();
+        }
+      }
     }
   }
 
@@ -69,6 +81,26 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
       NotificationListener listener = listenerReference.get();
       if (listener != null) {
         listener.onNotificationReceived(notification);
+      }
+    }
+  }
+
+  /**
+   * Used by {@link ExpoNotificationsService} to notify of new notification responses.
+   * Calls {@link NotificationListener#onNotificationResponseReceived(NotificationResponse)} on all values
+   * of {@link NotificationManager#mListenerReferenceMap}.
+   *
+   * @param response Notification response received
+   */
+  public void onNotificationResponseReceived(NotificationResponse response) {
+    if (mListenerReferenceMap.isEmpty()) {
+      mPendingNotificationResponses.add(response);
+    } else {
+      for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
+        NotificationListener listener = listenerReference.get();
+        if (listener != null) {
+          listener.onNotificationResponseReceived(response);
+        }
       }
     }
   }
