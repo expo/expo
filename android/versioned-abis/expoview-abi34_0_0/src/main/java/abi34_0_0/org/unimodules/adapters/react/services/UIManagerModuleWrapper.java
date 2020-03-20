@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
@@ -13,7 +12,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -21,12 +19,6 @@ import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
-import abi34_0_0.com.facebook.react.bridge.ReactContext;
-import abi34_0_0.com.facebook.react.modules.core.PermissionAwareActivity;
-import abi34_0_0.com.facebook.react.modules.core.PermissionListener;
-import abi34_0_0.com.facebook.react.uimanager.IllegalViewOperationException;
-import abi34_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
-import abi34_0_0.com.facebook.react.uimanager.UIManagerModule;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -36,6 +28,12 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nullable;
 
+import abi34_0_0.com.facebook.react.bridge.ReactContext;
+import abi34_0_0.com.facebook.react.modules.core.PermissionAwareActivity;
+import abi34_0_0.com.facebook.react.modules.core.PermissionListener;
+import abi34_0_0.com.facebook.react.uimanager.IllegalViewOperationException;
+import abi34_0_0.com.facebook.react.uimanager.NativeViewHierarchyManager;
+import abi34_0_0.com.facebook.react.uimanager.UIManagerModule;
 import abi34_0_0.org.unimodules.core.interfaces.ActivityEventListener;
 import abi34_0_0.org.unimodules.core.interfaces.ActivityProvider;
 import abi34_0_0.org.unimodules.core.interfaces.InternalModule;
@@ -45,14 +43,15 @@ import abi34_0_0.org.unimodules.core.interfaces.services.UIManager;
 import abi34_0_0.org.unimodules.interfaces.imageloader.ImageLoader;
 import abi34_0_0.org.unimodules.interfaces.permissions.PermissionsListener;
 import abi34_0_0.org.unimodules.interfaces.permissions.PermissionsManager;
+import androidx.annotation.NonNull;
 
 public class UIManagerModuleWrapper implements
-    ActivityProvider,
-    ImageLoader,
-    InternalModule,
-    JavaScriptContextProvider,
-    PermissionsManager,
-    UIManager {
+  ActivityProvider,
+  ImageLoader,
+  InternalModule,
+  JavaScriptContextProvider,
+  PermissionsManager,
+  UIManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, abi34_0_0.com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
   private Map<ActivityEventListener, abi34_0_0.com.facebook.react.bridge.ActivityEventListener> mActivityEventListenersMap = new WeakHashMap<>();
@@ -68,11 +67,11 @@ public class UIManagerModuleWrapper implements
   @Override
   public List<Class> getExportedInterfaces() {
     return Arrays.<Class>asList(
-        ActivityProvider.class,
-        ImageLoader.class,
-        JavaScriptContextProvider.class,
-        PermissionsManager.class,
-        UIManager.class
+      ActivityProvider.class,
+      ImageLoader.class,
+      JavaScriptContextProvider.class,
+      PermissionsManager.class,
+      UIManager.class
     );
   }
 
@@ -90,7 +89,7 @@ public class UIManagerModuleWrapper implements
               block.resolve(tClass.cast(view));
             } else {
               block.reject(new IllegalStateException(
-                  "Expected view to be of " + tClass + "; found " + view.getClass() + " instead"));
+                "Expected view to be of " + tClass + "; found " + view.getClass() + " instead"));
             }
           } catch (Exception e) {
             block.reject(e);
@@ -243,49 +242,60 @@ public class UIManagerModuleWrapper implements
 
     ImagePipeline imagePipeline = Fresco.getImagePipeline();
     DataSource<CloseableReference<CloseableImage>> dataSource =
-        imagePipeline.fetchDecodedImage(imageRequest, mReactContext);
+      imagePipeline.fetchDecodedImage(imageRequest, mReactContext);
 
     dataSource.subscribe(
-        new BaseBitmapDataSubscriber() {
-          @Override
-          public void onNewResultImpl(@Nullable Bitmap bitmap) {
-            if (bitmap == null) {
-              resultListener.onFailure(new Exception("Loaded bitmap is null"));
-              return;
-            }
-            resultListener.onSuccess(bitmap);
+      new BaseBitmapDataSubscriber() {
+        @Override
+        public void onNewResultImpl(@Nullable Bitmap bitmap) {
+          if (bitmap == null) {
+            resultListener.onFailure(new Exception("Loaded bitmap is null"));
+            return;
           }
+          resultListener.onSuccess(bitmap);
+        }
 
-          @Override
-          public void onFailureImpl(DataSource dataSource) {
-            resultListener.onFailure(dataSource.getFailureCause());
-          }
-        },
-        AsyncTask.THREAD_POOL_EXECUTOR);
+        @Override
+        public void onFailureImpl(DataSource dataSource) {
+          resultListener.onFailure(dataSource.getFailureCause());
+        }
+      },
+      AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @Override
   public void loadImageForManipulationFromURL(@NonNull String url, final ResultListener resultListener) {
-    Glide.with(getContext())
-        .asBitmap()
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
-        .skipMemoryCache(true)
-        .load(url)
-        .into(new SimpleTarget<Bitmap>() {
-          @Override
-          public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-            resultListener.onSuccess(resource);
-          }
+    String normalizedUrl = normalizeAssetsUrl(url);
 
-          @Override
-          public void onLoadFailed(@Nullable Drawable errorDrawable) {
-            resultListener.onFailure(new Exception("Loading bitmap failed"));
-          }
-        });
+    Glide.with(getContext())
+      .asBitmap()
+      .diskCacheStrategy(DiskCacheStrategy.NONE)
+      .skipMemoryCache(true)
+      .load(normalizedUrl)
+      .into(new SimpleTarget<Bitmap>() {
+        @Override
+        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+          resultListener.onSuccess(resource);
+        }
+
+        @Override
+        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+          resultListener.onFailure(new Exception("Loading bitmap failed"));
+        }
+      });
   }
 
   @Override
   public Activity getCurrentActivity() {
     return getContext().getCurrentActivity();
+  }
+
+  private String normalizeAssetsUrl(String url) {
+    String actualUrl = url;
+    if (url.startsWith("asset:///")) {
+      String[] split = url.split("/");
+      actualUrl = "file:///android_asset/" + split[split.length - 1];
+    }
+    return actualUrl;
   }
 }
