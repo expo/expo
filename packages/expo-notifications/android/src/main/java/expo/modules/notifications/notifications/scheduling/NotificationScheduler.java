@@ -13,10 +13,16 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
+import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
@@ -42,7 +48,16 @@ public class NotificationScheduler extends ExportedModule {
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
         if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
-          promise.resolve(resultData.getParcelableArrayList(ExpoNotificationSchedulerService.NOTIFICATIONS_KEY));
+          Collection<NotificationRequest> requests = resultData.getParcelableArrayList(ExpoNotificationSchedulerService.NOTIFICATION_REQUESTS_KEY);
+          if (requests == null) {
+            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.");
+          } else {
+            Collection<Bundle> serializedRequests = new ArrayList<>(requests.size());
+            for (NotificationRequest request : requests) {
+              serializedRequests.add(NotificationSerializer.toBundle(request));
+            }
+            promise.resolve(serializedRequests);
+          }
         } else {
           Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e);
@@ -52,10 +67,12 @@ public class NotificationScheduler extends ExportedModule {
   }
 
   @ExpoMethod
-  public void scheduleNotificationAsync(final String identifier, Map notificationSpec, ReadableArguments triggerParams, final Promise promise) {
+  public void scheduleNotificationAsync(final String identifier, Map notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
     try {
-      JSONObject notificationRequest = new JSONObject(notificationSpec);
-      ExpoNotificationSchedulerService.enqueueSchedule(getContext(), identifier, notificationRequest, triggerFromParams(triggerParams), new ResultReceiver(HANDLER) {
+      JSONObject payload = new JSONObject(notificationContentMap);
+      NotificationContent content = new JSONNotificationContentBuilder().setPayload(payload).build();
+      NotificationRequest request = new NotificationRequest(identifier, content, triggerFromParams(triggerParams));
+      ExpoNotificationSchedulerService.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
           super.onReceiveResult(resultCode, resultData);

@@ -1,4 +1,4 @@
-package expo.modules.notifications.notifications.triggers;
+package expo.modules.notifications.notifications.model.triggers;
 
 import android.os.Parcel;
 

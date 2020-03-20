@@ -5,11 +5,10 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
+import expo.modules.notifications.notifications.model.NotificationContent;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class BadgeSettingNotificationBuilder extends ExpoNotificationBuilder {
-  private static final String BADGE_KEY = "badge";
-
   public static final String EXTRAS_BADGE_KEY = "badge";
 
   public BadgeSettingNotificationBuilder(Context context) {
@@ -46,10 +45,22 @@ public class BadgeSettingNotificationBuilder extends ExpoNotificationBuilder {
   }
 
   private boolean shouldSetBadge() {
-    return getNotificationRequest().has(BADGE_KEY);
+    boolean behaviorAllowsBadge = getNotificationBehavior() == null || getNotificationBehavior().shouldSetBadge();
+
+    NotificationContent content = getNotificationContent();
+    boolean contentDefinesBadge = content.getBadgeCount() != null;
+
+    return behaviorAllowsBadge && contentDefinesBadge;
   }
 
   private int getBadgeCount() {
-    return getNotificationRequest().optInt(BADGE_KEY);
+    Number badgeCount = getNotificationContent().getBadgeCount();
+    if (badgeCount == null) {
+      // We should never end up here, since getBadgeCount is guarded by
+      // shouldSetBadge, which checks if badgeCount is null, but in case
+      // this is ever called, let's not crash the application.
+      return 0;
+    }
+    return badgeCount.intValue();
   }
 }

@@ -2,7 +2,7 @@ package expo.modules.notifications.notifications.interfaces;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 
-import org.json.JSONObject;
+import expo.modules.notifications.notifications.model.Notification;
 
 /**
  * Interface used to register in {@link NotificationManager}
@@ -12,11 +12,9 @@ public interface NotificationListener {
   /**
    * Callback called when new notification is received.
    *
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger
+   * @param notification Notification received
    */
-  void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger);
+  void onNotificationReceived(Notification notification);
 
   /**
    * Callback called when some notifications are dropped.
