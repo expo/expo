@@ -196,6 +196,10 @@ const styles = StyleSheet.create({
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
+<pre style="border: solid 2px #aa0000;">
+<b>It is advised to use <a href="https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command">expo-splash-screen</a> installation command. This command takes care of native installation process.</b>
+</pre>
+
 ### Add the package to your dependencies
 
 ```
