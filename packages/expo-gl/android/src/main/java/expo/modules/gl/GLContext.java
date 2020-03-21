@@ -278,9 +278,14 @@ public class GLContext {
       FileOutputStream output = null;
       Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
 
-      if (mFormat != null && mFormat.equals("png")) {
-        compressFormat = Bitmap.CompressFormat.PNG;
-        extension = ".png";
+      if (mFormat != null) {
+        if (mFormat.equals("png")) {
+          compressFormat = Bitmap.CompressFormat.PNG;
+          extension = ".png";
+        } else if (mFormat.equals("webp")) {
+          compressFormat = Bitmap.CompressFormat.WEBP;
+          extension = ".webp";
+        }
       }
 
       Context context = mContext.get();
