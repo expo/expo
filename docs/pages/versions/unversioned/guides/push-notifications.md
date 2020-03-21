@@ -80,6 +80,7 @@ Push notifications have to come from somewhere, and that somewhere is probably y
 - [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
 - [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
 - [expo-server-sdk-dotnet](https://github.com/glyphard/expo-server-sdk-dotnet) for dotnet. Maintained by community developers.
+- [expo-server-sdk-java](https://github.com/jav/expo-server-sdk-java) for Java. Maintained by community developers.
 
 Check out the source if you would like to implement it in another language.
 
