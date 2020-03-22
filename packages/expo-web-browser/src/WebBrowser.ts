@@ -149,15 +149,14 @@ let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
 // returns to active
 let _onWebBrowserCloseAndroid: null | (() => void) = null;
 
-// Store previous app state to check whether the listener has ever been attached
-let _previousAppState: null | string = AppState.currentState;
-
+// If the initial AppState.currentState is null, we assume that the first call to
+// AppState#change event is not actually triggered by a real change,
+// is triggered instead by the bridge capturing the current state
+// (https://facebook.github.io/react-native/docs/appstate#basic-usage)
+let _isAppStateAvailable: boolean = AppState.currentState !== null;
 function _onAppStateChangeAndroid(state: AppStateStatus) {
-  // if _previousAppState is null, we assume that the first call to
-  // AppState#change event is not actually triggered by a real change
-  // (https://facebook.github.io/react-native/docs/appstate#basic-usage)
-  if (_previousAppState === null) {
-    _previousAppState = state;
+  if (!_isAppStateAvailable) {
+    _isAppStateAvailable = true;
     return;
   }
 
