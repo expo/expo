@@ -15,7 +15,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
-## Instalation in bare iOS React Native project
+## Installation in bare iOS React Native project
 
 Apart from following [those steps](#installation-in-bare-react-native-projects), make sure your `AppDelegate` extends `UMAppDelegateWrapper` as shown [here](https://gist.github.com/mczernek/a62413ca517cfd5dac015f5527dafef0).
 
