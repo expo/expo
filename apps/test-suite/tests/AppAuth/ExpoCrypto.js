@@ -8,9 +8,6 @@ export async function test({ describe, it, expect, jasmine }) {
     it('d', () => expect(encodeBase64NoWrap('d')).toBe('ZA=='));
     it('da', () => expect(encodeBase64NoWrap('da')).toBe('ZGE='));
     it('dan', () => expect(encodeBase64NoWrap('dan')).toBe('ZGFu'));
-    it('ZA==', () => expect(encodeBase64NoWrap('ZA==')).toBe('d'));
-    it('ZGE=', () => expect(encodeBase64NoWrap('ZGE=')).toBe('da'));
-    it('ZGFu', () => expect(encodeBase64NoWrap('ZGFu')).toBe('dan'));
   });
 
   // Based on the AppAuth-JS tests to ensure the same results are created using unimodules.
