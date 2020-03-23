@@ -45,6 +45,17 @@ const imageTests: ImageTestGroup = {
       },
     },
     {
+      name: `Explicit size`,
+      props: {
+        defaultStyle: {},
+        style: {
+          backgroundColor: tintColor,
+          width: 100,
+          height: 30,
+        },
+      },
+    },
+    {
       name: 'Blur radius',
       props: ({ range }: ImageTestPropsFnInput) => ({
         blurRadius: range(0, 60),
