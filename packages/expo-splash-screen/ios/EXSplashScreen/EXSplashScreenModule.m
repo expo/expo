@@ -32,7 +32,7 @@ UM_EXPORT_METHOD_AS(hideAsync,
     UM_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = self.utilities.currentViewController;
     [[self splashScreenService] hideSplashScreenFor:currentViewController
-                                    successCallback:^{ resolve(nil); }
+                                    successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
                                     failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_HIDE", message, nil); }];
   });
 }
@@ -46,7 +46,7 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
     UM_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = self.utilities.currentViewController;
     [[self splashScreenService] preventSplashScreenAutoHideFor:currentViewController
-                                               successCallback:^{ resolve(nil); }
+                                               successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
                                                failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_PREVENT_AUTOHIDE", message, nil); }];
   });
 }

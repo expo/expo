@@ -2,20 +2,20 @@ import { UnavailabilityError } from '@unimodules/core';
 import ExpoSplashScreen from './ExpoSplashScreen';
 /**
  * Makes the native splash screen stay visible until `SplashScreen.hideAsync()` is called.
- * It has to be celled before any view is rendered.
+ * It has to be called before any view is rendered.
  *
  * @example
  * ```typescript
  * // top level component
  *
  * SplashScreen.preventAutoHideAsync()
- *  .catch(error => console.log(`SplashScreen.preventAutoHideAsync error: ${error}`));
+ *  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
+ *  .catch(console.warn); // it's good to explicitly catch and inspect any error
  *
  * class App extends React.Component {
  *   ...
  *   // Hide SplashScreen once your app content is ready to be displayed.
- *   SplashScreen.hideAsync()
- *    .catch(error => console.log(`SplashScreen.hideAsync error: ${error}`));
+ *   await SplashScreen.hideAsync()
  *   ...
  * }
  * ```
@@ -37,13 +37,13 @@ export async function hideAsync() {
  */
 export function hide() {
     console.warn('SplashScreen.hide() is deprecated in favour of SplashScreen.hideAsync()');
-    return hideAsync();
+    hideAsync();
 }
 /**
  * @deprecated
  */
 export function preventAutoHide() {
     console.warn('SplashScreen.preventAutoHide() is deprecated in favour of SplashScreen.preventAutoHideAsync()');
-    return preventAutoHideAsync();
+    preventAutoHideAsync();
 }
 //# sourceMappingURL=SplashScreen.js.map

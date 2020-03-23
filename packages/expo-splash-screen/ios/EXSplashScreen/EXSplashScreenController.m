@@ -52,25 +52,30 @@
   });
 }
 
-- (void)preventAutoHideWithCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
+- (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
   if (!_autoHideEnabled) {
-    return failureCallback(@"Native SplashScreen autohiding is already prevented.");
+    return successCallback(NO);
   }
+
+  if (!_splashScreenShown) {
+    return failureCallback(@"Native splash screen is already hidden. Call this method before rendering any view.");
+  }
+
   _autoHideEnabled = NO;
-  successCallback();
+  successCallback(YES);
 }
 
-- (void)hideWithCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
+- (void)hideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
   if (!_splashScreenShown) {
-    return failureCallback(@"Native SplashScreen is already hidden.");
+    return successCallback(NO);
   }
   
   [self hideWithCallback:successCallback];
 }
 
-- (void)hideWithCallback:(nullable void(^)(void))successCallback
+- (void)hideWithCallback:(nullable void(^)(BOOL))successCallback
 {
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -79,7 +84,7 @@
     self.splashScreenShown = NO;
     self.autoHideEnabled = YES;
     if (successCallback) {
-      successCallback();
+      successCallback(YES);
     }
   });
 }

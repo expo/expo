@@ -1,30 +1,30 @@
 /**
  * Makes the native splash screen stay visible until `SplashScreen.hideAsync()` is called.
- * It has to be celled before any view is rendered.
+ * It has to be called before any view is rendered.
  *
  * @example
  * ```typescript
  * // top level component
  *
  * SplashScreen.preventAutoHideAsync()
- *  .catch(error => console.log(`SplashScreen.preventAutoHideAsync error: ${error}`));
+ *  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
+ *  .catch(console.warn); // it's good to explicitly catch and inspect any error
  *
  * class App extends React.Component {
  *   ...
  *   // Hide SplashScreen once your app content is ready to be displayed.
- *   SplashScreen.hideAsync()
- *    .catch(error => console.log(`SplashScreen.hideAsync error: ${error}`));
+ *   await SplashScreen.hideAsync()
  *   ...
  * }
  * ```
  */
-export declare function preventAutoHideAsync(): Promise<any>;
-export declare function hideAsync(): Promise<any>;
+export declare function preventAutoHideAsync(): Promise<boolean>;
+export declare function hideAsync(): Promise<boolean>;
 /**
  * @deprecated
  */
-export declare function hide(): Promise<any>;
+export declare function hide(): void;
 /**
  * @deprecated
  */
-export declare function preventAutoHide(): Promise<any>;
+export declare function preventAutoHide(): void;

@@ -10,13 +10,14 @@ import java.lang.ref.WeakReference
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
 class SplashScreenController(
-  activity: Activity,
-  resizeMode: SplashScreenImageResizeMode,
-  private val rootViewClass: Class<*>,
-  splashScreenResourcesProvider: SplashScreenResourcesProvider
+    activity: Activity,
+    resizeMode: SplashScreenImageResizeMode,
+    private val rootViewClass: Class<*>,
+    splashScreenResourcesProvider: SplashScreenResourcesProvider
 ) {
   private val weakActivity = WeakReference(activity)
-  private val contentView: ViewGroup = activity.findViewById(android.R.id.content) ?: throw NoContentViewException()
+  private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
+      ?: throw NoContentViewException()
   private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenResourcesProvider)
   private val handler = Handler()
 
@@ -27,7 +28,7 @@ class SplashScreenController(
 
   // region public lifecycle
 
-  fun showSplashScreen(successCallback: () -> Unit = Noop) {
+  fun showSplashScreen(successCallback: () -> Unit = {}) {
     weakActivity.get()?.runOnUiThread {
       contentView.addView(splashScreenView)
       splashScreenShown = true
@@ -36,21 +37,28 @@ class SplashScreenController(
     }
   }
 
-  fun preventAutoHide(successCallback: () -> Unit, failureCallback: (reason: String) -> Unit) {
+  fun preventAutoHide(
+      successCallback: (hasEffect: Boolean) -> Unit,
+      failureCallback: (reason: String) -> Unit
+  ) {
     if (!autoHideEnabled) {
-      return failureCallback("Native splash screen autohiding is already prevented.")
+      return successCallback(false)
+    }
+
+    if (!splashScreenShown) {
+      return failureCallback("Native splash screen is already hidden. Call this method before rendering any view.")
     }
 
     autoHideEnabled = false
-    successCallback()
+    successCallback(true)
   }
 
   fun hideSplashScreen(
-      successCallback: () -> Unit = Noop,
-      failureCallback: (reason: String) -> Unit = Noop
+      successCallback: (hasEffect: Boolean) -> Unit = {},
+      failureCallback: (reason: String) -> Unit = {}
   ) {
     if (!splashScreenShown) {
-      return failureCallback("Native splash screen is already hidden.")
+      return successCallback(false)
     }
 
     // activity SHOULD be present at this point - if it's not, it means that application is already dead
@@ -63,7 +71,7 @@ class SplashScreenController(
       contentView.removeView(splashScreenView)
       autoHideEnabled = true
       splashScreenShown = false
-      successCallback()
+      successCallback(true)
     }
   }
 
@@ -119,9 +127,4 @@ class SplashScreenController(
       }
     })
   }
-}
-
-object Noop : () -> Unit, (String) -> Unit {
-  override fun invoke() {}
-  override fun invoke(reason: String) {}
 }

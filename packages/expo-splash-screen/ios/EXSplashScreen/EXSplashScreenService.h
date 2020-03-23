@@ -32,14 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
  * Hides SplashScreen for given viewController.
  */
 - (void)hideSplashScreenFor:(UIViewController *)viewController
-            successCallback:(void (^)(void))successCallback
+            successCallback:(void (^)(BOOL hasEffect))successCallback
             failureCallback:(void (^)(NSString *message))failureCallback;
 
 /**
  * Prevents SplashScreen from default autohiding.
  */
 - (void)preventSplashScreenAutoHideFor:(UIViewController *)viewController
-                       successCallback:(void (^)(void))successCallback
+                       successCallback:(void (^)(BOOL hasEffect))successCallback
                        failureCallback:(void (^)(NSString *message))failureCallback;
 
 /**

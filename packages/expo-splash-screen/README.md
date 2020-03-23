@@ -70,8 +70,8 @@ Preventing default autohiding might come in handy if your application needs to p
 
 #### Returns
 
-A `Promise` that resolves when preventing autohiding succeeded.
-`Promise` rejection most likely means that native splash screen cannot be prevented from autohiding (it's already hidden at the moment of calling this method or the splash screen is already prevented from autohiding (subsequent call to this method)).
+A `Promise` that resolves to `true` when preventing autohiding succeeded and to `false` if the native splash screen is already prevented from autohiding (subsequent call to this method).
+`Promise` rejection most likely means that native splash screen cannot be prevented from autohiding (it's already hidden at the moment of calling this method).
 
 ### `SplashScreen.hideAsync()`
 
@@ -79,8 +79,7 @@ Hides the native splash screen. Works only if native splash screen has been prev
 
 #### Returns
 
-A `Promise` that resolves once the splash screen becomes hidden.
-`Promise` rejection most likely means that native splash screen is already hidden (either by previously called `hideAsync` or not calling `preventAutoHideAsync` in the first place).
+A `Promise` that resolves to `true` once the splash screen becomes hidden and to `false` is the splash screen is already hidden.
 
 ## 🗒 Examples
 
@@ -93,18 +92,14 @@ import * as SplashScreen from 'expo-splash-screen';
 
 // Prevent native splash screen from autohiding before App component declaration
 SplashScreen.preventAutoHideAsync()
-  .then(() => console.log('SplashScreen.preventAutoHideAsync() succeeded'))
+  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
   .catch(console.warn); // it's good to explicitly catch and inspect any error 
 
 export default class App extends React.Component {
   componentDidMount() {
     // Hides native splash screen after 2s
     setTimeout(async () => {
-      try {
-        await SplashScreen.hideAsync();
-      } catch (e) {
-        console.warn(e); // it's good to explicitly catch and inspect any error
-      }
+      await SplashScreen.hideAsync();
     }, 2000);
   }
 
@@ -161,11 +156,7 @@ export default class App extends React.Component {
     await downloadAssets(...);
 
     this.setState({ appIsReady: true }, async () => {
-      try {
-        await SplashScreen.hideAsync();
-      } catch (e) {
-        console.warn(e);
-      }
+      await SplashScreen.hideAsync();
     });
   }
 

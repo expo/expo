@@ -49,12 +49,10 @@ object SplashScreen: SingletonModule {
    * @param successCallback Callback to be called once SplashScreen could be successfully prevented from autohinding.
    * @param failureCallback Callback to be called upon failure in preventing SplashScreen from autohiding.
    */
-  @JvmStatic
-  @JvmOverloads
   fun preventAutoHide(
     activity: Activity,
-    successCallback: () -> Unit = {},
-    failureCallback: (reason: String) -> Unit = {}
+    successCallback: (hasEffect: Boolean) -> Unit,
+    failureCallback: (reason: String) -> Unit
   ) {
     if (!controllers.containsKey(activity)) {
       return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")
@@ -68,12 +66,10 @@ object SplashScreen: SingletonModule {
    * @param successCallback Callback to be called once SplashScreen is removed from view hierarchy.
    * @param failureCallback Callback to be called upon failure in hiding SplashScreen.
    */
-  @JvmStatic
-  @JvmOverloads
   fun hide(
     activity: Activity,
-    successCallback: () -> Unit = {},
-    failureCallback: (reason: String) -> Unit = {}
+    successCallback: (hasEffect: Boolean) -> Unit,
+    failureCallback: (reason: String) -> Unit
   ) {
     if (!controllers.containsKey(activity)) {
       return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")

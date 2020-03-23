@@ -34,7 +34,7 @@ class SplashScreenModule(context: Context) : ExportedModule(context) {
     }
     SplashScreen.preventAutoHide(
       activity,
-      { promise.resolve(null) },
+      { hasEffect -> promise.resolve(hasEffect) },
       { m -> promise.reject(ERROR_TAG, m) }
     )
   }
@@ -48,7 +48,7 @@ class SplashScreenModule(context: Context) : ExportedModule(context) {
     }
     SplashScreen.hide(
       activity,
-      { promise.resolve(null) },
+      { hasEffect -> promise.resolve(hasEffect) },
       { m -> promise.reject(ERROR_TAG, m) }
     )
   }

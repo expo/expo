@@ -11,25 +11,25 @@ import ExpoSplashScreen from './ExpoSplashScreen';
  * // top level component
  *
  * SplashScreen.preventAutoHideAsync()
- *  .catch(error => console.log(`SplashScreen.preventAutoHideAsync error: ${error}`));
+ *  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
+ *  .catch(console.warn); // it's good to explicitly catch and inspect any error
  *
  * class App extends React.Component {
  *   ...
  *   // Hide SplashScreen once your app content is ready to be displayed.
- *   SplashScreen.hideAsync()
- *    .catch(error => console.log(`SplashScreen.hideAsync error: ${error}`));
+ *   await SplashScreen.hideAsync()
  *   ...
  * }
  * ```
  */
-export async function preventAutoHideAsync() {
+export async function preventAutoHideAsync(): Promise<boolean> {
   if (!ExpoSplashScreen.preventAutoHideAsync) {
     throw new UnavailabilityError('expo-splash-screen', 'preventAutoHideAsync');
   }
   return await ExpoSplashScreen.preventAutoHideAsync();
 }
 
-export async function hideAsync() {
+export async function hideAsync(): Promise<boolean> {
   if (!ExpoSplashScreen.hideAsync) {
     throw new UnavailabilityError('expo-splash-screen', 'hideAsync');
   }
