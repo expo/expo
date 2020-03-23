@@ -8,7 +8,21 @@ export interface ImageProps extends AccessibilityProps {
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
     onError?: (error: NativeSyntheticEvent<ImageErrorEventData>) => void;
+    onLoadEnd?: () => void;
 }
-export default class Image extends React.Component<ImageProps> {
+interface ImageState {
+    onLoad: ImageProps['onLoad'];
+    onError: ImageProps['onError'];
+}
+export default class Image extends React.Component<ImageProps, ImageState> {
+    static getDerivedStateFromProps(props: ImageProps): {
+        onLoad: ((event: NativeSyntheticEvent<ImageLoadEventData>) => void) | undefined;
+        onError: ((error: NativeSyntheticEvent<ImageErrorEventData>) => void) | undefined;
+    };
+    state: {
+        onLoad: undefined;
+        onError: undefined;
+    };
     render(): JSX.Element;
 }
+export {};
