@@ -10,4 +10,4 @@
 
 ### 🐛 Bug fixes
 
-- Fix WebBrowser sending `dismiss` before opening ([#6743](https://github.com/expo/expo/pull/6743) by [@LucaColonnello](https://github.com/LucaColonnello))
+- Fix `WebBrowser` sending `dismiss` before opening. ([#6743](https://github.com/expo/expo/pull/6743) by [@LucaColonnello](https://github.com/LucaColonnello))
