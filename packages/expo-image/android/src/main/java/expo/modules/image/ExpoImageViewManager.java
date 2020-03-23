@@ -59,7 +59,7 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @NonNull
   @Override
   public ExpoImageView createViewInstance(@NonNull ThemedReactContext context) {
-    return new ExpoImageView(context, mRequestManager, mProgressInterceptor, mResponseInterceptor);
+    return new ExpoImageView(context, mRequestManager, mProgressInterceptor);
   }
 
   @Override
