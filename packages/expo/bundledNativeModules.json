@@ -2,7 +2,7 @@
   "@expo/vector-icons": "^10.0.0",
   "@react-native-community/netinfo": "5.5.0",
   "@unimodules/core": "~5.1.0",
-  "@unimodules/react-native-adapter": "~5.1.0",
+  "@unimodules/react-native-adapter": "~5.1.1",
   "expo-ads-admob": "~8.1.0",
   "expo-ads-facebook": "~8.1.0",
   "expo-analytics-amplitude": "~8.1.0",
