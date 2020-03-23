@@ -20,7 +20,6 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import expo.modules.image.events.ImageErrorEvent;
-import expo.modules.image.events.ImageLoadEndEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
 import expo.modules.image.events.ImageProgressEvent;

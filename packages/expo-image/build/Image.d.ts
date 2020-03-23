@@ -8,7 +8,6 @@ export interface ImageProps extends AccessibilityProps {
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
     onError?: (error: NativeSyntheticEvent<ImageErrorEventData>) => void;
-    onLoadEnd?: () => void;
 }
 export default class Image extends React.Component<ImageProps> {
     render(): JSX.Element;

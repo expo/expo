@@ -14,7 +14,6 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.image.events.ImageErrorEvent;
-import expo.modules.image.events.ImageLoadEndEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
 import expo.modules.image.events.ImageProgressEvent;
@@ -45,7 +44,6 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
         .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
         .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
         .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
-        .put(ImageLoadEndEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEndEvent.EVENT_NAME))
         .build();
   }
 

@@ -102,10 +102,6 @@ static NSString * const sourceUriKey = @"uri";
         }
       });
     }
-
-    if (strongSelf.onLoadEnd) {
-      strongSelf.onLoadEnd(@{});
-    }
   };
 }
 

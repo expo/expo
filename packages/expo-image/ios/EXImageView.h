@@ -17,7 +17,6 @@ typedef NS_ENUM(NSInteger, EXImageCacheTypeEnum) {
 @property (nonatomic, copy) RCTDirectEventBlock onProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onError;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
-@property (nonatomic, copy) RCTDirectEventBlock onLoadEnd;
 
 - (void)setSource:(NSDictionary *)sourceMap;
 
