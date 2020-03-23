@@ -44,7 +44,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
                                                                                      splashScreenViewProvider:splashScreenViewProvider];
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
   [[self.splashScreenControllers objectForKey:viewController] showWithCallback:successCallback
-                                                           failureCallback:failureCallback];
+                                                               failureCallback:failureCallback];
 }
 
 - (void)preventSplashScreenAutoHideFor:(UIViewController *)viewController
@@ -56,7 +56,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   }
   
   return [[self.splashScreenControllers objectForKey:viewController] preventAutoHideWithCallback:successCallback
-                                                                             failureCallback:failureCallback];
+                                                                                 failureCallback:failureCallback];
 }
 
 - (void)hideSplashScreenFor:(UIViewController *)viewController

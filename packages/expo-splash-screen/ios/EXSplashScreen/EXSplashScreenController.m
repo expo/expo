@@ -43,7 +43,7 @@
 {
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     [self.viewController.view addSubview:self.splashScreenView];
     self.splashScreenShown = YES;
     if (successCallback) {
@@ -57,7 +57,7 @@
   if (!_autoHideEnabled) {
     return failureCallback(@"Native SplashScreen autohiding is already prevented.");
   }
-  self.autoHideEnabled = NO;
+  _autoHideEnabled = NO;
   successCallback();
 }
 
@@ -74,7 +74,7 @@
 {
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     [self.splashScreenView removeFromSuperview];
     self.splashScreenShown = NO;
     self.autoHideEnabled = YES;

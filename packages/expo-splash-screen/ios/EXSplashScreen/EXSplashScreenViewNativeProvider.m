@@ -7,24 +7,36 @@
 
 - (nonnull UIView *)createSplashScreenView
 {
+  UIStoryboard *storyboard;
   @try {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"SplashScreen" bundle:[NSBundle mainBundle]];
-    UIViewController *splashScreenViewController = [storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
-    UIView *splashScreenView = splashScreenViewController.view;
-    return splashScreenView;
+    storyboard = [UIStoryboard storyboardWithName:@"SplashScreen" bundle:[NSBundle mainBundle]];
   } @catch (NSException *_) {
-    UMLogInfo(@"Expo SplashScreen.storyboard is missing.");
+    UMLogInfo(@"'SplashScreen.storyboard' file is missing. Fallbacking to 'SplashScreen.xib' file.");
+  }
+  if (storyboard) {
+    @try {
+      UIViewController *splashScreenViewController = [storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
+      UIView *splashScreenView = splashScreenViewController.view;
+      return splashScreenView;
+    } @catch (NSException *_) {
+      @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN" reason:@"'SplashScreen.storyboard' does not contain ViewController named 'SplashScreenViewController'. Add correctly named ViewController to 'SplashScreen.storyboard' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
+    }
   }
   
+  NSArray *views;
   @try {
-    NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"SplashScreen" owner:self options:nil];
-    UIView *splashScreenView = views.firstObject;
-    return splashScreenView;
+    views = [[NSBundle mainBundle] loadNibNamed:@"SplashScreen" owner:self options:nil];
   } @catch (NSException *_) {
-    UMLogInfo(@"Expo SplashScreen.xib is missing.");
+    UMLogInfo(@"'SplashScreen.xib' file is missing - 'expo-splash-screen' would not work as expected.");
+  }
+  if (views) {
+    if (!views.firstObject) {
+      @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN" reason:@"'SplashScreen.xib' does not contain any views. Add a view to the 'SplashScreen.xib' or create 'SplashScreen.storyboard' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
+    }
+    return views.firstObject;
   }
   
-  @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work." userInfo:nil];
+  @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
 }
 
 @end

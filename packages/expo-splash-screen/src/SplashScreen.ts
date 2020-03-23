@@ -4,7 +4,7 @@ import ExpoSplashScreen from './ExpoSplashScreen';
 
 /**
  * Makes the native splash screen stay visible until `SplashScreen.hideAsync()` is called.
- * It has to be celled before any view is rendered.
+ * It has to be called before any view is rendered.
  *
  * @example
  * ```typescript
@@ -41,7 +41,7 @@ export async function hideAsync() {
  */
 export function hide() {
   console.warn('SplashScreen.hide() is deprecated in favour of SplashScreen.hideAsync()');
-  return hideAsync();
+  hideAsync();
 }
 
 /**
@@ -51,5 +51,5 @@ export function preventAutoHide() {
   console.warn(
     'SplashScreen.preventAutoHide() is deprecated in favour of SplashScreen.preventAutoHideAsync()'
   );
-  return preventAutoHideAsync();
+  preventAutoHideAsync();
 }

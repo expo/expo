@@ -13,14 +13,13 @@ class SplashScreenController(
   activity: Activity,
   resizeMode: SplashScreenImageResizeMode,
   private val rootViewClass: Class<*>,
-  splashScreenConfigurator: SplashScreenConfigurator
+  splashScreenResourcesProvider: SplashScreenResourcesProvider
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content) ?: throw NoContentViewException()
-  private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenConfigurator)
+  private var splashScreenView: View = SplashScreenView(activity, resizeMode, splashScreenResourcesProvider)
   private val handler = Handler()
 
-  private var rootViewState = RootViewState.NO_ROOT_VIEW
   private var autoHideEnabled = true
   private var splashScreenShown = false
 
@@ -54,12 +53,13 @@ class SplashScreenController(
       return failureCallback("Native splash screen is already hidden.")
     }
 
+    // activity SHOULD be present at this point - if it's not, it means that application is already dead
     val activity = weakActivity.get()
-    if (activity?.isFinishing == true || activity?.isDestroyed == true) {
-      return failureCallback("Activity is not operable.")
+    if (activity == null || activity.isFinishing || activity.isDestroyed) {
+      return failureCallback("Cannot hide native splash screen on activity that is already destroyed (application is already closed).")
     }
 
-    weakActivity.get()?.runOnUiThread {
+    activity.runOnUiThread {
       contentView.removeView(splashScreenView)
       autoHideEnabled = true
       splashScreenShown = false
@@ -96,9 +96,7 @@ class SplashScreenController(
 
   private fun handleRootView(view: ViewGroup) {
     rootView = view
-    rootViewState = RootViewState.ROOT_VIEW_NO_CHILDREN
     if ((rootView?.childCount ?: 0) > 0) {
-      rootViewState = RootViewState.ROOT_VIEW_HAS_CHILDREN
       if (autoHideEnabled) {
         hideSplashScreen()
       }
@@ -107,7 +105,6 @@ class SplashScreenController(
       override fun onChildViewRemoved(parent: View, child: View) {
         // TODO: ensure mechanism for detecting reloading view hierarchy works (reload button)
         if (rootView?.childCount == 0) {
-          rootViewState = RootViewState.ROOT_VIEW_NO_CHILDREN
           showSplashScreen()
         }
       }
@@ -115,33 +112,12 @@ class SplashScreenController(
       override fun onChildViewAdded(parent: View, child: View) {
         // react only to first child
         if (rootView?.childCount == 1) {
-          rootViewState = RootViewState.ROOT_VIEW_HAS_CHILDREN
           if (autoHideEnabled) {
             hideSplashScreen()
           }
         }
       }
     })
-  }
-
-  /**
-   * Indicates state of the root view that SplashScreen is operating on.
-   */
-  private enum class RootViewState {
-    /**
-     * Initial state
-     * Looking for RootView that conforms to RootView class provided via [SplashScreen.show]
-     */
-    NO_ROOT_VIEW,
-    /**
-     * SplashScreen is shown.
-     */
-    ROOT_VIEW_NO_CHILDREN,
-    /**
-     * SplashScreen is hidden unless autoHiding is disabled.
-     * Additionally SplashScreen would listen for the number of children in rootView.
-     */
-    ROOT_VIEW_HAS_CHILDREN
   }
 }
 

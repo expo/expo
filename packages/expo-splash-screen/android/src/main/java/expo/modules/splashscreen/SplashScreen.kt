@@ -19,27 +19,27 @@ object SplashScreen: SingletonModule {
    * @param activity                 Target Activity for SplashScreen to be mounted in.
    * @param resizeMode               SplashScreen imageView resizeMode.
    * @param rootViewClass            Class of View that would be monitored for children occurence (autohiding feature).
-   * @param splashScreenConfigurator
+   * @param splashScreenResourcesProvider
    * @param successCallback          Callback to be called once SplashScreen is mounted in view hierarchy.
    * @param failureCallback          Callback to be called once SplashScreen cannot be mounted.
-   * @throws [NoContentViewException] when [SplashScreen.show] is called before [Activity.setContentView] (when no ContentView is present for given activity).
+   * @throws [expo.modules.splashscreen.exceptions.NoContentViewException] when [SplashScreen.show] is called before [Activity.setContentView] (when no ContentView is present for given activity).
    */
   @JvmStatic
   @JvmOverloads
   fun show(
-    activity: Activity,
-    resizeMode: SplashScreenImageResizeMode,
-    rootViewClass: Class<*>,
-    splashScreenConfigurator: SplashScreenConfigurator = ResourcesBasedSplashScreenConfigurator(),
-    successCallback: () -> Unit = {},
-    failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
+      activity: Activity,
+      resizeMode: SplashScreenImageResizeMode,
+      rootViewClass: Class<*>,
+      splashScreenResourcesProvider: SplashScreenResourcesProvider = NativeResourcesBasedSplashScreenResourcesProvider(),
+      successCallback: () -> Unit = {},
+      failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
     // SplashScreen.show can only be called once per activity
     if (controllers.containsKey(activity)) {
       return failureCallback("'SplashScreen.show' has already been called for this activity.")
     }
 
-    val controller = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenConfigurator)
+    val controller = SplashScreenController(activity, resizeMode, rootViewClass, splashScreenResourcesProvider)
     controllers[activity] = controller
     controller.showSplashScreen(successCallback)
   }
@@ -57,7 +57,7 @@ object SplashScreen: SingletonModule {
     failureCallback: (reason: String) -> Unit = {}
   ) {
     if (!controllers.containsKey(activity)) {
-      return failureCallback("No Native SplashScreen registered for provided activity. First call 'SplashScreen.show' for this activity.")
+      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")
     }
 
     controllers[activity]?.preventAutoHide(successCallback, failureCallback)
@@ -76,7 +76,7 @@ object SplashScreen: SingletonModule {
     failureCallback: (reason: String) -> Unit = {}
   ) {
     if (!controllers.containsKey(activity)) {
-      return failureCallback("No Native SplashScreen registered for provided activity. First call 'SplashScreen.show' for this activity.")
+      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")
     }
 
     controllers[activity]?.hideSplashScreen(successCallback, failureCallback)

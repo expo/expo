@@ -18,9 +18,9 @@
 
 ## 🚀 Features
 
-### Build-in splash screen image resize modes
+### Built-in splash screen image resize modes
 
-`expo-splash-screen` is shipped with built-in feature for taking care of proper displaying your splash screen image. You can use following resize modes to obtain behavior as if using React Native `<Image>` component's resizeMode style.
+`expo-splash-screen` is shipped with built-in feature for taking care of proper displaying your splash screen image. You can use following the resize modes to obtain behavior as if using React Native `<Image>` component's `resizeMode` style.
 
 #### `CONTAIN` resize mode
 
@@ -40,13 +40,16 @@ Scale the image uniformly (maintain the image's aspect ratio) so that both dimen
 
 #### `NATIVE` resize mode
 
-Android only.
+> **Android only.**
+
 Using this resize mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up.
-Android (unlike iOS) does not support stretching the provided image during launching phase, so the application will present the given image centered on the screen at it's original dimensions.
+Android (unlike iOS) does not support stretching of the provided image during launching phase, so the application will present the given image centered on the screen at its original dimensions.
 
 | Android                                                   |
 |-----------------------------------------------------------|
 | <img src="./assets/demo-android-native.gif" height="350" /> |
+
+> Animation above present one of [known issues](#native-mode-pushes-splash-image-up-a-little-bit)
 
 Selecting this resize mode requires some more work to be done in native configuration.
 Please take a look at [`res/drawable/splashscreen.xml`](#resdrawablesplashscreenxml) section and [`res/drawable/splashscreen_background.png`](#resdrawablesplashscreen_backgroundpng) section.
@@ -57,7 +60,7 @@ Please take a look at [`res/drawable/splashscreen.xml`](#resdrawablesplashscreen
 import * as SplashScreen from 'expo-splash-screen';
 ```
 
-The native splash screen that is controlled via this modules autohides once ReactNative-controlled view hierarchy is mounted. That means that upon first `render` of you application that returns any renderable view component native splash screen will hide. This default behavior can be prevented by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) and later on [`SplashScreen.hideAsync()`](#splashscreenhideasync). 
+The native splash screen that is controlled via this modules autohides once ReactNative-controlled view hierarchy is mounted. That means that upon the first `render` of your application returning some renderable view component native splash screen will hide. This default behavior can be prevented by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) and later on [`SplashScreen.hideAsync()`](#splashscreenhideasync).
 
 ### `SplashScreen.preventAutoHideAsync()`
 
@@ -67,7 +70,7 @@ Preventing default autohiding might come in handy if your application needs to p
 
 #### Returns
 
-A `Promise` that resolves when preventing autohiding makes sense.
+A `Promise` that resolves when preventing autohiding succeeded.
 `Promise` rejection most likely means that native splash screen cannot be prevented from autohiding (it's already hidden at the moment of calling this method or the splash screen is already prevented from autohiding (subsequent call to this method)).
 
 ### `SplashScreen.hideAsync()`
@@ -76,8 +79,8 @@ Hides the native splash screen. Works only if native splash screen has been prev
 
 #### Returns
 
-A `Promise` that resolves when `hideAsync` call makes any sense.
-`Promise` rejections most likely means that native splash screen is already hidden (either by previously called `hideAsync` or not calling `preventAutoHideAsync` in the first place).
+A `Promise` that resolves once the splash screen becomes hidden.
+`Promise` rejection most likely means that native splash screen is already hidden (either by previously called `hideAsync` or not calling `preventAutoHideAsync` in the first place).
 
 ## 🗒 Examples
 
@@ -91,7 +94,7 @@ import * as SplashScreen from 'expo-splash-screen';
 // Prevent native splash screen from autohiding before App component declaration
 SplashScreen.preventAutoHideAsync()
   .then(() => console.log('SplashScreen.preventAutoHideAsync() succeeded'))
-  .catch(console.warn); // it's good to catch and inspect any error 
+  .catch(console.warn); // it's good to explicitly catch and inspect any error 
 
 export default class App extends React.Component {
   componentDidMount() {
@@ -100,7 +103,7 @@ export default class App extends React.Component {
       try {
         await SplashScreen.hideAsync();
       } catch (e) {
-        console.warn(e); // it's good to catch and inspect any error
+        console.warn(e); // it's good to explicitly catch and inspect any error
       }
     }, 2000);
   }
@@ -196,7 +199,7 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-Managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects are not supported by this unimodule at this moment. In managed Expo project please fallback to `Expo.SplashScreen` module that is shipped with `expo` module.
+[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects are not supported by this unimodule at this moment. In managed Expo project please fallback to `Expo.SplashScreen` module that is shipped with `expo` module.
 
 ## 🖥 Installation in bare React Native projects
 
@@ -212,15 +215,15 @@ expo install expo-splash-screen
 
 Run `pod install` in the `ios` directory after installing the package.
 
-To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) you have to provide either `SplashScreen.storyboard` file or `SplashScreen.xib` file and configure your XCode project accordingly.
+To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) you have to provide either `SplashScreen.storyboard` file or `SplashScreen.xib` file and configure your Xcode project accordingly.
 
-Below guide presents how to configure your project in XCode to use single image file as a splash screen with usage of `.storyboard` filetype (configuration for `.xib` filetype is analogues).
+The guide below presents how to configure your project in Xcode to use single image file as a splash screen using a `.storyboard` file (configuration for `.xib` filetype is analogous).
 
 #### `Images.xcassets`
 
-First you need to provide the image file that would serve as a splash screen.
+First you need to add the image file that would serve as a splash screen to native project's resources.
 
-1. In your XCode project open `Images.xcassets` file.
+1. In your Xcode project open the `.xcassets` (often named `Images.xcassets` or `Assets.xcassets`) file.
 2. In content panel add `New image set` and name it `SplashScreen`.
 3. Provide splash screen image you've prepared (you have to provide it in three different scales).
 
@@ -228,17 +231,17 @@ First you need to provide the image file that would serve as a splash screen.
 
 #### `SplashScreen.storyboard`
 
-This is an actual splash screen definition and would used by the system to render your splash screen.
+This is the actual splash screen definition and would be used by the system to render your splash screen.
 
-1. Create `SplashScreen.storyboard` file.
-2. Add `View Controller` to newly created `.storyboard` file:
+1. Create a `SplashScreen.storyboard` file.
+2. Add a `View Controller` to the newly created `.storyboard` file:
     - open `Library` (`+` button on the top-right),
     - find `View Controller` element,
     - drag-and-drop it to the `.storyboard` file.
 
 <img src="./assets/configuration-ios-addViewControllerToStoryboard.png" height="350" />
 
-3. Add `Image View` to `View Controller`:
+3. Add an `Image View` to the `View Controller`:
     - first remove other `View` element from `View Controller`,
     - open `Library` (`+` button on the top-right),
     - find `Image View` element,
@@ -260,11 +263,11 @@ This is an actual splash screen definition and would used by the system to rende
 
 <img src="./assets/configuration-ios-configureImageView.png" height="350" />
 
-6. Configure `Background` of `Image View`:
+6. Configure `Background` of the `Image View`:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - configure `Background` parameter:
-        - To provide `#RRGGBB` value you need to select `Custom` option and in the `Colors Popup` that appeared you need to navigate to the second tab and choose `RGB Sliders` from dropdown select.
+        - To enter a `#RRGGBB` value you need to select `Custom` option and in the `Colors Popup` that appeared you need to navigate to the second tab and choose `RGB Sliders` from dropdown select.
 
 <img src="./assets/configuration-ios-selectBackgroundColor.png" height="350" />
 
@@ -283,7 +286,7 @@ This is the way your image would be presented on the screen.
 
 #### Launch Screen File
 
-Newly created `SplashScreen.storyboard` needs to be marked as `Launch Screen File` in your XCode project to be presented from the very beginning of you application launch.
+Newly created `SplashScreen.storyboard` needs to be marked as `Launch Screen File` in your Xcode project to be presented from the very beginning of your application launch.
 
 1. Select your project in `Project Navigator`
 2. Select your project name from `TARGETS` panel and navigate to `General` tab.
@@ -294,13 +297,13 @@ Newly created `SplashScreen.storyboard` needs to be marked as `Launch Screen Fil
 
 ### 🤖 Configure Android
 
-To achieve fully-native splash screen behavior `expo-splash-screen` needs to be hooked into native view hierarchy and consume some resources that have to placed under `/android/app/src/res` directory.
+To achieve fully-native splash screen behavior `expo-splash-screen` needs to be hooked into native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.
 
 #### `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
 
 This native method is used to hook SplashScreen into native view hierarchy that is attached to the provided activity.
 
-You can use this method to parametrize how splash screen view will be presented. Pass one of `SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}` as second argument to do so.
+You can use this method to customize how splash screen view will be presented. Pass one of `SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}` as second argument to do so.
 
 #### `MainActivity.{java,kt}`
 
@@ -327,9 +330,82 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
+
+#### `res/drawable/splashscreen_background.png`
+
+You have to provide splash screen image and place it under `res/drawable` directory.
+This image will be loaded as soon as view Android mounts your application's native view hierarchy.
+
+##### `NATIVE` mode adjustments
+
+If you've selected `SplashScreenImageResizeMode.NATIVE` mode, you need to do a few additional steps.
+
+In your application's `res` directory you might want to have a number of `drawable-X` sub-directories (where `X` is the different DPI for different devices). They store different versions of images that are picked based on the device's DPI (for more information please see [this official Android docs](https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp)).
+
+To achieve proper scaling of your splash screen image on every device you should have following directories:
+- `res/drawable-mdpi` - scale 1x - resources for medium-density (mdpi) screens (~160dpi). (This is the baseline density.)
+- `res/drawable-hdpi` - scale 1.5x - resources for high-density (hdpi) screens (~240dpi).
+- `res/drawable-xhdpi` - scale 2x - resources for extra-high-density (xhdpi) screens (~320dpi).
+- `res/drawable-xxhdpi` - scale 3x - resources for extra-extra-high-density (xxhdpi) screens (~480dpi).
+- `res/drawable-xxxhdpi` - scale 4x - resources for extra-extra-extra-high-density (xxxhdpi) uses (~640dpi).
+
+Each of directories mentioned above should contain the same `splashscreen_image.png` file, but with different resolution (pay attention to scale factors).
+
+
+#### `res/values/colors.xml`
+
+File containing colors that are reused across your application on native level.
+Update the file with the following content or create one if missing:
+
+```diff
+<resources>
++ <color name="splashscreen_background">#AABBCC</color> <!-- #AARRGGBB or #RRGGBB format -->
+  <!-- Other colors defined for your application -->
+</resources>
+```
+
+
+#### `res/drawable/splashscreen.xml`
+
+File containing description how splash screen view should be drawn by the Android system.
+Create the file with the following content:
+
+```diff
++ <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
++   <item android:drawable="@color/splashscreen_background"/>
++ </layer-list>
+```
+
+##### `NATIVE` mode adjustments
+
+If you've selected `SplashScreenImageResizeMode.NATIVE` mode, you should add:
+
+```diff
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/splashscreen_background"/>
++ <item>
++   <bitmap android:gravity="center" android:src="@drawable/splashscreen_image"/>
++ </item>
+</layer-list>
+```
+
+
+#### `res/values/styles.xml`
+
+Locate your main activity theme in `/android/app/src/res/values/styles.xml` or create one if missing.
+
+```diff
+  <!-- Main activity theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
++   <item name="android:windowBackground">@drawable/splashscreen</item> <!-- this line instructs the system to use 'splashscreen.xml' as a background of the whole application -->
+    <!-- Other style properties -->
+  </style>
+```
+
+
 #### `AndroidManifest.xml`
 
-Adjust your application main `AndroidManifest.xml` to contain `android:theme` property pointing to the style that contains splash screen configuration:
+Adjust your application's main `AndroidManifest.xml` to contain `android:theme` property pointing to the style that contains splash screen configuration:
 
 ```diff
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -353,74 +429,6 @@ Adjust your application main `AndroidManifest.xml` to contain `android:theme` pr
 
 ```
 
-#### `res/values/styles.xml`
-
-Locate your main activity theme in `/android/app/src/res/values/styles.xml` or create one if missing.
-
-```diff
-  <!-- Main activity theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-+   <item name="android:windowBackground">@drawable/splashscreen</item> <!-- this line instructs the system to use 'splashscreen.xml' as a background of the whole application -->
-    <!-- Other style properties -->
-  </style>
-```
-
-#### `res/drawable/splashscreen.xml`
-
-File containing description how splash screen view should be drawn by the Android system.
-Create the file with the following content:
-
-```diff
-+ <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-+   <item android:drawable="@color/splashscreen_background"/>
-+ </layer-list>
-```
-
-##### `NATIVE` mode adjustments
-
-If you've selected `SplashScreenImageResizeMode.NATIVE` mode, you have to add the followings:
-
-```diff
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:drawable="@color/splashscreen_background"/>
-+ <item>
-+   <bitmap android:gravity="center" android:src="@drawable/splashscreen_image"/>
-+ </item>
-</layer-list>
-```
-
-
-#### `res/values/colors.xml`
-
-File containing colors that are reused across your application on native level.
-Update the file with the following content or create one if missing:
-
-```diff
-<resources>
-+ <color name="splashscreen_background">#AABBCC</color> <!-- #AARRGGBB or #RRGGBB format -->
-  <!-- Other colors defined for your application -->
-</resources>
-```
-
-#### `res/drawable/splashscreen_background.png`
-
-You have to provide splash screen image and place it under `res/drawable` directory.
-This image will be loaded as soon as view Android mounts your application's native view hierarchy.
-
-##### `NATIVE` mode adjustments
-
-If you've selected `SplashScreenImageResizeMode.NATIVE` mode, you will have to do a few additional steps.
-
-In your application's `res` directory you might want to have number of `drawable-X` sub-directories (where `X` is the different DPI for different devices). These store your properly scaled images that are selected depending on the device's DPI (for more information please see [this official Android docs](https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp)).
-
-To achieve proper scaling of your splash screen image on every device you should have following directories:
-- `res/drawable-mdpi` - scale 1x - resources for medium-density (mdpi) screens (~160dpi). (This is the baseline density.)
-- `res/drawable-hdpi` - scale 1.5x - resources for high-density (hdpi) screens (~240dpi).
-- `res/drawable-xhdpi` - scale 2x - resources for extra-high-density (xhdpi) screens (~320dpi).
-- `res/drawable-xxhdpi` - scale 3x - resources for extra-extra-high-density (xxhdpi) screens (~480dpi).
-- `res/drawable-xxxhdpi` - scale 4x - resources for extra-extra-extra-high-density (xxxhdpi) uses (~640dpi).
-
-Each of directories mentioned above should contain the same `splashscreen_image.png` file, but with different resolution (pay attention to scale factors).
 
 ## 👏 Contributing
 
@@ -430,16 +438,16 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 
 ### iOS caching
 
-Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However,the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
+Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However, the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
 
-### NATIVE mode pushes splash image up a little bit
+### `NATIVE` mode pushes splash image up a little bit
 
-See `NATIVE` mode preview above.
-This one will be addressed ASAP.
+See [`NATIVE`](#native-resize-mode) mode preview above.
+> We are aware of this issue and unfortunately haven't been able to provide a solution as of yet. This is on our immediate roadmap...
 
 ## 🏅 Hall Of Fame
 
-This module is based on a solid work from (many thank for that 👏):
+This module is based on a solid work from (many thanks for that 👏):
 - [react-native-splash-screen](https://github.com/crazycodeboy/react-native-splash-screen)
 - [react-native-bootsplash](https://github.com/zoontek/react-native-bootsplash)
 - [react-native-make](https://github.com/bamlab/react-native-make)

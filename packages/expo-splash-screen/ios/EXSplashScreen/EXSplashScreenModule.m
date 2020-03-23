@@ -33,7 +33,7 @@ UM_EXPORT_METHOD_AS(hideAsync,
     UIViewController *currentViewController = self.utilities.currentViewController;
     [[self splashScreenService] hideSplashScreenFor:currentViewController
                                     successCallback:^{ resolve(nil); }
-                                    failureCallback:^(NSString *message){ reject(@"ERR_CANNOT_HIDE", message, nil); }];
+                                    failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_HIDE", message, nil); }];
   });
 }
 
@@ -47,7 +47,7 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
     UIViewController *currentViewController = self.utilities.currentViewController;
     [[self splashScreenService] preventSplashScreenAutoHideFor:currentViewController
                                                successCallback:^{ resolve(nil); }
-                                               failureCallback:^(NSString *message){ reject(@"ERR_CANNOT_PREVENT_AUTOHIDE", message, nil); }];
+                                               failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_PREVENT_AUTOHIDE", message, nil); }];
   });
 }
 
@@ -83,7 +83,7 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
  * Tries to obtain singleton module that is registered as "SplashScreen".
  * Silent agreement is that registered module conforms to "EXSplashScreenService" protocol.
  */
-- (id <EXSplashScreenService>)splashScreenService
+- (id<EXSplashScreenService>)splashScreenService
 {
   return [self.moduleRegistry getSingletonModuleForName:@"SplashScreen"];
 }
