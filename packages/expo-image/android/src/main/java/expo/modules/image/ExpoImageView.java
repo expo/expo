@@ -2,47 +2,30 @@ package expo.modules.image;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.network.ProgressListener;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import java.lang.ref.WeakReference;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import expo.modules.image.events.ImageErrorEvent;
-import expo.modules.image.events.ImageLoadEvent;
-import expo.modules.image.events.ImageLoadStartEvent;
-import expo.modules.image.events.ImageProgressEvent;
+import expo.modules.image.events.ImageLoadEventsManager;
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
 
 @SuppressLint("ViewConstructor")
-public class ExpoImageView extends AppCompatImageView implements ProgressListener {
+public class ExpoImageView extends AppCompatImageView {
   private static final String SOURCE_URI_KEY = "uri";
 
   private OkHttpClientProgressInterceptor mProgressInterceptor;
-  private Target<BitmapFactory.Options> mBitmapOptionsTarget;
-  private RequestListener<Drawable> mRequestListener;
   private RequestManager mRequestManager;
   private RCTEventEmitter mEventEmitter;
 
   private ReadableMap mSourceMap;
   private GlideUrl mLoadedSource;
-  private DataSource mDataSource;
-  private BitmapFactory.Options mBitmapOptions;
 
   public ExpoImageView(ReactContext context, RequestManager requestManager, OkHttpClientProgressInterceptor progressInterceptor) {
     super(context);
@@ -50,8 +33,6 @@ public class ExpoImageView extends AppCompatImageView implements ProgressListene
     mEventEmitter = context.getJSModule(RCTEventEmitter.class);
     mRequestManager = requestManager;
     mProgressInterceptor = progressInterceptor;
-    mRequestListener = createRequestListener();
-    mBitmapOptionsTarget = createBitmapOptionsTarget();
 
     // For now let's set scale type to FIT_XY
     // to make behavior same on all platforms.
@@ -71,16 +52,17 @@ public class ExpoImageView extends AppCompatImageView implements ProgressListene
       mLoadedSource = null;
     } else if (!sourceToLoad.equals(mLoadedSource)) {
       mLoadedSource = sourceToLoad;
-      onLoadStart();
-      mProgressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), this);
+      ImageLoadEventsManager eventsManager = new ImageLoadEventsManager(getId(), mEventEmitter);
+      mProgressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager);
+      eventsManager.onLoadStarted();
       mRequestManager
           .load(sourceToLoad)
-          .listener(mRequestListener)
+          .listener(eventsManager)
           .into(this);
       mRequestManager
           .as(BitmapFactory.Options.class)
           .load(sourceToLoad)
-          .into(mBitmapOptionsTarget);
+          .into(eventsManager);
     }
   }
 
@@ -95,85 +77,5 @@ public class ExpoImageView extends AppCompatImageView implements ProgressListene
     }
 
     return new GlideUrl(sourceMap.getString(SOURCE_URI_KEY));
-  }
-
-  public void onLoadStart() {
-    mDataSource = null;
-    mBitmapOptions = null;
-    if (mEventEmitter != null) {
-      new ImageLoadStartEvent(getId()).dispatch(mEventEmitter);
-    }
-  }
-
-  @Override
-  public void onProgress(long bytesWritten, long contentLength, boolean done) {
-    if (mEventEmitter != null) {
-      new ImageProgressEvent(getId(), bytesWritten, contentLength, done).dispatch(mEventEmitter);
-    }
-  }
-
-  public void onLoadFailed(@Nullable GlideException e) {
-    if (mEventEmitter != null) {
-      new ImageErrorEvent(getId(), e).dispatch(mEventEmitter);
-    }
-  }
-
-  public void onDrawableReady(DataSource dataSource) {
-    mDataSource = dataSource;
-    onResourceReady();
-  }
-
-  public void onBitmapFactoryOptionsReady(BitmapFactory.Options options) {
-    mBitmapOptions = options;
-    onResourceReady();
-  }
-
-  protected void onResourceReady() {
-    if (mEventEmitter != null && mBitmapOptions != null && mDataSource != null) {
-      new ImageLoadEvent(getId(), mLoadedSource, mDataSource, mBitmapOptions).dispatch(mEventEmitter);
-    }
-  }
-
-  // Glide's parts
-
-  private RequestListener<Drawable> createRequestListener() {
-    final WeakReference<ExpoImageView> weakThis = new WeakReference<>(this);
-    return new RequestListener<Drawable>() {
-      @Override
-      public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-        ExpoImageView view = weakThis.get();
-        if (view != null) {
-          view.onLoadFailed(e);
-        }
-        return false;
-      }
-
-      @Override
-      public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-        ExpoImageView view = weakThis.get();
-        if (view != null) {
-          view.onDrawableReady(dataSource);
-        }
-        return false;
-      }
-    };
-  }
-
-  private Target<BitmapFactory.Options> createBitmapOptionsTarget() {
-    final WeakReference<ExpoImageView> weakThis = new WeakReference<>(this);
-    return new CustomTarget<BitmapFactory.Options>() {
-      @Override
-      public void onResourceReady(@NonNull BitmapFactory.Options resource, @Nullable Transition<? super BitmapFactory.Options> transition) {
-        ExpoImageView view = weakThis.get();
-        if (view != null) {
-          view.onBitmapFactoryOptionsReady(resource);
-        }
-      }
-
-      @Override
-      public void onLoadCleared(@Nullable Drawable placeholder) {
-        // do nothing
-      }
-    };
   }
 }
