@@ -25,31 +25,23 @@ import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
 import expo.modules.image.events.ImageProgressEvent;
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
-import expo.modules.image.okhttp.OkHttpClientResponseInterceptor;
-import expo.modules.image.okhttp.ResponseListener;
-import okhttp3.MediaType;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 @SuppressLint("ViewConstructor")
-public class ExpoImageView extends AppCompatImageView implements ResponseListener, ProgressListener {
+public class ExpoImageView extends AppCompatImageView implements ProgressListener {
   private static final String SOURCE_URI_KEY = "uri";
 
   private OkHttpClientProgressInterceptor mProgressInterceptor;
-  private OkHttpClientResponseInterceptor mResponseInterceptor;
   private RequestManager mRequestManager;
   private ReadableMap mSourceMap;
   private GlideUrl mLoadedSource;
-  private MediaType mMediaType;
   private RCTEventEmitter mEventEmitter;
 
-  public ExpoImageView(ReactContext context, RequestManager requestManager, OkHttpClientProgressInterceptor progressInterceptor, OkHttpClientResponseInterceptor responseInterceptor) {
+  public ExpoImageView(ReactContext context, RequestManager requestManager, OkHttpClientProgressInterceptor progressInterceptor) {
     super(context);
 
     mEventEmitter = context.getJSModule(RCTEventEmitter.class);
     mRequestManager = requestManager;
     mProgressInterceptor = progressInterceptor;
-    mResponseInterceptor = responseInterceptor;
 
     // For now let's set scale type to FIT_XY
     // to make behavior same on all platforms.
@@ -69,11 +61,9 @@ public class ExpoImageView extends AppCompatImageView implements ResponseListene
       mLoadedSource = null;
     } else if (!sourceToLoad.equals(mLoadedSource)) {
       mLoadedSource = sourceToLoad;
-      mMediaType = null;
       if (mEventEmitter != null) {
         new ImageLoadStartEvent(getId()).dispatch(mEventEmitter);
       }
-      mResponseInterceptor.registerResponseListener(sourceToLoad.toStringUrl(), this);
       mProgressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), this);
       mRequestManager
           .load(sourceToLoad)
@@ -93,14 +83,6 @@ public class ExpoImageView extends AppCompatImageView implements ResponseListene
     }
 
     return new GlideUrl(sourceMap.getString(SOURCE_URI_KEY));
-  }
-
-  @Override
-  public void onResponse(String requestUrl, Response response) {
-    ResponseBody body = response.body();
-    if (body != null && requestUrl.equals(mLoadedSource.toStringUrl())) {
-      mMediaType = body.contentType();
-    }
   }
 
   @Override
