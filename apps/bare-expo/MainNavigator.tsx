@@ -70,7 +70,7 @@ const MainNavigator = createBottomTabNavigator(routes, {
 });
 
 const createApp = Platform.select({
-  web: input => createBrowserApp(input, { history: 'hash' }),
+  web: input => createBrowserApp(input, {}),
   default: input => createAppContainer(input),
 });
 
