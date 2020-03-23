@@ -1,14 +1,18 @@
 import React from 'react';
 import {
   AccessibilityProps,
+  ImageResizeMode,
   ImageSourcePropType,
   ImageStyle,
   NativeSyntheticEvent,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+
+const DEFAULT_RESIZE_MODE = 'cover';
 
 export interface ImageProps extends AccessibilityProps {
   // On one hand we want to pass resolved source to native module.
@@ -16,6 +20,7 @@ export interface ImageProps extends AccessibilityProps {
   // function, so we can't use it there. So we pass the unresolved source
   // to "native components" and they decide whether to resolve the value
   // or not.
+  resizeMode?: ImageResizeMode;
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
 
@@ -59,6 +64,19 @@ export default class Image extends React.Component<ImageProps, ImageState> {
   };
 
   render() {
-    return <ExpoImage {...this.props} onLoad={this.state.onLoad} onError={this.state.onError} />;
+    const { style, resizeMode: resizeModeProp, ...restProps } = this.props;
+
+    const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten([style]) || {};
+    const resizeMode = resizeModeProp ?? resizeModeStyle ?? DEFAULT_RESIZE_MODE;
+
+    return (
+      <ExpoImage
+        {...restProps}
+        style={restStyle}
+        resizeMode={resizeMode}
+        onLoad={this.state.onLoad}
+        onError={this.state.onError}
+      />
+    );
   }
 }

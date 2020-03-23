@@ -2,16 +2,39 @@
 
 #import <expo-image/EXImageView.h>
 #import <React/RCTConvert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTUIManager.h>
 
 static NSString * const sourceUriKey = @"uri";
+static NSString * const sourceScaleKey = @"scale";
+static NSString * const sourceWidthKey = @"width";
+static NSString * const sourceHeightKey = @"height";
 
 @interface EXImageView ()
 
-@property (nonatomic, strong) NSURL *imageURL;
+@property (nonatomic, strong) NSDictionary *source;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
+@property (nonatomic, assign) BOOL needsReload;
+@property (nonatomic, assign) CGSize intrinsicContentSize;
 
 @end
 
 @implementation EXImageView
+{
+  __weak RCTBridge *_bridge;
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  if (self = [super init]) {
+    _bridge = bridge;
+    _needsReload = NO;
+    _resizeMode = RCTResizeModeCover;
+    _intrinsicContentSize = CGSizeZero;
+    self.contentMode = (UIViewContentMode)_resizeMode;
+  }
+  return self;
+}
 
 - (void)dealloc
 {
@@ -23,12 +46,31 @@ static NSString * const sourceUriKey = @"uri";
 
 - (void)setSource:(NSDictionary *)source
 {
-  _imageURL = [RCTConvert NSURL:source[sourceUriKey]];
+  _source = source;
+  // TODO: Implement equatable image source abstraction
+  _needsReload = YES;
+}
+
+- (void)setResizeMode:(RCTResizeMode)resizeMode
+{
+  if (_resizeMode == resizeMode) {
+    return;
+  }
+  
+  // Image needs to be reloaded whenever repeat is enabled or disabled
+  _needsReload = _needsReload || (resizeMode == RCTResizeModeRepeat) || (_resizeMode == RCTResizeModeRepeat);
+  _resizeMode = resizeMode;
+  
+  // Repeat resize mode is handled by the UIImage. Use scale to fill
+  // so the repeated image fills the UIImageView.
+  self.contentMode = resizeMode == RCTResizeModeRepeat
+    ? UIViewContentModeScaleToFill
+    : (UIViewContentMode)resizeMode;
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-  if ([changedProps containsObject:@"source"]) {
+  if (_needsReload) {
     [self updateImage];
   }
 }
@@ -43,9 +85,33 @@ static NSString * const sourceUriKey = @"uri";
     self.onLoadStart(@{});
   }
 
-  [self sd_setImageWithURL:_imageURL
+  NSURL *imageUrl = _source ? [RCTConvert NSURL:_source[sourceUriKey]] : nil;
+  NSNumber *scale = _source && _source[sourceScaleKey] ? _source[sourceScaleKey] : nil;
+  NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
+  NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
+  RCTResizeMode resizeMode = _resizeMode;
+  
+  // For local assets, the intrinsic image size is passed down in the source.
+  // This means we can set it immediately without having to wait for the
+  // image content to load.
+  if (width && height) {
+    [self updateIntrinsicContentSize:CGSizeMake(width.doubleValue, height.doubleValue) internalAsset:YES];
+  }
+  
+  NSMutableDictionary *context = [NSMutableDictionary new];
+
+  // Only apply custom scale factors when neccessary. The scale factor
+  // affects how the image is rendered when resizeMode `center` and `repeat`
+  // are used. On animated images, applying a scale factor may cause
+  // re-encoding of the data, which should be avoided when possible.
+  if (scale && scale.doubleValue != 1.0) {
+    [context setValue:scale forKey:SDWebImageContextImageScaleFactor];
+  }
+
+  [self sd_setImageWithURL:imageURL
           placeholderImage:nil
-                   options:0
+                   options:SDWebImageAvoidAutoSetImage
+                   context:context
                   progress:[self progressBlock]
                  completed:[self completionBlock]];
 }
@@ -78,6 +144,24 @@ static NSString * const sourceUriKey = @"uri";
       // Nothing to do
       return;
     }
+
+    // Modifications to the image like changing the resizing-mode or cap-insets
+    // cannot be handled using a SDWebImage transformer, because they don't change
+    // the image-data and this causes this "meta" data to be lost in the SDWebImage caching process.
+    if (image) {
+      if (resizeMode == RCTResizeModeRepeat) {
+        image = [image resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeTile];
+      }
+    }
+    
+    // When no explicit source image size was specified, use the dimensions
+    // of the loaded image as the intrinsic content size.
+    if (!width && !height) {
+      [self updateIntrinsicContentSize:image.size internalAsset:NO];
+    }
+
+    // Update image
+    strongSelf.image = image;
 
     if (error && strongSelf.onError) {
       strongSelf.onError(@{
@@ -156,6 +240,30 @@ static NSString * const sourceUriKey = @"uri";
       // shouldn't fail to compile on SDWebImage versions
       // with
       return nil;
+  }
+}
+
+# pragma mark -  Intrinsic content size
+
+- (CGSize)intrinsicContentSize
+{
+  return _intrinsicContentSize;
+}
+
+- (void)updateIntrinsicContentSize:(CGSize)intrinsicContentSize internalAsset:(BOOL)internalAsset
+{
+  if (!CGSizeEqualToSize(_intrinsicContentSize, intrinsicContentSize)) {
+    _intrinsicContentSize = intrinsicContentSize;
+    
+    // Only inform Yoga of the intrinsic image size when needed.
+    // Yoga already knows about the size of the internal assets, and
+    // only needs to be informed about the intrinsic content size when
+    // no size styles were provided to the component. Always updating
+    // the intrinsicContentSize will cause unnecessary layout passes
+    // which we want to avoid.
+    if (!internalAsset && CGRectIsEmpty(self.bounds)) {
+      [_bridge.uiManager setIntrinsicContentSize:intrinsicContentSize forView:self];
+    }
   }
 }
 

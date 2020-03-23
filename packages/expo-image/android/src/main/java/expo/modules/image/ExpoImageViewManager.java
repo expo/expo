@@ -54,6 +54,15 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
     view.setSource(sourceMap);
   }
 
+  @ReactProp(name = "resizeMode")
+  public void setResizeMode(ExpoImageView view, String stringValue) {
+    ExpoImageResizeMode resizeMode = ExpoImageResizeMode.fromStringValue(stringValue);
+    if (resizeMode == ExpoImageResizeMode.UNKNOWN) {
+      throw new JSApplicationIllegalArgumentException("Invalid resizeMode: " + stringValue);
+    }
+    view.setResizeMode(resizeMode);
+  }
+
   // View lifecycle
 
   @NonNull
