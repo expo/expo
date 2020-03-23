@@ -687,7 +687,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   NSMutableDictionary *result = [NSMutableDictionary dictionary];
   result[@"status"] = @([httpResponse statusCode]);
   result[@"headers"] = [httpResponse allHeaderFields];
-  result[@"MINEType"] = UMNullIfNil([httpResponse MIMEType]);
+  result[@"mineType"] = UMNullIfNil([httpResponse MIMEType]);
   return result;
 }
 
