@@ -1,16 +1,3 @@
-/*
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import { AppAuthError } from '@openid/appauth';
 import * as ExpoNativeCrypto from 'expo-crypto';
 import * as ExpoRandom from 'expo-random';
@@ -61,9 +48,9 @@ export function encodeBase64NoWrap(input) {
     return output;
 }
 export function bufferToString(buffer, charset = CHARSET) {
-    let state = [];
+    const state = [];
     for (let i = 0; i < buffer.byteLength; i += 1) {
-        let index = buffer[i] % charset.length;
+        const index = buffer[i] % charset.length;
         state.push(charset[index]);
     }
     return state.join('');
@@ -86,7 +73,7 @@ export function textEncodeLite(str) {
     return bufView;
 }
 async function getRandomValuesAsync(arr) {
-    let orig = arr;
+    const orig = arr;
     if (arr.byteLength !== arr.length) {
         // Get access to the underlying raw bytes
         arr = new Uint8Array(arr.buffer);
@@ -105,7 +92,7 @@ export class ExpoCrypto {
     // TODO(Bacon): Change this to be sync in the future when Expo unimodules support sync methods
     // @ts-ignore: we need to use async unfortunately
     async generateRandom(size) {
-        let buffer = new Uint8Array(size);
+        const buffer = new Uint8Array(size);
         if (HAS_CRYPTO) {
             // TODO(Bacon): Make random be sync
             await getRandomValuesAsync(buffer);

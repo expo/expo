@@ -58,9 +58,9 @@ export function encodeBase64NoWrap(input: string): string {
 }
 
 export function bufferToString(buffer: Uint8Array, charset: string = CHARSET): string {
-  let state: string[] = [];
+  const state: string[] = [];
   for (let i = 0; i < buffer.byteLength; i += 1) {
-    let index = buffer[i] % charset.length;
+    const index = buffer[i] % charset.length;
     state.push(charset[index]);
   }
   return state.join('');
@@ -87,7 +87,7 @@ export function textEncodeLite(str: string): Uint8Array {
 }
 
 async function getRandomValuesAsync(arr) {
-  let orig = arr;
+  const orig = arr;
   if (arr.byteLength !== arr.length) {
     // Get access to the underlying raw bytes
     arr = new Uint8Array(arr.buffer);
@@ -108,7 +108,7 @@ export class ExpoCrypto implements Crypto {
   // TODO(Bacon): Change this to be sync in the future when Expo unimodules support sync methods
   // @ts-ignore: we need to use async unfortunately
   async generateRandom(size: number) {
-    let buffer = new Uint8Array(size);
+    const buffer = new Uint8Array(size);
 
     if (HAS_CRYPTO) {
       // TODO(Bacon): Make random be sync

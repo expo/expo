@@ -57,7 +57,7 @@ export class ExpoRegistrationRequest {
         const map = this.toJson();
         // copy over extras
         if (this.extras) {
-            for (let extra in this.extras) {
+            for (const extra in this.extras) {
                 if (extra in this.extras && !(extra in map)) {
                     // check before inserting to requestMap
                     map[extra] = this.extras[extra];

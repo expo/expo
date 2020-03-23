@@ -3,7 +3,6 @@ import {
   AuthorizationRequest,
   AuthorizationResponse,
   TokenResponse,
-  StringMap,
 } from '@openid/appauth';
 import invariant from 'invariant';
 

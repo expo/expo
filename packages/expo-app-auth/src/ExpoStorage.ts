@@ -1,7 +1,7 @@
 import { StorageBackend } from '@openid/appauth';
 import { AsyncStorage } from 'react-native';
 
-let NativeStorage: any = AsyncStorage;
+const NativeStorage: any = AsyncStorage;
 
 // try {
 //   NativeStorage = require('@react-native-community/async-storage');

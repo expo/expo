@@ -8,7 +8,7 @@ export class ExpoRequestor extends Requestor {
         if (!settings.url) {
             throw new AppAuthError('A URL must be provided.');
         }
-        let url = new URL(settings.url);
+        const url = new URL(settings.url);
         const requestInit = {
             method: settings.method,
             mode: 'cors',
@@ -18,7 +18,7 @@ export class ExpoRequestor extends Requestor {
                 requestInit.body = settings.data;
             }
             else {
-                let searchParams = new URLSearchParams(settings.data);
+                const searchParams = new URLSearchParams(settings.data);
                 searchParams.forEach((value, key) => {
                     url.searchParams.append(key, value);
                 });
@@ -27,7 +27,7 @@ export class ExpoRequestor extends Requestor {
         // Set the request headers
         requestInit.headers = {};
         if (settings.headers) {
-            for (let i in settings.headers) {
+            for (const i in settings.headers) {
                 if (i in settings.headers) {
                     requestInit.headers[i] = settings.headers[i];
                 }

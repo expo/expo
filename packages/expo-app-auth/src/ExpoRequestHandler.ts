@@ -15,9 +15,10 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import qs from 'qs';
 import { Platform } from 'react-native';
-import { ExpoStorageBackend } from './ExpoStorage';
+
 import { ExpoAuthorizationServiceConfiguration } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoCrypto } from './ExpoCrypto';
+import { ExpoStorageBackend } from './ExpoStorage';
 
 /**
  * key for authorization request.
@@ -40,13 +41,13 @@ const AUTHORIZATION_REQUEST_HANDLE_KEY = 'expo_appauth_current_authorization_req
 
 export class ExpoRequestHandler extends AuthorizationRequestHandler {
   static getQueryParams = (url: string): Record<string, string> => {
-    let parts = url.split('#');
-    let hash = parts[1];
-    let partsWithoutHash = parts[0].split('?');
-    let queryString = partsWithoutHash[partsWithoutHash.length - 1];
+    const parts = url.split('#');
+    const hash = parts[1];
+    const partsWithoutHash = parts[0].split('?');
+    const queryString = partsWithoutHash[partsWithoutHash.length - 1];
 
     // Get query string (?hello=world)
-    let parsedSearch = qs.parse(queryString);
+    const parsedSearch = qs.parse(queryString);
 
     // TODO(Bacon): Should we support errorCode like expo-auth-session?
     // Pull errorCode off of params
@@ -60,7 +61,7 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
     }
 
     // Merge search and hash
-    let params = {
+    const params = {
       ...parsedSearch,
       ...parsedHash,
     };
@@ -112,7 +113,7 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
             ),
           ]);
 
-          let url = this.buildRequestUrl(configuration, request);
+          const url = this.buildRequestUrl(configuration, request);
 
           console.log('Making a request to ', request, url);
           const payload = await Platform.select<any>({
@@ -166,13 +167,13 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
     handle: string,
     request: AuthorizationRequest
   ): Promise<AuthorizationRequestResponse | null> {
-    let queryParams = this.getQueryParams();
-    let state: string | undefined = queryParams['state'];
-    let code: string | undefined = queryParams['code'];
-    let error: string | undefined = queryParams['error'];
+    const queryParams = this.getQueryParams();
+    const state: string | undefined = queryParams['state'];
+    const code: string | undefined = queryParams['code'];
+    const error: string | undefined = queryParams['error'];
     // let error: string | undefined = queryParams['error'] ?? queryParams['errorCode'];
     console.log('Potential authorization request ', queryParams, state, code, error);
-    let shouldNotify = state === request.state;
+    const shouldNotify = state === request.state;
     let authorizationResponse: AuthorizationResponse | null = null;
     let authorizationError: AuthorizationError | null = null;
 
@@ -183,8 +184,8 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
 
     if (error) {
       // get additional optional info.
-      let errorUri = queryParams['error_uri'];
-      let errorDescription = queryParams['error_description'];
+      const errorUri = queryParams['error_uri'];
+      const errorDescription = queryParams['error_description'];
       authorizationError = new AuthorizationError({
         error,
         error_description: errorDescription,

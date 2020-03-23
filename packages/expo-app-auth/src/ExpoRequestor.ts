@@ -1,4 +1,5 @@
 import { AppAuthError, Requestor } from '@openid/appauth';
+
 import { URL, URLSearchParams } from './URL';
 
 /**
@@ -11,7 +12,7 @@ export class ExpoRequestor extends Requestor {
     if (!settings.url) {
       throw new AppAuthError('A URL must be provided.');
     }
-    let url: URL = new URL(settings.url as string);
+    const url: URL = new URL(settings.url as string);
     const requestInit: RequestInit = {
       method: settings.method,
       mode: 'cors',
@@ -21,7 +22,7 @@ export class ExpoRequestor extends Requestor {
       if (settings.method?.toUpperCase() === 'POST') {
         requestInit.body = settings.data as string;
       } else {
-        let searchParams = new URLSearchParams(settings.data);
+        const searchParams = new URLSearchParams(settings.data);
         searchParams.forEach((value, key) => {
           url.searchParams.append(key, value);
         });
@@ -31,7 +32,7 @@ export class ExpoRequestor extends Requestor {
     // Set the request headers
     requestInit.headers = {};
     if (settings.headers) {
-      for (let i in settings.headers) {
+      for (const i in settings.headers) {
         if (i in settings.headers) {
           requestInit.headers[i] = settings.headers[i] as string;
         }
