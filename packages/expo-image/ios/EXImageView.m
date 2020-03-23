@@ -85,7 +85,7 @@ static NSString * const sourceHeightKey = @"height";
     self.onLoadStart(@{});
   }
 
-  NSURL *imageUrl = _source ? [RCTConvert NSURL:_source[sourceUriKey]] : nil;
+  NSURL *imageURL = _source ? [RCTConvert NSURL:_source[sourceUriKey]] : nil;
   NSNumber *scale = _source && _source[sourceScaleKey] ? _source[sourceScaleKey] : nil;
   NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
   NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
@@ -137,6 +137,10 @@ static NSString * const sourceHeightKey = @"height";
 
 - (SDExternalCompletionBlock)completionBlock
 {
+  RCTResizeMode resizeMode = _resizeMode;
+  NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
+  NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
+  
   __weak EXImageView *weakSelf = self;
   return ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
     __strong EXImageView *strongSelf = weakSelf;
