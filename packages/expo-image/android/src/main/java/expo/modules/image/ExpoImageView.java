@@ -2,7 +2,6 @@ package expo.modules.image;
 
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
-import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.model.GlideUrl;
@@ -16,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import expo.modules.image.events.ImageLoadEventsManager;
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor;
+import expo.modules.image.enums.ImageResizeMode;
 
 @SuppressLint("ViewConstructor")
 public class ExpoImageView extends AppCompatImageView {
@@ -38,14 +38,14 @@ public class ExpoImageView extends AppCompatImageView {
     mRequestManager = requestManager;
     mProgressInterceptor = progressInterceptor;
 
-    setScaleType(ExpoImageResizeMode.COVER.getScaleType());
+    setScaleType(ImageResizeMode.COVER.getScaleType());
   }
 
   /* package */ void setSource(@Nullable ReadableMap sourceMap) {
     mSourceMap = sourceMap;
   }
 
-  /* package */ void setResizeMode(ExpoImageResizeMode resizeMode) {
+  /* package */ void setResizeMode(ImageResizeMode resizeMode) {
     setScaleType(resizeMode.getScaleType());
     // TODO: repeat mode handling
   }

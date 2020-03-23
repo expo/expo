@@ -14,6 +14,8 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import expo.modules.image.enums.ImageResizeMode;
 import expo.modules.image.events.ImageErrorEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
@@ -57,8 +59,8 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
 
   @ReactProp(name = "resizeMode")
   public void setResizeMode(ExpoImageView view, String stringValue) {
-    ExpoImageResizeMode resizeMode = ExpoImageResizeMode.fromStringValue(stringValue);
-    if (resizeMode == ExpoImageResizeMode.UNKNOWN) {
+    ImageResizeMode resizeMode = ImageResizeMode.fromStringValue(stringValue);
+    if (resizeMode == ImageResizeMode.UNKNOWN) {
       throw new JSApplicationIllegalArgumentException("Invalid resizeMode: " + stringValue);
     }
     view.setResizeMode(resizeMode);

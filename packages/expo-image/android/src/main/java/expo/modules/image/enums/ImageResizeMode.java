@@ -1,8 +1,8 @@
-package expo.modules.image;
+package expo.modules.image.enums;
 
 import android.widget.ImageView.ScaleType;
 
-public enum ExpoImageResizeMode {
+public enum ImageResizeMode {
     UNKNOWN("unknown", null),
     CONTAIN("contain", ScaleType.FIT_CENTER),
     COVER("cover", ScaleType.CENTER_CROP),
@@ -13,7 +13,7 @@ public enum ExpoImageResizeMode {
     private final String mStringValue;
     private final ScaleType mScaleType;
   
-    ExpoImageResizeMode(String stringValue, ScaleType scaleType) {
+    ImageResizeMode(String stringValue, ScaleType scaleType) {
       mStringValue = stringValue;
       mScaleType = scaleType;
     }
@@ -26,12 +26,12 @@ public enum ExpoImageResizeMode {
       return mScaleType;
     }
   
-    public static ExpoImageResizeMode fromStringValue(String value) {
-      for (ExpoImageResizeMode resizeMode : ExpoImageResizeMode.values()) {
+    public static ImageResizeMode fromStringValue(String value) {
+      for (ImageResizeMode resizeMode : ImageResizeMode.values()) {
         if (resizeMode.getStringValue().equals(value)) {
           return resizeMode;
         }
       }
-      return ExpoImageResizeMode.UNKNOWN;
+      return ImageResizeMode.UNKNOWN;
     }
   }
