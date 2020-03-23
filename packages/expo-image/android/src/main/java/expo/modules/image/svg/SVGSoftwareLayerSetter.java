@@ -1,6 +1,5 @@
 package expo.modules.image.svg;
 
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.load.DataSource;
@@ -18,7 +17,7 @@ import androidx.annotation.Nullable;
  * <p>
  * Copied from https://github.com/bumptech/glide/blob/master/samples/svg/src/main/java/com/bumptech/glide/samples/svg/SvgSoftwareLayerSetter.java
  */
-public class SVGSoftwareLayerSetter implements RequestListener<Drawable> {
+public class SVGSoftwareLayerSetter implements RequestListener<Object> {
   private int mDefaultLayerType;
 
   public SVGSoftwareLayerSetter() {
@@ -31,7 +30,7 @@ public class SVGSoftwareLayerSetter implements RequestListener<Drawable> {
   }
 
   @Override
-  public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+  public boolean onLoadFailed(GlideException e, Object model, Target<Object> target, boolean isFirstResource) {
     ImageView imageView = getViewOfTarget(target);
     if (imageView != null) {
       imageView.setLayerType(mDefaultLayerType, null);
@@ -40,7 +39,7 @@ public class SVGSoftwareLayerSetter implements RequestListener<Drawable> {
   }
 
   @Override
-  public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+  public boolean onResourceReady(Object resource, Object model, Target<Object> target, DataSource dataSource, boolean isFirstResource) {
     ImageView imageView = getViewOfTarget(target);
     if (imageView != null && resource instanceof SVGDrawable) {
       imageView.setLayerType(ImageView.LAYER_TYPE_SOFTWARE, null);
@@ -49,9 +48,9 @@ public class SVGSoftwareLayerSetter implements RequestListener<Drawable> {
   }
 
   @Nullable
-  private ImageView getViewOfTarget(Target<Drawable> target) {
+  private ImageView getViewOfTarget(Target<Object> target) {
     if (target instanceof ImageViewTarget<?>) {
-      ImageViewTarget<?> imageViewTarget = (ImageViewTarget<Drawable>) target;
+      ImageViewTarget<?> imageViewTarget = (ImageViewTarget<Object>) target;
       return imageViewTarget.getView();
     }
     return null;
