@@ -1,5 +1,6 @@
 # Expo
 .expo
+**/*/web-build/
 __generated__
 
 # macOS
