@@ -1,13 +1,8 @@
 {
-  "name": "test-suite",
-  "version": "1.0.0",
-  "description": "Test suite for the Expo SDK",
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@expo/html-elements": "^0.0.0-alpha.5",
     "async-retry": "^1.1.4",
@@ -61,11 +56,5 @@
   },
   "devDependencies": {
     "expo-yarn-workspaces": "^1.2.1"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }

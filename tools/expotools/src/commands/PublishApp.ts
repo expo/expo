@@ -1,15 +1,15 @@
-import path from 'path';
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import semver from 'semver';
 import { Command } from '@expo/commander';
+import { getConfig, writeConfigJsonAsync } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
 import { UserManager, UserSettings } from '@expo/xdl';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
+import path from 'path';
+import semver from 'semver';
 
 import { getAppsDir } from '../Directories';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
-import inquirer from 'inquirer';
-import JsonFile from '@expo/json-file';
 
 type ActionOptions = {
   app: string;
@@ -29,7 +29,7 @@ async function getDefaultSDKVersionAsync(): Promise<string | undefined> {
   return semver.gt(defaultIosSdkVersion, defaultAndroidSdkVersion) ? defaultIosSdkVersion : defaultAndroidSdkVersion;
 }
 
-function getExpoStatePaths(): { originalPath: string, backupPath: string } {
+function getExpoStatePaths(): { originalPath: string; backupPath: string } {
   const originalPath = UserSettings.userSettingsFile();
   const backupPath = path.join(path.dirname(originalPath), 'state-backup.json');
   return { originalPath, backupPath };
@@ -63,12 +63,16 @@ async function loginAndPublishAsync(options: ActionOptions) {
   console.log(`Logging in as ${chalk.green(options.user)}...`);
   await UserManager.loginAsync('user-pass', { username: options.user, password });
 
-  const appJson = new JsonFile(path.join(appRootPath, 'app.json'));
-  const appSdkVersion = await appJson.getAsync('expo.sdkVersion', null) as string;
+  const { exp } = await getConfig(appRootPath);
+  const appSdkVersion = exp.sdkVersion!;
 
   if (appSdkVersion !== options.sdkVersion) {
-    console.log(`App's ${chalk.yellow('expo.sdkVersion')} was set to ${chalk.blue(appSdkVersion)}, changing to ${chalk.blue(options.sdkVersion!)}...`);
-    await appJson.setAsync('expo.sdkVersion', options.sdkVersion);
+    console.log(
+      `App's ${chalk.yellow('expo.sdkVersion')} was set to ${chalk.blue(
+        appSdkVersion
+      )}, changing to ${chalk.blue(options.sdkVersion!)}...`
+    );
+    await writeConfigJsonAsync(appRootPath, { sdkVersion: options.sdkVersion });
   }
 
   console.log(`Publishing ${chalk.cyan(options.app)} to ${chalk.green(options.user)} account...`);
@@ -86,8 +90,10 @@ async function loginAndPublishAsync(options: ActionOptions) {
     throw error;
   } finally {
     if (appSdkVersion !== options.sdkVersion) {
-      console.log(`Reverting ${chalk.yellow('expo.sdkVersion')} to ${chalk.blue(appSdkVersion)}...`);
-      await appJson.setAsync('expo.sdkVersion', appSdkVersion);
+      console.log(
+        `Reverting ${chalk.yellow('expo.sdkVersion')} to ${chalk.blue(appSdkVersion)}...`
+      );
+      await writeConfigJsonAsync(appRootPath, { sdkVersion: appSdkVersion });
     }
   }
 }
@@ -97,13 +103,21 @@ async function action(options: ActionOptions) {
     throw new Error('Run with `--app <string>`.');
   }
 
-  const allowedApps = (await fs.readdir(APPS_DIR)).filter(item => fs.lstatSync(path.join(APPS_DIR, item)).isDirectory());
+  const allowedApps = (await fs.readdir(APPS_DIR)).filter(item =>
+    fs.lstatSync(path.join(APPS_DIR, item)).isDirectory()
+  );
 
   if (!allowedApps.includes(options.app)) {
-    throw new Error(`App not found at ${chalk.cyan(options.app)} directory. Allowed app names: ${allowedApps.map(appDirname => chalk.green(appDirname)).join(', ')}`);
+    throw new Error(
+      `App not found at ${chalk.cyan(
+        options.app
+      )} directory. Allowed app names: ${allowedApps
+        .map(appDirname => chalk.green(appDirname))
+        .join(', ')}`
+    );
   }
 
-  const sdkVersion = options.sdkVersion || await getDefaultSDKVersionAsync();
+  const sdkVersion = options.sdkVersion || (await getDefaultSDKVersionAsync());
 
   if (!sdkVersion) {
     throw new Error('Next SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
@@ -115,7 +129,11 @@ async function action(options: ActionOptions) {
   const initialUser = await UserManager.getCurrentUserAsync();
 
   if (initialUser) {
-    console.log(`You're currently logged in as ${chalk.green(initialUser.username)} in ${chalk.cyan('expo-cli')} - backing up your user's session...`);
+    console.log(
+      `You're currently logged in as ${chalk.green(initialUser.username)} in ${chalk.cyan(
+        'expo-cli'
+      )} - backing up your user's session...`
+    );
     await backupExpoStateAsync();
   }
 
@@ -125,7 +143,9 @@ async function action(options: ActionOptions) {
     throw error;
   } finally {
     if (initialUser) {
-      console.log(`Restoring ${chalk.green(initialUser.username)} session in ${chalk.cyan('expo-cli')}...`);
+      console.log(
+        `Restoring ${chalk.green(initialUser.username)} session in ${chalk.cyan('expo-cli')}...`
+      );
       await restoreExpoStateAsync();
     } else {
       console.log(`Logging out from ${chalk.green(options.user)} account...`);
@@ -140,7 +160,13 @@ export default (program: Command) => {
     .alias('pub-app', 'pa')
     .description(`Publishes an app from ${chalk.magenta('apps')} folder.`)
     .option('-a, --app <string>', 'Specifies a name of the app to publish.')
-    .option('-u, --user <string>', 'Specifies a username of Expo account on which to publish the app.')
-    .option('-s, --sdkVersion [string]', 'SDK version the published app should use. Defaults to the newest available SDK version.')
+    .option(
+      '-u, --user <string>',
+      'Specifies a username of Expo account on which to publish the app.'
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version the published app should use. Defaults to the newest available SDK version.'
+    )
     .asyncAction(action);
 };

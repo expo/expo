@@ -1,8 +1,5 @@
 {
-  "name": "jest-expo-mock-generator",
-  "version": "0.0.0",
   "author": "Expo",
-  "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",

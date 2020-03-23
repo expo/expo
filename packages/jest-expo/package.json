@@ -35,12 +35,11 @@
     "react-native-web": "*"
   },
   "dependencies": {
-    "@expo/config": "^2.5.3",
+    "@expo/config": "^2.6.6",
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
     "jest-watch-select-projects": "^1.0.0",
     "jest-watch-typeahead": "^0.4.0",
-    "json5": "^2.1.0",
     "lodash": "^4.5.0",
     "react-test-renderer": "~16.9.0"
   },
