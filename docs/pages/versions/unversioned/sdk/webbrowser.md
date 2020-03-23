@@ -160,7 +160,7 @@ Dismisses the presented web browser.
 
 The promise resolves with `{ type: 'dismiss' }`.
 
-### `WebBrowser.getCustomTabsSupportingBrowsers`
+### `WebBrowser.getCustomTabsSupportingBrowsersAsync`
 
 _Android only_
 
