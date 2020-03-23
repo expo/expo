@@ -3651,6 +3651,18 @@
   dependencies:
     infer-owner "^1.0.4"
 
+"@openid/appauth@^1.2.6":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@openid/appauth/-/appauth-1.2.7.tgz#d40cb082876453e91012f1744437a3e45bdb716a"
+  integrity sha512-yqCJrypQC08Q9bvtCIh1MoAjrWo33Ut9KJbUmhx4qLJ6UoWi9TVLSEeLwNo1L9iIDlP4oy682nU0I8Azj9WJPw==
+  dependencies:
+    "@types/base64-js" "^1.2.5"
+    "@types/jquery" "^3.3.33"
+    base64-js "^1.3.1"
+    follow-redirects "^1.10.0"
+    form-data "^3.0.0"
+    opener "^1.5.1"
+
 "@react-native-community/cli-platform-android@^3.0.0-alpha.1", "@react-native-community/cli-platform-android@^3.0.0-alpha.7":
   version "3.0.0-alpha.7"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-3.0.0-alpha.7.tgz#03c3671ab72b62a8742aa71b66cb8d594171891f"
@@ -3904,6 +3916,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/base64-js@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@types/base64-js/-/base64-js-1.2.5.tgz#582b2476169a6cba460a214d476c744441d873d5"
+  integrity sha1-WCskdhaabLpGCiFNR2x0REHYc9U=
+
 "@types/bunyan@^1.8.6":
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/@types/bunyan/-/bunyan-1.8.6.tgz#6527641cca30bedec5feb9ab527b7803b8000582"
@@ -4032,6 +4049,13 @@
   integrity sha512-t2OvhNZnrNjlzi2i0/cxbLVM59WN15I2r1Qtb7wDv28PnV9IzrPtagFRey/S9ezdLD0zyh1XGMQIEQND2YEfrw==
   dependencies:
     "@types/jest-diff" "*"
+
+"@types/jquery@^3.3.33":
+  version "3.3.33"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.33.tgz#61d9cbd4004ffcdf6cf7e34720a87a5625a7d8e9"
+  integrity sha512-U6IdXYGkfUI42SR79vB2Spj+h1Ly3J3UZjpd8mi943lh126TK7CB+HZOxGh2nM3IySor7wqVQdemD/xtydsBKA==
+  dependencies:
+    "@types/sizzle" "*"
 
 "@types/json-schema@^7.0.3":
   version "7.0.3"
@@ -4163,6 +4187,11 @@
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-6.2.0.tgz#d688d574400d96c5b0114968705366f431831e1a"
   integrity sha512-1OzrNb4RuAzIT7wHSsgZRlMBlNsJl+do6UblR7JMW4oB7bbR+uBEYtUh7gEc/jM84GGilh68lSOokyM/zNUlBA==
+
+"@types/sizzle@*":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
+  integrity sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -5516,7 +5545,7 @@ base64-js@1.2.0:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.2.0.tgz#a39992d723584811982be5e290bb6a53d86700f1"
   integrity sha1-o5mS1yNYSBGYK+XikLtqU9hnAPE=
 
-base64-js@^1.0.2, base64-js@^1.1.2, base64-js@^1.2.3, base64-js@^1.3.0:
+base64-js@^1.0.2, base64-js@^1.1.2, base64-js@^1.2.3, base64-js@^1.3.0, base64-js@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
   integrity sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
@@ -6573,7 +6602,7 @@ combined-stream@1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-combined-stream@^1.0.6, combined-stream@~1.0.6:
+combined-stream@^1.0.6, combined-stream@^1.0.8, combined-stream@~1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.8.tgz#c3d45a8b34fd730631a110a8a2520682b31d5a7f"
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
@@ -9169,6 +9198,13 @@ follow-redirects@^1.0.0, follow-redirects@^1.2.5:
   dependencies:
     debug "^3.0.0"
 
+follow-redirects@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.10.0.tgz#01f5263aee921c6a54fb91667f08f4155ce169eb"
+  integrity sha512-4eyLK6s6lH32nOvLLwlIOnr9zrL8Sm+OvW4pVTJNoXeGzYIkHVf+pADQi+OJ0E67hiuSLezPVPyBcIZO50TmmQ==
+  dependencies:
+    debug "^3.0.0"
+
 fontfaceobserver@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/fontfaceobserver/-/fontfaceobserver-2.1.0.tgz#e2705d293e2c585a6531c2a722905657317a2991"
@@ -9217,6 +9253,15 @@ form-data@2.3.2:
   dependencies:
     asynckit "^0.4.0"
     combined-stream "1.0.6"
+    mime-types "^2.1.12"
+
+form-data@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.0.tgz#31b7e39c85f1355b7139ee0c647cf0de7f83c682"
+  integrity sha512-CKMFDglpbMi6PyN+brwB9Q/GOw0eAnsrEZDgcsH5Krhz5Od/haKHAX0NmQfha2zPPz0JpWzA7GJHGSnvCRLWsg==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
 form-data@~2.3.2:
@@ -19163,6 +19208,11 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
+webidl-conversions@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-5.0.0.tgz#ae59c8a00b121543a2acc65c0434f57b0fc11aff"
+  integrity sha512-VlZwKPCkYKxQgeSbH5EyngOmRp7Ww7I9rQLERETtf5ofd9pGeswWiOtogpEO850jziPRarreGxn5QIiTqpb2wA==
+
 webpack-bundle-analyzer@^3.0.4:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/webpack-bundle-analyzer/-/webpack-bundle-analyzer-3.6.0.tgz#39b3a8f829ca044682bc6f9e011c95deb554aefd"
@@ -19321,6 +19371,13 @@ whatwg-mimetype@^2.1.0, whatwg-mimetype@^2.2.0, whatwg-mimetype@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-2.3.0.tgz#3d4b1e0312d2079879f826aff18dbeeca5960fbf"
   integrity sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==
+
+whatwg-url-without-unicode@8.0.0-1:
+  version "8.0.0-1"
+  resolved "https://registry.yarnpkg.com/whatwg-url-without-unicode/-/whatwg-url-without-unicode-8.0.0-1.tgz#86d2916bc654fd6f7949432cd24fa43e5b3ad279"
+  integrity sha512-0Uy8mjsG5O8Y53327XL+ZqsrMdxO1CL/6m840SmW5iyRWFvU2zlxS2RzpD3pFFVKYOKCmsKn5JKzWxQ+bImnWA==
+  dependencies:
+    webidl-conversions "^5.0.0"
 
 whatwg-url@^6.4.1:
   version "6.5.0"

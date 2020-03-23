@@ -63,3 +63,5 @@ ios/build
 /scripts/start.command
 
 /artifacts
+
+/.expo/
