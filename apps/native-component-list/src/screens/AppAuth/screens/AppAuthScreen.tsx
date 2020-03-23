@@ -94,17 +94,15 @@ function useAuthCode(
 
 function clearQueryParams() {
   if (Platform.OS !== 'web') return;
-  //get full URL
-  const currURL = window.location.href; //get current address
+  // Get the full URL.
+  const currURL = window.location.href;
 
-  //Get the URL between what's after '/' and befor '?'
-  //1- get URL after'/'
-  const afterDomain = currURL.substring(currURL.lastIndexOf('/') + 1);
-  //2- get the part before '?'
-  const myNewURL = afterDomain.split('?')[0];
+  const url = new URL(currURL);
+  // Append the pathname to the origin (i.e. without the search).
+  const nextUrl = url.origin + url.pathname;
 
-  //here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
-  window.history.pushState({}, document.title, '/' + myNewURL);
+  // Here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
+  window.history.pushState({}, document.title, nextUrl);
 }
 
 const kRedirectURI = 'com.example.app:/oauth2redirect/example-provider';
@@ -411,7 +409,7 @@ function App() {
           return;
         }
         console.log('User: ', data);
-        setMessage(`Success: ${data}`);
+        setMessage(`Success:\n${JSON.stringify(data, null, 2)}`);
       } catch (error) {
         setMessage(`HTTP request failed ${error.message}`);
       }

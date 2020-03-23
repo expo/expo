@@ -22,7 +22,7 @@ const Services: Record<
       // https://github.com/IdentityServer/IdentityServer4.Demo/blob/1f98c8012d7ff08c9a198660f3fe6ad8dafc6002/src/IdentityServer4Demo/Config.cs#L200
       clientId: 'native.code',
       redirectUri: Platform.select({
-        web: 'https://localhost:19006/',
+        web: 'https://localhost:19006/apis/AppAuth',
         default: 'io.identityserver.demo:/oauthredirect',
       }),
       scopes: ['openid', 'profile', 'email', 'offline_access'],
@@ -34,7 +34,7 @@ const Services: Record<
     config: {
       clientId: `${GUID}.apps.googleusercontent.com`,
       redirectUri: Platform.select({
-        web: 'https://localhost:19006',
+        web: 'https://localhost:19006/apis/AppAuth',
         default: `com.googleusercontent.apps.${GUID}:/oauthredirect`,
       }),
       scopes: ['openid', 'profile'],
