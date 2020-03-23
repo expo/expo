@@ -15,12 +15,16 @@ export declare type HttpResult = {
         [name: string]: string;
     };
     status: number;
-    MINEType: string | null;
+    mimeType: string | null;
 };
-export declare type DownloadResult = {
+export declare type FileSystemDownloadResult = HttpResult & {
     uri: string;
     md5?: string;
-} & HttpResult;
+};
+/**
+ * @deprecated Use FileSystemDownloadResult instead.
+ */
+export declare type DownloadResult = FileSystemDownloadResult;
 export declare type FileSystemUploadOptions = {
     headers?: {
         [name: string]: string;
@@ -28,9 +32,9 @@ export declare type FileSystemUploadOptions = {
     httpMethod?: FileSystemHttpMethods;
     sessionType?: FileSystemSessionType;
 };
-export declare type FileSystemUploadResult = {
+export declare type FileSystemUploadResult = HttpResult & {
     body: string;
-} & HttpResult;
+};
 export declare type DownloadProgressCallback = (data: DownloadProgressData) => void;
 export declare type DownloadProgressData = {
     totalBytesWritten: number;

@@ -33,7 +33,7 @@
 didCompleteWithError:(NSError *)error
 {
   if (error) {
-    self.reject(@"E_UNABLE_TO_UPLOAD_FILE.",
+    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_UPLOAD_FILE.",
           [NSString stringWithFormat:@"Unable to upload the file. '%@'", error.description],
           error);
     return;

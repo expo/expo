@@ -5,7 +5,7 @@
 @interface EXSessionResumableDownloadTaskDelegate ()
 
 @property (strong, nonatomic) NSString *taskUUID;
-@property (weak, nonatomic) id<EXResumalbeTaskRegister> taskRegister;
+@property (weak, nonatomic) id<EXResumableTaskRegister> taskRegister;
 
 @end
 
@@ -19,7 +19,7 @@
                   withMd5Option:(BOOL)md5Option
             withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
                        withUUID:(NSString *)uuid
-      withResumalbeTaskRegister:(id<EXResumalbeTaskRegister>)taskRegister
+      withResumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister
 {
   if (self = [super initWithResolve:resolve
                          withReject:reject
@@ -36,8 +36,16 @@
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  if ([error description]) {
-    [super handleDidCompleteWithError:error];
+  if (error) {
+    // The task was paused by us. So, we shouldn't throw.
+    if (error.code == NSURLErrorCancelled) {
+      self.resolve([NSNull null]);
+    } else {
+      self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
+                  [NSString stringWithFormat:@"Unable to download file. %@", error.description],
+                  error);
+    }
+    
     [_taskRegister onTaskCompleted:_taskUUID];
   }
 }

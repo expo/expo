@@ -3,7 +3,7 @@
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
 
 
-@protocol EXResumalbeTaskRegister <NSObject>
+@protocol EXResumableTaskRegister <NSObject>
 
 - (void)onTaskCompleted:(NSString *)uuid;
 
@@ -18,6 +18,6 @@
                   withMd5Option:(BOOL)md5Option
             withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
                        withUUID:(NSString *)uuid
-      withResumalbeTaskRegister:(id<EXResumalbeTaskRegister>)taskRegister;
+      withResumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister;
 
 @end

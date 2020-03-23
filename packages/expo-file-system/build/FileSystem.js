@@ -98,17 +98,17 @@ export async function getTotalDiskCapacityAsync() {
     }
     return await ExponentFileSystem.getTotalDiskCapacityAsync();
 }
-export async function downloadAsync(fileUri, uri, options = {}) {
+export async function downloadAsync(uri, fileUri, options = {}) {
     if (!ExponentFileSystem.downloadAsync) {
         throw new UnavailabilityError('expo-file-system', 'downloadAsync');
     }
     return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
 }
-export async function uploadAsync(fileUri, url, options = {}) {
+export async function uploadAsync(url, fileUri, options = {}) {
     if (!ExponentFileSystem.uploadAsync) {
         throw new UnavailabilityError('expo-file-system', 'uploadAsync');
     }
-    return await ExponentFileSystem.uploadAsync(fileUri, url, options);
+    return await ExponentFileSystem.uploadAsync(url, fileUri, options);
 }
 export function createDownloadResumable(uri, fileUri, options, callback, resumeData) {
     return new DownloadResumable(uri, fileUri, options, callback, resumeData);

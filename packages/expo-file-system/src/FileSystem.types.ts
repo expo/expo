@@ -13,13 +13,18 @@ export type DownloadOptions = {
 export type HttpResult = {
   headers: { [name: string]: string };
   status: number;
-  MINEType: string | null;
+  mimeType: string | null;
 };
 
-export type DownloadResult = {
+export type FileSystemDownloadResult = HttpResult & {
   uri: string;
   md5?: string;
-} & HttpResult;
+};
+
+/**
+ * @deprecated Use FileSystemDownloadResult instead.
+ */
+export type DownloadResult = FileSystemDownloadResult;
 
 export type FileSystemUploadOptions = {
   headers?: { [name: string]: string };
@@ -27,9 +32,9 @@ export type FileSystemUploadOptions = {
   sessionType?: FileSystemSessionType;
 };
 
-export type FileSystemUploadResult = {
+export type FileSystemUploadResult = HttpResult & {
   body: string;
-} & HttpResult;
+};
 
 export type DownloadProgressCallback = (data: DownloadProgressData) => void;
 

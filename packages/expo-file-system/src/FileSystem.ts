@@ -5,19 +5,20 @@ import uuidv4 from 'uuid/v4';
 import ExponentFileSystem from './ExponentFileSystem';
 import {
   DownloadOptions,
-  DownloadResult,
+  DownloadPauseState,
   DownloadProgressCallback,
   DownloadProgressData,
-  DownloadPauseState,
-  FileInfo,
+  DownloadResult,
   EncodingType,
-  ReadingOptions,
-  WritingOptions,
-  ProgressEvent,
-  FileSystemUploadOptions,
-  FileSystemUploadResult,
+  FileInfo,
+  FileSystemDownloadResult,
   FileSystemHttpMethods,
   FileSystemSessionType,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
+  ProgressEvent,
+  ReadingOptions,
+  WritingOptions,
 } from './FileSystem.types';
 
 if (!ExponentFileSystem) {
@@ -30,19 +31,20 @@ const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 export {
   DownloadOptions,
-  DownloadResult,
+  DownloadPauseState,
   DownloadProgressCallback,
   DownloadProgressData,
-  DownloadPauseState,
-  FileInfo,
+  DownloadResult,
   EncodingType,
-  ReadingOptions,
-  WritingOptions,
-  ProgressEvent,
-  FileSystemUploadOptions,
-  FileSystemUploadResult,
+  FileInfo,
+  FileSystemDownloadResult,
   FileSystemHttpMethods,
   FileSystemSessionType,
+  FileSystemUploadOptions,
+  FileSystemUploadResult,
+  ProgressEvent,
+  ReadingOptions,
+  WritingOptions,
 };
 
 function normalizeEndingSlash(p: string | null): string | null {
@@ -165,10 +167,10 @@ export async function getTotalDiskCapacityAsync(): Promise<number> {
 }
 
 export async function downloadAsync(
-  fileUri: string,
   uri: string,
+  fileUri: string,
   options: DownloadOptions = {}
-): Promise<DownloadResult> {
+): Promise<FileSystemDownloadResult> {
   if (!ExponentFileSystem.downloadAsync) {
     throw new UnavailabilityError('expo-file-system', 'downloadAsync');
   }
@@ -176,14 +178,14 @@ export async function downloadAsync(
 }
 
 export async function uploadAsync(
-  fileUri: string,
   url: string,
+  fileUri: string,
   options: FileSystemUploadOptions = {}
 ): Promise<FileSystemUploadResult> {
   if (!ExponentFileSystem.uploadAsync) {
     throw new UnavailabilityError('expo-file-system', 'uploadAsync');
   }
-  return await ExponentFileSystem.uploadAsync(fileUri, url, options);
+  return await ExponentFileSystem.uploadAsync(url, fileUri, options);
 }
 
 export function createDownloadResumable(
@@ -223,7 +225,7 @@ export class DownloadResumable {
     this._emitter = new EventEmitter(ExponentFileSystem);
   }
 
-  async downloadAsync(): Promise<DownloadResult | undefined> {
+  async downloadAsync(): Promise<FileSystemDownloadResult | undefined> {
     if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
@@ -251,7 +253,7 @@ export class DownloadResumable {
     }
   }
 
-  async resumeAsync(): Promise<DownloadResult | undefined> {
+  async resumeAsync(): Promise<FileSystemDownloadResult | undefined> {
     if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }

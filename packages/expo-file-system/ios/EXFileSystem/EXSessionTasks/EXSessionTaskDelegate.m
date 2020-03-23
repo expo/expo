@@ -21,7 +21,7 @@
   NSMutableDictionary *result = [NSMutableDictionary dictionary];
   result[@"status"] = @([httpResponse statusCode]);
   result[@"headers"] = [httpResponse allHeaderFields];
-  result[@"MINEType"] = UMNullIfNil([httpResponse MIMEType]);
+  result[@"mimeType"] = UMNullIfNil([httpResponse MIMEType]);
   return result;
 }
 

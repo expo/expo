@@ -19,8 +19,6 @@ typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task
                   withMd5Option:(BOOL)md5Option
             withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
 
-- (void)handleDidCompleteWithError:(NSError *)error;
-
 - (void)handleDidFinishDownloadingToURL:(NSURL *)location withTask:(NSURLSessionDownloadTask *)downloadTask;
 
 @end

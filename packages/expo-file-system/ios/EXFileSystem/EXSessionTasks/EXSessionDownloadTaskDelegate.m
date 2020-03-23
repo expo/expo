@@ -62,46 +62,38 @@
 - (void)handleDidFinishDownloadingToURL:(NSURL *)location withTask:(NSURLSessionDownloadTask *)downloadTask
 {
   NSError *error;
-   NSFileManager *fileManager = [NSFileManager defaultManager];
-   if ([fileManager fileExistsAtPath:_localFileUrl.path]) {
-     [fileManager removeItemAtURL:_localFileUrl error:&error];
-   }
-   
-   [fileManager moveItemAtURL:location toURL:_localFileUrl error:&error];
-   if (error) {
-     self.reject(@"E_UNABLE_TO_SAVE",
-           [NSString stringWithFormat:@"Unable to save file to local URI. '%@'", error.description],
-           error);
-     return;
-   }
-   
-   NSMutableDictionary *result = [self parseServerResponse:downloadTask.response];
-   result[@"uri"] = _localFileUrl.absoluteString;
-   if (self.md5Option) {
-     NSData *data = [NSData dataWithContentsOfURL:_localFileUrl];
-     result[@"md5"] = [data md5String];
-   }
-   
-   self.resolve(result);
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:_localFileUrl.path]) {
+    [fileManager removeItemAtURL:_localFileUrl error:&error];
+  }
+
+  [fileManager moveItemAtURL:location toURL:_localFileUrl error:&error];
+  if (error) {
+   self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_SAVE",
+         [NSString stringWithFormat:@"Unable to save file to local URI. '%@'", error.description],
+         error);
+   return;
+  }
+
+  NSMutableDictionary *result = [self parseServerResponse:downloadTask.response];
+  result[@"uri"] = _localFileUrl.absoluteString;
+  if (self.md5Option) {
+   NSData *data = [NSData dataWithContentsOfURL:_localFileUrl];
+   result[@"md5"] = [data md5String];
+  }
+
+  self.resolve(result);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
-  if([error description] != nil) {
-    [self handleDidCompleteWithError:error];
+  if (error) {
+    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
+                [NSString stringWithFormat:@"Unable to download file. %@", error.description],
+                error);
   }
 }
 
-- (void)handleDidCompleteWithError:(NSError *)error
-{
-  // "cancelled" description when paused.  Don't throw.
-  if ([error.localizedDescription isEqualToString:@"cancelled"]) {
-    self.resolve([NSNull null]);
-  } else {
-    self.reject(@"E_UNABLE_TO_DOWNLOAD",
-           [NSString stringWithFormat:@"Unable to download file. %@", error.description],
-           error);
-  }
-}
+
 
 @end
