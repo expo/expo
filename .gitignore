@@ -1,7 +1,7 @@
 # Expo
 .expo
 __generated__
-**/*/web-build/
+web-build
 
 # macOS
 .DS_Store
@@ -113,4 +113,3 @@ shellAppWorkspaces
 .env.development.local
 .env.test.local
 .env.production.local
-
