@@ -238,7 +238,8 @@ dependencies {
         'expo-in-app-purchases',
         'expo-notifications',
         'expo-payments-stripe',
-        'expo-updates'
+        'expo-updates',
+        'expo-splash-screen'
       ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
