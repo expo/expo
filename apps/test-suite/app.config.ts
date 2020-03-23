@@ -13,6 +13,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: 'io.expo.testsuite',
   },
   ...config,
-  slug: process.env.EXPO_TEST_SUITE_SLUG || 'test-suite',
-  sdkVersion: process.env.EXPO_TEST_SUITE_SDK_VERSION || 'UNVERSIONED',
+  slug: process.env.EXPO_TEST_SUITE_SLUG ?? 'test-suite',
+  sdkVersion: process.env.EXPO_TEST_SUITE_SDK_VERSION ?? 'UNVERSIONED',
 });
