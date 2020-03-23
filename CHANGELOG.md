@@ -55,6 +55,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
+- Fixed loading images for manipulation in `expo-image-loader`. ([#7417](https://github.com/expo/expo/pull/7417) by [@mczernek](https://github.com/mczernek))
 - Added support for video mirroring with `expo-camera`. ([#7016](https://github.com/expo/expo/pull/7016) by [@scandinaro](https://github.com/scandinaro))
 - Added support for badge numbers. ([#4562](https://github.com/expo/expo/pull/4562) by [@jaulz](https://github.com/jaulz))
 - `expo-task-manager` supports bare workflow. ([#6828](https://github.com/expo/expo/pull/6828) by [@mczernek](https://github.com/mczernek))
