@@ -1,9 +1,9 @@
 {
   "name": "expo-app-auth",
-  "version": "9.0.0",
+  "version": "8.0.0",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
-  "main": "build/AppAuth.js",
-  "types": "build/AppAuth.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -43,17 +43,17 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
   "dependencies": {
-    "fbjs": "1.0.0",
-    "invariant": "^2.2.4"
+    "@openid/appauth": "^1.2.6",
+    "expo-crypto": "^8.0.0",
+    "expo-random": "^8.0.0",
+    "expo-web-browser": "^8.0.0",
+    "invariant": "^2.2.4",
+    "whatwg-url-without-unicode": "8.0.0-1"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.1.0",
+    "babel-preset-expo": "~8.0.0",
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806"
 }

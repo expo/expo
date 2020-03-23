@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/URL/index.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,GAAG,GAAG,MAAM,CAAC,GAAG,CAAC;AAE9B,MAAM,CAAC,MAAM,eAAe,GAAG,MAAM,CAAC,eAAe,CAAC","sourcesContent":["export const URL = window.URL;\n\nexport const URLSearchParams = window.URLSearchParams;\n"]}
