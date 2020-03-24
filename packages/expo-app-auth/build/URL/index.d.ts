@@ -5,6 +5,6 @@ export declare const URL: {
     revokeObjectURL(url: string): void;
 };
 export declare const URLSearchParams: {
-    new (init?: string | URLSearchParams | string[][] | Record<string, string> | undefined): URLSearchParams;
+    new (init?: string | Record<string, string> | string[][] | URLSearchParams | undefined): URLSearchParams;
     prototype: URLSearchParams;
 };
