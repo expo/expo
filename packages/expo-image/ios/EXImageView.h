@@ -62,6 +62,11 @@
 @property (nonatomic, assign) RCTBorderStyle borderStyle;
 
 
+#pragma mark - Appearance
+
+@property (nonatomic, copy) UIColor *tintColor;
+
+
 #pragma mark - Methods
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;

@@ -1,5 +1,5 @@
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
-import { tintColor } from './constants';
+import { tintColor, tintColor2 } from './constants';
 
 const imageTests: ImageTestGroup = {
   name: 'Appearance',
@@ -74,6 +74,14 @@ const imageTests: ImageTestGroup = {
       props: {
         style: {
           tintColor,
+        },
+      },
+    },
+    {
+      name: 'Tint color 2',
+      props: {
+        style: {
+          tintColor: tintColor2,
         },
       },
     },
