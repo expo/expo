@@ -27,6 +27,7 @@ let TESTS = [
   'FirebaseAnalytics',
   // 'Audio',
   'HTML',
+  'AppAuth.Crypto',
 ];
 
 const MIN_TIME = 50000;

@@ -22,6 +22,7 @@ const TESTS = [
   'HTML',
   'FirebaseCore',
   'FirebaseAnalytics',
+  'AppAuth.Crypto',
   // Overridding permissions doesn't work in headless mode
   // see https://github.com/puppeteer/puppeteer/issues/3279
   !config.launch.headless && 'expo-notifications',

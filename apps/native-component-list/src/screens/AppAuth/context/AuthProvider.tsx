@@ -3,13 +3,13 @@ import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import ServiceContext, { defaultService } from './ServiceContext';
 import AuthContext from './AuthContext';
 
-const storageKey = 'AppAuthAuthProvider';
+const storageKey = 'AppAuthServiceAuthProvider';
 const shouldRehydrate = true;
 
-const defaultState = null;
+const defaultState = { [defaultService]: null };
 
 const getItemAsync = Platform.select<any>({
   web: AsyncStorage.getItem,
@@ -24,23 +24,34 @@ const deleteItemAsync = Platform.select<any>({
   default: SecureStore.deleteItemAsync,
 });
 
-async function cache(value: TokenResponse | null) {
+type InternalServices = Record<string, TokenResponse | null>;
+
+async function cache(value: InternalServices) {
   if (value) {
-    await setItemAsync(storageKey, JSON.stringify(value.toJson()));
+    await setItemAsync(storageKey, JSON.stringify(value));
   } else {
     await deleteItemAsync(storageKey);
   }
 }
 
-async function rehydrate(): Promise<TokenResponse | null> {
+async function rehydrate(): Promise<InternalServices | null> {
   if (!shouldRehydrate || !AsyncStorage) {
     return defaultState;
   }
   try {
     const item = await getItemAsync(storageKey);
     if (item) {
-      const data = JSON.parse(item) as TokenResponseJson;
-      return new TokenResponse(data);
+      const data = JSON.parse(item) as Record<string, TokenResponseJson | null>;
+      let structured: InternalServices = {};
+      for (const service of Object.keys(data)) {
+        const item = data[service];
+        if (item != null) {
+          structured[service] = new TokenResponse(item);
+        } else {
+          structured[service] = null;
+        }
+      }
+      return structured;
     }
     return null;
   } catch (ignored) {
@@ -49,11 +60,28 @@ async function rehydrate(): Promise<TokenResponse | null> {
 }
 
 export default function AuthProvider({ children }: any) {
+  const { service } = React.useContext(ServiceContext);
+  const [internalAuth, setInternalAuth] = React.useState<InternalServices | null>(null);
   const [auth, setAuth] = React.useState<TokenResponse | null>(null);
+  console.log('AuthProvider: ', service, auth);
 
   React.useEffect(() => {
-    rehydrate().then(auth => setAuth(auth));
+    rehydrate().then(auth => {
+      console.log('rehydrated: ', auth);
+      setInternalAuth(auth);
+    });
   }, []);
+
+  React.useEffect(() => {
+    if (internalAuth) {
+      console.log('internal auth', service in internalAuth);
+      if (service in internalAuth) {
+        setAuth(internalAuth[service]);
+      } else {
+        setAuth(null);
+      }
+    }
+  }, [internalAuth, service]);
 
   return (
     <AuthContext.Provider
@@ -61,7 +89,7 @@ export default function AuthProvider({ children }: any) {
         auth,
         setAuth: auth => {
           setAuth(auth);
-          cache(auth);
+          cache({ ...internalAuth, [service]: auth?.toJson() ?? null } as InternalServices);
         },
       }}>
       {children}

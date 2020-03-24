@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ServiceContext, { defaultState } from './ServiceContext';
+import ServiceContext, { defaultService } from './ServiceContext';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const storageKey = 'AppAuthServiceProvider';
@@ -11,19 +11,19 @@ async function cache(value: string) {
 
 async function rehydrate() {
   if (!shouldRehydrate || !AsyncStorage) {
-    return defaultState;
+    return defaultService;
   }
   try {
     const item = await AsyncStorage.getItem(storageKey);
     const data = JSON.parse(item as string);
-    return data || defaultState;
+    return data || defaultService;
   } catch (ignored) {
-    return defaultState;
+    return defaultService;
   }
 }
 
 export default function ServiceProvider({ children }: any) {
-  const [service, setService] = React.useState<string>(defaultState);
+  const [service, setService] = React.useState<string>(defaultService);
 
   React.useEffect(() => {
     rehydrate().then(service => setService(service));

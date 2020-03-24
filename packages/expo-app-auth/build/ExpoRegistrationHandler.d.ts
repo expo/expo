@@ -14,9 +14,9 @@ export declare type ExpoRegistrationResponseJson = {
     extras: StringMap;
 };
 export declare class ExpoRegistrationResponse {
-    clientIDIssuedAt: number;
+    clientIdIssuedAt: number;
     clientSecretExpiresAt: number;
-    clientID: string;
+    clientId: string;
     clientSecret: string;
     registrationAccessToken: string;
     registrationClientURI: string;

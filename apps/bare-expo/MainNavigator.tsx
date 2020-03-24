@@ -43,8 +43,9 @@ const routes: RoutesConfig = {
 // We'd like to get rid of `native-component-list` being a part of the final bundle.
 // Otherwise, some tests may fail due to timeouts (bundling takes significantly more time).
 // See `babel.config.js` and `moduleResolvers/nullResolver.js` for more details.
-const NativeComponentList: NativeComponentListExportsType = require('native-component-list/src/navigation/MainNavigators')
-  .default;
+const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =>
+  require('native-component-list/src/navigation/MainNavigators')
+) as any;
 
 if (NativeComponentList) {
   routes.ExpoApis = NativeComponentList.ExpoApis;

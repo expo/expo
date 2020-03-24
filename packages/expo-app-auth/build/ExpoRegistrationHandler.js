@@ -5,9 +5,9 @@ export class ExpoRegistrationError extends TokenError {
 }
 export class ExpoRegistrationResponse {
     constructor(options) {
-        this.clientIDIssuedAt = options.client_id_issued_at;
+        this.clientIdIssuedAt = options.client_id_issued_at;
         this.clientSecretExpiresAt = options.client_secret_expires_at;
-        this.clientID = options.client_id;
+        this.clientId = options.client_id;
         this.clientSecret = options.client_secret;
         this.registrationAccessToken = options.registration_access_token;
         this.registrationClientURI = options.registration_client_uri;
@@ -15,9 +15,9 @@ export class ExpoRegistrationResponse {
     }
     toJson() {
         return {
-            client_id_issued_at: this.clientIDIssuedAt,
+            client_id_issued_at: this.clientIdIssuedAt,
             client_secret_expires_at: this.clientSecretExpiresAt,
-            client_id: this.clientID,
+            client_id: this.clientId,
             client_secret: this.clientSecret,
             registration_access_token: this.registrationAccessToken,
             registration_client_uri: this.registrationClientURI,
