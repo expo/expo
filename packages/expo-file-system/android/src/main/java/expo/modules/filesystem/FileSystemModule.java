@@ -71,6 +71,32 @@ public class FileSystemModule extends ExportedModule {
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
+  private enum HTTPMethod {
+    POST(0),
+    PUT(1),
+    PATCH(2);
+
+    private int value;
+
+    HTTPMethod(int value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return name();
+    }
+
+    public static HTTPMethod fromInt(int value) {
+      for (HTTPMethod method : values()) {
+        if (method.value == value) {
+          return method;
+        }
+      }
+      return POST;
+    }
+  }
+
   private ModuleRegistry mModuleRegistry;
   private OkHttpClient mClient;
 
@@ -486,12 +512,12 @@ public class FileSystemModule extends ExportedModule {
 
       RequestBody body = RequestBody.create(null, uriToFile(fileUri));
 
-      String method = "POST";
+      HTTPMethod method = HTTPMethod.POST;
       if (options.containsKey("httpMethod")) {
         method = importHttpMethod((int) (double) options.get("httpMethod"));
       }
 
-      requestBuilder.method(method, body);
+      requestBuilder.method(method.toString(), body);
 
       getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
         @Override
@@ -990,15 +1016,7 @@ public class FileSystemModule extends ExportedModule {
     }
   }
 
-  private String importHttpMethod(int method) {
-    if (method == 1) {
-      return "PUT";
-    }
-
-    if (method == 2) {
-      return "PATCH";
-    }
-
-    return "POST";
+  private HTTPMethod importHttpMethod(int method) {
+    return HTTPMethod.fromInt(method);
   }
 }
