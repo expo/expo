@@ -80,10 +80,10 @@ static NSString * const sourceHeightKey = @"height";
     self.onLoadStart(@{});
   }
 
-  NSURL *imageURL = _source ? [RCTConvert NSURL:_source[sourceUriKey]] : nil;
-  NSNumber *scale = _source ? _source[sourceScaleKey] : nil;
-  NSNumber *width = _source ? _source[sourceWidthKey] : nil;
-  NSNumber *height = _source ? _source[sourceHeightKey] : nil;
+  NSURL *imageURL = [RCTConvert NSURL:_source[sourceUriKey]];
+  NSNumber *scale = _source[sourceScaleKey];
+  NSNumber *width = _source[sourceWidthKey];
+  NSNumber *height = _source[sourceHeightKey];
   RCTResizeMode resizeMode = _resizeMode;
   
   // For local assets, the intrinsic image size is passed down in the source.
