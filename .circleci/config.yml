@@ -145,6 +145,7 @@ commands:
       - run: curl -O https://raw.githubusercontent.com/NixOS/nix/bb10dc20cc993c4343361c0d6e7eaebb4f450484/scripts/create-darwin-volume.sh
       - run: chmod +x create-darwin-volume.sh
       - run: sudo ./create-darwin-volume.sh
+      - run: rm ./create-darwin-volume.sh
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
