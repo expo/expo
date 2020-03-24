@@ -145,6 +145,11 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
     view.setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "tintColor", customType = "Color")
+  public void setTintColor(ExpoImageView view, @Nullable Integer color) {
+    view.setTintColor(color);
+  }
+
   // View lifecycle
 
   @NonNull
