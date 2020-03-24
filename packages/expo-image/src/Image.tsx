@@ -20,9 +20,9 @@ export interface ImageProps extends AccessibilityProps {
   // function, so we can't use it there. So we pass the unresolved source
   // to "native components" and they decide whether to resolve the value
   // or not.
-  resizeMode?: ImageResizeMode;
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
+  resizeMode?: ImageResizeMode;
 
   onLoadStart?: () => void;
   onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
