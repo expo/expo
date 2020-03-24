@@ -2,6 +2,9 @@
 
 #import <expo-image/EXImageViewManager.h>
 #import <expo-image/EXImageView.h>
+#if __has_include(<SDWebImageSVGCoder/SDImageSVGCoder.h>)
+#import <SDWebImageSVGCoder/SDImageSVGCoder.h>
+#endif
 #import <SDWebImageSVGKitPlugin/SDImageSVGKCoder.h>
 #import <SDWebImage/SDImageCodersManager.h>
 
@@ -18,7 +21,26 @@ RCT_EXPORT_MODULE(ExpoImage)
 
 + (void)initialize
 {
-  SDImageSVGKCoder *svgCoder = [SDImageSVGKCoder sharedCoder];
+  id<SDImageCoder> svgCoder;
+
+  // 1. SDWebImageSVGCoder is a non-dependency which users can
+  //    add to their own Podfiles, if they would like to use it
+  //    to decode SVGs on iOS 13+.
+  // 2. It only works on iOS 13+, we cannot use it on older versions
+  //    of iOS.
+  //
+  // Therefore to use SVGCoder we have to know it is available
+  // and we are running on iOS 13+.
+#if __has_include(<SDWebImageSVGCoder/SDImageSVGCoder.h>)
+  if (@available(iOS 13, *)) {
+    svgCoder = [SDImageSVGCoder sharedCoder];
+  } else {
+    svgCoder = [SDImageSVGKCoder sharedCoder];
+  }
+#else
+  svgCoder = [SDImageSVGKCoder sharedCoder];
+#endif
+
   if (![[SDImageCodersManager sharedManager].coders containsObject:svgCoder]) {
     [[SDImageCodersManager sharedManager] addCoder:svgCoder];
   }
