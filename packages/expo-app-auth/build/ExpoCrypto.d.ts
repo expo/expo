@@ -2,7 +2,6 @@ import { Crypto } from '@openid/appauth';
 export declare function encodeBase64NoWrap(input: string): string;
 export declare function bufferToString(buffer: Uint8Array, charset?: string): string;
 export declare function urlSafe(b64: string): string;
-export declare function textEncodeLite(str: string): Uint8Array;
 /**
  * Extension of the default implementation of the `Crypto` interface.
  * This uses the capabilities of the native platform via Expo Unimodules.

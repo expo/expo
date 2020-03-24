@@ -61,17 +61,6 @@ export function urlSafe(b64) {
         .replace(/\//g, '_')
         .replace(/=/g, '');
 }
-// adapted from source: http://stackoverflow.com/a/11058858
-// this is used in place of TextEncode as the api is not yet
-// well supported: https://caniuse.com/#search=TextEncoder
-export function textEncodeLite(str) {
-    const buf = new ArrayBuffer(str.length);
-    const bufView = new Uint8Array(buf);
-    for (let i = 0; i < str.length; i++) {
-        bufView[i] = str.charCodeAt(i);
-    }
-    return bufView;
-}
 async function getRandomValuesAsync(arr) {
     const orig = arr;
     if (arr.byteLength !== arr.length) {
