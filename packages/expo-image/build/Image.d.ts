@@ -2,9 +2,9 @@ import React from 'react';
 import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
 export interface ImageProps extends AccessibilityProps {
-    resizeMode?: ImageResizeMode;
     source?: ImageSourcePropType | null;
     style?: StyleProp<ImageStyle>;
+    resizeMode?: ImageResizeMode;
     onLoadStart?: () => void;
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
