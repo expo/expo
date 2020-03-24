@@ -5,7 +5,7 @@
 @implementation EXSessionTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
+                         reject:(UMPromiseRejectBlock)reject
 {
   if (self = [super init]) {
     _resolve = resolve;

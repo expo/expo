@@ -10,14 +10,14 @@ export declare type DownloadOptions = {
     };
     sessionType?: FileSystemSessionType;
 };
-export declare type HttpResult = {
+export declare type FileSystemHttpResult = {
     headers: {
         [name: string]: string;
     };
     status: number;
     mimeType: string | null;
 };
-export declare type FileSystemDownloadResult = HttpResult & {
+export declare type FileSystemDownloadResult = FileSystemHttpResult & {
     uri: string;
     md5?: string;
 };
@@ -32,7 +32,7 @@ export declare type FileSystemUploadOptions = {
     httpMethod?: FileSystemHttpMethods;
     sessionType?: FileSystemSessionType;
 };
-export declare type FileSystemUploadResult = HttpResult & {
+export declare type FileSystemUploadResult = FileSystemHttpResult & {
     body: string;
 };
 export declare type DownloadProgressCallback = (data: DownloadProgressData) => void;

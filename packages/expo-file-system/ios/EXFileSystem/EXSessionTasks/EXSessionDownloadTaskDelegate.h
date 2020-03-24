@@ -7,18 +7,18 @@ typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task
 @interface EXSessionDownloadTaskDelegate : EXSessionTaskDelegate
             
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option;
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option;
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option
-            withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
 
-- (void)handleDidFinishDownloadingToURL:(NSURL *)location withTask:(NSURLSessionDownloadTask *)downloadTask;
+- (void)handleDidFinishDownloadingToURL:(NSURL *)location task:(NSURLSessionDownloadTask *)downloadTask;
 
 @end

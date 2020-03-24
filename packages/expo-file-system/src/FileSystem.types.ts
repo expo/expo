@@ -1,5 +1,16 @@
 export enum FileSystemSessionType {
+  /*
+   * The session will work even if the user backgrounds an application.
+   *
+   * If a task complete when the application is inactive, the promise might resolve immediately.
+   * However, js code will be stopped after a couple of seconds and it will be resume when the user comes back to the application.
+   */
   BACKGROUND = 0,
+
+  /*
+   * The session will be killed when an application is inactive.
+   * When the user comes back to the application, the promise will be rejected.
+   */
   FOREGROUND = 1,
 }
 
@@ -7,16 +18,19 @@ export type DownloadOptions = {
   md5?: boolean;
   cache?: boolean;
   headers?: { [name: string]: string };
-  sessionType?: FileSystemSessionType; // iOS only
+  /*
+   * iOS only
+   */
+  sessionType?: FileSystemSessionType;
 };
 
-export type HttpResult = {
+export type FileSystemHttpResult = {
   headers: { [name: string]: string };
   status: number;
   mimeType: string | null;
 };
 
-export type FileSystemDownloadResult = HttpResult & {
+export type FileSystemDownloadResult = FileSystemHttpResult & {
   uri: string;
   md5?: string;
 };
@@ -32,7 +46,7 @@ export type FileSystemUploadOptions = {
   sessionType?: FileSystemSessionType;
 };
 
-export type FileSystemUploadResult = HttpResult & {
+export type FileSystemUploadResult = FileSystemHttpResult & {
   body: string;
 };
 

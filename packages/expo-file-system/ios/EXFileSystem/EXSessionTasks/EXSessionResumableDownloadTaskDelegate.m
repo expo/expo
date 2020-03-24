@@ -13,20 +13,20 @@
 @implementation EXSessionResumableDownloadTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option
-            withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                       withUUID:(NSString *)uuid
-      withResumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
+                           uuid:(NSString *)uuid
+          resumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister
 {
   if (self = [super initWithResolve:resolve
-                         withReject:reject
-                   withLocalFileUrl:localFileUrl
-                      withServerUrl:serverUrl
-                      withMd5Option:md5Option
-                withOnWriteCallback:onWrite]) {
+                             reject:reject
+                       localFileUrl:localFileUrl
+                          serverUrl:serverUrl
+                          md5Option:md5Option
+                    onWriteCallback:onWrite]) {
     _taskUUID = uuid;
     _taskRegister = taskRegister;
   }
@@ -50,9 +50,9 @@
   }
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-  
-  [super handleDidFinishDownloadingToURL:location withTask:downloadTask];
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+  [super handleDidFinishDownloadingToURL:location task:downloadTask];
   [_taskRegister onTaskCompleted:_taskUUID];
 }
 

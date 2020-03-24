@@ -12,25 +12,24 @@
 @implementation EXSessionUploadTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
+                         reject:(UMPromiseRejectBlock)reject
 {
-  if (self = [super initWithResolve:resolve withReject:reject]) {
+  if (self = [super initWithResolve:resolve reject:reject]) {
     _responseData = [[NSMutableData alloc] init];
   }
   
   return self;
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+{
   if (!data.length) {
     return;
   }
   [_responseData appendData:data];
 }
 
-- (void)URLSession:(NSURLSession *)session
-              task:(NSURLSessionTask *)task
-didCompleteWithError:(NSError *)error
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
   if (error) {
     self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_UPLOAD_FILE.",

@@ -5,7 +5,7 @@
 @interface EXSessionUploadTaskDelegate : EXSessionTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject;
+                         reject:(UMPromiseRejectBlock)reject;
 
 @end
 

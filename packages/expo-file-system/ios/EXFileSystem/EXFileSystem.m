@@ -20,6 +20,17 @@
 
 NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 
+typedef NS_ENUM(NSInteger, EXFileSystemSessionType) {
+  EXFileSystemBackgroundSession = 0,
+  EXFileSystemForegroundSession = 1,
+};
+
+typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
+  EXFileSystemPostMethod = 0,
+  EXFileSystemPutMethod = 1,
+  EXFileSystemPatchMethod = 2,
+};
+
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSession *> *resumableDownloads;
@@ -314,7 +325,7 @@ UM_EXPORT_METHOD_AS(deleteAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *path = uri.path;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    if ([self _checkIfFileExists:path]) {
       NSError *error;
       if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
         resolve([NSNull null]);
@@ -372,7 +383,7 @@ UM_EXPORT_METHOD_AS(moveAsync,
     NSString *fromPath = [from.path stringByStandardizingPath];
     NSString *toPath = [to.path stringByStandardizingPath];
     NSError *error;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
+    if ([self _checkIfFileExists:toPath]) {
       if (![[NSFileManager defaultManager] removeItemAtPath:toPath error:&error]) {
         reject(@"E_FILE_NOT_MOVED",
                [NSString stringWithFormat:@"File '%@' could not be moved to '%@' because a file already exists at "
@@ -501,10 +512,10 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
 
 UM_EXPORT_METHOD_AS(downloadAsync,
                     downloadAsyncWithUrl:(NSString *)urlString
-                    withLocalURI:(NSString *)localUriString
-                    withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                                localURI:(NSString *)localUriString
+                                 options:(NSDictionary *)options
+                                resolver:(UMPromiseResolveBlock)resolve
+                                rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
@@ -522,10 +533,10 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   }
   
   EXSessionDownloadTaskDelegate* taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
-                                                                                            withReject:reject
-                                                                                      withLocalFileUrl:localUri
-                                                                                         withServerUrl:url
-                                                                                         withMd5Option:[options[@"md5"] boolValue] ?: false];
+                                                                                                reject:reject
+                                                                                          localFileUrl:localUri
+                                                                                             serverUrl:url
+                                                                                             md5Option:[options[@"md5"] boolValue] ?: false];
   
   NSURLSession *session = [self _createSession:taskDelegate withOptions:options];
   NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url];
@@ -535,8 +546,8 @@ UM_EXPORT_METHOD_AS(downloadAsync,
 
 UM_EXPORT_METHOD_AS(uploadAsync,
                     uploadAsync:(NSString *)urlString
-                   withLocalURI:(NSString *)fileUriString
-                    withOptions:(NSDictionary *)options
+                       localURI:(NSString *)fileUriString
+                        options:(NSDictionary *)options
                        resolver:(UMPromiseResolveBlock)resolve
                        rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -554,7 +565,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     return;
   }
   
-  EXSessionUploadTaskDelegate* taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve withReject:reject];
+  EXSessionUploadTaskDelegate* taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve     reject:reject];
   
   NSURLSession *session = [self _createSession:taskDelegate withOptions:options];
   NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
@@ -566,12 +577,12 @@ UM_EXPORT_METHOD_AS(uploadAsync,
 
 UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
                     downloadResumableStartAsyncWithUrl:(NSString *)urlString
-                    withFileURI:(NSString *)fileUri
-                    withUUID:(NSString *)uuid
-                    withOptions:(NSDictionary *)options
-                    withResumeData:(NSString *)data
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                                               fileURI:(NSString *)fileUri
+                                                  uuid:(NSString *)uuid
+                                               options:(NSDictionary *)options
+                                            resumeData:(NSString *)data
+                                              resolver:(UMPromiseResolveBlock)resolve
+                                              rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
@@ -597,12 +608,12 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   }
   NSData *resumeData = data ? [[NSData alloc] initWithBase64EncodedString:data options:0] : nil;
   [self _downloadResumableCreateSessionWithUrl:url
-                                   withFileUrl:localUrl
-                                      withUUID:uuid
-                                   withOptions:options
-                                withResumeData:resumeData
-                                  withResolver:resolve
-                                  withRejecter:reject];
+                                       fileUrl:localUrl
+                                          uuid:uuid
+                                        optins:options
+                                    resumeData:resumeData
+                                       resolve:resolve
+                                        reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
@@ -653,11 +664,11 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 - (NSURLSession *)_createSession:(id<NSURLSessionDelegate>)delegate withOptions:(NSDictionary *)options
 {
-  NSNumber *sessionType = options[@"sessionType"] ?: 0;
+  EXFileSystemSessionType sessionType = [options[@"sessionType"] intValue] ?: EXFileSystemBackgroundSession;
   NSDictionary *headers = options[@"headers"];
   NSURLSessionConfiguration *sessionConfiguration;
   
-  if (sessionType == 0) {
+  if (sessionType == EXFileSystemBackgroundSession) {
     // background session
     sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
   } else {
@@ -691,31 +702,25 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return result;
 }
 
-- (NSURLSession *)_createSessionWithHeaders:(NSDictionary * _Nullable)headers
-{
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  if (headers != nil) {
-    sessionConfiguration.HTTPAdditionalHeaders = headers;
-  }
-  sessionConfiguration.URLCache = nil;
-  
-  return [NSURLSession sessionWithConfiguration:sessionConfiguration];
-}
-
 - (NSString *)_importHttpMethod:(NSNumber *)httpMethod
 {
-  if ([httpMethod isEqual:@1]) {
+  if ([httpMethod isEqual:@(EXFileSystemPutMethod)]) {
     return @"PUT";
   }
-  if ([httpMethod isEqual:@2]) {
+  if ([httpMethod isEqual:@(EXFileSystemPatchMethod)]) {
     return @"PATCH";
   }
   
   return @"POST";
 }
 
-- (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url withFileUrl:(NSURL *)fileUrl withUUID:(NSString *)uuid withOptions:(NSDictionary *)options withResumeData:(NSData * _Nullable)resumeData withResolver:(UMPromiseResolveBlock)resolve withRejecter:(UMPromiseRejectBlock)reject
+- (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url
+                                       fileUrl:(NSURL *)fileUrl
+                                          uuid:(NSString *)uuid
+                                        optins:(NSDictionary *)options
+                                    resumeData:(NSData * _Nullable)resumeData
+                                       resolve:(UMPromiseResolveBlock)resolve
+                                        reject:(UMPromiseRejectBlock)reject
 {
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:uuid];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
@@ -736,13 +741,13 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   };
   
   EXSessionResumableDownloadTaskDelegate *downloadDelegate = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
-                                                                                                                  withReject:reject
-                                                                                                            withLocalFileUrl:fileUrl
-                                                                                                               withServerUrl:url
-                                                                                                               withMd5Option:[options[@"md5"] boolValue] ?: false
-                                                                                                         withOnWriteCallback:onWrite
-                                                                                                                    withUUID:(NSString *)uuid
-                                                                                                   withResumableTaskRegister:self];
+                                                                                                                      reject:reject
+                                                                                                                localFileUrl:fileUrl
+                                                                                                                   serverUrl:url
+                                                                                                                   md5Option:[options[@"md5"] boolValue] ?: false
+                                                                                                             onWriteCallback:onWrite
+                                                                                                                        uuid:(NSString *)uuid
+                                                                                                       resumableTaskRegister:self];
   
   NSURLSession *session = [self _createSession:downloadDelegate withOptions:options];
   self.resumableDownloads[uuid] = session;

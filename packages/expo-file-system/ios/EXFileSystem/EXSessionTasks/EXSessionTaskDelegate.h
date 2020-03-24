@@ -12,7 +12,7 @@
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject;
+                         reject:(UMPromiseRejectBlock)reject;
 
 - (NSMutableDictionary *)parseServerResponse:(NSURLResponse *)response;
 

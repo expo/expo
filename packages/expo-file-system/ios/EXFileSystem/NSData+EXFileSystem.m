@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "NSData+EXFileSystem.h"
+#import <EXFileSystem/NSData+EXFileSystem.h>
 #import <CommonCrypto/CommonDigest.h>
 
 @implementation NSData (EXFileSystem)

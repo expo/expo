@@ -15,12 +15,12 @@
 @implementation EXSessionDownloadTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option
 {
-  if (self = [super initWithResolve:resolve withReject:reject]) {
+  if (self = [super initWithResolve:resolve reject:reject]) {
     _serverUrl = serverUrl;
     _localFileUrl = localFileUrl;
     _md5Option = md5Option;
@@ -30,17 +30,17 @@
 }
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option
-            withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
 {
   if (self = [self initWithResolve:resolve
-                        withReject:reject
-                  withLocalFileUrl:localFileUrl
-                     withServerUrl:serverUrl
-                     withMd5Option:md5Option]) {
+                            reject:reject
+                      localFileUrl:localFileUrl
+                         serverUrl:serverUrl
+                         md5Option:md5Option]) {
     _onWrite = onWrite;
   }
   
@@ -53,13 +53,13 @@
     _onWrite(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
   }
 }
-  
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-  [self handleDidFinishDownloadingToURL:location withTask:downloadTask];
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+  [self handleDidFinishDownloadingToURL:location task:downloadTask];
 }
 
-- (void)handleDidFinishDownloadingToURL:(NSURL *)location withTask:(NSURLSessionDownloadTask *)downloadTask
+- (void)handleDidFinishDownloadingToURL:(NSURL *)location task:(NSURLSessionDownloadTask *)downloadTask
 {
   NSError *error;
   NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -70,8 +70,8 @@
   [fileManager moveItemAtURL:location toURL:_localFileUrl error:&error];
   if (error) {
    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_SAVE",
-         [NSString stringWithFormat:@"Unable to save file to local URI. '%@'", error.description],
-         error);
+               [NSString stringWithFormat:@"Unable to save file to local URI. '%@'", error.description],
+               error);
    return;
   }
 
@@ -93,7 +93,5 @@
                 error);
   }
 }
-
-
 
 @end

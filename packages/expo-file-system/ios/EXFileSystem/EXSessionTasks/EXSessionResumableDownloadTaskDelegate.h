@@ -12,12 +12,12 @@
 @interface EXSessionResumableDownloadTaskDelegate : EXSessionDownloadTaskDelegate
 
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                     withReject:(UMPromiseRejectBlock)reject
-               withLocalFileUrl:(NSURL *)localFileUrl
-                  withServerUrl:(NSURL *)serverUrl
-                  withMd5Option:(BOOL)md5Option
-            withOnWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                       withUUID:(NSString *)uuid
-      withResumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister;
+                         reject:(UMPromiseRejectBlock)reject
+                   localFileUrl:(NSURL *)localFileUrl
+                      serverUrl:(NSURL *)serverUrl
+                      md5Option:(BOOL)md5Option
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
+                           uuid:(NSString *)uuid
+          resumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister;
 
 @end
