@@ -309,6 +309,9 @@ executors:
     resource_class: small
     environment:
       USER: circleci
+  catalina:
+    macos:
+      xcode: '11.4.0'
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '11.0.0'
@@ -328,6 +331,9 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
+  test:
+    jobs:
+      - catalina_nix
   docs:
     jobs:
       - docs
@@ -450,6 +456,14 @@ workflows:
           upload: false
 
 jobs:
+  catalina_nix:
+    executor: catalina
+    steps:
+      - run: curl -O https://raw.githubusercontent.com/NixOS/nix/bb10dc20cc993c4343361c0d6e7eaebb4f450484/scripts/create-darwin-volume.sh
+      - run: chmod +x create-darwin-volume.sh
+      - run: sudo ./create-darwin-volume.sh
+      - install_nix
+      - setup
   expo_sdk:
     executor: js
     steps:
