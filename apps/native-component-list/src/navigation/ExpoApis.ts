@@ -10,7 +10,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 const ActionSheet = optionalRequire(() => require('../screens/ActionSheetScreen'));
-const AppAuth = optionalRequire(() => require('../screens/AppAuth/screens/AppAuthScreen'));
+const AppAuth = require('../screens/AppAuth/screens/AppAuthScreen').default;
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));

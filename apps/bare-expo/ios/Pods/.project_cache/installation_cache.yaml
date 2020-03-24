@@ -49,22 +49,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXAmplitude
     SPECS:
       - EXAmplitude (8.1.0)
-  EXAppAuth:
-    BUILD_SETTINGS_CHECKSUM:
-      EXAppAuth: b4000be4e93e905bd83b52d30660d2ab
-    CHECKSUM: 26cc5ad605079dab36f6209322cf21f528c44328
-    FILES:
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.m"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth.h"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth.m"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.h"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.h"
-      - "../../../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.m"
-    PROJECT_NAME: EXAppAuth
-    SPECS:
-      - EXAppAuth (9.0.0)
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
       EXApplication: 5fd8b17b356234cacecd3159a6b20ac5
@@ -739,8 +723,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 877ad6c8eb169353a2f94d5ad26510ffadd46a1f
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.1.0)
@@ -946,12 +930,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 816f15a05b128cfbab101cc7184d9687
-      Release: 816f15a05b128cfbab101cc7184d9687
+      Debug: 2e1644cce33041e70e73a2718a6ebdc6
+      Release: 2e1644cce33041e70e73a2718a6ebdc6
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
-      Release: e6aedfaad570c1e1a2e18b3c4a18be48
+      Debug: d02f03f35314d12a769836f3e47bf440
+      Release: d02f03f35314d12a769836f3e47bf440
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1709,6 +1693,19 @@ CACHE_KEYS:
     SPECS:
       - ReactCommon/jscallinvoker (0.61.4)
       - ReactCommon/turbomodule/core (0.61.4)
+  RNCAsyncStorage:
+    BUILD_SETTINGS_CHECKSUM:
+      RNCAsyncStorage: 80c4253cd492d64ae0314024a18c3e03
+    CHECKSUM: e0dd7c8a36543b4ef84969acd9f8aceba3a92dc2
+    FILES:
+      - "../../../../node_modules/@react-native-community/async-storage/ios/RNCAsyncStorage.h"
+      - "../../../../node_modules/@react-native-community/async-storage/ios/RNCAsyncStorage.m"
+      - "../../../../node_modules/@react-native-community/async-storage/ios/RNCAsyncStorageDelegate.h"
+      - "../../../../node_modules/@react-native-community/async-storage/LICENSE"
+      - "../../../../node_modules/@react-native-community/async-storage/README.md"
+    PROJECT_NAME: RNCAsyncStorage
+    SPECS:
+      - RNCAsyncStorage (1.8.1)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: c576e5ba26e85306cdd748939cafee55
@@ -1967,7 +1964,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: 330db6c6bc97064a0ce907ee8d5fdbb2
-    CHECKSUM: c8f2b8beb61851b6f2441e54b409d2dbd6478b7d
+    CHECKSUM: 900e80a6cd83823870cf840f35081edb4043b014
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -1990,7 +1987,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.0)
+      - UMReactNativeAdapter (5.1.1)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: edab35b62745c17864e65b8dd2612597

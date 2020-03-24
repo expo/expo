@@ -1,8 +1,9 @@
 import { TokenResponse, TokenResponseJson } from '@openid/appauth';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
-import { AsyncStorage, Platform } from 'react-native';
-
+import { Platform } from 'react-native';
+// import AsyncStorage from '@react-native-community/async-storage';
+const AsyncStorage = {} as any;
 import AuthContext from './AuthContext';
 
 const storageKey = 'AppAuthAuthProvider';
