@@ -1,11 +1,6 @@
 import * as React from 'react';
-// import AsyncStorage from '@react-native-community/async-storage';
 import ServiceContext, { defaultState } from './ServiceContext';
-const AsyncStorage = {
-  getItem() {
-    return defaultState;
-  },
-} as any;
+import AsyncStorage from '@react-native-community/async-storage';
 
 const storageKey = 'AppAuthServiceProvider';
 const shouldRehydrate = false;

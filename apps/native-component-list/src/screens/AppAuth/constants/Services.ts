@@ -30,6 +30,24 @@ const Services: Record<
     storageKey: 'identityserver',
     issuer: 'https://demo.identityserver.io',
   },
+  spotify: {
+    config: {
+      clientId: 'cc809bf3e0a74f288c01fe14c3f3fbb3',
+      redirectUri: Platform.select({
+        web: 'https://localhost:19006/apis/AppAuth',
+        default: `io.identityserver.demo:/oauthredirect`,
+      }),
+      scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
+      extras: {
+        client_secret: 'a45500e2a01d48b4939727846ff5ab24',
+      },
+    },
+    storageKey: 'spotify',
+    issuer: {
+      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+    },
+  },
   google: {
     config: {
       clientId: `${GUID}.apps.googleusercontent.com`,

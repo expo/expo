@@ -141,6 +141,25 @@ function useParentNotifier(url: string) {
 
 function App() {
   useParentNotifier('batman');
+  const [browser, setBrowser] = React.useState<string | null>(null);
+
+  // Warm browser on Android
+  React.useEffect(() => {
+    if (Platform.OS === 'android') {
+      WebBrowser.getCustomTabsSupportingBrowsersAsync().then(value => {
+        if (value.browserPackages.length) {
+          WebBrowser.warmUpAsync(value.browserPackages[0]).then(() => {
+            setBrowser(value.browserPackages[0]);
+          });
+        }
+      });
+    }
+    return () => {
+      if (Platform.OS === 'android' && browser) {
+        WebBrowser.coolDownAsync(browser);
+      }
+    };
+  }, []);
 
   const { auth, setAuth } = React.useContext(AuthContext);
   const [authResponse, setAuthResponse] = React.useState<any>(null);
@@ -194,7 +213,7 @@ function App() {
     //   console.log('weird error closing browser: ', error);
     // }
 
-    const usePKCE = true; //Platform.OS !== 'web';
+    const usePKCE = true;
     const request = new AppAuth.ExpoAuthorizationRequest(
       { ...currentService.config, responseType: AuthorizationRequest.RESPONSE_TYPE_CODE },
       undefined,
@@ -250,7 +269,7 @@ function App() {
     if (clientSecret) extras.client_secret = clientSecret;
 
     try {
-      const usePKCE = true; //Platform.OS !== 'web';
+      const usePKCE = true;
       const request = new AppAuth.ExpoAuthorizationRequest(
         {
           clientId,
@@ -280,7 +299,7 @@ function App() {
     const scopes = ['openid', 'profile'];
     setMessage('Initiating authorization request with scope: ' + scopes);
     try {
-      const usePKCE = true; //Platform.OS !== 'web';
+      const usePKCE = true;
       const request = new AppAuth.ExpoAuthorizationRequest(
         {
           clientId,
@@ -494,6 +513,10 @@ function JsonView({ title, data }: { title: string; data: null | Record<string, 
     </View>
   );
 }
+
+Linking.addEventListener('url', event => {
+  console.log('general linking: ', event);
+});
 
 async function serviceConfigFromPropsAsync(
   issuerOrServiceConfig: any
