@@ -188,11 +188,11 @@ function App() {
   }
 
   async function signInAsync(): Promise<TokenResponse> {
-    try {
-      await WebBrowser.dismissAuthSession();
-    } catch (error) {
-      console.log('weird error closing browser: ', error);
-    }
+    // try {
+    //   await WebBrowser.dismissAuthSession();
+    // } catch (error) {
+    //   console.log('weird error closing browser: ', error);
+    // }
 
     const usePKCE = true; //Platform.OS !== 'web';
     const request = new AppAuth.ExpoAuthorizationRequest(
