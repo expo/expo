@@ -30,8 +30,8 @@ static NSString * const sourceHeightKey = @"height";
     _bridge = bridge;
     _needsReload = NO;
     _resizeMode = RCTResizeModeCover;
-    _intrinsicContentSize = CGSizeZero;
     self.contentMode = [EXImageTypes resizeModeToContentMode:_resizeMode];
+    _intrinsicContentSize = CGSizeZero;
   }
   return self;
 }
@@ -57,15 +57,11 @@ static NSString * const sourceHeightKey = @"height";
     return;
   }
   
-  // Image needs to be reloaded whenever repeat is enabled or disabled
+  // Update resize-mode. Image repeat is handled in the completion-block
+  // and requires a reload of the image for the post-process function to run.
   _needsReload = _needsReload || (resizeMode == RCTResizeModeRepeat) || (_resizeMode == RCTResizeModeRepeat);
   _resizeMode = resizeMode;
-  
-  // Repeat resize mode is handled by the UIImage. Use scale to fill
-  // so the repeated image fills the UIImageView.
-  self.contentMode = resizeMode == RCTResizeModeRepeat
-    ? UIViewContentModeScaleToFill
-    : (UIViewContentMode)resizeMode;
+  self.contentMode = [EXImageTypes resizeModeToContentMode:resizeMode];
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps

@@ -60,7 +60,9 @@
 
 + (UIViewContentMode)resizeModeToContentMode:(RCTResizeMode)resizeMode
 {
-  return (UIViewContentMode)resizeMode;
+  return resizeMode == RCTResizeModeRepeat
+  ? UIViewContentModeScaleToFill
+  : (UIViewContentMode)resizeMode;
 }
 
 @end
