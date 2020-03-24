@@ -3,7 +3,7 @@ import ServiceContext, { defaultService } from './ServiceContext';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const storageKey = 'AppAuthServiceProvider';
-const shouldRehydrate = false;
+const shouldRehydrate = true;
 
 async function cache(value: string) {
   await AsyncStorage.setItem(storageKey, JSON.stringify(value));

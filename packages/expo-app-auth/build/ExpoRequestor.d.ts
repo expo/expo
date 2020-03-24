@@ -4,6 +4,7 @@ import { Requestor } from '@openid/appauth';
  * Extends Requester
  */
 export declare class ExpoRequestor extends Requestor {
+    getJsonHeaders(): string;
     createRequest(settings: JQueryAjaxSettings): {
         init: RequestInit;
         url: URL;

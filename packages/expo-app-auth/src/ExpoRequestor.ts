@@ -6,6 +6,16 @@ import { URL, URLSearchParams } from './URL';
  * Extends Requester
  */
 export class ExpoRequestor extends Requestor {
+  // Set 'Accept' header value for json requests
+  // (Taken from https://github.com/jquery/jquery/blob/e0d941156900a6bff7c098c8ea7290528e468cf8/src/ajax.js#L644)
+  getJsonHeaders(): string {
+    // WARNING: Github authentication will return XML if this includes the standard `*/*`
+    // we'll remove the */* property for now. Override this class in the future if it has problems.
+    // https://github.com/expo/expo/pull/3828/files
+    return 'application/json, text/javascript; q=0.01';
+    // return 'application/json, text/javascript, */*; q=0.01';
+  }
+
   createRequest(
     settings: JQueryAjaxSettings
   ): { init: RequestInit; url: URL; isJsonDataType: boolean } {
@@ -41,11 +51,8 @@ export class ExpoRequestor extends Requestor {
 
     const isJsonDataType = settings.dataType?.toLowerCase() === 'json';
 
-    // Set 'Accept' header value for json requests (Taken from
-    // https://github.com/jquery/jquery/blob/e0d941156900a6bff7c098c8ea7290528e468cf8/src/ajax.js#L644
-    // )
-    if (isJsonDataType) {
-      requestInit.headers['Accept'] = 'application/json, text/javascript, */*; q=0.01';
+    if (isJsonDataType && !('Accept' in requestInit.headers)) {
+      requestInit.headers['Accept'] = this.getJsonHeaders();
     }
     return { init: requestInit, isJsonDataType, url };
   }
