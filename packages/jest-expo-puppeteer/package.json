@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-puppeteer",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -25,17 +25,18 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "dependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-flow": "^7.0.0",
-    "@expo/babel-preset-cli": "^0.2.5",
-    "@expo/config": "^2.5.6",
-    "@expo/xdl": "^57.4.6",
+    "@babel/core": "^7.9.0",
+    "@expo/babel-preset-cli": "^0.2.7",
+    "@expo/config": "^2.6.6",
+    "@expo/xdl": "^57.6.4",
     "babel-jest": "^24.7.1",
     "getenv": "^1.0.0",
     "jest": "^24.7.1",
-    "jest-puppeteer": "^4.3.0",
-    "puppeteer": "^1.19.0",
-    "serve": "^11.1.0"
+    "jest-puppeteer": "^4.4.0",
+    "serve": "^11.3.0"
+  },
+  "peerDependencies": {
+    "puppeteer": "^2.1.1"
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",

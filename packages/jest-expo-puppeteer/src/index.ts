@@ -41,9 +41,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     exp: { web = {} },
   } = readConfigJson(projectPath);
 
-  const hasServerSideRendering = web.use === 'nextjs';
-  const defaultPort = hasServerSideRendering ? 8000 : 5000;
-  const { port: serverPort = defaultPort } = server;
+  const { port: serverPort = 5000 } = server;
   let defaultURL;
   let command;
 
@@ -66,7 +64,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     }
     command = ofCommands(commands);
   } else {
-    command = `expo start ${projectPath} --web-only --non-interactive --https`;
+    command = `expo start:web ${projectPath} --non-interactive --https`;
     defaultURL = `https://localhost:${serverPort}`;
   }
 
@@ -80,7 +78,6 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   const url = isUndefined(config.url) ? defaultURL : config.url;
 
   return {
-    hasServerSideRendering,
     ...partConfig,
     url,
     launch: {
