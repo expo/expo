@@ -52,6 +52,16 @@
 				<string>io.identityserver.demo</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.googleusercontent.apps.629683148649-uvkfsi3pckps3lc4mbc2mi7pna8pqej5</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.629683148649-uvkfsi3pckps3lc4mbc2mi7pna8pqej5</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

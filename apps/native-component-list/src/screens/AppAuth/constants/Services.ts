@@ -3,7 +3,8 @@ import { Platform } from 'react-native';
 
 const GUID = Platform.select({
   web: '629683148649-29390lifpv9kcp042bc23877isouoviq',
-  ios: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9',
+  ios: '629683148649-uvkfsi3pckps3lc4mbc2mi7pna8pqej5',
+  android: '629683148649-jkqv4iha6ntt59bt44avatba7010j198',
 });
 
 // https://demo.identityserver.io/api/test

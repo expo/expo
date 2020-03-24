@@ -12,17 +12,26 @@ const shouldRehydrate = true;
 const defaultState = { [defaultService]: null };
 
 const getItemAsync = Platform.select<any>({
-  web: AsyncStorage.getItem,
-  default: SecureStore.getItemAsync,
+  default: AsyncStorage.getItem,
 });
 const setItemAsync = Platform.select<any>({
-  web: AsyncStorage.setItem,
-  default: SecureStore.setItemAsync,
+  default: AsyncStorage.setItem,
 });
 const deleteItemAsync = Platform.select<any>({
-  web: AsyncStorage.removeItem,
-  default: SecureStore.deleteItemAsync,
+  default: AsyncStorage.removeItem,
 });
+// const getItemAsync = Platform.select<any>({
+//   web: AsyncStorage.getItem,
+//   default: SecureStore.getItemAsync,
+// });
+// const setItemAsync = Platform.select<any>({
+//   web: AsyncStorage.setItem,
+//   default: SecureStore.setItemAsync,
+// });
+// const deleteItemAsync = Platform.select<any>({
+//   web: AsyncStorage.removeItem,
+//   default: SecureStore.deleteItemAsync,
+// });
 
 type InternalServices = Record<string, TokenResponse | null>;
 
