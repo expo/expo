@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "37.0.0",
+  "version": "37.0.1",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
@@ -56,7 +56,7 @@
     "@types/lodash.zipobject": "^4.1.4",
     "@types/qs": "^6.5.1",
     "@unimodules/core": "~5.1.0",
-    "@unimodules/react-native-adapter": "~5.1.0",
+    "@unimodules/react-native-adapter": "~5.1.1",
     "babel-preset-expo": "~8.1.0",
     "badgin": "^1.1.2",
     "cross-spawn": "^6.0.5",
@@ -81,6 +81,7 @@
     "qs": "^6.5.0",
     "react-native-view-shot": "3.1.2",
     "serialize-error": "^2.1.0",
+    "unimodules-app-loader": "~1.0.0",
     "unimodules-barcode-scanner-interface": "~5.1.0",
     "unimodules-camera-interface": "~5.1.0",
     "unimodules-constants-interface": "~5.1.0",
@@ -104,5 +105,5 @@
     "react-dom": "16.9.0",
     "react-native": "0.61.4"
   },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "gitHead": "22873841ee95691cebc593ee43a9f4f13e66a1db"
 }
