@@ -12,6 +12,7 @@ static NSString * const sourceHeightKey = @"height";
 
 @interface EXImageView ()
 
+@property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong) NSDictionary *source;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 @property (nonatomic, assign) BOOL needsReload;
@@ -20,9 +21,6 @@ static NSString * const sourceHeightKey = @"height";
 @end
 
 @implementation EXImageView
-{
-  __weak RCTBridge *_bridge;
-}
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -67,6 +65,7 @@ static NSString * const sourceHeightKey = @"height";
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   if (_needsReload) {
+    _needsReload = NO;
     [self updateImage];
   }
 }
@@ -82,9 +81,9 @@ static NSString * const sourceHeightKey = @"height";
   }
 
   NSURL *imageURL = _source ? [RCTConvert NSURL:_source[sourceUriKey]] : nil;
-  NSNumber *scale = _source && _source[sourceScaleKey] ? _source[sourceScaleKey] : nil;
-  NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
-  NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
+  NSNumber *scale = _source ? _source[sourceScaleKey] : nil;
+  NSNumber *width = _source ? _source[sourceWidthKey] : nil;
+  NSNumber *height = _source ? _source[sourceHeightKey] : nil;
   RCTResizeMode resizeMode = _resizeMode;
   
   // For local assets, the intrinsic image size is passed down in the source.
@@ -157,7 +156,7 @@ static NSString * const sourceHeightKey = @"height";
     // When no explicit source image size was specified, use the dimensions
     // of the loaded image as the intrinsic content size.
     if (!width && !height) {
-      [self updateIntrinsicContentSize:image.size internalAsset:NO];
+      [strongSelf updateIntrinsicContentSize:image.size internalAsset:NO];
     }
 
     // Update image
