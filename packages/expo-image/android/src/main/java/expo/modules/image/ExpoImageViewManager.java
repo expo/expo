@@ -2,6 +2,7 @@ package expo.modules.image;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -13,6 +14,8 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import expo.modules.image.enums.ImageResizeMode;
 import expo.modules.image.events.ImageErrorEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
@@ -52,6 +55,15 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @ReactProp(name = "source")
   public void setSource(ExpoImageView view, @Nullable ReadableMap sourceMap) {
     view.setSource(sourceMap);
+  }
+
+  @ReactProp(name = "resizeMode")
+  public void setResizeMode(ExpoImageView view, String stringValue) {
+    ImageResizeMode resizeMode = ImageResizeMode.fromStringValue(stringValue);
+    if (resizeMode == ImageResizeMode.UNKNOWN) {
+      throw new JSApplicationIllegalArgumentException("Invalid resizeMode: " + stringValue);
+    }
+    view.setResizeMode(resizeMode);
   }
 
   // View lifecycle
