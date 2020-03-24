@@ -56,14 +56,15 @@ const Services: Record<
         web: 'https://localhost:19006/apis/AppAuth',
         default: `com.googleusercontent.apps.${GUID}:/oauthredirect`,
       }),
-      scopes: ['openid', 'profile'],
+      scopes: ['profile', 'email', 'openid'],
       /// In theory, the options should be able to map to these:
       /// https://docs.expo.io/versions/latest/sdk/google-sign-in/#types
       extras: {
         // login_hint: 'bacon@expo.io',
+        // Seems like this maps to `isPromptEnabled` from `expo-google-sign-in`.
         // prompt: 'select_account',
-        /// ui_locales doesn't seem to work as expected.
-        // ui_locales: 'fr-CA fr en',
+        /// ui_locales doesn't seem to work as expected, but hl does work to change the language (https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230)
+        // hl: 'fr',
       },
     },
     storageKey: 'google',

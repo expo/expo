@@ -231,7 +231,7 @@ function App() {
     );
     // console.log('REQUEST: ', await request.toJson());
     // return;
-    const authState = await AppAuth.authAsync(request, currentService.issuer);
+    const authState = await AppAuth.authAndExchangeAsync(request, currentService.issuer);
     console.log('App.authAsync(): ', JSON.stringify(authState, null, 2));
     return authState as TokenResponse;
   }
@@ -294,7 +294,7 @@ function App() {
         usePKCE
       );
 
-      const authState = await AppAuth.authAsync(request, currentService.issuer);
+      const authState = await AppAuth.authAndExchangeAsync(request, currentService.issuer);
 
       setMessage('Got authorization tokens.');
       console.log('Got authorization tokens. Access token: ', authState);

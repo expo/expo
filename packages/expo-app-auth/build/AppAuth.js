@@ -1,6 +1,7 @@
 import { AuthorizationNotifier, AuthorizationRequest, } from '@openid/appauth';
 import invariant from 'invariant';
 import { ExpoAccessTokenRequest } from './ExpoAccessTokenRequest';
+import { ExpoAuthorizationRequest } from './ExpoAuthorizationRequest';
 import { ExpoAuthorizationServiceConfiguration, } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequest } from './ExpoRefreshTokenRequest';
 import { ExpoRegistrationHandler, ExpoRegistrationRequest, } from './ExpoRegistrationHandler';
@@ -27,7 +28,7 @@ async function serviceConfigFromPropsAsync(issuerOrServiceConfig) {
  *
  * @param props
  */
-export async function authAsync(request, issuerOrServiceConfig) {
+export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
     // Eval early
     await request.toJson();
     // Get the service config
@@ -57,6 +58,30 @@ export async function authAsync(request, issuerOrServiceConfig) {
     //    application developer must verify the id_token signature and
     //    c_hash before calling the token endpoint.
     return authResponse.response;
+}
+/**
+ * Wrap the browser API and make it more node friendly.
+ *
+ * @param props
+ */
+export async function authAsync(requestJson, issuerOrServiceConfig) {
+    const request = new ExpoAuthorizationRequest({
+        ...requestJson,
+        responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+    });
+    // Eval early
+    await request.toJson();
+    // Get the service config
+    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+    const authResponse = await authRequestAsync(request, config);
+    console.log(`Authorization Code ${authResponse.response.code}`);
+    return await exchangeAsync({
+        clientId: request.clientId,
+        redirectUri: request.redirectUri,
+        code: authResponse.response.code,
+        clientSecret: authResponse.request?.extras?.client_secret,
+        codeVerifier: authResponse.request?.internal?.code_verifier,
+    }, config);
 }
 /**
  * Make an auth request that returns the auth code which can be exchanged for an access token.

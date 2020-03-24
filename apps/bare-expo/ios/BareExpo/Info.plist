@@ -62,6 +62,16 @@
 				<string>com.googleusercontent.apps.629683148649-uvkfsi3pckps3lc4mbc2mi7pna8pqej5</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>expo-google-sign-in</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

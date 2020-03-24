@@ -7,7 +7,7 @@ import {
 import invariant from 'invariant';
 
 import { ExpoAccessTokenRequest, ExpoAccessTokenRequestJson } from './ExpoAccessTokenRequest';
-import { ExpoAuthorizationRequest } from './ExpoAuthorizationRequest';
+import { ExpoAuthorizationRequest, ExpoAuthorizationRequestJson } from './ExpoAuthorizationRequest';
 import {
   ExpoAuthorizationServiceConfiguration,
   ExpoAuthorizationServiceConfigurationJson,
@@ -50,7 +50,7 @@ async function serviceConfigFromPropsAsync(
  *
  * @param props
  */
-export async function authAsync(
+export async function authAndExchangeAsync(
   request: ExpoAuthorizationRequest,
   issuerOrServiceConfig: IssuerOrServiceConfig
 ): Promise<TokenResponse | AuthorizationResponse> {
@@ -87,6 +87,39 @@ export async function authAsync(
   //    application developer must verify the id_token signature and
   //    c_hash before calling the token endpoint.
   return authResponse.response;
+}
+
+/**
+ * Wrap the browser API and make it more node friendly.
+ *
+ * @param props
+ */
+export async function authAsync(
+  requestJson: ExpoAuthorizationRequestJson,
+  issuerOrServiceConfig: IssuerOrServiceConfig
+): Promise<TokenResponse> {
+  const request = new ExpoAuthorizationRequest({
+    ...requestJson,
+    responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+  });
+  // Eval early
+  await request.toJson();
+
+  // Get the service config
+  const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+  const authResponse = await authRequestAsync(request, config);
+  console.log(`Authorization Code ${authResponse.response.code}`);
+
+  return await exchangeAsync(
+    {
+      clientId: request.clientId,
+      redirectUri: request.redirectUri,
+      code: authResponse.response.code,
+      clientSecret: authResponse.request?.extras?.client_secret,
+      codeVerifier: authResponse.request?.internal?.code_verifier,
+    },
+    config
+  );
 }
 
 /**
@@ -183,7 +216,7 @@ export async function registerAsync(
 export async function revokeAsync(
   props: ExpoRevokeTokenRequestJson,
   issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<any> {
+): Promise<boolean> {
   const request = new ExpoRevokeTokenRequest(props);
   const handler = new ExpoTokenRequestHandler();
   const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
