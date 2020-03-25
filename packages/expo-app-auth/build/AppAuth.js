@@ -34,7 +34,6 @@ export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
     // Get the service config
     const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
     const authResponse = await authRequestAsync(request, config);
-    console.log(`Authorization Code ${authResponse.response.code}`);
     // inspects response and processes further if needed (e.g. authorization
     // code exchange)
     if (request.responseType === AuthorizationRequest.RESPONSE_TYPE_CODE) {
@@ -93,7 +92,7 @@ export async function authRequestAsync(request, issuerOrServiceConfig) {
     invariant(request.redirectUri, `\`ExpoAuthorizationRequest\` requires a valid \`redirectUri\`. Example: 'com.your.app:/oauthredirect'`);
     // Get the service config
     const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const notifier = new AuthorizationNotifier();
         const authorizationHandler = new ExpoRequestHandler();
         // set notifier to deliver responses
@@ -111,7 +110,7 @@ export async function authRequestAsync(request, issuerOrServiceConfig) {
         authorizationHandler.performAuthorizationRequest(config, request);
         // Complete the request.
         // This resolves the promise and invokes the authorization listener we defined earlier.
-        authorizationHandler.completeAuthorizationRequestIfPossible();
+        authorizationHandler.completeAuthorizationRequestIfPossible().catch(reject);
     });
 }
 export async function exchangeAsync(props, issuerOrServiceConfig) {

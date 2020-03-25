@@ -1,19 +1,20 @@
 import { StorageBackend } from '@openid/appauth';
+// import AsyncStorage from '@react-native-community/async-storage';
 // import { AsyncStorage } from 'react-native';
 
-let NativeStorage: any;
+let AsyncStorage: any;
 
 try {
-  NativeStorage = require('@react-native-community/async-storage').default;
+  AsyncStorage = require('@react-native-community/async-storage').default;
 } catch (_) {
-  NativeStorage = require('react-native').AsyncStorage;
+  AsyncStorage = require('react-native').AsyncStorage;
 }
 
 /**
  * A universal `StorageBackend` backed by Async Storage.
  */
 export class ExpoStorageBackend extends StorageBackend {
-  private storage = NativeStorage;
+  private storage = AsyncStorage;
 
   public async getItem(name: string): Promise<string | null> {
     const value = await this.storage.getItem(name);

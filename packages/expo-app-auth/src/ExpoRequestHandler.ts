@@ -6,6 +6,7 @@ import {
   AuthorizationResponse,
   BasicQueryStringUtils,
   Crypto,
+  log,
   QueryStringUtils,
   StringMap,
   StorageBackend,
@@ -13,9 +14,8 @@ import {
   AppAuthError,
 } from '@openid/appauth';
 import * as WebBrowser from 'expo-web-browser';
-import qs from 'qs';
 import { Platform } from 'react-native';
-
+import { URL } from './URL';
 import { ExpoAuthorizationServiceConfiguration } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoCrypto } from './ExpoCrypto';
 import { ExpoStorageBackend } from './ExpoStorage';
@@ -39,40 +39,25 @@ const authorizationServiceConfigurationKey = (handle: string) => {
  */
 const AUTHORIZATION_REQUEST_HANDLE_KEY = 'expo_appauth_current_authorization_request';
 
+const utils = new BasicQueryStringUtils();
+
+class LocationLikeURL extends URL {
+  assign(url: string) {
+    // noop
+  }
+}
+
 export class ExpoRequestHandler extends AuthorizationRequestHandler {
-  static getQueryParams = (url: string): Record<string, string> => {
-    const parts = url.split('#');
-    const hash = parts[1];
-    const partsWithoutHash = parts[0].split('?');
-    const queryString = partsWithoutHash[partsWithoutHash.length - 1];
-
-    // Get query string (?hello=world)
-    const parsedSearch = qs.parse(queryString);
-
-    // TODO(Bacon): Should we support errorCode like expo-auth-session?
-    // Pull errorCode off of params
-    // let { errorCode } = parsedSearch;
-    // delete parsedSearch.errorCode;
-
-    // Get hash (#abc=example)
-    let parsedHash = {};
-    if (parts[1]) {
-      parsedHash = qs.parse(hash);
-    }
-
-    // Merge search and hash
-    const params = {
-      ...parsedSearch,
-      ...parsedHash,
-    };
-
-    return params;
+  static createLocationLike = (url: string): LocationLike => {
+    return new LocationLikeURL(url);
   };
 
-  private error: AuthorizationError | null = null;
+  static getQueryParams = (url: string): Record<string, string> => {
+    return utils.parseQueryString(new URL(url).search);
+  };
+
   private request: AuthorizationRequest | null = null;
-  private authPromise?: Promise<any>;
-  private url?: string;
+  private authPromise?: Promise<void>;
 
   constructor(
     public locationLike: LocationLike = window.location,
@@ -90,125 +75,57 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
   ): void {
     this.request = request;
 
-    this.authPromise = new Promise((resolve, reject) => {
+    this.authPromise = (async () => {
       // Calling toJson() adds in the code & challenge when possible
-      request
-        .toJson()
-        .then(async requestJson => {
-          if (this.request) this.request.state = requestJson.state!;
+      const requestJson = await request.toJson();
 
-          const handle = await this.crypto.generateRandom(10);
+      if (this.request) {
+        this.request.state = requestJson.state!;
+      }
 
-          // before you make request, persist all request related data in local storage.
-          await Promise.all([
-            this.storageBackend.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle),
+      const handle = await this.crypto.generateRandom(10);
 
-            this.storageBackend.setItem(
-              authorizationRequestKey(handle),
-              JSON.stringify(requestJson)
-            ),
-            this.storageBackend.setItem(
-              authorizationServiceConfigurationKey(handle),
-              JSON.stringify(configuration.toJson())
-            ),
-          ]);
+      // before you make request, persist all request related data in local storage.
+      await Promise.all([
+        this.storageBackend.setItem(AUTHORIZATION_REQUEST_HANDLE_KEY, handle),
+        this.storageBackend.setItem(authorizationRequestKey(handle), JSON.stringify(requestJson)),
+        this.storageBackend.setItem(
+          authorizationServiceConfigurationKey(handle),
+          JSON.stringify(configuration.toJson())
+        ),
+      ]);
 
-          const url = this.buildRequestUrl(configuration, request);
+      const url = this.buildRequestUrl(configuration, request);
 
-          console.log('Making a request to ', request, url);
-          const payload = await Platform.select<any>({
-            web: async () => {
-              window.location.href = url;
-              // TODO(Bacon): Support mini-window
-              // const width = 880;
-              // const height = 380;
-              // const popup = window.open(
-              //   url,
-              //   'Authenticate',
-              //   `width=${width}, height=${height}, modal=no, resizable=no, toolbar=no, menubar=no, scrollbars=no, alwaysRaise=yes`
-              // );
-              // if (popup) popup.resizeBy(0, 50);
-            },
-            default: () => WebBrowser.openAuthSessionAsync(url, request.redirectUri),
-          })();
-          if (Platform.OS === 'web') {
-            resolve();
-            return;
-          }
+      log('Making an auth request to ', url);
 
-          if (payload.type === 'success') {
-            this.url = payload.url;
-            resolve();
-          } else {
-            // TODO(Bacon): Throw some kind of error for dismiss / cancel.
-            const error = new AppAuthError(`Authorization flow was cancelled.`, {
-              // -3 is the iOS code for user dismissed.
-              code: -3,
-              // @ts-ignore: message is not on the type
-              message: payload.message,
-              type: payload.type,
-            });
-            reject(error);
-          }
-        })
-        .catch(reject);
-    });
-  }
+      if (Platform.OS === 'web') {
+        // TODO(Bacon): Use WebBrowser
+        this.locationLike.assign(url);
+        return;
+      }
 
-  private getQueryParams(): StringMap {
-    if (Platform.OS === 'web') {
-      return this.utils.parse(this.locationLike, false /* don't use hash */);
-    }
-    if (!this.url) throw new Error('Auth did not complete properly');
-    return ExpoRequestHandler.getQueryParams(this.url!);
-  }
+      const payload = await WebBrowser.openAuthSessionAsync(url, request.redirectUri);
 
-  async completeAuthorizationRequestWithRequestAsync(
-    handle: string,
-    request: AuthorizationRequest
-  ): Promise<AuthorizationRequestResponse | null> {
-    const queryParams = this.getQueryParams();
-    const state: string | undefined = queryParams['state'];
-    const code: string | undefined = queryParams['code'];
-    const error: string | undefined = queryParams['error'];
-    // let error: string | undefined = queryParams['error'] ?? queryParams['errorCode'];
-    console.log('Potential authorization request ', queryParams, state, code, error);
-    const shouldNotify = state === request.state;
-    let authorizationResponse: AuthorizationResponse | null = null;
-    let authorizationError: AuthorizationError | null = null;
+      if (payload.type === 'success') {
+        this.locationLike = new LocationLikeURL(payload.url);
+        return;
+      }
 
-    if (!shouldNotify) {
-      console.log('Mismatched request (state and request_uri) dont match.');
-      return null;
-    }
-
-    if (error) {
-      // get additional optional info.
-      const errorUri = queryParams['error_uri'];
-      const errorDescription = queryParams['error_description'];
-      authorizationError = new AuthorizationError({
-        error,
-        error_description: errorDescription,
-        error_uri: errorUri,
-        state,
+      // There is no standard in the AppAuth-JS library for cancelling an auth flow
+      // This is an attempt to emulate the native error.
+      throw new AppAuthError(`User cancelled the authorization flow.`, {
+        // -3 is the iOS code for user dismissed.
+        code: -3,
+        // @ts-ignore: message is not on the type
+        message: payload.message,
+        type: payload.type,
       });
-    } else {
-      authorizationResponse = new AuthorizationResponse({ code, state });
-    }
+    })();
+  }
 
-    // cleanup state
-    await Promise.all([
-      this.storageBackend.removeItem(AUTHORIZATION_REQUEST_HANDLE_KEY),
-      this.storageBackend.removeItem(authorizationRequestKey(handle)),
-      this.storageBackend.removeItem(authorizationServiceConfigurationKey(handle)),
-    ]);
-
-    console.log('Delivering authorization response');
-    return {
-      request,
-      response: authorizationResponse,
-      error: authorizationError,
-    } as AuthorizationRequestResponse;
+  getQueryParams(): StringMap {
+    return this.utils.parse(this.locationLike, false /* don't use hash */);
   }
 
   async getOrRehydrateRequestAsync(): Promise<AuthorizationRequest | null> {
@@ -233,25 +150,52 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
   protected async completeAuthorizationRequest(): Promise<AuthorizationRequestResponse | null> {
     if (this.authPromise) await this.authPromise;
     const handle = await this.storageBackend.getItem(AUTHORIZATION_REQUEST_HANDLE_KEY);
-    if (!handle) return null;
     // we have a pending request.
     // fetch authorization request, and check state
     const request = await this.getOrRehydrateRequestAsync();
-    if (!request) throw new Error('Cannot complete an auth that has not begun');
+    if (!handle || !request) return null;
 
-    if (Platform.OS !== 'web') {
-      if (!this.url) throw new Error('Auth did not complete properly');
-      if (this.error) {
-        const error = this.error;
-        this.error = null;
-        return {
-          request,
-          response: null,
-          error,
-        } as AuthorizationRequestResponse;
-      }
+    const queryParams = this.getQueryParams();
+    const state: string | undefined = queryParams['state'];
+    const code: string | undefined = queryParams['code'];
+    const error: string | undefined = queryParams['error'];
+    // let error: string | undefined = queryParams['error'] ?? queryParams['errorCode'];
+    log('Potential authorization request ', queryParams, state, code, error);
+    const shouldNotify = state === request.state;
+    let authorizationResponse: AuthorizationResponse | null = null;
+    let authorizationError: AuthorizationError | null = null;
+
+    if (!shouldNotify) {
+      log('Mismatched request (state and request_uri) dont match.');
+      return null;
     }
 
-    return await this.completeAuthorizationRequestWithRequestAsync(handle, request);
+    if (error) {
+      // get additional optional info.
+      const errorUri = queryParams['error_uri'];
+      const errorDescription = queryParams['error_description'];
+      authorizationError = new AuthorizationError({
+        error,
+        error_description: errorDescription,
+        error_uri: errorUri,
+        state,
+      });
+    } else {
+      authorizationResponse = new AuthorizationResponse({ code, state });
+    }
+
+    // cleanup state
+    await Promise.all([
+      this.storageBackend.removeItem(AUTHORIZATION_REQUEST_HANDLE_KEY),
+      this.storageBackend.removeItem(authorizationRequestKey(handle)),
+      this.storageBackend.removeItem(authorizationServiceConfigurationKey(handle)),
+    ]);
+
+    log('Delivering authorization response');
+    return {
+      request,
+      response: authorizationResponse,
+      error: authorizationError,
+    } as AuthorizationRequestResponse;
   }
 }

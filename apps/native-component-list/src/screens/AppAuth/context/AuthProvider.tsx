@@ -2,7 +2,7 @@ import { TokenResponse, TokenResponseJson } from '@openid/appauth';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from './AsyncStorage';
 import ServiceContext, { defaultService } from './ServiceContext';
 import AuthContext from './AuthContext';
 
@@ -36,6 +36,7 @@ const deleteItemAsync = Platform.select<any>({
 type InternalServices = Record<string, TokenResponse | null>;
 
 async function cache(value: InternalServices) {
+  if (!AsyncStorage) return;
   if (value) {
     await setItemAsync(storageKey, JSON.stringify(value));
   } else {
@@ -72,18 +73,15 @@ export default function AuthProvider({ children }: any) {
   const { service } = React.useContext(ServiceContext);
   const [internalAuth, setInternalAuth] = React.useState<InternalServices | null>(null);
   const [auth, setAuth] = React.useState<TokenResponse | null>(null);
-  console.log('AuthProvider: ', service, auth);
 
   React.useEffect(() => {
     rehydrate().then(auth => {
-      console.log('rehydrated: ', auth);
       setInternalAuth(auth);
     });
   }, []);
 
   React.useEffect(() => {
     if (internalAuth) {
-      console.log('internal auth', service in internalAuth);
       if (service in internalAuth) {
         setAuth(internalAuth[service]);
       } else {

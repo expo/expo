@@ -45,11 +45,14 @@
   },
   "dependencies": {
     "@openid/appauth": "^1.2.6",
-    "expo-crypto": "^8.0.0",
+    "expo-crypto": "^8.1.0",
     "expo-random": "^8.0.0",
     "expo-web-browser": "^8.0.0",
     "invariant": "^2.2.4",
     "whatwg-url-without-unicode": "8.0.0-1"
+  },
+  "peerDependencies": {
+    "@react-native-community/async-storage": "^1.8.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.1.0",
