@@ -1,4 +1,4 @@
-import ExpoUpdates from '../ExpoUpdates';
+import ExponentUpdates from '../ExponentUpdates';
 import * as Updates from '../Updates';
 
 const fakeManifest = {
@@ -7,10 +7,7 @@ const fakeManifest = {
 };
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifest is returned', async () => {
-  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
-    isAvailable: true,
-    manifest: fakeManifest,
-  });
+  ExponentUpdates.checkForUpdateAsync.mockReturnValueOnce(fakeManifest);
 
   const actual = await Updates.checkForUpdateAsync();
   const expected = { isAvailable: true, manifest: fakeManifest };
@@ -18,18 +15,23 @@ it('returns the proper object in checkForUpdateAsync if an update is available a
 });
 
 it('returns the proper object in checkForUpdateAsync if an update is available and manifestString is returned', async () => {
-  ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
-    isAvailable: true,
-    manifestString: JSON.stringify(fakeManifest),
-  });
+  ExponentUpdates.checkForUpdateAsync.mockReturnValueOnce(JSON.stringify(fakeManifest));
 
   const actual = await Updates.checkForUpdateAsync();
   const expected = { isAvailable: true, manifest: fakeManifest };
   expect(actual).toEqual(expected);
 });
 
+it('returns the proper object in checkForUpdateAsync if an update is not available', async () => {
+  ExponentUpdates.checkForUpdateAsync.mockReturnValueOnce(false);
+
+  const actual = await Updates.checkForUpdateAsync();
+  const expected = { isAvailable: false };
+  expect(actual).toEqual(expected);
+});
+
 it('returns the proper object in fetchUpdateAsync if an update is available and manifest is returned', async () => {
-  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({ isNew: true, manifest: fakeManifest });
+  ExponentUpdates.fetchUpdateAsync.mockReturnValueOnce(fakeManifest);
 
   const actual = await Updates.fetchUpdateAsync();
   const expected = { isNew: true, manifest: fakeManifest };
@@ -37,12 +39,17 @@ it('returns the proper object in fetchUpdateAsync if an update is available and 
 });
 
 it('returns the proper object in fetchUpdateAsync if an update is available and manifestString is returned', async () => {
-  ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
-    isNew: true,
-    manifestString: JSON.stringify(fakeManifest),
-  });
+  ExponentUpdates.fetchUpdateAsync.mockReturnValueOnce(JSON.stringify(fakeManifest));
 
   const actual = await Updates.fetchUpdateAsync();
   const expected = { isNew: true, manifest: fakeManifest };
+  expect(actual).toEqual(expected);
+});
+
+it('returns the proper object in fetchUpdateAsync if an update is not available', async () => {
+  ExponentUpdates.fetchUpdateAsync.mockReturnValueOnce(false);
+
+  const actual = await Updates.fetchUpdateAsync();
+  const expected = { isNew: false };
   expect(actual).toEqual(expected);
 });
