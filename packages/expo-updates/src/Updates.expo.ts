@@ -45,7 +45,12 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
+  _isFetchingUpdate = true;
   const result = await ExponentUpdates.fetchUpdateAsync();
+  setTimeout(() => {
+    _isFetchingUpdate = false;
+  }, 0);
+
   if (!result) {
     return { isNew: false };
   }
@@ -57,6 +62,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
 }
 
 let _emitter: EventEmitter | null;
+let _isFetchingUpdate = false;
 
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
@@ -67,6 +73,12 @@ function _getEmitter(): EventEmitter {
 }
 
 function _emitEvent(params): void {
+  // The legacy implementation emits additional events during the `fetchUpdateAsync` call. Since the
+  // new implementation does not do this, we should ignore these events.
+  if (_isFetchingUpdate) {
+    return;
+  }
+
   let newParams = params;
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
@@ -93,7 +105,7 @@ function _emitEvent(params): void {
 }
 
 export function addListener(listener: Listener<UpdateEvent>): EventSubscription {
-  let emitter = _getEmitter();
+  const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
 }
 

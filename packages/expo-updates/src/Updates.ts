@@ -14,8 +14,13 @@ import {
 export * from './Updates.types';
 
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
-export const manifest: Manifest | object = ExpoUpdates.manifest ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
+
+let _manifest = ExpoUpdates.manifest;
+if (ExpoUpdates.manifestString) {
+  _manifest = JSON.parse(ExpoUpdates.manifestString);
+}
+export const manifest: Manifest | object = _manifest ?? {};
 
 export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
