@@ -1,5 +1,5 @@
 import { GRANT_TYPE_REFRESH_TOKEN, StringMap } from '@openid/appauth';
-
+import invariant from 'invariant';
 import { ExpoTokenRequest } from './ExpoTokenRequest';
 
 /**
@@ -22,6 +22,10 @@ export interface ExpoRefreshTokenRequestJson {
  */
 export class ExpoRefreshTokenRequest extends ExpoTokenRequest {
   constructor(options: ExpoRefreshTokenRequestJson) {
+    invariant(
+      options.refreshToken,
+      `\`ExpoRefreshTokenRequest\` requires a valid \`refreshToken\`.`
+    );
     super({
       grant_type: GRANT_TYPE_REFRESH_TOKEN,
       code: options.code,

@@ -39,7 +39,7 @@ export class ExpoTokenRequestHandler extends BaseTokenRequestHandler {
   ): Promise<boolean> {
     if (!configuration.revocationEndpoint) {
       throw new Error(
-        'Cannot revoke token without a valid `revocationEndpoint` in the authorization service configuration.'
+        `Cannot revoke token without a valid \`revocationEndpoint\` in the authorization service configuration.`
       );
     }
     await this.requestor.xhr<boolean>({

@@ -11,7 +11,7 @@ export class ExpoTokenRequestHandler extends BaseTokenRequestHandler {
     }
     async performRevokeTokenRequest(configuration, request) {
         if (!configuration.revocationEndpoint) {
-            throw new Error('Cannot revoke token without a valid `revocationEndpoint` in the authorization service configuration.');
+            throw new Error(`Cannot revoke token without a valid \`revocationEndpoint\` in the authorization service configuration.`);
         }
         await this.requestor.xhr({
             url: configuration.revocationEndpoint,

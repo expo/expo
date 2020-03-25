@@ -6,6 +6,7 @@ import {
   AuthorizationResponse,
   BasicQueryStringUtils,
   Crypto,
+  AuthorizationNotifier,
   log,
   QueryStringUtils,
   StringMap,
@@ -67,6 +68,42 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
     crypto: Crypto = new ExpoCrypto()
   ) {
     super(utils, crypto);
+  }
+
+  /**
+   * A convenience method for fully resolving native auth requests, and beginning web auth requests.
+   *
+   * @param config Service configuration
+   * @param request Authorization request (must contain a redirect URI)
+   */
+  async performAuthorizationRequestAsync(
+    config: ExpoAuthorizationServiceConfiguration,
+    request: AuthorizationRequest
+  ): Promise<{ request: AuthorizationRequest; response: AuthorizationResponse }> {
+    return new Promise((resolve, reject) => {
+      const currentNotifier = this.notifier;
+      const notifier = new AuthorizationNotifier();
+      const authorizationHandler = new ExpoRequestHandler();
+      // set notifier to deliver responses
+      authorizationHandler.setAuthorizationNotifier(notifier);
+      // set a listener to listen for authorization responses
+      notifier.setAuthorizationListener(async (request, response, error) => {
+        if (currentNotifier) {
+          currentNotifier.onAuthorizationComplete(request, response, error);
+          authorizationHandler.setAuthorizationNotifier(currentNotifier);
+        }
+        if (response) {
+          resolve({ request, response });
+        } else {
+          reject(error);
+        }
+      });
+      // Make the authorization request (launch the external web browser).
+      authorizationHandler.performAuthorizationRequest(config, request);
+      // Complete the request.
+      // This resolves the promise and invokes the authorization listener we defined earlier.
+      authorizationHandler.completeAuthorizationRequestIfPossible().catch(reject);
+    });
   }
 
   performAuthorizationRequest(

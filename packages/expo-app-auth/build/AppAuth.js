@@ -1,4 +1,4 @@
-import { AuthorizationNotifier, AuthorizationRequest, } from '@openid/appauth';
+import { AuthorizationRequest } from '@openid/appauth';
 import invariant from 'invariant';
 import { ExpoAccessTokenRequest } from './ExpoAccessTokenRequest';
 import { ExpoAuthorizationRequest } from './ExpoAuthorizationRequest';
@@ -9,12 +9,12 @@ import { ExpoRequestHandler } from './ExpoRequestHandler';
 import { ExpoRevokeTokenRequest } from './ExpoRevokeTokenRequest';
 import { ExpoTokenRequestHandler } from './ExpoTokenRequestHandler';
 /**
- * Utility method for resolving the service config
+ * Utility method for resolving the service config from an issuer or object.
  *
  * @param issuerOrServiceConfig
  */
-async function serviceConfigFromPropsAsync(issuerOrServiceConfig) {
-    invariant(issuerOrServiceConfig, 'Expected a valid service configuration or issuer URL');
+export async function resolveServiceConfigAsync(issuerOrServiceConfig) {
+    invariant(issuerOrServiceConfig && !['number', 'boolean'].includes(typeof issuerOrServiceConfig), 'Expected a valid service configuration or issuer URL');
     if (typeof issuerOrServiceConfig === 'string') {
         return await ExpoAuthorizationServiceConfiguration.fetchFromIssuer(issuerOrServiceConfig);
     }
@@ -24,31 +24,10 @@ async function serviceConfigFromPropsAsync(issuerOrServiceConfig) {
     return new ExpoAuthorizationServiceConfiguration(issuerOrServiceConfig);
 }
 /**
- * Wrap the browser API and make it more node friendly.
- *
- * @param props
+ * Authenticate and auto exchange the code for an access token.
  */
 export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
-    // Eval early
-    await request.toJson();
-    // Get the service config
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
-    const authResponse = await authRequestAsync(request, config);
-    // inspects response and processes further if needed (e.g. authorization
-    // code exchange)
-    if (request.responseType === AuthorizationRequest.RESPONSE_TYPE_CODE) {
-        // If the request is for the code flow (NB. not hybrid), then assume the
-        // code is intended for this client, and perform the authorization
-        // code exchange.
-        return await exchangeAsync({
-            clientId: request.clientId,
-            redirectUri: request.redirectUri,
-            code: authResponse.response.code,
-            clientSecret: authResponse.request?.extras?.client_secret,
-            codeVerifier: authResponse.request?.internal?.code_verifier,
-        }, config);
-    }
-    // Hybrid flow (code id_token).
+    // Using responseType token probably indicates that the developer wants to perform a hybrid flow.
     // Two possible cases:
     // 1. The code is not for this client, ie. will be sent to a
     //    web service that performs the ID token verification and token
@@ -56,65 +35,48 @@ export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
     // 2. The code is for this client and, for security reasons, the
     //    application developer must verify the id_token signature and
     //    c_hash before calling the token endpoint.
-    return authResponse.response;
-}
-/**
- * Wrap the browser API and make it more node friendly.
- *
- * @param props
- */
-export async function authAsync(requestJson, issuerOrServiceConfig) {
-    const request = new ExpoAuthorizationRequest({
-        ...requestJson,
-        responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
-    });
-    // Eval early
-    await request.toJson();
+    invariant(request.responseType === AuthorizationRequest.RESPONSE_TYPE_CODE, `Expected { responseType: 'code' }. Please use AppAuth.authRequestAsync() directly for token requests.`);
     // Get the service config
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
-    const authResponse = await authRequestAsync(request, config);
-    console.log(`Authorization Code ${authResponse.response.code}`);
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
+    const response = await authRequestAsync(request, config);
+    // If the request is for the code flow (NB. not hybrid), then assume the
+    // code is intended for this client, and perform the authorization
+    // code exchange.
     return await exchangeAsync({
         clientId: request.clientId,
         redirectUri: request.redirectUri,
-        code: authResponse.response.code,
-        clientSecret: authResponse.request?.extras?.client_secret,
-        codeVerifier: authResponse.request?.internal?.code_verifier,
+        code: response.response.code,
+        clientSecret: response.request?.extras?.client_secret,
+        codeVerifier: response.request?.internal?.code_verifier,
     }, config);
+}
+/**
+ * Authenticate and auto exchange the code for an access token.
+ *
+ * @deprecated Use `AppAuth.authAndExchangeAsync()` instead.
+ */
+export async function authAsync(props, issuerOrServiceConfig) {
+    const request = new ExpoAuthorizationRequest({
+        responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+        ...props,
+    });
+    return authAndExchangeAsync(request, issuerOrServiceConfig);
 }
 /**
  * Make an auth request that returns the auth code which can be exchanged for an access token.
  *
- * @param props
+ * @param request
  * @param issuerOrServiceConfig
  */
 export async function authRequestAsync(request, issuerOrServiceConfig) {
-    invariant(request.redirectUri, `\`ExpoAuthorizationRequest\` requires a valid \`redirectUri\`. Example: 'com.your.app:/oauthredirect'`);
+    // Eval early
+    await request.toJson();
     // Get the service config
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
-    return new Promise((resolve, reject) => {
-        const notifier = new AuthorizationNotifier();
-        const authorizationHandler = new ExpoRequestHandler();
-        // set notifier to deliver responses
-        authorizationHandler.setAuthorizationNotifier(notifier);
-        // set a listener to listen for authorization responses
-        notifier.setAuthorizationListener(async (_, response, error) => {
-            if (response) {
-                resolve({ request, response });
-            }
-            else {
-                reject(error);
-            }
-        });
-        // Make the authorization request (launch the external web browser).
-        authorizationHandler.performAuthorizationRequest(config, request);
-        // Complete the request.
-        // This resolves the promise and invokes the authorization listener we defined earlier.
-        authorizationHandler.completeAuthorizationRequestIfPossible().catch(reject);
-    });
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
+    const handler = new ExpoRequestHandler();
+    return await handler.performAuthorizationRequestAsync(config, request);
 }
 export async function exchangeAsync(props, issuerOrServiceConfig) {
-    invariant(props.redirectUri, `\`ExpoAccessTokenRequest\` requires a valid \`redirectUri\`. Example: 'com.your.app:/oauthredirect'`);
     // use the code to make the token request.
     /**
      * If this fails (status 400), it's either because the PKCE code is wrong, or because too many params are being passed in the body:
@@ -127,31 +89,32 @@ export async function exchangeAsync(props, issuerOrServiceConfig) {
      */
     const request = new ExpoAccessTokenRequest(props);
     const handler = new ExpoTokenRequestHandler();
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
     const response = await handler.performTokenRequest(config, request);
     return response;
 }
 export async function refreshAsync(props, issuerOrServiceConfig) {
-    invariant(props.refreshToken, `\`ExpoRefreshTokenRequest\` requires a valid \`refreshToken\`.`);
     const request = new ExpoRefreshTokenRequest(props);
     const handler = new ExpoTokenRequestHandler();
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
     const response = await handler.performTokenRequest(config, request);
     // Custom: reuse the refresh token if one wasn't returned
-    response.refreshToken = response.refreshToken || props.refreshToken;
+    response.refreshToken = response.refreshToken ?? props.refreshToken;
     return response;
 }
 export async function registerAsync(props, issuerOrServiceConfig) {
     const request = new ExpoRegistrationRequest(props);
     const handler = new ExpoRegistrationHandler();
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
     const response = await handler.performRegistrationRequest(config, request);
     return response;
 }
 export async function revokeAsync(props, issuerOrServiceConfig) {
     const request = new ExpoRevokeTokenRequest(props);
     const handler = new ExpoTokenRequestHandler();
-    const config = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+    const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
+    // Add a slightly more helpful error message for issuers that don't support revocation.
+    invariant(config.revocationEndpoint || typeof issuerOrServiceConfig !== 'string', `Cannot revoke token without a valid revocation endpoint in the authorization service configuration. The supplied issuer "${issuerOrServiceConfig}" may not support token revocation.`);
     const response = await handler.performRevokeTokenRequest(config, request);
     return response;
 }

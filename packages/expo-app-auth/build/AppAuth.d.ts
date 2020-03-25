@@ -5,23 +5,27 @@ import { ExpoAuthorizationServiceConfiguration, ExpoAuthorizationServiceConfigur
 import { ExpoRefreshTokenRequestJson } from './ExpoRefreshTokenRequest';
 import { ExpoRegistrationRequestJson, ExpoRegistrationResponse } from './ExpoRegistrationHandler';
 import { ExpoRevokeTokenRequestJson } from './ExpoRevokeTokenRequest';
-declare type IssuerOrServiceConfig = string | ExpoAuthorizationServiceConfiguration | ExpoAuthorizationServiceConfigurationJson;
+export declare type IssuerOrServiceConfig = string | ExpoAuthorizationServiceConfiguration | ExpoAuthorizationServiceConfigurationJson;
 /**
- * Wrap the browser API and make it more node friendly.
+ * Utility method for resolving the service config from an issuer or object.
  *
- * @param props
+ * @param issuerOrServiceConfig
  */
-export declare function authAndExchangeAsync(request: ExpoAuthorizationRequest, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<TokenResponse | AuthorizationResponse>;
+export declare function resolveServiceConfigAsync(issuerOrServiceConfig: IssuerOrServiceConfig): Promise<ExpoAuthorizationServiceConfiguration>;
 /**
- * Wrap the browser API and make it more node friendly.
- *
- * @param props
+ * Authenticate and auto exchange the code for an access token.
  */
-export declare function authAsync(requestJson: ExpoAuthorizationRequestJson, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<TokenResponse>;
+export declare function authAndExchangeAsync(request: ExpoAuthorizationRequest, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<TokenResponse>;
+/**
+ * Authenticate and auto exchange the code for an access token.
+ *
+ * @deprecated Use `AppAuth.authAndExchangeAsync()` instead.
+ */
+export declare function authAsync(props: ExpoAuthorizationRequestJson, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<TokenResponse>;
 /**
  * Make an auth request that returns the auth code which can be exchanged for an access token.
  *
- * @param props
+ * @param request
  * @param issuerOrServiceConfig
  */
 export declare function authRequestAsync(request: ExpoAuthorizationRequest, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<{
@@ -32,4 +36,3 @@ export declare function exchangeAsync(props: ExpoAccessTokenRequestJson, issuerO
 export declare function refreshAsync(props: ExpoRefreshTokenRequestJson, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<TokenResponse>;
 export declare function registerAsync(props: ExpoRegistrationRequestJson, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<ExpoRegistrationResponse>;
 export declare function revokeAsync(props: ExpoRevokeTokenRequestJson, issuerOrServiceConfig: IssuerOrServiceConfig): Promise<boolean>;
-export {};

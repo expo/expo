@@ -1,6 +1,7 @@
 import { GRANT_TYPE_AUTHORIZATION_CODE, StringMap } from '@openid/appauth';
-
+import invariant from 'invariant';
 import { ExpoTokenRequest } from './ExpoTokenRequest';
+import { Platform } from 'react-native';
 
 /**
  * Represents the Token Request as user-friendly JSON.
@@ -22,6 +23,13 @@ export interface ExpoAccessTokenRequestJson {
  */
 export class ExpoAccessTokenRequest extends ExpoTokenRequest {
   constructor(options: ExpoAccessTokenRequestJson) {
+    invariant(
+      options.redirectUri,
+      `\`ExpoAccessTokenRequest\` requires a valid \`redirectUri\`. Example: ${Platform.select({
+        web: 'https://yourwebsite.com/',
+        default: 'com.your.app:/oauthredirect',
+      })}`
+    );
     super({
       grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
       code: options.code,

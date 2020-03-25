@@ -1,6 +1,6 @@
 import { AuthorizationRequest, AuthorizationRequestJson, Crypto, StringMap } from '@openid/appauth';
 import invariant from 'invariant';
-
+import { Platform } from 'react-native';
 import { ExpoCrypto } from './ExpoCrypto';
 
 export type CodeChallengeMethod = 'S256' | 'plain';
@@ -46,6 +46,13 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
     invariant(
       request.responseType,
       `\`ExpoAuthorizationRequest\` requires a valid \`responseType\`.`
+    );
+    invariant(
+      request.redirectUri,
+      `\`ExpoAuthorizationRequest\` requires a valid \`redirectUri\`. Example: ${Platform.select({
+        web: 'https://yourwebsite.com/',
+        default: 'com.your.app:/oauthredirect',
+      })}`
     );
     super(
       {

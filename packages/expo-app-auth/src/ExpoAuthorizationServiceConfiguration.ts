@@ -60,6 +60,7 @@ export type DiscoveryDocument = Record<string, string | boolean | string[]> & {
   subject_types_supported?: string[];
   token_endpoint_auth_methods_supported?: string[];
 };
+
 /**
  * Configuration details required to interact with an authorization service.
  * Expo adds support for discoveryDocument
@@ -67,7 +68,6 @@ export type DiscoveryDocument = Record<string, string | boolean | string[]> & {
  * More information at https://openid.net/specs/openid-connect-discovery-1_0-17.html
  */
 export class ExpoAuthorizationServiceConfiguration extends AuthorizationServiceConfiguration {
-  // TODO(Bacon): This supports more properties on iOS
   discoveryDocument: DiscoveryDocument;
   registrationEndpoint?: string;
 
