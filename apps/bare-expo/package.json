@@ -44,7 +44,8 @@
     "expo-module-template",
     "expo-in-app-purchases",
     "expo-apple-authentication",
-    "expo-updates"
+    "expo-updates",
+    "expo-splash-screen"
   ],
   "detox": {
     "configurations": {
