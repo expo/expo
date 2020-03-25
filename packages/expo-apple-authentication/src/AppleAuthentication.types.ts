@@ -213,6 +213,7 @@ export enum AppleAuthenticationUserDetectionStatus {
 export enum AppleAuthenticationButtonType {
   SIGN_IN = 0,
   CONTINUE = 1,
+  SIGN_UP = 2, // requires iOS 13.2 or later
 }
 
 /**
