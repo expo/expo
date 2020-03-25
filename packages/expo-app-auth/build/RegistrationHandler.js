@@ -44,13 +44,13 @@ export class RegistrationRequest {
     }
     toJson() {
         return {
-            redirect_uris: this.redirectUris.join(' '),
-            response_types: this.responseTypes.join(' '),
-            grant_types: this.grantTypes.join(' '),
-            subject_type: this.subjectType || '',
+            redirect_uris: (this.redirectUris ?? []).join(' '),
+            response_types: (this.responseTypes ?? []).join(' '),
+            grant_types: (this.grantTypes ?? []).join(' '),
+            subject_type: this.subjectType ?? '',
             application_type: this.applicationType,
-            token_endpoint_auth_method: this.tokenEndpointAuthMethod || '',
-            initial_access_token: this.initialAccessToken || '',
+            token_endpoint_auth_method: this.tokenEndpointAuthMethod ?? '',
+            initial_access_token: this.initialAccessToken ?? '',
         };
     }
     toStringMap() {

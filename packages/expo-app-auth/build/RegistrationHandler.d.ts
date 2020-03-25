@@ -5,28 +5,28 @@ export declare type RegistrationErrorJson = TokenErrorJson;
 export declare class RegistrationError extends TokenError {
 }
 export declare type RegistrationResponseJson = {
-    client_id_issued_at: number;
-    client_secret_expires_at: number;
+    client_id_issued_at?: number;
+    client_secret_expires_at?: number;
     client_id: string;
-    client_secret: string;
+    client_secret?: string;
     registration_access_token: string;
     registration_client_uri: string;
     extras: StringMap;
 };
 export declare class RegistrationResponse {
-    clientIdIssuedAt: number;
-    clientSecretExpiresAt: number;
+    clientIdIssuedAt?: number;
+    clientSecretExpiresAt?: number;
     clientId: string;
-    clientSecret: string;
+    clientSecret?: string;
     registrationAccessToken: string;
     registrationClientUri: string;
     extras: StringMap;
     constructor(options: RegistrationResponseJson);
     toJson(): {
-        client_id_issued_at: number;
-        client_secret_expires_at: number;
+        client_id_issued_at: number | undefined;
+        client_secret_expires_at: number | undefined;
         client_id: string;
-        client_secret: string;
+        client_secret: string | undefined;
         registration_access_token: string;
         registration_client_uri: string;
     };
@@ -49,7 +49,7 @@ export interface RegistrationRequestJson {
      *
      * [OpenID Connect Dynamic Client Registration 1.0, Section 2](https://openid.net/specs/openid-connect-discovery-1_0.html#rfc.section.2)
      */
-    grant_types: GrantType[];
+    grant_types?: GrantType[];
     /**
      * Subject type to use.
      *
@@ -73,7 +73,7 @@ export interface RegistrationRequestJson {
     initial_access_token?: string;
     extras?: Record<string, any>;
 }
-export declare type RegistrationApplicationType = 'web' | 'native';
+export declare type RegistrationApplicationType = 'web' | 'native' | 'browser' | 'service';
 export declare class RegistrationRequest {
     /**
      * Instructs the authorization server to generate a pairwise subject identifier.
@@ -119,7 +119,7 @@ export declare class RegistrationRequest {
     static CLIENT_AUTH_NONE: string;
     redirectUris: string[];
     responseTypes: string[];
-    grantTypes: GrantType[];
+    grantTypes?: GrantType[];
     subjectType?: string;
     tokenEndpointAuthMethod?: string;
     initialAccessToken?: string;

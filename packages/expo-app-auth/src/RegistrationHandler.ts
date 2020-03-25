@@ -20,20 +20,20 @@ export type RegistrationErrorJson = TokenErrorJson;
 export class RegistrationError extends TokenError {}
 
 export type RegistrationResponseJson = {
-  client_id_issued_at: number;
-  client_secret_expires_at: number;
+  client_id_issued_at?: number;
+  client_secret_expires_at?: number;
   client_id: string;
-  client_secret: string;
+  client_secret?: string;
   registration_access_token: string;
   registration_client_uri: string;
   extras: StringMap;
 };
 
 export class RegistrationResponse {
-  clientIdIssuedAt: number;
-  clientSecretExpiresAt: number;
+  clientIdIssuedAt?: number;
+  clientSecretExpiresAt?: number;
   clientId: string;
-  clientSecret: string;
+  clientSecret?: string;
   registrationAccessToken: string;
   registrationClientUri: string;
   extras: StringMap;
@@ -80,7 +80,7 @@ export interface RegistrationRequestJson {
    *
    * [OpenID Connect Dynamic Client Registration 1.0, Section 2](https://openid.net/specs/openid-connect-discovery-1_0.html#rfc.section.2)
    */
-  grant_types: GrantType[];
+  grant_types?: GrantType[];
   /**
    * Subject type to use.
    *
@@ -105,7 +105,7 @@ export interface RegistrationRequestJson {
   extras?: Record<string, any>;
 }
 
-export type RegistrationApplicationType = 'web' | 'native';
+export type RegistrationApplicationType = 'web' | 'native' | 'browser' | 'service';
 
 export class RegistrationRequest {
   /**
@@ -155,7 +155,7 @@ export class RegistrationRequest {
 
   redirectUris: string[];
   responseTypes: string[];
-  grantTypes: GrantType[];
+  grantTypes?: GrantType[];
   subjectType?: string;
   tokenEndpointAuthMethod?: string;
   initialAccessToken?: string;
@@ -181,13 +181,13 @@ export class RegistrationRequest {
 
   toJson() {
     return {
-      redirect_uris: this.redirectUris.join(' '),
-      response_types: this.responseTypes.join(' '),
-      grant_types: this.grantTypes.join(' '),
-      subject_type: this.subjectType || '',
+      redirect_uris: (this.redirectUris ?? []).join(' '),
+      response_types: (this.responseTypes ?? []).join(' '),
+      grant_types: (this.grantTypes ?? []).join(' '),
+      subject_type: this.subjectType ?? '',
       application_type: this.applicationType,
-      token_endpoint_auth_method: this.tokenEndpointAuthMethod || '',
-      initial_access_token: this.initialAccessToken || '',
+      token_endpoint_auth_method: this.tokenEndpointAuthMethod ?? '',
+      initial_access_token: this.initialAccessToken ?? '',
     };
   }
 

@@ -55,9 +55,18 @@ function App() {
   const [message, setMessage] = React.useState<string>('');
   const currentService = JSON.parse(JSON.stringify(Services[service]));
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
+  const [supportsUserInfo, setSupportsUserInfo] = React.useState<boolean>(false);
+  const [supportsRegistration, setSupportsRegistration] = React.useState<boolean>(false);
   const serviceConfig = currentService?.issuer; //useServiceConfig(currentService.issuer);
 
   usePrepareWebBrowser();
+
+  React.useEffect(() => {
+    AppAuth.resolveServiceConfigAsync(serviceConfig).then(config => {
+      setSupportsUserInfo(!!config.userInfoEndpoint);
+      setSupportsRegistration(!!config.registrationEndpoint);
+    });
+  }, [service]);
 
   async function signOutAsync(authState: any) {
     try {
@@ -125,16 +134,16 @@ function App() {
     try {
       const registrationResponse = await AppAuth.registerAsync(
         {
-          // @ts-ignore
-          response_types: undefined,
-          // @ts-ignore
-          grant_types: undefined,
-          subject_type: undefined,
-          token_endpoint_auth_method: 'client_secret_post',
-          redirect_uris: [currentService.redirectUri],
+          extras: {
+            response_types: ['code', 'id_token'],
+          },
+          grantTypes: ['authorization_code', 'refresh_token'],
+          tokenEndpointAuthMethod: 'client_secret_post',
+          redirectUris: [currentService.redirectUri],
         },
         serviceConfig
       );
+      console.log('Got registration response: ', registrationResponse);
       setMessage('Got registration response: ' + registrationResponse);
       return registrationResponse;
     } catch (error) {
@@ -162,13 +171,17 @@ function App() {
           <Button title="Log In" onPress={async () => setAuth(await signInAsync())} />
           <Button disabled={!auth?.refreshToken} title="Refresh" onPress={() => refreshAsync()} />
           <Button title="Log Out" onPress={() => signOutAsync(auth)} />
-          <Button title="Get User" onPress={() => getUserInfoWithFreshTokensAsync()} />
           <Button
+            disabled={!supportsUserInfo}
+            title="Get User"
+            onPress={() => getUserInfoWithFreshTokensAsync()}
+          />
+          <Button
+            disabled={!supportsRegistration}
             title="Register"
             onPress={async () => {
               const register = await registerAsync();
-
-              setAuth(await signInAsync({ clientSecret: register?.clientSecret }));
+              if (register) setAuth(await signInAsync({ clientSecret: register?.clientSecret }));
             }}
           />
         </View>

@@ -241,7 +241,7 @@ export async function getUserInfoAsync(
   if (!token) {
     throw new Error('Cannot get user info without a valid access token');
   }
-  const serviceConfig = await serviceConfigFromPropsAsync(issuerOrServiceConfig);
+  const serviceConfig = await AppAuth.resolveServiceConfigAsync(issuerOrServiceConfig);
   // @ts-ignore: TODO
   const userInfoEndpoint = serviceConfig.discoveryDocument.userinfo_endpoint;
 
@@ -272,19 +272,3 @@ export async function getUserInfoAsync(
 }
 
 const serviceConfigCache: Record<string, AppAuth.ExpoAuthorizationServiceConfiguration> = {};
-
-export async function serviceConfigFromPropsAsync(
-  issuerOrServiceConfig: any
-): Promise<AppAuth.ExpoAuthorizationServiceConfiguration> {
-  if (typeof issuerOrServiceConfig === 'string') {
-    if (issuerOrServiceConfig in serviceConfigCache)
-      return serviceConfigCache[issuerOrServiceConfig];
-
-    const config = await AppAuth.ExpoAuthorizationServiceConfiguration.fetchFromIssuer(
-      issuerOrServiceConfig
-    );
-    serviceConfigCache[issuerOrServiceConfig] = config;
-    return config;
-  }
-  return new AppAuth.ExpoAuthorizationServiceConfiguration(issuerOrServiceConfig);
-}
