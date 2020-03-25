@@ -1,6 +1,7 @@
 import { AuthorizationRequest, AuthorizationRequestJson, Crypto, StringMap } from '@openid/appauth';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
+
 import { ExpoCrypto } from './ExpoCrypto';
 
 export type CodeChallengeMethod = 'S256' | 'plain';
@@ -10,12 +11,12 @@ export interface ExpoAuthorizationRequestJson {
   clientId: string;
   redirectUri: string;
   scopes: string[];
+  clientSecret?: string;
   state?: string;
   extras?: StringMap;
   internal?: StringMap;
+  usePKCE?: boolean;
 }
-
-const SIZE = 10; // 10 bytes (like Node)
 
 const CHALLENGE_METHOD = 'S256';
 
@@ -40,8 +41,7 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
   constructor(
     request: ExpoAuthorizationRequestJson,
     // @ts-ignore: This requires a sync method
-    _crypto: Crypto = new ExpoCrypto(),
-    _usePkce: boolean = true
+    _crypto: Crypto = new ExpoCrypto()
   ) {
     invariant(
       request.responseType,
@@ -54,6 +54,17 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
         default: 'com.your.app:/oauthredirect',
       })}`
     );
+    const _usePkce = request.usePKCE ?? true;
+
+    if (request.clientSecret) {
+      if (!request.extras) request.extras = {};
+      if (!request.extras.client_secret) {
+        request.extras.client_secret = request.clientSecret;
+      } else if (request.extras.client_secret !== request.clientSecret) {
+        throw new Error('`ExpoAuthorizationRequest` multiple client secrets provided');
+      }
+    }
+
     super(
       {
         response_type: request.responseType!,
@@ -70,14 +81,12 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
 
     this._crypto = _crypto;
     this._usePkce = _usePkce;
-
-    // @ts-ignore: hack to prevent unsafe, this is reassigned in setupCodeVerifier if it's null
-    this.state = null;
   }
 
   async setupCodeVerifier(): Promise<void> {
-    if (this.state == null) {
-      this.state = await this._crypto.generateRandom(SIZE);
+    // @ts-ignore
+    if (this.state instanceof Promise) {
+      this.state = await this.state;
     }
     if (!this._usePkce || this.internal?.code_verifier) {
       return;

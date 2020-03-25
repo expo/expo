@@ -73,14 +73,14 @@ function App() {
   }
 
   async function signInAsync(): Promise<TokenResponse | null> {
-    const request = new AppAuth.ExpoAuthorizationRequest(
-      { ...currentService.config, responseType: AuthorizationRequest.RESPONSE_TYPE_CODE },
-      undefined,
-      usePKCE
-    );
+    const request = new AppAuth.ExpoAuthorizationRequest({
+      ...currentService.config,
+      usePKCE,
+      responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+    });
     try {
       const authState = await AppAuth.authAndExchangeAsync(request, serviceConfig!);
-      return authState as TokenResponse;
+      return authState;
     } catch (error) {
       setMessage(`Failed to sign in: ${error.message}`);
       return auth;

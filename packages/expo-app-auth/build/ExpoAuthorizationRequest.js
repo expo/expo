@@ -2,7 +2,6 @@ import { AuthorizationRequest } from '@openid/appauth';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import { ExpoCrypto } from './ExpoCrypto';
-const SIZE = 10; // 10 bytes (like Node)
 const CHALLENGE_METHOD = 'S256';
 /**
  * Represents the AuthorizationRequest.
@@ -17,12 +16,23 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
      */
     constructor(request, 
     // @ts-ignore: This requires a sync method
-    _crypto = new ExpoCrypto(), _usePkce = true) {
+    _crypto = new ExpoCrypto()) {
         invariant(request.responseType, `\`ExpoAuthorizationRequest\` requires a valid \`responseType\`.`);
         invariant(request.redirectUri, `\`ExpoAuthorizationRequest\` requires a valid \`redirectUri\`. Example: ${Platform.select({
             web: 'https://yourwebsite.com/',
             default: 'com.your.app:/oauthredirect',
         })}`);
+        const _usePkce = request.usePKCE ?? true;
+        if (request.clientSecret) {
+            if (!request.extras)
+                request.extras = {};
+            if (!request.extras.client_secret) {
+                request.extras.client_secret = request.clientSecret;
+            }
+            else if (request.extras.client_secret !== request.clientSecret) {
+                throw new Error('`ExpoAuthorizationRequest` multiple client secrets provided');
+            }
+        }
         super({
             response_type: request.responseType,
             client_id: request.clientId,
@@ -34,12 +44,11 @@ export class ExpoAuthorizationRequest extends AuthorizationRequest {
         }, _crypto, _usePkce);
         this._crypto = _crypto;
         this._usePkce = _usePkce;
-        // @ts-ignore: hack to prevent unsafe, this is reassigned in setupCodeVerifier if it's null
-        this.state = null;
     }
     async setupCodeVerifier() {
-        if (this.state == null) {
-            this.state = await this._crypto.generateRandom(SIZE);
+        // @ts-ignore
+        if (this.state instanceof Promise) {
+            this.state = await this.state;
         }
         if (!this._usePkce || this.internal?.code_verifier) {
             return;

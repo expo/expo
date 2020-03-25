@@ -5,9 +5,11 @@ export interface ExpoAuthorizationRequestJson {
     clientId: string;
     redirectUri: string;
     scopes: string[];
+    clientSecret?: string;
     state?: string;
     extras?: StringMap;
     internal?: StringMap;
+    usePKCE?: boolean;
 }
 /**
  * Represents the AuthorizationRequest.
@@ -22,7 +24,7 @@ export declare class ExpoAuthorizationRequest extends AuthorizationRequest {
      * Use a `undefined` value for the `state` parameter, to generate a random
      * state for CSRF protection.
      */
-    constructor(request: ExpoAuthorizationRequestJson, _crypto?: Crypto, _usePkce?: boolean);
+    constructor(request: ExpoAuthorizationRequestJson, _crypto?: Crypto);
     setupCodeVerifier(): Promise<void>;
     /**
      * Serializes the AuthorizationRequest to a JavaScript Object.

@@ -1,12 +1,16 @@
 import { StorageBackend } from '@openid/appauth';
-// import AsyncStorage from '@react-native-community/async-storage';
-// import { AsyncStorage } from 'react-native';
+import { Platform } from 'react-native';
 let AsyncStorage;
 try {
-    AsyncStorage = require('@react-native-community/async-storage').default;
+    if (Platform.OS === 'web') {
+        AsyncStorage = require('react-native-web/dist/exports/AsyncStorage').default;
+    }
+    else {
+        AsyncStorage = require('react-native').AsyncStorage;
+    }
 }
 catch (_) {
-    AsyncStorage = require('react-native').AsyncStorage;
+    AsyncStorage = require('@react-native-community/async-storage').default;
 }
 /**
  * A universal `StorageBackend` backed by Async Storage.

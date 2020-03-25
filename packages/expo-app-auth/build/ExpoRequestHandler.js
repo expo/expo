@@ -148,7 +148,12 @@ export class ExpoRequestHandler extends AuthorizationRequestHandler {
         let authorizationResponse = null;
         let authorizationError = null;
         if (!shouldNotify) {
-            log('Mismatched request (state and request_uri) dont match.');
+            if (state && request.state) {
+                throw new AppAuthError('Mismatched request (state and request_uri) dont match.');
+            }
+            else {
+                log('Mismatched request (state and request_uri) dont match.');
+            }
             return null;
         }
         if (error) {

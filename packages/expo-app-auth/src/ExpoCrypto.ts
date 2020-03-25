@@ -94,7 +94,7 @@ async function getRandomValuesAsync(arr) {
 export class ExpoCrypto implements Crypto {
   // TODO(Bacon): Change this to be sync in the future when Expo unimodules support sync methods
   // @ts-ignore: we need to use async unfortunately
-  async generateRandom(size: number) {
+  async generateRandom(size: number): Promise<string> {
     const buffer = new Uint8Array(size);
 
     if (HAS_CRYPTO) {
