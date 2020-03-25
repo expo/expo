@@ -12,7 +12,7 @@ import org.unimodules.core.interfaces.ExpoMethod
 class SplashScreenModule(context: Context) : ExportedModule(context) {
   companion object {
     private const val NAME = "ExpoSplashScreen"
-    private const val ERROR_TAG = "ERR_SPLASH"
+    private const val ERROR_TAG = "ERR_SPLASH_SCREEN"
   }
 
   private lateinit var activityProvider: ActivityProvider

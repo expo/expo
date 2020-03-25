@@ -2,6 +2,7 @@ package expo.modules.splashscreen
 
 import android.app.Activity
 import android.util.Log
+import android.view.ViewGroup
 import org.unimodules.core.interfaces.SingletonModule
 import java.util.*
 
@@ -18,7 +19,7 @@ object SplashScreen: SingletonModule {
    * Show SplashScreen by mounting it in ContentView.
    * @param activity                 Target Activity for SplashScreen to be mounted in.
    * @param resizeMode               SplashScreen imageView resizeMode.
-   * @param rootViewClass            Class of View that would be monitored for children occurence (autohiding feature).
+   * @param rootViewClass            Class of View that would be monitored for children occurrence (autohiding feature).
    * @param splashScreenResourcesProvider
    * @param successCallback          Callback to be called once SplashScreen is mounted in view hierarchy.
    * @param failureCallback          Callback to be called once SplashScreen cannot be mounted.
@@ -29,8 +30,8 @@ object SplashScreen: SingletonModule {
   fun show(
       activity: Activity,
       resizeMode: SplashScreenImageResizeMode,
-      rootViewClass: Class<*>,
-      splashScreenResourcesProvider: SplashScreenResourcesProvider = NativeResourcesBasedSplashScreenResourcesProvider(),
+      rootViewClass: Class<out ViewGroup>,
+      splashScreenResourcesProvider: SplashScreenResourcesProvider = NativeResourcesBasedProvider(),
       successCallback: () -> Unit = {},
       failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {

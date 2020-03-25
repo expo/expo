@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 /**
  * Default implementation that uses native resources.
  */
-class NativeResourcesBasedSplashScreenResourcesProvider : SplashScreenResourcesProvider {
+class NativeResourcesBasedProvider : SplashScreenResourcesProvider {
 
   override fun getBackgroundColor(context: Context): Int {
     return ContextCompat.getColor(context, R.color.splashscreen_background)

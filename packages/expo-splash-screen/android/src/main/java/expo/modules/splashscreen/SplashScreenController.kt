@@ -12,7 +12,7 @@ const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 class SplashScreenController(
     activity: Activity,
     resizeMode: SplashScreenImageResizeMode,
-    private val rootViewClass: Class<*>,
+    private val rootViewClass: Class<out ViewGroup>,
     splashScreenResourcesProvider: SplashScreenResourcesProvider
 ) {
   private val weakActivity = WeakReference(activity)
