@@ -4,7 +4,8 @@ import { ExpoAccessTokenRequest } from './ExpoAccessTokenRequest';
 import { ExpoAuthorizationRequest } from './ExpoAuthorizationRequest';
 import { ExpoAuthorizationServiceConfiguration, } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequest } from './ExpoRefreshTokenRequest';
-import { ExpoRegistrationHandler, ExpoRegistrationRequest, } from './ExpoRegistrationHandler';
+import { RegistrationHandler } from './RegistrationHandler';
+import { ExpoRegistrationRequest, } from './ExpoRegistrationHandler';
 import { ExpoRequestHandler } from './ExpoRequestHandler';
 import { ExpoRevokeTokenRequest } from './ExpoRevokeTokenRequest';
 import { ExpoTokenRequestHandler } from './ExpoTokenRequestHandler';
@@ -26,7 +27,11 @@ export async function resolveServiceConfigAsync(issuerOrServiceConfig) {
 /**
  * Authenticate and auto exchange the code for an access token.
  */
-export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
+export async function authAsync(props, issuerOrServiceConfig) {
+    const request = new ExpoAuthorizationRequest({
+        responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+        ...props,
+    });
     // Using responseType token probably indicates that the developer wants to perform a hybrid flow.
     // Two possible cases:
     // 1. The code is not for this client, ie. will be sent to a
@@ -49,18 +54,6 @@ export async function authAndExchangeAsync(request, issuerOrServiceConfig) {
         clientSecret: response.request?.extras?.client_secret,
         codeVerifier: response.request?.internal?.code_verifier,
     }, config);
-}
-/**
- * Authenticate and auto exchange the code for an access token.
- *
- * @deprecated Use `AppAuth.authAndExchangeAsync()` instead.
- */
-export async function authAsync(props, issuerOrServiceConfig) {
-    const request = new ExpoAuthorizationRequest({
-        responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
-        ...props,
-    });
-    return authAndExchangeAsync(request, issuerOrServiceConfig);
 }
 /**
  * Make an auth request that returns the auth code which can be exchanged for an access token.
@@ -104,7 +97,7 @@ export async function refreshAsync(props, issuerOrServiceConfig) {
 }
 export async function registerAsync(props, issuerOrServiceConfig) {
     const request = new ExpoRegistrationRequest(props);
-    const handler = new ExpoRegistrationHandler();
+    const handler = new RegistrationHandler();
     const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
     const response = await handler.performRegistrationRequest(config, request);
     return response;

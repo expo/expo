@@ -72,14 +72,18 @@ function App() {
     }
   }
 
-  async function signInAsync(): Promise<TokenResponse | null> {
-    const request = new AppAuth.ExpoAuthorizationRequest({
-      ...currentService.config,
-      usePKCE,
-      responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
-    });
+  async function signInAsync(
+    options: Partial<AppAuth.ExpoAuthorizationRequestJson> = {}
+  ): Promise<TokenResponse | null> {
     try {
-      const authState = await AppAuth.authAndExchangeAsync(request, serviceConfig!);
+      const authState = await AppAuth.authAsync(
+        {
+          ...currentService.config,
+          ...options,
+          usePKCE,
+        },
+        serviceConfig!
+      );
       return authState;
     } catch (error) {
       setMessage(`Failed to sign in: ${error.message}`);
@@ -102,6 +106,43 @@ function App() {
     return authState;
   }
 
+  async function getUserInfoWithFreshTokensAsync() {
+    try {
+      const auth = await refreshAsync();
+      const data = await getUserInfoAsync(auth!, serviceConfig);
+      console.log('User: ', data);
+      setMessage(`Success:\n${JSON.stringify(data, null, 2)}`);
+      return data;
+    } catch (error) {
+      console.log(error);
+      setMessage(`Error:\n${JSON.stringify(error, null, 2)}`);
+      return null;
+    }
+  }
+
+  async function registerAsync() {
+    setMessage('Initiating registration request: ' + serviceConfig);
+    try {
+      const registrationResponse = await AppAuth.registerAsync(
+        {
+          // @ts-ignore
+          response_types: undefined,
+          // @ts-ignore
+          grant_types: undefined,
+          subject_type: undefined,
+          token_endpoint_auth_method: 'client_secret_post',
+          redirect_uris: [currentService.redirectUri],
+        },
+        serviceConfig
+      );
+      setMessage('Got registration response: ' + registrationResponse);
+      return registrationResponse;
+    } catch (error) {
+      console.log('Registration error: ', error);
+      setMessage('Registration error: ' + error.errorDescription ?? error.error);
+    }
+  }
+
   if (!service || !serviceConfig) return <View />;
 
   return (
@@ -121,6 +162,15 @@ function App() {
           <Button title="Log In" onPress={async () => setAuth(await signInAsync())} />
           <Button disabled={!auth?.refreshToken} title="Refresh" onPress={() => refreshAsync()} />
           <Button title="Log Out" onPress={() => signOutAsync(auth)} />
+          <Button title="Get User" onPress={() => getUserInfoWithFreshTokensAsync()} />
+          <Button
+            title="Register"
+            onPress={async () => {
+              const register = await registerAsync();
+
+              setAuth(await signInAsync({ clientSecret: register?.clientSecret }));
+            }}
+          />
         </View>
         <View
           style={{

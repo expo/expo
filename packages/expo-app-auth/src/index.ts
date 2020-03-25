@@ -8,6 +8,7 @@ export * from './ExpoAuthorizationServiceConfiguration';
 export { ExpoCrypto } from './ExpoCrypto';
 export * from './ExpoRefreshTokenRequest';
 export * from './ExpoRegistrationHandler';
+export * from './RegistrationHandler';
 export * from './ExpoRequestHandler';
 export * from './ExpoRequestor';
 export * from './ExpoRevokeTokenRequest';

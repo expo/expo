@@ -8,8 +8,8 @@ import {
   ExpoAuthorizationServiceConfigurationJson,
 } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequest, ExpoRefreshTokenRequestJson } from './ExpoRefreshTokenRequest';
+import { RegistrationHandler, RegistrationResponse } from './RegistrationHandler';
 import {
-  ExpoRegistrationHandler,
   ExpoRegistrationRequest,
   ExpoRegistrationRequestJson,
   ExpoRegistrationResponse,
@@ -46,10 +46,14 @@ export async function resolveServiceConfigAsync(
 /**
  * Authenticate and auto exchange the code for an access token.
  */
-export async function authAndExchangeAsync(
-  request: ExpoAuthorizationRequest,
+export async function authAsync(
+  props: ExpoAuthorizationRequestJson,
   issuerOrServiceConfig: IssuerOrServiceConfig
 ): Promise<TokenResponse> {
+  const request = new ExpoAuthorizationRequest({
+    responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
+    ...props,
+  });
   // Using responseType token probably indicates that the developer wants to perform a hybrid flow.
   // Two possible cases:
   // 1. The code is not for this client, ie. will be sent to a
@@ -80,22 +84,6 @@ export async function authAndExchangeAsync(
     },
     config
   );
-}
-
-/**
- * Authenticate and auto exchange the code for an access token.
- *
- * @deprecated Use `AppAuth.authAndExchangeAsync()` instead.
- */
-export async function authAsync(
-  props: ExpoAuthorizationRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<TokenResponse> {
-  const request = new ExpoAuthorizationRequest({
-    responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
-    ...props,
-  });
-  return authAndExchangeAsync(request, issuerOrServiceConfig);
 }
 
 /**
@@ -155,9 +143,9 @@ export async function refreshAsync(
 export async function registerAsync(
   props: ExpoRegistrationRequestJson,
   issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<ExpoRegistrationResponse> {
+): Promise<RegistrationResponse> {
   const request = new ExpoRegistrationRequest(props);
-  const handler = new ExpoRegistrationHandler();
+  const handler = new RegistrationHandler();
   const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
   const response = await handler.performRegistrationRequest(config, request);
   return response;
