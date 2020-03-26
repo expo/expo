@@ -154,7 +154,14 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      exclude      : ['expo-module-template', 'expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'expo-notifications']
+      exclude      : [
+        'expo-module-template',
+        'expo-bluetooth',
+        'expo-in-app-purchases',
+        'expo-updates',
+        'expo-notifications'
+        'expo-splash-screen'
+      ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -173,6 +180,7 @@ dependencies {
           'expo-notifications',
           'expo-in-app-purchases',
           'expo-updates',
+          'expo-splash-screen'
       ]
   ])
 

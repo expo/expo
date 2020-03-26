@@ -18,7 +18,7 @@
     "@react-native-community/viewpager": "3.3.0",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
-    "expo": "~37.0.0",
+    "expo": "~37.0.1",
     "expo-ads-admob": "~8.1.0",
     "expo-ads-facebook": "~8.1.0",
     "expo-app-auth": "~9.0.0",
