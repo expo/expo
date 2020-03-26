@@ -1,13 +1,18 @@
 import { danger, warn } from 'danger';
+import * as fs from 'fs';
 import { groupBy } from 'lodash';
+import * as path from 'path';
 
-const fs = require('fs');
-const path = require('path');
+import { GithubWrapper } from './GithubWrapper';
+import { getExpoRepositoryRootDir } from './Utils';
 
 // Setup
 const pr = danger.github.pr;
 const modified = danger.git.modified_files;
 const DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
+const repo = pr.base.repo.name;
+const owner = pr.base.user.login;
+const github = new GithubWrapper(danger.github.api, repo, owner);
 
 type ChangelogEntries = {
   [DEFAULT_CHANGELOG_ENTRY_KEY]: string;
@@ -49,7 +54,10 @@ function checkChangelog() {
 
   function wasChangelogModified(packageName: string, files: string[]) {
     const changelogPath = getPackageChangelogPath(packageName);
-    return files.includes(changelogPath) || !fs.existsSync(`./${changelogPath}`);
+    return (
+      files.includes(changelogPath) ||
+      !fs.existsSync(path.join(getExpoRepositoryRootDir(), changelogPath))
+    );
   }
 
   function addPRInfoToChangelogEntry(entry: string) {
@@ -81,6 +89,54 @@ function checkChangelog() {
     });
   }
 
+  async function createOrUpdateRP(missingEntries: { packageName: string; entry: string }[]) {
+    const dangerPRHead = `@danger/add-missing-changelog-to-${pr.number}`;
+
+    const { data: prs } = await danger.github.api.pulls.list({
+      repo,
+      owner,
+      state: 'open',
+      base: pr.head.ref,
+      head: dangerPRHead,
+    });
+
+    if (prs.length > 1) {
+      warn("Couldn't find a correct pull request. Too many open ones.");
+      return;
+    }
+
+    if (prs.length === 1) {
+      const dangerPR = prs[0];
+      // todo: check if this pr is up to date
+
+      return;
+    }
+
+    const fileMap = {
+      'test.md': `# Simple md`,
+    };
+
+    await github.createOrUpdateBranchFromFileMap(fileMap, {
+      baseBranchRef: 'heads/' + pr.head.ref,
+      branchRef: `heads/${dangerPRHead}`,
+      message: 'Update changelog',
+    });
+
+    danger.github.api.pulls.create({
+      repo,
+      owner,
+      base: pr.head.ref,
+      head: dangerPRHead,
+      title: `[danger][bot] Add missing changelog to #${pr.number}`,
+      body: `Add missing changelog to #${pr.number}`,
+    });
+    // console.log(prs[0]);
+    // pr not existing, so we need to creat it
+    // if (!pr) {
+    //
+    // }
+  }
+
   function generateReport(missingEntries: { packageName: string; entry: string }[]) {
     const message = missingEntries
       .map(
@@ -106,9 +162,12 @@ ${message}`);
     modified.filter(file => file.startsWith('packages')),
     file => file.split(path.sep)[1]
   );
-
   const packagesWithoutChangelogEntry = getPackagesWithoutChangelogEntry(modifiedPackages);
-  generateReport(getSuggestedChangelogEntriesForPackages(packagesWithoutChangelogEntry));
+
+  console.log(packagesWithoutChangelogEntry);
+  const suggestedEntries = getSuggestedChangelogEntriesForPackages(packagesWithoutChangelogEntry);
+  createOrUpdateRP(suggestedEntries);
+  // generateReport(suggestedEntries);
 }
 
 checkChangelog();

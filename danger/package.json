@@ -1,0 +1,11 @@
+{
+  "name": "@expo/danger",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Expo",
+  "license": "MIT",
+  "scripts": {},
+  "devDependencies": {
+    "danger": "^9.2.10"
+  }
+}
