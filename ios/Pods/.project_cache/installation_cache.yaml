@@ -7177,22 +7177,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXAmplitude
     SPECS:
       - EXAmplitude (8.1.0)
-  EXAppAuth:
-    BUILD_SETTINGS_CHECKSUM:
-      EXAppAuth: 89e0fde8db39f6819dad9ff4a53e3989
-    CHECKSUM: 26cc5ad605079dab36f6209322cf21f528c44328
-    FILES:
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.m"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth.h"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth.m"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.h"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.h"
-      - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.m"
-    PROJECT_NAME: EXAppAuth
-    SPECS:
-      - EXAppAuth (9.0.0)
   EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXAppleAuthentication: 231e6d3e7cdb50c8b662cdf61e99b5bc
@@ -8206,16 +8190,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 234b9984682505865bf98188fdf8ee97
-      Release: 234b9984682505865bf98188fdf8ee97
+      Debug: f0e7fe4aaece251ae907b8c7f5f1d83e
+      Release: f0e7fe4aaece251ae907b8c7f5f1d83e
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: a8d905233e83997e54f59219c5c4c7b5
+      Release: a8d905233e83997e54f59219c5c4c7b5
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: a8d905233e83997e54f59219c5c4c7b5
+      Release: a8d905233e83997e54f59219c5c4c7b5
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
