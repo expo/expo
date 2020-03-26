@@ -10,7 +10,7 @@ import {
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import TestSuite from 'test-suite/AppNavigator';
 
-import * as FakeAuth from './FakeAuth';
+import Redirect from './Redirect';
 import Colors from './src/constants/Colors';
 
 type RoutesConfig = {
@@ -75,7 +75,7 @@ const MainNavigator = createBottomTabNavigator(routes, {
 
 const SwitchRedirectNavigator = createSwitchNavigator({
   main: MainNavigator,
-  ...FakeAuth,
+  Redirect,
 });
 
 const createApp = Platform.select({

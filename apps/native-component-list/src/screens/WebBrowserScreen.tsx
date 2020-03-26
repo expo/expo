@@ -80,13 +80,9 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     const url = window.location.origin;
     const redirectUrl = `${url}/redirect`;
     const result = await WebBrowser.openAuthSessionAsync(
-      // 'https://csb-zymbn-a1qkvcoax.now.sh?state=faker&redirect_uri=https%3A%2F%2Flocalhost%3A19006%2Fredirect',
-      // `https://zymbn.codesandbox.io?state=faker&redirect_uri=${encodeURIComponent(
-      //   `${url}/redirect`
-      // )}`,
-      `${url}/fake-auth?state=faker&redirect_uri=${encodeURIComponent(redirectUrl)}&prompt=${
-        shouldPrompt ? 'consent' : 'none'
-      }`,
+      `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
+        redirectUrl
+      )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
       redirectUrl
     );
     console.log('RESULTS: ', result);
