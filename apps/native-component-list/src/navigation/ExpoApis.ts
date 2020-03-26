@@ -29,6 +29,7 @@ const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
 const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
 const Font = optionalRequire(() => require('../screens/FontScreen'));
 const Geocoding = optionalRequire(() => require('../screens/GeocodingScreen'));
 const Google = optionalRequire(() => require('../screens/GoogleScreen'));
@@ -87,6 +88,7 @@ const optionalScreens: {
   FacebookLogin,
   FaceDetector,
   FileSystem,
+  FirebaseRecaptcha,
   Font,
   Google,
   GoogleSignIn,
