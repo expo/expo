@@ -125,7 +125,7 @@ export declare enum MonthOfTheYear {
 export declare type RecurrenceRule = {
     frequency: string;
     interval?: number;
-    endDate?: string;
+    endDate?: number;
     occurrence?: number;
     daysOfTheWeek?: {
         dayOfTheWeek: DayOfTheWeek;
