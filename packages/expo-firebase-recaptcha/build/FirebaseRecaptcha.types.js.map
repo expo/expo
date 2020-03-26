@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseRecaptcha.types.js","sourceRoot":"","sources":["../src/FirebaseRecaptcha.types.ts"],"names":[],"mappings":"","sourcesContent":["export interface IFirebaseAuthApplicationVerifier {\n  readonly type: string;\n  verify(): Promise<string>;\n}\n"]}
