@@ -12,7 +12,9 @@
       "android",
       "web"
     ],
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "publishBundlePath": "ios/HelloWorld/Supporting/shell-app.bundle",
       "publishManifestPath": "ios/HelloWorld/Supporting/shell-app-manifest.json"
