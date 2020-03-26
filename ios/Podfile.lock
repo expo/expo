@@ -1482,9 +1482,6 @@ PODS:
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
-  - EXAppAuth (9.0.0):
-    - AppAuth (~> 1.2)
-    - UMCore
   - EXAppleAuthentication (2.1.0):
     - UMCore
   - EXApplication (2.1.0):

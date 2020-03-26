@@ -11,7 +11,6 @@ public class BasePackageList {
         new expo.modules.ads.facebook.AdsFacebookPackage(),
         new expo.modules.analytics.amplitude.AmplitudePackage(),
         new expo.modules.analytics.segment.SegmentPackage(),
-        new expo.modules.appauth.AppAuthPackage(),
         new expo.modules.application.ApplicationPackage(),
         new expo.modules.av.AVPackage(),
         new expo.modules.backgroundfetch.BackgroundFetchPackage(),

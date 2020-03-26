@@ -115,8 +115,6 @@ If upgrading from SDK 32 or below:
        :path => "../node_modules/expo-ads-admob/ios"
      pod 'EXSegment',
        :path => "../node_modules/expo-analytics-segment/ios"
-     pod 'EXAppAuth',
-       :path => "../node_modules/expo-app-auth/ios"
      # and so on...
    ```
    and instead add:
@@ -282,7 +280,6 @@ If upgrading from SDK32 or below:
     // only expo.modules!
     import expo.modules.ads.admob.AdMobPackage;
     import expo.modules.analytics.segment.SegmentPackage;
-    import expo.modules.appauth.AppAuthPackage;
     import expo.modules.backgroundfetch.BackgroundFetchPackage;
     ```
     to
@@ -347,7 +344,6 @@ If upgrading from SDK31 or below:
    // Optional universal modules, could be removed
    // along with references in MainActivity
    api 'host.exp.exponent:expo-ads-admob:+'
-   api 'host.exp.exponent:expo-app-auth:+'
    api 'host.exp.exponent:expo-analytics-segment:+'
    api 'org.unimodules:unimodules-barcode-scanner-interface:+'
    api 'host.exp.exponent:expo-barcode-scanner:+'
@@ -392,7 +388,6 @@ If upgrading from SDK31 or below:
    import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
    import expo.modules.ads.admob.AdMobPackage;
    import expo.modules.analytics.segment.SegmentPackage;
-   import expo.modules.appauth.AppAuthPackage;
    import expo.modules.backgroundfetch.BackgroundFetchPackage;
    import expo.modules.barcodescanner.BarCodeScannerPackage;
    import expo.modules.camera.CameraPackage;
@@ -436,7 +431,6 @@ If upgrading from SDK31 or below:
          new AdMobPackage(),
          new LocalAuthenticationPackage(),
          new LocalizationPackage(),
-         new AppAuthPackage(),
          new TaskManagerPackage(),
          new BackgroundFetchPackage()
      );
