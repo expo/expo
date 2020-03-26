@@ -10,6 +10,12 @@ This package is pre-installed in [managed](https://docs.expo.io/versions/latest/
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
+## Compatibility
+
+This module requires `expo-cli@3.16.0` or later; make sure your global installation is at least this version before proceeding.
+
+Additionally, this module is only compatible with Expo SDK 37 or later. For bare workflow projects, if the `expo` package is installed, it must be version `37.0.2` or later.
+
 ### Add the package to your npm dependencies
 
 ```
@@ -17,6 +23,19 @@ expo install expo-updates
 ```
 
 ### Setup app.json
+
+First, if your app.json file does not yet include an `expo` key, add it with the following fields:
+
+```json
+  "expo": {
+    "name": "<Display Name for your app>",
+    "slug": "<string that uniquely identifies your app>",
+    "privacy": "unlisted",
+    "sdkVersion": "<SDK version of your app. See note below>",
+  }
+```
+
+Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number.
 
 Expo can automatically bundle your most recent update into your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
 
