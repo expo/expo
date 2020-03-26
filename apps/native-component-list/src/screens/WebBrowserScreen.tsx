@@ -14,7 +14,9 @@ interface Package {
 interface State {
   showTitle: boolean;
   toolbarColor?: string;
+  authResult?: Record<string, string> | null;
   controlsColorText?: string;
+  shouldPrompt: boolean;
   packages?: Package[];
   selectedPackage?: string;
   lastWarmedPackage?: string;
@@ -32,6 +34,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   readonly state: State = {
     showTitle: false,
     barCollapsing: false,
+    authResult: null,
+    shouldPrompt: false,
     showInRecents: false,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
@@ -51,6 +55,10 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     }
   }
 
+  promptSwitchChanged = (shouldPrompt: boolean) => {
+    this.setState({ shouldPrompt });
+  };
+
   barCollapsingSwitchChanged = (barCollapsing: boolean) => {
     this.setState({ barCollapsing });
   };
@@ -66,6 +74,23 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   showPackagesAlert = async () => {
     const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
     Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
+    const url = window.location.origin;
+    const redirectUrl = `${url}/redirect`;
+    const result = await WebBrowser.openAuthSessionAsync(
+      // 'https://csb-zymbn-a1qkvcoax.now.sh?state=faker&redirect_uri=https%3A%2F%2Flocalhost%3A19006%2Fredirect',
+      // `https://zymbn.codesandbox.io?state=faker&redirect_uri=${encodeURIComponent(
+      //   `${url}/redirect`
+      // )}`,
+      `${url}/fake-auth?state=faker&redirect_uri=${encodeURIComponent(redirectUrl)}&prompt=${
+        shouldPrompt ? 'consent' : 'none'
+      }`,
+      redirectUrl
+    );
+    console.log('RESULTS: ', result);
+    return result;
   };
 
   handleWarmUpClicked = async () => {
@@ -226,6 +251,28 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
         </View>
         <Button style={styles.button} onPress={this.handleOpenWebUrlClicked} title="Open web url" />
         {this.renderAndroidButtons()}
+        {Platform.OS === 'web' && (
+          <>
+            <Button
+              style={styles.button}
+              onPress={async () => {
+                this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+              }}
+              title="Open web auth session"
+            />
+            <View style={styles.label}>
+              <Text>Should prompt</Text>
+              <Switch
+                style={styles.switch}
+                onValueChange={this.promptSwitchChanged}
+                value={this.state.shouldPrompt}
+              />
+            </View>
+            {this.state.authResult && (
+              <Text>Auth Result: {JSON.stringify(this.state.authResult, null, 2)}</Text>
+            )}
+          </>
+        )}
       </View>
     );
   }
