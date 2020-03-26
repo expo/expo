@@ -3041,6 +3041,14 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/globby@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@types/globby/-/globby-8.0.0.tgz#7bd10eaf802e1e11afdb1e5436cf472ddf4c0dd2"
+  integrity sha512-xDtsX5tlctxJzvg29r/LN12z30oJpoFP9cE8eJ8nY5cbSvN0c0RdRHrVlEq4LRh362Sd+JsqxJ3QWw0Wnyto8w==
+  dependencies:
+    "@types/glob" "*"
+    fast-glob "^2.0.2"
+
 "@types/hammerjs@^2.0.36":
   version "2.0.36"
   resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.36.tgz#17ce0a235e9ffbcdcdf5095646b374c2bf615a4c"
@@ -6312,9 +6320,9 @@ d3-voronoi@^1.1.2:
   integrity sha512-dArJ32hchFsrQ8uMiTBLq256MpnZjeuBtdHpaDlYuQyjU0CVzCJl/BVW+SkszaAeH95D/8gxqAhgx0ouAWAfRg==
 
 danger@^9.2.10:
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/danger/-/danger-9.3.0.tgz#7e6e101d43b992b24963cc3a36be1b336c88a892"
-  integrity sha512-l7QGCDlZL34y4YGERF9AvivCr52jJ04om6SYDVVNy11Mh0hXVxn4B8aM9h+xC9wUjdUw2wx2rierGqhcd4iosg==
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/danger/-/danger-9.4.0.tgz#99c3a355d96d7d2da0c4541e238f9fa2d2784a84"
+  integrity sha512-VTuq6ZN2eZYXSTAlze8AZnEvnzghBM6fzQh+2JM04ZivN315wAQbHGoyhOOzMizpUI4FaRKlZFVMZnGQlrGaLA==
   dependencies:
     "@babel/polyfill" "^7.2.5"
     "@octokit/rest" "^16.43.1"

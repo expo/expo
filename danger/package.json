@@ -4,8 +4,20 @@
   "private": true,
   "author": "Expo",
   "license": "MIT",
-  "scripts": {},
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "build": "tsc -w"
+  },
+  "keywords": [
+    "danger-plugin"
+  ],
+  "dependencies": {
+    "danger": "^9.2.10",
+    "lodash": "^4.17.15"
+  },
   "devDependencies": {
-    "danger": "^9.2.10"
+    "typescript": "^3.8.3",
+    "@types/globby": "^8.0.0"
   }
 }
