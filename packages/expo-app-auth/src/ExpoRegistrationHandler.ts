@@ -6,7 +6,7 @@ import {
   RegistrationRequest,
   RegistrationResponse,
 } from './RegistrationHandler';
-import { encodeBase64NoWrap } from './ExpoCrypto';
+
 // A custom module built to replicate the native dynamic register functionality
 
 export type ExpoRegistrationResponseJson = {

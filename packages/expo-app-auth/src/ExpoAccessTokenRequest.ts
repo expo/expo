@@ -1,7 +1,8 @@
 import { GRANT_TYPE_AUTHORIZATION_CODE, StringMap } from '@openid/appauth';
 import invariant from 'invariant';
-import { ExpoTokenRequest } from './ExpoTokenRequest';
 import { Platform } from 'react-native';
+
+import { ExpoTokenRequest } from './ExpoTokenRequest';
 
 /**
  * Represents the Token Request as user-friendly JSON.

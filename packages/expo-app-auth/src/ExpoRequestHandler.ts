@@ -16,10 +16,11 @@ import {
 } from '@openid/appauth';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
-import { URL } from './URL';
+
 import { ExpoAuthorizationServiceConfiguration } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoCrypto } from './ExpoCrypto';
 import { ExpoStorageBackend } from './ExpoStorage';
+import { URL } from './URL';
 
 /**
  * key for authorization request.

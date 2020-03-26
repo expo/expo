@@ -8,15 +8,11 @@ import {
   ExpoAuthorizationServiceConfigurationJson,
 } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequest, ExpoRefreshTokenRequestJson } from './ExpoRefreshTokenRequest';
-import { RegistrationHandler, RegistrationResponse } from './RegistrationHandler';
-import {
-  ExpoRegistrationRequest,
-  ExpoRegistrationRequestJson,
-  ExpoRegistrationResponse,
-} from './ExpoRegistrationHandler';
+import { ExpoRegistrationRequest, ExpoRegistrationRequestJson } from './ExpoRegistrationHandler';
 import { ExpoRequestHandler } from './ExpoRequestHandler';
 import { ExpoRevokeTokenRequest, ExpoRevokeTokenRequestJson } from './ExpoRevokeTokenRequest';
 import { ExpoTokenRequestHandler } from './ExpoTokenRequestHandler';
+import { RegistrationHandler, RegistrationResponse } from './RegistrationHandler';
 
 export type IssuerOrServiceConfig =
   | string

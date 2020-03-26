@@ -1,9 +1,9 @@
 import { AuthorizationError, AuthorizationRequest, AuthorizationRequestHandler, AuthorizationResponse, BasicQueryStringUtils, AuthorizationNotifier, log, AppAuthError, } from '@openid/appauth';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
-import { URL } from './URL';
 import { ExpoCrypto } from './ExpoCrypto';
 import { ExpoStorageBackend } from './ExpoStorage';
+import { URL } from './URL';
 /**
  * key for authorization request.
  */

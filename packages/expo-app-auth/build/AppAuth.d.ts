@@ -3,9 +3,9 @@ import { ExpoAccessTokenRequestJson } from './ExpoAccessTokenRequest';
 import { ExpoAuthorizationRequest, ExpoAuthorizationRequestJson } from './ExpoAuthorizationRequest';
 import { ExpoAuthorizationServiceConfiguration, ExpoAuthorizationServiceConfigurationJson } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequestJson } from './ExpoRefreshTokenRequest';
-import { RegistrationResponse } from './RegistrationHandler';
 import { ExpoRegistrationRequestJson } from './ExpoRegistrationHandler';
 import { ExpoRevokeTokenRequestJson } from './ExpoRevokeTokenRequest';
+import { RegistrationResponse } from './RegistrationHandler';
 export declare type IssuerOrServiceConfig = string | ExpoAuthorizationServiceConfiguration | ExpoAuthorizationServiceConfigurationJson;
 /**
  * Utility method for resolving the service config from an issuer or object.

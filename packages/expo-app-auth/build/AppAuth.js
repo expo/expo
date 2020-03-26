@@ -4,11 +4,11 @@ import { ExpoAccessTokenRequest } from './ExpoAccessTokenRequest';
 import { ExpoAuthorizationRequest } from './ExpoAuthorizationRequest';
 import { ExpoAuthorizationServiceConfiguration, } from './ExpoAuthorizationServiceConfiguration';
 import { ExpoRefreshTokenRequest } from './ExpoRefreshTokenRequest';
-import { RegistrationHandler } from './RegistrationHandler';
-import { ExpoRegistrationRequest, } from './ExpoRegistrationHandler';
+import { ExpoRegistrationRequest } from './ExpoRegistrationHandler';
 import { ExpoRequestHandler } from './ExpoRequestHandler';
 import { ExpoRevokeTokenRequest } from './ExpoRevokeTokenRequest';
 import { ExpoTokenRequestHandler } from './ExpoTokenRequestHandler';
+import { RegistrationHandler } from './RegistrationHandler';
 /**
  * Utility method for resolving the service config from an issuer or object.
  *

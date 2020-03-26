@@ -1,7 +1,7 @@
 import { GRANT_TYPE_AUTHORIZATION_CODE } from '@openid/appauth';
 import invariant from 'invariant';
-import { ExpoTokenRequest } from './ExpoTokenRequest';
 import { Platform } from 'react-native';
+import { ExpoTokenRequest } from './ExpoTokenRequest';
 /**
  * Represents an access token request.
  * This is a utility class created for parity with `ExpoRevokeTokenRequest`.

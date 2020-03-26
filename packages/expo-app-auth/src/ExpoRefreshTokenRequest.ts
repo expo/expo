@@ -1,5 +1,6 @@
 import { GRANT_TYPE_REFRESH_TOKEN, StringMap } from '@openid/appauth';
 import invariant from 'invariant';
+
 import { ExpoTokenRequest } from './ExpoTokenRequest';
 
 /**

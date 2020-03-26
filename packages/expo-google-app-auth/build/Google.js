@@ -71,10 +71,22 @@ export async function logInAsync(config) {
     const redirectUri = config.redirectUrl;
     try {
         const serviceConfiguration = await AppAuth.ExpoAuthorizationServiceConfiguration.fetchFromIssuer('https://accounts.google.com');
+        const extras = {};
+        if (config.language) {
+            // The OpenID property `ui_locales` doesn't seem to work as expected,
+            // but `hl` will work to change the UI language.
+            // Reference: https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230
+            extras.hl = config.language;
+        }
+        if (config.accountName) {
+            // Reference https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+            extras.login_hint = config.accountName;
+        }
         const logInResult = await AppAuth.authAsync({
             clientId,
             redirectUri,
             scopes: applyDefaultsToScopes(config.scopes),
+            extras,
         }, serviceConfiguration);
         // Web login only returns an accessToken so use it to fetch the same info as the native login
         // does.
