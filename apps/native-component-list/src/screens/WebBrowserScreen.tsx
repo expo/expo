@@ -1,6 +1,17 @@
 import React from 'react';
-import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  View,
+  StyleSheet,
+  Text,
+  Switch,
+  TextInput,
+  Picker,
+  Platform,
+} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 
 import Colors from '../constants/Colors';
 import Button from '../components/Button';
@@ -77,7 +88,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const url = window.location.origin;
+    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
     const redirectUrl = `${url}/redirect`;
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
@@ -224,7 +235,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.label}>
           <Text>Toolbar color (#rrggbb):</Text>
           <TextInput
@@ -246,29 +257,27 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
         </View>
         <Button style={styles.button} onPress={this.handleOpenWebUrlClicked} title="Open web url" />
         {this.renderAndroidButtons()}
-        {Platform.OS === 'web' && (
-          <>
-            <Button
-              style={styles.button}
-              onPress={async () => {
-                this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
-              }}
-              title="Open web auth session"
+        <>
+          <Button
+            style={styles.button}
+            onPress={async () => {
+              this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+            }}
+            title="Open web auth session"
+          />
+          <View style={styles.label}>
+            <Text>Should prompt</Text>
+            <Switch
+              style={styles.switch}
+              onValueChange={this.promptSwitchChanged}
+              value={this.state.shouldPrompt}
             />
-            <View style={styles.label}>
-              <Text>Should prompt</Text>
-              <Switch
-                style={styles.switch}
-                onValueChange={this.promptSwitchChanged}
-                value={this.state.shouldPrompt}
-              />
-            </View>
-            {this.state.authResult && (
-              <Text>Auth Result: {JSON.stringify(this.state.authResult, null, 2)}</Text>
-            )}
-          </>
-        )}
-      </View>
+          </View>
+          {this.state.authResult && (
+            <Text>Auth Result: {JSON.stringify(this.state.authResult, null, 2)}</Text>
+          )}
+        </>
+      </ScrollView>
     );
   }
 }
