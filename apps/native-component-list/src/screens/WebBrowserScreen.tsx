@@ -85,7 +85,6 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
       redirectUrl
     );
-    console.log('RESULTS: ', result);
     return result;
   };
 
