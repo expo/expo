@@ -11,8 +11,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo": "~37.0.0",
-    "expo-updates": "^0.0.1-rc.1",
+    "expo": "~37.0.2",
+    "expo-updates": "^0.0.1-rc.3",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "~0.61.4",
