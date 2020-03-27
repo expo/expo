@@ -611,6 +611,54 @@ export async function test(t) {
       });
     });
 
+    t.describe('getPresentedNotificationsAsync()', () => {
+      const identifier = 'test-containing-id';
+      const notificationStatuses = {};
+
+      t.beforeAll(() => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+          }),
+          handleSuccess: notificationId => {
+            notificationStatuses[notificationId] = true;
+          },
+        });
+      });
+
+      t.it('resolves with an array containing a displayed notification', async () => {
+        await Notifications.presentNotificationAsync({
+          identifier,
+          title: 'Sample title',
+          subtitle: 'What an event!',
+          message: 'An interesting event has just happened',
+          badge: 1,
+        });
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+
+      t.it('resolves with an array that does not contain a canceled notification', async () => {
+        await Notifications.dismissNotificationAsync(identifier);
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).not.toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+    });
+
     t.describe('dismissNotificationAsync()', () => {
       t.it('resolves for a valid notification ID', async () => {
         const identifier = 'test-id';
