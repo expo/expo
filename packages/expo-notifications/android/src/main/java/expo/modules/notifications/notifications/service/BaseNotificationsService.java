@@ -246,7 +246,11 @@ public abstract class BaseNotificationsService extends JobIntentService {
   protected void onNotificationsDropped() {
   }
 
+  protected static Uri.Builder getUriBuilder() {
+    return Uri.parse("expo-notifications://notifications/").buildUpon();
+  }
+
   protected static Uri.Builder getUriBuilderForIdentifier(String identifier) {
-    return Uri.parse("expo-notifications://notifications/").buildUpon().appendPath(identifier);
+    return getUriBuilder().appendPath(identifier);
   }
 }
