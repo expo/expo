@@ -11,11 +11,19 @@ import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 
 import { Renderer, TextureLoader, THREE } from 'expo-three';
 import GLWrap from './GLWrap';
-import GLCameraScreen from './GLCameraScreen';
 import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
+
+function optionalRequire(requirer: () => { default: React.ComponentType }) {
+  try {
+    return requirer().default;
+  } catch (e) {
+    return null;
+  }
+}
+const GLCameraScreen = optionalRequire(() => require('./GLCameraScreen'));
 
 interface Screens {
   [key: string]: {
@@ -399,9 +407,11 @@ const GLScreens: Screens = {
     }),
   },
 
-  GLCamera: {
-    screen: GLCameraScreen,
-  },
+  ...(GLCameraScreen && {
+    GLCamera: {
+      screen: GLCameraScreen,
+    }
+  }),
 
   // WebGL 2.0 sample - http://webglsamples.org/WebGL2Samples/#transform_feedback_separated_2
   WebGL2TransformFeedback: {
