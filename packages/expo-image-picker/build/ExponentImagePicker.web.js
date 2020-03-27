@@ -27,7 +27,7 @@ export default {
     /*
      * Delegate to expo-permissions to request camera permissions
      */
-    async getCameraPermissionAsync() {
+    async getCameraPermissionsAsync() {
         return Permissions.getAsync(Permissions.CAMERA);
     },
     async requestCameraPermissionsAsync() {
