@@ -536,12 +536,18 @@ jobs:
       - run:
           name: Build
           command: fastlane ios create_simulator_build
+      - run:
+          name: Unit tests
+          command: fastlane scan
+          working_directory: ~/project/ios
       - persist_to_workspace:
           root: ios
           paths:
             - simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+      - store_test_results:
+          path: ~/project/ios/test-results
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
