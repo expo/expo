@@ -12,7 +12,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ## Compatibility
 
-This module requires `expo-cli@3.16.0` or later; make sure your global installation is at least this version before proceeding.
+This module requires `expo-cli@3.16.1` or later; make sure your global installation is at least this version before proceeding.
 
 Additionally, this module is only compatible with Expo SDK 37 or later. For bare workflow projects, if the `expo` package is installed, it must be version `37.0.2` or later.
 
@@ -22,20 +22,36 @@ Additionally, this module is only compatible with Expo SDK 37 or later. For bare
 expo install expo-updates
 ```
 
+### `expo-asset`
+
+(If you have the `expo` package installed in your project already and use `registerRootComponent` in your project entry point, you can skip this section!)
+
+If you have assets (such as images or other media) that are `require`d in your application code, and you'd like these to be included in updates, you'll also need to install the `expo-asset` helper package:
+
+```
+expo install expo-asset
+```
+
+Additionally, add the following line in your root `index.js` or `App.js` file:
+
+```js
+import 'expo-asset';
+```
+
 ### Setup app.json
 
 First, if your app.json file does not yet include an `expo` key, add it with the following fields:
 
 ```json
   "expo": {
-    "name": "<Display Name for your app>",
+    "name": "<your app name -- must match your iOS project folder name>",
     "slug": "<string that uniquely identifies your app>",
     "privacy": "unlisted",
     "sdkVersion": "<SDK version of your app. See note below>",
   }
 ```
 
-Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number.
+Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `37.0.0`).
 
 Expo can automatically bundle your most recent update into your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
 
@@ -50,7 +66,7 @@ Expo can automatically bundle your most recent update into your iOS and Android 
   },
 ```
 
-Additionally, ensure that these directories (`ios/<your-project-name>/Supporting/` and `android/app/src/main/assets/`) exist. After running `expo publish` at least once, you'll need to manually add the `shell-app.bundle` and `shell-app-manifest.json` files to your Xcode project.
+It's OK that the files don't exist yet, as they will be created when you run `expo publish`. However, you should ensure that these directories (`ios/<your-project-name>/Supporting/` and `android/app/src/main/assets/`) exist. After running `expo publish` at least once, **you'll need to manually add the `shell-app.bundle` and `shell-app-manifest.json` files to your Xcode project.**
 
 Finally, if you have other assets (such as images or other media) that are `require`d in your application code and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
 
@@ -87,15 +103,20 @@ Create the file `ios/<your-project-name>/Supporting/Expo.plist` with the followi
 </plist>
 ```
 
+EXUpdatesURL is the remote URL at which your app will be hosted, and to which expo-updates will query for new updates. EXUpdatesSDKVersion should match the SDK version in your app.json.
+
+If you use `expo publish` to publish your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
+
 #### `AppDelegate.h`
 
+In this file, you need to import the `EXUpdatesAppController` header and add `EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`. A diff for a typical bare project might look like this (but yours might look different):
+
 ```diff
++#import <EXUpdates/EXUpdatesAppController.h>
  #import <React/RCTBridgeDelegate.h>
  #import <UMCore/UMAppDelegateWrapper.h>
 
 -@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
-+#import <EXUpdates/EXUpdatesAppController.h>
-+
 +@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
 
  @property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
@@ -202,9 +223,15 @@ Add the following lines inside of the `MainApplication`'s `<application>` tag.
 <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE" />
 ```
 
+EXPO_UPDATE_URL is the remote URL at which your app will be hosted, and to which expo-updates will query for new updates. EXPO_SDK_VERSION should match the SDK version in your app.json.
+
+As with iOS, if you use `expo publish` to publish your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
+
 #### `MainApplication.java`
 
 Make the following changes to `MainApplication.java` (or whichever file you instantiate your `ReactNativeHost`). `UpdatesController.initialize()` expects to be given an instance of `ReactApplication`, but if not, you can also call `UpdatesController.getInstance().setReactNativeHost()` to directly set the host. Providing `UpdatesController` with a reference to the `ReactNativeHost` is optional, but required in order for reloading and updates events to work.
+
+If the diff doesn't apply cleanly, the important parts here are (1) overriding `getJSBundleFile()` and `getBundleAssetName()` from `ReactNativeHost` with the values provided by expo-updates, and (2) initializing `UpdatesController` as early as possible in the application's lifecycle.
 
 ```diff
 +import android.net.Uri;
@@ -252,6 +279,10 @@ Make the following changes to `MainApplication.java` (or whichever file you inst
    }
  }
 ```
+
+### Run `expo publish` once
+
+Before building an update-enabled release build of your app, you need to run `expo publish` at least once! After doing so, be sure to **add `ios/<your-project-name>/Supporting/shell-app-manifest.json` and `ios/<your-project-name>/Supporting/shell-app.bundle` to your Xcode project**.
 
 ## Configuration
 
