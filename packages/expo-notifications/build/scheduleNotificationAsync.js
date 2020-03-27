@@ -16,6 +16,9 @@ export default async function scheduleNotificationAsync(notification, trigger) {
     return await NotificationScheduler.scheduleNotificationAsync(notificationIdentifier, notificationSpec, parseTrigger(trigger[Platform.OS] ?? trigger));
 }
 function parseTrigger(userFacingTrigger) {
+    if (userFacingTrigger === null) {
+        return null;
+    }
     if (userFacingTrigger instanceof Date) {
         return { type: 'date', value: userFacingTrigger.getTime() };
     }

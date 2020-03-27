@@ -20,7 +20,7 @@ export interface TimeIntervalTrigger {
   seconds: number;
 }
 export type DateTrigger = Date | number;
-export type NotificationTrigger = (DateTrigger | TimeIntervalTrigger) & {
+export type NotificationTrigger = (null | DateTrigger | TimeIntervalTrigger) & {
   ios?: IosNotificationTrigger;
   android?: AndroidNotificationTrigger;
 };
@@ -52,13 +52,17 @@ export default async function scheduleNotificationAsync(
 }
 
 type NativeTrigger =
+  | null
   | { type: 'interval'; value: number; repeats: boolean }
   | { type: 'date'; value: number }
   | { type: 'calendar'; value: CalendarTrigger };
 
 function parseTrigger(
-  userFacingTrigger: DateTrigger | TimeIntervalTrigger | CalendarTrigger
+  userFacingTrigger: null | DateTrigger | TimeIntervalTrigger | CalendarTrigger
 ): NativeNotificationTrigger {
+  if (userFacingTrigger === null) {
+    return null;
+  }
   if (userFacingTrigger instanceof Date) {
     return { type: 'date', value: userFacingTrigger.getTime() };
   } else if (typeof userFacingTrigger === 'number') {

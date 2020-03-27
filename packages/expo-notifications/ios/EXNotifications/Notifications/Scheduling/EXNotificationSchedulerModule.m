@@ -88,6 +88,14 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
 {
+  if (!params) {
+    // nil trigger is a valid trigger
+    return nil;
+  }
+  if (![params isKindOfClass:[NSDictionary class]]) {
+    NSString *reason = [NSString stringWithFormat:@"Unknown notification trigger declaration passed in, expected a dictionary, received %@.", NSStringFromClass(params.class)];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+  }
   NSString *triggerType = params[notificationTriggerTypeKey];
   if ([intervalNotificationTriggerType isEqualToString:triggerType]) {
     NSNumber *interval = [params objectForKey:intervalNotificationTriggerIntervalKey verifyingClass:[NSNumber class]];
@@ -107,8 +115,10 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 
     return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
                                                                     repeats:[repeats boolValue]];
+  } else {
+    NSString *reason = [NSString stringWithFormat:@"Unknown notification trigger type: %@.", triggerType];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
   }
-  return nil;
 }
 
 - (NSDateComponents *)dateComponentsFromParams:(NSDictionary<NSString *, id> *)params

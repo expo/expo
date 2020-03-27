@@ -8,7 +8,7 @@ export interface TimeIntervalTrigger {
     seconds: number;
 }
 export declare type DateTrigger = Date | number;
-export declare type NotificationTrigger = (DateTrigger | TimeIntervalTrigger) & {
+export declare type NotificationTrigger = (null | DateTrigger | TimeIntervalTrigger) & {
     ios?: IosNotificationTrigger;
     android?: AndroidNotificationTrigger;
 };
