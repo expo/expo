@@ -21,10 +21,10 @@ interface Options {
 
   // Request body overrides
   type?: string;
-  appId?: string;
   deviceId?: string;
   development?: boolean;
   experienceId?: string;
+  applicationId?: string;
   devicePushToken?: DevicePushToken;
 }
 
@@ -42,11 +42,11 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     );
   }
 
-  const appId = options.appId || Application.applicationId;
-  if (!appId) {
+  const applicationId = options.applicationId || Application.applicationId;
+  if (!applicationId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_APP_ID',
-      "No appId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself."
+      "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself."
     );
   }
   const type = options.type || getTypeOfToken(devicePushToken);
@@ -56,10 +56,10 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const body = {
     type,
-    appId,
     deviceId,
     development,
     experienceId,
+    appId: applicationId,
     deviceToken: getDeviceToken(devicePushToken),
   };
 

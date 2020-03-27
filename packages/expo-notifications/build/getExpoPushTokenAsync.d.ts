@@ -7,10 +7,10 @@ interface Options {
     baseUrl?: string;
     url?: string;
     type?: string;
-    appId?: string;
     deviceId?: string;
     development?: boolean;
     experienceId?: string;
+    applicationId?: string;
     devicePushToken?: DevicePushToken;
 }
 export default function getExpoPushTokenAsync(options?: Options): Promise<ExpoPushToken>;
