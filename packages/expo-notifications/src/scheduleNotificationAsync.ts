@@ -1,76 +1,34 @@
-import { Platform } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
-import {
-  IosNotificationRequestOptions,
-  AndroidNotificationRequestOptions,
-} from './NotificationPresenter.types';
 import NotificationScheduler from './NotificationScheduler';
-import {
-  NativeCalendarTrigger,
-  NativeNotificationTrigger,
-  IosNotificationTrigger,
-  AndroidNotificationTrigger,
-} from './NotificationScheduler.types';
-import { NotificationRequest } from './presentNotificationAsync';
+import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
+import { NotificationContentInput, NotificationTriggerInput } from './Notifications.types';
 
-export type CalendarTrigger = Omit<NativeCalendarTrigger['value'], 'type'> & { repeats?: boolean };
-export interface TimeIntervalTrigger {
-  repeats?: boolean;
-  seconds: number;
-}
-export type DateTrigger = Date | number;
-export type NotificationTrigger = (null | DateTrigger | TimeIntervalTrigger) & {
-  ios?: IosNotificationTrigger;
-  android?: AndroidNotificationTrigger;
-};
-
-type PlatformSpecificOptions = IosNotificationRequestOptions | AndroidNotificationRequestOptions;
 export default async function scheduleNotificationAsync(
-  notification: NotificationRequest,
-  trigger: NotificationTrigger
+  content: NotificationContentInput,
+  trigger: NotificationTriggerInput,
+  identifier: string = uuidv4()
 ): Promise<string> {
-  // Remember current platform-specific options
-  const platformSpecificOptions: PlatformSpecificOptions | undefined =
-    notification[Platform.OS] ?? undefined;
-  // Remove all known platform-specific options
-  const { ios, android, identifier, ...baseRequest } = notification;
-  // Merge current platform-specific options
-  const easyBodyNotificationSpec = { ...baseRequest, ...platformSpecificOptions };
-  // Stringify `body`
-  const { body, ...restNotificationSpec } = easyBodyNotificationSpec;
-  const notificationSpec = { ...restNotificationSpec, body: JSON.stringify(body) };
-
-  // If identifier has not been provided, let's create one.
-  const notificationIdentifier = identifier ?? uuidv4();
-
   return await NotificationScheduler.scheduleNotificationAsync(
-    notificationIdentifier,
-    notificationSpec,
-    parseTrigger(trigger[Platform.OS] ?? trigger)
+    identifier,
+    content,
+    parseTrigger(trigger)
   );
 }
 
-type NativeTrigger =
-  | null
-  | { type: 'interval'; value: number; repeats: boolean }
-  | { type: 'date'; value: number }
-  | { type: 'calendar'; value: CalendarTrigger };
-
-function parseTrigger(
-  userFacingTrigger: null | DateTrigger | TimeIntervalTrigger | CalendarTrigger
-): NativeNotificationTrigger {
+function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput {
   if (userFacingTrigger === null) {
     return null;
   }
+
   if (userFacingTrigger instanceof Date) {
-    return { type: 'date', value: userFacingTrigger.getTime() };
+    return { type: 'date', timestamp: userFacingTrigger.getTime() };
   } else if (typeof userFacingTrigger === 'number') {
-    return { type: 'date', value: userFacingTrigger };
+    return { type: 'date', timestamp: userFacingTrigger };
   } else if ('seconds' in userFacingTrigger) {
     return {
-      type: 'interval',
-      value: userFacingTrigger.seconds,
+      type: 'timeInterval',
+      seconds: userFacingTrigger.seconds,
       repeats: userFacingTrigger.repeats ?? false,
     };
   } else {

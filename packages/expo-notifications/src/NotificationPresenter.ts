@@ -1,13 +1,12 @@
 import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
 
-import { NotificationRequest } from './NotificationPresenter.types';
-import { Notification } from './NotificationsEmitter.types';
+import { Notification, NotificationContentInput } from './Notifications.types';
 
 export interface NotificationPresenterModule extends ProxyNativeModule {
   getPresentedNotificationsAsync: () => Promise<Notification[]>;
   presentNotificationAsync: (
     identifier: string,
-    notificationRequest: NotificationRequest
+    content: NotificationContentInput
   ) => Promise<void>;
   dismissNotificationAsync: (identifier: string) => Promise<void>;
   dismissAllNotificationsAsync: () => Promise<void>;

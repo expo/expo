@@ -13,7 +13,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_APP_ID', "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
+        throw new CodedError('ERR_NOTIFICATIONS_NO_APPLICATION_ID', "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
     }
     const type = options.type || getTypeOfToken(devicePushToken);
     const development = options.development || (await shouldUseDevelopmentNotificationService());

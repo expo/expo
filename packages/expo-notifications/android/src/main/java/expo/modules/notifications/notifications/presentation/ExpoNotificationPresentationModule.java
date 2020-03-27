@@ -4,16 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
-import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -34,9 +33,8 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   // Remove once presentNotificationAsync is removed
   @ExpoMethod
-  public void presentNotificationAsync(String identifier, Map notificationContentMap, final Promise promise) {
-    JSONObject payload = new JSONObject(notificationContentMap);
-    NotificationContent content = new JSONNotificationContentBuilder().setPayload(payload).build();
+  public void presentNotificationAsync(String identifier, ReadableArguments payload, final Promise promise) {
+    NotificationContent content = new ArgumentsNotificationContentBuilder().setPayload(payload).build();
     NotificationRequest request = new NotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
     BaseNotificationsService.enqueuePresent(getContext(), notification, null, new ResultReceiver(null) {

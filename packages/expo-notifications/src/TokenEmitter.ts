@@ -1,7 +1,7 @@
 import { EventEmitter, Subscription, Platform } from '@unimodules/core';
 
 import PushTokenManager from './PushTokenManager';
-import { DevicePushToken } from './getDevicePushTokenAsync';
+import { DevicePushToken } from './Tokens.types';
 
 export type PushTokenListener = (token: DevicePushToken) => void;
 
