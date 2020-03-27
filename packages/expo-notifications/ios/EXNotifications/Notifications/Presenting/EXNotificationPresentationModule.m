@@ -3,6 +3,7 @@
 #import <EXNotifications/EXNotificationPresentationModule.h>
 
 #import <EXNotifications/EXNotificationBuilder.h>
+#import <EXNotifications/EXNotificationSerializer.h>
 
 @interface EXNotificationPresentationModule ()
 
@@ -34,6 +35,20 @@ UM_EXPORT_METHOD_AS(presentNotificationAsync,
     }
   }];
 }
+
+UM_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
+                    getPresentedNotificationsAsyncWithResolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+    NSMutableArray *serializedNotifications = [NSMutableArray new];
+    for (UNNotification *notification in notifications) {
+      [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
+    }
+    resolve(serializedNotifications);
+  }];
+}
+
 
 UM_EXPORT_METHOD_AS(dismissNotificationAsync,
                     dismissNotificationWithIdentifier:(NSString *)identifier

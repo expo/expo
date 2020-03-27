@@ -9,9 +9,12 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -44,6 +47,27 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
         } else {
           Exception e = (Exception) resultData.getSerializable(BaseNotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);
+        }
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void getPresentedNotificationsAsync(final Promise promise) {
+    BaseNotificationsService.enqueueGetAllPresented(getContext(), new ResultReceiver(null) {
+      @Override
+      protected void onReceiveResult(int resultCode, Bundle resultData) {
+        super.onReceiveResult(resultCode, resultData);
+        Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsService.NOTIFICATIONS_KEY);
+        if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
+          ArrayList<Bundle> serializedNotifications = new ArrayList<>();
+          for (Notification notification : notifications) {
+            serializedNotifications.add(NotificationSerializer.toBundle(notification));
+          }
+          promise.resolve(serializedNotifications);
+        } else {
+          Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
+          promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
         }
       }
     });
