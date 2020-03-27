@@ -163,6 +163,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
         throw new IllegalArgumentException(String.format("Received intent of unrecognized action: %s. Ignoring.", intent.getAction()));
       }
 
+      Bundle resultData = null;
       // Let's go through known actions and trigger respective callbacks
       String eventType = intent.getStringExtra(EVENT_TYPE_KEY);
       if (PRESENT_TYPE.equals(eventType)) {
@@ -186,7 +187,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
 
       // If we ended up here, the callbacks must have completed successfully
       if (receiver != null) {
-        receiver.send(SUCCESS_CODE, null);
+        receiver.send(SUCCESS_CODE, resultData);
       }
     } catch (IllegalArgumentException | NullPointerException e) {
       Log.e("expo-notifications", String.format("Action %s failed: %s.", intent.getAction(), e.getMessage()));
