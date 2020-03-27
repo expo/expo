@@ -15,6 +15,10 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXWebBrowser/**/*.{h,m}'
   s.preserve_paths = 'EXWebBrowser/**/*.{h,m}'
   s.requires_arc   = true
+  
+  s.test_spec 'Tests' do |spec|
+    spec.source_files = 'EXWebBrowserTests/**/*.{h,m}'
+  end
 
   s.dependency 'UMCore'
 

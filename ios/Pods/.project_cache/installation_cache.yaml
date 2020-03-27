@@ -7989,10 +7989,12 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: 59fe782f0e740f61899473481074075b
-    CHECKSUM: c8abe4e22f30322949da381d4f6faa8d94ba6b59
+    CHECKSUM: 0d5e2c1e684522a131eab074c1310e5cd95d829f
     FILES:
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
+      - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowserDelegate.h"
+      - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowserDelegate.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
       - EXWebBrowser (8.2.0)

@@ -19,5 +19,12 @@
     "UMCore": [
 
     ]
-  }
+  },
+  "testspecs": [
+    {
+      "name": "Tests",
+      "test_type": "unit",
+      "source_files": "EXWebBrowserTests/**/*.{h,m}"
+    }
+  ]
 }
