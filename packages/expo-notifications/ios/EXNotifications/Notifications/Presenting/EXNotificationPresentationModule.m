@@ -10,6 +10,7 @@
 
 @property (nonatomic, weak) id<EXNotificationBuilder> notificationBuilder;
 
+// Remove once presentNotificationAsync is removed
 @property (nonatomic, strong) NSCountedSet<NSString *> *presentedNotifications;
 @property (nonatomic, weak) id<EXNotificationCenterDelegate> notificationCenterDelegate;
 
@@ -19,6 +20,7 @@
 
 UM_EXPORT_MODULE(ExpoNotificationPresenter);
 
+// Remove once presentNotificationAsync is removed
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -29,6 +31,7 @@ UM_EXPORT_MODULE(ExpoNotificationPresenter);
 
 # pragma mark - Exported methods
 
+// Remove once presentNotificationAsync is removed
 UM_EXPORT_METHOD_AS(presentNotificationAsync,
                     presentNotificationWithIdentifier:(NSString *)identifier
                     notification:(NSDictionary *)notificationSpec
@@ -89,10 +92,12 @@ UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
 {
   _notificationBuilder = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationBuilder)];
 
+  // Remove once presentNotificationAsync is removed
   id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>)[moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
   [notificationCenterDelegate addDelegate:self];
 }
 
+// Remove once presentNotificationAsync is removed
 # pragma mark - EXNotificationsDelegate
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler

@@ -32,6 +32,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
     return EXPORTED_NAME;
   }
 
+  // Remove once presentNotificationAsync is removed
   @ExpoMethod
   public void presentNotificationAsync(String identifier, Map notificationContentMap, final Promise promise) {
     JSONObject payload = new JSONObject(notificationContentMap);
