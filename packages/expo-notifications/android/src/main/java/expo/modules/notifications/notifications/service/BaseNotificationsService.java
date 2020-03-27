@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
@@ -27,6 +30,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
   public static final int SUCCESS_CODE = 0;
   public static final int EXCEPTION_OCCURRED_CODE = -1;
   public static final String EXCEPTION_KEY = "exception";
+  public static final String NOTIFICATIONS_KEY = "notifications";
 
   // Intent extras keys
   private static final String NOTIFICATION_KEY = "notification";
@@ -36,6 +40,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String EVENT_TYPE_KEY = "type";
   private static final String RECEIVER_KEY = "receiver";
 
+  private static final String GET_ALL_DISPLAYED = "getAllDisplayed";
   private static final String PRESENT_TYPE = "present";
   private static final String DISMISS_TYPE = "dismiss";
   private static final String DISMISS_ALL_TYPE = "dismissAll";
@@ -45,6 +50,19 @@ public abstract class BaseNotificationsService extends JobIntentService {
 
   private static final Intent SEARCH_INTENT = new Intent(NOTIFICATION_EVENT_ACTION);
   private static final int JOB_ID = BaseNotificationsService.class.getName().hashCode();
+
+  /**
+   * A helper function for dispatching a "fetch all displayed notifications" command to the service.
+   *
+   * @param context  Context where to start the service.
+   * @param receiver A receiver to which send the notifications
+   */
+  public static void enqueueGetAllPresented(Context context, @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build());
+    intent.putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
 
   /**
    * A helper function for dispatching a "present notification" command to the service.
@@ -181,6 +199,10 @@ public abstract class BaseNotificationsService extends JobIntentService {
         onNotificationsDropped();
       } else if (RESPONSE_TYPE.equals(eventType)) {
         onNotificationResponseReceived(intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY));
+      } else if (GET_ALL_DISPLAYED.equals(eventType)) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(NOTIFICATIONS_KEY, new ArrayList<>(getDisplayedNotifications()));
+        resultData = bundle;
       } else {
         throw new IllegalArgumentException(String.format("Received event of unrecognized type: %s. Ignoring.", intent.getAction()));
       }
@@ -244,6 +266,16 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * Callback called when some notifications dispatched by the backend haven't been delivered to the device.
    */
   protected void onNotificationsDropped() {
+  }
+
+  /**
+   * Callback called when the notifications system is supposed to return a list of currently displayed
+   * notifications.
+   *
+   * @return A list of currently displayed notifications,
+   */
+  protected Collection<Notification> getDisplayedNotifications() {
+    return null;
   }
 
   protected static Uri.Builder getUriBuilder() {
