@@ -22,4 +22,7 @@ export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
 export * from './NotificationPermissions';
+export * from './Tokens.types';
+export * from './Notifications.types';
 export * from './NotificationChannelManager.types';
+export * from './NotificationChannelGroupManager.types';

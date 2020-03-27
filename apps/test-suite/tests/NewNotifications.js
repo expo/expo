@@ -260,7 +260,7 @@ export async function test(t) {
         await Notifications.presentNotificationAsync({
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
       });
@@ -270,13 +270,8 @@ export async function test(t) {
         await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
         await Notifications.presentNotificationAsync({
           title: 'Look at that kitten! ➡️',
-          message: 'What a cutie!',
-          ios: {
-            attachments: [{ uri: fileUri }],
-          },
-          android: {
-            thumbnailUri: fileUri,
-          },
+          body: 'What a cutie!',
+          attachments: [{ uri: fileUri }],
         });
       });
     });
@@ -627,13 +622,15 @@ export async function test(t) {
       });
 
       t.it('resolves with an array containing a displayed notification', async () => {
-        await Notifications.presentNotificationAsync({
-          identifier,
-          title: 'Sample title',
-          subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
-          badge: 1,
-        });
+        await Notifications.presentNotificationAsync(
+          {
+            title: 'Sample title',
+            subtitle: 'What an event!',
+            body: 'An interesting event has just happened',
+            badge: 1,
+          },
+          identifier
+        );
         await waitFor(1000);
         const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
         t.expect(displayedNotifications).toContain(
@@ -666,7 +663,7 @@ export async function test(t) {
           identifier,
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
         await Notifications.dismissNotificationAsync(identifier);
@@ -708,8 +705,8 @@ export async function test(t) {
             content: t.jasmine.objectContaining(notification),
             trigger: t.jasmine.objectContaining({
               repeats: false,
-              value: trigger.seconds,
-              type: 'interval',
+              seconds: trigger.seconds,
+              type: 'timeInterval',
             }),
           })
         );
@@ -730,7 +727,7 @@ export async function test(t) {
       const identifier = 'test-scheduled-notification';
       const notification = {
         title: 'Scheduled notification',
-        body: { key: 'value' },
+        data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
       };
@@ -817,9 +814,7 @@ export async function test(t) {
             await Notifications.scheduleNotificationAsync(
               { identifier, ...notification },
               {
-                ios: {
-                  second: (new Date().getSeconds() + 5) % 60,
-                },
+                second: (new Date().getSeconds() + 5) % 60,
               }
             );
             await waitFor(6000);
@@ -1015,7 +1010,7 @@ export async function test(t) {
           }
           const notificationSpec = {
             title: 'Tap me!',
-            message: 'Better be quick!',
+            body: 'Better be quick!',
           };
           await Notifications.presentNotificationAsync(notificationSpec);
           let iterations = 0;

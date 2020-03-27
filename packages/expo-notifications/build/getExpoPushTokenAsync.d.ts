@@ -1,8 +1,4 @@
-import { DevicePushToken } from './getDevicePushTokenAsync';
-export interface ExpoPushToken {
-    type: 'expo';
-    data: string;
-}
+import { DevicePushToken, ExpoPushToken } from './Tokens.types';
 interface Options {
     baseUrl?: string;
     url?: string;

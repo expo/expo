@@ -5,11 +5,6 @@ import {
   NotificationChannelGroupInput,
 } from './NotificationChannelGroupManager.types';
 
-export {
-  NotificationChannelGroup,
-  NotificationChannelGroupInput,
-} from './NotificationChannelGroupManager.types';
-
 export interface NotificationChannelGroupManager extends ProxyNativeModule {
   getNotificationChannelGroupsAsync: () => Promise<NotificationChannelGroup[]>;
   getNotificationChannelGroupAsync: (groupId: string) => Promise<NotificationChannelGroup | null>;

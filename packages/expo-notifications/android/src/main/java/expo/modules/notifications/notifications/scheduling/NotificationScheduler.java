@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
@@ -15,10 +14,9 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
-import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.NotificationContent;
@@ -67,10 +65,9 @@ public class NotificationScheduler extends ExportedModule {
   }
 
   @ExpoMethod
-  public void scheduleNotificationAsync(final String identifier, Map notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
+  public void scheduleNotificationAsync(final String identifier, ReadableArguments notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
     try {
-      JSONObject payload = new JSONObject(notificationContentMap);
-      NotificationContent content = new JSONNotificationContentBuilder().setPayload(payload).build();
+      NotificationContent content = new ArgumentsNotificationContentBuilder().setPayload(notificationContentMap).build();
       NotificationRequest request = new NotificationRequest(identifier, content, triggerFromParams(triggerParams));
       ExpoNotificationSchedulerService.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
         @Override
@@ -134,16 +131,16 @@ public class NotificationScheduler extends ExportedModule {
     }
 
     switch (params.getString("type")) {
-      case "interval":
-        if (!(params.get("value") instanceof Number)) {
+      case "timeInterval":
+        if (!(params.get("seconds") instanceof Number)) {
           throw new InvalidArgumentException("Invalid value provided as interval of trigger.");
         }
-        return new TimeIntervalTrigger(((Number) params.get("value")).longValue(), params.getBoolean("repeats"));
+        return new TimeIntervalTrigger(((Number) params.get("seconds")).longValue(), params.getBoolean("repeats"));
       case "date":
-        if (!(params.get("value") instanceof Number)) {
+        if (!(params.get("timestamp") instanceof Number)) {
           throw new InvalidArgumentException("Invalid value provided as date of trigger.");
         }
-        return new DateTrigger(((Number) params.get("value")).longValue());
+        return new DateTrigger(((Number) params.get("timestamp")).longValue());
       default:
         throw new InvalidArgumentException("Trigger of type: " + params.getString("type") + " is not supported on Android.");
     }

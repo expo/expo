@@ -10,11 +10,11 @@
 static NSString * const notificationTriggerTypeKey = @"type";
 static NSString * const notificationTriggerRepeatsKey = @"repeats";
 
-static NSString * const intervalNotificationTriggerType = @"interval";
-static NSString * const intervalNotificationTriggerIntervalKey = @"value";
+static NSString * const intervalNotificationTriggerType = @"timeInterval";
+static NSString * const intervalNotificationTriggerIntervalKey = @"seconds";
 
 static NSString * const dateNotificationTriggerType = @"date";
-static NSString * const dateNotificationTriggerTimestampKey = @"value";
+static NSString * const dateNotificationTriggerTimestampKey = @"timestamp";
 
 static NSString * const calendarNotificationTriggerType = @"calendar";
 static NSString * const calendarNotificationTriggerComponentsKey = @"value";
