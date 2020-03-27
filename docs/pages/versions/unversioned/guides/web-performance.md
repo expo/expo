@@ -14,7 +14,7 @@ There are a number of performance tools at your disposal that will not only opti
 
 ## Optimize Your Assets
 
-The easiest and most **highly** recommended way to improve you project is to optimize your assets. You can reduce the size of your assets with the [Expo Optimize CLI](https://www.npmjs.com/package/expo-optimize). 
+The easiest and most **highly** recommended way to improve you project is to optimize your assets. You can reduce the size of your assets with the [Expo Optimize CLI](https://www.npmjs.com/package/expo-optimize).
 
 ```sh
 # Make sure you can successfully install the native image editing library Sharp
@@ -26,59 +26,31 @@ npx expo-optimize
 
 ## 📦 What Makes My App Large?
 
-To inspect bundle sizes, we use a Webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer) A plugin that will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.
+To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer). This plugin will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.
 
 ### Using Bundle Analyzer
 
-1. Reveal the Webpack Config: `expo customize:web` and select `webpack.config.js`.
-2. Customize the config to generate a web report: 
+1. Install the bundle analyzer: `yarn add -D webpack-bundle-analyzer`
+2. Reveal the Webpack Config: `expo customize:web` and select `webpack.config.js`.
+3. Customize the config to generate a web report:
 
 ```js
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
-module.exports = async function (env, argv) {
-  const isProd = env.mode === 'production';
-  // A web report will be generated everytime you run `expo build:web`
-  // By default this is disabled because it will add noticeably more time to your builds and reloads.
-  const config = await createExpoWebpackConfigAsync({ ...env, report: isProd }, argv);
-  return config;
-};
-```
+module.exports = async (env, argv) => {
+  const config = await createExpoWebpackConfigAsync(env, argv);
 
-- **Alternatively** you can pass a lot more options to the web report like this:
-```js
-const createExpoWebpackConfigAsync = require('@expo/webpack-config');
-
-module.exports = async function (env, argv) {
-  const isProd = env.mode === 'production';
-
-  const report = isProd && {
-    // Any of the following: https://github.com/webpack-contrib/webpack-bundle-analyzer#options-for-plugin
-    "statsFilename": "stats.json",
-    "reportFilename": "report.html"
-    // "server", "static", "disabled"
-    "analyzerMode": 'static',
-    // Host that will be used in server mode to start HTTP server.
-    "analyzerHost": '127.0.0.1',
-    // Port that will be used in server mode to start HTTP server.
-    "analyzerPort": 8888,
-    // stat, parsed, gzip
-    "defaultSizes": 'gzip',
-    // Automatically open report in default browser.
-    "openAnalyzer": false,
-    // If true, webpack stats JSON file will be generated in bundle output directory.
-    "generateStatsFile": true,
-    // null or {Object}
-    "statsOptions": null,
-    // {null|pattern|pattern[]} where pattern equals to {String|RegExp|function}
-    "excludeAssets": null,
-    // Overrides logLevel
-    "verbose": false,
-    // The output path for the report.
-    "path": "web-report",
+  // Optionally you can enable the bundle size report.
+  // It's best to do this only with production builds because it will add noticeably more time to your builds and reloads.
+  if (env.mode === 'production') {
+    config.plugins.push(
+      new BundleAnalyzerPlugin({
+        path: 'web-report',
+      })
+    );
   }
-  
-  const config = await createExpoWebpackConfigAsync({ ...env, report }, argv);
+
   return config;
 };
 ```

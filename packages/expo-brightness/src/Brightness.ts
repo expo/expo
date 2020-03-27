@@ -23,7 +23,7 @@ export async function setBrightnessAsync(brightnessValue: number): Promise<void>
   if (!ExpoBrightness.setBrightnessAsync) {
     throw new UnavailabilityError('expo-brightness', 'setBrightnessAsync');
   }
-  let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+  const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
   if (isNaN(clampedBrightnessValue)) {
     throw new TypeError(`setBrightnessAsync cannot be called with ${brightnessValue}`);
   }
@@ -38,7 +38,7 @@ export async function getSystemBrightnessAsync(): Promise<number> {
 }
 
 export async function setSystemBrightnessAsync(brightnessValue: number): Promise<void> {
-  let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
+  const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
   if (isNaN(clampedBrightnessValue)) {
     throw new TypeError(`setSystemBrightnessAsync cannot be called with ${brightnessValue}`);
   }

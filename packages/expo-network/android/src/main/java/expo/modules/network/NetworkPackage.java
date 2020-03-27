@@ -2,11 +2,11 @@ package expo.modules.network;
 
 import android.content.Context;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
+
+import java.util.Collections;
+import java.util.List;
 
 public class NetworkPackage extends BasePackage {
   @Override

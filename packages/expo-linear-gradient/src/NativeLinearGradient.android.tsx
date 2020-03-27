@@ -13,16 +13,16 @@ type Point = [number, number];
 
 export default class NativeLinearGradient extends React.Component<Props> {
   render() {
-    let { colors, locations, startPoint, endPoint, children, style, ...props } = this.props;
+    const { colors, locations, startPoint, endPoint, children, style, ...props } = this.props;
 
     // TODO: revisit whether we need to inherit the container's borderRadius since this issue has
     // been resolved: https://github.com/facebook/react-native/issues/3198
-    let flatStyle = StyleSheet.flatten(style) || {};
-    let borderRadius = flatStyle.borderRadius || 0;
+    const flatStyle = StyleSheet.flatten(style) || {};
+    const borderRadius = flatStyle.borderRadius || 0;
 
     // This is the format from:
     // https://developer.android.com/reference/android/graphics/Path.html#addRoundRect(android.graphics.RectF,%20float[],%20android.graphics.Path.Direction)
-    let borderRadiiPerCorner = [
+    const borderRadiiPerCorner = [
       flatStyle.borderTopLeftRadius || borderRadius,
       flatStyle.borderTopLeftRadius || borderRadius,
       flatStyle.borderTopRightRadius || borderRadius,

@@ -3,16 +3,23 @@ import qs from 'qs';
 import URL from 'url-parse';
 import Linking from './LinkingModule';
 const { manifest } = Constants;
-const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
-let HOST_URI = manifest.hostUri;
-if (!HOST_URI && !USES_CUSTOM_SCHEME) {
-    // we're probably not using up-to-date xdl, so just fake it for now
-    // we have to remove the /--/ on the end since this will be inserted again later
-    HOST_URI = _removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
+function _usesCustomScheme() {
+    return Constants.appOwnership === 'standalone' && manifest.scheme;
 }
-const IS_EXPO_HOSTED = HOST_URI &&
-    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(HOST_URI) ||
-        manifest.developer);
+function _getHostUri() {
+    if (!manifest.hostUri && !_usesCustomScheme()) {
+        // we're probably not using up-to-date xdl, so just fake it for now
+        // we have to remove the /--/ on the end since this will be inserted again later
+        return _removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
+    }
+    return manifest.hostUri;
+}
+function _isExpoHosted() {
+    const hostUri = _getHostUri();
+    return !!(hostUri &&
+        (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
+            manifest.developer));
+}
 function _removeScheme(url) {
     return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
 }
@@ -30,7 +37,7 @@ function _removeTrailingSlashAndQueryString(url) {
 }
 function makeUrl(path = '', queryParams = {}) {
     let scheme = 'exp';
-    let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+    const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
     if (Constants.appOwnership === 'standalone' && manifestScheme) {
         scheme = manifestScheme;
     }
@@ -40,12 +47,12 @@ function makeUrl(path = '', queryParams = {}) {
     else if (Constants.appOwnership === 'expo' && !manifestScheme) {
         console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
     }
-    let hostUri = HOST_URI || '';
-    if (USES_CUSTOM_SCHEME && IS_EXPO_HOSTED) {
+    let hostUri = _getHostUri() || '';
+    if (_usesCustomScheme() && _isExpoHosted()) {
         hostUri = '';
     }
     if (path) {
-        if (IS_EXPO_HOSTED && hostUri) {
+        if (_isExpoHosted() && hostUri) {
             path = `/--/${_removeLeadingSlash(path)}`;
         }
         if (!path.startsWith('/')) {
@@ -58,13 +65,13 @@ function makeUrl(path = '', queryParams = {}) {
     // merge user-provided query params with any that were already in the hostUri
     // e.g. release-channel
     let queryString = '';
-    let queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
+    const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
     if (queryStringMatchResult) {
         hostUri = queryStringMatchResult[1];
         queryString = queryStringMatchResult[2];
         let paramsFromHostUri = {};
         try {
-            let parsedParams = qs.parse(queryString);
+            const parsedParams = qs.parse(queryString);
             if (typeof parsedParams === 'object') {
                 paramsFromHostUri = parsedParams;
             }
@@ -90,9 +97,9 @@ function parse(url) {
     for (const param in parsed.query) {
         parsed.query[param] = decodeURIComponent(parsed.query[param]);
     }
-    let queryParams = parsed.query;
-    let hostUri = HOST_URI || '';
-    let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
+    const queryParams = parsed.query;
+    const hostUri = _getHostUri() || '';
+    const hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
     let path = parsed.pathname || null;
     let hostname = parsed.hostname || null;
     let scheme = parsed.protocol || null;
@@ -110,7 +117,7 @@ function parse(url) {
                 .concat(['--/'])
                 .join('/');
         }
-        if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
+        if (_isExpoHosted() && !_usesCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);
             hostname = null;
         }
@@ -138,7 +145,7 @@ async function parseInitialURLAsync() {
     return parse(initialUrl);
 }
 // @ts-ignore fix this...
-let newLinking = new Linking.constructor();
+const newLinking = new Linking.constructor();
 newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;

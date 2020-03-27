@@ -90,7 +90,7 @@ class FirebaseAnalyticsJS {
             event['ep.screen_name'] = screenName;
         // Add user-properties
         if (userProperties) {
-            for (let name in userProperties) {
+            for (const name in userProperties) {
                 event[name] = userProperties[name];
             }
             // Reset user-properties after the first event. This is what gtag.js seems
@@ -154,7 +154,7 @@ class FirebaseAnalyticsJS {
             'ep.origin': options.origin,
         };
         if (eventParams) {
-            for (let key in eventParams) {
+            for (const key in eventParams) {
                 const paramKey = SHORT_EVENT_PARAMS[key] ||
                     (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
                 params[paramKey] = eventParams[key];
@@ -238,7 +238,7 @@ class FirebaseAnalyticsJS {
     async setUserProperties(userProperties) {
         if (!this.enabled)
             return;
-        for (let name in userProperties) {
+        for (const name in userProperties) {
             const val = userProperties[name];
             const key = FirebaseAnalyticsJS.parseUserProperty(this.options, name, val);
             if (val === null || val === undefined) {

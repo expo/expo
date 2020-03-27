@@ -13,8 +13,8 @@ The configuration for Android status bar lives under the `androidStatusBar` key 
 This option can be used to specify whether the status bar content (icons and text in the status bar) is light, or dark. Usually a status bar with a light background has dark content, and a status bar with a dark background has light content.
 
 The valid values are:
-- `light-content` - The status bar content is light colored (usually white). This is the default value.
-- `dark-content` - The status bar content is dark colored (usually dark grey). This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions.
+- `light-content` - The status bar content is light colored (usually white).
+- `dark-content` - The status bar content is dark colored (usually dark grey). This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions. This is the default value.
 
 > Note: If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
 > Same goes for `dark-content` when you have a very dark image set as the `SplashScreen` or `backgroundColor` set to a dark color.
@@ -23,7 +23,7 @@ The valid values are:
 
 This option can be used to set a background color for the status bar.
 The valid value is a 6-character long hexadecimal solid color string with the format `#RRGGBB` (e.g. `#C2185B`) or 8-character long hexadecimal color string with transparency with the format `#RRGGBBAA` (e.g. `#23C1B255`).
-Defaults to `#00000000` (fully transparent color).
+Defaults to `#00000000` (fully transparent color) for `dark-content` bar style and `#00000088` (semi-transparent black) for `light-content` bar style.
 
 ### `translucent`
 
@@ -114,8 +114,8 @@ Example:
   "androidStatusBar": {
     "hidden": false, // default value
     "translucent": true, // default value to align with default iOS behavior
-    "barStyle": "light-content", // default value
-    "backgroundColor": "#00000000" // default value - transparent color
+    "barStyle": "dark-content", // default value
+    "backgroundColor": "#00000000" // default value depends on "barStyle" value - fully-transparent when it is `dark-content` and semi-transparent black for `light-content` 
   },
   ...
 }

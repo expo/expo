@@ -21,7 +21,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
   getDefaultReturnUrl(): string {
     let scheme = 'exp';
     let path = ManagedSessionUrlProvider.SESSION_PATH;
-    let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+    const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
 
     if (Constants.appOwnership === 'standalone' && manifestScheme) {
       scheme = manifestScheme;
@@ -58,7 +58,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
   }
 
   getStartUrl(authUrl: string, returnUrl: string): string {
-    let queryString = qs.stringify({
+    const queryString = qs.stringify({
       authUrl,
       returnUrl,
     });

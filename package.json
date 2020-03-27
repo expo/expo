@@ -29,7 +29,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "eslint": "^6.6.0",
     "eslint-config-universe": "^2.0.0",
-    "expo-cli": "^3.11.1",
+    "expo-cli": "^3.15.4",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.19.0"
   },

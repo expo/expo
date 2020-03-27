@@ -31,7 +31,7 @@ jest.mock('expo-updates', () => {
 
 describe('getEmbeddedAssetUri', () => {
   it(`returns null in __DEV__`, () => {
-    let uri = EmbeddedAssets.getEmbeddedAssetUri('hash', 'png');
+    const uri = EmbeddedAssets.getEmbeddedAssetUri('hash', 'png');
     expect(__DEV__).toBeTruthy();
     expect(uri).toBeNull();
   });
@@ -48,38 +48,38 @@ describe('getEmbeddedAssetUri', () => {
     });
 
     it(`returns a URI when an asset is bundled`, () => {
-      let uri = EmbeddedAssets.getEmbeddedAssetUri('test3', 'png');
+      const uri = EmbeddedAssets.getEmbeddedAssetUri('test3', 'png');
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test3.png'
       );
     });
 
     it(`returns a URI when an asset is bundled with a hash and no file extension`, () => {
-      let uri = EmbeddedAssets.getEmbeddedAssetUri('test4', null);
+      const uri = EmbeddedAssets.getEmbeddedAssetUri('test4', null);
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test4'
       );
     });
 
     it(`returns a URI when an asset is bundled in the legacy location`, () => {
-      let uri = EmbeddedAssets.getEmbeddedAssetUri('test1', null);
+      const uri = EmbeddedAssets.getEmbeddedAssetUri('test1', null);
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test1'
       );
     });
 
     it(`returns a URI for an asset with the given hash and file extension`, () => {
-      let uri = EmbeddedAssets.getEmbeddedAssetUri('test2', 'png');
+      const uri = EmbeddedAssets.getEmbeddedAssetUri('test2', 'png');
       expect(uri).toBe(
         'file:///Containers/Bundle/Application/00A4A2F0-E268-40DC-A1AD-2F3A90BA2340/Expo.app/asset_test2.png'
       );
     });
 
     it(`returns null when no asset exists with the given hash and file extension`, () => {
-      let uri1 = EmbeddedAssets.getEmbeddedAssetUri('test1', 'png');
+      const uri1 = EmbeddedAssets.getEmbeddedAssetUri('test1', 'png');
       expect(uri1).toBeNull();
 
-      let uri2 = EmbeddedAssets.getEmbeddedAssetUri('test2', 'xxx');
+      const uri2 = EmbeddedAssets.getEmbeddedAssetUri('test2', 'xxx');
       expect(uri2).toBeNull();
     });
   });

@@ -36,8 +36,15 @@
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
+  },
+  "dependencies": {
+    "prop-types": "15.7.2"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

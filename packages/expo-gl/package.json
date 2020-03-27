@@ -37,13 +37,18 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "unimodules-camera-interface": "*",
     "@unimodules/core": "*",
-    "unimodules-file-system-interface": "*",
-    "expo-gl-cpp": "~5.0.0"
+    "unimodules-camera-interface": "*",
+    "unimodules-file-system-interface": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "expo-gl-cpp": "~8.1.0",
+    "fbjs": "1.0.0",
+    "invariant": "2.2.4",
     "prop-types": "^15.7.2"
   },
   "devDependencies": {

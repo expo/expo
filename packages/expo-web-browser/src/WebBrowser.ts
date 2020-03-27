@@ -159,13 +159,13 @@ async function _openBrowserAndWaitAndroidAsync(
   startUrl: string,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserResult> {
-  let appStateChangedToActive = new Promise(resolve => {
+  const appStateChangedToActive = new Promise(resolve => {
     _onWebBrowserCloseAndroid = resolve;
     AppState.addEventListener('change', _onAppStateChangeAndroid);
   });
 
   let result: WebBrowserResult = { type: 'cancel' };
-  let { type } = await openBrowserAsync(startUrl, browserParams);
+  const { type } = await openBrowserAsync(startUrl, browserParams);
 
   if (type === 'opened') {
     await appStateChangedToActive;

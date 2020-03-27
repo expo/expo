@@ -10,7 +10,9 @@
 #import <React/RCTBridgeDelegate.h>
 #import <UMCore/UMAppDelegateWrapper.h>
 
-@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
+#import <EXUpdates/EXUpdatesAppController.h>
+
+@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
 
 @property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
 @property (nonatomic, strong) UIWindow *window;

@@ -16,6 +16,6 @@ export interface NotificationBehavior extends BaseNotificationBehavior {
 export interface NotificationHandler {
     handleNotification: (notification: Notification) => Promise<NotificationBehavior>;
     handleSuccess?: (notificationId: string) => void;
-    handleError?: (error: NotificationHandlingError) => void;
+    handleError?: (notificationId: string, error: NotificationHandlingError) => void;
 }
 export declare function setNotificationHandler(handler: NotificationHandler | null): void;

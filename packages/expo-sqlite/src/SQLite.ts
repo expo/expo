@@ -44,7 +44,7 @@ function _serializeQuery(query: Query): [string, unknown[]] {
 }
 
 function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
-  let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
+  const [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
   // TODO: send more structured error information from the native module so we can better construct
   // a SQLException object
   if (errorMessage !== null) {

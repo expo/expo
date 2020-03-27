@@ -65,7 +65,7 @@ function mock(property, customMock) {
 
 function mockProperties(moduleProperties, customMocks) {
   const mockedProperties = {};
-  for (let propertyName of Object.keys(moduleProperties)) {
+  for (const propertyName of Object.keys(moduleProperties)) {
     const property = moduleProperties[propertyName];
     const customMock =
       customMocks && customMocks.hasOwnProperty(propertyName)
@@ -84,7 +84,7 @@ function mockByMockDefinition(definition) {
   return mock;
 }
 
-for (let moduleName of Object.keys(expoModules)) {
+for (const moduleName of Object.keys(expoModules)) {
   const moduleProperties = expoModules[moduleName];
   const mockedProperties = mockProperties(moduleProperties);
 

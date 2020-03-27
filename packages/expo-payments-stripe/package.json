@@ -35,6 +35,10 @@
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
     "prop-types": "^15.6.0"
   },

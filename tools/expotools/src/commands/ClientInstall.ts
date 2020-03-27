@@ -83,7 +83,7 @@ async function action(options: ActionOptions) {
   Config.api.host = STAGING_HOST;
 
   const versions = await Versions.versionsAsync();
-  const sdkConfiguration = versions && versions.sdkVersions && versions.sdkVersions[sdkVersion];
+  const sdkConfiguration = versions?.sdkVersions?.[sdkVersion];
 
   if (!sdkConfiguration) {
     throw new Error(`Versions configuration for SDK ${chalk.cyan(sdkVersion)} not found!`);

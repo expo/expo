@@ -4,10 +4,11 @@ import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import ExponentTest from '../ExponentTest';
+import { getTestModules } from '../TestModules';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
-import ExponentTest from '../ExponentTest';
 
 const initialState = {
   portalChildShouldBeVisible: false,
@@ -28,7 +29,15 @@ export default class TestScreen extends React.Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    const selectedModules = navigation.getParam('selected');
+    const selectedTestNames = navigation.getParam('selected');
+
+    // We get test modules here to make sure that React Native will reload this component when tests were changed.
+    const selectedModules = getTestModules().filter(m => selectedTestNames.has(m.name));
+
+    if (!selectedModules.length) {
+      console.log('[TEST_SUITE]', 'No selected modules', selectedTestNames);
+    }
+
     this._runTests(selectedModules);
     this._isMounted = true;
   }

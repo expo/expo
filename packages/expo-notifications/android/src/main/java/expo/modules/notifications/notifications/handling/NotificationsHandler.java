@@ -2,7 +2,6 @@ package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -16,7 +15,9 @@ import java.util.Map;
 import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.interfaces.NotificationListener;
 import expo.modules.notifications.notifications.interfaces.NotificationManager;
-import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationResponse;
 
 /**
  * {@link NotificationListener} responsible for managing app's reaction to incoming
@@ -28,6 +29,11 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
  */
 public class NotificationsHandler extends ExportedModule implements NotificationListener {
   private final static String EXPORTED_NAME = "ExpoNotificationsHandlerModule";
+
+  private static final String SHOULD_SHOW_ALERT_KEY = "shouldShowAlert";
+  private static final String SHOULD_PLAY_SOUND_KEY = "shouldPlaySound";
+  private static final String SHOULD_SET_BADGE_KEY = "shouldSetBadge";
+  private static final String PRIORITY_KEY = "priority";
 
   private NotificationManager mNotificationManager;
   private ModuleRegistry mModuleRegistry;
@@ -79,20 +85,33 @@ public class NotificationsHandler extends ExportedModule implements Notification
       promise.reject("ERR_NOTIFICATION_HANDLED", message);
       return;
     }
-    task.handleResponse(new ExpoNotificationBehavior(behavior), promise);
+    boolean shouldShowAlert = behavior.getBoolean(SHOULD_SHOW_ALERT_KEY);
+    boolean shouldPlaySound = behavior.getBoolean(SHOULD_PLAY_SOUND_KEY);
+    boolean shouldSetBadge = behavior.getBoolean(SHOULD_SET_BADGE_KEY);
+    String priorityOverride = behavior.getString(PRIORITY_KEY);
+    task.handleResponse(new NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priorityOverride), promise);
+  }
+
+  /**
+   * Callback called when {@link NotificationManager} gets notified of a new notification response.
+   * Does nothing.
+   *
+   * @param response Notification response received
+   */
+  @Override
+  public void onNotificationResponseReceived(NotificationResponse response) {
+    // do nothing, the response is received through emitter
   }
 
   /**
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
-   * @param identifier Notification identifier
-   * @param request    Notification request
-   * @param trigger    Notification trigger
+   * @param notification Notification received
    */
   @Override
-  public void onNotificationReceived(String identifier, JSONObject request, NotificationTrigger trigger) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, identifier, request, trigger, this);
+  public void onNotificationReceived(Notification notification) {
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, notification, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
   }

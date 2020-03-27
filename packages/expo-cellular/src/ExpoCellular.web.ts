@@ -17,7 +17,7 @@ export default {
     return null;
   },
   async getCellularGenerationAsync(): Promise<CellularGeneration> {
-    let connection =
+    const connection =
       navigator['connection'] ||
       navigator['mozConnection'] ||
       navigator['webkitConnection'] ||

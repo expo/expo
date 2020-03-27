@@ -5,12 +5,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.modules.notifications.actions.DEFAULT";
+
 @implementation EXNotificationSerializer
 
 + (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSMutableDictionary *serializedResponse = [NSMutableDictionary dictionary];
-  serializedResponse[@"actionIdentifier"] = response.actionIdentifier ?: [NSNull null];
+  NSString *actionIdentifier = response.actionIdentifier;
+  if ([UNNotificationDefaultActionIdentifier isEqualToString:actionIdentifier]) {
+    actionIdentifier = EXNotificationResponseDefaultActionIdentifier;
+  }
+  serializedResponse[@"actionIdentifier"] = actionIdentifier;
   serializedResponse[@"notification"] = [self serializedNotification:response.notification];
   if ([response isKindOfClass:[UNTextInputNotificationResponse class]]) {
     UNTextInputNotificationResponse *textInputResponse = (UNTextInputNotificationResponse *)response;
@@ -31,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content];
+  serializedRequest[@"notification"] = [self serializedNotificationContent:request.content];
   serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
   return serializedRequest;
 }
@@ -116,9 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
     UNLocationNotificationTrigger *locationTrigger = (UNLocationNotificationTrigger *)trigger;
     serializedTrigger[@"region"] = [self serializedRegion:locationTrigger.region];
   } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
-    serializedTrigger[@"type"] = @"timeInterval";
+    serializedTrigger[@"type"] = @"interval";
     UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
-    serializedTrigger[@"timeInterval"] = @(timeIntervalTrigger.timeInterval);
+    serializedTrigger[@"value"] = @(timeIntervalTrigger.timeInterval);
   } else {
     serializedTrigger[@"type"] = @"unknown";
   }

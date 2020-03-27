@@ -183,7 +183,7 @@ export default class Video extends React.Component {
         const source = getNativeSourceFromSource(this.props.source) || undefined;
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
         if (this.props.resizeMode) {
-            let resizeMode = this.props.resizeMode;
+            const resizeMode = this.props.resizeMode;
             if (resizeMode === ResizeMode.STRETCH) {
                 nativeResizeMode = ExpoVideoManagerConstants.ScaleToFill;
             }

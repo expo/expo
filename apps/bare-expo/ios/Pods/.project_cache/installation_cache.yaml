@@ -569,8 +569,12 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
@@ -599,6 +603,21 @@ CACHE_KEYS:
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.1.0)
+  expo-image:
+    BUILD_SETTINGS_CHECKSUM:
+      expo-image: bcbb57a3ee11d42bb8c5a75d69a0418f
+    CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
+    FILES:
+      - "../../../../packages/expo-image/ios/EXImageTypes.h"
+      - "../../../../packages/expo-image/ios/EXImageTypes.m"
+      - "../../../../packages/expo-image/ios/EXImageView.h"
+      - "../../../../packages/expo-image/ios/EXImageView.m"
+      - "../../../../packages/expo-image/ios/EXImageViewManager.h"
+      - "../../../../packages/expo-image/ios/EXImageViewManager.m"
+      - "../../../../packages/expo-image/README.md"
+    PROJECT_NAME: expo-image
+    SPECS:
+      - expo-image (1.0.0-alpha.0)
   EXPrint:
     BUILD_SETTINGS_CHECKSUM:
       EXPrint: f73e095f89524fa02c72b0692bb1f272
@@ -929,12 +948,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: a72feb9509b1afa5820c6069629d5c50
-      Release: a72feb9509b1afa5820c6069629d5c50
+      Debug: 816f15a05b128cfbab101cc7184d9687
+      Release: 816f15a05b128cfbab101cc7184d9687
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 949995fb801a2adf1073e60370a6ea79
-      Release: 949995fb801a2adf1073e60370a6ea79
+      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
+      Release: e6aedfaad570c1e1a2e18b3c4a18be48
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1817,6 +1836,14 @@ CACHE_KEYS:
     PROJECT_NAME: RNScreens
     SPECS:
       - RNScreens (2.2.0)
+  SDWebImage:
+    BUILD_SETTINGS_CHECKSUM:
+      SDWebImage: 77937f139d5c03d5c73744a96408a279
+    CHECKSUM: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
+    PROJECT_NAME: SDWebImage
+    SPECS:
+      - SDWebImage (5.6.0)
+      - SDWebImage/Core (5.6.0)
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
@@ -1942,7 +1969,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: 330db6c6bc97064a0ce907ee8d5fdbb2
-    CHECKSUM: c8f2b8beb61851b6f2441e54b409d2dbd6478b7d
+    CHECKSUM: 900e80a6cd83823870cf840f35081edb4043b014
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -1965,7 +1992,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.0)
+      - UMReactNativeAdapter (5.1.1)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: edab35b62745c17864e65b8dd2612597

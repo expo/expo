@@ -5,8 +5,10 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
+import { Alert, AppState } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import { isInteractive } from '../utils/Environment';
 import { waitFor } from './helpers';
 
 export const name = 'expo-notifications';
@@ -121,7 +123,7 @@ export async function test(t) {
           handleSuccess: event => {
             handleSuccessEvent = event;
           },
-          handleError: event => {
+          handleError: (...event) => {
             handleErrorEvent = event;
           },
         });
@@ -218,6 +220,7 @@ export async function test(t) {
               await waitFor(1000);
             }
             t.expect(handleErrorEvent).not.toBeNull();
+            t.expect(typeof handleErrorEvent[0]).toBe('string');
             t.expect(handleSuccessEvent).toBeNull();
           },
           10000
@@ -607,6 +610,387 @@ export async function test(t) {
         t.expect(badgeCount).toBe(clearingCounter);
       });
     });
+
+    t.describe('dismissNotificationAsync()', () => {
+      t.it('resolves for a valid notification ID', async () => {
+        const identifier = 'test-id';
+        await Notifications.presentNotificationAsync({
+          identifier,
+          title: 'Sample title',
+          subtitle: 'What an event!',
+          message: 'An interesting event has just happened',
+          badge: 1,
+        });
+        await Notifications.dismissNotificationAsync(identifier);
+      });
+
+      t.it('resolves for an invalid notification ID', async () => {
+        await Notifications.dismissNotificationAsync('no-such-notification-id');
+      });
+    });
+
+    t.describe('dismissAllNotificationsAsync()', () => {
+      t.it('resolves', async () => {
+        await Notifications.dismissAllNotificationsAsync();
+      });
+    });
+
+    t.describe('getAllScheduledNotificationsAsync', () => {
+      const identifier = 'test-scheduled-notification';
+      const notification = { title: 'Scheduled notification' };
+
+      t.afterEach(async () => {
+        await Notifications.cancelScheduledNotificationAsync(identifier);
+      });
+
+      t.it('resolves with an Array', async () => {
+        const notifications = await Notifications.getAllScheduledNotificationsAsync();
+        t.expect(notifications).toEqual(t.jasmine.arrayContaining([]));
+      });
+
+      t.it('contains a scheduled notification', async () => {
+        const trigger = {
+          seconds: 10,
+        };
+        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        const notifications = await Notifications.getAllScheduledNotificationsAsync();
+        t.expect(notifications).toContain(
+          t.jasmine.objectContaining({
+            identifier,
+            content: t.jasmine.objectContaining(notification),
+            trigger: t.jasmine.objectContaining({
+              repeats: false,
+              value: trigger.seconds,
+              type: 'interval',
+            }),
+          })
+        );
+      });
+
+      t.it('does not contain a canceled notification', async () => {
+        const trigger = {
+          seconds: 10,
+        };
+        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.cancelScheduledNotificationAsync(identifier);
+        const notifications = await Notifications.getAllScheduledNotificationsAsync();
+        t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
+      });
+    });
+
+    t.describe('scheduleNotificationAsync', () => {
+      const identifier = 'test-scheduled-notification';
+      const notification = {
+        title: 'Scheduled notification',
+        body: { key: 'value' },
+        badge: 2,
+        vibrate: [100, 100, 100, 100, 100, 100],
+      };
+
+      t.afterEach(async () => {
+        await Notifications.cancelScheduledNotificationAsync(identifier);
+      });
+
+      t.it(
+        'triggers a notification which emits an event',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          await Notifications.scheduleNotificationAsync(
+            { identifier, ...notification },
+            { seconds: 5 }
+          );
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          subscription.remove();
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync(
+            { identifier, ...notification },
+            { seconds: 5 }
+          );
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      // iOS rejects with "time interval must be at least 60 if repeating"
+      // and having a test running for more than 60 seconds may be too
+      // time-consuming to maintain
+      if (Platform.OS !== 'ios') {
+        t.it(
+          'triggers a repeating notification which emits events',
+          async () => {
+            let timesSpyHasBeenCalled = 0;
+            const subscription = Notifications.addNotificationReceivedListener(() => {
+              timesSpyHasBeenCalled += 1;
+            });
+            await Notifications.scheduleNotificationAsync(
+              { identifier, ...notification },
+              {
+                seconds: 5,
+                repeats: true,
+              }
+            );
+            await waitFor(12000);
+            t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
+            subscription.remove();
+          },
+          16000
+        );
+      }
+
+      if (Platform.OS === 'ios') {
+        t.it(
+          'schedules a notification with calendar trigger',
+          async () => {
+            const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+            const subscription = Notifications.addNotificationReceivedListener(
+              notificationReceivedSpy
+            );
+            await Notifications.scheduleNotificationAsync(
+              { identifier, ...notification },
+              {
+                ios: {
+                  second: (new Date().getSeconds() + 5) % 60,
+                },
+              }
+            );
+            await waitFor(6000);
+            t.expect(notificationReceivedSpy).toHaveBeenCalled();
+            subscription.remove();
+          },
+          16000
+        );
+      }
+    });
+
+    t.describe('cancelScheduledNotificationAsync', () => {
+      const identifier = 'test-scheduled-canceled-notification';
+      const notification = { title: 'Scheduled, canceled notification' };
+
+      t.it(
+        'makes a scheduled notification not trigger',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          await Notifications.scheduleNotificationAsync(
+            { identifier, ...notification },
+            { seconds: 5 }
+          );
+          await Notifications.cancelScheduledNotificationAsync(identifier);
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+          subscription.remove();
+        },
+        10000
+      );
+    });
+
+    t.describe('cancelAllScheduledNotificationsAsync', () => {
+      const notification = { title: 'Scheduled, canceled notification' };
+
+      t.it(
+        'removes all scheduled notifications',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          for (let i = 0; i < 3; i += 1) {
+            await Notifications.scheduleNotificationAsync(
+              { identifier: `notification-${i}`, ...notification },
+              { seconds: 5 }
+            );
+          }
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+          subscription.remove();
+          const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+          t.expect(scheduledNotifications.length).toEqual(0);
+        },
+        10000
+      );
+    });
+
+    const onlyInteractiveDescribe = isInteractive ? t.describe : t.xdescribe;
+    onlyInteractiveDescribe('when the app is in background', () => {
+      let subscription = null;
+      let handleNotificationSpy = null;
+      let handleSuccessSpy = null;
+      let handleErrorSpy = null;
+      let notificationReceivedSpy = null;
+
+      t.beforeEach(async () => {
+        handleNotificationSpy = t.jasmine.createSpy('handleNotificationSpy');
+        handleSuccessSpy = t.jasmine.createSpy('handleSuccessSpy');
+        handleErrorSpy = t.jasmine.createSpy('handleErrorSpy').and.callFake((...args) => {
+          console.log(args);
+        });
+        notificationReceivedSpy = t.jasmine.createSpy('notificationReceivedSpy');
+        Notifications.setNotificationHandler({
+          handleNotification: handleNotificationSpy,
+          handleSuccess: handleSuccessSpy,
+          handleError: handleErrorSpy,
+        });
+        subscription = Notifications.addNotificationReceivedListener(notificationReceivedSpy);
+      });
+
+      t.afterEach(() => {
+        if (subscription) {
+          subscription.remove();
+          subscription = null;
+        }
+        Notifications.setNotificationHandler(null);
+        handleNotificationSpy = null;
+        handleSuccessSpy = null;
+        handleErrorSpy = null;
+        notificationReceivedSpy = null;
+      });
+
+      t.it(
+        'shows the notification',
+        // without async-await the code is executed immediately after opening the screen
+        async () =>
+          await new Promise((resolve, reject) => {
+            const secondsToTimeout = 5;
+            let notificationSent = false;
+            Alert.alert(`Please move the app to the background and wait for 5 seconds`);
+            let userInteractionTimeout = null;
+            async function handleStateChange(state) {
+              const identifier = 'test-interactive-notification';
+              if (state === 'background' && !notificationSent) {
+                if (userInteractionTimeout) {
+                  clearInterval(userInteractionTimeout);
+                  userInteractionTimeout = null;
+                }
+                await Notifications.scheduleNotificationAsync(
+                  {
+                    identifier,
+                    title: 'Hello from the application!',
+                    message:
+                      'You can now return to the app and let the test know the notification has been shown.',
+                  },
+                  { seconds: 1 }
+                );
+                notificationSent = true;
+              } else if (state === 'active' && notificationSent) {
+                const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
+                t.expect(notificationWasShown).toBeTruthy();
+                t.expect(handleNotificationSpy).not.toHaveBeenCalled();
+                t.expect(handleSuccessSpy).not.toHaveBeenCalled();
+                t.expect(handleErrorSpy).not.toHaveBeenCalledWith(identifier);
+                t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
+                AppState.removeEventListener('change', handleStateChange);
+                resolve();
+              }
+            }
+            userInteractionTimeout = setTimeout(() => {
+              console.warn(
+                "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+              );
+              AppState.removeEventListener('change', handleStateChange);
+              Alert.alert(
+                'Scheduled notification test was skipped',
+                `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
+              );
+              resolve();
+            }, secondsToTimeout * 1000);
+            AppState.addEventListener('change', handleStateChange);
+          }),
+        30000
+      );
+    });
+
+    onlyInteractiveDescribe('tapping on a notification', () => {
+      let subscription = null;
+      let event = null;
+
+      t.beforeEach(async () => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+          }),
+        });
+        subscription = Notifications.addNotificationResponseReceivedListener(anEvent => {
+          event = anEvent;
+        });
+      });
+
+      t.afterEach(() => {
+        if (subscription) {
+          subscription.remove();
+          subscription = null;
+        }
+        Notifications.setNotificationHandler(null);
+        event = null;
+      });
+
+      t.it(
+        'calls the “notification response received” listener with default action identifier',
+        async () => {
+          const secondsToTimeout = 5;
+          const shouldRun = await Promise.race([
+            askUserYesOrNo('Could you tap on a notification when it shows?'),
+            waitFor(secondsToTimeout * 1000),
+          ]);
+          if (!shouldRun) {
+            console.warn(
+              "Notification response test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+            );
+            Alert.alert(
+              'Notification response test was skipped',
+              `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
+            );
+            return;
+          }
+          const notificationSpec = {
+            title: 'Tap me!',
+            message: 'Better be quick!',
+          };
+          await Notifications.presentNotificationAsync(notificationSpec);
+          let iterations = 0;
+          while (iterations < 5) {
+            iterations += 1;
+            if (event) {
+              break;
+            }
+            await waitFor(1000);
+          }
+          t.expect(event).not.toBeNull();
+          t.expect(event.actionIdentifier).toBe(Notifications.DEFAULT_ACTION_IDENTIFIER);
+          t.expect(event.notification).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining(notificationSpec),
+              }),
+            })
+          );
+        },
+        10000
+      );
+    });
   });
 }
 
@@ -658,4 +1042,28 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       throw new Error(`API error has occurred: ${receipt.details.error}`);
     }
   }
+}
+
+function askUserYesOrNo(title, message = '') {
+  return new Promise((resolve, reject) => {
+    try {
+      Alert.alert(
+        title,
+        message,
+        [
+          {
+            text: 'No',
+            onPress: () => resolve(false),
+          },
+          {
+            text: 'Yes',
+            onPress: () => resolve(true),
+          },
+        ],
+        { onDismiss: () => resolve(false) }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
 }

@@ -265,9 +265,9 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
 
     if (!(type == "Ljava/lang/Double;" || type == "Ljava/lang/Boolean;" ||
           type == "Ljava/lang/String;" ||
-          type == "Labi36_0_0/com/facebook/react/bridge/ReadableArray;" ||
-          type == "Labi36_0_0/com/facebook/react/bridge/Callback;" ||
-          type == "Labi36_0_0/com/facebook/react/bridge/ReadableMap;")) {
+          type == "Labi37_0_0/com/facebook/react/bridge/ReadableArray;" ||
+          type == "Labi37_0_0/com/facebook/react/bridge/Callback;" ||
+          type == "Labi37_0_0/com/facebook/react/bridge/ReadableMap;")) {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);
     }
@@ -315,7 +315,7 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (type == "Labi36_0_0/com/facebook/react/bridge/ReadableArray;") {
+    if (type == "Labi37_0_0/com/facebook/react/bridge/ReadableArray;") {
       if (!(arg->isObject() && arg->getObject(rt).isArray(rt))) {
         throw JavaTurboModuleArgumentConversionException(
             "Array", argIndex, methodName, arg, &rt);
@@ -328,7 +328,7 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (type == "Labi36_0_0/com/facebook/react/bridge/Callback;") {
+    if (type == "Labi37_0_0/com/facebook/react/bridge/Callback;") {
       if (!(arg->isObject() && arg->getObject(rt).isFunction(rt))) {
         throw JavaTurboModuleArgumentConversionException(
             "Function", argIndex, methodName, arg, &rt);
@@ -339,7 +339,7 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
       continue;
     }
 
-    if (type == "Labi36_0_0/com/facebook/react/bridge/ReadableMap;") {
+    if (type == "Labi37_0_0/com/facebook/react/bridge/ReadableMap;") {
       if (!(arg->isObject())) {
         throw JavaTurboModuleArgumentConversionException(
             "Object", argIndex, methodName, arg, &rt);
@@ -361,11 +361,11 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   // This could also be done purely in C++, but iterative over map methods
   // but those may end up calling reflection methods anyway
   // TODO (axe) Investigate the best way to convert Java Map to Value
-  jclass jArguments = env->FindClass("abi36_0_0/com/facebook/react/bridge/Arguments");
+  jclass jArguments = env->FindClass("abi37_0_0/com/facebook/react/bridge/Arguments");
   static jmethodID jMakeNativeMap = env->GetStaticMethodID(
       jArguments,
       "makeNativeMap",
-      "(Ljava/util/Map;)Labi36_0_0/com/facebook/react/bridge/WritableNativeMap;");
+      "(Ljava/util/Map;)Labi37_0_0/com/facebook/react/bridge/WritableNativeMap;");
   auto constants =
       (jobject)env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
   auto jResult = jni::adopt_local(constants);
@@ -543,11 +543,11 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                               .release();
 
             jclass cls =
-                env->FindClass("abi36_0_0/com/facebook/react/bridge/PromiseImpl");
+                env->FindClass("abi37_0_0/com/facebook/react/bridge/PromiseImpl");
             jmethodID constructor = env->GetMethodID(
                 cls,
                 "<init>",
-                "(Labi36_0_0/com/facebook/react/bridge/Callback;Labi36_0_0/com/facebook/react/bridge/Callback;)V");
+                "(Labi37_0_0/com/facebook/react/bridge/Callback;Labi37_0_0/com/facebook/react/bridge/Callback;)V");
             jobject promise = env->NewObject(cls, constructor, resolve, reject);
 
             jargs[count].l = promise;

@@ -34,12 +34,17 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
     "expo-asset": "*",
     "expo-constants": "*",
-    "@unimodules/core": "*",
     "unimodules-font-interface": "*"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
+    "fbjs": "1.0.0",
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {

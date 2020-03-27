@@ -174,13 +174,14 @@ For more details please navigate to [Configuring StatusBar](../../guides/configu
     /*
       Configures the status-bar icons to have a light or dark color.
       Valid values: "light-content", "dark-content".
-      Defaults to "light-content".
+      Defaults to "dark-content".
     */
     "barStyle": "light-content" | "dark-content",
 
     /*
       Specifies the background color of the status bar.
-      Six-character hex color string "#RRGGBB" (e.g. "#000000" for white) or eight-character hex color string "#RRGGBBAA" (e.g. "#00000077" for half-transparent white).
+      Six-character hex color string "#RRGGBB" (e.g. "#000000" for white) or eight-character hex color string "#RRGGBBAA" (e.g. "#00000088" for semi-transparent black).
+      Defaults to "#00000000" (transparent) for "dark-content" bar style and "#00000088" (semi-transparent black) for "light-content" bar style.
     */
     "backgroundColor": STRING,
 

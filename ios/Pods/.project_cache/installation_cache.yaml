@@ -2596,7 +2596,7 @@ CACHE_KEYS:
   ABI36_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0EXAdsFacebook: 3adddacf56f9fa99cb4d9ac81f2737d2
-    CHECKSUM: 2c614e29238d4443dd45c0364f451809e6245cea
+    CHECKSUM: 363afd305489fa0651347342604158aae274266b
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdIconViewManager.h"
       - "../versioned-react-native/ABI36_0_0/Expo/EXAdsFacebook/ABI36_0_0EXAdsFacebook/ABI36_0_0EXAdIconViewManager.m"
@@ -4794,7 +4794,7 @@ CACHE_KEYS:
   ABI37_0_0EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0EXAdsAdMob: 76779b0ab155418a7c2e797651b0b64f
-    CHECKSUM: 29118f9294dee844c1a9672991d92adcbff99836
+    CHECKSUM: ff3bea280dfcbb9f77059cce42a269b7935e1ccf
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsAdMob/ABI37_0_0EXAdsAdMob/ABI37_0_0EXAdsAdMob.m"
@@ -4816,7 +4816,7 @@ CACHE_KEYS:
   ABI37_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       ABI37_0_0EXAdsFacebook: 57bf0f0607cca51c8c7696ccf3517d2d
-    CHECKSUM: 2b5d0da3cefa065d9f1d79d03985b809e5a5a599
+    CHECKSUM: 03663956df3e240105da0556957ad6bb57eef2c0
     FILES:
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsFacebook/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdIconViewManager.h"
       - "../versioned-react-native/ABI37_0_0/Expo/EXAdsFacebook/ABI37_0_0EXAdsFacebook/ABI37_0_0EXAdIconViewManager.m"
@@ -7122,7 +7122,7 @@ CACHE_KEYS:
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
-    CHECKSUM: 3e5722fab02ba964b13b2fc8336e4a466adf7bc3
+    CHECKSUM: 131803d2e78cc8e901c2afa72fb219dbc3e097bb
     FILES:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.m"
@@ -7144,7 +7144,7 @@ CACHE_KEYS:
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsFacebook: 64173b3cb8e7fa2668fbaed42153e865
-    CHECKSUM: 26b241c83d1e0f80c52c1e3549581a9005194586
+    CHECKSUM: 3615ce0bf49b7dcabd53718fea9201224b489c43
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.m"
@@ -7954,10 +7954,10 @@ CACHE_KEYS:
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: a4ace8e29238a5d6827948993cc85524
-    CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
+    CHECKSUM: 33fc8c8c07c1cdbf5279784b73729c6410809daa
     PROJECT_NAME: FBAudienceNetwork
     SPECS:
-      - FBAudienceNetwork (5.5.0)
+      - FBAudienceNetwork (5.7.1)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector: 9aa2b0554ddaab9f6e72982d6af582cb
@@ -8090,10 +8090,10 @@ CACHE_KEYS:
   Google-Mobile-Ads-SDK:
     BUILD_SETTINGS_CHECKSUM:
       Google-Mobile-Ads-SDK: 539b9663c2ef324f98d2a11315beaf88
-    CHECKSUM: fac081606dbd438d8db57198b83ba8b5f875a601
+    CHECKSUM: f206aff290f26fde422495c6cd187e50efbed57e
     PROJECT_NAME: Google-Mobile-Ads-SDK
     SPECS:
-      - Google-Mobile-Ads-SDK (7.53.1)
+      - Google-Mobile-Ads-SDK (7.55.1)
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAPIClientForREST: 7bc2e43d860f0a8b8d74967265f714d1
@@ -10204,7 +10204,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: d1d6fddd8bc592ac726865cf408276d2
-    CHECKSUM: c8f2b8beb61851b6f2441e54b409d2dbd6478b7d
+    CHECKSUM: 900e80a6cd83823870cf840f35081edb4043b014
     FILES:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -10227,7 +10227,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.0)
+      - UMReactNativeAdapter (5.1.1)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: 2a69c5e2ded5336edb3dbfcb358ca18f

@@ -1,21 +1,21 @@
 package expo.modules.notifications.notifications.interfaces;
 
-import android.app.Notification;
-
-import org.json.JSONObject;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationContent;
 
 /**
  * An object capable of building a {@link Notification} based
- * on a {@link JSONObject} spec.
+ * on a {@link NotificationContent} spec.
  */
 public interface NotificationBuilder {
   /**
-   * Pass in {@link JSONObject} based on which the notification should be based.
+   * Pass in a {@link Notification} based on which the Android notification should be based.
    *
-   * @param notificationRequest {@link JSONObject} on which the notification should be based.
-   * @return The same instance of {@link NotificationBuilder} updated with the remote message.
+   * @param notification {@link Notification} on which the notification should be based.
+   * @return The same instance of {@link NotificationBuilder} updated with the notification.
    */
-  NotificationBuilder setNotificationRequest(JSONObject notificationRequest);
+  NotificationBuilder setNotification(Notification notification);
 
   /**
    * Pass in a {@link NotificationBehavior} if you want to override the behavior
@@ -27,9 +27,9 @@ public interface NotificationBuilder {
   NotificationBuilder setAllowedBehavior(NotificationBehavior behavior);
 
   /**
-   * Builds the notification based on passed in data.
+   * Builds the Android notification based on passed in data.
    *
    * @return Built notification.
    */
-  Notification build();
+  android.app.Notification build();
 }

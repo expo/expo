@@ -1,7 +1,7 @@
 {
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "36.0.4",
+  "version": "37.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -15,28 +15,28 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/vector-icons": "~10.0.0",
-    "@react-native-community/masked-view": "0.1.5",
+    "@expo/vector-icons": "~10.0.6",
+    "@react-native-community/masked-view": "0.1.6",
     "@react-navigation/bottom-tabs": "^5.0.0",
     "@react-navigation/native": "^5.0.0",
     "@react-navigation/stack": "^5.0.0",
     "@react-navigation/web": "~1.0.0-alpha.9",
-    "expo": "~36.0.0",
-    "expo-asset": "~8.0.0",
-    "expo-constants": "~8.0.0",
-    "expo-font": "~8.0.0",
-    "expo-web-browser": "~8.0.0",
+    "expo": "~37.0.0",
+    "expo-asset": "~8.1.0",
+    "expo-constants": "~9.0.0",
+    "expo-font": "~8.1.0",
+    "expo-web-browser": "~8.1.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
-    "react-native-gesture-handler": "~1.5.0",
-    "react-native-safe-area-context": "0.6.0",
-    "react-native-screens": "2.0.0-alpha.12",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.0.tar.gz",
+    "react-native-gesture-handler": "~1.6.0",
+    "react-native-safe-area-context": "0.7.3",
+    "react-native-screens": "~2.2.0",
     "react-native-web": "~0.11.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "babel-preset-expo": "~8.0.0",
-    "jest-expo": "~36.0.1"
+    "@babel/core": "^7.8.6",
+    "babel-preset-expo": "~8.1.0",
+    "jest-expo": "~37.0.0"
   }
 }

@@ -2,8 +2,8 @@ import { requireNativeViewManager } from '@unimodules/core';
 import React from 'react';
 export default class BannerAd extends React.Component {
     render() {
-        let { type, onPress, onError, style, ...props } = this.props;
-        let size = _getSizeForAdType(type);
+        const { type, onPress, onError, style, ...props } = this.props;
+        const size = _getSizeForAdType(type);
         return (<NativeBannerView size={size} onAdPress={onPress} onAdError={onError} style={[style, { height: size }]} {...props}/>);
     }
 }

@@ -42,7 +42,7 @@ function _getNextWatchId() {
 function _getCurrentWatchId() {
     return nextWatchId;
 }
-let watchCallbacks = {};
+const watchCallbacks = {};
 let deviceEventSubscription;
 let headingEventSub;
 let googleApiKey;
@@ -86,9 +86,8 @@ export async function getHeadingAsync() {
             }
             else {
                 let done = false;
-                let subscription;
                 let tries = 0;
-                subscription = await watchHeadingAsync((heading) => {
+                const subscription = await watchHeadingAsync((heading) => {
                     if (!done) {
                         if (heading.accuracy > 1 || tries > 5) {
                             subscription.remove();
@@ -200,7 +199,7 @@ async function _googleGeocodeAsync(address) {
     }
     assertGeocodeResults(resultObject);
     return resultObject.results.map(result => {
-        let location = result.geometry.location;
+        const location = result.geometry.location;
         // TODO: This is missing a lot of props
         return {
             latitude: location.lat,

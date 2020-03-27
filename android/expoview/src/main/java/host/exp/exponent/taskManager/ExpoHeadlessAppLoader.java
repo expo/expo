@@ -7,6 +7,7 @@ import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
 import org.unimodules.apploader.AppLoaderProvider;
 import org.unimodules.apploader.HeadlessAppLoader;
 import org.unimodules.core.interfaces.Consumer;
+import org.unimodules.core.interfaces.DoNotStrip;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +22,10 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
 
+  @DoNotStrip
   @SuppressWarnings("unused")
-  public ExpoHeadlessAppLoader(Context context) {}
+  public ExpoHeadlessAppLoader(Context context) {
+  }
 
   @Override
   public void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError {

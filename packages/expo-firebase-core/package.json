@@ -30,8 +30,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-core",
-  "peerDependencies": {
-    "@unimodules/core": "*"
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "expo-constants": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.1.1"

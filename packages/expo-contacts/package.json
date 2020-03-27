@@ -34,7 +34,12 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "uuid": "^3.4.0"

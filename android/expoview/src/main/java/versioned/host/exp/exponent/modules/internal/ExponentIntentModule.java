@@ -8,12 +8,14 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.modules.intent.IntentModule;
 
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import androidx.annotation.Nullable;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
@@ -46,7 +48,7 @@ public class ExponentIntentModule extends IntentModule {
       promise.resolve(mExperienceProperties.get(KernelConstants.INTENT_URI_KEY));
     } catch (Exception e) {
       promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not get the initial URL : " + e.getMessage()));
+        "Could not get the initial URL : " + e.getMessage()));
     }
   }
 
@@ -88,10 +90,17 @@ public class ExponentIntentModule extends IntentModule {
     }
   }
 
-  // We need to add this method, cause otherwise React Native won't export it.
-  // RN doesn't export methods from base classes.
+  /**
+   * We need to add these methods because otherwise React Native won't export them.
+   * RN doesn't export methods from base classes
+   */
   @ReactMethod
   public void openSettings(Promise promise) {
     super.openSettings(promise);
+  }
+
+  @ReactMethod
+  public void sendIntent(String action, @Nullable ReadableArray extras, Promise promise) {
+    super.sendIntent(action, extras, promise);
   }
 }

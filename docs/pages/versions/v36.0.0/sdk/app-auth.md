@@ -49,7 +49,7 @@ export default function App() {
       <Button
         title="Sign In with Google "
         onPress={async () => {
-          const authState = await signInAsync();
+          const _authState = await signInAsync();
           setAuthState(_authState);
         }}
       />
