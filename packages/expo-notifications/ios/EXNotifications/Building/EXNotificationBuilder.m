@@ -23,6 +23,19 @@ UM_REGISTER_MODULE();
   [content setUserInfo:[request objectForKey:@"body" verifyingClass:[NSDictionary class]]];
   if ([request objectForKey:@"sound" verifyingClass:[NSNumber class]]) {
     [content setSound:[request[@"sound"] boolValue] ? [UNNotificationSound defaultSound] : nil];
+  } else if ([request objectForKey:@"sound" verifyingClass:[NSString class]]) {
+    NSString *soundName = [request objectForKey:@"sound"];
+    if ([@"default" isEqualToString:soundName]) {
+      [content setSound:[UNNotificationSound defaultSound]];
+    } else if ([@"defaultCritical" isEqualToString:soundName]) {
+      if (@available(iOS 12.0, *)) {
+        [content setSound:[UNNotificationSound defaultCriticalSound]];
+      } else {
+        [content setSound:[UNNotificationSound defaultSound]];
+      }
+    } else {
+      [content setSound:[UNNotificationSound soundNamed:soundName]];
+    }
   }
   NSMutableArray<UNNotificationAttachment *> *attachments = [NSMutableArray new];
   [[request objectForKey:@"attachments" verifyingClass:[NSArray class]] enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
