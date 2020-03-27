@@ -1,23 +1,11 @@
 import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
 
-export interface BaseNotificationBehavior {
-  shouldShowAlert: boolean;
-  shouldPlaySound: boolean;
-  shouldSetBadge: boolean;
-}
-
-export interface AndroidNotificationBehavior extends BaseNotificationBehavior {
-  priority?: 'min' | 'low' | 'default' | 'high' | 'max';
-}
-
-export interface IosNotificationBehavior extends BaseNotificationBehavior {}
-
-export type NativeNotificationBehavior = AndroidNotificationBehavior | IosNotificationBehavior;
+import { NotificationBehavior } from './Notifications.types';
 
 export interface NotificationsHandlerModule extends ProxyNativeModule {
   handleNotificationAsync: (
     notificationId: string,
-    notificationBehavior: NativeNotificationBehavior
+    notificationBehavior: NotificationBehavior
   ) => Promise<void>;
 }
 
