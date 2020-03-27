@@ -49,8 +49,9 @@
   "dependencies": {
     "blueimp-md5": "^2.10.0",
     "expo-updates": "~0.0.1-rc.1",
-    "path-browserify": "^1.0.0",
     "invariant": "^2.2.4",
+    "md5-file": "^3.2.3",
+    "path-browserify": "^1.0.0",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
