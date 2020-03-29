@@ -40,7 +40,7 @@ export default function App() {
       return;
     }
 
-    Sharing.shareAsync(selectedImage.localUri);
+    await Sharing.shareAsync(selectedImage.localUri);
   };/* @end */
 
 
