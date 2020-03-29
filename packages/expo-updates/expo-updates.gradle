@@ -17,7 +17,12 @@ afterEvaluate {
     def folderName = variant.name
     def targetName = folderName.capitalize()
 
-    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
+
+    GradleVersion gradleVersion = GradleVersion.current()
+    if (gradleVersion < GradleVersion.version('5.0')) {
+      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    }
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoUpdatesAssets"
