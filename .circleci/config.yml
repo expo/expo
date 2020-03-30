@@ -540,6 +540,12 @@ jobs:
           name: Unit tests
           command: fastlane scan
           working_directory: ~/project/ios
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/test-results/.*" -exec cp {} ~/test-results/ \;
+          when: always
       - persist_to_workspace:
           root: ios
           paths:
@@ -547,7 +553,7 @@ jobs:
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
       - store_test_results:
-          path: ~/project/ios/test-results
+          path: ~/test-results
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
