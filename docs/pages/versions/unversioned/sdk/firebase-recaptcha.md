@@ -135,7 +135,7 @@ export default class PhoneAuthScreen extends React.Component {
 
 If you want a custom look & feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen.
 
-```tsx
+```js
 import { FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
 
 class CustomPhoneAuthScreen extends React.Component {
