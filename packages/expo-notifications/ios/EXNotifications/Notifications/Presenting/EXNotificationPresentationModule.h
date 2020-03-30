@@ -2,6 +2,7 @@
 
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
+#import <EXNotifications/EXNotificationsDelegate.h>
 
-@interface EXNotificationPresentationModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXNotificationPresentationModule : UMExportedModule <UMModuleRegistryConsumer, EXNotificationsDelegate>
 @end
