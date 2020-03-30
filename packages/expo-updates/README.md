@@ -40,6 +40,8 @@ import 'expo-asset';
 
 ### Setup app.json
 
+If you're going to be using Expo CLI to package your updates (either with `expo export` or `expo publish`), you will need to add some fields to your app.json. If not, you can skip this section.
+
 First, if your app.json file does not yet include an `expo` key, add it with the following fields:
 
 ```json
@@ -53,22 +55,7 @@ First, if your app.json file does not yet include an `expo` key, add it with the
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `37.0.0`).
 
-Expo can automatically bundle your most recent update into your iOS and Android binaries, so that users can launch your app immediately for the first time without needing an internet connection. Add the following fields under the `expo` key in your project's app.json:
-
-```json
-  "ios": {
-    "publishBundlePath": "ios/<your-project-name>/Supporting/shell-app.bundle",
-    "publishManifestPath": "ios/<your-project-name>/Supporting/shell-app-manifest.json"
-  },
-  "android": {
-    "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
-    "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
-  },
-```
-
-It's OK that the files don't exist yet, as they will be created when you run `expo publish`. However, you should ensure that these directories (`ios/<your-project-name>/Supporting/` and `android/app/src/main/assets/`) exist. After running `expo publish` at least once, **you'll need to manually add the `shell-app.bundle` and `shell-app-manifest.json` files to your Xcode project.**
-
-Finally, if you have other assets (such as images or other media) that are `require`d in your application code and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
+Finally, if you installed `expo-asset` and have other assets (such as images or other media) that are `require`d in your application code, and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
 
 ```json
   "assetBundlePatterns": ["**/*"],
@@ -105,7 +92,7 @@ Create the file `ios/<your-project-name>/Supporting/Expo.plist` with the followi
 
 EXUpdatesURL is the remote URL at which your app will be hosted, and to which expo-updates will query for new updates. EXUpdatesSDKVersion should match the SDK version in your app.json.
 
-If you use `expo publish` to publish your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
+If you use `expo export` or `expo publish` to create your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
 
 #### `AppDelegate.h`
 
@@ -225,7 +212,7 @@ Add the following lines inside of the `MainApplication`'s `<application>` tag.
 
 EXPO_UPDATE_URL is the remote URL at which your app will be hosted, and to which expo-updates will query for new updates. EXPO_SDK_VERSION should match the SDK version in your app.json.
 
-As with iOS, if you use `expo publish` to publish your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
+As with iOS, if you use `expo export` or `expo publish` to create your update, it will fill in the proper values here for you (given the file exists), so you don't need to set these values right now.
 
 #### `MainApplication.java`
 
@@ -280,9 +267,13 @@ If the diff doesn't apply cleanly, the important parts here are (1) overriding `
  }
 ```
 
-### Run `expo publish` once
+### Embed an initial update
 
-Before building an update-enabled release build of your app, you need to run `expo publish` at least once! After doing so, be sure to **add `ios/<your-project-name>/Supporting/shell-app-manifest.json` and `ios/<your-project-name>/Supporting/shell-app.bundle` to your Xcode project**.
+Before building an update-enabled release build of your app, you need to create an initial update to embed into the app binary. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
+
+If you're not using Expo CLI, you need to create a manifest and bundle for this initial update. The files should be named `shell-app-manifest.json` and `shell-app.bundle`. (See the documentation on [Updating your App](https://docs/expo.io/versions/latest/bare/updating-your-app/) for the format of the manifest.) To embed them into your Android project, place a copy in the `android/app/src/main/assets` folder. To embed them into your iOS app, place them in the `ios/<your-project-name>` folder (or any subfolder) and add them to your Xcode project in the Xcode GUI.
+
+If you're using Expo CLI, you just need to run `expo export` or `expo publish` once before making a release build. After doing so, be sure to **add `ios/<your-project-name>/Supporting/shell-app-manifest.json` and `ios/<your-project-name>/Supporting/shell-app.bundle` to your Xcode project**.
 
 ## Configuration
 
@@ -291,43 +282,43 @@ Some build-time configuration options are available to allow your app to update 
 On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesEnabled` | `enabled` | `expo.modules.updates.ENABLED` | `true` | ❌ |
 
 Whether updates are enabled. Setting this to `false` disables all update functionality, all module methods, and forces the app to load with the manifest and assets bundled into the app binary.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
 
 URL to the remote server where the app should check for updates
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 SDK version to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 Runtime version to send under the `Expo-Runtime-Version` header in the manifest request.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
 
 Release channel to send under the `Expo-Release-Channel` header in the manifest request
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌ |
 
 Condition under which expo-updates should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `EXUpdatesLaunchWaitMs` | `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0` | ❌ |
 
 Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
