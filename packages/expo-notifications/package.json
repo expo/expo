@@ -32,13 +32,15 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "expo-application": "*",
-    "expo-constants": "*",
+    "expo-application": "^2.1.0",
+    "expo-constants": "<10.0.0",
     "unimodules-permissions-interface": "*"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806",
+  "gitHead": "71839983dec66421bc6e7cd2f145884d7552b733",
   "dependencies": {
     "badgin": "^1.1.5",
+    "expo-application": "^2.1.0",
+    "expo-constants": "<10.0.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
