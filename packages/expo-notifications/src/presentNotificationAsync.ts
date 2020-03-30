@@ -24,10 +24,19 @@ export type NotificationRequest = EasyBodyBaseNotificationRequest & {
   android?: AndroidNotificationRequest;
 };
 
+let warningMessageShown = false;
+
 export default async function presentNotificationAsync({
   identifier,
   ...notification
 }: NotificationRequest): Promise<void> {
+  if (__DEV__ && !warningMessageShown) {
+    console.warn(
+      '`presentNotificationAsync` has been deprecated in favor of using `scheduleNotificationAsync` + an explicit notification handler. Read more at https://expo.fyi/presenting-notifications-deprecated.'
+    );
+    warningMessageShown = true;
+  }
+
   if (!NotificationPresenter.presentNotificationAsync) {
     throw new UnavailabilityError('Notifications', 'presentNotificationAsync');
   }
