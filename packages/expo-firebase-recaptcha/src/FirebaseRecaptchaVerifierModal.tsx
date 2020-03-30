@@ -3,7 +3,7 @@ import * as React from 'react';
 import { StyleSheet, Button, View, SafeAreaView, Text, Modal } from 'react-native';
 
 import FirebaseRecaptcha from './FirebaseRecaptcha';
-import { IFirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
+import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
 
 interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'onVerify'> {
   title?: string;
@@ -17,7 +17,7 @@ interface State {
 }
 
 export default class FirebaseRecaptchaVerifierModal extends React.Component<Props, State>
-  implements IFirebaseAuthApplicationVerifier {
+  implements FirebaseAuthApplicationVerifier {
   static defaultProps = {
     title: 'reCAPTCHA',
     cancelLabel: 'Cancel',

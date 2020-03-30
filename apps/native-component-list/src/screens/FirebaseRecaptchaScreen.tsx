@@ -1,6 +1,6 @@
 import {
   FirebaseRecaptchaVerifierModal,
-  IFirebaseAuthApplicationVerifier,
+  FirebaseAuthApplicationVerifier,
 } from 'expo-firebase-recaptcha';
 import * as React from 'react';
 import { Alert, ScrollView } from 'react-native';
@@ -33,7 +33,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     firebaseConfig,
   };
 
-  applicationVerifier: IFirebaseAuthApplicationVerifier | null = null;
+  applicationVerifier: FirebaseAuthApplicationVerifier | null = null;
 
   render() {
     const { title, cancelLabel, firebaseConfig } = this.state;

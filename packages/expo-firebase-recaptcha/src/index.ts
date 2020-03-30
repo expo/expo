@@ -4,4 +4,4 @@ import FirebaseRecaptchaVerifierModal from './FirebaseRecaptchaVerifierModal';
 
 export { FirebaseRecaptcha, FirebaseRecaptchaVerifier, FirebaseRecaptchaVerifierModal };
 
-export { IFirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
+export { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';

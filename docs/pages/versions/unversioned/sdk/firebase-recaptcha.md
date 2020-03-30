@@ -60,7 +60,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import {
   FirebaseRecaptchaVerifierModal,
-  IFirebaseAuthApplicationVerifier
+  FirebaseAuthApplicationVerifier
 } from 'expo-firebase-recaptcha';
 
 export default class PhoneAuthScreen extends React.Component {
@@ -72,9 +72,9 @@ export default class PhoneAuthScreen extends React.Component {
 
   // Store a reference to the ReCAPTCHA verifier model.
   // The FirebaseRecaptchaVerifierModal class conforms to the
-  // IFirebaseAuthApplicationVerifier interface so we can use it
+  // FirebaseAuthApplicationVerifier interface so we can use it
   // directly with `verifyPhoneNumber`.
-  recaptchaVerifier: IFirebaseAuthApplicationVerifier;
+  recaptchaVerifier: FirebaseAuthApplicationVerifier;
 
   // Call verifyPhoneNumber with the `recaptchaVerifier` ref.
   // This will automatically make the modal visible and display
@@ -180,13 +180,13 @@ import {
   FirebaseRecaptcha,
   FirebaseRecaptchaVerifier,
   FirebaseRecaptchaVerifierModal,
-  IFirebaseAuthApplicationVerifier
+  FirebaseAuthApplicationVerifier
 } from 'expo-firebase-recaptcha';
 ```
 
 ### `<FirebaseRecaptchaVerifierModal>`
 
-Modal screen that is automatically shown and displays a reCAPTCHA widget. The ref to the component implements the `IFirebaseAuthApplicationVerifier` interface and can be used directly in the `verifyPhoneNumber` function.
+Modal screen that is automatically shown and displays a reCAPTCHA widget. The ref to the component implements the `FirebaseAuthApplicationVerifier` interface and can be used directly in the `verifyPhoneNumber` function.
 
 #### Props
 
@@ -207,12 +207,12 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 - **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
 
 
-### `IFirebaseAuthApplicationVerifier`
+### `FirebaseAuthApplicationVerifier`
 
 Interface describing a domain verification and abuse prevention verifier.
 
 ```ts
-interface IFirebaseAuthApplicationVerifier {
+interface FirebaseAuthApplicationVerifier {
   readonly type: string; // Identifies the type of application verifier (e.g. "recaptcha").
   verify(): Promise<string>; // Returns a token that can be used to assert the validity of a request.
 }
@@ -221,7 +221,7 @@ interface IFirebaseAuthApplicationVerifier {
 
 ### `FirebaseRecaptchaVerifier`
 
-A helper class implementing the `IFirebaseAuthApplicationVerifier` interface, which can be used when creating a customized reCAPTCHA workflow. The class takes a single `string` argument in the constructor which should be a valid reCAPTCHA token.
+A helper class implementing the `FirebaseAuthApplicationVerifier` interface, which can be used when creating a customized reCAPTCHA workflow. The class takes a single `string` argument in the constructor which should be a valid reCAPTCHA token.
 
 #### Example
 
