@@ -8,7 +8,7 @@ let warningMessageShown = false;
 export default async function presentNotificationAsync(
   content: NotificationContentInput,
   identifier: string = uuidv4()
-): Promise<void> {
+): Promise<string> {
   if (__DEV__ && !warningMessageShown) {
     console.warn(
       '`presentNotificationAsync` has been deprecated in favor of using `scheduleNotificationAsync` + an explicit notification handler. Read more at https://expo.fyi/presenting-notifications-deprecated.'

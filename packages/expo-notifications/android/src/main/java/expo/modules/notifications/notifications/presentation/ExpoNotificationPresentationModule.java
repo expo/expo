@@ -33,7 +33,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
 
   // Remove once presentNotificationAsync is removed
   @ExpoMethod
-  public void presentNotificationAsync(String identifier, ReadableArguments payload, final Promise promise) {
+  public void presentNotificationAsync(final String identifier, ReadableArguments payload, final Promise promise) {
     NotificationContent content = new ArgumentsNotificationContentBuilder().setPayload(payload).build();
     NotificationRequest request = new NotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
@@ -42,7 +42,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
         if (resultCode == BaseNotificationsService.SUCCESS_CODE) {
-          promise.resolve(null);
+          promise.resolve(identifier);
         } else {
           Exception e = (Exception) resultData.getSerializable(BaseNotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e);

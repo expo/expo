@@ -7,7 +7,7 @@ export interface NotificationPresenterModule extends ProxyNativeModule {
   presentNotificationAsync: (
     identifier: string,
     content: NotificationContentInput
-  ) => Promise<void>;
+  ) => Promise<string>;
   dismissNotificationAsync: (identifier: string) => Promise<void>;
   dismissAllNotificationsAsync: () => Promise<void>;
 }

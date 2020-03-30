@@ -50,7 +50,7 @@ UM_EXPORT_METHOD_AS(presentNotificationAsync,
       NSString *message = [NSString stringWithFormat:@"Notification could not have been presented: %@", error.description];
       reject(@"ERR_NOTIF_PRESENT", message, error);
     } else {
-      resolve(nil);
+      resolve(identifier);
     }
   }];
 }
