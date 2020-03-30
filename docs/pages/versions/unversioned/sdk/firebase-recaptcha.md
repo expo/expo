@@ -54,7 +54,7 @@ const authResult = await firebase.auth().signInWithCredential(credential);
 
 ## Example usage
 
-```tsx
+```js
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
