@@ -443,7 +443,11 @@ function stringifyIfDate(date) {
 }
 function stringifyDateValues(obj) {
     return Object.keys(obj).reduce((acc, key) => {
-        acc[key] = stringifyIfDate(obj[key]);
+        const value = obj[key];
+        if (typeof value === 'object' && !(value instanceof Date)) {
+            return { ...acc, [key]: stringifyDateValues(value) };
+        }
+        acc[key] = stringifyIfDate(value);
         return acc;
     }, {});
 }
