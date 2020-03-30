@@ -3,7 +3,7 @@ title: Updating your App Over-the-Air
 sidebar_title: Updating your App
 ---
 
-The `expo-updates` unimodule provides a client-side implementation for loading over-the-air (OTA) updates in bare workflow apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app, without building a new binary and re-submitting to app stores.
+The `expo-updates` unimodule provides a client-side implementation for loading over-the-air (OTA) updates in bare workflow apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
 
 In this guide, an **update** refers to a single, atomic OTA update, which may consist of a JavaScript bundle, other assets (such as images or fonts), and metadata about the update.
 
@@ -13,7 +13,7 @@ If possible, we highly recommend starting with a boilerplate project that has `e
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#installation).
 
-Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client binaries can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the Developer Services we offer.
+Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the Developer Services we offer.
 
 You can also run your own server to host your updates, provided it conforms to the protocol `expo-updates` expects. You can read more about these requirements below.
 
@@ -63,7 +63,7 @@ Updates hosted on your own server can make use of a concept called Runtime Versi
 
 The Runtime Version of a particular binary should be configured at build time (see [Configuration Options](#configuration-options) below). The configured Runtime Version will be included in the header of every update request sent from that binary. The server should use this header to select an appropriate update to serve in response.
 
-The Runtime Version expected by a given update must also be provided as a field (`runtimeVersion`) in the manifest returned to `expo-updates`. `expo-updates` keeps track of the Runtime Version of all updates it has downloaded; this way, if a user updates their app binary through the App Store, it will not attempt to run a previously-downloaded and newly incompatible update.
+The Runtime Version expected by a given update must also be provided as a field (`runtimeVersion`) in the manifest returned to `expo-updates`. `expo-updates` keeps track of the Runtime Version of all updates it has downloaded; this way, if a user updates their app binary through the App Store, it will not attempt to run a previously downloaded and newly incompatible update.
 
 ### Release Channels
 
@@ -75,7 +75,7 @@ Since headers sent in requests by `expo-updates` do not affect statically hosted
 
 ## Embedding Assets
 
-In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
+In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
 Updates embedded into your app binary look slightly different from how vanilla React Native apps embed JavaScript and assets. In particular, updates from `expo-updates` include the manifest metadata along with all of the assets required to run the update. The manifest should be in a file called `app.manifest` and the JavaScript bundle in a file called `app.bundle`. For iOS, these should be added to your Xcode project so they are bundled into the IPA. For Android, placing them in the `android/app/src/main/assets` folder is sufficient for gradle to bundle them into the APK.
 
@@ -87,7 +87,7 @@ Assets that you `require` in your JavaScript source can be embedded into your ap
 ],
 ```
 
-Assets with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`. If you have a particularly large asset, such as a video, that should be downloaded at runtime rather than when the app is installed, you can use `assetBundlePatterns` to exclude it while still `require`ing it in your JavaScript code.
+Assets with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`. If you have an asset that should be lazily downloaded at runtime rather than when the app is installed, you can use `assetBundlePatterns` to exclude it while still `require`ing it in your JavaScript code.
 
 Note that in order to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
 
