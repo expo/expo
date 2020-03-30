@@ -124,7 +124,7 @@ export default class PhoneAuthScreen extends React.Component {
 
 `<FirebaseRecaptchaVerifierModal>` has limited customisation options. You cannot change its appearance, but you can change the **title** and the **cancel-label**.
 
-```tsx
+```js
 <FirebaseRecaptchaVerifierModal
   ref={...}
   firebaseConfig={...}
