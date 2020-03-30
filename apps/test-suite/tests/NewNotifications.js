@@ -697,7 +697,11 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).toContain(
           t.jasmine.objectContaining({
@@ -716,7 +720,11 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         await Notifications.cancelScheduledNotificationAsync(identifier);
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
@@ -743,10 +751,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
           subscription.remove();
@@ -766,10 +775,11 @@ export async function test(t) {
               };
             },
           });
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
           Notifications.setNotificationHandler(null);
@@ -788,13 +798,14 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(() => {
               timesSpyHasBeenCalled += 1;
             });
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
                 seconds: 5,
                 repeats: true,
-              }
-            );
+              },
+            });
             await waitFor(12000);
             t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
             subscription.remove();
@@ -811,12 +822,13 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(
               notificationReceivedSpy
             );
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
                 second: (new Date().getSeconds() + 5) % 60,
-              }
-            );
+              },
+            });
             await waitFor(6000);
             t.expect(notificationReceivedSpy).toHaveBeenCalled();
             subscription.remove();
@@ -837,10 +849,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await Notifications.cancelScheduledNotificationAsync(identifier);
           await waitFor(6000);
           t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
@@ -861,10 +874,11 @@ export async function test(t) {
             notificationReceivedSpy
           );
           for (let i = 0; i < 3; i += 1) {
-            await Notifications.scheduleNotificationAsync(
-              { identifier: `notification-${i}`, ...notification },
-              { seconds: 5 }
-            );
+            await Notifications.scheduleNotificationAsync({
+              identifier: `notification-${i}`,
+              content: notification,
+              trigger: { seconds: 5 },
+            });
           }
           await Notifications.cancelAllScheduledNotificationsAsync();
           await waitFor(6000);
@@ -928,15 +942,15 @@ export async function test(t) {
                   clearInterval(userInteractionTimeout);
                   userInteractionTimeout = null;
                 }
-                await Notifications.scheduleNotificationAsync(
-                  {
-                    identifier,
+                await Notifications.scheduleNotificationAsync({
+                  identifier,
+                  content: {
                     title: 'Hello from the application!',
                     message:
                       'You can now return to the app and let the test know the notification has been shown.',
                   },
-                  { seconds: 1 }
-                );
+                  trigger: { seconds: 1 },
+                });
                 notificationSent = true;
               } else if (state === 'active' && notificationSent) {
                 const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
