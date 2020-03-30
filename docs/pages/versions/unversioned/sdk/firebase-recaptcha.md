@@ -18,7 +18,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Basic usage
 
-To get started[, read the offical Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
+To get started, [read the offical Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
 
 Instead of using the standard `firebase.auth.RecaptchaVerifier` class, we will be using our own verifier which creates a reCAPTCHA widget inside a web-browser.
 
