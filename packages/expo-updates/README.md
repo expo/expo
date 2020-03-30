@@ -271,9 +271,9 @@ If the diff doesn't apply cleanly, the important parts here are (1) overriding `
 
 Before building an update-enabled release build of your app, you need to create an initial update to embed into the app binary. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
 
-If you're not using Expo CLI, you need to create a manifest and bundle for this initial update. The files should be named `shell-app-manifest.json` and `shell-app.bundle`. (See the documentation on [Updating your App](https://docs/expo.io/versions/latest/bare/updating-your-app/) for the format of the manifest.) To embed them into your Android project, place a copy in the `android/app/src/main/assets` folder. To embed them into your iOS app, place them in the `ios/<your-project-name>` folder (or any subfolder) and add them to your Xcode project in the Xcode GUI.
+If you're not using Expo CLI, you need to create a manifest and bundle for this initial update. The files should be named `app.manifest` and `app.bundle`. (See the documentation on [Updating your App](https://docs/expo.io/versions/latest/bare/updating-your-app/) for the format of the manifest.) To embed them into your Android project, place a copy in the `android/app/src/main/assets` folder. To embed them into your iOS app, place them in the `ios/<your-project-name>` folder (or any subfolder) and add them to your Xcode project in the Xcode GUI.
 
-If you're using Expo CLI, you just need to run `expo export` or `expo publish` once before making a release build. After doing so, be sure to **add `ios/<your-project-name>/Supporting/shell-app-manifest.json` and `ios/<your-project-name>/Supporting/shell-app.bundle` to your Xcode project**.
+If you're using Expo CLI, you just need to run `expo export` or `expo publish` once before making a release build. After doing so, be sure to **add `ios/<your-project-name>/Supporting/app.manifest` and `ios/<your-project-name>/Supporting/app.bundle` to your Xcode project**.
 
 ## Configuration
 
