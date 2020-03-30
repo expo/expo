@@ -1,2 +1,2 @@
-import { NotificationContentInput, NotificationTriggerInput } from './Notifications.types';
-export default function scheduleNotificationAsync(content: NotificationContentInput, trigger: NotificationTriggerInput, identifier?: string): Promise<string>;
+import { NotificationRequestInput } from './Notifications.types';
+export default function scheduleNotificationAsync(request: NotificationRequestInput): Promise<string>;

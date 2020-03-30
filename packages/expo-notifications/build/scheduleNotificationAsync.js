@@ -1,11 +1,14 @@
 import uuidv4 from 'uuid/v4';
 import NotificationScheduler from './NotificationScheduler';
-export default async function scheduleNotificationAsync(content, trigger, identifier = uuidv4()) {
-    return await NotificationScheduler.scheduleNotificationAsync(identifier, content, parseTrigger(trigger));
+export default async function scheduleNotificationAsync(request) {
+    return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
 }
 function parseTrigger(userFacingTrigger) {
     if (userFacingTrigger === null) {
         return null;
+    }
+    if (userFacingTrigger === undefined) {
+        throw new TypeError('Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.');
     }
     if (userFacingTrigger instanceof Date) {
         return { type: 'date', timestamp: userFacingTrigger.getTime() };

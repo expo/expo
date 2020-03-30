@@ -201,6 +201,12 @@ export interface NotificationContentInput {
   }[];
 }
 
+export interface NotificationRequestInput {
+  identifier?: string;
+  content: NotificationContentInput;
+  trigger: NotificationTriggerInput;
+}
+
 export interface Notification {
   date: number;
   request: NotificationRequest;
