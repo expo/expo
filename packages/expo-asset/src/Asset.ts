@@ -58,6 +58,7 @@ export class Asset {
         this.downloaded = true;
       }
     }
+
     if (Platform.OS === 'web') {
       if (!name) {
         this.name = AssetUris.getFilename(uri);
@@ -83,6 +84,8 @@ export class Asset {
       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
     }
 
+    // TODO: how should this behave in bare app with updates? re: hashAssetFiles
+    //
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
     if (!IS_MANAGED_ENV) {

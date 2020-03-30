@@ -1,17 +1,20 @@
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import * as Updates from 'expo-updates';
 
-// Fast lookup check if assets are available in the local bundle
+import { IS_BARE_ENV_WITHOUT_UPDATES, getLocalAssets } from './PlatformUtils';
+
+// Fast lookup check if assets are available in the local bundle in managed apps
 const bundledAssets = new Set(FileSystem.bundledAssets || []);
-const localAssets = Updates.localAssets;
+
+// localAssets are provided by the expo-updates module
+const localAssets = getLocalAssets();
 
 /**
  * Returns the local URI of an embedded asset from its hash and type, or null if the asset is not
  * included in the app bundle.
  */
 export function getEmbeddedAssetUri(hash: string, type: string | null): string | null {
-  if (__DEV__) {
+  if (__DEV__ || IS_BARE_ENV_WITHOUT_UPDATES) {
     return null;
   }
   const localAssetsKey = `${hash}.${type ?? ''}`;
