@@ -1,5 +1,6 @@
 import React from 'react';
-import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
+import { Clipboard, PixelRatio, Platform, StyleSheet } from 'react-native';
 
 import * as DevMenu from './DevMenuModule';
 import DevMenuButton from './DevMenuButton';
@@ -141,6 +142,15 @@ class DevMenuView extends React.PureComponent<Props, State> {
   renderDevMenuItem(key, item) {
     const { label, isEnabled, detail } = item;
 
+    if (
+      key === 'dev-perf-monitor' &&
+      Platform.OS === 'ios' &&
+      Constants.expoRuntimeVersion === '2.15.2'
+    ) {
+      // This version on iOS crashes when enabling Performance Monitor,
+      // so we turned it off until next build with native fix is submitted.
+      return null;
+    }
     return (
       <DevMenuButton
         key={key}
