@@ -145,7 +145,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
     if (
       key === 'dev-perf-monitor' &&
       Platform.OS === 'ios' &&
-      Constants.expoRuntimeVersion === '2.15.2'
+      Constants.expoRuntimeVersion === '2.15.2.108043'
     ) {
       // This version on iOS crashes when enabling Performance Monitor,
       // so we turned it off until next build with native fix is submitted.
