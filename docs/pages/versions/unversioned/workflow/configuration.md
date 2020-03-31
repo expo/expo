@@ -17,7 +17,7 @@ title: Configuration with app.json
 
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
-> 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit).
+> 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit). Note that ExpoKit is deprecated and will no longer be supported after SDK 38.
 
 ## Properties
 
@@ -939,3 +939,5 @@ Configuration for how and when the app should request OTA JavaScript updates
 While some of the properties defined in `app.json` can be applied at runtime, others require modifying native build configuration files. For ExpoKit projects, we only apply these settings once, at the time the native projects are generated (i.e. when you run `expo eject`).
 
 This means that for existing ExpoKit projects, **changing certain properties in `app.json` will not have the desired effect**. Instead, you must modify the corresponding native configuration files. In most cases, we've provided here a brief description of the files or settings that need to be changed, but you can also refer to the Apple and Android documentation for more information.
+
+> Note that ExpoKit is deprecated and will no longer be supported after SDK 38. We recommend using the [bare workflow](../../introduction/managed-vs-bare/#bare-workflow) instead.
