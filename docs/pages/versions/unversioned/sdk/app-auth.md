@@ -14,13 +14,47 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
 
-Currently, this module only supports on Android, and iOS. Web support is planned to be added. Track it here: [Web support in expo-app-auth](https://github.com/expo/expo/issues/6883).
-
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
 ## Installation
 
 <InstallSection packageName="expo-app-auth" />
+
+## Managed Workflow
+
+> These steps are nearly identical to our **Managed Workflow** guide on [deep linking in React Navigation](https://reactnavigation.org/docs/deep-linking/#set-up-with-expo-projects).
+
+You will want to decide on a URI scheme for your app, this will correspond to the prefix before `://` in a URI. Ex: If your scheme is `mychat` then a link to your app would be `mychat://`.
+
+The scheme only applies to standalone apps and you need to re-build the standalone app for the change to take effect. In the Expo client app you can deep link using `exp://ADDRESS:PORT` where `ADDRESS` is often `127.0.0.1` and `PORT` is often `19000` - the URL is printed when you run `expo start`.
+
+If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your `app.json` by adding a string under the scheme key:
+
+```json
+{
+  "expo": {
+    "scheme": "myapp"
+  }
+}
+```
+
+To create a scheme that is appropriate for the environment, be sure to use `Linking` from `expo`:
+
+```js
+import { Linking } from 'expo';
+
+const prefix = Linking.makeUrl('/');
+// Expo Client: `exp://ADDRESS:PORT`
+// Standalone: `myapp://`
+```
+
+For more info on [Linking in Expo](https://docs.expo.io/versions/latest/workflow/linking).
+
+## Bare Workflow
+
+Carefully follow our in-depth **Bare Workflow** guide for [deep linking](https://reactnavigation.org/docs/deep-linking/#set-up-with-react-native-init-projects).
+
+For more customization (like https redirects) please refer to the native docs: [capturing the authorization redirect](https://github.com/openid/AppAuth-android#capturing-the-authorization-redirect).
 
 ## Usage
 
@@ -51,7 +85,7 @@ export default function App() {
       <Button
         title="Sign In with Google "
         onPress={async () => {
-          const authState = await signInAsync();
+          const _authState = await signInAsync();
           setAuthState(_authState);
         }}
       />
@@ -136,6 +170,18 @@ export async function signOutAsync({ accessToken }) {
 ```
 
 </SnackInline>
+
+## Comparison
+
+There are a couple different methods for authenticating your app in React Native and Expo, this should help you know if `expo-app-auth` is right for your needs.
+
+### AuthSession
+
+The [`AuthSession`](./auth-session) API is built on top of [`expo-web-browser`](./webbrowser) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](./auth-session#security-considerations).
+
+### react-native-app-auth
+
+The `expo-app-auth` module is based on [react-native-app-auth](https://github.com/FormidableLabs/react-native-app-auth) by the incredible React.js consulting firm [Formidable](https://formidable.com/). The documentation and questions there may prove helpful. `expo-app-auth` provides a few extra features to make native app auth work inside a sand-boxed Expo client environment.
 
 ## API
 

@@ -19,7 +19,11 @@ For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the
 
 ### Registering your app with Facebook
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
+> 💡 When following these steps you will find on the Facebook Developer site that there are many fields and steps that you don't actually care about. Just look for the information that we ask you for and you will be OK!
+
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call.
+
+Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/). You don't need to set up the iOS and Android standalone apps right away, you can do that at any time in the future if you just want to get the Expo client version running first.
 
 - **The Expo client app**
 
@@ -39,7 +43,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
   - Run `expo fetch:android:hashes`.
   - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
-You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
+You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in. This requires adding a privacy policy URL, which can be as simple as a GitHub Gist.
 
 ## API
 
