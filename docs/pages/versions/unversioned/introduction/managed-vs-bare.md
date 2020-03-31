@@ -36,8 +36,8 @@ In the bare workflow the developer has complete control, along with the complexi
 | ------------------------------------------------------ | ---------------- | ------------------------------------------- | -------------------- |
 | Develop universal apps with only JavaScript/TypeScript | ✅               |                                             |                      |
 | Use Expo to create your iOS and Android builds         | ✅               |                                             |                      |
-| Use Expo's over the air updates features               | ✅               |                                             |                      |
 | Use Expo's push notification service                   | ✅               |                                             |                      |
+| Use Expo's over the air updates features               | ✅               | ✅                                          |                      |
 | Develop with the Expo client app                       | ✅               | ✅ (only if custom native code is disabled) |                      |
 | Access to Expo SDK                                     | ✅               | ✅                                          |                      |
 | Add custom native code and manage native dependencies  |                  | ✅                                          | ✅                   |

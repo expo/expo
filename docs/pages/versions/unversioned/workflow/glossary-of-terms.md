@@ -18,8 +18,8 @@ The term "detach" was previously used in Expo to mean [ejecting](#eject) your ap
 
 The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
 
-- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit), so you can continue building your project using the Expo APIs but your workflow now is the same as if you were building a React Native application without Expo. [Read more in "Ejecting to ExpoKit"](../../expokit/eject/).
-- _Eject to plain React Native_, where you take a more extreme step than just ejecting to [ExpoKit](#expokit) -- you lose access to Expo APIs and completely leave the Expo environment. [Read more about ejecting](https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md).
+- _Eject to bare workflow_, where you jump between [workflows](../../introduction/managed-vs-bare/) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
+- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.
 
 ### Emulator
 

@@ -3,6 +3,7 @@ title: Payments
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
@@ -17,95 +18,25 @@ import { PaymentsStripe } from 'expo-payments-stripe';
 
 <PlatformsSection android ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4046' }} />
 
+## Installation
+
+<InstallSection packageName="expo-payments-stripe" />
+
+## Compatibility
+
+The Payments module is currently only supported the bare workflow on iOS. If you have a managed workflow project, you'll need to [move to the bare workflow](../../bare/customization/) in order to use this module on iOS.
+
 ## Setup
 
 If you haven't done payments with Stripe before, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
 
-## Adding the Payments Module on iOS
-
-The Payments module is currently only supported through `EXPaymentsStripe` pod on iOS.
-
-First, eject your Expo project using ExpoKit (refer to [Eject to ExpoKit](../../expokit/eject/) for more information). Then, add `expo-payments-stripe` to the list of dependencies of your project and install the dependencies. Then, navigate to and open `your-project-name/ios/Podfile`. Add `EXPaymentsStripe` to your Podfile's subspecs. Example:
-
-```ruby
-...
-target 'your-project-name' do
-  ...
-
-  pod 'EXPaymentsStripe',
-    :path => "../node_modules/expo-payments-stripe/ios",
-    :inhibit_warnings => true
-
-  ...
-  pod 'React',
-  ...
-```
-
-Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod install` in `your-project-name/ios`. This will add the Payments module files to your project and the corresponding dependencies.
-
 ### Register hook in order to let Stripe process source authorization
 
 > You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
 
-Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
+For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
 
-## Adding the Payments Module on Android
-
-_Note_: These steps are required only if you have ejected your app with SDK < 30. If at the moment of ejecting you had `sdkVersion` set to 30 or higher in your `app.json`, the following setup should have been performed automatically.
-
-1.  Add these lines into your settings.gradle file.
-
-```groovy
-include ':expo-payments-stripe'
-project(':expo-payments-stripe').projectDir = new File(rootProject.projectDir, '../node_modules/expo-payments-stripe/android')
-```
-
-2.  Add dependencies in your build.gradle file.
-
-```groovy
-implementation project(':expo-payments-stripe')
-```
-
-3.  Force specific `com.android.support:design` version in your `build.gradle` file.
-
-```groovy
-  android {
-    ...
-    configurations.all {
-      resolutionStrategy.force 'com.android.support:design:27.1.0'
-    }
-    ...
-  }
-```
-
-4.  Exclude old version of `CreditCardEntry` in `your-project/android/app/build.gradle` file.
-
-```groovy
-    implementation('host.exp.exponent:expoview:29.0.0@aar') {
-      transitive = true
-      exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-      exclude group: 'com.github.thefuntasty', module: 'CreditCardEntry' // add this line
-      exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-    }
-```
-
-5.  Make sure your list of repositories in `build.gradle` contains `jitpack`.
-
-```groovy
-    allprojects {
-      repositories {
-        ...
-        maven { url "https://www.jitpack.io" }
-        ...
-      }
-    }
-```
-
-### Register hook in order to let Stripe process source authorization
-
-> You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
-
-Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
 
 ```xml
       ...
