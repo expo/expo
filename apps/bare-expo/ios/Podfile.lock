@@ -103,6 +103,8 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
+  - EXInAppPurchases (8.1.0):
+    - UMCore
   - EXKeepAwake (8.1.0):
     - UMCore
   - EXLinearGradient (8.1.0):
@@ -539,6 +541,7 @@ DEPENDENCIES:
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../../../packages/expo-image-picker/ios`)
+  - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
@@ -696,6 +699,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-image-manipulator/ios"
   EXImagePicker:
     :path: "../../../packages/expo-image-picker/ios"
+  EXInAppPurchases:
+    :path: "../../../packages/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: "../../../packages/expo-keep-awake/ios"
   EXLinearGradient:
@@ -863,6 +868,7 @@ SPEC CHECKSUMS:
   EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
   EXImageManipulator: 97f61d14c292714d66884e83697e794f8cefe0b0
   EXImagePicker: 4126814cba56cc3dc5e7fc47abce0b263da84609
+  EXInAppPurchases: 084e1ea266b7b297010d3a1534bd1fe285fba235
   EXKeepAwake: d045bc2cf1ad5a04f0323cc7c894b95b414042e0
   EXLinearGradient: 97d8095d1e4ad96f7893e010e564796ed8aeea42
   EXLocalAuthentication: bbf1026cc289d729da4f29240dd7a8f6a14e4b20

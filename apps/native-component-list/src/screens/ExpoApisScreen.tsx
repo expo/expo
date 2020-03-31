@@ -109,6 +109,7 @@ export default class ExpoApisScreen extends React.Component {
       'Haptics',
       'ImagePicker',
       'ImageManipulator',
+      'InAppPurchases',
       'IntentLauncher',
       'KeepAwake',
       'Linking',

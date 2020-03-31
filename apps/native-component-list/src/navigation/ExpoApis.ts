@@ -36,6 +36,7 @@ const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScree
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
 const ImageManipulator = optionalRequire(() => require('../screens/ImageManipulatorScreen'));
 const ImagePicker = optionalRequire(() => require('../screens/ImagePickerScreen'));
+const InAppPurchases = optionalRequire(() => require('../screens/InAppPurchases/InAppPurchases'));
 const IntentLauncher = optionalRequire(() => require('../screens/IntentLauncherScreen'));
 const KeepAwake = optionalRequire(() => require('../screens/KeepAwakeScreen'));
 const Linking = optionalRequire(() => require('../screens/LinkingScreen'));
@@ -98,6 +99,7 @@ const optionalScreens: {
   Geocoding,
   ImageManipulator,
   ImagePicker,
+  InAppPurchases,
   IntentLauncher,
   KeepAwake,
   Linking,

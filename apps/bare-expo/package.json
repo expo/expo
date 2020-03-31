@@ -42,7 +42,6 @@
     "expo-ads-admob",
     "expo-video-thumbnails",
     "expo-module-template",
-    "expo-in-app-purchases",
     "expo-apple-authentication",
     "expo-updates",
     "expo-splash-screen"
