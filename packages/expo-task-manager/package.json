@@ -32,6 +32,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/task-manager/",
+  "dependencies": {
+    "unimodules-app-loader": "~1.0.0"
+  },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "unimodules-app-loader": "*",
