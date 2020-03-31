@@ -9,7 +9,6 @@ title: Configuration with app.json
   "expo": {
     "name": "My app",
     "slug": "my-app",
-    "sdkVersion": "UNVERSIONED",
     "privacy": "public"
   }
 }
@@ -18,6 +17,81 @@ title: Configuration with app.json
 Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
 > 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit).
+
+## App Config
+
+For more customization you can use the JavaScript and TypeScript `app.config.js`, or `app.config.ts`. These configs have the following properties:
+
+- Comments, variables, and single quotes!
+- ES module support (import/export).
+- TypeScript support with nullish coalescing and optional chaining.
+- Updated whenever Metro bundler reloads.
+- Provide environment information to your app.
+- Does not support Promises.
+
+For example, you can export an object as default to define your config:
+
+```js
+// app.config.js
+
+const myValue = 'My App';
+
+export default {
+  name: myValue,
+  version: process.env.MY_CUSTOM_PROJECT_VERSION || '1.0.0',
+  // All values in extra will be passed to your app.
+  extra: {
+    fact: 'kittens are cool',
+  },
+};
+```
+
+Extras can be accessed via `expo-constants`:
+
+```ts
+// App.js
+import Constants from 'expo-constants';
+
+Constants.manifest.extra.fact === 'kittens are cool';
+```
+
+You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an `app.json`. By default, Expo CLI will read the `app.json` first and send the normalized results to the `app.config.js`. This functionality is disabled when the `--config` is used to specify a custom config.
+
+**app.json**
+
+```json
+{
+  "expo": {
+    "name": "My App"
+  }
+}
+```
+
+```js
+// app.config.js
+
+export default ({ config }) => {
+  console.log(config.name); // prints 'My App'
+  return {
+    ...config,
+  };
+};
+```
+
+### TypeScript Config
+
+You can use autocomplete and doc-blocks with a TypeScript config `app.config.ts`:
+
+```ts
+// app.config.ts
+
+import { ExpoConfig, ConfigContext } from '@expo/config';
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  name: 'My App',
+});
+```
 
 ## Properties
 
@@ -52,7 +126,7 @@ Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
-**Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
+The Expo sdkVersion to run the project on. This should line up with the version specified in your `package.json`. If this isn't defined it'll be read from the installed version of `expo` in your `node_modules/`.
 
 ### `"version"`
 
