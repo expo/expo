@@ -16,13 +16,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 public class OkHttpClientProgressInterceptor implements Interceptor {
+  private static OkHttpClientProgressInterceptor sInstance;
   private Map<String, Collection<WeakReference<ProgressListener>>> mProgressListeners;
 
   private OkHttpClientProgressInterceptor() {
     mProgressListeners = new HashMap<>();
   }
-
-  private static OkHttpClientProgressInterceptor sInstance;
 
   public static OkHttpClientProgressInterceptor getInstance() {
     synchronized (OkHttpClientProgressInterceptor.class) {
@@ -47,29 +46,29 @@ public class OkHttpClientProgressInterceptor implements Interceptor {
     Response originalResponse = chain.proceed(chain.request());
 
     return originalResponse.newBuilder()
-        .body(new ProgressResponseBody(originalResponse.body(), new ProgressListener() {
-          @Override
-          public void onProgress(long bytesWritten, long contentLength, boolean done) {
-            OkHttpClientProgressInterceptor strongThis = weakThis.get();
-            if (strongThis != null) {
-              Collection<WeakReference<ProgressListener>> urlListeners = strongThis.mProgressListeners.get(requestUrl);
+      .body(new ProgressResponseBody(originalResponse.body(), new ProgressListener() {
+        @Override
+        public void onProgress(long bytesWritten, long contentLength, boolean done) {
+          OkHttpClientProgressInterceptor strongThis = weakThis.get();
+          if (strongThis != null) {
+            Collection<WeakReference<ProgressListener>> urlListeners = strongThis.mProgressListeners.get(requestUrl);
 
-              if (urlListeners != null) {
-                for (WeakReference<ProgressListener> listenerReference : urlListeners) {
-                  ProgressListener listener = listenerReference.get();
-                  if (listener != null) {
-                    listener.onProgress(bytesWritten, contentLength, done);
-                  }
+            if (urlListeners != null) {
+              for (WeakReference<ProgressListener> listenerReference : urlListeners) {
+                ProgressListener listener = listenerReference.get();
+                if (listener != null) {
+                  listener.onProgress(bytesWritten, contentLength, done);
                 }
               }
+            }
 
-              if (done) {
-                strongThis.mProgressListeners.remove(requestUrl);
-              }
+            if (done) {
+              strongThis.mProgressListeners.remove(requestUrl);
             }
           }
-        }))
-        .build();
+        }
+      }))
+      .build();
   }
 
   public void registerProgressListener(String requestUrl, ProgressListener requestListener) {
