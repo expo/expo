@@ -46,7 +46,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 ### `Audio.setIsEnabledAsync(value)`
 
-Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Audio API.
+Audio is enabled by default, but if you want to write your own Audio API in a bare workflow app, you might want to disable the Audio API.
 
 #### Arguments
 

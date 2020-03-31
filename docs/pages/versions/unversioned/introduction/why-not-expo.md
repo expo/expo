@@ -14,7 +14,7 @@ There are plenty of cases where its current constraints may not be appropriate f
 <details><summary><h4>Not all iOS and Android APIs are available yet</h4></summary>
 <p>
 
- Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use ExpoKit or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
+ Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](../managed-vs-bare/#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
 </p>
 </details>
@@ -96,14 +96,6 @@ To build your app binaries for distribution on the Apple App Store and Google Pl
 </p>
 </details>
 
-
-<details><summary><h4>Over-the-air updates service only works in the managed workflow</h4></summary>
-<p>
-
-The over-the-air updates service does not work in the bare workflow, we are working on adding support in the immediate future.
-
-</p>
-</details>
 
 <details><summary><h4>Configuration must be done on each native project rather than once with app.json</h4></summary>
 <p>

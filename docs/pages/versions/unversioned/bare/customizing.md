@@ -8,4 +8,4 @@ The process of ejecting is easily reversible so don't worry about experimenting 
 
 To eject to the bare workflow, you can run `expo eject` and choose the "Bare" option. You will prompted with several questions and then the native iOS and Android projects will be created.
 
-> Note: We don't recommend the [ExpoKit](../../expokit/overview/) eject option, it is less flexible and we will stop supporting it in the near future.
+> Note: We don't recommend the [ExpoKit](../../expokit/overview/) eject option; it is deprecated and we will no longer support it after SDK 38.
