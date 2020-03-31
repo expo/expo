@@ -53,7 +53,7 @@ import {
 } from 'expo-ads-admob';
 
 // Set global test device ID
-await setTestDeviceIDAsync("EMULATOR");
+await setTestDeviceIDAsync('EMULATOR');
 
 // Display a banner
 <AdMobBanner
