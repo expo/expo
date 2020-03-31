@@ -451,6 +451,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (8.1.0)
+  EXInAppPurchases:
+    BUILD_SETTINGS_CHECKSUM:
+      EXInAppPurchases: 9de76cf78759ab4168540e85ecee8b86
+    CHECKSUM: 084e1ea266b7b297010d3a1534bd1fe285fba235
+    FILES:
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.m"
+    PROJECT_NAME: EXInAppPurchases
+    SPECS:
+      - EXInAppPurchases (8.1.0)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake: ff09e99980f1b1b84c118d7d2037e232
@@ -741,8 +751,8 @@ CACHE_KEYS:
       EXSQLite: acb84ade2d15e9630e8da4bbb7418d6f
     CHECKSUM: 877ad6c8eb169353a2f94d5ad26510ffadd46a1f
     FILES:
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (8.1.0)
@@ -948,12 +958,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 816f15a05b128cfbab101cc7184d9687
-      Release: 816f15a05b128cfbab101cc7184d9687
+      Debug: 7a1761168fd8e561cf3cc4be5c1d1807
+      Release: 7a1761168fd8e561cf3cc4be5c1d1807
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
-      Release: e6aedfaad570c1e1a2e18b3c4a18be48
+      Debug: ed06bb52be8bf77ef4920e8ed63a2fd5
+      Release: ed06bb52be8bf77ef4920e8ed63a2fd5
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
