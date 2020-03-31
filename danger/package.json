@@ -14,7 +14,8 @@
   ],
   "dependencies": {
     "danger": "^9.2.10",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "@expo/spawn-async": "^1.5.0"
   },
   "devDependencies": {
     "typescript": "^3.8.3",
