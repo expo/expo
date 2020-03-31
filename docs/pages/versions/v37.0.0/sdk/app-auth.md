@@ -177,7 +177,7 @@ There are a couple different methods for authenticating your app in React Native
 
 ### AuthSession
 
-The [`AuthSession`](./auth-session) API is built on top of [`expo-web-browser`](./webbrowser) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](./auth-session#security-considerations).
+The [`AuthSession`](../auth-session) API is built on top of [`expo-web-browser`](../webbrowser) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](../auth-session#security-considerations).
 
 ### react-native-app-auth
 
