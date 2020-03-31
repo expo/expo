@@ -2293,6 +2293,20 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
+"@expo/babel-preset-cli@0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@expo/babel-preset-cli/-/babel-preset-cli-0.2.7.tgz#251b60e530943d2b29a1065295001039410e9a69"
+  integrity sha512-NWL5S4ODDi+dRsQRSu0x8w/m4rr55ZH+5qpb2ixB8Nojlq4dEt7EV2bHB6IPxT1XbJau4/IZiG6oN6XdRDHm+w==
+  dependencies:
+    "@babel/core" "^7.4.5"
+    "@babel/plugin-proposal-class-properties" "^7.4.4"
+    "@babel/plugin-proposal-nullish-coalescing-operator" "^7.7.4"
+    "@babel/plugin-proposal-optional-chaining" "^7.7.5"
+    "@babel/plugin-transform-modules-commonjs" "^7.5.0"
+    "@babel/preset-env" "^7.4.4"
+    "@babel/preset-typescript" "^7.3.3"
+    typescript "3.7.3"
+
 "@expo/babel-preset-cli@^0.2.5":
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@expo/babel-preset-cli/-/babel-preset-cli-0.2.5.tgz#baaab6b9617383f25e35db2c3a9aafea283d9885"
@@ -2378,18 +2392,25 @@
     slugify "^1.3.4"
     xml2js "^0.4.23"
 
-"@expo/config@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@expo/config/-/config-2.5.3.tgz#18e04de7715cd0b5faaf4eba4156b4f4e11bfed1"
-  integrity sha512-7D02r1Sm2YjQq1S4eKQhGjTgQCIg9i7q6pTKiCgcr+U90xATtOzay08LxdBXRjSbPCKCsZxqLMZqVh+PT+isbg==
+"@expo/config@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/config/-/config-3.0.1.tgz#3a51251f7dff84d2e1de639f67b10f85d23680d5"
+  integrity sha512-JVug2HoT8IN6wz4abFuBjtb9G2tqOJzGgLQkdyP9G+QoenKIYLk/k57AmyzsQatdqc9vJ4JiBxQCEFh8BdDeuA==
   dependencies:
-    "@expo/json-file" "^8.2.3"
+    "@babel/register" "^7.8.3"
+    "@expo/babel-preset-cli" "0.2.7"
+    "@expo/json-file" "8.2.7"
+    "@expo/plist" "^0.0.1"
     "@types/invariant" "^2.2.30"
     find-yarn-workspace-root "^1.2.1"
     fs-extra "^7.0.1"
     invariant "^2.2.4"
+    jest-message-util "^25.1.0"
+    plist "^3.0.1"
     resolve-from "^5.0.0"
     slugify "^1.3.4"
+    xcode "^2.1.0"
+    xml2js "^0.4.23"
 
 "@expo/dev-tools@0.10.11":
   version "0.10.11"
@@ -2434,10 +2455,10 @@
     util.promisify "^1.0.0"
     write-file-atomic "^2.3.0"
 
-"@expo/json-file@^8.2.3":
-  version "8.2.3"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.3.tgz#176d8db091e70ce4ff7fea0381ea5ee919e8260b"
-  integrity sha512-eJAfGFKjHGh53CkI4sTK5bPNWmOwG1VOQlg3BlVhpa6OH+ySjz5sfGJpj39OPEK85Pupav9iTLK7oa7+jBnPKQ==
+"@expo/json-file@8.2.7":
+  version "8.2.7"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.7.tgz#61611b0fd62c99cb4bf1e73052ea9da08c488e40"
+  integrity sha512-VhaVj6EI95uwK4SDKEFGmp4Zt70RB67s7+zgGK5t92e8twFz3WAvz7J5Qn/78vGL3xWrV7Mn6ZOILDCuMeXW/A==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     fs-extra "^8.0.1"
