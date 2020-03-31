@@ -1,12 +1,16 @@
-import React from 'react';
-import { createAppContainer, NavigationRouteConfigMap } from 'react-navigation';
-import { Platform } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBrowserApp } from '@react-navigation/web';
-
+import React from 'react';
+import { Platform } from 'react-native';
+import {
+  createAppContainer,
+  createSwitchNavigator,
+  NavigationRouteConfigMap,
+} from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import TestSuite from 'test-suite/AppNavigator';
 
+import Redirect from './Redirect';
 import Colors from './src/constants/Colors';
 
 type RoutesConfig = {
@@ -69,9 +73,14 @@ const MainNavigator = createBottomTabNavigator(routes, {
   },
 });
 
+const SwitchRedirectNavigator = createSwitchNavigator({
+  main: MainNavigator,
+  Redirect,
+});
+
 const createApp = Platform.select({
-  web: input => createBrowserApp(input, { history: 'hash' }),
+  web: input => createBrowserApp(input),
   default: input => createAppContainer(input),
 });
 
-export default createApp(MainNavigator);
+export default createApp(SwitchRedirectNavigator);
