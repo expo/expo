@@ -15,7 +15,7 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
 ## API
 
