@@ -90,7 +90,7 @@ export default function App() {
 import { Camera } from 'expo-camera';
 ```
 
-<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync()']} />
+<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync(): string[]']} />
 
 <TableOfContentSection title='Props' contents={['type', 'flashMode', 'autoFocus', 'zoom', 'whiteBalance', 'focusDepth', 'ratio', 'pictureSize', 'onCameraReady', 'onFacesDetected', 'faceDetectorSettings', 'onMountError', 'onBarCodeScanned', 'barCodeScannerSettings', 'useCamera2Api', 'videoStablizationMode']} />
 
@@ -110,6 +110,8 @@ if (await Camera.isAvailableAsync()) {
 ```
 
 ### `Camera.getAvailableCameraTypesAsync(): string[]`
+
+_Web Only_
 
 Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
 
