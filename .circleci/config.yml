@@ -850,7 +850,9 @@ jobs:
           working_directory: docs
           command: nix run expo.curl --command yarn run test-links http://localhost:8000
       - run: mkdir -p /tmp/workspace/
-      - run: mv out /tmp/workspace/site
+      - run:
+          working_directory: docs
+          command: mv out /tmp/workspace/site
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
