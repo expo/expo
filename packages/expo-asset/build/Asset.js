@@ -4,7 +4,7 @@ import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-import { downloadAsync, IS_MANAGED_ENV } from './PlatformUtils';
+import { downloadAsync } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 export class Asset {
     constructor({ name, type, hash = null, uri, width, height }) {
@@ -54,7 +54,7 @@ export class Asset {
         }
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
-        if (!IS_MANAGED_ENV) {
+        if (!meta.fileHashes) {
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({
                 name: meta.name,
