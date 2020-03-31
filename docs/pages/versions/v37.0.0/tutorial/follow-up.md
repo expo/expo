@@ -58,7 +58,7 @@ We covered the basic minimal configuration, but you learn more about about custo
 
 ## Standalone apps & deployment
 
-How can you take what you have built and turn it into an app that you ship to the App Store and Play Store. Learn more about [distributing your app to stores](../../distribution/introduction/) and [deploying websites](../../guides/deploying-websites/).
+How can you take what you have built and turn it into an app that you ship to the App Store and Play Store. Learn more about [distributing your app to stores](../../distribution/introduction/) and [deploying websites](../../distribution/publishing-websites/).
 
 ## Navigation
 
