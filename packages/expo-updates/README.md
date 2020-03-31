@@ -38,7 +38,7 @@ Additionally, add the following line in your root `index.js` or `App.js` file:
 import 'expo-asset';
 ```
 
-### Setup app.json
+### Set up app.json
 
 If you're going to be using Expo CLI to package your updates (either with `expo export` or `expo publish`), you will need to add some fields to your app.json. If not, you can skip this section.
 
@@ -72,6 +72,8 @@ In Xcode, under the `Build Phases` tab of your main project, expand the phase en
 ```
 ../node_modules/expo-updates/bundle-expo-assets.sh
 ```
+
+This will configure your project to bundle assets from your published update when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
 
 #### `Expo.plist`
 
@@ -194,10 +196,16 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
 
 #### `app/build.gradle`
 
-Make the following change in order to bundle assets from expo-updates instead of your local metro server.
+Make the following change in order to bundle assets from expo-updates instead of your local metro server when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
 
 ```diff
--apply from: "../../node_modules/react-native/react.gradle"
+ project.ext.react = [
+     entryFile: "index.js",
++    bundleInRelease: false,
+     enableHermes: false
+ ]
+
+ apply from: "../../node_modules/react-native/react.gradle"
 +apply from: "../../node_modules/expo-updates/expo-updates.gradle"
 ```
 
@@ -267,9 +275,21 @@ If the diff doesn't apply cleanly, the important parts here are (1) overriding `
  }
 ```
 
+## Embedded Assets
+
+In certain situations, assets that are `require`d by your JavaScript are embedded into your application binary by Xcode/Android Studio. This allows these assets to load when the packager server running locally on your machine is not available.
+
+Debug builds of Android apps do not, by default, have any assets bundled into the APK; they are always loaded at runtime from the Metro packager.
+
+Debug builds of iOS apps built for the iOS simulator also do not have assets bundled into the app. They are loaded at runtime from Metro. Debug builds of iOS apps built for a real device **do** have assets bundled into the app binary, so they can be loaded from disk if they cannot be loaded from the packager at runtime.
+
+Release builds of both iOS and Android apps include a full embedded update, including manifest, JavaScript bundle, and all `require`d assets. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
+
+Note that when you make a release build, the update that will run on first launch is the update whose manifest and bundle are embedded in the binary at build time -- i.e. your most recently exported/published update. **This is different behavior from plain React Native projects**, which create a new bundle on-demand each time you make a release build. This means that if you make a change to your JavaScript app, you need to export/publish a new update in order to see that change in a release build. In future versions of `expo-updates` we hope to support on-demand updates created at build-time.
+
 ### Embed an initial update
 
-Before building an update-enabled release build of your app, you need to create an initial update to embed into the app binary. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
+Before building an `expo-update`-enabled release build of your app, you need to create an initial update to embed into the app binary.
 
 If you're not using Expo CLI, you need to create a manifest and bundle for this initial update. The files should be named `app.manifest` and `app.bundle`. (See the documentation on [Updating your App](https://docs/expo.io/versions/latest/bare/updating-your-app/) for the format of the manifest.) To embed them into your Android project, place a copy in the `android/app/src/main/assets` folder. To embed them into your iOS app, place them in the `ios/<your-project-name>` folder (or any subfolder) and add them to your Xcode project in the Xcode GUI.
 
