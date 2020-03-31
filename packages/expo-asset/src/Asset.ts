@@ -5,7 +5,7 @@ import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-import { downloadAsync } from './PlatformUtils';
+import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 type AssetDescriptor = {
@@ -86,7 +86,7 @@ export class Asset {
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!meta.fileHashes) {
+    if (!IS_ENV_WITH_UPDATES_ENABLED) {
       const { uri } = resolveAssetSource(virtualAssetModule);
       const asset = new Asset({
         name: meta.name,
