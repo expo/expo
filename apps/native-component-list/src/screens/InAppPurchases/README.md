@@ -1,9 +1,8 @@
 # Expo Payments
 
-This is an ejected Expo app that can be used to test the `expo-in-app-purchases` module.
+This screen may not be usable outside of the `bare-expo` project, which is preconfigured for supporting in-app purchases.
 
-It has a bundle ID of `dev.expo.Payments` and an application ID of `com.expo.payments`.
-This is important because it matches the app entries we set up in [App Store Connect](https://appstoreconnect.apple.com/)
+To use this in a new project, you'll first need to add some purchases in [App Store Connect](https://appstoreconnect.apple.com/)
 and [Google Play Console](https://developer.android.com/distribute/console/) respectively.
 
 There are already a few basic in-app products configured there (one for each type).
