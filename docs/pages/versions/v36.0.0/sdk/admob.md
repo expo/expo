@@ -53,7 +53,7 @@ import {
 } from 'expo-ads-admob';
 
 // Set global test device ID
-await setTestDeviceIDAsync("EMULATOR");
+await setTestDeviceIDAsync('EMULATOR');
 
 // Display a banner
 <AdMobBanner
@@ -79,6 +79,15 @@ await AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Te
 await AdMobRewarded.requestAdAsync();
 await AdMobRewarded.showAdAsync();
 ```
+
+### setTestDeviceIDAsync(testDeviceID)
+
+Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
+
+#### Arguments
+
+- **testDeviceID (_string_)** -- Test device ID.
+
 
 ### AdMobBanner
 
@@ -168,12 +177,4 @@ Opens a rewarded AdMob ad.
 | `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
 | `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
 
-
-### setTestDeviceIDAsync(testDeviceID)
-
-Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
-
-#### Arguments
-
-- **testDeviceID (_string_)** -- Test device ID.
 #

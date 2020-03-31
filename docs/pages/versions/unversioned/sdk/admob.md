@@ -80,6 +80,15 @@ await AdMobRewarded.requestAdAsync();
 await AdMobRewarded.showAdAsync();
 ```
 
+### setTestDeviceIDAsync(testDeviceID)
+
+Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
+
+#### Arguments
+
+- **testDeviceID (_string_)** -- Test device ID.
+
+
 ### AdMobBanner
 
 #### servePersonalizedAds property
@@ -168,12 +177,4 @@ Opens a rewarded AdMob ad.
 | `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
 | `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
 
-
-### setTestDeviceIDAsync(testDeviceID)
-
-Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
-
-#### Arguments
-
-- **testDeviceID (_string_)** -- Test device ID.
 #
