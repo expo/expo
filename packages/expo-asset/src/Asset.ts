@@ -5,7 +5,7 @@ import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-import { downloadAsync, IS_MANAGED_ENV } from './PlatformUtils';
+import { downloadAsync } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 type AssetDescriptor = {
@@ -84,11 +84,9 @@ export class Asset {
       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
     }
 
-    // TODO: how should this behave in bare app with updates? re: hashAssetFiles
-    //
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!IS_MANAGED_ENV) {
+    if (!meta.fileHashes) {
       const { uri } = resolveAssetSource(virtualAssetModule);
       const asset = new Asset({
         name: meta.name,

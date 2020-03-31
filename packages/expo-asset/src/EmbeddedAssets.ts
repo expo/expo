@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 
-import { IS_BARE_ENV_WITHOUT_UPDATES, getLocalAssets } from './PlatformUtils';
+import { getLocalAssets } from './PlatformUtils';
 
 // Fast lookup check if assets are available in the local bundle in managed apps
 const bundledAssets = new Set(FileSystem.bundledAssets || []);
@@ -14,11 +14,8 @@ const localAssets = getLocalAssets();
  * included in the app bundle.
  */
 export function getEmbeddedAssetUri(hash: string, type: string | null): string | null {
-  if (__DEV__ || IS_BARE_ENV_WITHOUT_UPDATES) {
-    return null;
-  }
   const localAssetsKey = `${hash}.${type ?? ''}`;
-  if (!localAssets.hasOwnProperty(localAssetsKey)) {
+  if (!localAssets.hasOwnProperty(localAssetsKey) && !__DEV__) {
     // check legacy location in case we're in Expo client/managed workflow
     // TODO(eric): remove this once bundledAssets is no longer exported from FileSystem
     const assetName = `asset_${hash}${type ? `.${type}` : ''}`;
@@ -27,5 +24,5 @@ export function getEmbeddedAssetUri(hash: string, type: string | null): string |
     }
     return `${FileSystem.bundleDirectory}${assetName}`;
   }
-  return localAssets[localAssetsKey];
+  return localAssets[localAssetsKey] ?? null;
 }
