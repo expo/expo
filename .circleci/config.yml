@@ -543,8 +543,8 @@ jobs:
       - run:
           name: Save test results
           command: |
-            mkdir -p ~/test-results/junit/
-            find . -type f -regex ".*/test-results/.*" -exec cp {} ~/test-results/ \;
+            mkdir -p ~/test-results
+            find . -type f -regex ".*/test_output/.*" -exec cp {} ~/test-results/ \;
           when: always
       - persist_to_workspace:
           root: ios
