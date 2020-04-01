@@ -6,6 +6,7 @@
 /packages/expo-analytics-amplitude              @sjchmiela
 /packages/expo-analytics-segment                @sjchmiela
 /packages/expo-app-auth                         @EvanBacon
+/packages/expo-new-app-auth                     @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide

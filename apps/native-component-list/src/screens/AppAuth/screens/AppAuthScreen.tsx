@@ -2,8 +2,8 @@ import './side-effects';
 
 import { B, H2, H4, HR, Table, TBody, TD, TR } from '@expo/html-elements';
 import { AuthorizationRequest, TokenResponse } from '@openid/appauth';
-import * as AppAuth from 'expo-app-auth';
-import { ExpoAuthorizationRequestJson } from 'expo-app-auth';
+import * as AppAuth from 'expo-new-app-auth';
+import { ExpoAuthorizationRequestJson } from 'expo-new-app-auth';
 import React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 

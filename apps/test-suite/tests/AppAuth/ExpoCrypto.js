@@ -1,4 +1,4 @@
-import { ExpoCrypto, encodeBase64NoWrap } from 'expo-app-auth/build/ExpoCrypto';
+import { ExpoCrypto, encodeBase64NoWrap } from 'expo-new-app-auth/build/ExpoCrypto';
 
 export const name = 'AppAuth.ExpoCrypto';
 

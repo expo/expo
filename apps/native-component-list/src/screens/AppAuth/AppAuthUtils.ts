@@ -5,7 +5,7 @@ import {
   AuthorizationError,
   TokenResponse,
 } from '@openid/appauth';
-import * as AppAuth from 'expo-app-auth';
+import * as AppAuth from 'expo-new-app-auth';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { Linking, Platform } from 'react-native';

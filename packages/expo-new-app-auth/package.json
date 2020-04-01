@@ -1,7 +1,7 @@
 {
-  "name": "expo-app-auth",
-  "version": "9.0.0",
-  "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
+  "name": "expo-new-app-auth",
+  "version": "1.0.0",
+  "description": "Pure JavaScript Expo Unimodule for interfacing with the OpenID library AppAuth",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -29,7 +29,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-app-auth"
+    "directory": "packages/expo-new-app-auth"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3AAppAuth"

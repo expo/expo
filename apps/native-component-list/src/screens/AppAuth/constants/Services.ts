@@ -1,4 +1,4 @@
-import * as AppAuth from 'expo-app-auth';
+import * as AppAuth from 'expo-new-app-auth';
 import { Platform } from 'react-native';
 
 const GUID = Platform.select({
