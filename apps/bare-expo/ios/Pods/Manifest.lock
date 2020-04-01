@@ -12,6 +12,9 @@ PODS:
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
+  - EXAppAuth (9.0.0):
+    - AppAuth (~> 1.2)
+    - UMCore
   - EXApplication (2.1.0):
     - UMCore
   - EXAV (8.1.0):
@@ -123,7 +126,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.0):
     - UMCore
-  - EXNotifications (0.1.0-beta.0):
+  - EXNotifications (0.1.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (8.1.0):
@@ -474,8 +477,6 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - RNCAsyncStorage (1.8.1):
-    - React
   - RNGestureHandler (1.6.0):
     - React
   - RNReanimated (1.7.0):
@@ -511,6 +512,7 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
+  - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -592,7 +594,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../../../react-native-lab/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/ReactCommon`)
-  - "RNCAsyncStorage (from `../../../node_modules/@react-native-community/async-storage`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
@@ -640,6 +641,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAmplitude:
     :path: "../../../packages/expo-analytics-amplitude/ios"
+  EXAppAuth:
+    :path: "../../../packages/expo-app-auth/ios"
   EXApplication:
     :path: "../../../packages/expo-application/ios"
   EXAV:
@@ -796,8 +799,6 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../../../react-native-lab/react-native/ReactCommon"
-  RNCAsyncStorage:
-    :path: "../../../node_modules/@react-native-community/async-storage"
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -838,6 +839,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: bc6221f0fb9c8af700ae3d26f2d9b803e1ccff7a
+  EXAppAuth: 26cc5ad605079dab36f6209322cf21f528c44328
   EXApplication: 777c2f1742b381725b3e8c1da41f0113ebfd4694
   EXAV: 2edd9cd30fe98d04b55325303c7ff01db02d1d0f
   EXBackgroundFetch: d876383d77a17fab25b2bd98437b6cf2297de353
@@ -875,7 +877,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 30a65e1eef453c6e7a76754febeb88c0d0fba232
   EXNetwork: b8cfa4936341d260779043acc4c366904decef0d
-  EXNotifications: 3d48c16bf4f0a14d02bf2e33352f438d1b8aed0d
+  EXNotifications: 4eb1836866d7527130667ff1b948030a7f73a5ab
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
@@ -932,7 +934,6 @@ SPEC CHECKSUMS:
   React-RCTText: 21934e0a51d522abcd0a275407e80af45d6fd9ec
   React-RCTVibration: 0f76400ee3cec6edb9c125da49fed279340d145a
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  RNCAsyncStorage: e0dd7c8a36543b4ef84969acd9f8aceba3a92dc2
   RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
