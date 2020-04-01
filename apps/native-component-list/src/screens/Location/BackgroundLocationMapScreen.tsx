@@ -1,7 +1,8 @@
 import React from 'react';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
-import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import MapView from 'react-native-maps';

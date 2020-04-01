@@ -1,6 +1,7 @@
 import * as AppAuth from 'expo-app-auth';
 import React from 'react';
-import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const GUID = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9';
 const config = {

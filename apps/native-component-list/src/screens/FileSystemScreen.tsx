@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   Alert,
-  AsyncStorage,
   Platform,
   ProgressBarAndroid,
   ProgressViewIOS,
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
 import ListButton from '../components/ListButton';

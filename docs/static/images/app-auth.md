@@ -299,7 +299,7 @@ Requested Authentication Context Class Reference values. Space-separated string 
 Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth Sign-In provider.
 
 ```js
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { AppAuth } from 'expo-app-auth';
 /* 
 // or from expo directly...

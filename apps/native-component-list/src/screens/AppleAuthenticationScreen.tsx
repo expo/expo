@@ -1,7 +1,8 @@
 import React from 'react';
 import { Subscription } from '@unimodules/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Alert, AsyncStorage, ScrollView, StyleSheet, View, Text, Button, Slider } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View, Text, Button, Slider } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import MonoText from '../components/MonoText';
 

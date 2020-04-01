@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
+    "@react-native-community/async-storage": "^1.8.1",
     "@react-native-community/datetimepicker": "2.2.2",
     "@react-native-community/masked-view": "0.1.6",
     "@react-native-community/netinfo": "5.5.0",

@@ -1,2 +1,0 @@
-import { DevicePushToken } from './Tokens.types';
-export default function getDevicePushTokenAsync(): Promise<DevicePushToken>;

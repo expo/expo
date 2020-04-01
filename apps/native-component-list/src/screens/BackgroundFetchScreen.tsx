@@ -3,7 +3,8 @@ import format from 'date-format';
 import { NavigationEvents } from 'react-navigation';
 import * as TaskManager from 'expo-task-manager';
 import * as BackgroundFetch from 'expo-background-fetch';
-import { AppState, AsyncStorage, StyleSheet, Text, View, AppStateStatus } from 'react-native';
+import { AppState, StyleSheet, Text, View, AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Button from '../components/Button';
 
