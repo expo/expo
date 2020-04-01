@@ -1,6 +1,5 @@
 # Expo
 .expo
-**/*/web-build/
 __generated__
 web-build
 

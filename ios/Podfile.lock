@@ -1482,6 +1482,9 @@ PODS:
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
+  - EXAppAuth (9.0.0):
+    - AppAuth (~> 1.2)
+    - UMCore
   - EXAppleAuthentication (2.1.0):
     - UMCore
   - EXApplication (2.1.0):
@@ -2490,6 +2493,7 @@ DEPENDENCIES:
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
+  - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
   - EXAV (from `../packages/expo-av/ios`)
@@ -3287,6 +3291,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-ads-facebook/ios"
   EXAmplitude:
     :path: "../packages/expo-analytics-amplitude/ios"
+  EXAppAuth:
+    :path: "../packages/expo-app-auth/ios"
   EXAppleAuthentication:
     :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
@@ -3800,6 +3806,7 @@ SPEC CHECKSUMS:
   EXAdsAdMob: 131803d2e78cc8e901c2afa72fb219dbc3e097bb
   EXAdsFacebook: 3615ce0bf49b7dcabd53718fea9201224b489c43
   EXAmplitude: bc6221f0fb9c8af700ae3d26f2d9b803e1ccff7a
+  EXAppAuth: 26cc5ad605079dab36f6209322cf21f528c44328
   EXAppleAuthentication: 77b56f8fd953a5471630775320d4942983017a40
   EXApplication: 777c2f1742b381725b3e8c1da41f0113ebfd4694
   EXAV: 2edd9cd30fe98d04b55325303c7ff01db02d1d0f

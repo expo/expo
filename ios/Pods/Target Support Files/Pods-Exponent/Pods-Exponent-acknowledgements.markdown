@@ -2237,7 +2237,7 @@ third-party archives.
 
 ## Google-Mobile-Ads-SDK
 
-Copyright 2020 Google
+Copyright 2019 Google
 
 ## GoogleAPIClientForREST
 
