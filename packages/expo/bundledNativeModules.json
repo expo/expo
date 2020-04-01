@@ -93,5 +93,5 @@
   "expo-module-template": "~8.2.0",
   "expo-image-loader": "~1.0.0",
   "expo-screen-orientation": "~1.0.0",
-  "unimodules-app-loader": "~1.0.0"
+  "unimodules-app-loader": "~1.0.1"
 }

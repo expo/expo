@@ -10072,7 +10072,7 @@ CACHE_KEYS:
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 98f4825f425141e39e25ec9bb92098e1
-    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    CHECKSUM: 90273a65f9b1d789214e0c913dfcabc7a1b1590e
     FILES:
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
@@ -10080,7 +10080,7 @@ CACHE_KEYS:
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
     PROJECT_NAME: UMAppLoader
     SPECS:
-      - UMAppLoader (1.0.0)
+      - UMAppLoader (1.0.1)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 0b7affbc39246c1e4ce2f9f58ebdc8c5
