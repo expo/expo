@@ -75,6 +75,16 @@ In Xcode, under the `Build Phases` tab of your main project, expand the phase en
 
 This will configure your project to bundle assets from your published update when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
 
+**Optional: Do not start packager in release builds**
+
+This step is completely optional! Since the React Native packager is not used in release builds, you can prevent it from starting and opening an unnecessary terminal window every time you make a release build. To do so, just add the following lines to the beginning of the script in the "Start Packager" build phase:
+
+```sh
+if [ "$CONFIGURATION" == "Release" ]; then
+  exit 0;
+fi
+```
+
 #### `Expo.plist`
 
 Create the file `ios/<your-project-name>/Supporting/Expo.plist` with the following contents, and add it to your Xcode project.
