@@ -1,164 +1,131 @@
-import { AuthorizationRequest, AuthorizationResponse, TokenResponse } from '@openid/appauth';
+import { CodedError, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 
-import { ExpoAccessTokenRequest, ExpoAccessTokenRequestJson } from './ExpoAccessTokenRequest';
-import { ExpoAuthorizationRequest, ExpoAuthorizationRequestJson } from './ExpoAuthorizationRequest';
 import {
-  ExpoAuthorizationServiceConfiguration,
-  ExpoAuthorizationServiceConfigurationJson,
-} from './ExpoAuthorizationServiceConfiguration';
-import { ExpoRefreshTokenRequest, ExpoRefreshTokenRequestJson } from './ExpoRefreshTokenRequest';
-import { ExpoRegistrationRequest, ExpoRegistrationRequestJson } from './ExpoRegistrationHandler';
-import { ExpoRequestHandler } from './ExpoRequestHandler';
-import { ExpoRevokeTokenRequest, ExpoRevokeTokenRequestJson } from './ExpoRevokeTokenRequest';
-import { ExpoTokenRequestHandler } from './ExpoTokenRequestHandler';
-import { RegistrationHandler, RegistrationResponse } from './RegistrationHandler';
+  OAuthBaseProps,
+  OAuthProps,
+  OAuthRevokeOptions,
+  OAuthServiceConfiguration,
+  TokenResponse,
+} from './AppAuth.types';
+import ExpoAppAuth from './ExpoAppAuth';
 
-export type IssuerOrServiceConfig =
-  | string
-  | ExpoAuthorizationServiceConfiguration
-  | ExpoAuthorizationServiceConfigurationJson;
+export * from './AppAuth.types';
 
-/**
- * Utility method for resolving the service config from an issuer or object.
- *
- * @param issuerOrServiceConfig
- */
-export async function resolveServiceConfigAsync(
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<ExpoAuthorizationServiceConfiguration> {
-  invariant(
-    issuerOrServiceConfig && !['number', 'boolean'].includes(typeof issuerOrServiceConfig),
-    'Expected a valid service configuration or issuer URL'
+function isValidServiceConfiguration(config?: OAuthServiceConfiguration): boolean {
+  return !!(
+    config &&
+    typeof config.authorizationEndpoint === 'string' &&
+    typeof config.tokenEndpoint === 'string'
   );
-  if (typeof issuerOrServiceConfig === 'string') {
-    return await ExpoAuthorizationServiceConfiguration.fetchFromIssuer(issuerOrServiceConfig);
-  } else if (issuerOrServiceConfig.constructor.name === 'ExpoAuthorizationServiceConfiguration') {
-    return issuerOrServiceConfig as ExpoAuthorizationServiceConfiguration;
+}
+
+function assertValidClientId(clientId?: string): void {
+  if (typeof clientId !== 'string' || !clientId.length) {
+    throw new CodedError(
+      'ERR_APP_AUTH_INVALID_CONFIG',
+      '`clientId` must be a string with more than 0 characters'
+    );
   }
-  return new ExpoAuthorizationServiceConfiguration(issuerOrServiceConfig);
 }
 
-/**
- * Authenticate and auto exchange the code for an access token.
- */
-export async function authAsync(
-  props: ExpoAuthorizationRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<TokenResponse> {
-  const request = new ExpoAuthorizationRequest({
-    responseType: AuthorizationRequest.RESPONSE_TYPE_CODE,
-    ...props,
-  });
-  // Using responseType token probably indicates that the developer wants to perform a hybrid flow.
-  // Two possible cases:
-  // 1. The code is not for this client, ie. will be sent to a
-  //    web service that performs the ID token verification and token
-  //    exchange.
-  // 2. The code is for this client and, for security reasons, the
-  //    application developer must verify the id_token signature and
-  //    c_hash before calling the token endpoint.
-  invariant(
-    request.responseType === AuthorizationRequest.RESPONSE_TYPE_CODE,
-    `Expected { responseType: 'code' }. Please use AppAuth.authRequestAsync() directly for token requests.`
-  );
-
-  // Get the service config
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  const response = await authRequestAsync(request, config);
-
-  // If the request is for the code flow (NB. not hybrid), then assume the
-  // code is intended for this client, and perform the authorization
-  // code exchange.
-  return await exchangeAsync(
-    {
-      clientId: request.clientId,
-      redirectUri: request.redirectUri,
-      code: response.response.code,
-      clientSecret: response.request?.extras?.client_secret,
-      codeVerifier: response.request?.internal?.code_verifier,
-    },
-    config
-  );
+function assertValidProps({
+  issuer,
+  redirectUrl,
+  clientId,
+  serviceConfiguration,
+}: OAuthProps): void {
+  if (typeof issuer !== 'string' && !isValidServiceConfiguration(serviceConfiguration)) {
+    throw new CodedError(
+      'ERR_APP_AUTH_INVALID_CONFIG',
+      'You must provide either an `issuer` or both `authorizationEndpoint` and `tokenEndpoint`'
+    );
+  }
+  if (typeof redirectUrl !== 'string') {
+    throw new CodedError('ERR_APP_AUTH_INVALID_CONFIG', '`redirectUrl` must be a string');
+  }
+  assertValidClientId(clientId);
 }
 
-/**
- * Make an auth request that returns the auth code which can be exchanged for an access token.
- *
- * @param request
- * @param issuerOrServiceConfig
- */
-export async function authRequestAsync(
-  request: ExpoAuthorizationRequest,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<{ request: AuthorizationRequest; response: AuthorizationResponse }> {
-  // Eval early
-  await request.toJson();
-  // Get the service config
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  const handler = new ExpoRequestHandler();
-  return await handler.performAuthorizationRequestAsync(config, request);
+async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
+  if (!props.redirectUrl) {
+    props.redirectUrl = getDefaultOAuthRedirect();
+  }
+  assertValidProps(props);
+  return await ExpoAppAuth.executeAsync(props);
 }
 
-export async function exchangeAsync(
-  props: ExpoAccessTokenRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<TokenResponse> {
-  // use the code to make the token request.
-  /**
-   * If this fails (status 400), it's either because the PKCE code is wrong, or because too many params are being passed in the body:
-   * If you get the error `invalid_grant` please refer to https://www.oauth.com/oauth2-servers/pkce/authorization-code-exchange/
-   *
-   * grant_type=authorization_code
-   * redirect_uri=''
-   * code=''
-   * code_verifier=''
-   */
-  const request = new ExpoAccessTokenRequest(props);
-  const handler = new ExpoTokenRequestHandler();
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  const response = await handler.performTokenRequest(config, request);
-  return response;
+export function getDefaultOAuthRedirect(): string {
+  return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
+}
+
+export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
+  if (!ExpoAppAuth.executeAsync) {
+    throw new UnavailabilityError('expo-app-auth', 'authAsync');
+  }
+  return await _executeAsync(props);
 }
 
 export async function refreshAsync(
-  props: ExpoRefreshTokenRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
+  props: OAuthProps,
+  refreshToken: string
 ): Promise<TokenResponse> {
-  const request = new ExpoRefreshTokenRequest(props);
-  const handler = new ExpoTokenRequestHandler();
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  const response = await handler.performTokenRequest(config, request);
-
-  // Custom: reuse the refresh token if one wasn't returned
-  response.refreshToken = response.refreshToken ?? props.refreshToken;
-
-  return response;
+  if (!ExpoAppAuth.executeAsync) {
+    throw new UnavailabilityError('expo-app-auth', 'refreshAsync');
+  }
+  if (!refreshToken) {
+    throw new CodedError('ERR_APP_AUTH_TOKEN', 'Cannot refresh with null `refreshToken`');
+  }
+  return await _executeAsync({
+    isRefresh: true,
+    refreshToken,
+    ...props,
+  });
 }
 
-export async function registerAsync(
-  props: ExpoRegistrationRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<RegistrationResponse> {
-  const request = new ExpoRegistrationRequest(props);
-  const handler = new RegistrationHandler();
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  const response = await handler.performRegistrationRequest(config, request);
-  return response;
-}
-
+/* JS Method */
 export async function revokeAsync(
-  props: ExpoRevokeTokenRequestJson,
-  issuerOrServiceConfig: IssuerOrServiceConfig
-): Promise<boolean> {
-  const request = new ExpoRevokeTokenRequest(props);
-  const handler = new ExpoTokenRequestHandler();
-  const config = await resolveServiceConfigAsync(issuerOrServiceConfig);
-  // Add a slightly more helpful error message for issuers that don't support revocation.
-  invariant(
-    config.revocationEndpoint || typeof issuerOrServiceConfig !== 'string',
-    `Cannot revoke token without a valid revocation endpoint in the authorization service configuration. The supplied issuer "${issuerOrServiceConfig}" may not support token revocation.`
-  );
-  const response = await handler.performRevokeTokenRequest(config, request);
-  return response;
+  { clientId, issuer, serviceConfiguration }: OAuthBaseProps,
+  { token, isClientIdProvided = false }: OAuthRevokeOptions
+): Promise<any> {
+  if (!token) {
+    throw new CodedError('ERR_APP_AUTH_TOKEN', 'Cannot revoke a null `token`');
+  }
+
+  assertValidClientId(clientId);
+
+  let revocationEndpoint;
+  if (serviceConfiguration && serviceConfiguration.revocationEndpoint) {
+    revocationEndpoint = serviceConfiguration.revocationEndpoint;
+  } else {
+    // For Open IDC providers only.
+    const response = await fetch(`${issuer}/.well-known/openid-configuration`);
+    const openidConfig = await response.json();
+
+    invariant(
+      openidConfig.revocation_endpoint,
+      'The OpenID config does not specify a revocation endpoint'
+    );
+
+    revocationEndpoint = openidConfig.revocation_endpoint;
+  }
+
+  const encodedClientID = encodeURIComponent(clientId);
+  const encodedToken = encodeURIComponent(token);
+  const body = `token=${encodedToken}${isClientIdProvided ? `&client_id=${encodedClientID}` : ''}`;
+  const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+  try {
+    // https://tools.ietf.org/html/rfc7009#section-2.2
+    const results = await fetch(revocationEndpoint, {
+      method: 'POST',
+      headers,
+      body,
+    });
+
+    return results;
+  } catch (error) {
+    throw new CodedError('ERR_APP_AUTH_REVOKE_FAILED', error.message);
+  }
 }
+
+export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
