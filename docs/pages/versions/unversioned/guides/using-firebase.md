@@ -2,6 +2,8 @@
 title: Using Firebase
 ---
 
+***WARNING:*** Firebase integration does not work with Android! Use xpo for Firebase communication only if you do not need to support Android.
+
 [Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.  Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
 ## Usage with Expo
