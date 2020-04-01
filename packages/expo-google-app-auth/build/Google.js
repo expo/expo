@@ -23,6 +23,8 @@ function getPlatformGUID(config) {
     const guid = guidFromClientId(platformClientId);
     return guid;
 }
+// TODO: Bacon: ensure this is valid for all cases.
+const PROJECT_NUMBER_LENGTH = 11; // eslint-disable-line
 const PROJECT_ID_LENGTH = 32;
 function isValidGUID(guid) {
     const components = guid.split('-');
@@ -66,31 +68,26 @@ export async function logInAsync(config) {
     if (config.webClientId !== undefined) {
         console.warn('Deprecated: You will need to use expo-google-sign-in to do server side authentication outside of the Expo client');
     }
+    const userDefinedScopes = config.scopes || [];
+    /* Add the required scopes for returning profile data. */
+    const requiredScopes = [...userDefinedScopes, 'profile', 'email', 'openid'];
+    /* Remove duplicates */
+    const scopes = [...new Set(requiredScopes)];
     const guid = getPlatformGUID(config);
     const clientId = `${guid}.apps.googleusercontent.com`;
-    const redirectUri = config.redirectUrl;
+    const redirectUrl = config.redirectUrl
+        ? config.redirectUrl
+        : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
     try {
-        const serviceConfiguration = await AppAuth.ExpoAuthorizationServiceConfiguration.fetchFromIssuer('https://accounts.google.com');
-        const extras = {};
-        if (config.language) {
-            // The OpenID property `ui_locales` doesn't seem to work as expected,
-            // but `hl` will work to change the UI language.
-            // Reference: https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230
-            extras.hl = config.language;
-        }
-        if (config.accountName) {
-            // Reference https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-            extras.login_hint = config.accountName;
-        }
         const logInResult = await AppAuth.authAsync({
+            issuer: 'https://accounts.google.com',
+            scopes,
+            redirectUrl,
             clientId,
-            redirectUri,
-            scopes: applyDefaultsToScopes(config.scopes),
-            extras,
-        }, serviceConfiguration);
+        });
         // Web login only returns an accessToken so use it to fetch the same info as the native login
         // does.
-        const userInfoResponse = await fetch(serviceConfiguration.userInfoEndpoint ?? 'https://www.googleapis.com/userinfo/v2/me', {
+        const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
             headers: { Authorization: `Bearer ${logInResult.accessToken}` },
         });
         const userInfo = await userInfoResponse.json();
@@ -110,26 +107,22 @@ export async function logInAsync(config) {
         };
     }
     catch (error) {
-        // TODO: Bacon: Make this work with the new app auth API
         if (error.message.toLowerCase().indexOf('user cancelled') > -1) {
             return { type: 'cancel' };
         }
         throw error;
     }
 }
-function applyDefaultsToScopes(scopes = []) {
-    /* Add the required scopes for returning profile data. */
-    const requiredScopes = [...scopes, 'profile', 'email', 'openid'];
-    /* Remove duplicates */
-    return [...new Set(requiredScopes)];
-}
 export async function logOutAsync({ accessToken, ...inputConfig }) {
     const guid = getPlatformGUID(inputConfig);
     const clientId = `${guid}.apps.googleusercontent.com`;
-    await AppAuth.revokeAsync({
+    const config = {
+        issuer: 'https://accounts.google.com',
         clientId,
+    };
+    return await AppAuth.revokeAsync(config, {
         token: accessToken,
-        tokenTypeHint: 'access_token',
-    }, 'https://accounts.google.com');
+        isClientIdProvided: !!clientId,
+    });
 }
 //# sourceMappingURL=Google.js.map
