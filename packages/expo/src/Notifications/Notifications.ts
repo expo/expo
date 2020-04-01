@@ -95,7 +95,8 @@ function _validateNotification(notification) {
 const ASYNC_STORAGE_PREFIX = '__expo_internal_channel_';
 // TODO: remove this before releasing
 // this will always be `true` for SDK 28+
-const IS_USING_NEW_BINARY = typeof ExponentNotifications.createChannel === 'function';
+const IS_USING_NEW_BINARY =
+  ExponentNotifications && typeof ExponentNotifications.createChannel === 'function';
 
 async function _legacyReadChannel(id: string): Promise<Channel | null> {
   try {

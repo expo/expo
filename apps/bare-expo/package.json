@@ -42,9 +42,9 @@
     "expo-ads-admob",
     "expo-video-thumbnails",
     "expo-module-template",
-    "expo-in-app-purchases",
     "expo-apple-authentication",
-    "expo-updates"
+    "expo-updates",
+    "expo-splash-screen"
   ],
   "detox": {
     "configurations": {
@@ -80,9 +80,9 @@
     "@babel/runtime": "^7.5.5",
     "@react-native-community/async-storage": "^1.8.1",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~37.0.1",
+    "expo": "~37.0.3",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~1.0.0",
+    "expo-notifications": "~0.1.1",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.9.0",

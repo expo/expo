@@ -13,13 +13,12 @@ type PropsType = {
 export default class ImageTestView extends React.PureComponent<PropsType> {
   render() {
     const { imageProps, ImageComponent } = this.props;
-    const { style, source, ...otherImageProps } = imageProps;
+    const { style, defaultStyle, source, ...otherImageProps } = imageProps;
     return (
       <View style={styles.container}>
         <ImageComponent
-          style={[styles.image, this.props.style, style]}
+          style={[defaultStyle || styles.image, defaultStyle ? undefined : this.props.style, style]}
           source={source || defaultImage}
-          resizeMode="cover"
           {...otherImageProps}
         />
       </View>

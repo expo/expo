@@ -2,16 +2,37 @@
 
 #import <expo-image/EXImageView.h>
 #import <React/RCTConvert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTUIManager.h>
 
 static NSString * const sourceUriKey = @"uri";
+static NSString * const sourceScaleKey = @"scale";
+static NSString * const sourceWidthKey = @"width";
+static NSString * const sourceHeightKey = @"height";
 
 @interface EXImageView ()
 
-@property (nonatomic, strong) NSURL *imageURL;
+@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, strong) NSDictionary *source;
+@property (nonatomic, assign) RCTResizeMode resizeMode;
+@property (nonatomic, assign) BOOL needsReload;
+@property (nonatomic, assign) CGSize intrinsicContentSize;
 
 @end
 
 @implementation EXImageView
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  if (self = [super init]) {
+    _bridge = bridge;
+    _needsReload = NO;
+    _resizeMode = RCTResizeModeCover;
+    self.contentMode = [EXImageTypes resizeModeToContentMode:_resizeMode];
+    _intrinsicContentSize = CGSizeZero;
+  }
+  return self;
+}
 
 - (void)dealloc
 {
@@ -23,12 +44,28 @@ static NSString * const sourceUriKey = @"uri";
 
 - (void)setSource:(NSDictionary *)source
 {
-  _imageURL = [RCTConvert NSURL:source[sourceUriKey]];
+  _source = source;
+  // TODO: Implement equatable image source abstraction
+  _needsReload = YES;
+}
+
+- (void)setResizeMode:(RCTResizeMode)resizeMode
+{
+  if (_resizeMode == resizeMode) {
+    return;
+  }
+  
+  // Update resize-mode. Image repeat is handled in the completion-block
+  // and requires a reload of the image for the post-process function to run.
+  _needsReload = _needsReload || (resizeMode == RCTResizeModeRepeat) || (_resizeMode == RCTResizeModeRepeat);
+  _resizeMode = resizeMode;
+  self.contentMode = [EXImageTypes resizeModeToContentMode:resizeMode];
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-  if ([changedProps containsObject:@"source"]) {
+  if (_needsReload) {
+    _needsReload = NO;
     [self updateImage];
   }
 }
@@ -43,9 +80,33 @@ static NSString * const sourceUriKey = @"uri";
     self.onLoadStart(@{});
   }
 
-  [self sd_setImageWithURL:_imageURL
+  NSURL *imageURL = [RCTConvert NSURL:_source[sourceUriKey]];
+  NSNumber *scale = _source[sourceScaleKey];
+  NSNumber *width = _source[sourceWidthKey];
+  NSNumber *height = _source[sourceHeightKey];
+  RCTResizeMode resizeMode = _resizeMode;
+  
+  // For local assets, the intrinsic image size is passed down in the source.
+  // This means we can set it immediately without having to wait for the
+  // image content to load.
+  if (width && height) {
+    [self updateIntrinsicContentSize:CGSizeMake(width.doubleValue, height.doubleValue) internalAsset:YES];
+  }
+  
+  NSMutableDictionary *context = [NSMutableDictionary new];
+
+  // Only apply custom scale factors when neccessary. The scale factor
+  // affects how the image is rendered when resizeMode `center` and `repeat`
+  // are used. On animated images, applying a scale factor may cause
+  // re-encoding of the data, which should be avoided when possible.
+  if (scale && scale.doubleValue != 1.0) {
+    [context setValue:scale forKey:SDWebImageContextImageScaleFactor];
+  }
+
+  [self sd_setImageWithURL:imageURL
           placeholderImage:nil
-                   options:0
+                   options:SDWebImageAvoidAutoSetImage
+                   context:context
                   progress:[self progressBlock]
                  completed:[self completionBlock]];
 }
@@ -71,6 +132,10 @@ static NSString * const sourceUriKey = @"uri";
 
 - (SDExternalCompletionBlock)completionBlock
 {
+  RCTResizeMode resizeMode = _resizeMode;
+  NSNumber *width = _source && _source[sourceWidthKey] ? _source[sourceWidthKey] : nil;
+  NSNumber *height = _source && _source[sourceHeightKey] ? _source[sourceHeightKey] : nil;
+  
   __weak EXImageView *weakSelf = self;
   return ^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
     __strong EXImageView *strongSelf = weakSelf;
@@ -78,6 +143,24 @@ static NSString * const sourceUriKey = @"uri";
       // Nothing to do
       return;
     }
+
+    // Modifications to the image like changing the resizing-mode or cap-insets
+    // cannot be handled using a SDWebImage transformer, because they don't change
+    // the image-data and this causes this "meta" data to be lost in the SDWebImage caching process.
+    if (image) {
+      if (resizeMode == RCTResizeModeRepeat) {
+        image = [image resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeTile];
+      }
+    }
+    
+    // When no explicit source image size was specified, use the dimensions
+    // of the loaded image as the intrinsic content size.
+    if (!width && !height) {
+      [strongSelf updateIntrinsicContentSize:image.size internalAsset:NO];
+    }
+
+    // Update image
+    strongSelf.image = image;
 
     if (error && strongSelf.onError) {
       strongSelf.onError(@{
@@ -93,69 +176,40 @@ static NSString * const sourceUriKey = @"uri";
       });
     } else if (image && strongSelf.onLoad) {
       strongSelf.onLoad(@{
-        @"cacheType": @([self convertToCacheTypeEnum:cacheType]),
+        @"cacheType": @([EXImageTypes convertToCacheTypeEnum:cacheType]),
         @"source": @{
             @"url": imageURL.absoluteString,
             @"width": @(image.size.width),
             @"height": @(image.size.height),
-            @"mediaType": [self sdImageFormatToMediaType:image.sd_imageFormat] ?: [NSNull null]
+            @"mediaType": [EXImageTypes sdImageFormatToMediaType:image.sd_imageFormat] ?: [NSNull null]
         }
       });
     }
   };
 }
 
-- (EXImageCacheTypeEnum)convertToCacheTypeEnum:(SDImageCacheType)imageCacheType
+
+# pragma mark -  Intrinsic content size
+
+- (CGSize)intrinsicContentSize
 {
-  switch (imageCacheType) {
-    case SDImageCacheTypeNone:
-      return EXImageCacheNone;
-    case SDImageCacheTypeDisk:
-      return EXImageCacheDisk;
-    case SDImageCacheTypeMemory:
-      return EXImageCacheMemory;
-    // The only other known SDImageCacheType value
-    // is SDImageCacheTypeAll, which:
-    // 1. doesn't make sense in the context of completion block,
-    // 2. shouldn't ever end up as an argument to completion block.
-    // All in all, we map other SDImageCacheType values to EXImageCacheUnknown.
-    default:
-      return EXImageCacheUnknown;
-  }
+  return _intrinsicContentSize;
 }
 
-- (nullable NSString *)sdImageFormatToMediaType:(SDImageFormat)imageFormat
+- (void)updateIntrinsicContentSize:(CGSize)intrinsicContentSize internalAsset:(BOOL)internalAsset
 {
-  switch (imageFormat) {
-    case SDImageFormatUndefined:
-      return nil;
-    case SDImageFormatJPEG:
-      return @"image/jpeg";
-    case SDImageFormatPNG:
-      return @"image/png";
-    case SDImageFormatGIF:
-      return @"image/gif";
-    case SDImageFormatTIFF:
-      return @"image/tiff";
-    case SDImageFormatWebP:
-      return @"image/webp";
-    case SDImageFormatHEIC:
-      return @"image/heic";
-    case SDImageFormatHEIF:
-      return @"image/heif";
-    case SDImageFormatPDF:
-      return @"application/pdf";
-    case SDImageFormatSVG:
-      return @"image/svg+xml";
-    default:
-      // On one hand we could remove this clause
-      // and always ensure that we have handled
-      // all supported formats (by erroring compilation
-      // otherwise). On the other hand, we do support
-      // overriding SDWebImage version, so expo-image
-      // shouldn't fail to compile on SDWebImage versions
-      // with
-      return nil;
+  if (!CGSizeEqualToSize(_intrinsicContentSize, intrinsicContentSize)) {
+    _intrinsicContentSize = intrinsicContentSize;
+    
+    // Only inform Yoga of the intrinsic image size when needed.
+    // Yoga already knows about the size of the internal assets, and
+    // only needs to be informed about the intrinsic content size when
+    // no size styles were provided to the component. Always updating
+    // the intrinsicContentSize will cause unnecessary layout passes
+    // which we want to avoid.
+    if (!internalAsset && CGRectIsEmpty(self.bounds)) {
+      [_bridge.uiManager setIntrinsicContentSize:intrinsicContentSize forView:self];
+    }
   }
 }
 

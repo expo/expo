@@ -7,11 +7,11 @@ let
   os = if stdenv.system == "x86_64-linux" then "linux"
     else if stdenv.system == "x86_64-darwin" then "macosx" else throw "unsupported system architecture: ${stdenv.system}";
   ndk_17c_src = if stdenv.isDarwin then fetchurl {
-    url = http://dl.google.com/android/repository/android-ndk-r17c-darwin-x86_64.zip;
-    sha256 = "11iyxgqp017fchn54kkns9mrax73m73xm5wgis266dsq2g36dn73";
+    url = https://dl.google.com/android/repository/android-ndk-r17c-darwin-x86_64.zip;
+    sha256 = "1yvx5jcmrj45bp4fmbwyvs1xi80dxfk6k6frj7llji79s86mm9pn";
   } else fetchurl {
     url = https://dl.google.com/android/repository/android-ndk-r17c-linux-x86_64.zip;
-    sha256 = "12b5h5p8b2ia38825dnnacn7b47c0inpys8jp82r42iks3dilm1z";
+    sha256 = "16mqpjcdz8n3h75yrfm7ch32s1abyrpakkwwwwlgdrqajniq0yi0";
   };
   ndk_runtime_paths = lib.makeBinPath [ coreutils file findutils gawk gnugrep gnused jdk python3 which ]; #+ ":${platform-tools}/platform-tools";
   ndk = stdenv.mkDerivation {

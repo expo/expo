@@ -11,19 +11,19 @@ export default async function getExpoPushTokenAsync(options = {}) {
     if (!experienceId) {
         throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
     }
-    const appId = options.appId || Application.applicationId;
-    if (!appId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_APP_ID', "No appId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
+    const applicationId = options.applicationId || Application.applicationId;
+    if (!applicationId) {
+        throw new CodedError('ERR_NOTIFICATIONS_NO_APPLICATION_ID', "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
     }
     const type = options.type || getTypeOfToken(devicePushToken);
     const development = options.development || (await shouldUseDevelopmentNotificationService());
     const url = options.url || `${options.baseUrl || productionBaseUrl}push/getExpoPushToken`;
     const body = {
         type,
-        appId,
         deviceId,
         development,
         experienceId,
+        appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
     };
     const response = await fetch(url, {

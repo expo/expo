@@ -35,6 +35,7 @@ public class BasePackageList {
         new expo.modules.imageloader.ImageLoaderPackage(),
         new expo.modules.imagemanipulator.ImageManipulatorPackage(),
         new expo.modules.imagepicker.ImagePickerPackage(),
+        new expo.modules.inapppurchases.InAppPurchasesPackage(),
         new expo.modules.intentlauncher.IntentLauncherPackage(),
         new expo.modules.keepawake.KeepAwakePackage(),
         new expo.modules.lineargradient.LinearGradientPackage(),
@@ -54,6 +55,7 @@ public class BasePackageList {
         new expo.modules.sharing.SharingPackage(),
         new expo.modules.sms.SMSPackage(),
         new expo.modules.speech.SpeechPackage(),
+        new expo.modules.splashscreen.SplashScreenPackage(),
         new expo.modules.sqlite.SQLitePackage(),
         new expo.modules.taskManager.TaskManagerPackage(),
         new expo.modules.webbrowser.WebBrowserPackage()

@@ -1,5 +1,6 @@
 export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 export { default as getExpoPushTokenAsync } from './getExpoPushTokenAsync';
+export { default as getPresentedNotificationsAsync } from './getPresentedNotificationsAsync';
 export { default as presentNotificationAsync } from './presentNotificationAsync';
 export { default as dismissNotificationAsync } from './dismissNotificationAsync';
 export { default as dismissAllNotificationsAsync } from './dismissAllNotificationsAsync';
@@ -21,4 +22,7 @@ export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
 export * from './NotificationPermissions';
+export * from './Tokens.types';
+export * from './Notifications.types';
 export * from './NotificationChannelManager.types';
+export * from './NotificationChannelGroupManager.types';
