@@ -2,7 +2,8 @@ import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodu
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import { AsyncStorage, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import ExponentNotifications from './ExponentNotifications';
 import {
