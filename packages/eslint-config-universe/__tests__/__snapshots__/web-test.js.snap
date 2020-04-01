@@ -259,8 +259,8 @@ Object {
     Object {
       "column": 9,
       "endColumn": 26,
-      "endLine": 31,
-      "line": 31,
+      "endLine": 30,
+      "line": 30,
       "message": "'SharedArrayBuffer' is not defined.",
       "messageId": "undef",
       "nodeType": "Identifier",
@@ -268,8 +268,7 @@ Object {
       "severity": 2,
     },
   ],
-  "source": "// @flow
-import React from 'react';
+  "source": "import React from 'react';
 import { connect } from 'react-redux';
 
 export default
@@ -282,7 +281,7 @@ class Example extends React.Component {
     },
   };
 
-  props: { x: string };
+  props;
 
   static getInitialProps() {}
 
