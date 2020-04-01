@@ -16,7 +16,6 @@ const path = __importStar(require("path"));
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const GithubWrapper_1 = require("./GithubWrapper");
 const Utils_1 = require("./Utils");
-const DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
 var ChangelogEntryType;
 (function (ChangelogEntryType) {
     ChangelogEntryType["BUG_FIXES"] = "bug-fix";
@@ -24,6 +23,7 @@ var ChangelogEntryType;
     ChangelogEntryType["BREAKING_CHANGES"] = "breaking-change";
 })(ChangelogEntryType || (ChangelogEntryType = {}));
 const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
+const DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
 // Setup
 const pr = danger.github.pr;
 const modifiedFiles = danger.git.modified_files;
@@ -46,15 +46,16 @@ async function getFileDiffAsync(path) {
     });
     return stdout;
 }
-function getTags(entry) {
+function parseTagsFromLine(line) {
     const result = {
         type: DEFAULT_ENTRY_TYPE,
         packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
     };
-    const tags = entry.match(/\[[^\]]*\]/g);
+    const tags = line.match(/\[[^\]]*\]/g);
     if (!tags) {
         return result;
     }
+    // We currently support only two tags - packageName and type.
     if (tags.length > 2) {
         return null;
     }
@@ -84,7 +85,7 @@ function getTags(entry) {
  * }
  * Otherwise, it tries to parse PR's body.
  */
-function getChangelogSuggestionFromPR() {
+function parseChangelogSuggestionFromPRDescription() {
     var _a, _b;
     const changelogEntries = {
         [DEFAULT_CHANGELOG_ENTRY_KEY]: {
@@ -100,36 +101,30 @@ function getChangelogSuggestionFromPR() {
             .map(line => line.trim())
             .filter(line => line.length > 0)
             .forEach(line => {
-            const tags = getTags(line);
+            const tags = parseTagsFromLine(line);
             if (!tags) {
-                warn(`Cound't parse tags from PR's body. Line: ${line}.`);
+                warn(`Couldn't parse line: ${line}.`);
                 return;
             }
-            if (tags.packageName) {
-                changelogEntries[tags.packageName] = {
-                    type: tags.type,
-                    message: line.replace(/\[.*\]/, '').trim(),
-                };
-            }
+            changelogEntries[tags.packageName] = {
+                type: tags.type,
+                message: line.replace(/\[.*\]/, '').trim(),
+            };
         });
     }
     return changelogEntries;
 }
 /**
- * Check if the changelog was modified.
- * If `CHANGELOG.md` doesn't exist in provided package, it returns false.
+ * @returns `false` if `CHANGELOG.md` doesn't exist in provided package.
  */
-function wasChangelogModified(packageName, modifiedFiles) {
+function isChangelogModified(packageName, modifiedFiles) {
     const changelogPath = getPackageChangelogPath(packageName);
     return (modifiedFiles.includes(changelogPath) ||
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
-function getPackagesWithoutChangelogEntry(modifiedPackages) {
-    return Object.keys(modifiedPackages).filter(packageName => !wasChangelogModified(packageName, modifiedPackages[packageName]));
-}
-function getSuggestedChangelogEntries(packagesWithoutChangelogEntry) {
-    const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = getChangelogSuggestionFromPR();
-    return packagesWithoutChangelogEntry.map(packageName => {
+function getSuggestedChangelogEntries(packageNames) {
+    const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = parseChangelogSuggestionFromPRDescription();
+    return packageNames.map(packageName => {
         var _a, _b, _c, _d;
         const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;
         const type = (_d = (_c = suggestedEntries[packageName]) === null || _c === void 0 ? void 0 : _c.type) !== null && _d !== void 0 ? _d : defaultEntry.type;
@@ -163,7 +158,6 @@ async function runAddChangelogCommand(suggestedEntries) {
         };
     }));
 }
-// @ts-ignore
 async function createOrUpdateRP(missingEntries) {
     const dangerHeadRef = `@danger/add-missing-changelog-to-${pr.number}`;
     const dangerBaseRef = pr.head.ref;
@@ -178,7 +172,7 @@ async function createOrUpdateRP(missingEntries) {
         branchName: dangerHeadRef,
         message: `${dangerTags} ${dangerMessage}`,
     });
-    const prs = await github.getOpenPR({
+    const prs = await github.getOpenPRs({
         fromBranch: dangerHeadRef,
         toBranch: dangerBaseRef,
     });
@@ -197,7 +191,6 @@ async function createOrUpdateRP(missingEntries) {
     });
     return html_url;
 }
-// @ts-ignore
 function generateReport(missingEntries, url) {
     const message = missingEntries
         .map(entry => `- <code>${danger.github.utils.fileLinks([getPackageChangelogPath(entry.packageName)], false)}</code>`)
@@ -220,17 +213,26 @@ ${diff}
 ${pr} 
 </details>`);
 }
-async function changelogCheck() {
+/**
+ * This function checks if the changelog was modified, doing the following steps:
+ * - get packages which were modified but don't have changes in `CHANGELOG.md`
+ * - parse PR body to get suggested entries for those packages
+ * - run `et add-changelog` for each package to apply the suggestion
+ * - create a new PR
+ * - add a comment to inform about missing changelog
+ * - fail CI job
+ */
+async function checkChangelog() {
     const modifiedPackages = lodash_1.groupBy(modifiedFiles.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
-    const packagesWithoutChangelogEntry = getPackagesWithoutChangelogEntry(modifiedPackages);
-    if (packagesWithoutChangelogEntry.length === 0) {
+    const packagesWithoutChangelog = Object.keys(modifiedPackages).filter(packageName => !isChangelogModified(packageName, modifiedPackages[packageName]));
+    if (packagesWithoutChangelog.length === 0) {
         message(`✅ **Changelog**`);
         return;
     }
-    const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelogEntry);
+    const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
     const fixedEntries = await runAddChangelogCommand(suggestedEntries);
     const url = await createOrUpdateRP(fixedEntries);
     await generateReport(fixedEntries, url);
 }
-exports.changelogCheck = changelogCheck;
+exports.checkChangelog = checkChangelog;
 //# sourceMappingURL=ChangelogChecker.js.map

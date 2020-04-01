@@ -12,13 +12,6 @@ class GithubWrapper {
      * Create or update branch from the file map.
      *
      * If the branch exists it will be ovewritten (similar behavior to git push --force).
-     *
-     * The file map contains files content as a value and path as a key.
-     * For example:
-     * {
-     *    'packages/expo-image-picker/CHANGELOG.md': '# Changelog',
-     *    'CHANGELOG.md'  : '# Changelog'
-     * }
      */
     async createOrUpdateBranchFromFileMap(fileMap, config) {
         const baseBranchRef = `heads/${config.baseBranchName}`;
@@ -36,7 +29,7 @@ class GithubWrapper {
     /**
      * Get currently opened PRs, which are from `ref.fromBranch` to `ref.toBranch`.
      */
-    async getOpenPR(ref) {
+    async getOpenPRs(ref) {
         const { data: prs } = await this.api.pulls.list({
             ...this.userInfo,
             state: 'open',
@@ -62,14 +55,12 @@ class GithubWrapper {
      * A Git tree object creates the hierarchy between files in a Git repository. To create a tree
      * we need to make a list of blobs (which represent changes to the FS)
      *
-     * We want to build on top of the tree that already exists at the last sha
+     * We want to build on top of the tree that already exists at the latest sha
      *
      * @see https://developer.github.com/v3/git/trees/
      */
     async createTree(fileMap, baseSha) {
-        const createBlobs = Object.keys(fileMap).map(filename => this.api.git
-            .createBlob({ ...this.userInfo, content: fileMap[filename] })
-            .then((blob) => ({
+        const createBlobs = Object.entries(fileMap).map(([filename, content]) => this.api.git.createBlob({ ...this.userInfo, content }).then(blob => ({
             sha: blob.data.sha,
             path: filename,
             mode: '100644',

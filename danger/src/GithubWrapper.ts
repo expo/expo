@@ -4,9 +4,15 @@
  */
 import { Octokit } from '@octokit/rest';
 
-type FileMap = {
-  [key: string]: string;
-};
+/**
+ * The file map contains files content as a value and path as a key.
+ * For example:
+ * {
+ *    'packages/expo-image-picker/CHANGELOG.md': '# Changelog',
+ *    'CHANGELOG.md'  : '# Changelog'
+ * }
+ */
+type FileMap = Record<string, string>;
 
 export type CreateBranchOptions = {
   /*
@@ -34,7 +40,7 @@ export type PRReferences = {
   toBranch: string;
 };
 
-export type CreatePROption = PRReferences & {
+export type CreatePROptions = PRReferences & {
   /*
    * The PR's title.
    */
@@ -46,11 +52,9 @@ export type CreatePROption = PRReferences & {
 };
 
 export class GithubWrapper {
-  private api: Octokit;
   private userInfo: { owner: string; repo: string };
 
-  constructor(api: Octokit, owner: string, repo: string) {
-    this.api = api;
+  constructor(private api: Octokit, owner: string, repo: string) {
     this.userInfo = {
       owner,
       repo,
@@ -61,13 +65,6 @@ export class GithubWrapper {
    * Create or update branch from the file map.
    *
    * If the branch exists it will be ovewritten (similar behavior to git push --force).
-   *
-   * The file map contains files content as a value and path as a key.
-   * For example:
-   * {
-   *    'packages/expo-image-picker/CHANGELOG.md': '# Changelog',
-   *    'CHANGELOG.md'  : '# Changelog'
-   * }
    */
   async createOrUpdateBranchFromFileMap(
     fileMap: FileMap,
@@ -92,7 +89,7 @@ export class GithubWrapper {
   /**
    * Get currently opened PRs, which are from `ref.fromBranch` to `ref.toBranch`.
    */
-  async getOpenPR(ref: PRReferences): Promise<Octokit.PullsListResponse> {
+  async getOpenPRs(ref: PRReferences): Promise<Octokit.PullsListResponse> {
     const { data: prs } = await this.api.pulls.list({
       ...this.userInfo,
       state: 'open',
@@ -105,7 +102,7 @@ export class GithubWrapper {
   /**
    * Create a PR as a user, which was provided in the constructor.
    */
-  async openPR(options: CreatePROption): Promise<Octokit.PullsCreateResponse> {
+  async openPR(options: CreatePROptions): Promise<Octokit.PullsCreateResponse> {
     const { data: pr } = await this.api.pulls.create({
       ...this.userInfo,
       base: options.toBranch,
@@ -120,7 +117,7 @@ export class GithubWrapper {
    * A Git tree object creates the hierarchy between files in a Git repository. To create a tree
    * we need to make a list of blobs (which represent changes to the FS)
    *
-   * We want to build on top of the tree that already exists at the last sha
+   * We want to build on top of the tree that already exists at the latest sha
    *
    * @see https://developer.github.com/v3/git/trees/
    */
@@ -128,21 +125,19 @@ export class GithubWrapper {
     fileMap: FileMap,
     baseSha: string
   ): Promise<Octokit.GitCreateTreeResponse> {
-    const createBlobs = Object.keys(fileMap).map(filename =>
-      this.api.git
-        .createBlob({ ...this.userInfo, content: fileMap[filename] })
-        .then((blob: any) => ({
-          sha: blob.data.sha,
-          path: filename,
-          mode: '100644',
-          type: 'blob',
-        }))
+    const createBlobs = Object.entries(fileMap).map(([filename, content]) =>
+      this.api.git.createBlob({ ...this.userInfo, content }).then(blob => ({
+        sha: blob.data.sha,
+        path: filename,
+        mode: '100644',
+        type: 'blob',
+      }))
     );
 
     const blobs = await Promise.all(createBlobs);
     const tree = await this.api.git.createTree({
       ...this.userInfo,
-      tree: blobs as any,
+      tree: blobs as Octokit.GitCreateTreeParamsTree[],
       base_tree: baseSha,
     });
     return tree.data;

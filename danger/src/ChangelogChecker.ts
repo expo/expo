@@ -14,8 +14,6 @@ declare function warn(message: string): void;
 declare function fail(message: string): void;
 declare function markdown(message: string): void;
 
-const DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
-
 enum ChangelogEntryType {
   BUG_FIXES = 'bug-fix',
   NEW_FEATURES = 'new-feature',
@@ -32,6 +30,10 @@ type ChangelogEntry = {
 type PackageChangelogEntry = ChangelogEntry & {
   packageName: string;
 };
+
+type FixedChangelogEntry = PackageChangelogEntry & { content: string; diff: string };
+
+const DEFAULT_CHANGELOG_ENTRY_KEY = 'default' as const;
 
 type ChangelogEntries = {
   [DEFAULT_CHANGELOG_ENTRY_KEY]: ChangelogEntry;
@@ -64,18 +66,22 @@ async function getFileDiffAsync(path): Promise<string> {
   return stdout;
 }
 
-function getTags(
-  entry: string
+function parseTagsFromLine(
+  line: string
 ): { packageName: string | typeof DEFAULT_CHANGELOG_ENTRY_KEY; type: ChangelogEntryType } | null {
-  const result = {
+  const result: {
+    packageName: string | typeof DEFAULT_CHANGELOG_ENTRY_KEY;
+    type: ChangelogEntryType;
+  } = {
     type: DEFAULT_ENTRY_TYPE,
     packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
   };
 
-  const tags = entry.match(/\[[^\]]*\]/g);
+  const tags = line.match(/\[[^\]]*\]/g);
   if (!tags) {
     return result;
   }
+  // We currently support only two tags - packageName and type.
   if (tags.length > 2) {
     return null;
   }
@@ -108,7 +114,7 @@ function getTags(
  * }
  * Otherwise, it tries to parse PR's body.
  */
-function getChangelogSuggestionFromPR(): ChangelogEntries {
+function parseChangelogSuggestionFromPRDescription(): ChangelogEntries {
   const changelogEntries = {
     [DEFAULT_CHANGELOG_ENTRY_KEY]: {
       type: DEFAULT_ENTRY_TYPE,
@@ -124,18 +130,16 @@ function getChangelogSuggestionFromPR(): ChangelogEntries {
       .map(line => line.trim())
       .filter(line => line.length > 0)
       .forEach(line => {
-        const tags = getTags(line);
+        const tags = parseTagsFromLine(line);
         if (!tags) {
-          warn(`Cound't parse tags from PR's body. Line: ${line}.`);
+          warn(`Couldn't parse line: ${line}.`);
           return;
         }
 
-        if (tags.packageName) {
-          changelogEntries[tags.packageName] = {
-            type: tags.type,
-            message: line.replace(/\[.*\]/, '').trim(),
-          };
-        }
+        changelogEntries[tags.packageName] = {
+          type: tags.type,
+          message: line.replace(/\[.*\]/, '').trim(),
+        };
       });
   }
 
@@ -143,10 +147,9 @@ function getChangelogSuggestionFromPR(): ChangelogEntries {
 }
 
 /**
- * Check if the changelog was modified.
- * If `CHANGELOG.md` doesn't exist in provided package, it returns false.
+ * @returns `false` if `CHANGELOG.md` doesn't exist in provided package.
  */
-function wasChangelogModified(packageName: string, modifiedFiles: string[]): boolean {
+function isChangelogModified(packageName: string, modifiedFiles: string[]): boolean {
   const changelogPath = getPackageChangelogPath(packageName);
 
   return (
@@ -155,21 +158,13 @@ function wasChangelogModified(packageName: string, modifiedFiles: string[]): boo
   );
 }
 
-function getPackagesWithoutChangelogEntry(modifiedPackages: { [Key: string]: string[] }): string[] {
-  return Object.keys(modifiedPackages).filter(
-    packageName => !wasChangelogModified(packageName, modifiedPackages[packageName])
-  );
-}
-
-function getSuggestedChangelogEntries(
-  packagesWithoutChangelogEntry: string[]
-): PackageChangelogEntry[] {
+function getSuggestedChangelogEntries(packageNames: string[]): PackageChangelogEntry[] {
   const {
     DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry,
     ...suggestedEntries
-  } = getChangelogSuggestionFromPR();
+  } = parseChangelogSuggestionFromPRDescription();
 
-  return packagesWithoutChangelogEntry.map(packageName => {
+  return packageNames.map(packageName => {
     const message = suggestedEntries[packageName]?.message ?? defaultEntry.message;
     const type = suggestedEntries[packageName]?.type ?? defaultEntry.type;
     return {
@@ -182,7 +177,7 @@ function getSuggestedChangelogEntries(
 
 async function runAddChangelogCommand(
   suggestedEntries: PackageChangelogEntry[]
-): Promise<Array<PackageChangelogEntry & { content: string; diff: string }>> {
+): Promise<FixedChangelogEntry[]> {
   await Promise.all(
     suggestedEntries.map(entry =>
       spawnAsync('et', [
@@ -216,7 +211,6 @@ async function runAddChangelogCommand(
   );
 }
 
-// @ts-ignore
 async function createOrUpdateRP(
   missingEntries: { packageName: string; content: string }[]
 ): Promise<string | null> {
@@ -239,7 +233,7 @@ async function createOrUpdateRP(
     message: `${dangerTags} ${dangerMessage}`,
   });
 
-  const prs = await github.getOpenPR({
+  const prs = await github.getOpenPRs({
     fromBranch: dangerHeadRef,
     toBranch: dangerBaseRef,
   });
@@ -263,7 +257,6 @@ async function createOrUpdateRP(
   return html_url;
 }
 
-// @ts-ignore
 function generateReport(
   missingEntries: Array<{ packageName: string; diff: string }>,
   url?: string | null
@@ -300,20 +293,32 @@ ${pr}
   );
 }
 
-export async function changelogCheck(): Promise<void> {
+/**
+ * This function checks if the changelog was modified, doing the following steps:
+ * - get packages which were modified but don't have changes in `CHANGELOG.md`
+ * - parse PR body to get suggested entries for those packages
+ * - run `et add-changelog` for each package to apply the suggestion
+ * - create a new PR
+ * - add a comment to inform about missing changelog
+ * - fail CI job
+ */
+export async function checkChangelog(): Promise<void> {
   const modifiedPackages = groupBy(
     modifiedFiles.filter(file => file.startsWith('packages')),
     file => file.split(path.sep)[1]
   );
 
-  const packagesWithoutChangelogEntry = getPackagesWithoutChangelogEntry(modifiedPackages);
-  if (packagesWithoutChangelogEntry.length === 0) {
+  const packagesWithoutChangelog = Object.keys(modifiedPackages).filter(
+    packageName => !isChangelogModified(packageName, modifiedPackages[packageName])
+  );
+  if (packagesWithoutChangelog.length === 0) {
     message(`✅ **Changelog**`);
     return;
   }
 
-  const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelogEntry);
+  const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
   const fixedEntries = await runAddChangelogCommand(suggestedEntries);
+
   const url = await createOrUpdateRP(fixedEntries);
   await generateReport(fixedEntries, url);
 }

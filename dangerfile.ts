@@ -1,3 +1,3 @@
-import { changelogCheck } from '@expo/danger';
+import { checkChangelog } from '@expo/danger';
 
-changelogCheck();
+checkChangelog();
