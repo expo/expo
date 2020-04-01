@@ -1,6 +1,7 @@
 // Gradle script for downloading assets that make up an OTA update and bundling them into the APK
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
 
 void runBefore(String dependentTaskName, Task task) {
   Task dependentTask = tasks.findByPath(dependentTaskName);
