@@ -19,12 +19,12 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Configuration for standalone apps
 
-### Backroung modes on iOS
+### Background modes on iOS
 
 `TaskManager` works out of the box in the Expo client on Android, but on iOS you'll need to test using [a custom Expo client](../../guides/adhoc-builds/).
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
-Example of `app.json` that enables background location and background fetch:
+Here is an example of an `app.json` configuration that enables background location and background fetch:
 
 ```json
 {
@@ -44,11 +44,17 @@ Example of `app.json` that enables background location and background fetch:
 }
 ```
 
-For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, according to your needs.
+For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding the `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, depending on your needs.
 
-### AppDelegate
+### AppDelegate.h
 
-Make sure
+Make sure that in your `AppDelegate.h`, `AppDelegate` subclasses the `UMAppDelegateWrapper` class from `@unimodules/core`, like so:
+
+```objective-c
+#import <UMCore/UMAppDelegateWrapper.h>
+
+@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
+```
 
 ## API
 

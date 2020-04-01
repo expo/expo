@@ -849,10 +849,14 @@ jobs:
           name: Test links
           working_directory: docs
           command: nix run expo.curl --command yarn run test-links http://localhost:8000
-      - save_cache:
-          key: docs-site-{{ .Revision }}
+      - run: mkdir -p /tmp/workspace/
+      - run:
+          working_directory: docs
+          command: mv out /tmp/workspace/site
+      - persist_to_workspace:
+          root: /tmp/workspace
           paths:
-            - docs/out
+            - site
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master
@@ -862,12 +866,10 @@ jobs:
     executor: nix
     steps:
       - setup
-      - restore_cache:
-          keys:
-            - docs-site-{{ .Revision }}
+      - attach_workspace:
+          at: /tmp/workspace
       - deploy:
-          command: ./deploy.sh
-          working_directory: docs
+          command: docs/deploy.sh /tmp/workspace/site
 
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900

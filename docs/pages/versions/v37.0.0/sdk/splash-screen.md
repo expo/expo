@@ -13,7 +13,7 @@ This is useful to let you create an impression of a pure React component splash 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. See the [expo-splash-screen README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) for information on how to use a similar splash screen API in bare React Native apps.
 
 ## API
 
