@@ -126,7 +126,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.0):
     - UMCore
-  - EXNotifications (0.1.0-beta.0):
+  - EXNotifications (0.1.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (8.1.0):
@@ -477,9 +477,9 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - RNGestureHandler (1.6.0):
+  - RNGestureHandler (1.6.1):
     - React
-  - RNReanimated (1.7.0):
+  - RNReanimated (1.7.1):
     - React
   - RNScreens (2.2.0):
     - React
@@ -877,7 +877,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 30a65e1eef453c6e7a76754febeb88c0d0fba232
   EXNetwork: b8cfa4936341d260779043acc4c366904decef0d
-  EXNotifications: 3d48c16bf4f0a14d02bf2e33352f438d1b8aed0d
+  EXNotifications: 4eb1836866d7527130667ff1b948030a7f73a5ab
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
@@ -934,8 +934,8 @@ SPEC CHECKSUMS:
   React-RCTText: 21934e0a51d522abcd0a275407e80af45d6fd9ec
   React-RCTVibration: 0f76400ee3cec6edb9c125da49fed279340d145a
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
-  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+  RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
+  RNReanimated: 4e102df74a9674fa943e05f97f3362b6e44d0b48
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
   UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
