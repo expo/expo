@@ -40,16 +40,16 @@ public class ExpoImageView extends AppCompatImageView {
     setScaleType(ImageResizeMode.COVER.getScaleType());
   }
 
-  /* package */ void setSource(@Nullable ReadableMap sourceMap) {
+  protected void setSource(@Nullable ReadableMap sourceMap) {
     mSourceMap = sourceMap;
   }
 
-  /* package */ void setResizeMode(ImageResizeMode resizeMode) {
+  protected void setResizeMode(ImageResizeMode resizeMode) {
     setScaleType(resizeMode.getScaleType());
     // TODO: repeat mode handling
   }
 
-  /* package */ void onAfterUpdateTransaction() {
+  protected void onAfterUpdateTransaction() {
     GlideUrl sourceToLoad = createUrlFromSourceMap(mSourceMap);
 
     if (sourceToLoad == null) {
@@ -74,7 +74,7 @@ public class ExpoImageView extends AppCompatImageView {
     }
   }
 
-  /* package */ void onDrop() {
+  protected void onDrop() {
     mRequestManager.clear(this);
   }
 
