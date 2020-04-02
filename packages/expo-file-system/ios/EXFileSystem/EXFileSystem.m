@@ -675,9 +675,10 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
         reject(@"E_UNABLE_TO_PAUSE",
                @"There was an error producing resume data",
                nil);
-        [self unregister:session uuid:uuid];
-        [session invalidateAndCancel];
       }
+      
+      [self unregister:session uuid:uuid];
+      [session invalidateAndCancel];
     }];
   }
 }
@@ -899,6 +900,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 - (void)unregister:(NSURLSession *)session
 {
   [_sessions removeObject:session];
+  [session invalidateAndCancel];
 }
 
 - (void)unregister:(NSURLSession *)session uuid:(NSString *)uuid
