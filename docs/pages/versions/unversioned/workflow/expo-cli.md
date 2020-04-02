@@ -271,8 +271,7 @@ Alias: `expo i`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
-| `--template`, `-t` [name] | Specify which template to use. Options are [blank, tabs or bare-minimum] |
-| `--npm` | Use npm to install dependencies. The default when Yarn is not installed. |
+| `--template`, `-t` [name] | Specify which template to use. Options are [blank, tabs or bare-minimum] or the package name on npm (e.g. "expo-template-bare-typescript"). |
 | `--yarn` | Use Yarn to install dependencies. The default when Yarn is installed. |
 | `--name` [name] | The name of your app visible on the home screen. |
 
