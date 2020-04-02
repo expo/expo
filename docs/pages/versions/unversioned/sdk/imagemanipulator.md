@@ -1,6 +1,6 @@
 ---
 title: ImageManipulator
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-image-manipulator'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-image-manipulator'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -22,10 +22,10 @@ This will first rotate the image 90 degrees clockwise, then flip the rotated ima
 <SnackInline label='Basic ImageManipulator usage' templateId='image-manipulator' dependencies={['expo-asset', 'expo-image-manipulator']}>
 
 ```js
-import React, { useState, useEffect } from 'react';
-import { Button, View, Image } from 'react-native';
-import { Asset } from 'expo-asset';
-import * as ImageManipulator from 'expo-image-manipulator';
+import React, { useState, useEffect } from "react";
+import { Button, View, Image } from "react-native";
+import { Asset } from "expo-asset";
+import * as ImageManipulator from "expo-image-manipulator";
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -33,7 +33,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const image = Asset.fromModule(require('./assets/snack-icon.png'));
+      const image = Asset.fromModule(require("./assets/snack-embed.png"));
       await image.downloadAsync();
       setReady(true);
       setImage(image);
@@ -51,18 +51,24 @@ export default function App() {
 
   const _renderImage = () => {
     return (
-      <View style={{ marginVertical: 20, alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          marginVertical: 20,
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
         <Image
-          source={{ uri: this.state.image.localUri || this.state.image.uri }}
-          style={{ width: 300, height: 300, resizeMode: 'contain' }}
+          source={{ uri: image.localUri || image.uri }}
+          style={{ width: 300, height: 300, resizeMode: "contain" }}
         />
       </View>
     );
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
-      {ready && _renderImage()}
+    <View style={{ flex: 1, justifyContent: "center" }}>
+      {ready && image && _renderImage()}
       <Button title="Rotate and Flip" onPress={_rotate90andFlip} />
     </View>
   );
