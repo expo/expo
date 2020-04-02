@@ -9,10 +9,10 @@ let
   # checksums and urls taken from https://developer.android.com/ndk/downloads/older_releases
   ndk_17c_src = if stdenv.isDarwin then fetchurl {
     url = https://dl.google.com/android/repository/android-ndk-r17c-darwin-x86_64.zip;
-    sha1 = "f97e3d7711497e3b4faf9e7b3fa0f0da90bb649c";
+    sha256 = "11iyxgqp017fchn54kkns9mrax73m73xm5wgis266dsq2g36dn73";
   } else fetchurl {
     url = https://dl.google.com/android/repository/android-ndk-r17c-linux-x86_64.zip;
-    sha1 = "12cacc70c3fd2f40574015631c00f41fb8a39048";
+    sha256 = "12b5h5p8b2ia38825dnnacn7b47c0inpys8jp82r42iks3dilm1z";
   };
   ndk_runtime_paths = lib.makeBinPath [ coreutils file findutils gawk gnugrep gnused jdk python3 which ]; #+ ":${platform-tools}/platform-tools";
   ndk = stdenv.mkDerivation {
