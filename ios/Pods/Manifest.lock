@@ -1580,7 +1580,7 @@ PODS:
     - UMCore
   - EXHaptics (8.1.0):
     - UMCore
-  - EXImageLoader (1.0.0):
+  - EXImageLoader (1.0.1):
     - React-Core
     - UMCore
     - UMImageLoaderInterface
@@ -3835,7 +3835,7 @@ SPEC CHECKSUMS:
   EXGL_CPP: a70374bf147b423e4ed8dd435006581de7e3c311
   EXGoogleSignIn: d1fcbf367429818e0ba622d236fbb7126acb510b
   EXHaptics: 013b5065946d4dd7b46ea547b58072d45a206dbd
-  EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
+  EXImageLoader: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
   EXImageManipulator: 97f61d14c292714d66884e83697e794f8cefe0b0
   EXImagePicker: 4126814cba56cc3dc5e7fc47abce0b263da84609
   EXKeepAwake: d045bc2cf1ad5a04f0323cc7c894b95b414042e0
