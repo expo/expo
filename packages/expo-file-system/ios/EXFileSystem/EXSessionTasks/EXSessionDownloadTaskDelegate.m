@@ -8,19 +8,19 @@
 @property (strong, nonatomic) NSURL *serverUrl;
 @property (strong, nonatomic) NSURL *localFileUrl;
 @property (nonatomic) BOOL md5Option;
-@property (strong, nonatomic) EXDownloadDelegateOnWriteCallback onWrite;
 
 @end
 
 @implementation EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
-                   localFileUrl:(NSURL *)localFileUrl
-                      serverUrl:(NSURL *)serverUrl
-                      md5Option:(BOOL)md5Option
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject
+                           localFileUrl:(NSURL *)localFileUrl
+                              serverUrl:(NSURL *)serverUrl
+                              md5Option:(BOOL)md5Option;
 {
-  if (self = [super initWithResolve:resolve reject:reject]) {
+  if (self = [super initWithSessionRegister:sessionRegister resolve:resolve reject:reject]) {
     _serverUrl = serverUrl;
     _localFileUrl = localFileUrl;
     _md5Option = md5Option;
@@ -29,34 +29,10 @@
   return self;
 }
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
-                   localFileUrl:(NSURL *)localFileUrl
-                      serverUrl:(NSURL *)serverUrl
-                      md5Option:(BOOL)md5Option
-                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite;
-{
-  if (self = [self initWithResolve:resolve
-                            reject:reject
-                      localFileUrl:localFileUrl
-                         serverUrl:serverUrl
-                         md5Option:md5Option]) {
-    _onWrite = onWrite;
-  }
-  
-  return self;
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-  if (_onWrite) {
-    _onWrite(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-  }
-}
-
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
   [self handleDidFinishDownloadingToURL:location task:downloadTask];
+  [self.sessionRegister unregister:session];
 }
 
 - (void)handleDidFinishDownloadingToURL:(NSURL *)location task:(NSURLSessionDownloadTask *)downloadTask
@@ -91,6 +67,7 @@
     self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
                 [NSString stringWithFormat:@"Unable to download file. %@", error.description],
                 error);
+    [self.sessionRegister unregister:session];
   }
 }
 

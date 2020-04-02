@@ -37,8 +37,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.CookieHandler;
-import java.nio.file.LinkOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -83,7 +81,6 @@ public class FileSystemModule extends ExportedModule {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   @Override
@@ -491,9 +488,14 @@ public class FileSystemModule extends ExportedModule {
       } else if ("file".equals(uri.getScheme())) {
         Request.Builder requestBuilder = new Request.Builder().url(url);
         if (options != null && options.containsKey(HEADER_KEY)) {
-          final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
-          for (String key : headers.keySet()) {
-            requestBuilder.addHeader(key, headers.get(key).toString());
+          try {
+            final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+            for (String key : headers.keySet()) {
+              requestBuilder.addHeader(key, (String) headers.get(key));
+            }
+          } catch (ClassCastException exception) {
+            promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception);
+            return;
           }
         }
         getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {

@@ -4,10 +4,12 @@
 
 @implementation EXSessionTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject
 {
   if (self = [super init]) {
+    _sessionRegister = sessionRegister;
     _resolve = resolve;
     _reject = reject;
   }

@@ -281,7 +281,7 @@ export class DownloadResumable {
       return;
     }
     this._subscription = this._emitter.addListener(
-      'Exponent.downloadProgress',
+      'expo-file-system.downloadProgress',
       (event: ProgressEvent) => {
         if (event.uuid === this._uuid) {
           const callback = this._callback;

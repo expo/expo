@@ -4,34 +4,40 @@
 
 @interface EXSessionResumableDownloadTaskDelegate ()
 
-@property (strong, nonatomic) NSString *taskUUID;
-@property (weak, nonatomic) id<EXResumableTaskRegister> taskRegister;
+@property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWrite;
+@property (strong, nonatomic, readonly) NSString *uuid;
 
 @end
 
-
 @implementation EXSessionResumableDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
-                   localFileUrl:(NSURL *)localFileUrl
-                      serverUrl:(NSURL *)serverUrl
-                      md5Option:(BOOL)md5Option
-                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                           uuid:(NSString *)uuid
-          resumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject
+                           localFileUrl:(NSURL *)localFileUrl
+                              serverUrl:(NSURL *)serverUrl
+                              md5Option:(BOOL)md5Option
+                        onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
+                                   uuid:(NSString *)uuid;
 {
-  if (self = [super initWithResolve:resolve
-                             reject:reject
-                       localFileUrl:localFileUrl
-                          serverUrl:serverUrl
-                          md5Option:md5Option
-                    onWriteCallback:onWrite]) {
-    _taskUUID = uuid;
-    _taskRegister = taskRegister;
+  if (self = [self initWithSessionRegister:sessionRegister
+                                   resolve:resolve
+                                    reject:reject
+                              localFileUrl:localFileUrl
+                                 serverUrl:serverUrl
+                                 md5Option:md5Option]) {
+    _onWrite = onWrite;
+    _uuid = uuid;
   }
   
   return self;
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
+  if (_onWrite) {
+    _onWrite(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+  }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
@@ -44,16 +50,15 @@
       self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
                   [NSString stringWithFormat:@"Unable to download file. %@", error.description],
                   error);
+      [self.sessionRegister unregister:session uuid:_uuid];
     }
-    
-    [_taskRegister onTaskCompleted:_taskUUID];
   }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
   [super handleDidFinishDownloadingToURL:location task:downloadTask];
-  [_taskRegister onTaskCompleted:_taskUUID];
+  [self.sessionRegister unregister:session uuid:_uuid];
 }
 
 @end

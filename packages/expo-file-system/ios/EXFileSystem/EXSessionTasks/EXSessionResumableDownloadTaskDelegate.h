@@ -2,22 +2,17 @@
 
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
 
-
-@protocol EXResumableTaskRegister <NSObject>
-
-- (void)onTaskCompleted:(NSString *)uuid;
-
-@end
+typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite);
 
 @interface EXSessionResumableDownloadTaskDelegate : EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
-                   localFileUrl:(NSURL *)localFileUrl
-                      serverUrl:(NSURL *)serverUrl
-                      md5Option:(BOOL)md5Option
-                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                           uuid:(NSString *)uuid
-          resumableTaskRegister:(id<EXResumableTaskRegister>)taskRegister;
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject
+                           localFileUrl:(NSURL *)localFileUrl
+                              serverUrl:(NSURL *)serverUrl
+                              md5Option:(BOOL)md5Option
+                        onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
+                                   uuid:(NSString *)uuid;
 
 @end

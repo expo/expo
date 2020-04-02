@@ -3,16 +3,22 @@
 #import <Foundation/Foundation.h>
 #import <UMCore/UMDefines.h>
 
-@class EXSessionTaskDelegate;
+@protocol EXSessionRegister <NSObject>
+
+- (void)unregister:(NSURLSession *)session;
+- (void)unregister:(NSURLSession *)session uuid:(NSString *)uuid;
+
+@end
 
 @interface EXSessionTaskDelegate : NSObject <NSURLSessionTaskDelegate>
 
-@property (nonatomic, strong) NSString *uuid;
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong, readonly) UMPromiseResolveBlock resolve;
+@property (nonatomic, strong, readonly) UMPromiseRejectBlock reject;
+@property (nonatomic, strong, readonly) id<EXSessionRegister> sessionRegister;
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject;
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject;
 
 - (NSMutableDictionary *)parseServerResponse:(NSURLResponse *)response;
 

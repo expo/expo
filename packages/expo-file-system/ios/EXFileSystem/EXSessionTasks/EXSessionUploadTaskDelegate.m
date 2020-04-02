@@ -8,13 +8,13 @@
 
 @end
 
-
 @implementation EXSessionUploadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
+                                resolve:(UMPromiseResolveBlock)resolve
+                                 reject:(UMPromiseRejectBlock)reject
 {
-  if (self = [super initWithResolve:resolve reject:reject]) {
+  if (self = [super initWithSessionRegister:sessionRegister resolve:resolve reject:reject]) {
     _responseData = [[NSMutableData alloc] init];
   }
   
@@ -35,13 +35,16 @@
     self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_UPLOAD_FILE.",
           [NSString stringWithFormat:@"Unable to upload the file. '%@'", error.description],
           error);
+    [self.sessionRegister unregister:session];
     return;
   }
+  
   NSURLSessionUploadTask *uploadTask = (NSURLSessionUploadTask *)task;
   NSMutableDictionary *result = [self parseServerResponse:uploadTask.response];
   result[@"body"] = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-  
   self.resolve(result);
+  
+  [self.sessionRegister unregister:session];
 }
 
 @end
