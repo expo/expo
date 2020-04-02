@@ -15,17 +15,17 @@
     "expo-updates": "^0.0.1-rc.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
-    "react-native": "~0.61.4",
+    "react-native": "~0.61.5",
     "react-native-gesture-handler": "~1.6.0",
-    "react-native-reanimated": "~1.4.0",
+    "react-native-reanimated": "~1.7.0",
     "react-native-screens": "~2.2.0",
-    "react-native-unimodules": "~0.8.0",
+    "react-native-unimodules": "~0.9.0",
     "react-native-web": "~0.11.7"
   },
   "devDependencies": {
-    "@babel/core": "~7.8.6",
+    "@babel/core": "~7.9.0",
     "@types/react": "~16.9.23",
-    "@types/react-native": "~0.61.17",
+    "@types/react-native": "~0.61.23",
     "babel-preset-expo": "~8.1.0",
     "jest-expo": "~37.0.0",
     "typescript": "~3.8.3"
