@@ -133,6 +133,7 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
       'Using Expo for web',
