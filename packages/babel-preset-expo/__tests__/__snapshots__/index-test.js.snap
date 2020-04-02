@@ -15,10 +15,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;function _createSuper(Derived){return function(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(_isNativeReflectConstruct()){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
 
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_possibleConstructorReturn2.default)(this,(0,_getPrototypeOf2.default)(Lazy).apply(this,arguments));}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -65,10 +65,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _dec,_class;function _createSuper(Derived){return function(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(_isNativeReflectConstruct()){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
 
-Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_possibleConstructorReturn2().default)(this,(0,_getPrototypeOf2().default)(Lazy).apply(this,arguments));}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
@@ -115,10 +115,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){return function(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(_isNativeReflectConstruct()){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
 
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_possibleConstructorReturn2.default)(this,(0,_getPrototypeOf2.default)(Lazy).apply(this,arguments));}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -165,10 +165,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){return function(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(_isNativeReflectConstruct()){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
 
-Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_possibleConstructorReturn2.default)(this,(0,_getPrototypeOf2.default)(Lazy).apply(this,arguments));}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=(_dec=(0,_reactRedux.connect)(),_dec(_class=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
@@ -215,10 +215,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _dec,_class;function _createSuper(Derived){return function(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(_isNativeReflectConstruct()){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}var
 
 
-Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_possibleConstructorReturn2().default)(this,(0,_getPrototypeOf2().default)(Lazy).apply(this,arguments));}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
+Lazy=(_dec=(0,_reactRedux().connect)(),_dec(_class=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
 {
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
