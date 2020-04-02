@@ -353,6 +353,7 @@ workflows:
   sdk:
     jobs:
       - expo_sdk
+      - web_preview
       # E2E SDK testing
       - web_test_suite
       - ios_test_suite
@@ -446,7 +447,7 @@ workflows:
   shell_app_nightly:
     triggers:
       - schedule:
-          cron: "20 5 * * 2,4,6"
+          cron: '20 5 * * 2,4,6'
           filters:
             branches:
               only:
@@ -494,6 +495,20 @@ jobs:
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_WEB_WEBHOOK
+
+  web_preview:
+    executor: js
+    steps:
+      - setup
+      - guard_sdk_tests
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      - yarn:
+          command: build:deploy:web
+          working_directory: ~/expo/apps/bare-expo
 
   home:
     executor: js
@@ -731,31 +746,31 @@ jobs:
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
-# Disabled until further notice
-# See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-#   android_test_suite:
-#     executor: android
-#     steps:
-#       - setup
-#       - guard_sdk_tests
-#       - update_submodules
-#       - yarn_install:
-#           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-#       - yarn_install:
-#           working_directory: ~/expo/tools-public
-#       - restore_gradle_cache
-#       - run:
-#           name: Build APK, upload to Device Farm, follow device logs
-#           command: |
-#             nix-shell android/shell.nix --pure \
-#               --keep AWS_ACCESS_KEY_ID \
-#               --keep AWS_SECRET_ACCESS_KEY \
-#               --keep SSL_CERT_FILE \
-#               --keep FASTLANE_SKIP_UPDATE_CHECK \
-#               --keep FASTLANE_DISABLE_COLORS \
-#               --keep CI \
-#               --run "fastlane android devicefarm"
-#       - save_gradle_cache
+  # Disabled until further notice
+  # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+  #   android_test_suite:
+  #     executor: android
+  #     steps:
+  #       - setup
+  #       - guard_sdk_tests
+  #       - update_submodules
+  #       - yarn_install:
+  #           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+  #       - yarn_install:
+  #           working_directory: ~/expo/tools-public
+  #       - restore_gradle_cache
+  #       - run:
+  #           name: Build APK, upload to Device Farm, follow device logs
+  #           command: |
+  #             nix-shell android/shell.nix --pure \
+  #               --keep AWS_ACCESS_KEY_ID \
+  #               --keep AWS_SECRET_ACCESS_KEY \
+  #               --keep SSL_CERT_FILE \
+  #               --keep FASTLANE_SKIP_UPDATE_CHECK \
+  #               --keep FASTLANE_DISABLE_COLORS \
+  #               --keep CI \
+  #               --run "fastlane android devicefarm"
+  #       - save_gradle_cache
 
   client_android:
     executor: android
@@ -870,7 +885,6 @@ jobs:
           at: /tmp/workspace
       - deploy:
           command: docs/deploy.sh /tmp/workspace/site
-
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:

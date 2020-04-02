@@ -14,6 +14,7 @@
     "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json",
     "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
     "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
+    "build:deploy:web": "expo build:web --no-pwa && npx now web-build",
     "web": "expo start:web --https",
     "start": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
