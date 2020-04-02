@@ -1,4 +1,4 @@
-# expo-background-fetch
+# expo-task-manager
 
 Expo universal module for TaskManager API
 
