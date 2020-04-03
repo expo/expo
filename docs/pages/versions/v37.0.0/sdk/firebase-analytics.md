@@ -1,8 +1,9 @@
 ---
-title: Firebase Analytics
+title: FirebaseAnalytics
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-firebase-analytics'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
@@ -10,13 +11,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 **`expo-firebase-analytics`** enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
 Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
-
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅              | ✅                | ✅          | ✅             | ✅   |
-
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
