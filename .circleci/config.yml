@@ -708,9 +708,9 @@ jobs:
           working_directory: ~/expo/tools
       - yarn_restore_and_install:
           working_directory: ~/expo/tools/expotools
-      - run:
-          name: Check that Android packages are up-to-date
-          command: expotools check-android-packages
+      # - run:
+      #     name: Check that Android packages are up-to-date
+      #     command: expotools check-android-packages
       - run: |
           aws s3 ls $S3_URI || {
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
