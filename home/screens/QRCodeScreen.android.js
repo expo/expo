@@ -61,7 +61,7 @@ export default class BarCodeScreen extends React.Component {
           </TouchableOpacity>
         </View>
 
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
       </View>
     );
   }
