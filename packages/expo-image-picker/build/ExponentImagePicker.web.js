@@ -76,32 +76,12 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 };
                 reader.onload = ({ target }) => {
                     const uri = target.result;
-                    const returnRaw = () => {
-                        resolve({
-                            cancelled: false,
-                            uri,
-                            width: 0,
-                            height: 0,
-                        });
-                    };
-                    if (typeof target?.result === 'string') {
-                        const image = new Image();
-                        image.src = target.result;
-                        image.onload = function () {
-                            resolve({
-                                cancelled: false,
-                                uri,
-                                width: image.naturalWidth ?? image.width,
-                                height: image.naturalHeight ?? image.height,
-                            });
-                        };
-                        image.onerror = () => {
-                            returnRaw();
-                        };
-                    }
-                    else {
-                        returnRaw();
-                    }
+                    resolve({
+                        cancelled: false,
+                        uri,
+                        width: 0,
+                        height: 0,
+                    });
                 };
                 // Read in the image file as a binary string.
                 reader.readAsDataURL(targetFile);
