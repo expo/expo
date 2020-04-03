@@ -1,0 +1,41 @@
+{
+  "name": "expo-firebase-polyfill",
+  "version": "1.0.0",
+  "description": "Polyfill missing APIs for the Firebase JS SDK",
+  "main": "build/FirebasePolyfill.js",
+  "types": "build/FirebasePolyfill.d.ts",
+  "sideEffects": true,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "firebase",
+    "firebase-polyfill",
+    "react-native-firebase-polyfill"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-firebase-polyfill"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-firebase-polyfill/",
+  "devDependencies": {
+    "expo-module-scripts": "^1.2.0"
+  },
+  "dependencies": {
+    "base-64": "^0.1.0"
+  }
+}

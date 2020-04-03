@@ -1,0 +1,1 @@
+{"version":3,"file":"Base64.js","sourceRoot":"","sources":["../src/Base64.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,IAAI,IAAI,EAAE,MAAM,IAAI,IAAI,EAAE,MAAM,SAAS,CAAC;AAEzD,OAAO,EAAE,IAAI,EAAE,IAAI,EAAE,CAAC","sourcesContent":["import { decode as atob, encode as btoa } from 'base-64';\n\nexport { atob, btoa };\n"]}
