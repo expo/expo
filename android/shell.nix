@@ -6,12 +6,13 @@ let
   # ndk present in nixpkgs.
   os = if stdenv.system == "x86_64-linux" then "linux"
     else if stdenv.system == "x86_64-darwin" then "macosx" else throw "unsupported system architecture: ${stdenv.system}";
+  # checksums and urls taken from https://developer.android.com/ndk/downloads/older_releases
   ndk_17c_src = if stdenv.isDarwin then fetchurl {
     url = https://dl.google.com/android/repository/android-ndk-r17c-darwin-x86_64.zip;
-    sha256 = "1yvx5jcmrj45bp4fmbwyvs1xi80dxfk6k6frj7llji79s86mm9pn";
+    sha1 = "f97e3d7711497e3b4faf9e7b3fa0f0da90bb649c";
   } else fetchurl {
     url = https://dl.google.com/android/repository/android-ndk-r17c-linux-x86_64.zip;
-    sha256 = "16mqpjcdz8n3h75yrfm7ch32s1abyrpakkwwwwlgdrqajniq0yi0";
+    sha1 = "12cacc70c3fd2f40574015631c00f41fb8a39048";
   };
   ndk_runtime_paths = lib.makeBinPath [ coreutils file findutils gawk gnugrep gnused jdk python3 which ]; #+ ":${platform-tools}/platform-tools";
   ndk = stdenv.mkDerivation {
