@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "37.0.3",
+  "version": "37.0.4",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
@@ -105,5 +105,5 @@
     "react-dom": "16.9.0",
     "react-native": "0.61.4"
   },
-  "gitHead": "be21a6a35d10f6f8a7ee8510dbff958bd47bff9c"
+  "gitHead": "19c3aa3cd73e5295077dcf4497b513455923c57a"
 }
