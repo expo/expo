@@ -26,7 +26,7 @@ See the [official Firebase blog post announcing React Native compatibility](http
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
-`npm install --save firebase`.
+`expo install firebase`.
 
 The Firebase console will provide you with an api key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
