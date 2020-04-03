@@ -20,7 +20,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-firebase-analytics expo-firebase-core
+expo install expo-firebase-analytics
 ```
 
 ### Configure for iOS
