@@ -323,7 +323,7 @@ public class MainActivity extends ReactActivity {
 ```
 
 
-#### `res/drawable/splashscreen_background.png`
+#### `res/drawable/splashscreen_image.png`
 
 You have to provide your splash screen image and place it under the `res/drawable` directory.
 This image will be loaded as soon as Android mounts your application's native view hierarchy.
