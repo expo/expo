@@ -44,6 +44,9 @@ xcuserdata
 .project
 .settings
 
+# VSCode
+.history/
+
 # Android
 *.apk
 *.hprof
