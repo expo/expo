@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App renders correctly 1`] = `
+exports[`App renders the loading screen 1`] = `
 <View
   style={
     Object {
@@ -193,7 +193,7 @@ exports[`App renders correctly 1`] = `
                         }
                         route={
                           Object {
-                            "key": "Root-SD3BRPbhHM",
+                            "key": "Root-1",
                             "name": "Root",
                             "params": undefined,
                           }

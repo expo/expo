@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import { act, create } from 'react-test-renderer';
-
 import App from '../App';
 
 jest.mock('expo', () => ({
@@ -14,17 +13,23 @@ jest.mock('expo', () => ({
   },
 }));
 
-jest.mock("../navigation/BottomTabNavigator", () => "BottomTabNavigator");
 
+// test to prevent snapshot error here
+jest.mock('shortid', () => jest.fn(() => '1'))
+jest.mock("../navigation/BottomTabNavigator", () => "BottomTabNavigator");
+//
 describe('App', () => {
   jest.useFakeTimers();
 
   let tree;
-  it(`renders correctly`, async () => {
+  it(`renders the loading screen`, async () => {
     // act is used to prevent snapshot returning null
     await act(async () => {
       tree = await create(<App />);
+      
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree.toJSON()).toMatchSnapshot()
+
   });
+  
 });
