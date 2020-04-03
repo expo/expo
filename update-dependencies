@@ -38,7 +38,7 @@ done
 yarn add --dev --ignore-workspace-root-check \
   eslint@latest \
   expo-cli@latest \
-  prettier@latest
+  prettier@^1.19.0 # upgrade along with eslint-config-universe dependency
 
 # Update all yarn.lock files
 fd -a yarn.lock -E react-native-lab . \
