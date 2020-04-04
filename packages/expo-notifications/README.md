@@ -390,7 +390,7 @@ Check if the app is allowed to send any type of notifications (interrupting and 
 ```ts
 import * as Notifications from 'expo-notifications';
 
-export function allowsNotificationsAsync() {
+export async function allowsNotificationsAsync() {
   const settings = await Notifications.getPermissionsAsync();
   return (
     settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
@@ -516,7 +516,7 @@ import * as Notifications from 'expo-notifications';
 
 Notifications.presentNotificationAsync({
   title: 'Look at that notification',
-  message: "I'm so proud of myself!",
+  body: "I'm so proud of myself!",
 });
 ```
 
@@ -541,7 +541,7 @@ Notifications.setNotificationHandler({
 Notifications.scheduleNotificationAsync({
   content: {
     title: 'Look at that notification',
-    message: "I'm so proud of myself!",
+    body: "I'm so proud of myself!",
   },
   trigger: null,
 });
@@ -571,7 +571,7 @@ import * as Notifications from 'expo-notifications';
 Notifications.scheduleNotificationAsync({
   content: {
     title: "Time's up!",
-    message: 'Change sides!',
+    body: 'Change sides!',
   },
   trigger: {
     seconds: 60,
