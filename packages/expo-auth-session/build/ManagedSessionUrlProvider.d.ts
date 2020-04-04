@@ -5,7 +5,7 @@ export declare class ManagedSessionUrlProvider implements SessionUrlProvider {
     private static readonly USES_CUSTOM_SCHEME;
     private static readonly HOST_URI;
     private static readonly IS_EXPO_HOSTED;
-    getDefaultReturnUrl(): string;
+    getDefaultReturnUrl(urlPath?: string): string;
     getStartUrl(authUrl: string, returnUrl: string): string;
     getRedirectUrl(): string;
     static getHostUri(): string;
