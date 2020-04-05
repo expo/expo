@@ -3,3 +3,4 @@ export declare function startAsync(options: AuthSessionOptions): Promise<AuthSes
 export declare function dismiss(): void;
 export declare function getDefaultReturnUrl(): string;
 export declare function getRedirectUrl(): string;
+export { resolveProviderConfigAsync, fetchProviderConfigAsync, ProviderConfig, DiscoveryDocument, IssuerOrProviderConfig, } from './ProviderConfig';

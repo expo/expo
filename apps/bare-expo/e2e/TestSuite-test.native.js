@@ -8,6 +8,7 @@ let TESTS = [
   // 'Asset',
   // 'FileSystem',
   // 'Font',
+  'AuthSession',
   'Permissions',
   'Blur',
   'LinearGradient',

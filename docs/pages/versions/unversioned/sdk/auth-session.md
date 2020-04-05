@@ -203,6 +203,25 @@ const result = await AuthSession.startAsync({
 });
 ```
 
+## OpenID Connect
+
+Auth Session provides methods for making authentication with OpenID connect compliant services easier.
+
+### [Auto Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
+
+You can resolve a provider config from an **OpenID issuer** like this:
+
+```ts
+import { fetchProviderConfigAsync } from 'expo-auth-session';
+
+(async () => {
+  const issuer = 'https://accounts.google.com';
+  const config = await fetchProviderConfigAsync(issuer);
+
+  console.log('provider: ', config);
+})();
+```
+
 ## Advanced usage
 
 ### Filtering out AuthSession events in Linking handlers

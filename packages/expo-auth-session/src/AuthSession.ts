@@ -117,3 +117,11 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
     params,
   };
 }
+
+export {
+  resolveProviderConfigAsync,
+  fetchProviderConfigAsync,
+  ProviderConfig,
+  DiscoveryDocument,
+  IssuerOrProviderConfig,
+} from './ProviderConfig';

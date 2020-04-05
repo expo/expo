@@ -68,7 +68,8 @@ export function getTestModules() {
     require('./tests/Facebook'),
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
-    require('./tests/FirebaseAnalytics')
+    require('./tests/FirebaseAnalytics'),
+    require('./tests/AuthSession')
   );
 
   if (Platform.OS === 'android') {
