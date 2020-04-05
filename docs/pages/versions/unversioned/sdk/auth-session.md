@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthS
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import InstallSection from '~/components/plugins/InstallSection';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-auth-session`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-auth-session).
+<InstallSection packageName="expo-auth-session" />
 
 ## How web browser based authentication flows work
 
@@ -53,31 +54,16 @@ In order to be able to deep link back into your app, you will need to set a `sch
 ```javascript
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthSession } from 'expo';
+import * as AuthSession from 'expo-auth-session';
 
 /* @info Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a> */
 const FB_APP_ID = 'YOUR_APP_ID';
 /* @end */
 
-export default class App extends React.Component {
-  state = {
-    result: null,
-  };
+export default function App() {
+  const [result, setResult] = React.useState(null);
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="Open FB Auth" onPress={this._handlePressAsync} />
-        /* @info In this example, show the authentication result after success. In a real application,
-        this would be a weird thing to do, instead you would use this data to match the user with a user
-        in your application and sign them in. */
-        {this.state.result ? <Text>{JSON.stringify(this.state.result)}</Text> : null}
-        /* @end */
-      </View>
-    );
-  }
-
-  _handlePressAsync = async () => {
+  const handlePressAsync = async () => {
     let redirectUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
 
     let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync(
@@ -94,8 +80,19 @@ export default class App extends React.Component {
           }`,
       }
     );
-    this.setState({ result });
+    setResult(result);
   };
+
+  return (
+    <View style={styles.container}>
+      <Button title="Open FB Auth" onPress={handlePressAsync} />
+      /* @info In this example, show the authentication result after success. In a real application,
+      this would be a weird thing to do, instead you would use this data to match the user with a user
+      in your application and sign them in. */
+      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+      /* @end */
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -110,7 +107,7 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
-import { AuthSession } from 'expo';
+import * as AuthSession from 'expo-auth-session';
 ```
 
 ### `AuthSession.startAsync(options)`
