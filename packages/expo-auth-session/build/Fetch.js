@@ -29,7 +29,9 @@ export async function requestAsync(requestUrl, fetchRequest) {
         // NOTE: Github authentication will return XML if this includes the standard `*/*`
         request.headers['Accept'] = 'application/json, text/javascript; q=0.01';
     }
-    const response = await fetch(url.toString(), request);
+    // Fix a problem with React Native `URL` causing a trailing slash to be added.
+    const correctedUrl = url.toString().replace(/\/$/, '');
+    const response = await fetch(correctedUrl, request);
     const contentType = response.headers.get('content-type');
     if (isJsonDataType || contentType?.includes('application/json')) {
         return response.json();
