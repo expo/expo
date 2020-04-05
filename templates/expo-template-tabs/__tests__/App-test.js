@@ -14,10 +14,9 @@ jest.mock('expo', () => ({
 }));
 
 
-// test to prevent snapshot error here
 jest.mock('shortid', () => jest.fn(() => '1'))
 jest.mock("../navigation/BottomTabNavigator", () => "BottomTabNavigator");
-//
+
 describe('App', () => {
   jest.useFakeTimers();
 
