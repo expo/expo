@@ -10,8 +10,8 @@ export async function test({ describe, it, expect, jasmine }) {
       const config = await AuthSession.fetchProviderConfigAsync(issuer);
       expect(config.authorizationEndpoint).toEqual('https://accounts.google.com/o/oauth2/v2/auth');
       expect(config.tokenEndpoint).toEqual('https://oauth2.googleapis.com/token');
-      expect(config.userinfoEndpoint).toEqual('https://openidconnect.googleapis.com/v1/userinfo');
       expect(config.revocationEndpoint).toEqual('https://oauth2.googleapis.com/revoke');
+      expect(config.userInfoEndpoint).toEqual('https://openidconnect.googleapis.com/v1/userinfo');
     });
   });
 }
