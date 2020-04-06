@@ -58,7 +58,7 @@ app.bundle
 app.manifest
 
 # CocoaPods
-/ios/pods
+/ios/Pods/
 
 # Expo
 .expo/*
