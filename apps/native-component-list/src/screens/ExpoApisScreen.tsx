@@ -102,6 +102,7 @@ export default class ExpoApisScreen extends React.Component {
       'FacebookLogin',
       'FaceDetector',
       'FileSystem',
+      'FirebaseRecaptcha',
       'Font',
       'Geocoding',
       'Google',
