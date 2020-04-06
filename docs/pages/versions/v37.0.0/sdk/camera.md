@@ -100,6 +100,8 @@ import { Camera } from 'expo-camera';
 
 ### `Camera.isAvailableAsync(): boolean`
 
+_Web Only_
+
 Check whether the current device has a camera. This is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
 
 ```js
