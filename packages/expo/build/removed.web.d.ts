@@ -64,6 +64,7 @@ export declare const WebBrowser: null;
 export declare const GestureHandler: null;
 export declare const Icon: null;
 export declare const MapView: null;
+export declare const ScreenOrientation: null;
 export declare const Svg: null;
 export declare const takeSnapshotAsync: null;
 export declare const WebView: null;
