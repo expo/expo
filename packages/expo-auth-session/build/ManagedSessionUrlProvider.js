@@ -2,6 +2,24 @@ import Constants from 'expo-constants';
 import qs from 'qs';
 const { manifest } = Constants;
 export class ManagedSessionUrlProvider {
+    /**
+     * This method was moved to the top of this class, cause otherwise, ts compilation will fail with error:
+     * - `Property 'hostUri' is used before its initialization.`
+     */
+    static getHostAddress() {
+        let hostUri = manifest.hostUri;
+        if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
+            // we're probably not using up-to-date xdl, so just fake it for now
+            // we have to remove the /--/ on the end since this will be inserted again later
+            hostUri = ManagedSessionUrlProvider.removeScheme(Constants.linkingUri).replace(/\/--(\/.*)?$/, '');
+        }
+        const uriParts = hostUri?.split('?');
+        const parameters = uriParts?.[1];
+        if (uriParts?.length > 0) {
+            hostUri = uriParts[0];
+        }
+        return { hostUri, parameters };
+    }
     getDefaultReturnUrl(urlPath) {
         let scheme = 'exp';
         let path = ManagedSessionUrlProvider.SESSION_PATH;
@@ -15,7 +33,7 @@ export class ManagedSessionUrlProvider {
         else if (Constants.appOwnership === 'expo' && !manifestScheme) {
             console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
         }
-        let hostUri = ManagedSessionUrlProvider.HOST_URI || '';
+        let hostUri = ManagedSessionUrlProvider.HOST_ADDRESS.hostUri || '';
         if (ManagedSessionUrlProvider.USES_CUSTOM_SCHEME && ManagedSessionUrlProvider.IS_EXPO_HOSTED) {
             hostUri = '';
         }
@@ -33,8 +51,15 @@ export class ManagedSessionUrlProvider {
         if (urlPath) {
             path = [path, urlPath].filter(Boolean).join('/');
         }
+        let { parameters } = ManagedSessionUrlProvider.HOST_ADDRESS;
+        if (parameters) {
+            parameters = `?${parameters}`;
+        }
+        else {
+            parameters = '';
+        }
         hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
-        return encodeURI(`${scheme}://${hostUri}${path}`);
+        return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
     }
     getStartUrl(authUrl, returnUrl) {
         const queryString = qs.stringify({
@@ -49,15 +74,6 @@ export class ManagedSessionUrlProvider {
             ManagedSessionUrlProvider.warnIfAnonymous(manifest.id, redirectUrl);
         }
         return redirectUrl;
-    }
-    static getHostUri() {
-        let hostUri = manifest.hostUri;
-        if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
-            // we're probably not using up-to-date xdl, so just fake it for now
-            // we have to remove the /--/ on the end since this will be inserted again later
-            hostUri = ManagedSessionUrlProvider.removeScheme(Constants.linkingUri).replace(/\/--(\/.*)?$/, '');
-        }
-        return hostUri;
     }
     static warnIfAnonymous(id, url) {
         if (id.startsWith('@anonymous/')) {
@@ -77,8 +93,8 @@ export class ManagedSessionUrlProvider {
 ManagedSessionUrlProvider.BASE_URL = `https://auth.expo.io`;
 ManagedSessionUrlProvider.SESSION_PATH = 'expo-auth-session';
 ManagedSessionUrlProvider.USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
-ManagedSessionUrlProvider.HOST_URI = ManagedSessionUrlProvider.getHostUri();
-ManagedSessionUrlProvider.IS_EXPO_HOSTED = ManagedSessionUrlProvider.HOST_URI &&
-    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(ManagedSessionUrlProvider.HOST_URI) ||
+ManagedSessionUrlProvider.HOST_ADDRESS = ManagedSessionUrlProvider.getHostAddress();
+ManagedSessionUrlProvider.IS_EXPO_HOSTED = ManagedSessionUrlProvider.HOST_ADDRESS.hostUri &&
+    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(ManagedSessionUrlProvider.HOST_ADDRESS.hostUri) ||
         manifest.developer);
 //# sourceMappingURL=ManagedSessionUrlProvider.js.map

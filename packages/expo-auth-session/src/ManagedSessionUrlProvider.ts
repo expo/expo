@@ -6,15 +6,39 @@ import { SessionUrlProvider } from './SessionUrlProvider';
 const { manifest } = Constants;
 
 export class ManagedSessionUrlProvider implements SessionUrlProvider {
+  /**
+   * This method was moved to the top of this class, cause otherwise, ts compilation will fail with error:
+   * - `Property 'hostUri' is used before its initialization.`
+   */
+  private static getHostAddress(): { hostUri: string; parameters: string | undefined } {
+    let hostUri: string = manifest.hostUri;
+    if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
+      // we're probably not using up-to-date xdl, so just fake it for now
+      // we have to remove the /--/ on the end since this will be inserted again later
+      hostUri = ManagedSessionUrlProvider.removeScheme(Constants.linkingUri).replace(
+        /\/--(\/.*)?$/,
+        ''
+      );
+    }
+
+    const uriParts = hostUri?.split('?');
+    const parameters = uriParts?.[1];
+    if (uriParts?.length > 0) {
+      hostUri = uriParts[0];
+    }
+
+    return { hostUri, parameters };
+  }
+
   private static readonly BASE_URL = `https://auth.expo.io`;
   private static readonly SESSION_PATH = 'expo-auth-session';
   private static readonly USES_CUSTOM_SCHEME =
     Constants.appOwnership === 'standalone' && manifest.scheme;
-  private static readonly HOST_URI = ManagedSessionUrlProvider.getHostUri();
+  private static readonly HOST_ADDRESS = ManagedSessionUrlProvider.getHostAddress();
   private static readonly IS_EXPO_HOSTED =
-    ManagedSessionUrlProvider.HOST_URI &&
+    ManagedSessionUrlProvider.HOST_ADDRESS.hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(
-      ManagedSessionUrlProvider.HOST_URI
+      ManagedSessionUrlProvider.HOST_ADDRESS.hostUri
     ) ||
       manifest.developer);
 
@@ -35,7 +59,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       );
     }
 
-    let hostUri = ManagedSessionUrlProvider.HOST_URI || '';
+    let hostUri = ManagedSessionUrlProvider.HOST_ADDRESS.hostUri || '';
     if (ManagedSessionUrlProvider.USES_CUSTOM_SCHEME && ManagedSessionUrlProvider.IS_EXPO_HOSTED) {
       hostUri = '';
     }
@@ -56,9 +80,16 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       path = [path, urlPath].filter(Boolean).join('/');
     }
 
+    let { parameters } = ManagedSessionUrlProvider.HOST_ADDRESS;
+    if (parameters) {
+      parameters = `?${parameters}`;
+    } else {
+      parameters = '';
+    }
+
     hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
 
-    return encodeURI(`${scheme}://${hostUri}${path}`);
+    return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
   }
 
   getStartUrl(authUrl: string, returnUrl: string): string {
@@ -76,20 +107,6 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       ManagedSessionUrlProvider.warnIfAnonymous(manifest.id, redirectUrl);
     }
     return redirectUrl;
-  }
-
-  static getHostUri(): string {
-    let hostUri = manifest.hostUri;
-    if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
-      // we're probably not using up-to-date xdl, so just fake it for now
-      // we have to remove the /--/ on the end since this will be inserted again later
-      hostUri = ManagedSessionUrlProvider.removeScheme(Constants.linkingUri).replace(
-        /\/--(\/.*)?$/,
-        ''
-      );
-    }
-
-    return hostUri;
   }
 
   private static warnIfAnonymous(id, url): void {
