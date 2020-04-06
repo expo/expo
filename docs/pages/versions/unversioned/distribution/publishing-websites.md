@@ -23,7 +23,7 @@ title: Publishing Websites
   - Uses Webpack to [optimize the project.][webpack-optimize]
   - If you make any changes to your project, you'll need to re-build for production.
   - For more help use `expo build:web --help`
-  - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa`
+  - To prevent webpack from generating the manifest.json and injecting meta into the index.html use `expo build:web --no-pwa`
 - You can now deploy or host this anywhere you like.
 
 [webpack-optimize]: https://webpack.js.org/configuration/optimization/
