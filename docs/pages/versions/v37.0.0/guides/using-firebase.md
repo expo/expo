@@ -6,7 +6,7 @@ title: Using Firebase
 
 ## Usage with Expo
 
-If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication (except phone auth), Firestore, Database, Storage, Functions and Performance on React Native. Other modules like Analytics are not supported through the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk), but you can use [expo-firebase-analaytics](../../sdk/firebase-analytics) for that.
+If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore, Database, Storage, Functions and Performance on React Native. Other modules like Analytics are not supported through the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk), but you can use [expo-firebase-analaytics](../../sdk/firebase-analytics) for that.
 If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
@@ -108,6 +108,12 @@ See the Facebook section of our docs for information on how to set this up. This
 Once you have added Facebook login to your Expo app, we need to adjust the Firebase console to check for it. Under the Authentication section in the console in the Sign-In Method tab, enable Facebook as a sign-in provider.
 
 You can add whichever provider makes sense for you, or even add multiple providers. We will stick with Facebook for now since we already have a simple drop-in Expo component already built.
+
+### Phone Authentication
+
+To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is neccessary to verify that you are not a bot.
+
+Please follow the instructions for the [expo-firebase-recaptcha](../../sdk/firebase-recaptcha) package on how to use phone auth.
 
 ### Reenable Data Access Security Rule
 
