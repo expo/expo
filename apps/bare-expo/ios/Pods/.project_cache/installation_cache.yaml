@@ -308,13 +308,13 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
-    CHECKSUM: 13b3f0a61af72d8429fa957a928383ce905fe911
+    CHECKSUM: 6eaf790f19b893077993a261d9734c0713760f61
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
     PROJECT_NAME: EXFirebaseAnalytics
     SPECS:
-      - EXFirebaseAnalytics (2.1.0)
+      - EXFirebaseAnalytics (2.1.1)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
@@ -420,13 +420,13 @@ CACHE_KEYS:
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
       EXImageLoader: 311389058db34474056fe2e893a52953
-    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    CHECKSUM: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
     FILES:
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
     PROJECT_NAME: EXImageLoader
     SPECS:
-      - EXImageLoader (1.0.0)
+      - EXImageLoader (1.0.1)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc

@@ -68,7 +68,7 @@ PODS:
   - EXFileSystem (8.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.1.0):
+  - EXFirebaseAnalytics (2.1.1):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -91,7 +91,7 @@ PODS:
     - UMCore
   - EXHaptics (8.1.0):
     - UMCore
-  - EXImageLoader (1.0.0):
+  - EXImageLoader (1.0.1):
     - React-Core
     - UMCore
     - UMImageLoaderInterface
@@ -858,14 +858,14 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 8f4c21ab2f51bf75defe4536f841a37de59b0661
   EXFacebook: 74d53d9da75d1a953f1821dd417594ed18d7a72f
   EXFileSystem: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
-  EXFirebaseAnalytics: 13b3f0a61af72d8429fa957a928383ce905fe911
+  EXFirebaseAnalytics: 6eaf790f19b893077993a261d9734c0713760f61
   EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
   EXFont: 8326ecf966be559f7ced7c8e221a32fc4d9ed8b0
   EXGL: 7df5a1c0cd23dc7496d95889d4274448de8e21a2
   EXGL_CPP: a70374bf147b423e4ed8dd435006581de7e3c311
   EXGoogleSignIn: d1fcbf367429818e0ba622d236fbb7126acb510b
   EXHaptics: 013b5065946d4dd7b46ea547b58072d45a206dbd
-  EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
+  EXImageLoader: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
   EXImageManipulator: 97f61d14c292714d66884e83697e794f8cefe0b0
   EXImagePicker: 4126814cba56cc3dc5e7fc47abce0b263da84609
   EXInAppPurchases: 084e1ea266b7b297010d3a1534bd1fe285fba235
