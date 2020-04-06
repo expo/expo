@@ -65,7 +65,7 @@ class FirebaseAnalyticsJS {
       ...options.customArgs,
       v: 2,
       tid: config.measurementId,
-      cid: this.options.clientId,
+      cid: options.clientId,
     };
     if (options.userLanguage) queryArgs.ul = options.userLanguage;
     if (options.appName) queryArgs.an = options.appName;
@@ -88,10 +88,15 @@ class FirebaseAnalyticsJS {
       };
     }
     const args = encodeQueryArgs(queryArgs);
-    if (body) console.log(`FirebaseAnalyticsJS body: ${body}...`);
-    await fetch(`${this.url}?${args}`, {
+    const url = `${this.url}?${args}`;
+    await fetch(url, {
       method: 'POST',
       cache: 'no-cache',
+      ...(options.headers
+        ? {
+            headers: options.headers,
+          }
+        : {}),
       body,
     });
   }
