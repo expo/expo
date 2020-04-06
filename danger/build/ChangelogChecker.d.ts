@@ -1,3 +1,12 @@
+import './DangerDeclarations';
+import { ChangelogEntry } from './PullRequestManager';
+export declare type PackageChangelogEntry = ChangelogEntry & {
+    packageName: string;
+};
+export declare type FixedChangelogEntry = PackageChangelogEntry & {
+    content: string;
+    diff: string;
+};
 /**
  * This function checks if the changelog was modified, doing the following steps:
  * - get packages which were modified but don't have changes in `CHANGELOG.md`

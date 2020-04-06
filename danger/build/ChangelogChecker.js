@@ -10,120 +10,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("./DangerDeclarations");
 const fs = __importStar(require("fs"));
 const lodash_1 = require("lodash");
 const path = __importStar(require("path"));
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
-const GithubWrapper_1 = require("./GithubWrapper");
+const PullRequestManager_1 = require("./PullRequestManager");
 const Utils_1 = require("./Utils");
-var ChangelogEntryType;
-(function (ChangelogEntryType) {
-    ChangelogEntryType["BUG_FIXES"] = "bug-fix";
-    ChangelogEntryType["NEW_FEATURES"] = "new-feature";
-    ChangelogEntryType["BREAKING_CHANGES"] = "breaking-change";
-})(ChangelogEntryType || (ChangelogEntryType = {}));
-const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
-const DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
 // Setup
 const pr = danger.github.pr;
-const modifiedFiles = danger.git.modified_files;
 const prAuthor = pr.base.user.login;
-const github = new GithubWrapper_1.GithubWrapper(danger.github.api, prAuthor, pr.base.repo.name);
-/**
- * @param packageName for example: `expo-image-picker` or `unimodules-constatns-interface`
- * @returns relative path to package's changelog. For example: `packages/expo-image-picker/CHANGELOG.md`
- */
-function getPackageChangelogPath(packageName) {
-    return path.join('packages', packageName, 'CHANGELOG.md');
-}
-async function getFileContentAsync(path) {
-    const buffer = await fs.promises.readFile(path);
-    return buffer.toString();
-}
+const pullRequestManager = PullRequestManager_1.createPullRequestManager(danger.github.api, pr);
 async function getFileDiffAsync(path) {
     const { stdout } = await spawn_async_1.default('git', ['diff', '--', path], {
         cwd: Utils_1.getExpoRepositoryRootDir(),
     });
     return stdout;
 }
-function parseTagsFromLine(line) {
-    const result = {
-        type: DEFAULT_ENTRY_TYPE,
-        packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
-    };
-    const tags = line.match(/\[[^\]]*\]/g);
-    if (!tags) {
-        return result;
-    }
-    // We currently support only two tags - packageName and type.
-    if (tags.length > 2) {
-        return null;
-    }
-    for (const tag of tags) {
-        switch (true) {
-            case /\[[\s-_]*(bug)?[\s-_]*fix[\s-_]*\]/i.test(tag):
-                result.type = ChangelogEntryType.BUG_FIXES;
-                break;
-            case /\[[\s-_]*(new)?[\s-_]*feature(s)?[\s-_]*\]/i.test(tag):
-                result.type = ChangelogEntryType.NEW_FEATURES;
-                break;
-            case /\[[\s-_]*breaking[\s-_]*(change)?[\s-_]*\]/i.test(tag):
-                result.type = ChangelogEntryType.BREAKING_CHANGES;
-                break;
-            default:
-                result['packageName'] = tag.replace(/\[|\]/g, '').trim();
-        }
-    }
-    return result;
-}
-/**
- * Get suggested changelog entries from PR.
- *
- * If PR doesn't contais `# Changelog` section, this method returns:
- * {
- *   [DEFAULT_CHANGELOG_ENTRY_KEY]: <title of this pr without tags>
- * }
- * Otherwise, it tries to parse PR's body.
- */
-function parseChangelogSuggestionFromPRDescription() {
-    var _a, _b;
-    const changelogEntries = {
-        [DEFAULT_CHANGELOG_ENTRY_KEY]: {
-            type: DEFAULT_ENTRY_TYPE,
-            message: pr.title.replace(/\[.*\]/, '').trim(),
-        },
-    };
-    const changelogTag = (_b = (_a = pr.body.match(/#\schangelog(([^#]*?)\s?)*/i)) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.replace(/^-/, '');
-    if (changelogTag) {
-        changelogTag
-            .split('\n')
-            .slice(1)
-            .map(line => line.trim())
-            .filter(line => line.length > 0)
-            .forEach(line => {
-            const tags = parseTagsFromLine(line);
-            if (!tags) {
-                warn(`Couldn't parse line: ${line}.`);
-                return;
-            }
-            changelogEntries[tags.packageName] = {
-                type: tags.type,
-                message: line.replace(/\[.*\]/, '').trim(),
-            };
-        });
-    }
-    return changelogEntries;
-}
 /**
  * @returns `false` if `CHANGELOG.md` doesn't exist in provided package.
  */
 function isChangelogModified(packageName, modifiedFiles) {
-    const changelogPath = getPackageChangelogPath(packageName);
+    const changelogPath = Utils_1.getPackageChangelogRelativePath(packageName);
     return (modifiedFiles.includes(changelogPath) ||
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
 function getSuggestedChangelogEntries(packageNames) {
-    const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = parseChangelogSuggestionFromPRDescription();
+    const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
         const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;
@@ -135,7 +48,7 @@ function getSuggestedChangelogEntries(packageNames) {
         };
     });
 }
-async function runAddChangelogCommand(suggestedEntries) {
+async function runAddChangelogCommandAsync(suggestedEntries) {
     await Promise.all(suggestedEntries.map(entry => spawn_async_1.default('et', [
         `add-changelog`,
         `--package`,
@@ -146,54 +59,21 @@ async function runAddChangelogCommand(suggestedEntries) {
         prAuthor,
         `--type`,
         entry.type,
-        `--pullRequest`,
+        `--pull-request`,
         `${pr.number}`,
     ])));
     return Promise.all(suggestedEntries.map(async (entry) => {
-        const changelogPath = path.join(Utils_1.getExpoRepositoryRootDir(), getPackageChangelogPath(entry.packageName));
+        const changelogPath = path.join(Utils_1.getExpoRepositoryRootDir(), Utils_1.getPackageChangelogRelativePath(entry.packageName));
         return {
             ...entry,
-            content: await getFileContentAsync(changelogPath),
+            content: await Utils_1.getFileContentAsync(changelogPath),
             diff: await getFileDiffAsync(changelogPath),
         };
     }));
 }
-async function createOrUpdateRP(missingEntries) {
-    const dangerHeadRef = `@danger/add-missing-changelog-to-${pr.number}`;
-    const dangerBaseRef = pr.head.ref;
-    const dangerMessage = `Add missing changelog`;
-    const dangerTags = `[danger][bot]`;
-    const fileMap = missingEntries.reduce((prev, current) => ({
-        ...prev,
-        [getPackageChangelogPath(current.packageName)]: current.content,
-    }), {});
-    await github.createOrUpdateBranchFromFileMap(fileMap, {
-        baseBranchName: dangerBaseRef,
-        branchName: dangerHeadRef,
-        message: `${dangerTags} ${dangerMessage}`,
-    });
-    const prs = await github.getOpenPRs({
-        fromBranch: dangerHeadRef,
-        toBranch: dangerBaseRef,
-    });
-    if (prs.length > 1) {
-        warn("Couldn't find a correct pull request. Too many open ones.");
-        return null;
-    }
-    if (prs.length === 1) {
-        return prs[0].html_url;
-    }
-    const { html_url } = await github.openPR({
-        fromBranch: dangerHeadRef,
-        toBranch: dangerBaseRef,
-        title: `${dangerTags} ${dangerMessage} to #${pr.number}`,
-        body: `${dangerMessage} to #${pr.number}`,
-    });
-    return html_url;
-}
 function generateReport(missingEntries, url) {
     const message = missingEntries
-        .map(entry => `- <code>${danger.github.utils.fileLinks([getPackageChangelogPath(entry.packageName)], false)}</code>`)
+        .map(entry => `- <code>${danger.github.utils.fileLinks([Utils_1.getPackageChangelogRelativePath(entry.packageName)], false)}</code>`)
         .join('\n');
     const diff = '```diff\n' + missingEntries.map(entry => entry.diff).join('\n') + '```\n';
     const pr = url ? `#### or merge this pull request: ${url}` : '';
@@ -223,16 +103,22 @@ ${pr}
  * - fail CI job
  */
 async function checkChangelog() {
-    const modifiedPackages = lodash_1.groupBy(modifiedFiles.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
-    const packagesWithoutChangelog = Object.keys(modifiedPackages).filter(packageName => !isChangelogModified(packageName, modifiedPackages[packageName]));
+    const modifiedPackages = lodash_1.groupBy(danger.git.modified_files.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
+    const packagesWithoutChangelog = Object.entries(modifiedPackages)
+        .filter(([packageName, files]) => !isChangelogModified(packageName, files))
+        .map(([packageName, _]) => packageName);
     if (packagesWithoutChangelog.length === 0) {
         message(`✅ **Changelog**`);
         return;
     }
+    // gets suggested entries based on pull request
     const suggestedEntries = getSuggestedChangelogEntries(packagesWithoutChangelog);
-    const fixedEntries = await runAddChangelogCommand(suggestedEntries);
-    const url = await createOrUpdateRP(fixedEntries);
-    await generateReport(fixedEntries, url);
+    // applies suggested fixes using `et add-changelog` command
+    const fixedEntries = await runAddChangelogCommandAsync(suggestedEntries);
+    // creates/updates PR form result of `et` command - it will be merged to the current PR
+    const { html_url } = (await pullRequestManager.createOrUpdateRPAsync(fixedEntries)) || {};
+    // generates danger report. It will contain result of `et` command as a git diff and link to created PR
+    await generateReport(fixedEntries, html_url);
 }
 exports.checkChangelog = checkChangelog;
 //# sourceMappingURL=ChangelogChecker.js.map

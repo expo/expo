@@ -51,7 +51,7 @@ export type CreatePROptions = PRReferences & {
   body: string;
 };
 
-export class GithubWrapper {
+export class GithubApiWrapper {
   private userInfo: { owner: string; repo: string };
 
   constructor(private api: Octokit, owner: string, repo: string) {
