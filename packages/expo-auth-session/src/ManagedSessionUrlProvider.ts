@@ -18,7 +18,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
     ) ||
       manifest.developer);
 
-  getDefaultReturnUrl(): string {
+  getDefaultReturnUrl(urlPath?: string): string {
     let scheme = 'exp';
     let path = ManagedSessionUrlProvider.SESSION_PATH;
     const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
@@ -50,6 +50,10 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       }
     } else {
       path = '';
+    }
+
+    if (urlPath) {
+      path = [path, urlPath].filter(Boolean).join('/');
     }
 
     hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
