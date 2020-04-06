@@ -68,10 +68,6 @@ Expo for web also works on bare projects. Here we will just import one simple co
 
 This is entirely up to you! The Expo build service does not yet support builds for the bare workflow.
 
-## Over the air updates
-
-This is also up to you! The Expo updates service does not yet support over the air updates for the bare workflow.
-
 ## That's it!
 
 You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../hello-world/) to get started coding!
