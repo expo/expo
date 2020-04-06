@@ -1,25 +1,31 @@
 import fs from 'fs-extra';
-import semver from 'semver';
 
 import * as Markdown from './Markdown';
 
 /**
- * Type of the objects representing changelog entries.
+ * Type of the objects representing single changelog entry.
  */
-export type ChangelogChanges = {
-  totalCount: number;
-  versions: {
-    [key: string]: {
-      [key in ChangeType]?: string[];
-    };
-  };
-};
-
-export type ChangelogNewEntry = {
+export type ChangelogEntry = {
+  /**
+   * The change note.
+   */
   message: string;
+  /**
+   * The type of changelog entry.
+   */
   type: ChangeType;
+  /**
+   * The pull request number.
+   */
   pullRequest: number;
+  /**
+   * GitHub's user name of someone who made this change.
+   */
   author: string;
+  /**
+   * The changelog section which contains this entry.
+   */
+  version: string;
 };
 
 /**
@@ -34,7 +40,7 @@ export enum ChangeType {
 /**
  * Heading name for unpublished changes.
  */
-const UNPUBLISHED_VERSION_NAME = 'master';
+export const UNPUBLISHED_VERSION_NAME = 'master';
 
 /**
  * Depth of headings that mean the version containing following changes.
@@ -65,85 +71,16 @@ export class Changelog {
     return this.tokens;
   }
 
-  async getVersionsAsync(): Promise<string[]> {
-    const tokens = await this.getTokensAsync();
-    const versionTokens = tokens.filter(
-      token => token.type === Markdown.TokenType.HEADING && token.depth === VERSION_HEADING_DEPTH
-    ) as Markdown.HeadingToken[];
-
-    return versionTokens.map(token => token.text);
-  }
-
-  async getLastPublishedVersionAsync(): Promise<string | null> {
-    const versions = await this.getVersionsAsync();
-    return versions.find(version => semver.valid(version)) ?? null;
-  }
-
-  async getChangesAsync(
-    fromVersion?: string,
-    toVersion: string = UNPUBLISHED_VERSION_NAME
-  ): Promise<ChangelogChanges> {
-    const tokens = await this.getTokensAsync();
-    const versions = {};
-    const changes: ChangelogChanges = { totalCount: 0, versions };
-
-    let currentVersion: string | null = null;
-    let currentSection: string | null = null;
-
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-
-      if (token.type === Markdown.TokenType.HEADING) {
-        if (token.depth === VERSION_HEADING_DEPTH) {
-          if (token.text !== toVersion && (!fromVersion || token.text === fromVersion)) {
-            // We've iterated over everything we needed, stop the loop.
-            break;
-          }
-
-          currentVersion = token.text === UNPUBLISHED_VERSION_NAME ? 'unpublished' : token.text;
-          currentSection = null;
-
-          if (!versions[currentVersion]) {
-            versions[currentVersion] = {};
-          }
-        } else if (currentVersion && token.depth === CHANGE_TYPE_HEADING_DEPTH) {
-          currentSection = token.text;
-
-          if (!versions[currentVersion][currentSection]) {
-            versions[currentVersion][currentSection] = [];
-          }
-        }
-        continue;
-      }
-
-      if (currentVersion && currentSection && token.type === Markdown.TokenType.LIST_ITEM_START) {
-        i++;
-        for (; tokens[i].type !== Markdown.TokenType.LIST_ITEM_END; i++) {
-          const token = tokens[i] as Markdown.TextToken;
-
-          if (token.text) {
-            changes.totalCount++;
-            versions[currentVersion][currentSection].push(token.text);
-          }
-        }
-      }
-    }
-    return changes;
-  }
-
-  async addChangesAsync(
-    entry: ChangelogNewEntry,
-    toVersion: string = UNPUBLISHED_VERSION_NAME
-  ): Promise<void> {
+  async addChangeAsync(entry: ChangelogEntry): Promise<void> {
     const tokens = [...(await this.getTokensAsync())];
     const sectionIndex = tokens.findIndex(
       token =>
         token.type === Markdown.TokenType.HEADING &&
         token.depth === VERSION_HEADING_DEPTH &&
-        token.text === toVersion
+        token.text === entry.version
     );
     if (sectionIndex === -1) {
-      throw new Error(`Version ${toVersion} not found.`);
+      throw new Error(`Version ${entry.version} not found.`);
     }
 
     for (let i = sectionIndex + 1; i < tokens.length; i++) {
@@ -200,46 +137,6 @@ export class Changelog {
     }
 
     throw new Error(`Cound't find '${entry.type}' section.`);
-  }
-
-  async cutOffAsync(version: string): Promise<void> {
-    const tokens = [...(await this.getTokensAsync())];
-    const firstVersionHeadingIndex = tokens.findIndex(
-      token => token.type === Markdown.TokenType.HEADING && token.depth === VERSION_HEADING_DEPTH
-    );
-    const newSectionTokens: Markdown.Tokens = [
-      {
-        type: Markdown.TokenType.HEADING,
-        depth: VERSION_HEADING_DEPTH,
-        text: UNPUBLISHED_VERSION_NAME,
-      },
-      {
-        type: Markdown.TokenType.HEADING,
-        depth: CHANGE_TYPE_HEADING_DEPTH,
-        text: ChangeType.BREAKING_CHANGES,
-      },
-      {
-        type: Markdown.TokenType.HEADING,
-        depth: CHANGE_TYPE_HEADING_DEPTH,
-        text: ChangeType.NEW_FEATURES,
-      },
-      {
-        type: Markdown.TokenType.HEADING,
-        depth: CHANGE_TYPE_HEADING_DEPTH,
-        text: ChangeType.BUG_FIXES,
-      },
-    ];
-
-    if (firstVersionHeadingIndex !== -1) {
-      (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = version;
-    }
-
-    tokens.splice(firstVersionHeadingIndex, 0, ...newSectionTokens);
-    await fs.outputFile(this.filePath, Markdown.parse(tokens));
-
-    // Reset cached tokens as we just modified the file.
-    // We could use an array with new tokens here, but just for safety, let them be reloaded.
-    this.tokens = null;
   }
 }
 

@@ -13,10 +13,10 @@ type ActionOptions = {
   author: string;
   entry: string;
   type: string;
-  version?: string;
+  version: string;
 };
 
-async function checkOrAskForOptins(options: ActionOptions): Promise<ActionOptions> {
+async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptions> {
   const questions: inquirer.Question[] = [];
   if (!options.package) {
     questions.push({
@@ -78,7 +78,7 @@ function toChangeType(type: string): Changelogs.ChangeType | null {
 
 async function action(options: ActionOptions) {
   if (!process.env.CI) {
-    options = await checkOrAskForOptins(options);
+    options = await checkOrAskForOptions(options);
   }
 
   if (
@@ -89,7 +89,7 @@ async function action(options: ActionOptions) {
     !options.type
   ) {
     throw new Error(
-      `Must run with --package [string] --entry [string] --author [string] --pullRequest [number] --type [string]`
+      `Must run with --package <string> --entry <string> --author <string> --pull-request <number> --type <string>`
     );
   }
 
@@ -98,40 +98,44 @@ async function action(options: ActionOptions) {
     throw new Error(`Invalid type: ${chalk.cyan(options.type)}`);
   }
 
-  const packegPath = path.join(Directories.getPackagesDir(), options.package, 'CHANGELOG.md');
-  if (!(await fs.pathExists(packegPath))) {
-    throw new Error(`Path ${chalk.cyan(packegPath)} does not exist.`);
+  const packagePath = path.join(Directories.getPackagesDir(), options.package, 'CHANGELOG.md');
+  if (!(await fs.pathExists(packagePath))) {
+    throw new Error(`Package ${chalk.green(options.package)} doesn't have changelog file.`);
   }
 
-  const changelog = Changelogs.loadFrom(packegPath);
+  const changelog = Changelogs.loadFrom(packagePath);
   const newEntry = {
     author: options.author,
     message: options.entry,
     pullRequest: options.pullRequest,
+    version: options.version,
     type,
   };
 
-  if (options.version) {
-    await changelog.addChangesAsync(newEntry, options.version);
-  } else {
-    await changelog.addChangesAsync(newEntry);
-  }
+  await changelog.addChangeAsync(newEntry);
 }
 
 export default (program: Command) => {
   program
     .command('add-changelog')
-    .alias('acl')
-    .description('Add an changelog entry.')
+    .alias('ac')
+    .description('Adds changelog entry to the package.')
     .option(
-      '-p --package [string]',
+      '-p, --package <string>',
       'Package name. For example `expo-image-picker` or `unimodules-file-system-interface.'
     )
-    .option('-e --entry [string]', 'Changelog entry.')
-    .option('-a --author [string]', 'Author.')
-    .option('-pr --pullRequest [number]', 'Pull request number.')
-    .option('-t --type [string]', 'Type of entry: bug-fix|new-feature|breaking-change.')
-    .option('-v --version [string]', 'Version.')
+    .option('-e, --entry <string>', 'Change note to put into the changelog.')
+    .option('-a, --author <string>', "GitHub's user name of someone who made this change.")
+    .option('-p, --pull-request <number>', 'Pull request number.')
+    .option(
+      '-t, --type <string>',
+      'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change.'
+    )
+    .option(
+      '-v, --version [string]',
+      'Version in which the change was made.',
+      Changelogs.UNPUBLISHED_VERSION_NAME
+    )
 
     .asyncAction(action);
 };
