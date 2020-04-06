@@ -56,8 +56,8 @@ export function dismiss() {
 export function getDefaultReturnUrl() {
     return sessionUrlProvider.getDefaultReturnUrl();
 }
-export function getRedirectUrl() {
-    return sessionUrlProvider.getRedirectUrl();
+export function getRedirectUrl(path) {
+    return sessionUrlProvider.getRedirectUrl(path);
 }
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
