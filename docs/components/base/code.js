@@ -115,10 +115,8 @@ export class Code extends React.Component {
     const grammar = Prism.languages[lang];
     if (!grammar) throw new Error(`docs currently do not support language: ${lang}`)
 
-    if (lang && grammar) {
-      html = Prism.highlight(html, grammar);
-      html = this._replaceCommentsWithAnnotations(html);
-    }
+    html = Prism.highlight(html, grammar);
+    html = this._replaceCommentsWithAnnotations(html);
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and
     // sometimes, Prism adds a newline before the code)
