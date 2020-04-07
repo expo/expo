@@ -77,7 +77,7 @@ and backup your keystore to a safe location. Once you submit an app to the Googl
 be signed with the same keystore to be accepted by Google. If, for any reason, you delete your project or clear your credentials
 in the future, you will not be able to submit any updates to your app if you have not backed up your keystore.
 
-```bash
+```sh
 [exp] No currently active or previous builds for this project.
 
 Would you like to upload a keystore or have us generate one for you?
@@ -96,7 +96,7 @@ necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
 
-```bash
+```sh
 $ expo build:ios
 [16:44:37] Checking if current build exists...
 

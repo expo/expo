@@ -38,13 +38,13 @@ The example in this guide uses the `useFonts` hook from the [`use-expo`](https:/
 
 To set it up, first add the library to your project, either by
 
-```shell
+```sh
 yarn add @use-expo/font
 ```
 
 or
 
-```shell
+```sh
 npm install --save @use-expo/font
 
 ```

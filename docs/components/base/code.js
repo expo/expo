@@ -107,7 +107,11 @@ export class Code extends React.Component {
     let html = this.props.children.toString();
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
-    const lang = this.props.className && this.props.className.slice(9).toLowerCase();
+    let lang = this.props.className && this.props.className.slice(9).toLowerCase();
+
+    // sh isn't supported, use Use sh to match js, and ts
+    if (lang === 'sh') lang = 'bash';
+
     const grammar = Prism.languages[lang];
     if (!grammar) throw new Error(`docs currently do not support language: ${lang}`)
 

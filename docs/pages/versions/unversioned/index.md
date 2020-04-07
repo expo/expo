@@ -8,7 +8,7 @@ title: Introduction
 
 If you are already experienced with React and JavaScript tooling and want to dive right in and figure things out as you go, this is the quickest way to get started:
 
-```bash
+```sh
 # Install the command line tools
 npm install --global expo-cli
 

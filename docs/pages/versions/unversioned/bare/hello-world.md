@@ -5,7 +5,7 @@ sidebar_label: Up and Running
 
 To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here. This guide assumes that you have Xcode and/or Android Studio installed and working.
 
-```bash
+```sh
 # If you don't have expo-cli yet, get it
 npm i -g expo-cli
 # If you don't have react-native-cli yet, get it
@@ -28,7 +28,7 @@ import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodul
 
 We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/master/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
-```bash
+```sh
 npm install expo-web-browser
 ```
 
