@@ -1,7 +1,6 @@
-import { css } from 'react-emotion';
-import Prism from 'prismjs';
-
+import Prism from 'prism-react-renderer/prism';
 import * as React from 'react';
+import { css } from 'react-emotion';
 import * as Constants from '~/common/constants';
 
 const attributes = {
@@ -81,7 +80,7 @@ export class Code extends React.Component {
 
   _runTippy() {
     if (process.browser) {
-      tippy('.code-annotation', {
+      global.tippy('.code-annotation', {
         theme: 'expo',
         placement: 'top',
         arrow: true,
@@ -108,14 +107,12 @@ export class Code extends React.Component {
     let html = this.props.children.toString();
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
-    let lang = this.props.className && this.props.className.slice(9).toLowerCase();
-    if (lang && !Prism.languages[lang]) {
-      try {
-        require('prismjs/components/prism-' + lang + '.js');
-      } catch (e) {}
-    }
-    if (lang && Prism.languages[lang]) {
-      html = Prism.highlight(html, Prism.languages[lang]);
+    const lang = this.props.className && this.props.className.slice(9).toLowerCase();
+    const grammar = Prism.languages[lang];
+    if (!grammar) throw new Error(`docs currently do not support language: ${lang}`)
+
+    if (lang && grammar) {
+      html = Prism.highlight(html, grammar);
       html = this._replaceCommentsWithAnnotations(html);
     }
 

@@ -21,8 +21,10 @@ const STYLES_LINE = css`
 export default function TerminalBlock({ cmd }) {
   return (
     <div className={STYLES_PROMPT}>
-      {cmd.map(line => (
-        <code className={STYLES_LINE}>{line}</code>
+      {cmd.map((line, index) => (
+        <code key={`line-${index}`} className={STYLES_LINE}>
+          {line}
+        </code>
       ))}
     </div>
   );
