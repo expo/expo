@@ -20,10 +20,8 @@ We recommend using [Sentry](../../guides/using-sentry) to track JS errors in pro
 
 ## What about Native Errors?
 
-Since Expo's native code never changes with regard to your project, the native symbols aren't especially meaningful (they would show you a trace into the React Native core or into Expo's native SDK). In the vast majority of circumstances *, the JS error is what you care about.
+Since Expo's native code never changes with regard to your project, the native symbols aren't especially meaningful (they would show you a trace into the React Native core or into Expo's native SDK). In the vast majority of circumstances \*, the JS error is what you care about.
 
-Nonetheless, if you really want native crash logs and are deploying your app as a [standalone app](../../distribution/building-standalone-apps/), you can configure custom Fabric keys for Android. See [Configuration with app.json](../../workflow/configuration/).
-
-For iOS, right now we don't expose a way for you to see native crash logs from your Expo app. This is because we don't build iOS native code on demand, which would be a requirement for uploading your debug symbols to Fabric (or a similar service).
+If you need native crash reporting, then we recommend using the [Bare workflow](../../introduction/managed-vs-bare/#bare-workflow), which will allow you to install and use any native library in your project.
 
 `*` There are a few circumstances where it's possible to crash native code by writing bad JS. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type.
