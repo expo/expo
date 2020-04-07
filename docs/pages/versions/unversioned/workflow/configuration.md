@@ -758,22 +758,6 @@ Configuration for how and when the app should request OTA JavaScript updates
       },
 
       /*
-        Google Developers Fabric keys to hook up Crashlytics and other services.
-        get.fabric.io/
-      */
-      "fabric": {
-        /*
-          Your Fabric API key
-        */
-        "apiKey": STRING,
-
-        /*
-          Your Fabric build secret
-        */
-        "buildSecret": STRING
-      },
-
-      /*
         Google Maps Android SDK key for your standalone app.
         developers.google.com/maps/documentation/android-api/signup
       */
