@@ -3,6 +3,10 @@ import * as React from 'react';
 import { css } from 'react-emotion';
 import * as Constants from '~/common/constants';
 
+import { installLanguages } from './languages';
+
+installLanguages(Prism);
+
 const attributes = {
   'data-text': true,
 };
@@ -112,7 +116,7 @@ export class Code extends React.Component {
     // Allow for code blocks without a language.
     if (lang) {
       // sh isn't supported, use Use sh to match js, and ts
-      if (lang === 'sh') lang = 'bash';
+      if (lang in remapLanguages) lang = remapLanguages[lang];
       const grammar = Prism.languages[lang];
       if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
       html = Prism.highlight(html, grammar);
@@ -132,6 +136,12 @@ export class Code extends React.Component {
     );
   }
 }
+
+const remapLanguages = {
+  objc: 'objectivec',
+  sh: 'bash',
+  rb: 'ruby',
+};
 
 export const InlineCode = ({ children }) => (
   <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>
