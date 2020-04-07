@@ -1,7 +1,7 @@
 # expo-splash-screen-command
 
-This module provides supporting installation command for [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) module.
-You can use this command to configure your native iOS and Android project according to your needs without opening XCode or Android Studio.
+This package provides CLI command that helps you configure [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) module.
+You can use it to configure your native iOS and Android project according to your needs without opening Xcode or Android Studio.
 
 ## Content
 
@@ -15,14 +15,14 @@ You can use this command to configure your native iOS and Android project accord
 
 ### 📱 iOS
 
-- configures background color for native splash screen
-- configures [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) to show given `.png` image
+- Configures background color for native splash screen.
+- Configures [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) to show given `.png` image.
 - supports [`CONTAIN`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#contain-resize-mode) and [`COVER`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#cover-resize-mode) modes from [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen)
 
 ### 🤖 Android
 
-- configures background color for native splash screen
-- configures `expo-splash-screen` to show given `.png` image
+- Configures background color for native splash screen.
+- Configures `expo-splash-screen` to show given `.png` image.
 - supports [`CONTAIN`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#contain-resize-mode), [`COVER`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#cover-resize-mode) and [`NATIVE`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#native-resize-mode) modes from [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen)
 
 ## 🗒 Usage
@@ -53,7 +53,7 @@ npx expo-splash-screen
 
 ## 🖥 Installation
 
-This package is installed as a dependency of the [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) package. Follow the installation instructions provided from [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) package.
+This package is installed as a dependency of the [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) package. Follow the installation instructions provided by [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) package.
 
 ## 👏 Contributing
 

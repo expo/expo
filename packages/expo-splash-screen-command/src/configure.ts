@@ -129,7 +129,7 @@ async function runAsync() {
     )
     .allowUnknownOption(false)
     .option(
-      '-r, --resizeMode [resizeMode]',
+      '-r, --resize-mode [resizeMode]',
       `ResizeMode to be used for native splash screen image. Available values: ${getAvailableOptions(
         ResizeMode
       )} (${chalk.yellow.dim(`only available for ${chalk.cyan.dim('android')} platform)`)}).`,
