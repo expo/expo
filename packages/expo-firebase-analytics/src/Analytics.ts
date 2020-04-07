@@ -1,6 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
+export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 
 if (!ExpoFirebaseAnalytics) {
   console.warn(
