@@ -109,14 +109,15 @@ export class Code extends React.Component {
     // if this class is present, we want to slice out `language-`
     let lang = this.props.className && this.props.className.slice(9).toLowerCase();
 
-    // sh isn't supported, use Use sh to match js, and ts
-    if (lang === 'sh') lang = 'bash';
-
-    const grammar = Prism.languages[lang];
-    if (!grammar) throw new Error(`docs currently do not support language: ${lang}`)
-
-    html = Prism.highlight(html, grammar);
-    html = this._replaceCommentsWithAnnotations(html);
+    // Allow for code blocks without a language.
+    if (lang) {
+      // sh isn't supported, use Use sh to match js, and ts
+      if (lang === 'sh') lang = 'bash';
+      const grammar = Prism.languages[lang];
+      if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
+      html = Prism.highlight(html, grammar);
+      html = this._replaceCommentsWithAnnotations(html);
+    }
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and
     // sometimes, Prism adds a newline before the code)
