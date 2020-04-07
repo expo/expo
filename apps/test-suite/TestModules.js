@@ -69,6 +69,7 @@ export function getTestModules() {
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
+    require('./tests/FirebaseRecaptcha'),
     require('./tests/AuthSession')
   );
 

@@ -1,6 +1,6 @@
 {
   "name": "EXFirebaseAnalytics",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "summary": "A universal module that interfaces with the native firebase analytics API",
   "description": "A universal module that interfaces with the native firebase analytics API",
   "license": "MIT",

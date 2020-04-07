@@ -31,6 +31,11 @@ function callAnalyticsModule(funcName, ...args) {
                 strictNativeEmulation: true,
                 appName: Constants.manifest?.name || 'Unnamed Expo project',
                 appVersion: Constants.nativeAppVersion || undefined,
+                headers: {
+                    // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
+                    // Set a user-agent that clearly identifies the Expo client.
+                    'user-agent': `Expo/${Constants.nativeAppVersion}`,
+                },
             });
         }
         if (pureJSAnalyticsTracker) {

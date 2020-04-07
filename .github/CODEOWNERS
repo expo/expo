@@ -32,6 +32,7 @@
 /packages/expo-file-system                      @sjchmiela @bbarthec
 /packages/expo-firebase-core                    @IjzerenHein
 /packages/expo-firebase-analytics               @IjzerenHein @EvanBacon
+/packages/expo-firebase-recaptcha               @IjzerenHein
 /packages/expo-font                             @sjchmiela
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec

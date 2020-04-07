@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import qs from 'qs';
 const { manifest } = Constants;
 export class ManagedSessionUrlProvider {
-    getDefaultReturnUrl() {
+    getDefaultReturnUrl(urlPath) {
         let scheme = 'exp';
         let path = ManagedSessionUrlProvider.SESSION_PATH;
         const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
@@ -29,6 +29,9 @@ export class ManagedSessionUrlProvider {
         }
         else {
             path = '';
+        }
+        if (urlPath) {
+            path = [path, urlPath].filter(Boolean).join('/');
         }
         hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
         return encodeURI(`${scheme}://${hostUri}${path}`);
