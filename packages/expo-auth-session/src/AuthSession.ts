@@ -119,9 +119,9 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
 }
 
 export {
-  resolveProviderConfigAsync,
-  fetchProviderConfigAsync,
-  ProviderConfig,
+  resolveDiscoveryAsync,
+  fetchDiscoveryAsync,
+  Discovery,
   DiscoveryDocument,
-  IssuerOrProviderConfig,
-} from './ProviderConfig';
+  IssuerOrDiscovery,
+} from './Discovery';

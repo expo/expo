@@ -92,5 +92,5 @@ function parseUrl(url) {
         params,
     };
 }
-export { resolveProviderConfigAsync, fetchProviderConfigAsync, } from './ProviderConfig';
+export { resolveDiscoveryAsync, fetchDiscoveryAsync, } from './Discovery';
 //# sourceMappingURL=AuthSession.js.map

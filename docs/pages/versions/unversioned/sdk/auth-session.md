@@ -209,16 +209,16 @@ Auth Session provides methods for making authentication with OpenID connect comp
 
 ### [Auto Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
 
-You can resolve a provider config from an **OpenID issuer** like this:
+You can resolve a discovery document from an **OpenID issuer** like this:
 
 ```ts
-import { fetchProviderConfigAsync } from 'expo-auth-session';
+import { fetchDiscoveryAsync } from 'expo-auth-session';
 
 (async () => {
   const issuer = 'https://accounts.google.com';
-  const config = await fetchProviderConfigAsync(issuer);
+  const config = await fetchDiscoveryAsync(issuer);
 
-  console.log('provider: ', config);
+  console.log('discovery document: ', config);
 })();
 ```
 

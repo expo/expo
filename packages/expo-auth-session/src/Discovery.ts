@@ -29,7 +29,7 @@ export type DiscoveryDocument = Record<string, string | boolean | string[]> & {
   token_endpoint_auth_methods_supported?: string[];
 };
 
-export interface ProviderConfig {
+export interface Discovery {
   authorizationEndpoint: string;
   tokenEndpoint: string;
   // The spec requires a revocation endpoint but some providers (like Spotify) do not support one.
@@ -42,7 +42,7 @@ export interface ProviderConfig {
   discoveryDocument: DiscoveryDocument;
 }
 
-export type IssuerOrProviderConfig = string | ProviderConfig;
+export type IssuerOrDiscovery = string | Discovery;
 
 /**
  * Append the well known resources path and OpenID connect discovery document path to a URL
@@ -52,7 +52,7 @@ export function issuerWithWellKnownUrl(issuer: string): string {
   return `${issuer}/.well-known/openid-configuration`;
 }
 
-export async function fetchProviderConfigAsync(issuer: string): Promise<ProviderConfig> {
+export async function fetchDiscoveryAsync(issuer: string): Promise<Discovery> {
   const json = await requestAsync<DiscoveryDocument>(issuerWithWellKnownUrl(issuer), {
     dataType: 'json',
     method: 'GET',
@@ -70,19 +70,19 @@ export async function fetchProviderConfigAsync(issuer: string): Promise<Provider
 }
 
 /**
- * Utility method for resolving the provider config from an issuer or object.
+ * Utility method for resolving the discovery document from an issuer or object.
  *
- * @param issuerOrProviderConfig
+ * @param issuerOrDiscovery
  */
-export async function resolveProviderConfigAsync(
-  issuerOrProviderConfig: IssuerOrProviderConfig
-): Promise<ProviderConfig> {
+export async function resolveDiscoveryAsync(
+  issuerOrDiscovery: IssuerOrDiscovery
+): Promise<Discovery> {
   invariant(
-    issuerOrProviderConfig && !['number', 'boolean'].includes(typeof issuerOrProviderConfig),
-    'Expected a valid Provider configuration or issuer URL'
+    issuerOrDiscovery && !['number', 'boolean'].includes(typeof issuerOrDiscovery),
+    'Expected a valid discovery object or issuer URL'
   );
-  if (typeof issuerOrProviderConfig === 'string') {
-    return await fetchProviderConfigAsync(issuerOrProviderConfig);
+  if (typeof issuerOrDiscovery === 'string') {
+    return await fetchDiscoveryAsync(issuerOrDiscovery);
   }
-  return issuerOrProviderConfig;
+  return issuerOrDiscovery;
 }
