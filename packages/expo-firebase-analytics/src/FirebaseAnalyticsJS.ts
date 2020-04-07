@@ -28,6 +28,7 @@ class FirebaseAnalyticsJS {
   private options: FirebaseAnalyticsJSOptions;
   private flushEventsPromise: Promise<void> = Promise.resolve();
   private flushEventsTimer: any;
+  private sequenceNr: number = 1;
 
   constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions) {
     // Verify the measurement- & client Ids
@@ -66,7 +67,10 @@ class FirebaseAnalyticsJS {
       v: 2,
       tid: config.measurementId,
       cid: options.clientId,
+      sid: options.sessionId,
+      _s: this.sequenceNr++,
     };
+    if (options.sessionId) queryArgs.sid = options.sessionId;
     if (options.userLanguage) queryArgs.ul = options.userLanguage;
     if (options.appName) queryArgs.an = options.appName;
     if (options.appVersion) queryArgs.av = options.appVersion;

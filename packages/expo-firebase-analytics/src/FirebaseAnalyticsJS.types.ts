@@ -19,6 +19,11 @@ export interface FirebaseAnalyticsJSOptions {
   clientId: string;
 
   /**
+   * **(Required)** Unique Id that identifies this session.
+   */
+  sessionId: string;
+
+  /**
    * Max cache time in msec (default = 5000).
    * Caches events fired within a certain time-frame and then
    * sends them to the Google Measurement API in a single batch.

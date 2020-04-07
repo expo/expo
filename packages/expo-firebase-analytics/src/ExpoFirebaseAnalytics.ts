@@ -37,7 +37,8 @@ function callAnalyticsModule(funcName: string, ...args) {
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
     if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
       pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-        clientId: Constants.sessionId,
+        clientId: Constants.installationId,
+        sessionId: Constants.sessionId,
         strictNativeEmulation: true,
         appName: Constants.manifest?.name || 'Unnamed Expo project',
         appVersion: Constants.nativeAppVersion || undefined,
