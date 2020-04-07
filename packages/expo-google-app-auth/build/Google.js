@@ -59,6 +59,15 @@ function guidFromClientId(clientId) {
     }
     return guid;
 }
+/**
+ * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
+ *
+ * Get started in:
+ * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ *
+ * @param config
+ */
 export async function logInAsync(config) {
     if (config.behavior !== undefined) {
         console.warn("Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34");
