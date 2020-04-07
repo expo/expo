@@ -238,14 +238,14 @@ async function configureShowingSplashScreen(projectRootPath, resizeMode) {
 async function configureAndroidSplashScreen({ imagePath, resizeMode, backgroundColor, }) {
     const projectRootPath = path_1.default.resolve();
     const androidMainPath = path_1.default.resolve(projectRootPath, 'android/app/src/main');
-    return Promise.all([
+    await Promise.all([
         configureSplashScreenDrawables(androidMainPath, imagePath),
         configureColorsXML(androidMainPath, backgroundColor),
         configureDrawableXML(androidMainPath, resizeMode),
         configureStylesXML(androidMainPath),
         configureAndroidManifestXML(androidMainPath),
         configureShowingSplashScreen(projectRootPath, resizeMode),
-    ]).then(() => { });
+    ]);
 }
 exports.default = configureAndroidSplashScreen;
 //# sourceMappingURL=configureAndroidSplashScreen.js.map

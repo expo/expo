@@ -9,7 +9,7 @@ export declare const COMMENTS: {
 };
 /**
  * Modifies file's content if either `replacePattern` or `insertPattern` matches.
- * If `replacePatten` matches `replaceContent` is used, otherwise if `insertPattern` matches `insertContent` is used.
+ * If `replacePattern` matches, `replaceContent` is used, otherwise if `insertPattern` matches, `insertContent` is used.
  * `insertBeforeLastOccurrence` - flag that indicates whether to insert before first or last occurrence.
  * @returns object describing which operation is successful.
  */

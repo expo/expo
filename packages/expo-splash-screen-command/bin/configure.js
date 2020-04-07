@@ -77,7 +77,7 @@ async function runAsync() {
         imagePath: `(${chalk_1.default.dim.yellow('optional')}) Path to a valid .png image.`,
     })
         .allowUnknownOption(false)
-        .option('-r, --resizeMode [resizeMode]', `ResizeMode to be used for native splash screen image. Available values: ${getAvailableOptions(constants_1.ResizeMode)} (${chalk_1.default.yellow.dim(`only available for ${chalk_1.default.cyan.dim('android')} platform)`)}).`, (userInput) => {
+        .option('-r, --resize-mode [resizeMode]', `ResizeMode to be used for native splash screen image. Available values: ${getAvailableOptions(constants_1.ResizeMode)} (${chalk_1.default.yellow.dim(`only available for ${chalk_1.default.cyan.dim('android')} platform)`)}).`, (userInput) => {
         if (!Object.values(constants_1.ResizeMode).includes(userInput)) {
             console.log(chalk_1.default.red(`\nUnknown value ${chalk_1.default.yellow(userInput)} for option ${chalk_1.default.magenta('resizeMode')}. See below for the available values for this option.\n`));
             commander_1.default.help();
