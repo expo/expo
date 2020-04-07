@@ -6,8 +6,6 @@
 	<string>${FIREBASE_CLIENT_ID}</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>${FIREBASE_REVERSED_CLIENT_ID}</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>${FIREBASE_ANDROID_CLIENT_ID}</string>
 	<key>API_KEY</key>
 	<string>${FIREBASE_API_KEY}</string>
 	<key>GCM_SENDER_ID</key>
