@@ -18,7 +18,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 ## API
 
 ```js
-import Svg from 'react-native-svg';
+import * as Svg from 'react-native-svg';
 ```
 
 ### `Svg`
