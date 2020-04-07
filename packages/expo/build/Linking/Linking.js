@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
+import { Platform } from 'react-native';
 import URL from 'url-parse';
 import Linking from './LinkingModule';
 const { manifest } = Constants;
@@ -149,5 +150,9 @@ let newLinking = new Linking.constructor();
 newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;
+// TODO: remove this on SDK 38 after adding to EXLinking
+if (Platform.OS === 'ios') {
+    newLinking.openSettings = () => newLinking.openURL('app-settings:');
+}
 export default newLinking;
 //# sourceMappingURL=Linking.js.map
