@@ -138,7 +138,7 @@ export class Code extends React.Component {
 }
 
 const remapLanguages = {
-  objc: 'objectivec',
+  'objective-c': 'objc',
   sh: 'bash',
   rb: 'ruby',
 };
