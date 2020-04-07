@@ -104,7 +104,6 @@ This will be done using a "custom Chrome tabs" browser, [AppState][d-appstate], 
 **On web:**
 
 > 🚨 This API can only be used in a secure environment (`https`). You can use `expo start:web --https` to test this.
-> 🚨 This method cannot be invoked in an async method on mobile web, otherwise]
 
 This will use the browser's [`window.open()`][d-windowopen] API.
 
@@ -118,7 +117,7 @@ How this works on web:
 - The state will be added to the window's `localstorage`. This ensures that auth cannot complete unless it's done from a page running with the same origin as it was started. Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession` must be invoked on a page hosted from the origin `https://localhost:19006`. Using a different website, or even a different host like `https://128.0.0.*:19006` for example will not work.
 - A timer will be started to check for every 1000 milliseconds (1 second) to check if the window has been closed by the user. If this happens then a promise will resolve with `{ type: 'dismiss' }`.
 
-On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which is made inside an async call. So this method must be invoked immediately during a user interaction.
+🚨 On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which is made inside an async call. This method must be invoked immediately after a user interaction.
 
 [d-windowopen]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open
 [d-appstate]: https://docs.expo.io/versions/latest/react-native/appstate/
