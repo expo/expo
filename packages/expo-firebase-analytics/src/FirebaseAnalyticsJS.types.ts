@@ -31,6 +31,13 @@ export interface FirebaseAnalyticsJSOptions {
   maxCacheTime?: number;
 
   /**
+   * Enables debug-mode (default = false).
+   * When enabled shows the events in the DebugView in the Firebase console.
+   * https://firebase.google.com/docs/analytics/debugview#reporting
+   */
+  debug?: boolean;
+
+  /**
    * Enables strict data format checks for logEvent and setUserProperties.
    * When enabled, causes `logEvent` and `setUserProperties` to strictly check
    * whether any event- names & values and user-properties conform to the

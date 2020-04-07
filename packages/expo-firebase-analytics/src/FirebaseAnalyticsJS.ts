@@ -77,6 +77,7 @@ class FirebaseAnalyticsJS {
     if (options.docTitle) queryArgs.dt = options.docTitle;
     if (options.docLocation) queryArgs.dl = options.docLocation;
     if (options.screenRes) queryArgs.sr = options.screenRes;
+    if (options.debug) queryArgs._dbg = 1;
     let body;
 
     if (events.size > 1) {
@@ -106,7 +107,7 @@ class FirebaseAnalyticsJS {
   }
 
   private async addEvent(event: FirebaseAnalyticsJSCodedEvent) {
-    const { userId, userProperties, screenName } = this;
+    const { userId, userProperties, screenName, options } = this;
 
     // Extend the event with the currently set User-id
     if (userId) event.uid = userId;
@@ -128,15 +129,18 @@ class FirebaseAnalyticsJS {
 
     // Start debounce timer
     if (!this.flushEventsTimer) {
-      this.flushEventsTimer = setTimeout(async () => {
-        this.flushEventsTimer = undefined;
-        try {
-          await this.flushEventsPromise;
-        } catch (err) {
-          // nop
-        }
-        this.flushEventsPromise = this.flushEvents();
-      }, this.options.maxCacheTime);
+      this.flushEventsTimer = setTimeout(
+        async () => {
+          this.flushEventsTimer = undefined;
+          try {
+            await this.flushEventsPromise;
+          } catch (err) {
+            // nop
+          }
+          this.flushEventsPromise = this.flushEvents();
+        },
+        options.debug ? 10 : options.maxCacheTime
+      );
     }
   }
 
