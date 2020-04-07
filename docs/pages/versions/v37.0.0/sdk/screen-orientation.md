@@ -149,7 +149,7 @@ Gets the current screen orientation.
 
 #### Returns
 
-Returns a promise that resolves to an [`ScreenOrientationInfo`](#screenorientationscreenorientationinfo) object value that reflects the current screen orientation.
+Returns a promise that resolves to an [`Orientation`](#screenorientationorientation) value that reflects the current screen orientation.
 
 #### Error Codes
 
@@ -261,6 +261,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 - **`LANDSCAPE_SECONDARY`**
 - **`LANDSCAPE`**
 - **`ANY`**
+- **`NATURAL`**
 - **`UNKNOWN`**
 
 ## Object Types
@@ -269,7 +270,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 - **screenOrientationConstantAndroid (_integer_)**: A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (**Android only**)
 - **screenOrientationArrayIOS (Array[Orientation])**: An array of orientations to allow on the iOS platform (**iOS only**)
-- **screenOrientationLockWebOrientation (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
+- **screenOrientationLockWeb (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
 
 ### `ScreenOrientation.ScreenOrientationInfo`
 
