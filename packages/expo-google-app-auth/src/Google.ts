@@ -22,6 +22,18 @@ export type GoogleLogInConfig = {
    * If this isn't defined then it will be infered from the correct client ID.
    */
   redirectUrl?: string;
+  /**
+   * Language for the sign in UI, in the form of ISO 639-1 language code optionally followed by a dash
+   * and ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
+   * Only set this value if it's different from the system default (which you can access via expo-localization).
+   */
+  language?: string;
+  /**
+   * If the user's email address is known ahead of time, it can be supplied to be the default option.
+   * If the user has approved access for this app in the past then auth may return without any further interaction.
+   */
+  loginHint?: string;
+
   /* If no other client IDs are defined this will be used. */
   clientId?: string;
 };
@@ -82,9 +94,6 @@ function getPlatformGUID(config: GoogleLogInConfig) {
   const guid = guidFromClientId(platformClientId);
   return guid;
 }
-
-// TODO: Bacon: ensure this is valid for all cases.
-const PROJECT_NUMBER_LENGTH = 11; // eslint-disable-line
 
 const PROJECT_ID_LENGTH = 32;
 
@@ -156,12 +165,26 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
   const redirectUrl = config.redirectUrl
     ? config.redirectUrl
     : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
+
+  const extras: Record<string, string> = {};
+  if (config.language) {
+    // The OpenID property `ui_locales` doesn't seem to work as expected,
+    // but `hl` will work to change the UI language.
+    // Reference: https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230
+    extras.hl = config.language;
+  }
+  if (config.loginHint) {
+    // Reference https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+    extras.login_hint = config.loginHint;
+  }
+
   try {
     const logInResult = await AppAuth.authAsync({
       issuer: 'https://accounts.google.com',
       scopes,
       redirectUrl,
       clientId,
+      additionalParameters: extras,
     });
 
     // Web login only returns an accessToken so use it to fetch the same info as the native login

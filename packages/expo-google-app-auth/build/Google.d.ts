@@ -16,6 +16,17 @@ export declare type GoogleLogInConfig = {
      * If this isn't defined then it will be infered from the correct client ID.
      */
     redirectUrl?: string;
+    /**
+     * Language for the sign in UI, in the form of ISO 639-1 language code optionally followed by a dash
+     * and ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
+     * Only set this value if it's different from the system default (which you can access via expo-localization).
+     */
+    language?: string;
+    /**
+     * If the user's email address is known ahead of time, it can be supplied to be the default option.
+     * If the user has approved access for this app in the past then auth may return without any further interaction.
+     */
+    loginHint?: string;
     clientId?: string;
 };
 export declare type GoogleUser = {
