@@ -64,7 +64,7 @@
     "expo-constants": "~9.0.0",
     "expo-error-recovery": "~1.1.0",
     "expo-file-system": "~8.1.0",
-    "expo-font": "~8.1.0",
+    "expo-font": "~8.1.1",
     "expo-keep-awake": "~8.1.0",
     "expo-linear-gradient": "~8.1.0",
     "expo-location": "~8.1.0",
