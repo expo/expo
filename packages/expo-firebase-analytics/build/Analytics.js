@@ -1,5 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
+export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 if (!ExpoFirebaseAnalytics) {
     console.warn("No native ExpoFirebaseAnalytics module found, are you sure the expo-firebase-analytics's module is linked properly?");
 }

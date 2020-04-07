@@ -18,11 +18,21 @@ export interface FirebaseAnalyticsJSOptions {
      */
     clientId: string;
     /**
+     * **(Required)** Unique Id that identifies this session.
+     */
+    sessionId: string;
+    /**
      * Max cache time in msec (default = 5000).
      * Caches events fired within a certain time-frame and then
      * sends them to the Google Measurement API in a single batch.
      */
     maxCacheTime?: number;
+    /**
+     * Enables debug-mode (default = false).
+     * When enabled shows the events in the DebugView in the Firebase console.
+     * https://firebase.google.com/docs/analytics/debugview#reporting
+     */
+    debug?: boolean;
     /**
      * Enables strict data format checks for logEvent and setUserProperties.
      * When enabled, causes `logEvent` and `setUserProperties` to strictly check

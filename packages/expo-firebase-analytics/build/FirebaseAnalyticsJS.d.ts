@@ -23,6 +23,7 @@ declare class FirebaseAnalyticsJS {
     private options;
     private flushEventsPromise;
     private flushEventsTimer;
+    private sequenceNr;
     constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions);
     /**
      * Sends 1 or more coded-events to the back-end.

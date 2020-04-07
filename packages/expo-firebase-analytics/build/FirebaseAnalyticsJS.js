@@ -15,6 +15,7 @@ class FirebaseAnalyticsJS {
     constructor(config, options) {
         this.eventQueue = new Set();
         this.flushEventsPromise = Promise.resolve();
+        this.sequenceNr = 1;
         // Verify the measurement- & client Ids
         if (!config.measurementId)
             throw new Error('No valid measurementId. Make sure to provide a valid measurementId with a G-XXXXXXXXXX format.');
@@ -45,7 +46,11 @@ class FirebaseAnalyticsJS {
             v: 2,
             tid: config.measurementId,
             cid: options.clientId,
+            sid: options.sessionId,
+            _s: this.sequenceNr++,
         };
+        if (options.sessionId)
+            queryArgs.sid = options.sessionId;
         if (options.userLanguage)
             queryArgs.ul = options.userLanguage;
         if (options.appName)
@@ -58,6 +63,8 @@ class FirebaseAnalyticsJS {
             queryArgs.dl = options.docLocation;
         if (options.screenRes)
             queryArgs.sr = options.screenRes;
+        if (options.debug)
+            queryArgs._dbg = 1;
         let body;
         if (events.size > 1) {
             body = '';
@@ -86,7 +93,7 @@ class FirebaseAnalyticsJS {
         });
     }
     async addEvent(event) {
-        const { userId, userProperties, screenName } = this;
+        const { userId, userProperties, screenName, options } = this;
         // Extend the event with the currently set User-id
         if (userId)
             event.uid = userId;
@@ -114,7 +121,7 @@ class FirebaseAnalyticsJS {
                     // nop
                 }
                 this.flushEventsPromise = this.flushEvents();
-            }, this.options.maxCacheTime);
+            }, options.debug ? 10 : options.maxCacheTime);
         }
     }
     async flushEvents() {
