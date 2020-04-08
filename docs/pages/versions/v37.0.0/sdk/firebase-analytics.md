@@ -39,7 +39,7 @@ You may want to use Firebase Analytics in Expo client to verify that you are log
 {
   "expo": {
     "web": {
-      "config" {
+      "config": {
         "firebase": {
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
           ...

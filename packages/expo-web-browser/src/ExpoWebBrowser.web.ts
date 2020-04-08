@@ -95,7 +95,7 @@ export default {
     if (!parent) {
       throw new CodedError(
         'ERR_WEB_BROWSER_REDIRECT',
-        `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the window was reloaded on mobile.`
+        `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.`
       );
     }
     // Send the URL back to the opening window.
@@ -127,7 +127,10 @@ export default {
       popupWindow = window.open(url, undefined, features);
 
       if (!popupWindow) {
-        window.open(url, '_blank');
+        throw new CodedError(
+          'ERR_WEB_BROWSER_BLOCKED',
+          'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.'
+        );
       }
     }
 
