@@ -1,37 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Linking, Platform } from 'react-native';
-import { AuthRequest, clearQueryParams, maybeCompleteAuthRequestAfterRedirectAsync, } from './AuthRequest';
+import { AuthRequest } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';
 import { requestAsync } from './Fetch';
-import * as QueryParams from './QueryParams';
-export function useLinking() {
-    const [link, setLink] = useState(null);
-    function onChange({ url }) {
-        setLink(url);
-    }
-    useEffect(() => {
-        Linking.getInitialURL().then(url => setLink(url));
-        Linking.addEventListener('url', onChange);
-        return () => {
-            Linking.removeEventListener('url', onChange);
-        };
-    }, []);
-    return link;
-}
-export function useQueryParams() {
-    const [queryParams, setQueryParams] = useState(null);
-    const link = useLinking();
-    useEffect(() => {
-        if (link) {
-            const { params } = QueryParams.getQueryParams(link);
-            setQueryParams(params);
-        }
-        else {
-            setQueryParams(null);
-        }
-    }, [link]);
-    return queryParams;
-}
 export function useDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
     useEffect(() => {
@@ -67,31 +37,16 @@ export function useJsonFetchRequest(accessToken, requestUrl, headers, method = '
     }, [accessToken]);
     return [json, error];
 }
-export function useCompleteRedirect() {
-    if (Platform.OS !== 'web')
-        return null;
-    const [authState, setAuthState] = useState(null);
-    const link = useLinking();
-    useEffect(() => {
-        if (link)
-            maybeCompleteAuthRequestAfterRedirectAsync(link).then(result => {
-                if (result) {
-                    clearQueryParams();
-                    setAuthState(result);
-                }
-            });
-    }, [link]);
-    return authState;
-}
-export function useAuthRequest(config) {
+export function useAuthRequest(config, discovery) {
     const [request, setRequest] = useState(null);
     useEffect(() => {
-        if (config) {
+        if (config && discovery) {
             AuthRequest.buildAsync({
                 ...config,
-            }).then(request => setRequest(request));
+            }, discovery).then(request => setRequest(request));
         }
     }, [
+        discovery?.authorizationEndpoint,
         config.clientId,
         config.redirectUri,
         config.scopes.join(','),
@@ -100,8 +55,6 @@ export function useAuthRequest(config) {
         config.state,
         JSON.stringify(config.extraParams || {}),
         config.usePKCE,
-        JSON.stringify(config.discovery || {}),
-        config.issuer,
     ]);
     return request;
 }

@@ -1,6 +1,6 @@
 import { B } from '@expo/html-elements';
 import * as Application from 'expo-application';
-import { getRedirectUrl, useAuthRequest } from 'expo-auth-session';
+import { getRedirectUrl, AuthRequest, useDiscovery, useAuthRequest } from 'expo-auth-session';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
@@ -32,31 +32,53 @@ export default function AuthSessionScreen() {
     [useProxy]
   );
 
-  const spotifyRequest = useAuthRequest({
-    clientId: 'cc809bf3e0a74f288c01fe14c3f3fbb3',
-    redirectUri,
-    scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
-    clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
-    discovery: {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+  const spotifyDiscovery = {
+    authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+    tokenEndpoint: 'https://accounts.spotify.com/api/token',
+  };
+
+  const spotifyRequest = useAuthRequest(
+    {
+      clientId: 'cc809bf3e0a74f288c01fe14c3f3fbb3',
+      redirectUri,
+      scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
+      clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
     },
-  });
+    spotifyDiscovery
+  );
 
-  const identityRequest = useAuthRequest({
-    clientId: 'native.code',
-    redirectUri,
-    scopes: ['openid', 'profile', 'email', 'offline_access'],
-    clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
-    issuer: 'https://demo.identityserver.io',
-  });
+  const identityDiscovery = useDiscovery('https://demo.identityserver.io');
 
-  const googleRequest = useAuthRequest({
+  const identityRequest = useAuthRequest(
+    {
+      clientId: 'native.code',
+      redirectUri,
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
+    },
+    identityDiscovery
+  );
+
+  const googleDiscovery = useDiscovery('https://accounts.google.com');
+
+  const googleRequest = useAuthRequest(
+    {
+      clientId: G_PROJECT_ID,
+      redirectUri: googleRedirectUri,
+      scopes: ['profile', 'email', 'openid'],
+    },
+    googleDiscovery
+  );
+
+  /*
+  AuthRequest.loadAsync({
     clientId: G_PROJECT_ID,
     redirectUri: googleRedirectUri,
     scopes: ['profile', 'email', 'openid'],
-    issuer: 'https://accounts.google.com',
-  });
+  }, 'https://accounts.google.com').then(request => {
+
+  })
+  */
 
   return (
     <ScrollView style={{ flex: 1 }}>
