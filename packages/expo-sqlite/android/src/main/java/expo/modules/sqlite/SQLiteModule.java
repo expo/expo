@@ -162,8 +162,20 @@ public class SQLiteModule extends ExportedModule {
   }
 
   private static File ensureDirExists(File dir) throws IOException {
-    if (!(dir.isDirectory() || dir.mkdirs())) {
-      throw new IOException("Couldn't create directory '" + dir + "'");
+    if (!dir.isDirectory()) {
+      if (dir.isFile()) {
+        throw new IOException("Path '" + dir + "' points to a file, but must point to a directory.");
+      }
+      if (!dir.mkdirs()) {
+        String additionalErrorMessage = null;
+        if (dir.exists()) {
+          additionalErrorMessage = "Path already points to a non-normal file.";
+        }
+        if (dir.getParentFile() == null) {
+          additionalErrorMessage = "Parent directory is null.";
+        }
+        throw new IOException("Couldn't create directory '" + dir + "'. " + (additionalErrorMessage == null ? "" : additionalErrorMessage));
+      }
     }
     return dir;
   }
@@ -305,11 +317,11 @@ public class SQLiteModule extends ExportedModule {
       if (object instanceof String) {
         res[i] = unescapeBlob((String) object);
       } else if (object instanceof Boolean) {
-        res[i] = ((Boolean) object) ? "0" : "1";
+        res[i] = ((Boolean) object) ? "1" : "0";
       } else if (object instanceof Double) {
         res[i] = object.toString();
       } else if (object != null) {
-        throw new ClassCastException("Cound not find proper type in SQLite module");
+        throw new ClassCastException("Could not find proper SQLite data type for argument: " + object.toString());
       }
     }
     return res;

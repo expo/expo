@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
-    "@expo/json-file": "^8.0.0",
+    "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xdl": "~57.1.0",
     "@types/base-64": "^0.1.2",
@@ -76,6 +76,6 @@
     "xcode": "^2.0.0"
   },
   "devDependencies": {
-    "typescript": "^3.6.3"
+    "typescript": "^3.8.3"
   }
 }

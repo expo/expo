@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "36.0.0"
+  s.version = "37.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
     ss.dependency 'Amplitude-iOS', '~> 4.7.1'
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
-    ss.dependency 'Crashlytics', '~> 3.13.4'
+    ss.dependency 'Crashlytics', '~> 3.14.0'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'

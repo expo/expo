@@ -82,4 +82,10 @@ public interface TaskServiceInterface extends SingletonModule {
    *  Executes the task with given data bundle and given error.
    */
   void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback);
+
+  /**
+   *  Checks whether the app with given appId is currently being run in headless mode.
+   */
+  boolean isStartedByHeadlessLoader(String appId);
+
 }

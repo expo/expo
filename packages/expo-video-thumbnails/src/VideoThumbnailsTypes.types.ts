@@ -4,7 +4,7 @@ export type VideoThumbnailsResult = {
   height: number;
 };
 
-export type ThumbnailOptions = {
+export type VideoThumbnailsOptions = {
   quality?: number;
   time?: number;
   headers?: { [fieldName: string]: string };

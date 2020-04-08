@@ -14,8 +14,14 @@
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
 #import "EXScreenOrientationManager.h"
+#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
+#import <UMCore/UMModuleRegistryProvider.h>
+
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
+#endif
 
 #import <React/RCTUtils.h>
 
@@ -107,6 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated: (BOOL)flag completion:(void (^ __nullable)(void))completion
+{
+  [super presentViewController:viewControllerToPresent animated:flag completion:completion];
+  [self _overrideUserInterfaceStyleOf:viewControllerToPresent];
+}
+
 #pragma mark - Public
 
 - (void)maybeShowError:(NSError *)error
@@ -191,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
-      [self _overrideUserInterfaceStyle];
+      [self _overrideUserInterfaceStyleOf:self];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -319,9 +331,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+#if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
+    return [screenOrientationRegistry requiredOrientationMask];
+  }
+#endif
+  
+  // TODO: Remove once sdk 37 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
+  
+  return [self orientationMaskFromManifestOrDefault];
+}
+
+- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
     NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
     if ([orientationConfig isEqualToString:@"portrait"]) {
@@ -336,6 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+// TODO: Remove once sdk 37 is phased out
 - (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   _supportedInterfaceOrientations = supportedInterfaceOrientations;
@@ -346,10 +372,18 @@ NS_ASSUME_NONNULL_BEGIN
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
+    
+    #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
+    #endif
+      
+    // TODO: Remove once sdk 37 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
 }
 
+// TODO: Remove once sdk 37 is phased out
 - (void)_enforceDesiredDeviceOrientation
 {
   RCTAssertMainQueue();
@@ -395,11 +429,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - user interface style
 
-- (void)_overrideUserInterfaceStyle
+- (void)_overrideUserInterfaceStyleOf:(UIViewController *)viewController
 {
   if (@available(iOS 13.0, *)) {
     NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
-    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+    viewController.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
   }
 }
 

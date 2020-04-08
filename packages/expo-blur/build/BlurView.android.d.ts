@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { BlurTint, Props } from './BlurView.types';
-export default class BlurView extends React.Component<Props> {
+import { BlurTint, BlurProps } from './BlurView.types';
+export default class BlurView extends React.Component<BlurProps> {
     static propTypes: {
         tint: PropTypes.Validator<BlurTint>;
         intensity: PropTypes.Validator<number>;
@@ -50,6 +50,7 @@ export default class BlurView extends React.Component<Props> {
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityValue?: PropTypes.Validator<import("react-native").AccessibilityValue | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
@@ -57,6 +58,7 @@ export default class BlurView extends React.Component<Props> {
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        onAccessibilityEscape?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;

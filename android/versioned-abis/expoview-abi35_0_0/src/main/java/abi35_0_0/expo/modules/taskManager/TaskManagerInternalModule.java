@@ -15,6 +15,7 @@ import abi35_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 import abi35_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi35_0_0.org.unimodules.core.interfaces.services.UIManager;
 import abi35_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
+
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
@@ -112,12 +113,12 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return null;
   }
 
-  @Override
-  public boolean isRunningInHeadlessMode() {
-    if (mConstants != null) {
+  private boolean isRunningInHeadlessMode() {
+    if (mConstants != null && mConstants.getConstants() != null && mConstants.getConstants().containsKey("isHeadless")) {
       return (boolean) mConstants.getConstants().get("isHeadless");
+    } else {
+      return mTaskService.isStartedByHeadlessLoader(getAppId());
     }
-    return false;
   }
 
   //endregion

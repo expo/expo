@@ -11,11 +11,20 @@ import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 
 import { Renderer, TextureLoader, THREE } from 'expo-three';
 import GLWrap from './GLWrap';
-import GLCameraScreen from './GLCameraScreen';
 import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
+import GLThreeDepthStencilBuffer from './GLThreeDepthStencilBuffer';
+
+function optionalRequire(requirer: () => { default: React.ComponentType }) {
+  try {
+    return requirer().default;
+  } catch (e) {
+    return null;
+  }
+}
+const GLCameraScreen = optionalRequire(() => require('./GLCameraScreen'));
 
 interface Screens {
   [key: string]: {
@@ -167,6 +176,10 @@ const GLScreens: Screens = {
     }),
   },
 
+  THREEDepthStencilBuffer: {
+    screen: GLThreeDepthStencilBuffer,
+  },
+
   THREEGlitchFilm: {
     screen: GLWrap('three.js glitch and film effects', async gl => {
       const scene = new THREE.Scene();
@@ -181,10 +194,10 @@ const GLScreens: Screens = {
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
-      const composer = new EffectComposer( renderer );
-      composer.addPass( new RenderPass( scene, camera ) );
+      const composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
       const glitchPass = new GlitchPass();
-      composer.addPass( glitchPass );
+      composer.addPass(glitchPass);
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
@@ -399,9 +412,11 @@ const GLScreens: Screens = {
     }),
   },
 
-  GLCamera: {
-    screen: GLCameraScreen,
-  },
+  ...(GLCameraScreen && {
+    GLCamera: {
+      screen: GLCameraScreen,
+    },
+  }),
 
   // WebGL 2.0 sample - http://webglsamples.org/WebGL2Samples/#transform_feedback_separated_2
   WebGL2TransformFeedback: {

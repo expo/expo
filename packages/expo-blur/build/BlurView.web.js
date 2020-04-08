@@ -4,7 +4,7 @@ import { View, ViewPropTypes } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
 export default class BlurView extends React.Component {
     render() {
-        let { tint, intensity, style = {}, ...props } = this.props;
+        const { tint, intensity, style = {}, ...props } = this.props;
         const blurStyle = getBlurStyle({ tint, intensity });
         return <View {...props} style={[style, blurStyle]}/>;
     }
@@ -29,7 +29,7 @@ function getBlurStyle({ intensity, tint }) {
         backgroundColor: getBackgroundColor(intensity, tint),
     };
     if (isBlurSupported()) {
-        style.backdropFilter = `blur(${intensity * 0.8}px)`;
+        style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
     }
     return style;
 }

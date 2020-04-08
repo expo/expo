@@ -19,7 +19,7 @@ it(`has a web config`, () => {
 });
 
 it(`lints with the web config`, async () => {
-  let report = await lintAsync(
+  const report = await lintAsync(
     {
       baseConfig: getBaseConfig(),
       configFile,
@@ -29,16 +29,16 @@ it(`lints with the web config`, async () => {
     },
     ['__tests__/fixtures/*all*', '__tests__/fixtures/*web*']
   );
-  let { results } = report;
-  for (let result of results) {
-    let relativeFilePath = path.relative(__dirname, result.filePath);
+  const { results } = report;
+  for (const result of results) {
+    const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;
     expect(result).toMatchSnapshot(relativeFilePath);
   }
 }, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
-  let { success, message } = await checkPrettierRulesAsync(configFile);
+  const { success, message } = await checkPrettierRulesAsync(configFile);
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
 }, 10000);

@@ -1,11 +1,10 @@
+import { batchProcessAllSourcesAsync } from './ProcessSources.web';
 import {
   getSourceAndEncodeAsync,
   formatDataAsUrl,
   isDataUrl,
   getMimeTypeFromSource,
 } from './Utils.web';
-
-import { batchProcessAllSourcesAsync } from './ProcessSources.web';
 
 export async function processAllImagesAsync(element: HTMLElement): Promise<void> {
   if (!(element instanceof HTMLElement)) {

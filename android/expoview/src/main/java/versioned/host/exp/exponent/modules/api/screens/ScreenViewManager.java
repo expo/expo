@@ -35,7 +35,7 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
   public void setStackPresentation(Screen view, String presentation) {
     if ("push".equals(presentation)) {
       view.setStackPresentation(Screen.StackPresentation.PUSH);
-    } else if ("modal".equals(presentation) || "containedModal".equals(presentation)) {
+    } else if ("modal".equals(presentation) || "containedModal".equals(presentation) || "fullScreenModal".equals(presentation) || "formSheet".equals(presentation)) {
       // at the moment Android implementation does not handle contained vs regular modals
       view.setStackPresentation(Screen.StackPresentation.MODAL);
     } else if ("transparentModal".equals(presentation) || "containedTransparentModal".equals((presentation))) {
@@ -57,11 +57,20 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     }
   }
 
+  @ReactProp(name = "gestureEnabled", defaultBoolean = true)
+  public void setGestureEnabled(Screen view, boolean gestureEnabled) {
+    view.setGestureEnabled(gestureEnabled);
+  }
+
   @Nullable
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
             ScreenDismissedEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onDismissed"));
+            MapBuilder.of("registrationName", "onDismissed"),
+            ScreenAppearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onAppear"),
+            StackFinishTransitioningEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onFinishTransitioning"));
   }
 }

@@ -38,10 +38,6 @@ export default class ExponentCamera extends React.Component {
                 onPictureSaved: this.props.onPictureSaved,
             });
         };
-        this.getAvailableCameraTypesAsync = async () => {
-            const camera = this.getCamera();
-            return await camera.getAvailableCameraTypesAsync();
-        };
         this.resumePreview = async () => {
             const camera = this.getCamera();
             await camera.resumePreview();
@@ -82,7 +78,7 @@ export default class ExponentCamera extends React.Component {
             this.camera.stopAsync();
         }
     }
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(nextProps) {
         this._updateCameraProps(nextProps);
     }
     render() {

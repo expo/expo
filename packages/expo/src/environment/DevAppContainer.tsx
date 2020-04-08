@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import DevLoadingView from '../environment/DevLoadingView';
 
 export default class DevAppContainer extends React.Component {

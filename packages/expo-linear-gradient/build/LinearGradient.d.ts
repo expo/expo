@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-declare type Props = {
+export declare type LinearGradientProps = {
     colors: string[];
     locations?: number[] | null;
-    start?: Point | null;
-    end?: Point | null;
+    start?: LinearGradienPoint | null;
+    end?: LinearGradienPoint | null;
 } & React.ComponentProps<typeof View>;
-declare type Point = {
+export declare type LinearGradienPoint = {
     x: number;
     y: number;
 } | [number, number];
-export default class LinearGradient extends React.Component<Props> {
+export default class LinearGradient extends React.Component<LinearGradientProps> {
     static propTypes: {
         colors: PropTypes.Validator<string[]>;
         locations: PropTypes.Requireable<(number | null | undefined)[]>;
@@ -62,6 +62,7 @@ export default class LinearGradient extends React.Component<Props> {
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityValue?: PropTypes.Validator<import("react-native").AccessibilityValue | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
@@ -69,10 +70,10 @@ export default class LinearGradient extends React.Component<Props> {
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        onAccessibilityEscape?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
     render(): JSX.Element;
 }
-export {};

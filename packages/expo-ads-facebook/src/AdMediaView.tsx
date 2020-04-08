@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { View } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 
 import { AdMediaViewContext, AdMediaViewContextValue } from './withNativeAd';
 
@@ -12,7 +12,7 @@ export default class AdMediaView extends React.Component<Props> {
     return (
       <AdMediaViewContext.Consumer>
         {(contextValue: AdMediaViewContextValue | null) => {
-          let context = nullthrows(contextValue);
+          const context = nullthrows(contextValue);
           return <NativeAdMediaView {...this.props} ref={context.nativeRef} />;
         }}
       </AdMediaViewContext.Consumer>

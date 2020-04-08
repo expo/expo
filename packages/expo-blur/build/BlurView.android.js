@@ -4,8 +4,8 @@ import { View, ViewPropTypes } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
 export default class BlurView extends React.Component {
     render() {
-        let { tint, intensity, ...props } = this.props;
-        let backgroundColor = getBackgroundColor(intensity, tint);
+        const { tint, intensity, ...props } = this.props;
+        const backgroundColor = getBackgroundColor(intensity, tint);
         return <View {...props} style={[this.props.style, { backgroundColor }]}/>;
     }
 }

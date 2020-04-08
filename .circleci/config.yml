@@ -140,6 +140,12 @@ commands:
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
 
+  nix_mac_volume:
+    steps:
+      - run: curl -O https://raw.githubusercontent.com/NixOS/nix/bb10dc20cc993c4343361c0d6e7eaebb4f450484/scripts/create-darwin-volume.sh
+      - run: chmod +x create-darwin-volume.sh
+      - run: sudo ./create-darwin-volume.sh
+      - run: rm ./create-darwin-volume.sh
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -525,6 +531,7 @@ jobs:
     executor: mac
     #parallelism: 8
     steps:
+      - nix_mac_volume
       - install_nix
       - setup
       - guard_sdk_tests
@@ -580,6 +587,7 @@ jobs:
   client_ios:
     executor: mac
     steps:
+      - nix_mac_volume
       - install_nix
       - setup
       - guard_sdk_tests
@@ -606,6 +614,7 @@ jobs:
   client_ios_simulator_release:
     executor: mac
     steps:
+      - nix_mac_volume
       - install_nix
       - setup
       - update_submodules
@@ -620,6 +629,7 @@ jobs:
   expo_client_build:
     executor: mac
     steps:
+      - nix_mac_volume
       - install_nix
       - setup
       - guard_sdk_tests
@@ -653,6 +663,7 @@ jobs:
         type: boolean
         default: true
     steps:
+      - nix_mac_volume
       - install_nix
       - setup
       - guard_sdk_tests
@@ -822,6 +833,10 @@ jobs:
       - update_submodules
       - yarn_install:
           working_directory: docs
+      - run:
+          name: Run Danger
+          working_directory: docs
+          command: yarn danger ci
       - yarn:
           command: export
           working_directory: docs
@@ -834,10 +849,14 @@ jobs:
           name: Test links
           working_directory: docs
           command: nix run expo.curl --command yarn run test-links http://localhost:8000
-      - save_cache:
-          key: docs-site-{{ .Revision }}
+      - run: mkdir -p /tmp/workspace/
+      - run:
+          working_directory: docs
+          command: mv out /tmp/workspace/site
+      - persist_to_workspace:
+          root: /tmp/workspace
           paths:
-            - docs/out
+            - site
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master
@@ -847,12 +866,10 @@ jobs:
     executor: nix
     steps:
       - setup
-      - restore_cache:
-          keys:
-            - docs-site-{{ .Revision }}
+      - attach_workspace:
+          at: /tmp/workspace
       - deploy:
-          command: ./deploy.sh
-          working_directory: docs
+          command: docs/deploy.sh /tmp/workspace/site
 
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900

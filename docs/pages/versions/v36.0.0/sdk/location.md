@@ -3,19 +3,17 @@ title: Location
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-location'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-location`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+<InstallSection packageName="expo-location" />
 
 ## Configuration
 
@@ -39,7 +37,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackEmbed snackId="@charliecruzan/basiclocationexample" />
+<SnackEmbed snackId="@lukaszkosmaty/basiclocationexample" />
 
 ## API
 
@@ -102,6 +100,7 @@ Get the current position of the device.
 - **options (_object_)** -- A map of options:
   - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
   - **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
+  - **timeout (_number_)** -- (Android only). Specifies the duration of time in milliseconds to wait before timing out the location request.
 
 #### Returns
 

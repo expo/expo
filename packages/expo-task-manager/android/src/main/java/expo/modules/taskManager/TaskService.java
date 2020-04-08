@@ -14,6 +14,15 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.apploader.AppLoaderProvider;
+import org.unimodules.apploader.HeadlessAppLoader;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -25,19 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.unimodules.core.interfaces.SingletonModule;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import expo.loaders.provider.interfaces.AppLoaderInterface;
-import expo.loaders.provider.AppLoaderProvider;
-import expo.loaders.provider.interfaces.AppRecordInterface;
+import androidx.annotation.Nullable;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
-import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
+import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -66,9 +66,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   // { "<appId>": List(eventBodies...) }
   private static final Map<String, List<Bundle>> sEventsQueues = new HashMap<>();
-
-  // { "<appId>": AppRecordInterface }
-  private static final Map<String, AppRecordInterface> sAppRecords = new HashMap<>();
 
   // Map of callbacks for task execution events. Schema: { "<eventId>": TaskExecutionCallback }
   private static final Map<String, TaskExecutionCallback> sTaskCallbacks = new HashMap<>();
@@ -246,7 +243,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = taskManager.isRunningInHeadlessMode();
+    boolean isHeadless = isStartedByHeadlessLoader(appId);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -268,6 +265,15 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       // Maybe update app url in user defaults. It might change only in non-headless mode.
       maybeUpdateAppUrlForAppId(appUrl, appId);
     }
+  }
+
+  @Override
+  public boolean isStartedByHeadlessLoader(String appId) {
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      return appLoader.isRunning(appId);
+    }
+    return false;
   }
 
   public void handleIntent(Intent intent) {
@@ -377,17 +383,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     String eventId = executionInfo.getString("eventId");
     String appId = task.getAppId();
-    List<String> appEvents = sEvents.get(appId);
 
     if (callback != null) {
       sTaskCallbacks.put(eventId, callback);
     }
 
-    if (appEvents == null) {
+    final List<String> appEvents;
+    if (sEvents.get(appId) == null) {
       appEvents = new ArrayList<>();
       appEvents.add(eventId);
       sEvents.put(appId, appEvents);
     } else {
+      appEvents = new ArrayList<>();
       appEvents.add(eventId);
     }
 
@@ -399,28 +406,43 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // The app is not fully loaded as its task manager is not there yet.
     // We need to add event's body to the queue from which events will be executed once the task manager is ready.
     if (!sEventsQueues.containsKey(appId)) {
-      sEventsQueues.put(appId, new ArrayList<Bundle>());
+      sEventsQueues.put(appId, new ArrayList<>());
     }
     sEventsQueues.get(appId).add(body);
 
-    if (!sAppRecords.containsKey(appId)) {
-      // No app record yet - let's spin it up!
+    try {
+      getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appId, task.getAppUrl()), () -> {
+      }, success -> {
+        if (!success) {
+          sEvents.remove(appId);
+          sEventsQueues.remove(appId);
 
-      if (!loadApp(appId, task.getAppUrl())) {
-        // Loading failed because parameters are invalid - unregister the task.
-        try {
-          unregisterTask(task.getName(), appId, null);
-        } catch (Exception e) {
-          Log.e(TAG, "Error occurred while unregistering invalid task.", e);
+          // Host unreachable? Unregister all tasks for that app.
+          unregisterAllTasksForAppId(appId);
         }
-        appEvents.remove(eventId);
-        sEventsQueues.remove(appId);
+      });
+    } catch (HeadlessAppLoader.AppConfigurationError ignored) {
+      try {
+        unregisterTask(task.getName(), appId, null);
+      } catch (Exception e) {
+        Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
+
+      appEvents.remove(eventId);
+      sEventsQueues.remove(appId);
     }
   }
 
   //endregion
   //region helpers
+
+  private HeadlessAppLoader getAppLoader() {
+    if (mContextRef.get() != null) {
+      return AppLoaderProvider.getLoader("react-native-headless", mContextRef.get());
+    } else {
+      return null;
+    }
+  }
 
   private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
     Constructor<?> consumerConstructor;
@@ -474,7 +496,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return errorBundle;
   }
 
-  private TaskInterface getTask(String taskName, String appId) {
+  private static TaskInterface getTask(String taskName, String appId) {
     Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
     return appTasks != null ? appTasks.get(taskName) : null;
   }
@@ -510,9 +532,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
         appConfig.put("appUrl", appUrl);
 
         preferences
-            .edit()
-            .putString(appId, new JSONObject(appConfig).toString())
-            .apply();
+          .edit()
+          .putString(appId, new JSONObject(appConfig).toString())
+          .apply();
       }
     }
   }
@@ -589,9 +611,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     appConfig.put("tasks", tasks);
 
     preferences
-        .edit()
-        .putString(appId, new JSONObject(appConfig).toString())
-        .apply();
+      .edit()
+      .putString(appId, new JSONObject(appConfig).toString())
+      .apply();
   }
 
   private void removeAppFromConfig(String appId) {
@@ -599,8 +621,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
+   * Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
    */
+  @Nullable
   private TaskManagerInterface getTaskManager(String appId) {
     WeakReference<TaskManagerInterface> weakRef = sTaskManagers.get(appId);
     TaskManagerInterface taskManager = weakRef == null ? null : weakRef.get();
@@ -624,59 +647,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return map;
   }
 
-  private AppLoaderInterface createAppLoader() {
-    // for now only react-native apps in Expo are supported
-    Context context = mContextRef.get();
-    return context != null ? AppLoaderProvider.createLoader("react-native-experience", context) : null;
-  }
-
-  private boolean loadApp(final String appId, String appUrl) {
-    AppLoaderInterface appLoader = createAppLoader();
-
-    if (appLoader == null) {
-      Log.e(TAG, "Cannot execute background task because application loader can't be found.");
-      return false;
-    }
-    if (appUrl == null) {
-      Log.e(TAG, "Cannot execute background task because application URL is invalid");
-      return false;
-    }
-
-    // TODO(@tsapeta): add timeout option;
-    Map<String, Object> options = new HashMap<>();
-
-    Log.i(TAG, "Loading headless app '" + appId + "' with url '" + appUrl + "'.");
-
-    AppRecordInterface appRecord = appLoader.loadApp(appUrl, options, new AppLoaderProvider.Callback() {
-      @Override
-      public void onComplete(boolean success, Exception exception) {
-        if (exception != null) {
-          exception.printStackTrace();
-          Log.e(TAG, exception.getMessage());
-        }
-        if (!success) {
-          sEvents.remove(appId);
-          sEventsQueues.remove(appId);
-          sAppRecords.remove(appId);
-
-          // Host unreachable? Unregister all tasks for that app.
-          unregisterAllTasksForAppId(appId);
-        }
-      }
-    });
-
-    sAppRecords.put(appId, appRecord);
-    return true;
-  }
-
   private void invalidateAppRecord(String appId) {
-    AppRecordInterface appRecord = sAppRecords.get(appId);
-
-    if (appRecord != null) {
-      appRecord.invalidate();
-      sAppRecords.remove(appId);
-      sHeadlessTaskManagers.remove(appId);
-      Log.i(TAG, "Invalidated headless app '" + appId + "'.");
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      if (getAppLoader().invalidateApp(appId)) {
+        sHeadlessTaskManagers.remove(appId);
+      }
     }
   }
 
@@ -747,7 +723,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
+   * Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
    */
   private static int getConsumerVersion(Class consumerClass) {
     try {
@@ -759,7 +735,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Method that unversions class names, so we can always use unversioned task consumer classes.
+   * Method that unversions class names, so we can always use unversioned task consumer classes.
    */
   private static String unversionedClassNameForClass(Class versionedClass) {
     String className = versionedClass.getName();
@@ -767,7 +743,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   /**
-   *  Returns unversioned class from versioned one.
+   * Returns unversioned class from versioned one.
    */
   private static Class unversionedClassForClass(Class versionedClass) {
     if (versionedClass == null) {

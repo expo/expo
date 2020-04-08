@@ -10,7 +10,9 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
+#import "EXHomeModule.h"
 
+#import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
@@ -18,9 +20,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static const NSString *kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+
 NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
-NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
@@ -267,7 +270,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [self->_browserController toggleMenuWithCompletion:nil];
+      if ([self->_browserController isMenuVisible]) {
+        EXHomeModule *homeModule = [self nativeModuleForAppManager:self->_appRegistry.homeAppRecord.appManager named:@"ExponentKernel"];
+        [homeModule requestToCloseDevMenu];
+      } else {
+        [self->_browserController toggleMenuWithCompletion:nil];
+      }
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;

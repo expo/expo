@@ -1,0 +1,1 @@
+../../../SDWebImage/SDWebImage/Private/NSBezierPath+RoundedCorners.h

@@ -22,6 +22,8 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
 import expo.modules.errorrecovery.ErrorRecoveryPackage;
+import expo.modules.screenorientation.ScreenOrientationPackage;
+import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -30,6 +32,8 @@ import expo.modules.documentpicker.DocumentPickerPackage;
 import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
+import expo.modules.firebase.core.FirebaseCorePackage;
+import expo.modules.firebase.analytics.FirebaseAnalyticsPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
@@ -83,10 +87,13 @@ public class ExperiencePackagePicker {
       new FacebookPackage(),
       new FaceDetectorPackage(),
       new FileSystemPackage(),
+      new FirebaseCorePackage(),
+      new FirebaseAnalyticsPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
       new HapticsPackage(),
+      new ImageLoaderPackage(),
       new ImageManipulatorPackage(),
       new ImagePickerPackage(),
       new IntentLauncherPackage(),
@@ -103,6 +110,7 @@ public class ExperiencePackagePicker {
       new RandomPackage(),
       new SMSPackage(),
       new SQLitePackage(),
+      new ScreenOrientationPackage(),
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),

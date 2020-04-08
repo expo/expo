@@ -1,13 +1,12 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import JsonFile from '@expo/json-file';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
-import macros from './macros';
 import { Directories } from '../expotools';
-
-import IosMacrosGenerator from './IosMacrosGenerator';
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
+import IosMacrosGenerator from './IosMacrosGenerator';
+import macros from './macros';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
@@ -108,7 +107,8 @@ async function copyTemplateFileAsync(
   source,
   dest,
   templateSubstitutions,
-  configuration
+  configuration,
+  isOptional
 ): Promise<void> {
   let [currentSourceFile, currentDestFile] = await Promise.all([
     readExistingSourceAsync(source),
@@ -132,20 +132,27 @@ async function copyTemplateFileAsync(
   }
 
   if (currentSourceFile !== currentDestFile) {
-    await fs.writeFile(dest, currentSourceFile, 'utf8');
+    try {
+      await fs.writeFile(dest, currentSourceFile, 'utf8');
+    } catch (error) {
+      if (!isOptional) throw error;
+    }
   }
 }
 
-async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
-  const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
-  const templatePaths = await new JsonFile(
-    path.join(templateFilesPath, `${platform}-paths.json`)
-  ).readAsync();
-  const promises: Promise<any>[] = [];
-  const skipTemplates: Array<string> = args.skipTemplates || [];
+type TemplatePaths = Record<string, string>;
+type CheckIgnoredTemplatePaths = string[];
 
+async function copyTemplateFilesAsync(platform: string, args: any, templateSubstitutions: any) {
+  const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
+  const templatePaths = (await new JsonFile(
+    path.join(templateFilesPath, `${platform}-paths.json`)
+  ).readAsync()) as TemplatePaths;
+  const checkIgnoredTemplatePaths = await readCheckIgnoredTemplatePaths(platform);
+  const promises: Promise<any>[] = [];
+  const skipTemplates: string[] = args.skipTemplates || [];
   for (const [source, dest] of Object.entries(templatePaths)) {
-    if (skipTemplates.includes(source)){
+    if (skipTemplates.includes(source)) {
       console.log(
         'Skipping template %s ...',
         chalk.cyan(path.join(templateFilesPath, platform, source))
@@ -153,23 +160,36 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
       continue;
     }
 
+    const isOptional = checkIgnoredTemplatePaths.includes(source);
     console.log(
-      'Rendering %s from template %s ...',
-      chalk.cyan(path.join(EXPO_DIR, dest as string, source)),
-      chalk.cyan(path.join(templateFilesPath, platform, source))
+      'Rendering %s from template %s %s...',
+      chalk.cyan(path.join(EXPO_DIR, dest)),
+      chalk.cyan(path.join(templateFilesPath, platform, source)),
+      isOptional ? chalk.yellow('(Optional) ') : ''
     );
 
     promises.push(
       copyTemplateFileAsync(
         path.join(templateFilesPath, platform, source),
-        path.join(EXPO_DIR, dest as string, source),
+        path.join(EXPO_DIR, dest),
         templateSubstitutions,
-        args.configuration
+        args.configuration,
+        isOptional
       )
     );
   }
 
   await Promise.all(promises);
+}
+
+async function readCheckIgnoredTemplatePaths(platform: string): Promise<CheckIgnoredTemplatePaths> {
+  const fileContents = (await readExistingSourceAsync(`${platform}-paths.check-ignore`)) || '';
+  const fileContentsTrimmed = fileContents.trim();
+  if (fileContentsTrimmed) {
+    return fileContentsTrimmed.split('\n');
+  } else {
+    return [];
+  }
 }
 
 export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutionsAsync };

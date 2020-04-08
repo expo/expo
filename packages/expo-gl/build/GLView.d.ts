@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-declare type GLViewProps = {
+export declare type GLViewProps = {
     /**
      * Called when the OpenGL context is created, with the context object as a parameter. The context
      * object has an API mirroring WebGL's WebGLRenderingContext.
@@ -67,6 +67,7 @@ export declare class GLView extends React.Component<GLViewProps> {
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityValue?: PropTypes.Validator<import("react-native").AccessibilityValue | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
@@ -74,6 +75,7 @@ export declare class GLView extends React.Component<GLViewProps> {
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        onAccessibilityEscape?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -98,7 +100,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
 declare type WebGLObjectId = any;
-declare class WebGLObject {
+export declare class WebGLObject {
     id: WebGLObjectId;
     constructor(id: WebGLObjectId);
     toString(): string;

@@ -6,7 +6,6 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
@@ -36,7 +35,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider), @protocol(UMImageLoaderInterface)];
+  return @[@protocol(UMAppLifecycleService), @protocol(UMUIManager), @protocol(UMJavaScriptContextProvider)];
 }
 
 # pragma mark - Lifecycle methods
@@ -180,17 +179,6 @@ UM_REGISTER_MODULE();
   return nil;
 }
 
-# pragma mark - UMImageLoader
-
-- (void)loadImageForURL:(NSURL *)imageURL
-      completionHandler:(UMImageLoaderCompletionBlock)completionHandler
-{
-    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                                                    callback:^(NSError *error, UIImage *loadedImage) {
-        completionHandler(error, loadedImage);
-    }];
-}
-
 # pragma mark - App state observing
 
 - (void)startObserving
@@ -199,7 +187,9 @@ UM_REGISTER_MODULE();
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
+                           UIApplicationWillEnterForegroundNotification,
+                           RCTContentDidAppearNotification,
+                           RCTBridgeWillReloadNotification]) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
@@ -210,7 +200,11 @@ UM_REGISTER_MODULE();
 
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
-  if (
+  if ([notification.name isEqualToString:RCTContentDidAppearNotification]) {
+    [self notifyAboutContentDidAppear];
+  } else if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
+    [self notifyAboutContentWillReload];
+  } else if (
       _isForegrounded && (
        [notification.name isEqualToString:UIApplicationWillResignActiveNotification] ||
        [notification.name isEqualToString:UIApplicationWillEnterForegroundNotification] ||
@@ -241,6 +235,24 @@ UM_REGISTER_MODULE();
     }];
     _isForegrounded = true;
   }
+}
+
+- (void)notifyAboutContentDidAppear
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentDidAppear)]) {
+      [obj performSelector:@selector(onAppContentDidAppear)];
+    }
+  }];
+}
+
+- (void)notifyAboutContentWillReload
+{
+  [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    if ([obj respondsToSelector:@selector(onAppContentWillReload)]) {
+      [obj performSelector:@selector(onAppContentWillReload)];
+    }
+  }];
 }
 
 - (void)stopObserving

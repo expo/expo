@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		386B0B024E91559B2596C37744B46882 /* UMAppLoaderProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6A37B127C5280D1E93447AE2879E86AC /* UMAppRecordInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AD2B158BC4D251B34FDC92352E9B2EEE /* UMAppLoaderInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E07358B09CE767048D9F1E6F80EE32DE /* UMAppLoader-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */; };
+		F4ACA67F7EBF663372DBEBFA1C0D97F9 /* UMAppLoaderProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppLoaderInterface.h; sourceTree = "<group>"; };
+		17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppRecordInterface.h; sourceTree = "<group>"; };
+		52833ABCC6E1F11F282709CBB8926A79 /* UMAppLoader-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMAppLoader-prefix.pch"; sourceTree = "<group>"; };
+		6B18BAA29707AD7E470F561850D9C5C0 /* libUMAppLoader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libUMAppLoader.a; path = libUMAppLoader.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMAppLoader.xcconfig; sourceTree = "<group>"; };
+		A14C5223FFBEC527CB2F235BB69B3A8D /* UMAppLoader.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMAppLoader.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMAppLoaderProvider.h; path = UMAppLoader/UMAppLoaderProvider.h; sourceTree = "<group>"; };
+		D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMAppLoaderProvider.m; path = UMAppLoader/UMAppLoaderProvider.m; sourceTree = "<group>"; };
+		E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMAppLoader-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5C60AC760DC97A728291D4307A3C6954 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		06C29445860890868E4D1C024D491D7F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2871116D3E32D0F55C67793F15FE1158 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A14C5223FFBEC527CB2F235BB69B3A8D /* UMAppLoader.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		36D587924645F18175E1F60061C986E2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */,
+				E335FC98E572B18E5081B4045FBA231B /* UMAppLoader-dummy.m */,
+				52833ABCC6E1F11F282709CBB8926A79 /* UMAppLoader-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/UMAppLoader";
+			sourceTree = "<group>";
+		};
+		3941C2B9988C6C23313D9682D00A30CB = {
+			isa = PBXGroup;
+			children = (
+				06C29445860890868E4D1C024D491D7F /* Frameworks */,
+				B5B7DBD7B4EBFA1FB332C2184D71F4C9 /* Products */,
+				796DA979B24729A4855461CD2CAE5DC4 /* UMAppLoader */,
+			);
+			sourceTree = "<group>";
+		};
+		796DA979B24729A4855461CD2CAE5DC4 /* UMAppLoader */ = {
+			isa = PBXGroup;
+			children = (
+				CFE84978F0B27827E369B778D76F4946 /* UMAppLoaderProvider.h */,
+				D5B41089C1AA7552B2A677FA03D159DF /* UMAppLoaderProvider.m */,
+				DB014FD46D8E5145C7F9B63FD918D683 /* Interfaces */,
+				2871116D3E32D0F55C67793F15FE1158 /* Pod */,
+				36D587924645F18175E1F60061C986E2 /* Support Files */,
+			);
+			name = UMAppLoader;
+			path = "../../../../packages/unimodules-app-loader/ios";
+			sourceTree = "<group>";
+		};
+		B5B7DBD7B4EBFA1FB332C2184D71F4C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6B18BAA29707AD7E470F561850D9C5C0 /* libUMAppLoader.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB014FD46D8E5145C7F9B63FD918D683 /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				15A73AB5E000B6736FA7612EA095E468 /* UMAppLoaderInterface.h */,
+				17F2A02F7E77058CC303D676F44D951C /* UMAppRecordInterface.h */,
+			);
+			name = Interfaces;
+			path = UMAppLoader/Interfaces;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C067BDEA0497445BC9D266819CC1C78D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD2B158BC4D251B34FDC92352E9B2EEE /* UMAppLoaderInterface.h in Headers */,
+				386B0B024E91559B2596C37744B46882 /* UMAppLoaderProvider.h in Headers */,
+				6A37B127C5280D1E93447AE2879E86AC /* UMAppRecordInterface.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AD914734744A00B4515A3E7A846EDC15 /* UMAppLoader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED068C3EB6601017BB9D9F7C2CE8BADE /* Build configuration list for PBXNativeTarget "UMAppLoader" */;
+			buildPhases = (
+				C067BDEA0497445BC9D266819CC1C78D /* Headers */,
+				44D4981F32CF5E2F51505C5E007BA715 /* Sources */,
+				5C60AC760DC97A728291D4307A3C6954 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UMAppLoader;
+			productName = UMAppLoader;
+			productReference = 6B18BAA29707AD7E470F561850D9C5C0 /* libUMAppLoader.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5276EACA87CC53FABC0751A7A7730507 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 756516B5799CECBA620480DB4F897535 /* Build configuration list for PBXProject "UMAppLoader" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3941C2B9988C6C23313D9682D00A30CB;
+			productRefGroup = B5B7DBD7B4EBFA1FB332C2184D71F4C9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD914734744A00B4515A3E7A846EDC15 /* UMAppLoader */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		44D4981F32CF5E2F51505C5E007BA715 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E07358B09CE767048D9F1E6F80EE32DE /* UMAppLoader-dummy.m in Sources */,
+				F4ACA67F7EBF663372DBEBFA1C0D97F9 /* UMAppLoaderProvider.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8306A1D22271D8899C4CE59BA29AB73F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMAppLoader;
+				PRODUCT_NAME = UMAppLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8B0BCF6533E0223EE1BA34F1DD414156 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		AC60A4DA485A17155C91418AA639D303 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7E190CB5CE026B659B41AEB59180ECC3 /* UMAppLoader.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMAppLoader/UMAppLoader-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMAppLoader;
+				PRODUCT_NAME = UMAppLoader;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D2B5B99948F44D898F5CE60902B78A7E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		756516B5799CECBA620480DB4F897535 /* Build configuration list for PBXProject "UMAppLoader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2B5B99948F44D898F5CE60902B78A7E /* Debug */,
+				8B0BCF6533E0223EE1BA34F1DD414156 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED068C3EB6601017BB9D9F7C2CE8BADE /* Build configuration list for PBXNativeTarget "UMAppLoader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8306A1D22271D8899C4CE59BA29AB73F /* Debug */,
+				AC60A4DA485A17155C91418AA639D303 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5276EACA87CC53FABC0751A7A7730507 /* Project object */;
+}

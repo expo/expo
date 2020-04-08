@@ -55,6 +55,9 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
   @Override
   @SuppressWarnings("unchecked")
   public void didRegister(TaskInterface task) {
+    if (task == null) {
+      return;
+    }
     mTask = task;
     startGeofencing();
   }
@@ -115,6 +118,11 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
 
   @Override
   public boolean didExecuteJob(JobService jobService, JobParameters params) {
+    if (mTask == null) {
+      return false;
+    }
+
+
     List<PersistableBundle> data = getTaskManagerUtils().extractDataFromJobParams(params);
 
     for (PersistableBundle item : data) {
@@ -124,7 +132,9 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
       region.putAll(item.getPersistableBundle("region"));
       bundle.putInt("eventType", item.getInt("eventType"));
       bundle.putBundle("region", region);
-
+      if (mTask == null) {
+        return false;
+      }
       mTask.execute(bundle, null);
     }
     return true;

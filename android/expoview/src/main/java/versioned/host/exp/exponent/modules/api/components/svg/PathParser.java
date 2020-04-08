@@ -33,8 +33,11 @@ class PathParser {
 
     static Path parse(String d) {
         elements = new ArrayList<>();
-        char prev_cmd = ' ';
         mPath = new Path();
+        if(d == null){
+            return mPath;
+        }
+        char prev_cmd = ' ';
         l = d.length();
         s = d;
         i = 0;

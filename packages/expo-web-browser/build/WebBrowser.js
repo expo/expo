@@ -1,6 +1,8 @@
-import { AppState, Linking, Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { AppState, Linking, Platform } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
+import { WebBrowserResultType, } from './WebBrowser.types';
+export { WebBrowserResultType, };
 const emptyCustomTabsPackages = {
     defaultBrowserPackage: undefined,
     preferredBrowserPackage: undefined,
@@ -63,7 +65,7 @@ export function dismissBrowser() {
     }
     ExponentWebBrowser.dismissBrowser();
 }
-export async function openAuthSessionAsync(url, redirectUrl) {
+export async function openAuthSessionAsync(url, redirectUrl, browserParams = {}) {
     if (_authSessionIsNativelySupported()) {
         if (!ExponentWebBrowser.openAuthSessionAsync) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
@@ -71,7 +73,7 @@ export async function openAuthSessionAsync(url, redirectUrl) {
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
     }
     else {
-        return _openAuthSessionPolyfillAsync(url, redirectUrl);
+        return _openAuthSessionPolyfillAsync(url, redirectUrl, browserParams);
     }
 }
 export function dismissAuthSession() {
@@ -88,10 +90,24 @@ export function dismissAuthSession() {
         ExponentWebBrowser.dismissBrowser();
     }
 }
+/**
+ * Attempts to complete an auth session in the browser.
+ *
+ * @param options
+ */
+export function maybeCompleteAuthSession(options = {}) {
+    if (ExponentWebBrowser.maybeCompleteAuthSession) {
+        return ExponentWebBrowser.maybeCompleteAuthSession(options);
+    }
+    return { type: 'failed', message: 'Not supported on this platform' };
+}
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
     if (Platform.OS === 'android') {
         return false;
+    }
+    else if (Platform.OS === 'web') {
+        return true;
     }
     const versionNumber = parseInt(String(Platform.Version), 10);
     return versionNumber >= 11;
@@ -109,13 +125,13 @@ function _onAppStateChangeAndroid(state) {
         _onWebBrowserCloseAndroid();
     }
 }
-async function _openBrowserAndWaitAndroidAsync(startUrl) {
-    let appStateChangedToActive = new Promise(resolve => {
+async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
+    const appStateChangedToActive = new Promise(resolve => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
     let result = { type: 'cancel' };
-    let { type } = await openBrowserAsync(startUrl);
+    const { type } = await openBrowserAsync(startUrl, browserParams);
     if (type === 'opened') {
         await appStateChangedToActive;
         result = { type: 'dismiss' };
@@ -124,7 +140,7 @@ async function _openBrowserAndWaitAndroidAsync(startUrl) {
     _onWebBrowserCloseAndroid = null;
     return result;
 }
-async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
+async function _openAuthSessionPolyfillAsync(startUrl, returnUrl, browserParams = {}) {
     if (_redirectHandler) {
         throw new Error(`The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`);
     }
@@ -134,12 +150,15 @@ async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
     try {
         if (Platform.OS === 'android') {
             return await Promise.race([
-                _openBrowserAndWaitAndroidAsync(startUrl),
+                _openBrowserAndWaitAndroidAsync(startUrl, browserParams),
                 _waitForRedirectAsync(returnUrl),
             ]);
         }
         else {
-            return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+            return await Promise.race([
+                openBrowserAsync(startUrl, browserParams),
+                _waitForRedirectAsync(returnUrl),
+            ]);
         }
     }
     finally {

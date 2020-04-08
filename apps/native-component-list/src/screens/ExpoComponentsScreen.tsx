@@ -28,6 +28,8 @@ export default class ExpoComponentsScreen extends React.Component {
       'GestureHandlerSwipeable',
       'Gif',
       'GL',
+      'HTML',
+      'Image',
       'LinearGradient',
       'Lottie',
       'Maps',
@@ -52,5 +54,5 @@ export default class ExpoComponentsScreen extends React.Component {
         }
         return 0;
       });
-  }
+  };
 }

@@ -16,7 +16,7 @@ const sections = [
   {
     name: 'Introduction',
     reference: [
-      'What is Expo?',
+      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
@@ -31,7 +31,7 @@ const sections = [
   {
     name: 'Tutorial',
     reference: [
-      'Introduction',
+      'First steps',
       'Styling text',
       'Adding an image',
       'Creating a button',
@@ -133,11 +133,13 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
       'Using Expo for web',
       'Ejecting from Managed Workflow',
       'Migrating from ExpoKit',
+      'Updating your App',
     ],
   },
   {

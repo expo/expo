@@ -1,20 +1,10 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
-version = '5.0.0'
+version = '5.1.0'
 
+// Simple helper that allows the root project to override versions declared by this library.
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -50,16 +40,12 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 20
-    versionName "5.0.0"
+    versionCode 21
+    versionName "5.1.0"
   }
   lintOptions {
     abortOnError false
   }
-}
-
-repositories {
-  mavenCentral()
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -68,8 +54,4 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   throw new GradleException(
       "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
           "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
-}
-
-dependencies {
-  unimodule 'unimodules-core'
 }

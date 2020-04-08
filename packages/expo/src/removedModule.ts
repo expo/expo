@@ -37,7 +37,7 @@ function throwError() {
   });
 
   instructions += '\n';
-  let message = `The following APIs have moved to separate packages and importing them from the "expo" package is no longer supported: ${instructions}`;
+  const message = `The following APIs have moved to separate packages and importing them from the "expo" package is no longer supported: ${instructions}`;
   messages = [];
   packages = [];
   namedImports = [];

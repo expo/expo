@@ -13,7 +13,7 @@ const alteredBaseConfig = {
 };
 
 it(`lints`, async () => {
-  let report = await lintAsync(
+  const report = await lintAsync(
     {
       baseConfig: alteredBaseConfig,
       configFile,
@@ -23,9 +23,9 @@ it(`lints`, async () => {
     },
     ['__tests__/fixtures/*typescript-analysis*']
   );
-  let { results } = report;
-  for (let result of results) {
-    let relativeFilePath = path.relative(__dirname, result.filePath);
+  const { results } = report;
+  for (const result of results) {
+    const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;
     expect(result).toMatchSnapshot(relativeFilePath);
   }

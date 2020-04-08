@@ -3,7 +3,7 @@ import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import { Android, Config, Simulator, Versions } from '@expo/xdl';
 
-import { STAGING_HOST } from '../Constants';
+import { STAGING_API_HOST } from '../Constants';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import askForSDKVersionAsync from '../utils/askForSDKVersionAsync';
 import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
@@ -80,10 +80,10 @@ async function action(options: ActionOptions) {
   }
 
   // Set XDL config to use staging
-  Config.api.host = STAGING_HOST;
+  Config.api.host = STAGING_API_HOST;
 
   const versions = await Versions.versionsAsync();
-  const sdkConfiguration = versions && versions.sdkVersions && versions.sdkVersions[sdkVersion];
+  const sdkConfiguration = versions?.sdkVersions?.[sdkVersion];
 
   if (!sdkConfiguration) {
     throw new Error(`Versions configuration for SDK ${chalk.cyan(sdkVersion)} not found!`);

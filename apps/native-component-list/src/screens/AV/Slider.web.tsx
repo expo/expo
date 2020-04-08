@@ -137,14 +137,12 @@ class Slider extends PureComponent<Props, State> {
     });
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const newValue = nextProps.value;
-
-    if (this.props.value !== newValue) {
+  componentDidUpdate(prevProps: Props, _prevState: State) {
+    if (this.props.value !== prevProps.value) {
       if (this.props.animateTransitions) {
-        this._setCurrentValueAnimated(newValue);
+        this._setCurrentValueAnimated(this.props.value);
       } else {
-        this._setCurrentValue(newValue);
+        this._setCurrentValue(this.props.value);
       }
     }
   }

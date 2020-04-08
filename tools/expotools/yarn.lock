@@ -982,22 +982,22 @@
   optionalDependencies:
     sharp-cli "1.10.0"
 
-"@expo/json-file@^8.0.0":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.6.tgz#f5dce64e4747e0360fd212a3722da6f6b96bf20c"
-  integrity sha512-hjbLppBWzr2AgRnxCkAw5BlzIJh6bCgfdSxTKVD9mtpTir4/aFWvc0NXN2df/bUuJV+GQCuONro41NImMx1NuQ==
-  dependencies:
-    "@babel/code-frame" "^7.0.0-beta.44"
-    fs-extra "^8.0.1"
-    json5 "^1.0.1"
-    lodash "^4.17.4"
-    util.promisify "^1.0.0"
-    write-file-atomic "^2.3.0"
-
 "@expo/json-file@^8.2.1":
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.1.tgz#481e038ec0b01bf0d48bc223acaaa25214ccb4c6"
   integrity sha512-8X7rBhjNJEXTXlVLAhOoRl19WhlRhfuEp8cbfoE1fEV0ExXyZwfN8rRYbm2Q5BcFjSsRnfuTckpQiU86qahIDA==
+  dependencies:
+    "@babel/code-frame" "^7.0.0-beta.44"
+    fs-extra "^8.0.1"
+    json5 "^1.0.1"
+    lodash "^4.17.15"
+    util.promisify "^1.0.0"
+    write-file-atomic "^2.3.0"
+
+"@expo/json-file@^8.2.6":
+  version "8.2.6"
+  resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.2.6.tgz#09eaab0b528232798803369b29e220b0b6891e69"
+  integrity sha512-Azx9WhIw5ksOfnFjSfBF4fKBxxJ9lZNpyV88WNiGtZ7FmZu1U+rpv+BMK50SA6fcQdLAFjU1Rzx+LvtOPpvE2w==
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.44"
     fs-extra "^8.0.1"
@@ -10135,10 +10135,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.6.3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
-  integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
+typescript@^3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 uglify-js@3.4.x:
   version "3.4.10"

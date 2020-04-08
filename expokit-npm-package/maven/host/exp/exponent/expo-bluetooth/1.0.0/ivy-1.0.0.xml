@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-bluetooth" revision="1.0.0" status="integration" publication="20191119134539"/>
+  <info organisation="host.exp.exponent" module="expo-bluetooth" revision="1.0.0" status="integration" publication="20200311155553"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -108,15 +108,15 @@
     <artifact name="expo-bluetooth" type="aar" ext="aar" conf="archives,default"/>
   </publications>
   <dependencies>
-    <dependency org="com.android.tools.build" name="aapt2" rev="3.5.1-5435860" conf="_internal_aapt2_binary-&gt;default">
+    <dependency org="com.android.tools.build" name="aapt2" rev="3.5.3-5435860" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="org.unimodules" name="unimodules-core" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="4.0.0" conf="implementation-&gt;default"/>
-    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.5.1" conf="lintClassPath-&gt;default"/>
-    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-jdk7" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-common" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-core" rev="5.1.0" conf="implementation-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="5.1.0" conf="implementation-&gt;default"/>
+    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.5.3" conf="lintClassPath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-jdk7" rev="1.3.50" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.3.50" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-common" rev="1.3.50" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="org.jetbrains" name="annotations" rev="13.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>

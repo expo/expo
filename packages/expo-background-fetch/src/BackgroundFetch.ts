@@ -15,7 +15,7 @@ enum BackgroundFetchStatus {
   Available = 3,
 }
 
-interface BackgroundFetchOptions {
+export interface BackgroundFetchOptions {
   minimumInterval?: number;
   stopOnTerminate?: boolean;
   startOnBoot?: boolean;

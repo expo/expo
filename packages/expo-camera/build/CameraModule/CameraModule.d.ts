@@ -1,4 +1,4 @@
-import { PictureOptions } from '../Camera.types';
+import { CameraPictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 export { ImageType, CameraType, CaptureOptions };
 declare type OnCameraReadyListener = () => void;
@@ -46,9 +46,9 @@ declare class CameraModule {
     getActualCameraType(): CameraType | null;
     ensureCameraIsRunningAsync(): Promise<void>;
     resumePreview(): Promise<MediaStream | null>;
-    takePicture(config: PictureOptions): CapturedPicture;
+    takePicture(config: CameraPictureOptions): CapturedPicture;
     stopAsync(): void;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
-    getAvailableCameraTypesAsync: () => Promise<string[]>;
+    static getAvailableCameraTypesAsync(): Promise<string[]>;
 }
 export default CameraModule;

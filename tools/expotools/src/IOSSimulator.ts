@@ -74,7 +74,7 @@ export class IOSLogStream extends Transform {
       entry = JSON.parse(data.toString('utf8'));
     } catch (e) {}
 
-    if (entry && entry.eventMessage) {
+    if (entry?.eventMessage) {
       this.push(entry);
     }
     callback();

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionResponse } from './Camera.types';
-export default class Camera extends React.Component<Props> {
+import { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError } from './Camera.types';
+export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
     static Constants: {
@@ -80,6 +80,7 @@ export default class Camera extends React.Component<Props> {
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityValue?: PropTypes.Validator<import("react-native").AccessibilityValue | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
@@ -87,11 +88,12 @@ export default class Camera extends React.Component<Props> {
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityTraits?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "text" | "adjustable" | "header" | "summary" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        onAccessibilityEscape?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
-    static defaultProps: Props;
+    static defaultProps: CameraProps;
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
     _cameraHandle?: number | null;
@@ -102,10 +104,10 @@ export default class Camera extends React.Component<Props> {
     _lastEventsTimes: {
         [eventName: string]: Date;
     };
-    takePictureAsync(options?: PictureOptions): Promise<CapturedPicture>;
+    takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     getSupportedRatiosAsync(): Promise<string[]>;
     getAvailablePictureSizesAsync(ratio?: string): Promise<string[]>;
-    recordAsync(options?: RecordingOptions): Promise<{
+    recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
     }>;
     stopRecording(): void;
@@ -131,3 +133,4 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 }, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+export { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError, };

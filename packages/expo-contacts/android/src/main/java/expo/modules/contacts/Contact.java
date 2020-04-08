@@ -1,5 +1,7 @@
 package expo.modules.contacts;
 
+import android.net.Uri;
+import android.util.Log;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -9,6 +11,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
@@ -37,7 +41,7 @@ public class Contact {
 
 
     protected String contactId;
-  protected String lookupKey;
+    protected String lookupKey;
 
     protected String displayName;
 
@@ -180,6 +184,15 @@ public class Contact {
             return displayName;
         }
         return lastName;
+    }
+
+    @Nullable
+    public String getDisplayName() {
+      if (displayName == null && firstName != null) {
+        return lastName == null ? firstName : String.format("%s %s", firstName, lastName).trim();
+      }
+
+      return displayName;
     }
 
     public Contact(String contactId) {
@@ -380,40 +393,56 @@ public class Contact {
 
         if (showDates || showBirthday) { // double if check with query with cursor
             boolean hasYear;
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
 
-          ArrayList<Bundle> datesArray = new ArrayList();
+            ArrayList<Bundle> rawDatesArray = new ArrayList();
+            ArrayList<Bundle> datesArray = new ArrayList();
             for (BaseModel item : dates) {
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat datePattern = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat noYearPattern = new SimpleDateFormat("--MM-dd", Locale.getDefault());
+
                 Bundle details = new Bundle();
                 String dateString = item.getData();
                 String label = item.getLabel();
+                
+                Bundle rawDate = new Bundle();
+                rawDate.putString("type", label);
+                rawDate.putString("value", dateString);
+                rawDatesArray.add(rawDate);
 
-                hasYear = !dateString.startsWith("--");
+                try {
+                    hasYear = !dateString.startsWith("--");
 
-                if (hasYear) {
-                    calendar.setTime(datePattern.parse(dateString));
-                } else {
-                    calendar.setTime(noYearPattern.parse(dateString));
-                }
+                    if (hasYear) {
+                        calendar.setTime(datePattern.parse(dateString));
+                    } else {
+                        calendar.setTime(noYearPattern.parse(dateString));
+                    }
 
-                if (hasYear) {
-                    details.putInt("year", calendar.get(Calendar.YEAR));
-                }
-                details.putInt("month", calendar.get(Calendar.MONTH));
-                details.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
-                // TODO: Evan: The type is only supported in 26+
-                details.putString("format", "gregorian");
-                if (showBirthday && label != null && label.equals("birthday")) {
-                    contact.putBundle("birthday", details);
-                } else {
-                    details.putString("label", label);
-                    datesArray.add(details);
+                    if (hasYear) {
+                        details.putInt("year", calendar.get(Calendar.YEAR));
+                    }
+                    details.putInt("month", calendar.get(Calendar.MONTH));
+                    details.putInt("day", calendar.get(Calendar.DAY_OF_MONTH));
+                    // TODO: Evan: The type is only supported in 26+
+                    details.putString("format", "gregorian");
+                    if (showBirthday && label != null && label.equals("birthday")) {
+                        contact.putBundle("birthday", details);
+                    } else {
+                        details.putString("label", label);
+                        datesArray.add(details);
+                    }
+                } catch (Exception e) {
+                    Log.w("Contact", e.toString());
                 }
             }
-            if (showDates && datesArray.size() > 0) {
-                contact.putParcelableArrayList("dates", datesArray);
+            if (showDates) {
+                if (datesArray.size() > 0) {
+                    contact.putParcelableArrayList("dates", datesArray);
+                }
+            }
+            if (rawDatesArray.size() > 0) {
+                contact.putParcelableArrayList("rawDates", rawDatesArray);
             }
         }
 
@@ -449,7 +478,7 @@ public class Contact {
         contactData.add(notes);
 
         if (photoUri != null && !photoUri.isEmpty()) {
-            Bitmap photo = BitmapFactory.decodeFile(photoUri);
+            Bitmap photo = BitmapFactory.decodeFile(Uri.parse(photoUri).getPath());
 
             if (photo != null) {
                 ContentValues image = new ContentValues();

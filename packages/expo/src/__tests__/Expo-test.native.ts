@@ -58,6 +58,7 @@ const skippedExports: string[] = [
   'Print',
   'PublisherBanner',
   'Random',
+  'ScreenOrientation',
   'SecureStore',
   'Segment',
   'Sensors',
@@ -130,7 +131,7 @@ describe(`importing Expo`, () => {
     const warn = console.warn;
 
     global.console.warn = str => {
-      let tst = (str || '') + '';
+      const tst = (str || '') + '';
       if (!tst.includes('No native')) {
         warn.apply(console, [str]);
       }

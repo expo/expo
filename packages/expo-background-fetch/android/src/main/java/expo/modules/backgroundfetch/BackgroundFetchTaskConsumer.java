@@ -6,11 +6,8 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
-
-import java.util.Map;
 
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
@@ -18,6 +15,8 @@ import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+
+import java.util.Map;
 
 public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = BackgroundFetchTaskConsumer.class.getSimpleName();
@@ -135,10 +134,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     Log.i(TAG, "Starting an alarm for task '" + mTask.getName() + "'.");
 
     alarmManager.setInexactRepeating(
-        AlarmManager.ELAPSED_REALTIME_WAKEUP,
-        SystemClock.elapsedRealtime() + interval,
-        interval,
-        mPendingIntent
+      AlarmManager.ELAPSED_REALTIME_WAKEUP,
+      SystemClock.elapsedRealtime() + interval,
+      interval,
+      mPendingIntent
     );
   }
 

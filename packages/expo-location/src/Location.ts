@@ -1,10 +1,9 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import invariant from 'invariant';
 import {
   PermissionResponse as UMPermissionResponse,
   PermissionStatus,
 } from 'unimodules-permissions-interface';
-
-import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
 
@@ -20,6 +19,7 @@ export interface ProviderStatus {
 
 export interface LocationOptions {
   accuracy?: LocationAccuracy;
+  maximumAge?: number;
   enableHighAccuracy?: boolean;
   timeInterval?: number;
   distanceInterval?: number;
@@ -76,7 +76,7 @@ export interface PermissionResponse extends UMPermissionResponse {
   android?: PermissionDetailsLocationAndroid;
 }
 
-interface LocationTaskOptions {
+export interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
   distanceInterval?: number;
@@ -96,7 +96,7 @@ interface LocationTaskOptions {
   };
 }
 
-interface Region {
+export interface LocationRegion {
   identifier?: string;
   latitude: number;
   longitude: number;
@@ -108,8 +108,8 @@ interface Region {
 type Subscription = {
   remove: () => void;
 };
-type LocationCallback = (data: LocationData) => any;
-type HeadingCallback = (data: HeadingData) => any;
+export type LocationCallback = (data: LocationData) => any;
+export type LocationHeadingCallback = (data: HeadingData) => any;
 
 enum LocationAccuracy {
   Lowest = 1,
@@ -151,8 +151,8 @@ function _getCurrentWatchId() {
   return nextWatchId;
 }
 
-let watchCallbacks: {
-  [watchId: number]: LocationCallback | HeadingCallback;
+const watchCallbacks: {
+  [watchId: number]: LocationCallback | LocationHeadingCallback;
 } = {};
 
 let deviceEventSubscription: Subscription | null;
@@ -208,9 +208,8 @@ export async function getHeadingAsync(): Promise<HeadingData> {
         );
       } else {
         let done = false;
-        let subscription;
         let tries = 0;
-        subscription = await watchHeadingAsync((heading: HeadingData) => {
+        const subscription = await watchHeadingAsync((heading: HeadingData) => {
           if (!done) {
             if (heading.accuracy > 1 || tries > 5) {
               subscription.remove();
@@ -235,7 +234,7 @@ export async function getHeadingAsync(): Promise<HeadingData> {
 }
 
 export async function watchHeadingAsync(
-  callback: HeadingCallback
+  callback: LocationHeadingCallback
 ): Promise<{ remove: () => void }> {
   // Check if there is already a compass event watch.
   if (headingEventSub) {
@@ -351,7 +350,7 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
-    let location = result.geometry.location;
+    const location = result.geometry.location;
     // TODO: This is missing a lot of props
     return {
       latitude: location.lat,
@@ -541,7 +540,7 @@ export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<
 
 // --- Geofencing
 
-function _validateRegions(regions: Region[]) {
+function _validateRegions(regions: LocationRegion[]) {
   if (!regions || regions.length === 0) {
     throw new Error(
       'Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions'
@@ -564,7 +563,7 @@ function _validateRegions(regions: Region[]) {
 
 export async function startGeofencingAsync(
   taskName: string,
-  regions: Region[] = []
+  regions: LocationRegion[] = []
 ): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);

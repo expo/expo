@@ -6,9 +6,11 @@ import createStackNavigator from '../../navigation/createStackNavigator';
 
 import Container from './container';
 import Navigation from './navigation';
+import NativeStack from './nativeStack';
 
-const SCREENS: { [key: string]: { screen: any, title: string } } = {
+const SCREENS: Record<string, { screen: any; title: string }> = {
   Container: { screen: Container, title: 'ScreenContainer example' },
+  NativeStack: { screen: NativeStack, title: 'ScreenStack example' },
   Navigation: { screen: Navigation, title: 'React Navigation example' },
 };
 
@@ -27,7 +29,7 @@ class MainScreen extends React.Component<NavigationScreenProps> {
         renderItem={props => (
           <MainScreenItem
             item={props.item}
-            onPressItem={(key) => this.props.navigation.navigate(key)}
+            onPressItem={key => this.props.navigation.navigate(key)}
           />
         )}
       />
@@ -37,7 +39,10 @@ class MainScreen extends React.Component<NavigationScreenProps> {
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-class MainScreenItem extends React.Component<{ item: string; onPressItem: (item: string) => void }> {
+class MainScreenItem extends React.Component<{
+  item: string;
+  onPressItem: (item: string) => void;
+}> {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
     const { item } = this.props;

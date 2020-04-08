@@ -14,7 +14,7 @@ export async function getIpAddressAsync() {
     }
     return await ExpoNetwork.getIpAddressAsync();
 }
-export async function getMacAddressAsync(interfaceName) {
+export async function getMacAddressAsync(interfaceName = null) {
     if (!ExpoNetwork.getMacAddressAsync) {
         throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
     }

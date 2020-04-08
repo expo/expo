@@ -189,7 +189,10 @@ public class OperatorNode extends Node {
   private static final Operator EQ = new CompOperator() {
     @Override
     public boolean eval(Double x, Double y) {
-      return x.equals(y);
+      if (x == null || y == null) {
+        return x == y;
+      }
+      return x.doubleValue() == y.doubleValue();
     }
   };
   private static final Operator GREATER_THAN = new CompOperator() {
@@ -213,7 +216,10 @@ public class OperatorNode extends Node {
   private static final Operator NEQ = new CompOperator() {
     @Override
     public boolean eval(Double x, Double y) {
-      return !x.equals(y);
+      if (x == null || y == null) {
+        return x == y;
+      }
+      return x.doubleValue() != y.doubleValue();
     }
   };
 

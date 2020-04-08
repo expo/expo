@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "36.0.0",
+  "version": "37.0.0",
   "private": true,
   "scripts": {
     "dev": "node server.js",
@@ -37,8 +37,9 @@
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
+    "danger": "^9.2.10",
     "http-server": "^0.11.1",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "prettier": "^1.18.2"
   }
 }

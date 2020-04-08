@@ -84,7 +84,33 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     if (self.content) {
         RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
         if (self.inlineSize != nil && self.inlineSize.value != 0) {
-            [self drawWrappedText:context gc:gc rect:rect];
+            CGColorRef color;
+            if (self.fill) {
+                if (self.fill.class == RNSVGBrush.class) {
+                    color = [self.tintColor CGColor];
+                    [self drawWrappedText:context gc:gc rect:rect color:color];
+                } else {
+                    color = [self.fill getColorWithOpacity:self.fillOpacity];
+                    [self drawWrappedText:context gc:gc rect:rect color:color];
+                }
+                if (color) {
+                    CGColorRelease(color);
+                    color = nil;
+                }
+            }
+            if (self.stroke) {
+                if (self.stroke.class == RNSVGBrush.class) {
+                    color = [self.tintColor CGColor];
+                    [self drawWrappedText:context gc:gc rect:rect color:color];
+                } else {
+                    color = [self.stroke getColorWithOpacity:self.strokeOpacity];
+                    [self drawWrappedText:context gc:gc rect:rect color:color];
+                }
+                if (color) {
+                    CGColorRelease(color);
+                    color = nil;
+                }
+            }
         } else {
             if (self.path) {
                 NSUInteger count = [emoji count];
@@ -138,8 +164,11 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 }
 
 TopAlignedLabel *label;
-- (void)drawWrappedText:(CGContextRef)context gc:(RNSVGGlyphContext *)gc rect:(CGRect)rect {
+- (void)drawWrappedText:(CGContextRef)context gc:(RNSVGGlyphContext *)gc rect:(CGRect)rect color:(CGColorRef)color {
     [self pushGlyphContext];
+    if (fontRef != nil) {
+         CFRelease(fontRef);
+     }
     fontRef = [self getFontFromContext];
     RNSVGFontData* fontdata = [gc getFont];
     CFStringRef string = (__bridge CFStringRef)self.content;
@@ -179,6 +208,7 @@ TopAlignedLabel *label;
     label.numberOfLines = 0;
     label.opaque = NO;
     label.font = font;
+    label.textColor = [UIColor colorWithCGColor:color];
 
     CGFloat fontSize = [gc getFontSize];
     CGFloat height = CGRectGetHeight(rect);

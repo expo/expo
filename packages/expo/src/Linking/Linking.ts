@@ -1,24 +1,34 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
-import { LinkingStatic } from 'react-native';
+import { Platform, LinkingStatic } from 'react-native';
 import URL from 'url-parse';
+
 import { ParsedURL, QueryParams } from './Linking.types';
 import Linking from './LinkingModule';
 
 const { manifest } = Constants;
 
-const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
-
-let HOST_URI = manifest.hostUri;
-if (!HOST_URI && !USES_CUSTOM_SCHEME) {
-  // we're probably not using up-to-date xdl, so just fake it for now
-  // we have to remove the /--/ on the end since this will be inserted again later
-  HOST_URI = _removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
+function _usesCustomScheme(): boolean {
+  return Constants.appOwnership === 'standalone' && manifest.scheme;
 }
-const IS_EXPO_HOSTED =
-  HOST_URI &&
-  (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(HOST_URI) ||
-    manifest.developer);
+
+function _getHostUri(): string {
+  if (!manifest.hostUri && !_usesCustomScheme()) {
+    // we're probably not using up-to-date xdl, so just fake it for now
+    // we have to remove the /--/ on the end since this will be inserted again later
+    return _removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
+  }
+  return manifest.hostUri;
+}
+
+function _isExpoHosted(): boolean {
+  const hostUri = _getHostUri();
+  return !!(
+    hostUri &&
+    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
+      manifest.developer)
+  );
+}
 
 function _removeScheme(url: string) {
   return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
@@ -42,7 +52,7 @@ function _removeTrailingSlashAndQueryString(url: string) {
 
 function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   let scheme = 'exp';
-  let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+  const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
 
   if (Constants.appOwnership === 'standalone' && manifestScheme) {
     scheme = manifestScheme;
@@ -54,13 +64,13 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
     );
   }
 
-  let hostUri = HOST_URI || '';
-  if (USES_CUSTOM_SCHEME && IS_EXPO_HOSTED) {
+  let hostUri = _getHostUri() || '';
+  if (_usesCustomScheme() && _isExpoHosted()) {
     hostUri = '';
   }
 
   if (path) {
-    if (IS_EXPO_HOSTED && hostUri) {
+    if (_isExpoHosted() && hostUri) {
       path = `/--/${_removeLeadingSlash(path)}`;
     }
 
@@ -74,13 +84,13 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   // merge user-provided query params with any that were already in the hostUri
   // e.g. release-channel
   let queryString = '';
-  let queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
+  const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
   if (queryStringMatchResult) {
     hostUri = queryStringMatchResult[1];
     queryString = queryStringMatchResult[2];
     let paramsFromHostUri = {};
     try {
-      let parsedParams = qs.parse(queryString);
+      const parsedParams = qs.parse(queryString);
       if (typeof parsedParams === 'object') {
         paramsFromHostUri = parsedParams;
       }
@@ -110,10 +120,10 @@ function parse(url: string): ParsedURL {
   for (const param in parsed.query) {
     parsed.query[param] = decodeURIComponent(parsed.query[param]!);
   }
-  let queryParams = parsed.query;
+  const queryParams = parsed.query;
 
-  let hostUri = HOST_URI || '';
-  let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
+  const hostUri = _getHostUri() || '';
+  const hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
 
   let path = parsed.pathname || null;
   let hostname = parsed.hostname || null;
@@ -136,7 +146,7 @@ function parse(url: string): ParsedURL {
         .join('/');
     }
 
-    if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
+    if (_isExpoHosted() && !_usesCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
       path = path.substring(expoPrefix.length);
       hostname = null;
     } else if (path.indexOf('+') > -1) {
@@ -173,10 +183,15 @@ interface ExpoLinking extends LinkingStatic {
 }
 
 // @ts-ignore fix this...
-let newLinking = new Linking.constructor();
+const newLinking = new Linking.constructor();
 
 newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;
+
+// TODO: remove this on SDK 38 after adding to EXLinking
+if (Platform.OS === 'ios') {
+  newLinking.openSettings = () => newLinking.openURL('app-settings:');
+}
 
 export default newLinking as ExpoLinking;

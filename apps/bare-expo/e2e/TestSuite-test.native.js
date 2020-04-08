@@ -23,7 +23,10 @@ let TESTS = [
   'Random',
   'Permissions',
   'KeepAwake',
+  'FirebaseCore',
+  'FirebaseAnalytics',
   // 'Audio',
+  'HTML',
 ];
 
 const MIN_TIME = 50000;

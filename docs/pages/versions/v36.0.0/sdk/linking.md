@@ -3,6 +3,8 @@ title: Linking
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking'
 ---
 
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
@@ -11,11 +13,7 @@ This module is an extension of the React Native [Linking module](https://faceboo
 
 For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
 
-#### Platform Compatibility
-
-| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
-| -------------- | ---------------- | ---------- | ------------- | --- |
-| ✅             | ✅               | ✅         | ✅            | ✅  |
+<PlatformsSection android emulator ios simulator web />
 
 ## API
 

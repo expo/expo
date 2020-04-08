@@ -2,7 +2,7 @@
 
 #import <EXNotifications/EXInstallationIdProvider.h>
 
-NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 
 @implementation EXInstallationIdProvider
 

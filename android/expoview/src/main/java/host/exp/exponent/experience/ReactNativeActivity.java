@@ -2,6 +2,7 @@
 
 package host.exp.exponent.experience;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,17 +13,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -41,6 +38,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
@@ -76,6 +77,16 @@ import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMIS
 public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity  {
 
   public static class ExperienceDoneLoadingEvent {
+    private Activity mActivity;
+
+    ExperienceDoneLoadingEvent(Activity activity) {
+      super();
+      mActivity = activity;
+    }
+
+    public Activity getActivity() {
+      return mActivity;
+    }
   }
 
   // Override
@@ -184,9 +195,13 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     addView(view);
   }
 
-  protected void addView(final View view) {
+  public void addView(final View view) {
     removeViewFromParent(view);
     mContainer.addView(view);
+  }
+
+  public boolean hasView(final View view) {
+    return view.getParent() == mContainer;
   }
 
   protected void removeViewFromParent(final View view) {
@@ -250,12 +265,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (!mIsLoading) {
       return;
     }
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        hideLoadingScreen();
-        EventBus.getDefault().post(new ExperienceDoneLoadingEvent());
-      }
+    runOnUiThread(() -> {
+      hideLoadingScreen();
+      EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
     });
   }
 
@@ -286,11 +298,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        mReactInstanceManager.call("showDevOptionsDialog");
-        return true;
-      }
-      RNObject devSupportManager = mReactInstanceManager.callRecursive("getDevSupportManager");
+      RNObject devSupportManager = getDevSupportManager();
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
@@ -349,9 +357,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
-      mReactInstanceManager.call("destroy");
-    }
+    destroyReactInstanceManager();
 
     mHandler.removeCallbacksAndMessages(null);
     mLoadingHandler.removeCallbacksAndMessages(null);
@@ -374,6 +380,12 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   public boolean isDebugModeEnabled() {
     return ExponentManifest.isDebugModeEnabled(mManifest);
+  }
+
+  protected void destroyReactInstanceManager() {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("destroy");
+    }
   }
 
   protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
@@ -452,6 +464,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
       builder.call("setCurrentActivity", this);
     }
+
+    // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
+    builder.call("setInitialLifecycleState", LifecycleState.RESUMED);
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -692,6 +707,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     } else {
       return PackageManager.PERMISSION_DENIED;
     }
+  }
+
+  public RNObject getDevSupportManager() {
+    return mReactInstanceManager.callRecursive("getDevSupportManager");
   }
 
   // deprecated in favor of Expo.Linking.makeUrl

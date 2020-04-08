@@ -1,76 +1,46 @@
 'use strict';
 
-import { ScreenOrientation } from 'expo';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { Platform } from 'react-native';
 
 export const name = 'ScreenOrientation';
 
-const convertToCoarseOrientation = orientation => {
-  if (
-    orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
-    orientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
-  ) {
-    return ScreenOrientation.Orientation.PORTRAIT;
-  } else if (
-    orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-    orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT
-  ) {
-    return ScreenOrientation.Orientation.LANDSCAPE;
-  } else {
-    return orientation;
-  }
-};
-
 // Wait until we are in desiredOrientation
 // Fail if we are not in a validOrientation
 const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientations }) => {
-  if (Platform.OS === 'ios' && desiredOrientations) {
-    // ios can only detect orientation of coarse granularity (ie) 'PORTRAIT'/'LANDSCAPE'
-    desiredOrientations = desiredOrientations.map(orientation =>
-      convertToCoarseOrientation(orientation)
-    );
-  }
-  if (Platform.OS === 'ios' && validOrientations) {
-    // ios can only detect orientation of coarse granularity (ie) 'PORTRAIT'/'LANDSCAPE'
-    validOrientations = validOrientations.map(orientation =>
-      convertToCoarseOrientation(orientation)
-    );
-  }
   return new Promise(async function(resolve, reject) {
     let subscriptionCancelled = false;
-    const subscription = ScreenOrientation.addOrientationChangeListener(update => {
-      const { orientationInfo, orientationLock } = update;
-      const { orientation } = orientationInfo;
-      if (validOrientations && !validOrientations.includes(orientation)) {
-        reject(new Error(`Should not have received an orientation of ${orientation}`));
-      }
+    const subscription = ScreenOrientation.addOrientationChangeListener(
+      ({ orientationInfo, orientationLock }) => {
+        const { orientation } = orientationInfo;
+        if (validOrientations && !validOrientations.includes(orientation)) {
+          reject(new Error(`Should not have received an orientation of ${orientation}`));
+        }
+        if (desiredOrientations && !desiredOrientations.includes(orientation)) {
+          return;
+        } else if (desiredOrientationLock && orientationLock !== desiredOrientationLock) {
+          return;
+        }
 
-      if (desiredOrientations && !desiredOrientations.includes(orientation)) {
-        return;
-      } else if (desiredOrientationLock && orientationLock !== desiredOrientationLock) {
-        return;
-      }
+        // We have met all the desired orientation conditions
+        // remove itself
+        if (!subscriptionCancelled) {
+          ScreenOrientation.removeOrientationChangeListener(subscription);
+          subscriptionCancelled = true;
+        }
 
-      // We have met all the desired orientation conditions
-      // remove itself
-      if (!subscriptionCancelled) {
-        ScreenOrientation.removeOrientationChangeListener(subscription);
-        subscriptionCancelled = true;
+        // resolve promise
+        resolve();
       }
-
-      // resolve promise
-      resolve();
-    });
+    );
 
     if (desiredOrientationLock) {
       // set the screen orientation to desired orientation lock
       await ScreenOrientation.lockAsync(desiredOrientationLock);
     }
 
-    const orientationInfo = await ScreenOrientation.getOrientationAsync();
-    const { orientation } = orientationInfo;
+    const orientation = await ScreenOrientation.getOrientationAsync();
     const orientationLock = await ScreenOrientation.getOrientationLockAsync();
-
     if (desiredOrientations && !desiredOrientations.includes(orientation)) {
       return;
     } else if (desiredOrientationLock && orientationLock !== desiredOrientationLock) {
@@ -99,9 +69,15 @@ export function test(t) {
           desiredOrientations: [desiredOrientation],
         });
       });
-      t.afterEach(async () => {
+
+      t.afterEach(() => {
         ScreenOrientation.removeOrientationChangeListeners();
       });
+
+      t.afterAll(async () => {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+      });
+
       t.it(
         'Sets screen to landscape orientation and gets the correct orientationLock',
         async () => {
@@ -127,13 +103,8 @@ export function test(t) {
           validOrientations,
         });
 
-        const orientationInfo = await ScreenOrientation.getOrientationAsync();
-        const { orientation } = orientationInfo;
-        // ios can only detect orientation with coarse granularity
-        t.expect([
-          ScreenOrientation.Orientation.LANDSCAPE_LEFT,
-          ScreenOrientation.Orientation.LANDSCAPE,
-        ]).toContain(orientation);
+        const orientation = await ScreenOrientation.getOrientationAsync();
+        t.expect(orientation).toBe(ScreenOrientation.Orientation.LANDSCAPE_LEFT);
       });
 
       // We rely on RN to emit `didUpdateDimensions`
@@ -144,18 +115,11 @@ export function test(t) {
         async () => {
           const callListenerAsync = new Promise(async function(resolve, reject) {
             // Register for screen orientation changes
-            ScreenOrientation.addOrientationChangeListener(update => {
-              const { orientationInfo } = update;
+            ScreenOrientation.addOrientationChangeListener(({ orientationInfo }) => {
               const { orientation } = orientationInfo;
-              if (
-                orientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
-                orientation === ScreenOrientation.Orientation.PORTRAIT // ios can only detect orientation with coarse granularity
-              ) {
+              if (orientation === ScreenOrientation.Orientation.PORTRAIT_UP) {
                 // orientation update has not happened yet
-              } else if (
-                orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-                orientation === ScreenOrientation.Orientation.LANDSCAPE // ios can only detect orientation with coarse granularity
-              ) {
+              } else if (orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT) {
                 resolve();
               } else {
                 reject(new Error(`Should not be in orientation: ${orientation}`));
@@ -208,7 +172,7 @@ export function test(t) {
           ];
           const validOrientations = [
             ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
-            ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+            ScreenOrientation.Orientation.LANDSCAPE_LEFT,
             ScreenOrientation.Orientation.PORTRAIT_UP,
           ];
           await applyAsync({ desiredOrientations, validOrientations });
@@ -343,7 +307,7 @@ export function test(t) {
 
       t.it('throws an error when asked for non-lock values', async () => {
         // Expect non-lock values to throw an error
-        const notLocks = ['FOO', 3];
+        const notLocks = ['FOO', 99, -1];
         for (const notLock of notLocks) {
           let hasError = false;
           try {

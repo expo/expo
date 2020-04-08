@@ -17,9 +17,9 @@
 #import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
+#import "EXScopedFirebaseCore.h"
 
 #import "EXScopedReactNativeAdapter.h"
-#import "EXModuleRegistryBinding.h"
 #import "EXExpoUserNotificationCenterProxy.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
@@ -109,18 +109,19 @@
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
-
+  
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
   EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:errorRecovery];
 #endif
   
-  return moduleRegistry;
-}
+#if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
+  EXScopedFirebaseCore *firebaseCoreModule = [[EXScopedFirebaseCore alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  [moduleRegistry registerExportedModule:firebaseCoreModule];
+  [moduleRegistry registerInternalModule:firebaseCoreModule];
+#endif
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  return [[super extraModulesForModuleRegistry:moduleRegistry] arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
+  return moduleRegistry;
 }
 
 @end

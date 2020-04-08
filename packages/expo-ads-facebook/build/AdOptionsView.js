@@ -1,7 +1,7 @@
+import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from '@unimodules/core';
 import { AdOptionsViewContext } from './withNativeAd';
 var NativeOrientation;
 (function (NativeOrientation) {
@@ -25,7 +25,7 @@ export default class AdOptionsView extends React.Component {
             };
         return (<AdOptionsViewContext.Consumer>
         {(contextValue) => {
-            let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
+            const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
             return (<NativeAdOptionsView {...this.props} style={[this.props.style, style]} nativeAdViewTag={findNodeHandle(adViewRef.current)} orientation={this.shouldAlignHorizontal()
                 ? NativeOrientation.Horizontal
                 : NativeOrientation.Vertical}/>);
