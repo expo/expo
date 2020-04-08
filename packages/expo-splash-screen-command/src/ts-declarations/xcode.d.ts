@@ -84,7 +84,7 @@ declare module 'xcode' {
     sourceTree: '"<group>"' | unknown;
   }
 
-  class project {
+  export class project {
     constructor(pbxprojPath: string);
 
     /**
@@ -171,20 +171,34 @@ declare module 'xcode' {
     removeFromPbxResourcesBuildPhase(file: unknown): void;
     addToPbxFrameworksBuildPhase(file: unknown): void;
     removeFromPbxFrameworksBuildPhase(file: unknown): void;
-    addXCConfigurationList(configurationObjectsArray: unknown, defaultConfigurationName: unknown, comment: unknown): {
-        uuid: unknown;
-        xcConfigurationList: {
-          isa: string;
-          buildConfigurations: unknown[];
-          defaultConfigurationIsVisible: number;
-          defaultConfigurationName: unknown;
-        };
+    addXCConfigurationList(
+      configurationObjectsArray: unknown,
+      defaultConfigurationName: unknown,
+      comment: unknown
+    ): {
+      uuid: unknown;
+      xcConfigurationList: {
+        isa: string;
+        buildConfigurations: unknown[];
+        defaultConfigurationIsVisible: number;
+        defaultConfigurationName: unknown;
       };
-    addTargetDependency(target: unknown, dependencyTargets: unknown): {
+    };
+    addTargetDependency(
+      target: unknown,
+      dependencyTargets: unknown
+    ): {
       uuid: unknown;
       target: unknown;
     };
-    addBuildPhase(filePathsArray: unknown, buildPhaseType: unknown, comment: unknown, target: unknown, optionsOrFolderType: unknown, subfolderPath: unknown): {
+    addBuildPhase(
+      filePathsArray: unknown,
+      buildPhaseType: unknown,
+      comment: unknown,
+      target: unknown,
+      optionsOrFolderType: unknown,
+      subfolderPath: unknown
+    ): {
       uuid: unknown;
       buildPhase: {
         isa: unknown;
@@ -208,9 +222,9 @@ declare module 'xcode' {
     pbxXCConfigurationList(): unknown;
     pbxGroupByName(name: unknown): unknown;
     /**
-    * @param targetName in most cases it's the name of the application
-    */
-    pbxTargetByName(targetName: string): PBXNativeTarget?;
+     * @param targetName in most cases it's the name of the application
+     */
+    pbxTargetByName(targetName: string): PBXNativeTarget | undefined;
     findTargetKey(name: unknown): string;
     pbxItemByComment(name: unknown, pbxSectionName: unknown): unknown;
     pbxSourcesBuildPhaseObj(target: unknown): unknown;
@@ -237,7 +251,11 @@ declare module 'xcode' {
      * Checks whether there is a file with given `filePath` in the project.
      */
     hasFile(filePath): PBXFile | false;
-    addTarget(name: unknown, type: unknown, subfolder: unknown): {
+    addTarget(
+      name: unknown,
+      type: unknown,
+      subfolder: unknown
+    ): {
       uuid: unknown;
       pbxNativeTarget: {
         isa: string;
@@ -284,7 +302,9 @@ declare module 'xcode' {
      */
     findPBXGroupKey(criteria: { name?: string; path?: string }): UUID | undefined;
     findPBXVariantGroupKey(criteria: unknown): string;
-    addLocalizationVariantGroup(name: unknown): {
+    addLocalizationVariantGroup(
+      name: unknown
+    ): {
       uuid: unknown;
       fileRef: unknown;
       basename: unknown;
@@ -294,12 +314,11 @@ declare module 'xcode' {
     hasKnownRegion(name: unknown): boolean;
     getPBXObject(name: unknown): unknown;
     /**
-    * - creates `PBXFile`
-    * - adds to `PBXFileReference` section
-    * - adds to `PBXGroup` or `PBXVariantGroup` if applicable
-    * @param group 
-    * @returns `null` if file is already in `pbxproj`.
-    */
+     * - creates `PBXFile`
+     * - adds to `PBXFileReference` section
+     * - adds to `PBXGroup` or `PBXVariantGroup` if applicable
+     * @returns `null` if file is already in `pbxproj`.
+     */
     addFile(
       path: string,
       group?: string,
@@ -315,11 +334,11 @@ declare module 'xcode' {
         compilerFLags?: string;
         embed?: boolean;
         sign?: boolean;
-      },
+      }
     ): PBXFile | null;
     removeFile(path: unknown, group: unknown, opt: unknown): unknown;
     getBuildProperty(prop: unknown, build: unknown): unknown;
-    getBuildConfigByName(name: unknown): {};
+    getBuildConfigByName(name: unknown): object;
     addDataModelDocument(filePath: unknown, group: unknown, opt: unknown): unknown;
     addTargetAttribute(prop: unknown, value: unknown, target: unknown): void;
     removeTargetAttribute(prop: unknown, target: unknown): void;
