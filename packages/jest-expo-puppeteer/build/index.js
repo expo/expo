@@ -41,7 +41,6 @@ function ofCommands(commands) {
 function withExpoPuppeteer(config = {}) {
     const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot } = config, partConfig = __rest(config, ["mode", "preventRebuild", "server", "launch", "projectRoot"]);
     const projectPath = path_1.default.resolve(projectRoot || process.cwd());
-    const { exp: { web = {} }, } = config_1.readConfigJson(projectPath);
     const { port: serverPort = 5000 } = server;
     let defaultURL;
     let command;
@@ -49,7 +48,8 @@ function withExpoPuppeteer(config = {}) {
     process.env.WEB_PORT = serverPort;
     if (mode === 'production') {
         defaultURL = `http://localhost:${serverPort}`;
-        const outputBuildPath = (web.build || {}).output || 'web-build';
+        const { exp } = config_1.getConfig(projectPath, { skipSDKVersionRequirement: true });
+        const outputBuildPath = config_1.getWebOutputPath(exp);
         const buildFolder = path_1.default.resolve(projectPath, outputBuildPath);
         const serveCommand = `serve ${buildFolder}`;
         const commands = [serveCommand];
