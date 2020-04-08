@@ -1,111 +1,139 @@
+import { B } from '@expo/html-elements';
+import * as Application from 'expo-application';
+import { getRedirectUrl, useAuthRequest } from 'expo-auth-session';
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import * as AuthSession from 'expo-auth-session';
+import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
-import Constants from 'expo-constants';
+import Button from '../components/Button';
 
-const auth0ClientId = '8wmGum25h3KU2grnmZtFvMQeitmIdSDS';
-const auth0Domain = 'https://expo-testing.auth0.com';
+const GUID = '629683148649-29390lifpv9kcp042bc23877isouoviq';
 
-/**
- * Converts an object to a query string.
- */
-function toQueryString(params: object) {
+const G_PROJECT_ID = `${GUID}.apps.googleusercontent.com`;
+
+export default function AuthSessionScreen() {
+  const [result, setResult] = React.useState<null | any>(null);
+  const [useProxy, setProxy] = React.useState<boolean>(false);
+
+  const redirectUri = React.useMemo(
+    () =>
+      Platform.select({
+        web: getRedirectUrl('redirect'),
+        default: useProxy ? getRedirectUrl() : `${Application.applicationId}://redirect`,
+      }),
+    [useProxy]
+  );
+
+  const googleRedirectUri = React.useMemo(
+    () =>
+      Platform.select({
+        web: getRedirectUrl('redirect'),
+        default: useProxy ? getRedirectUrl() : `com.googleusercontent.apps.${GUID}:/oauthredirect`,
+      }),
+    [useProxy]
+  );
+
+  const spotifyRequest = useAuthRequest({
+    clientId: 'cc809bf3e0a74f288c01fe14c3f3fbb3',
+    redirectUri,
+    scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
+    clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
+    discovery: {
+      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+    },
+  });
+
+  const identityRequest = useAuthRequest({
+    clientId: 'native.code',
+    redirectUri,
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
+    clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
+    issuer: 'https://demo.identityserver.io',
+  });
+
+  const googleRequest = useAuthRequest({
+    clientId: G_PROJECT_ID,
+    redirectUri: googleRedirectUri,
+    scopes: ['profile', 'email', 'openid'],
+    issuer: 'https://accounts.google.com',
+  });
+
   return (
-    '?' +
-    Object.entries(params)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-      .join('&')
+    <ScrollView style={{ flex: 1 }}>
+      {Platform.OS !== 'web' && (
+        <TitleSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />
+      )}
+      <Button
+        title="Spotify"
+        buttonStyle={styles.button}
+        onPress={async () => {
+          setResult(
+            await spotifyRequest.performAsync({
+              useProxy,
+            })
+          );
+        }}
+      />
+      <Button
+        title="Identity"
+        buttonStyle={styles.button}
+        onPress={async () => {
+          setResult(
+            await identityRequest.performAsync({
+              useProxy,
+            })
+          );
+        }}
+      />
+      <Button
+        title="Google"
+        buttonStyle={styles.button}
+        onPress={async () => {
+          setResult(
+            await googleRequest.performAsync({
+              useProxy,
+            })
+          );
+        }}
+      />
+      {result ? <Text style={styles.text}>Result: {JSON.stringify(result, null, 2)}</Text> : null}
+    </ScrollView>
   );
 }
 
-interface State {
-  result?: any;
-  invalidExperienceId: boolean;
+function TitleSwitch({ title, value, setValue }: any) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 12,
+        justifyContent: 'space-between',
+      }}>
+      <B style={{ marginRight: 12 }}>{title}</B>
+      <Switch value={value} onValueChange={value => setValue(value)} />
+    </View>
+  );
 }
 
-export default class AuthSessionScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'AuthSession',
-  };
-
-  readonly state: State = {
-    invalidExperienceId: Constants.manifest.id !== '@community/native-component-list',
-  };
-
-  render() {
-    if (this.state.invalidExperienceId) {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.oopsTitle}>Hello, developer person!</Text>
-          <Text style={styles.oopsText}>
-            The experience id {Constants.manifest.id} will not work with this due to the authorized
-            callback URL configuration on Auth0{' '}
-          </Text>
-          <Text style={styles.oopsText}>
-            Sign in as @community to use this example, or change the Auth0 client id and domain in
-            AuthSessionScreen.js
-          </Text>
-        </View>
-      );
-    }
-    return (
-      <View style={styles.container}>
-        <Button
-          title="Test auto discovery"
-          onPress={async () => {
-            const issuer = 'https://accounts.google.com';
-            const config = await AuthSession.fetchDiscoveryAsync(issuer);
-            alert(JSON.stringify(config, null, 2));
-          }}
-        />
-        <Button title="Authenticate using an external service" onPress={this._handlePressAsync} />
-        {this.state.result ? (
-          <Text style={styles.text}>Result: {JSON.stringify(this.state.result)}</Text>
-        ) : null}
-        <Text style={styles.faintText}>{AuthSession.getDefaultReturnUrl()}</Text>
-      </View>
-    );
-  }
-
-  _handlePressAsync = async () => {
-    const redirectUrl = AuthSession.getRedirectUrl();
-    const authUrl =
-      `${auth0Domain}/authorize` +
-      toQueryString({
-        client_id: auth0ClientId,
-        response_type: 'token',
-        scope: 'openid name',
-        redirect_uri: redirectUrl,
-      });
-
-    const result = await AuthSession.startAsync({ authUrl });
-    this.setState({ result });
-  };
-}
+AuthSessionScreen.navigationOptions = {
+  title: 'AuthSession',
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    maxWidth: '100%',
+    flexWrap: 'wrap',
+  },
+  button: {
+    marginVertical: 16,
   },
   text: {
     marginVertical: 15,
+    maxWidth: '80%',
     marginHorizontal: 10,
-  },
-  faintText: {
-    color: '#888',
-    marginHorizontal: 30,
-  },
-  oopsTitle: {
-    fontSize: 25,
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  oopsText: {
-    textAlign: 'center',
-    marginTop: 10,
-    marginHorizontal: 30,
   },
 });

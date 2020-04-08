@@ -1,4 +1,4 @@
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
+import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import qs from 'qs';
 
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
@@ -119,9 +119,13 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
 }
 
 export {
+  IssuerOrDiscovery,
+  Discovery,
   resolveDiscoveryAsync,
   fetchDiscoveryAsync,
-  Discovery,
   DiscoveryDocument,
-  IssuerOrDiscovery,
 } from './Discovery';
+
+export * from './AuthRequest';
+
+export * from './AuthRequestHooks';

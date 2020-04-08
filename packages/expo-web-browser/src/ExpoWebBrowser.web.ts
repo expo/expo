@@ -127,7 +127,10 @@ export default {
       popupWindow = window.open(url, undefined, features);
 
       if (!popupWindow) {
-        window.open(url, '_blank');
+        throw new CodedError(
+          'ERR_WEB_BROWSER_BLOCKED',
+          'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.'
+        );
       }
     }
 

@@ -1,4 +1,4 @@
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
+import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import qs from 'qs';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 let _authLock = false;
@@ -93,4 +93,6 @@ function parseUrl(url) {
     };
 }
 export { resolveDiscoveryAsync, fetchDiscoveryAsync, } from './Discovery';
+export * from './AuthRequest';
+export * from './AuthRequestHooks';
 //# sourceMappingURL=AuthSession.js.map
