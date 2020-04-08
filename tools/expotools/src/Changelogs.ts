@@ -17,11 +17,11 @@ export type ChangelogEntry = {
   /**
    * The pull request number.
    */
-  pullRequest: number;
+  pullRequests?: number[];
   /**
    * GitHub's user name of someone who made this change.
    */
-  author: string;
+  authors: string[];
   /**
    * The changelog section which contains this entry.
    */
@@ -92,6 +92,16 @@ export class Changelog {
       ) {
         const message =
           entry.message[entry.message.length - 1] === '.' ? entry.message : `${entry.message}.`;
+
+        const pullRequestLinks = (entry.pullRequests || [])
+          .map(pullRequest => `[#${pullRequest}](https://github.com/expo/expo/pull/${pullRequest})`)
+          .join(', ');
+
+        const authors = entry.authors
+          .map(author => `[@${author}](https://github.com/${author})`)
+          .join(', ');
+
+        const pullRequestInformations = `${pullRequestLinks} by ${authors}`.trim();
         const newTokens: Markdown.Tokens = [
           {
             type: Markdown.TokenType.LIST_ITEM_START,
@@ -100,7 +110,7 @@ export class Changelog {
           },
           {
             type: Markdown.TokenType.PARAGRAPH,
-            text: `${message} ([#${entry.pullRequest}](https://github.com/expo/expo/pull/${entry.pullRequest}) by [@${entry.author}](https://github.com/${entry.author}))`,
+            text: `${message} (${pullRequestInformations})`,
           },
           {
             type: Markdown.TokenType.LIST_ITEM_END,

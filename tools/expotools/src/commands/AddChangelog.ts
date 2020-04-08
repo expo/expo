@@ -9,8 +9,10 @@ import * as Directories from '../Directories';
 
 type ActionOptions = {
   package: string;
-  pullRequest: number;
-  author: string;
+  // true means that the user didn't use --pull-request or --no-pull-request
+  // unfortunately, we can't change this value
+  pullRequest: number[] | true;
+  author: string[];
   entry: string;
   type: string;
   version: string;
@@ -26,19 +28,25 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
     });
   }
 
-  if (!options.pullRequest) {
+  if (options.pullRequest === true) {
     questions.push({
-      type: 'number',
+      type: 'input',
       name: 'pullRequest',
       message: 'What is the pull request number?',
+      filter: pullRequests => pullRequests.split(',').map(pullrequest => parseInt(pullrequest, 10)),
     });
   }
 
-  if (!options.author) {
+  if (!options.author.length) {
     questions.push({
       type: 'input',
       name: 'author',
       message: 'Who is the author?',
+      filter: authors =>
+        authors
+          .split(',')
+          .map(author => author.trim())
+          .filter(Boolean),
     });
   }
 
@@ -82,11 +90,11 @@ async function action(options: ActionOptions) {
   }
 
   if (
-    !options.author ||
+    !options.author.length ||
     !options.entry ||
     !options.package ||
-    !options.pullRequest ||
-    !options.type
+    !options.type ||
+    options.pullRequest === true
   ) {
     throw new Error(
       `Must run with --package <string> --entry <string> --author <string> --pull-request <number> --type <string>`
@@ -105,10 +113,10 @@ async function action(options: ActionOptions) {
 
   const changelog = Changelogs.loadFrom(packagePath);
   const newEntry = {
-    author: options.author,
+    authors: options.author,
     message: options.entry,
-    pullRequest: options.pullRequest,
     version: options.version,
+    pullRequests: options.pullRequest,
     type,
   };
 
@@ -125,8 +133,30 @@ export default (program: Command) => {
       'Package name. For example `expo-image-picker` or `unimodules-file-system-interface.'
     )
     .option('-e, --entry <string>', 'Change note to put into the changelog.')
-    .option('-a, --author <string>', "GitHub's user name of someone who made this change.")
-    .option('-p, --pull-request <number>', 'Pull request number.')
+    .option(
+      '-a, --author <string>',
+      "GitHub's user name of someone who made this change. Can be passed multiple times.",
+      (value, previous) => previous.concat(value),
+      []
+    )
+    .option('-r, --pull-request <number>', 'Pull request number.', (value, previous) => {
+      if (typeof previous === 'boolean') {
+        return [parseInt(value, 10)];
+      }
+
+      return previous.concat(parseInt(value, 10));
+    })
+    .option(
+      '--no-pull-request',
+      'If changes were pushed directly to the master.',
+      (value, previous) => {
+        // we need to change how no-flag works in commander to be able to pass an array
+        if (!value) {
+          return [];
+        }
+        return previous;
+      }
+    )
     .option(
       '-t, --type <string>',
       'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change.'
