@@ -92,4 +92,5 @@ function parseUrl(url) {
         params,
     };
 }
+export { resolveDiscoveryAsync, fetchDiscoveryAsync, } from './Discovery';
 //# sourceMappingURL=AuthSession.js.map

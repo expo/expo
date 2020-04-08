@@ -51,6 +51,14 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     }
     return (
       <View style={styles.container}>
+        <Button
+          title="Test auto discovery"
+          onPress={async () => {
+            const issuer = 'https://accounts.google.com';
+            const config = await AuthSession.fetchDiscoveryAsync(issuer);
+            alert(JSON.stringify(config, null, 2));
+          }}
+        />
         <Button title="Authenticate using an external service" onPress={this._handlePressAsync} />
         {this.state.result ? (
           <Text style={styles.text}>Result: {JSON.stringify(this.state.result)}</Text>
