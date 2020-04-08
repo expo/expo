@@ -21,12 +21,7 @@ function main(args) {
         try {
             yield xdl_1.Webpack.bundleAsync(projectRoot, {
                 nonInteractive: true,
-                // @ts-ignore
-                verbose: true,
                 mode: 'production',
-                webpackEnv: {
-                    removeUnusedImportExports: true,
-                },
             });
             process.exit(0);
         }

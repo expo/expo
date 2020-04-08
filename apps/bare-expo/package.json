@@ -108,6 +108,7 @@
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~37.0.0",
-    "jest-expo-puppeteer": "^0.0.0"
+    "jest-expo-puppeteer": "^1.0.0",
+    "puppeteer": "^2.1.1"
   }
 }
