@@ -607,6 +607,12 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     }
     [urlRequest setHTTPMethod:httpMethod];
   }
+  NSDictionary *headers = options[@"headers"];
+  if (headers != nil) {
+    for (NSString *headerKey in headers) {
+        [urlRequest setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
+    }
+  }
 
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
   NSURLSessionUploadTask *task = [[self _sessionForType:type] uploadTaskWithRequest:urlRequest fromFile:fileUri];
@@ -801,7 +807,14 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
-    downloadTask = [session downloadTaskWithURL:url];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    NSDictionary *headers = options[@"headers"];
+    if (headers != nil) {
+      for (NSString *headerKey in headers) {
+          [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
+      }
+    }
+    downloadTask = [session downloadTaskWithRequest:request];
   }
   EXSessionTaskDelegate *exTask = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
                                                                                            reject:reject
