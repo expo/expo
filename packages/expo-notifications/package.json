@@ -39,7 +39,7 @@
   "gitHead": "760658eab1d3ba6ef334d9779f2c5f28dfafc286",
   "dependencies": {
     "badgin": "^1.1.5",
-    "expo-application": "^2.1.0",
+    "expo-application": "~2.1.1",
     "expo-constants": "<10.0.0",
     "uuid": "^3.4.0"
   },
