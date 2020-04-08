@@ -100,7 +100,7 @@ export class Changelog {
           },
           {
             type: Markdown.TokenType.PARAGRAPH,
-            text: `${message} ([#${entry.pullRequest}](http://github.com/expo/expo/pull/${entry.pullRequest}) by [@${entry.author}](http://github.com/${entry.author}))`,
+            text: `${message} ([#${entry.pullRequest}](https://github.com/expo/expo/pull/${entry.pullRequest}) by [@${entry.author}](https://github.com/${entry.author}))`,
           },
           {
             type: Markdown.TokenType.LIST_ITEM_END,
