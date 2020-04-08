@@ -3,7 +3,7 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "2.105.2"
+fastlane_version "2.141.0"
 default_platform :ios
 
 STAGING_API_URL = 'https://staging.exp.host/'
