@@ -8,7 +8,7 @@ import spawnAsync from '@expo/spawn-async';
 import { Config, UpdateVersions } from '@expo/xdl';
 
 import { Platform, iosAppVersionAsync, androidAppVersionAsync } from '../ProjectVersions';
-import { STAGING_HOST, EXPO_DIR, IOS_DIR, ANDROID_DIR } from '../Constants';
+import { STAGING_API_HOST, EXPO_DIR, IOS_DIR, ANDROID_DIR } from '../Constants';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import getSDKVersionFromBranchNameAsync from '../utils/getSDKVersionFromBranchNameAsync';
 
@@ -102,7 +102,7 @@ async function releaseBuildAsync(platform: Platform, appPath: string, sdkVersion
 }
 
 async function action(options: ActionOptions) {
-  Config.api.host = STAGING_HOST;
+  Config.api.host = STAGING_API_HOST;
 
   const platform = options.platform || await askForPlatformAsync();
   const sdkVersion = await getSDKVersionFromBranchNameAsync() || '20.0.0';
