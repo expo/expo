@@ -1,4 +1,4 @@
-import { AuthResponseError } from './Errors';
+import { AuthResultError } from './Errors';
 export declare type AuthSessionOptions = {
     authUrl: string;
     returnUrl?: string;
@@ -9,7 +9,7 @@ export declare type AuthSessionResult = {
 } | {
     type: 'error' | 'success';
     errorCode: string | null;
-    error?: AuthResponseError | null;
+    error?: AuthResultError | null;
     params: {
         [key: string]: string;
     };

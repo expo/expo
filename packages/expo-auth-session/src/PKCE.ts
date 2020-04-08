@@ -4,6 +4,20 @@ import invariant from 'invariant';
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+async function getRandomValuesAsync(arr) {
+  const orig = arr;
+  if (arr.byteLength !== arr.length) {
+    // Get access to the underlying raw bytes
+    arr = new Uint8Array(arr.buffer);
+  }
+  const bytes = await ExpoRandom.getRandomBytesAsync(arr.length);
+  for (var i = 0; i < bytes.length; i++) {
+    arr[i] = bytes[i];
+  }
+
+  return orig;
+}
+
 function convertBufferToString(buffer: Uint8Array): string {
   const state: string[] = [];
   for (let i = 0; i < buffer.byteLength; i += 1) {
@@ -19,21 +33,6 @@ function convertToUrlSafeString(b64: string): string {
     .replace(/\//g, '_')
     .replace(/=/g, '');
 }
-
-async function getRandomValuesAsync(arr) {
-  const orig = arr;
-  if (arr.byteLength !== arr.length) {
-    // Get access to the underlying raw bytes
-    arr = new Uint8Array(arr.buffer);
-  }
-  const bytes = await ExpoRandom.getRandomBytesAsync(arr.length);
-  for (var i = 0; i < bytes.length; i++) {
-    arr[i] = bytes[i];
-  }
-
-  return orig;
-}
-
 // TODO(Bacon): Change this to be sync in the future when Expo unimodules support sync methods
 export async function generateRandomAsync(size: number): Promise<string> {
   const buffer = new Uint8Array(size);

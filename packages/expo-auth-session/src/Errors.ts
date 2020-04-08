@@ -15,7 +15,7 @@ export interface ResponseErrorConfig extends Record<string, any> {
   error_uri?: string;
 }
 
-export interface AuthResponseErrorConfig extends ResponseErrorConfig {
+export interface AuthResultErrorConfig extends ResponseErrorConfig {
   /**
    * Required only if state is used in the initial request
    */
@@ -95,13 +95,13 @@ export class TokenResponseError extends ResponseError {
 /**
  * Extends https://tools.ietf.org/html/rfc6749#section-5.2
  */
-export class AuthResponseError extends ResponseError {
+export class AuthResultError extends ResponseError {
   /**
    * Required only if state is used in the initial request
    */
   state?: string;
 
-  constructor(response: AuthResponseErrorConfig) {
+  constructor(response: AuthResultErrorConfig) {
     super(response, 'auth');
     this.state = response.state;
   }

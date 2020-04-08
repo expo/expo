@@ -53,7 +53,7 @@ export class TokenResponseError extends ResponseError {
 /**
  * Extends https://tools.ietf.org/html/rfc6749#section-5.2
  */
-export class AuthResponseError extends ResponseError {
+export class AuthResultError extends ResponseError {
     constructor(response) {
         super(response, 'auth');
         this.state = response.state;

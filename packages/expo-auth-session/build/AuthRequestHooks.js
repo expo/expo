@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AuthRequest } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';
 import { requestAsync } from './Fetch';
@@ -39,6 +39,16 @@ export function useJsonFetchRequest(accessToken, requestUrl, headers, method = '
 }
 export function useAuthRequest(config, discovery) {
     const [request, setRequest] = useState(null);
+    const [result, setResult] = useState(null);
+    const promptAsync = useCallback(async (options) => {
+        if (!discovery || !request) {
+            throw new Error('Cannot prompt to authenticate until the request has finished loading.');
+        }
+        console.log(request);
+        const result = await request?.promptAsync(discovery, options);
+        setResult(result);
+        return result;
+    }, [request?.url, discovery?.authorizationEndpoint]);
     useEffect(() => {
         if (config && discovery) {
             AuthRequest.buildAsync({
@@ -56,6 +66,6 @@ export function useAuthRequest(config, discovery) {
         JSON.stringify(config.extraParams || {}),
         config.usePKCE,
     ]);
-    return request;
+    return [request, result, promptAsync];
 }
 //# sourceMappingURL=AuthRequestHooks.js.map

@@ -1,35 +1,14 @@
 import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
+import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
 import { resolveDiscoveryAsync } from './Discovery';
-import { AuthResponseError } from './Errors';
+import { AuthResultError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
-export var CodeChallengeMethod;
-(function (CodeChallengeMethod) {
-    CodeChallengeMethod["S256"] = "S256";
-    CodeChallengeMethod["Plain"] = "plain";
-})(CodeChallengeMethod || (CodeChallengeMethod = {}));
-/**
- * The client informs the authorization server of the
- * desired grant type by using the a response type.
- *
- * https://tools.ietf.org/html/rfc6749#section-3.1.1
- */
-export var ResponseType;
-(function (ResponseType) {
-    /**
-     * For requesting an authorization code as described by [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
-     */
-    ResponseType["Code"] = "code";
-    /**
-     * for requesting an access token (implicit grant) as described by [Section 4.2.1](https://tools.ietf.org/html/rfc6749#section-4.2.1).
-     */
-    ResponseType["Token"] = "token";
-})(ResponseType || (ResponseType = {}));
 /**
  * Represents the authorization request.
  * For more information look at
@@ -76,13 +55,17 @@ export class AuthRequest {
             usePKCE: this.usePKCE,
         };
     }
-    async promptAsync(discovery, { url, ...options }) {
-        // Reuse the preloaded url
-        if (!(url ?? this.url)) {
-            return this.promptAsync(discovery, {
-                ...options,
-                url: this.url ?? (await this.buildUrlAsync(discovery)),
-            });
+    async promptAsync(discovery, { url, ...options } = {}) {
+        if (!url) {
+            if (!this.url) {
+                // Generate a new url
+                return this.promptAsync(discovery, {
+                    ...options,
+                    url: await this.buildUrlAsync(discovery),
+                });
+            }
+            // Reuse the preloaded url
+            url = this.url;
         }
         // Prevent accidentally starting to an empty url
         if (!url) {
@@ -126,24 +109,20 @@ export class AuthRequest {
         const { params, errorCode } = QueryParams.getQueryParams(url);
         const { state, error = errorCode } = params;
         const shouldNotify = state === this.state;
+        let parsedError = null;
         if (!shouldNotify) {
-            throw new Error('Cached state and returned state do not match.');
+            throw new Error('Cross-Site request verification failed. Cached state and returned state do not match.');
         }
         else if (error) {
-            return {
-                type: 'error',
-                errorCode,
-                error: new AuthResponseError({ error, ...params }),
-                url,
-                params,
-            };
+            parsedError = new AuthResultError({ error, ...params });
         }
         return {
-            type: 'success',
-            errorCode,
-            error: null,
+            type: parsedError ? 'error' : 'success',
+            error: parsedError,
             url,
             params,
+            // Return errorCode for legacy
+            errorCode,
         };
     }
     async buildUrlAsync(discovery) {
@@ -168,9 +147,9 @@ export class AuthRequest {
                 params[extra] = request.extraParams[extra];
             }
         }
-        // These overwrite any extra params
         params = {
             ...params,
+            // These overwrite any extra params
             redirect_uri: request.redirectUri,
             client_id: request.clientId,
             response_type: request.responseType,

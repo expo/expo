@@ -1,17 +1,16 @@
-import { B } from '@expo/html-elements';
 import * as Application from 'expo-application';
-import { getRedirectUrl, AuthRequest, useDiscovery, useAuthRequest } from 'expo-auth-session';
+import { getRedirectUrl, useAuthRequest, useDiscovery } from 'expo-auth-session';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import Button from '../components/Button';
+import TitleSwitch from '../components/TitleSwitch';
 
 const GUID = '629683148649-29390lifpv9kcp042bc23877isouoviq';
 
 const G_PROJECT_ID = `${GUID}.apps.googleusercontent.com`;
 
 export default function AuthSessionScreen() {
-  const [result, setResult] = React.useState<null | any>(null);
   const [useProxy, setProxy] = React.useState<boolean>(false);
 
   const redirectUri = React.useMemo(
@@ -37,7 +36,7 @@ export default function AuthSessionScreen() {
     tokenEndpoint: 'https://accounts.spotify.com/api/token',
   };
 
-  const spotifyRequest = useAuthRequest(
+  const [, spotifyResult, spotifyPromptAsync] = useAuthRequest(
     {
       clientId: 'cc809bf3e0a74f288c01fe14c3f3fbb3',
       redirectUri,
@@ -49,7 +48,7 @@ export default function AuthSessionScreen() {
 
   const identityDiscovery = useDiscovery('https://demo.identityserver.io');
 
-  const identityRequest = useAuthRequest(
+  const [, identityResult, identityPromptAsync] = useAuthRequest(
     {
       clientId: 'native.code',
       redirectUri,
@@ -61,7 +60,7 @@ export default function AuthSessionScreen() {
 
   const googleDiscovery = useDiscovery('https://accounts.google.com');
 
-  const googleRequest = useAuthRequest(
+  const [, googleResult, googlePromptAsync] = useAuthRequest(
     {
       clientId: G_PROJECT_ID,
       redirectUri: googleRedirectUri,
@@ -76,10 +75,8 @@ export default function AuthSessionScreen() {
     redirectUri: googleRedirectUri,
     scopes: ['profile', 'email', 'openid'],
   }, 'https://accounts.google.com').then(request => {
-
   })
   */
-
   return (
     <ScrollView style={{ flex: 1 }}>
       {Platform.OS !== 'web' && (
@@ -88,54 +85,33 @@ export default function AuthSessionScreen() {
       <Button
         title="Spotify"
         buttonStyle={styles.button}
-        onPress={async () => {
-          setResult(
-            await spotifyRequest.promptAsync({
-              useProxy,
-            })
-          );
-        }}
+        onPress={() => spotifyPromptAsync({ useProxy })}
       />
+      <Result title="Spotify" result={spotifyResult} />
       <Button
         title="Identity"
         buttonStyle={styles.button}
-        onPress={async () => {
-          setResult(
-            await identityRequest.promptAsync({
-              useProxy,
-            })
-          );
-        }}
+        onPress={() => identityPromptAsync({ useProxy })}
       />
+      <Result title="Identity" result={identityResult} />
       <Button
         title="Google"
         buttonStyle={styles.button}
-        onPress={async () => {
-          setResult(
-            await googleRequest.promptAsync({
-              useProxy,
-            })
-          );
-        }}
+        onPress={() => googlePromptAsync({ useProxy })}
       />
-      {result ? <Text style={styles.text}>Result: {JSON.stringify(result, null, 2)}</Text> : null}
+      <Result title="Google" result={googleResult} />
     </ScrollView>
   );
 }
 
-function TitleSwitch({ title, value, setValue }: any) {
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 12,
-        justifyContent: 'space-between',
-      }}>
-      <B style={{ marginRight: 12 }}>{title}</B>
-      <Switch value={value} onValueChange={value => setValue(value)} />
-    </View>
-  );
+function Result({ title, result }: any) {
+  if (result)
+    return (
+      <Text style={styles.text}>
+        {title}: {JSON.stringify(result, null, 2)}
+      </Text>
+    );
+  return null;
 }
 
 AuthSessionScreen.navigationOptions = {

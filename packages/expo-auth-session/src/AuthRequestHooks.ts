@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { AuthRequest, AuthRequestConfig } from './AuthRequest';
+import { AuthRequest } from './AuthRequest';
+import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
+import { AuthSessionResult } from './AuthSession.types';
 import { Discovery, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
 import { Headers, requestAsync } from './Fetch';
 
@@ -53,8 +55,26 @@ export function useJsonFetchRequest<T>(
 export function useAuthRequest(
   config: AuthRequestConfig,
   discovery: Discovery | null
-): AuthRequest | null {
+): [
+  AuthRequest | null,
+  AuthSessionResult | null,
+  (options: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+] {
   const [request, setRequest] = useState<AuthRequest | null>(null);
+  const [result, setResult] = useState<AuthSessionResult | null>(null);
+
+  const promptAsync = useCallback(
+    async (options: AuthRequestPromptOptions) => {
+      if (!discovery || !request) {
+        throw new Error('Cannot prompt to authenticate until the request has finished loading.');
+      }
+      console.log(request);
+      const result = await request?.promptAsync(discovery, options);
+      setResult(result);
+      return result;
+    },
+    [request?.url, discovery?.authorizationEndpoint]
+  );
 
   useEffect(() => {
     if (config && discovery) {
@@ -77,5 +97,5 @@ export function useAuthRequest(
     config.usePKCE,
   ]);
 
-  return request;
+  return [request, result, promptAsync];
 }

@@ -6,3 +6,4 @@ export declare function getRedirectUrl(path?: string): string;
 export { IssuerOrDiscovery, Discovery, resolveDiscoveryAsync, fetchDiscoveryAsync, DiscoveryDocument, } from './Discovery';
 export * from './AuthRequest';
 export * from './AuthRequestHooks';
+export { AuthRequestConfig, CodeChallengeMethod, ResponseType, AuthRequestPromptOptions, } from './AuthRequest.types';
