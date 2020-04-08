@@ -8,7 +8,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -53,23 +53,28 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ```javascript
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Platform, Text, View } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 
 /* @info Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a> */
 const FB_APP_ID = 'YOUR_APP_ID';
+/* @end */
+
+/* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
 export default function App() {
   const [result, setResult] = React.useState(null);
 
   const handlePressAsync = async () => {
-    let redirectUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
+    let managedUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
 
     let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync(
       /* @end */ {
         /* @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in) */ /* @end */
-
+        returnUrl: Platform.select({ web: redirectUrl }),
         authUrl:
           /* @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.*/ `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` /* @end */ +
           `&client_id=${FB_APP_ID}` +
@@ -142,9 +147,20 @@ Cancels an active `AuthSession` if there is one. No return value, but if there i
 
 ### `AuthSession.getRedirectUrl()`
 
-Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`.
+```ts
+AuthSession.getRedirectUrl(extraPath?: string): string
+```
 
-> **Note** This method will throw an exception if you're using the bare workflow.
+Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
+
+> **Note** This method will throw an exception if you're using the bare workflow on native.
+
+```js
+const url = AuthSession.getRedirectUrl('redirect');
+
+// Managed: https://auth.expo.io/@your-username/your-app-slug/redirect
+// Web: https://localhost:19006/redirect
+```
 
 ## Usage in the bare React Native app
 

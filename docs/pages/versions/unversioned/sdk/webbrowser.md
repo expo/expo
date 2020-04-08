@@ -93,7 +93,35 @@ On iOS:
 
 ### `WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
-Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`. The user will be asked whether to allow the app to authenticate using the given url. Unavailable on Android.
+**On iOS:**
+
+Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater, and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app to authenticate using the given url.
+
+**On Android:**
+
+This will be done using a "custom Chrome tabs" browser, [AppState][d-appstate], and [Linking][d-linking] APIs.
+
+**On web:**
+
+> 🚨 This API can only be used in a secure environment (`https`). You can use `expo start:web --https` to test this.
+
+This will use the browser's [`window.open()`][d-windowopen] API.
+
+- _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.
+- _Mobile_: This will open a new tab in the browser which can be closed using `WebBrowser.maybeCompleteAuthSession()`.
+
+How this works on web:
+
+- A crypto state will be created for verifying the redirect.
+  - This means you need to run with `expo start:web --https`.
+- The state will be added to the window's `localstorage`. This ensures that auth cannot complete unless it's done from a page running with the same origin as it was started. Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession` must be invoked on a page hosted from the origin `https://localhost:19006`. Using a different website, or even a different host like `https://128.0.0.*:19006` for example will not work.
+- A timer will be started to check for every 1000 milliseconds (1 second) to check if the window has been closed by the user. If this happens then a promise will resolve with `{ type: 'dismiss' }`.
+
+🚨 On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which is made inside an async call. This method must be invoked immediately after a user interaction.
+
+[d-windowopen]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open
+[d-appstate]: https://docs.expo.io/versions/latest/react-native/appstate/
+[d-linking]: https://docs.expo.io/versions/latest/sdk/linking/
 
 #### Arguments
 
@@ -106,6 +134,26 @@ Returns a Promise:
 - If the user does not permit the application to authenticate with the given url, the Promise resolved with `{ type: 'cancel' }`.
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
 - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
+
+### `WebBrowser.maybeCompleteAuthSession(options)`
+
+**Web Only**: Possibly completes an authentication session on web in a window popup. The method should be invoked on the page that the window redirects to.
+
+#### Arguments
+
+- **skipRedirectCheck (_boolean_)** -- **optional**: Attempt to close the window without checking to see if the auth redirect matches the cached redirect URL.
+
+Returns a message about why the redirect failed or succeeded:
+
+- **`{ type: 'failed' }`**:
+  - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+  - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR or node environment.
+  - `No auth session is currently in progress`: (the cached state wasn't found in local storage). This can happen if the window redirects to an origin (website) that is different to the initial website origin. If this happens in development, it may be because the auth started on `localhost` and finished on your computer port (Ex: `128.0.0.*`). This is controlled by the `redirectUrl` and `returnUrl`.
+  - `Current URL "<URL>" and original redirect URL "<URL>" do not match.`: This can occur when the redirect URL doesn't match what was initial defined as the `returnUrl`. You can skip this test in development by passing `{ skipRedirectCheck: true }` to the function.
+- **`{ type: 'success' }`**:
+  - The parent window will attempt to close the child window immediately.
+
+If the error `ERR_WEB_BROWSER_REDIRECT` was thrown, it may mean that the parent window was reloaded before the auth was completed. In this case you'll need to close the child window manually.
 
 ### `WebBrowser.warmUpAsync(browserPackage)`
 
