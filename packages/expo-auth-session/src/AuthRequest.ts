@@ -36,6 +36,13 @@ export enum ResponseType {
   Token = 'token',
 }
 
+export type AuthRequestPromptOptions = {
+  url?: string;
+  useProxy?: boolean;
+  showInRecents?: boolean;
+  useRedirect?: boolean;
+};
+
 export interface AuthRequestConfig {
   responseType: ResponseType;
   clientId: string;
@@ -65,6 +72,12 @@ export type AuthResponse = {
  * https://tools.ietf.org/html/rfc6749#section-4.1.1
  */
 export class AuthRequest {
+  static async buildAsync(config: AuthRequestConfig): Promise<AuthRequest> {
+    const request = new AuthRequest(config);
+    await request.buildUrlAsync();
+    return request;
+  }
+
   responseType: ResponseType;
   clientId: string;
   redirectUri: string;
@@ -127,20 +140,18 @@ export class AuthRequest {
     };
   }
 
-  public async performAsync(options: {
-    useProxy?: boolean;
-    showInRecents?: boolean;
-    useRedirect?: boolean;
-  }): Promise<AuthSessionResult> {
+  public async promptAsync({
+    url,
+    ...options
+  }: AuthRequestPromptOptions): Promise<AuthSessionResult> {
     // Reuse the preloaded url
-    const url = this.url ?? (await this.buildUrlAsync());
-    return await this.performWithUrlAsync(url, options);
-  }
+    if (!(url ?? this.url)) {
+      return this.promptAsync({
+        ...options,
+        url: this.url ?? (await this.buildUrlAsync()),
+      });
+    }
 
-  public async performWithUrlAsync(
-    url: string,
-    options: { useProxy?: boolean; showInRecents?: boolean; useRedirect?: boolean }
-  ): Promise<AuthSessionResult> {
     // Prevent accidentally starting to an empty url
     if (!url) {
       throw new Error(
@@ -412,3 +423,16 @@ const authRequestStorageKey = (discoveryId: string, handle: string): string =>
   `${getStorageKey(discoveryId)}_${handle}`;
 const getStorageKey = (discoveryId: string): string => `expo_auth_request_${discoveryId}`;
 const getDiscoveryStorageKey = (): string => `expo_auth_request`;
+
+export function clearQueryParams() {
+  if (Platform.OS !== 'web') return;
+  // Get the full URL.
+  const currURL = window.location.href;
+
+  const url = new window.URL(currURL);
+  // Append the pathname to the origin (i.e. without the search).
+  const nextUrl = url.origin + url.pathname;
+
+  // Here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
+  window.history.pushState({}, window.document.title, nextUrl);
+}

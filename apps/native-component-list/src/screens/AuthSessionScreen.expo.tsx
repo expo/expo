@@ -68,7 +68,7 @@ export default function AuthSessionScreen() {
         buttonStyle={styles.button}
         onPress={async () => {
           setResult(
-            await spotifyRequest.performAsync({
+            await spotifyRequest.promptAsync({
               useProxy,
             })
           );
@@ -79,7 +79,7 @@ export default function AuthSessionScreen() {
         buttonStyle={styles.button}
         onPress={async () => {
           setResult(
-            await identityRequest.performAsync({
+            await identityRequest.promptAsync({
               useProxy,
             })
           );
@@ -90,7 +90,7 @@ export default function AuthSessionScreen() {
         buttonStyle={styles.button}
         onPress={async () => {
           setResult(
-            await googleRequest.performAsync({
+            await googleRequest.promptAsync({
               useProxy,
             })
           );

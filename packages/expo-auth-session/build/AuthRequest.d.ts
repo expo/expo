@@ -20,6 +20,12 @@ export declare enum ResponseType {
      */
     Token = "token"
 }
+export declare type AuthRequestPromptOptions = {
+    url?: string;
+    useProxy?: boolean;
+    showInRecents?: boolean;
+    useRedirect?: boolean;
+};
 export interface AuthRequestConfig {
     responseType: ResponseType;
     clientId: string;
@@ -47,6 +53,7 @@ export declare type AuthResponse = {
  * https://tools.ietf.org/html/rfc6749#section-4.1.1
  */
 export declare class AuthRequest {
+    static buildAsync(config: AuthRequestConfig): Promise<AuthRequest>;
     responseType: ResponseType;
     clientId: string;
     redirectUri: string;
@@ -66,16 +73,7 @@ export declare class AuthRequest {
     discovery?: Discovery;
     constructor(request: AuthRequestConfig);
     getAuthRequestConfigAsync(): Promise<AuthRequestConfig>;
-    performAsync(options: {
-        useProxy?: boolean;
-        showInRecents?: boolean;
-        useRedirect?: boolean;
-    }): Promise<AuthSessionResult>;
-    performWithUrlAsync(url: string, options: {
-        useProxy?: boolean;
-        showInRecents?: boolean;
-        useRedirect?: boolean;
-    }): Promise<AuthSessionResult>;
+    promptAsync({ url, ...options }: AuthRequestPromptOptions): Promise<AuthSessionResult>;
     parseReturnUrlAsync(url: string): Promise<AuthSessionResult>;
     buildUrlAsync(): Promise<string>;
     private getStateAsync;
@@ -85,3 +83,4 @@ export declare class AuthRequest {
     private ensureCodeIsSetupAsync;
 }
 export declare function maybeCompleteAuthRequestAfterRedirectAsync(urlString?: string): Promise<AuthSessionResult | null>;
+export declare function clearQueryParams(): void;

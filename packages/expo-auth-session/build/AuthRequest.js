@@ -56,6 +56,11 @@ export class AuthRequest {
             default: 'com.your.app:/oauthredirect',
         })}`);
     }
+    static async buildAsync(config) {
+        const request = new AuthRequest(config);
+        await request.buildUrlAsync();
+        return request;
+    }
     async getAuthRequestConfigAsync() {
         if (this.usePKCE) {
             await this.ensureCodeIsSetupAsync();
@@ -75,12 +80,14 @@ export class AuthRequest {
             usePKCE: this.usePKCE,
         };
     }
-    async performAsync(options) {
+    async promptAsync({ url, ...options }) {
         // Reuse the preloaded url
-        const url = this.url ?? (await this.buildUrlAsync());
-        return await this.performWithUrlAsync(url, options);
-    }
-    async performWithUrlAsync(url, options) {
+        if (!(url ?? this.url)) {
+            return this.promptAsync({
+                ...options,
+                url: this.url ?? (await this.buildUrlAsync()),
+            });
+        }
         // Prevent accidentally starting to an empty url
         if (!url) {
             throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
@@ -306,4 +313,15 @@ const getDiscoveryId = ({ authorizationEndpoint, }) => {
 const authRequestStorageKey = (discoveryId, handle) => `${getStorageKey(discoveryId)}_${handle}`;
 const getStorageKey = (discoveryId) => `expo_auth_request_${discoveryId}`;
 const getDiscoveryStorageKey = () => `expo_auth_request`;
+export function clearQueryParams() {
+    if (Platform.OS !== 'web')
+        return;
+    // Get the full URL.
+    const currURL = window.location.href;
+    const url = new window.URL(currURL);
+    // Append the pathname to the origin (i.e. without the search).
+    const nextUrl = url.origin + url.pathname;
+    // Here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
+    window.history.pushState({}, window.document.title, nextUrl);
+}
 //# sourceMappingURL=AuthRequest.js.map

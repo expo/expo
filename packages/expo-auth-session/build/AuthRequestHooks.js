@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking, Platform } from 'react-native';
-import { maybeCompleteAuthRequestAfterRedirectAsync, AuthRequest, } from './AuthRequest';
+import { AuthRequest, clearQueryParams, maybeCompleteAuthRequestAfterRedirectAsync, } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';
+import { requestAsync } from './Fetch';
 import * as QueryParams from './QueryParams';
 export function useLinking() {
     const [link, setLink] = useState(null);
@@ -31,17 +32,6 @@ export function useQueryParams() {
     }, [link]);
     return queryParams;
 }
-export function clearQueryParams() {
-    if (Platform.OS !== 'web')
-        return;
-    // Get the full URL.
-    const currURL = window.location.href;
-    const url = new window.URL(currURL);
-    // Append the pathname to the origin (i.e. without the search).
-    const nextUrl = url.origin + url.pathname;
-    // Here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
-    window.history.pushState({}, window.document.title, nextUrl);
-}
 export function useDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
     useEffect(() => {
@@ -50,6 +40,32 @@ export function useDiscovery(issuerOrDiscovery) {
         });
     }, [issuerOrDiscovery]);
     return discovery;
+}
+export function useJsonFetchRequest(accessToken, requestUrl, headers, method = 'GET') {
+    const [json, setJson] = useState(null);
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        if (accessToken) {
+            requestAsync(requestUrl, {
+                // @ts-ignore
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    ...headers,
+                },
+                method,
+                dataType: 'json',
+            })
+                .then(json => {
+                setJson(json);
+                setError(null);
+            })
+                .catch(error => {
+                setJson(null);
+                setError(error);
+            });
+        }
+    }, [accessToken]);
+    return [json, error];
 }
 export function useCompleteRedirect() {
     if (Platform.OS !== 'web')
@@ -71,10 +87,9 @@ export function useAuthRequest(config) {
     const [request, setRequest] = useState(null);
     useEffect(() => {
         if (config) {
-            const authRequest = new AuthRequest({
+            AuthRequest.buildAsync({
                 ...config,
-            });
-            authRequest.buildUrlAsync().then(() => setRequest(authRequest));
+            }).then(request => setRequest(request));
         }
     }, [
         config.clientId,

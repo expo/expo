@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import {
-  maybeCompleteAuthRequestAfterRedirectAsync,
   AuthRequest,
   AuthRequestConfig,
+  clearQueryParams,
+  maybeCompleteAuthRequestAfterRedirectAsync,
 } from './AuthRequest';
 import { AuthSessionResult } from './AuthSession.types';
 import { Discovery, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
+import { Headers, requestAsync } from './Fetch';
 import * as QueryParams from './QueryParams';
 
 export function useLinking(): string | null {
@@ -43,19 +45,6 @@ export function useQueryParams(): Record<string, string> | null {
   return queryParams;
 }
 
-export function clearQueryParams() {
-  if (Platform.OS !== 'web') return;
-  // Get the full URL.
-  const currURL = window.location.href;
-
-  const url = new window.URL(currURL);
-  // Append the pathname to the origin (i.e. without the search).
-  const nextUrl = url.origin + url.pathname;
-
-  // Here you pass the new URL extension you want to appear after the domains '/'. Note that the previous identifiers or "query string" will be replaced.
-  window.history.pushState({}, window.document.title, nextUrl);
-}
-
 export function useDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discovery | null {
   const [discovery, setDiscovery] = useState<Discovery | null>(null);
 
@@ -66,6 +55,40 @@ export function useDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discovery | 
   }, [issuerOrDiscovery]);
 
   return discovery;
+}
+
+export function useJsonFetchRequest<T>(
+  accessToken: string,
+  requestUrl: string,
+  headers: Headers,
+  method: string = 'GET'
+): [T | null, Error | null] {
+  const [json, setJson] = useState<T | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (accessToken) {
+      requestAsync<T>(requestUrl, {
+        // @ts-ignore
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          ...headers,
+        },
+        method,
+        dataType: 'json',
+      })
+        .then(json => {
+          setJson(json);
+          setError(null);
+        })
+        .catch(error => {
+          setJson(null);
+          setError(error);
+        });
+    }
+  }, [accessToken]);
+
+  return [json, error];
 }
 
 export function useCompleteRedirect(): AuthSessionResult | null {
@@ -92,10 +115,9 @@ export function useAuthRequest(config: AuthRequestConfig): AuthRequest | null {
 
   useEffect(() => {
     if (config) {
-      const authRequest = new AuthRequest({
+      AuthRequest.buildAsync({
         ...config,
-      });
-      authRequest.buildUrlAsync().then(() => setRequest(authRequest));
+      }).then(request => setRequest(request));
     }
   }, [
     config.clientId,
