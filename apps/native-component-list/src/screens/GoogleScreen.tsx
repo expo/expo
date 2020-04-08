@@ -1,34 +1,14 @@
-import React from 'react';
-import { Platform, StyleSheet, TextInput, Alert, Text, View } from 'react-native';
 import * as Google from 'expo-google-app-auth';
-
-import Button from '../components/Button';
-import * as Application from 'expo-application';
 import * as Localization from 'expo-localization';
-import Constants from 'expo-constants';
+import React from 'react';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 
-const GUIDs = Platform.select<Record<string, string>>({
-  ios: {
-    // bare-expo
-    'dev.expo.Payments': '29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e',
-    // Expo client
-    'host.exp.Exponent': '629683148649-rqd64l050fr7nvaottj8rhlp08q4t7da',
-    [Constants.manifest.ios.bundleIdentifier]: '29635966244-td9jmh1m5trn8uuqa0je1mansia76cln',
-  },
-  android: {
-    // bare-expo
-    'dev.expo.payments': '29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2',
-    // Expo client
-    'host.exp.exponent': '629683148649-8ls3mbtakmkqe2qqt9tsjugbemgrjhth',
-    [Constants.manifest.android.package]: '29635966244-eql85q7fpnjncjcp6o3t3n98mgeeklc9',
-  },
-});
-
-const GUID = GUIDs[Application.applicationId ?? ''];
-
-const G_PROJECT_ID = `${GUID}.apps.googleusercontent.com`;
+import { getGUID } from '../api/guid';
+import Button from '../components/Button';
 
 export default function GoogleLoginScreen() {
+  const GUID = getGUID();
+  const G_PROJECT_ID = `${GUID}.apps.googleusercontent.com`;
   const [language, onChangeLanguage] = React.useState(Localization.locale);
   const [loginHint, onChangeLoginHint] = React.useState('');
 
@@ -59,14 +39,6 @@ export default function GoogleLoginScreen() {
       Alert.alert('Error!', e.message, [{ text: 'OK :(', onPress: () => {} }]);
     }
   };
-
-  if (!GUID) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Unknown Project ID {Application.applicationId}</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
