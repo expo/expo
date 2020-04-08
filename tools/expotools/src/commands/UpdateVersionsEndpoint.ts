@@ -8,7 +8,7 @@ import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
 import { Command } from '@expo/commander';
 
-import { STAGING_HOST, PRODUCTION_HOST } from '../Constants';
+import { STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
 import sleepAsync from '../utils/sleepAsync';
 
 type ActionOptions = {
@@ -79,7 +79,7 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
 
     console.log(
       chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-      chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`),
+      chalk.blue(`https://${STAGING_API_HOST}/--/api/v2/versions`),
     );
   } else {
     console.log(chalk.yellow('Canceled'));
@@ -88,14 +88,14 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
 
 async function resetStagingConfigurationAsync() {
   // Get current production config.
-  Config.api.host = PRODUCTION_HOST;
+  Config.api.host = PRODUCTION_API_HOST;
   const productionVersions = await Versions.versionsAsync();
 
   // Wait for the cache to invalidate.
   await sleepAsync(10);
 
   // Get current staging config.
-  Config.api.host = STAGING_HOST;
+  Config.api.host = STAGING_API_HOST;
   const stagingVersions = await Versions.versionsAsync();
 
   // Calculate the diff between them.
@@ -111,7 +111,7 @@ async function action(options: ActionOptions) {
     return;
   }
 
-  Config.api.host = STAGING_HOST;
+  Config.api.host = STAGING_API_HOST;
   const versions = await Versions.versionsAsync();
   const sdkVersions = Object.keys(versions.sdkVersions).sort(semver.rcompare);
   const sdkVersion = options.sdkVersion || (await chooseSdkVersionAsync(sdkVersions));
@@ -141,7 +141,7 @@ async function action(options: ActionOptions) {
   // If SDK is already there, make a deep clone of the sdkVersion config so we can calculate a diff later.
   const sdkVersionConfig = containsSdk ? cloneDeep(versions.sdkVersions[sdkVersion]) : {};
 
-  console.log(`\nUsing ${chalk.blue(STAGING_HOST)} host ...`);
+  console.log(`\nUsing ${chalk.blue(STAGING_API_HOST)} host ...`);
   console.log(`Using SDK ${chalk.cyan(sdkVersion)} ...`);
 
   if ('deprecated' in options) {
@@ -180,7 +180,7 @@ export default (program: Command) => {
     .command('update-versions-endpoint')
     .alias('update-versions')
     .description(
-      `Updates SDK configuration under ${chalk.blue('https://staging.expo.io/--/api/v2/versions')}`
+      `Updates SDK configuration under ${chalk.blue('https://staging.exp.host/--/api/v2/versions')}`
     )
     .option(
       '-s, --sdkVersion [string]',
