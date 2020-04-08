@@ -379,7 +379,7 @@ To use it with other services such as ZEIT Now, you would need appropriate confi
 
 Here is an example `now.json` configuration file:
 
-```jsonc
+```json
 {
   "version": 2,
   "routes": [
