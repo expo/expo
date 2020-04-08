@@ -7,7 +7,7 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
 
-@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface, EXSessionRegister>
+@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface, NSURLSessionDelegate>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
@@ -18,6 +18,7 @@
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
+
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
@@ -28,14 +29,13 @@
            withOptions:(NSDictionary *)optionxs
               resolver:(UMPromiseResolveBlock)resolve
               rejecter:(UMPromiseRejectBlock)reject;
+
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
         resolver:(UMPromiseResolveBlock)resolve
         rejecter:(UMPromiseRejectBlock)reject;
 
-
 @end
-
 
 @interface NSData (EXFileSystem)
 

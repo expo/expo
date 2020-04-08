@@ -4,9 +4,5 @@
 
 @interface EXSessionUploadTaskDelegate : EXSessionTaskDelegate
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)taskRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject;
-
 @end
 

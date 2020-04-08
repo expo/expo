@@ -4,27 +4,48 @@
 
 @implementation EXSessionTaskDelegate
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
+                         reject:(UMPromiseRejectBlock)reject
 {
   if (self = [super init]) {
-    _sessionRegister = sessionRegister;
     _resolve = resolve;
     _reject = reject;
   }
-  
   return self;
 }
 
-- (NSMutableDictionary *)parseServerResponse:(NSURLResponse *)response
++ (NSDictionary *)parseServerResponse:(NSURLResponse *)response
 {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-  NSMutableDictionary *result = [NSMutableDictionary dictionary];
-  result[@"status"] = @([httpResponse statusCode]);
-  result[@"headers"] = [httpResponse allHeaderFields];
-  result[@"mimeType"] = UMNullIfNil([httpResponse MIMEType]);
-  return result;
+  return @{
+    @"status": @([httpResponse statusCode]),
+    @"headers": [httpResponse allHeaderFields],
+    @"mimeType": UMNullIfNil([httpResponse MIMEType])
+  };
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+  if (error) {
+    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
+                [NSString stringWithFormat:@"Unable to download file: %@", error.description],
+                error);
+  }
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+                                           didWriteData:(int64_t)bytesWritten
+                                      totalBytesWritten:(int64_t)totalBytesWritten
+                              totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
+{
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+{
 }
 
 @end

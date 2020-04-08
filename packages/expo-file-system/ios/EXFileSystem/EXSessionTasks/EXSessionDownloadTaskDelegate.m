@@ -5,70 +5,56 @@
 
 @interface EXSessionDownloadTaskDelegate ()
 
-@property (strong, nonatomic) NSURL *serverUrl;
-@property (strong, nonatomic) NSURL *localFileUrl;
-@property (nonatomic) BOOL md5Option;
+@property (strong, nonatomic) NSURL *localUrl;
+@property (nonatomic) BOOL shouldCalculateMd5;
 
 @end
 
 @implementation EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject
-                           localFileUrl:(NSURL *)localFileUrl
-                              serverUrl:(NSURL *)serverUrl
-                              md5Option:(BOOL)md5Option;
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
+                         reject:(UMPromiseRejectBlock)reject
+                       localUrl:(NSURL *)localUrl
+             shouldCalculateMd5:(BOOL)shouldCalculateMd5
 {
-  if (self = [super initWithSessionRegister:sessionRegister resolve:resolve reject:reject]) {
-    _serverUrl = serverUrl;
-    _localFileUrl = localFileUrl;
-    _md5Option = md5Option;
+  if (self = [super initWithResolve:resolve reject:reject])
+  {
+    _localUrl = localUrl;
+    _shouldCalculateMd5 = shouldCalculateMd5;
   }
-  
   return self;
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
-  [self handleDidFinishDownloadingToURL:location task:downloadTask];
-  [self.sessionRegister unregister:session];
-}
-
-- (void)handleDidFinishDownloadingToURL:(NSURL *)location task:(NSURLSessionDownloadTask *)downloadTask
-{
   NSError *error;
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:_localFileUrl.path]) {
-    [fileManager removeItemAtURL:_localFileUrl error:&error];
+  if ([fileManager fileExistsAtPath:_localUrl.path]) {
+    [fileManager removeItemAtURL:_localUrl error:&error];
+    if (error) {
+      self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_REMOVE",
+                  [NSString stringWithFormat:@"Unable to remove file from local URI: '%@'", error.description],
+                  error);
+      return;
+    }
   }
 
-  [fileManager moveItemAtURL:location toURL:_localFileUrl error:&error];
+  [fileManager moveItemAtURL:location toURL:_localUrl error:&error];
   if (error) {
-   self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_SAVE",
-               [NSString stringWithFormat:@"Unable to save file to local URI. '%@'", error.description],
-               error);
-   return;
+    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_SAVE",
+                [NSString stringWithFormat:@"Unable to save file to local URI: '%@'", error.description],
+                error);
+    return;
   }
 
-  NSMutableDictionary *result = [self parseServerResponse:downloadTask.response];
-  result[@"uri"] = _localFileUrl.absoluteString;
-  if (self.md5Option) {
-   NSData *data = [NSData dataWithContentsOfURL:_localFileUrl];
-   result[@"md5"] = [data md5String];
+  NSMutableDictionary *result = [[EXSessionTaskDelegate parseServerResponse:downloadTask.response] mutableCopy];
+  result[@"uri"] = _localUrl.absoluteString;
+  if (_shouldCalculateMd5) {
+    NSData *data = [NSData dataWithContentsOfURL:_localUrl];
+    result[@"md5"] = [data md5String];
   }
 
   self.resolve(result);
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
-{
-  if (error) {
-    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
-                [NSString stringWithFormat:@"Unable to download file. %@", error.description],
-                error);
-    [self.sessionRegister unregister:session];
-  }
 }
 
 @end

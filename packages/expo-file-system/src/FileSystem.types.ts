@@ -1,14 +1,14 @@
 export enum FileSystemSessionType {
   /*
-   * Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to the `background`.
+   * Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background.
    *
-   * If the task completes when the application is in the `background`, the promise might be resolved immediately.
-   * However, javascript execution will be stopped after a couple of seconds and it will be resumed when the application is moved to the `foreground` again.
+   * If the task completes while the application is in background, the Promise might be resolved immediately.
+   * However, application execution will be stopped after a couple of seconds and it will be resumed when the application is moved to foreground again.
    */
   BACKGROUND = 0,
   /*
-   * Using this mode means that downloading/uploading session on the native side will be killed once the application becomes inactive (e.g. when it goes to `background`).
-   * Bringing the application to the `foreground` again would trigger promise rejection.
+   * Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background).
+   * Bringing the application to foreground again would trigger Promise rejection.
    */
   FOREGROUND = 1,
 }

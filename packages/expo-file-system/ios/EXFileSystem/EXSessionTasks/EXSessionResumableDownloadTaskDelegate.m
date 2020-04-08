@@ -4,40 +4,27 @@
 
 @interface EXSessionResumableDownloadTaskDelegate ()
 
-@property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWrite;
-@property (strong, nonatomic, readonly) NSString *uuid;
+@property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWriteCallback;
 
 @end
 
 @implementation EXSessionResumableDownloadTaskDelegate
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject
-                           localFileUrl:(NSURL *)localFileUrl
-                              serverUrl:(NSURL *)serverUrl
-                              md5Option:(BOOL)md5Option
-                        onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                                   uuid:(NSString *)uuid;
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
+                         reject:(UMPromiseRejectBlock)reject
+                       localUrl:(NSURL *)localUrl
+             shouldCalculateMd5:(BOOL)shouldCalculateMd5
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
+                           uuid:(NSString *)uuid;
 {
-  if (self = [self initWithSessionRegister:sessionRegister
-                                   resolve:resolve
-                                    reject:reject
-                              localFileUrl:localFileUrl
-                                 serverUrl:serverUrl
-                                 md5Option:md5Option]) {
-    _onWrite = onWrite;
+  if (self = [super initWithResolve:resolve
+                             reject:reject
+                           localUrl:localUrl
+                 shouldCalculateMd5:shouldCalculateMd5]) {
+    _onWriteCallback = onWriteCallback;
     _uuid = uuid;
   }
-  
   return self;
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-  if (_onWrite) {
-    _onWrite(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-  }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
@@ -48,17 +35,20 @@
       self.resolve([NSNull null]);
     } else {
       self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
-                  [NSString stringWithFormat:@"Unable to download file. %@", error.description],
+                  [NSString stringWithFormat:@"Unable to download file: %@", error.description],
                   error);
-      [self.sessionRegister unregister:session uuid:_uuid];
     }
   }
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+                                           didWriteData:(int64_t)bytesWritten
+                                      totalBytesWritten:(int64_t)totalBytesWritten
+                              totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
-  [super handleDidFinishDownloadingToURL:location task:downloadTask];
-  [self.sessionRegister unregister:session uuid:_uuid];
+  if (_onWriteCallback) {
+    _onWriteCallback(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+  }
 }
 
 @end

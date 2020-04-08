@@ -3,24 +3,25 @@
 #import <Foundation/Foundation.h>
 #import <UMCore/UMDefines.h>
 
-@protocol EXSessionRegister <NSObject>
-
-- (void)unregister:(NSURLSession *)session;
-- (void)unregister:(NSURLSession *)session uuid:(NSString *)uuid;
-
-@end
-
-@interface EXSessionTaskDelegate : NSObject <NSURLSessionTaskDelegate>
+@interface EXSessionTaskDelegate : NSObject
 
 @property (nonatomic, strong, readonly) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong, readonly) UMPromiseRejectBlock reject;
-@property (nonatomic, strong, readonly) id<EXSessionRegister> sessionRegister;
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject;
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
+                         reject:(UMPromiseRejectBlock)reject;
 
-- (NSMutableDictionary *)parseServerResponse:(NSURLResponse *)response;
++ (NSDictionary *)parseServerResponse:(NSURLResponse *)response;
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location;
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error;
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
+                                           didWriteData:(int64_t)bytesWritten
+                                      totalBytesWritten:(int64_t)totalBytesWritten
+                              totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite;
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data;
 
 @end
-

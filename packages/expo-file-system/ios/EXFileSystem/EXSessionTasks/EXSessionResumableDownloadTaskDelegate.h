@@ -6,13 +6,13 @@ typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task
 
 @interface EXSessionResumableDownloadTaskDelegate : EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithSessionRegister:(id<EXSessionRegister>)sessionRegister
-                                resolve:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject
-                           localFileUrl:(NSURL *)localFileUrl
-                              serverUrl:(NSURL *)serverUrl
-                              md5Option:(BOOL)md5Option
-                        onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWrite
-                                   uuid:(NSString *)uuid;
+@property (strong, nonatomic, readonly) NSString *uuid;
+
+- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
+                         reject:(UMPromiseRejectBlock)reject
+                       localUrl:(NSURL *)localUrl
+             shouldCalculateMd5:(BOOL)shouldCalculateMd5
+                onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
+                           uuid:(NSString *)uuid;
 
 @end
