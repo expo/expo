@@ -40,10 +40,3 @@ This document will guide you through the process of releasing a new version of E
     **Why:** So that our users that downloaded Expo client from Play Store can update easily.
 
     **How:** Open the `client` workflow from which you downloaded `app-release.apk` in step 3. and approve the `client_android_approve_google_play` job. About 45 minutes later the update should be downloadable via Play Store.
-
-
-6. **Promote versions to production**
-
-    **Why:** Right now the APK is updated only on staging. We want to push the information to production.
-
-    **How:** This is probably a subject to change, but at the moment go to `universe` and run `pt promote-versions-to-prod`.
