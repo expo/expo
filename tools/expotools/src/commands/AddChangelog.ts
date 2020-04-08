@@ -139,13 +139,17 @@ export default (program: Command) => {
       (value, previous) => previous.concat(value),
       []
     )
-    .option('-r, --pull-request <number>', 'Pull request number.', (value, previous) => {
-      if (typeof previous === 'boolean') {
-        return [parseInt(value, 10)];
-      }
+    .option(
+      '-r, --pull-request <number>',
+      'Pull request number. Can be passed multiple times.',
+      (value, previous) => {
+        if (typeof previous === 'boolean') {
+          return [parseInt(value, 10)];
+        }
 
-      return previous.concat(parseInt(value, 10));
-    })
+        return previous.concat(parseInt(value, 10));
+      }
+    )
     .option(
       '--no-pull-request',
       'If changes were pushed directly to the master.',
