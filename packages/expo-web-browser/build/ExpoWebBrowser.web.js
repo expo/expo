@@ -70,7 +70,7 @@ export default {
         // Get the window that created the current popup
         const parent = window.opener ?? window.parent;
         if (!parent) {
-            throw new CodedError('ERR_WEB_BROWSER_REDIRECT', `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the window was reloaded on mobile.`);
+            throw new CodedError('ERR_WEB_BROWSER_REDIRECT', `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.`);
         }
         // Send the URL back to the opening window.
         parent.postMessage({ url, expoSender: handle }, parent.location);
@@ -93,7 +93,7 @@ export default {
             const features = 'width=600,height=700,top=100,left=100,toolbar=no,menubar=no';
             popupWindow = window.open(url, undefined, features);
             if (!popupWindow) {
-                window.open(url, '_blank');
+                throw new CodedError('ERR_WEB_BROWSER_BLOCKED', 'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.');
             }
         }
         return new Promise(async (resolve) => {
