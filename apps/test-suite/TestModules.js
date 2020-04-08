@@ -69,8 +69,7 @@ export function getTestModules() {
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
-    require('./tests/FirebaseRecaptcha'),
-    require('./tests/AuthSession')
+    require('./tests/FirebaseRecaptcha')
   );
 
   if (Platform.OS === 'android') {
@@ -110,6 +109,7 @@ export function getTestModules() {
 
   modules.push(
     optionalRequire(() => require('./tests/Application')),
+    optionalRequire(() => require('./tests/AuthSession')),
     optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
