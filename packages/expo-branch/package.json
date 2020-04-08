@@ -32,8 +32,8 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-branch",
   "peerDependencies": {
-    "@unimodules/core": "~3.0.0",
-    "@unimodules/react-native-adapter": "~3.0.0"
+    "@unimodules/core": "*",
+    "@unimodules/react-native-adapter": "*"
   },
   "dependencies": {
     "react-native-branch": "4.2.1"

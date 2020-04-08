@@ -31,8 +31,8 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-apple-authentication",
   "unimodulePeerDependencies": {
-    "@unimodules/core": "~3.0.0",
-    "@unimodules/react-native-adapter": "~3.0.0"
+    "@unimodules/core": "*",
+    "@unimodules/react-native-adapter": "*"
   },
   "peerDependencies": {
     "react": "*",
