@@ -17,7 +17,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Pedometer' dependencies={['expo-sensors']} />
+<SnackInline label='Pedometer' dependencies={['expo-sensors']} >
 
 ```js
 import React from 'react';
