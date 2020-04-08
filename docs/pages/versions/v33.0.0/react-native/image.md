@@ -38,25 +38,21 @@ export default class DisplayAnImage extends Component {
 You can also add `style` to an image:
 
 ```javascript
-
 import React, { Component } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   stretch: {
     width: 50,
-    height: 200
-  }
+    height: 200,
+  },
 });
 
 export default class DisplayAnImageWithStyle extends Component {
   render() {
     return (
       <View>
-        <Image
-          style={styles.stretch}
-          source={require('/react-native/img/favicon.png')}
-        />
+        <Image style={styles.stretch} source={require('/react-native/img/favicon.png')} />
       </View>
     );
   }
@@ -69,7 +65,7 @@ When building your own native code, GIF and WebP are not supported by default on
 
 You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
 
-```gradle
+```groovy
 
 dependencies {
   // If your app supports Android versions before Ice Cream Sandwich (API level 14)

@@ -2,7 +2,7 @@
 title: Linking
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
 ## Introduction
 
@@ -70,18 +70,56 @@ The following example illustrates the difference between opening a web link with
 
 Update: "WebBrowser" is in a separate package so first install `expo-web-browser` like `expo install expo-web-browser` and use it like this:
 
-```javascript
-import * as WebBrowser from 'expo-web-browser';
+<SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-constants"]}>
 
-export default function App() {
-  async function openLink() {
-    await WebBrowser.openBrowserAsync('https://expo.io');
+```js
+import React, { Component } from 'react';
+import { Button, Linking, View, StyleSheet } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
+
+export default class App extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Button
+          title="Open URL with ReactNative.Linking"
+          onPress={this._handleOpenWithLinking}
+          style={styles.button}
+        />
+        <Button
+          title="Open URL with Expo.WebBrowser"
+          onPress={this._handleOpenWithWebBrowser}
+          style={styles.button}
+        />
+      </View>
+    );
   }
-  return <Button title="Open Expo" onPress={openLink} />
+
+  _handleOpenWithLinking = () => {
+    Linking.openURL('https://expo.io');
+  };
+
+  _handleOpenWithWebBrowser = () => {
+    WebBrowser.openBrowserAsync('https://expo.io');
+  };
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+  button: {
+    marginVertical: 10,
+  },
+});
 ```
 
-<SnackEmbed snackId="H11a8rk7b" />
+</SnackInline>
 
 ### Opening links to other apps
 

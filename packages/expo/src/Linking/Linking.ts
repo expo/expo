@@ -189,9 +189,4 @@ newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;
 
-// TODO: remove this on SDK 38 after adding to EXLinking
-if (Platform.OS === 'ios') {
-  newLinking.openSettings = () => newLinking.openURL('app-settings:');
-}
-
 export default newLinking as ExpoLinking;

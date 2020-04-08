@@ -25,7 +25,7 @@ Jest will handle snapshots more strictly.
 
 To summarize we will set up the CI to run the following two scripts.
 
-```bash
+```sh
 $ npm ci
 $ npx jest --ci
 ```
@@ -234,7 +234,7 @@ For vendors that charge you per minute, it might we worth creating a prebuilt en
 
 To install the Expo CLI into your project, you can execute this script.
 
-```bash
+```sh
 $ npm install --save-dev expo-cli
 ```
 
@@ -248,13 +248,13 @@ Most vendors make use of environment variables which are "injected" into the env
 
 To perform the authentication, we will add this script to our configuration:
 
-```bash
+```sh
 $ npx expo login -u <EXPO USERNAME> -p <EXPO PASSWORD>
 ```
 
 If you don't want to expose the password in the login script, set the `EXPO_CLI_PASSWORD` environment variable to the password and run the following script instead:
 
-```bash
+```sh
 $ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
 
@@ -266,7 +266,7 @@ It finalizes the whole workflow of creating, testing and shipping your applicati
 
 To create the builds, we will add this script to our configuration:
 
-```bash
+```sh
 $ npx expo publish --non-interactive
 ```
 

@@ -168,7 +168,7 @@ This API currently does not require any authentication.
 
 This is a "hello world" request using cURL (replace the placeholder push token with your own):
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
@@ -215,7 +215,7 @@ After receiving a batch of notifications, Expo enqueues each notification to be 
 
 To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The request body must be a JSON object with a field name "ids" that is an array of receipt ID strings:
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
   "ids": ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
 }'

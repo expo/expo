@@ -38,7 +38,6 @@ export default class MyDocument extends Document {
       <html lang="en">
         <Head>
           <Analytics.GoogleScript id="UA-107832480-3" />
-          <script src="/static/libs/prism/prism.js" />
           <script src="/static/libs/tippy/tippy.all.min.js" />
           <script src="/static/libs/nprogress/nprogress.js" />
 

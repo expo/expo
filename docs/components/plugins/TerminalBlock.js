@@ -38,13 +38,18 @@ export function ShellComment({ children }) {
 export default function TerminalBlock({ cmd }) {
   return (
     <div className={STYLES_PROMPT}>
-      {cmd.map(line => {
+      {cmd.map((line, index) => {
+        const key = `line-${index}`;
         if (line.startsWith('#')) {
-          return <ShellComment>{line}</ShellComment>;
+          return <ShellComment key={key}>{line}</ShellComment>;
         } else if (line.trim() === '') {
-          return <br />;
+          return <br key={key} />;
         }
-        return <code className={STYLES_LINE}>{line}</code>;
+        return (
+          <code key={key} className={STYLES_LINE}>
+            {line}
+          </code>
+        );
       })}
     </div>
   );
