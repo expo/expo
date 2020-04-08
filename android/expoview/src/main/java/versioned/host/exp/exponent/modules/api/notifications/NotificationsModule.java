@@ -155,7 +155,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       // (#onNewToken is supposed to be called when a token is generated after app install, see
       // https://developers.google.com/android/reference/com/google/firebase/messaging/FirebaseMessagingService#onNewToken(java.lang.String)).
       // If it hasn't been set, the app probably couldn't register at FCM (invalid configuration?).
-      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token on device.");
+      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token on device. Check that your FCM configuration is valid.");
       return;
     }
 
@@ -169,11 +169,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFailure(Exception e) {
-          promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device", e);
+          promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device. Check that your FCM configuration is valid.", e);
         }
       });
     } catch (JSONException e) {
-      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device", e);
+      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device. Check that your FCM configuration is valid.", e);
     }
   }
 
