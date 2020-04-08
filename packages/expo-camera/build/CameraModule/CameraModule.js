@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import * as CapabilityUtils from './CapabilityUtils';
-import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync, canGetUserMedia, } from './UserMediaManager';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 export { ImageType, CameraType };
 const VALID_SETTINGS_KEYS = [
@@ -38,17 +38,6 @@ class CameraModule {
         // TODO: Bacon: we don't even use ratio in native...
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
-        };
-        this.getAvailableCameraTypesAsync = async () => {
-            if (!navigator.mediaDevices.enumerateDevices) {
-                return [];
-            }
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const types = await Promise.all([
-                (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
-                (await isBackCameraAvailableAsync()) && CameraType.back,
-            ]);
-            return types.filter(Boolean);
         };
         if (this.videoElement) {
             this.videoElement.addEventListener('loadedmetadata', () => {
@@ -211,6 +200,16 @@ class CameraModule {
     stopAsync() {
         stopMediaStream(this.stream);
         this.setStream(null);
+    }
+    static async getAvailableCameraTypesAsync() {
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices)
+            return [];
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const types = await Promise.all([
+            (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+            (await isBackCameraAvailableAsync()) && CameraType.back,
+        ]);
+        return types.filter(Boolean);
     }
 }
 function stopMediaStream(stream) {

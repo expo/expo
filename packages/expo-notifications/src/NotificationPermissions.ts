@@ -1,23 +1,10 @@
 import { Platform } from '@unimodules/core';
 
-import NotificationPermissionsModule, {
-  IosNotificationPermissionsRequest,
-  AndroidNotificationPermissionRequest,
-} from './NotificationPermissionsModule';
-
-export {
-  IosAlertStyle,
-  IosAllowsPreviews,
-  IosAuthorizationStatus,
-} from './NotificationPermissionsModule';
+import { NotificationPermissionsRequest } from './NotificationPermissions.types';
+import NotificationPermissionsModule from './NotificationPermissionsModule';
 
 export async function getPermissionsAsync() {
   return await NotificationPermissionsModule.getPermissionsAsync();
-}
-
-export interface NotificationPermissionsRequest {
-  ios?: IosNotificationPermissionsRequest;
-  android?: AndroidNotificationPermissionRequest;
 }
 
 export async function requestPermissionsAsync(permissions?: NotificationPermissionsRequest) {

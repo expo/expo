@@ -10,11 +10,11 @@
 static NSString * const notificationTriggerTypeKey = @"type";
 static NSString * const notificationTriggerRepeatsKey = @"repeats";
 
-static NSString * const intervalNotificationTriggerType = @"interval";
-static NSString * const intervalNotificationTriggerIntervalKey = @"value";
+static NSString * const intervalNotificationTriggerType = @"timeInterval";
+static NSString * const intervalNotificationTriggerIntervalKey = @"seconds";
 
 static NSString * const dateNotificationTriggerType = @"date";
-static NSString * const dateNotificationTriggerTimestampKey = @"value";
+static NSString * const dateNotificationTriggerTimestampKey = @"timestamp";
 
 static NSString * const calendarNotificationTriggerType = @"calendar";
 static NSString * const calendarNotificationTriggerComponentsKey = @"value";
@@ -88,6 +88,14 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
 {
+  if (!params) {
+    // nil trigger is a valid trigger
+    return nil;
+  }
+  if (![params isKindOfClass:[NSDictionary class]]) {
+    NSString *reason = [NSString stringWithFormat:@"Unknown notification trigger declaration passed in, expected a dictionary, received %@.", NSStringFromClass(params.class)];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+  }
   NSString *triggerType = params[notificationTriggerTypeKey];
   if ([intervalNotificationTriggerType isEqualToString:triggerType]) {
     NSNumber *interval = [params objectForKey:intervalNotificationTriggerIntervalKey verifyingClass:[NSNumber class]];
@@ -107,8 +115,10 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 
     return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
                                                                     repeats:[repeats boolValue]];
+  } else {
+    NSString *reason = [NSString stringWithFormat:@"Unknown notification trigger type: %@.", triggerType];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
   }
-  return nil;
 }
 
 - (NSDateComponents *)dateComponentsFromParams:(NSDictionary<NSString *, id> *)params

@@ -1557,7 +1557,7 @@ PODS:
   - EXFileSystem (8.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.1.0):
+  - EXFirebaseAnalytics (2.1.2):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -1580,7 +1580,7 @@ PODS:
     - UMCore
   - EXHaptics (8.1.0):
     - UMCore
-  - EXImageLoader (1.0.0):
+  - EXImageLoader (1.0.1):
     - React-Core
     - UMCore
     - UMImageLoaderInterface
@@ -2150,7 +2150,7 @@ PODS:
   - UMImageLoaderInterface (5.1.0)
   - UMPermissionsInterface (5.1.0):
     - UMCore
-  - UMReactNativeAdapter (5.1.1):
+  - UMReactNativeAdapter (5.2.0):
     - React-Core
     - UMCore
     - UMFontInterface
@@ -3828,14 +3828,14 @@ SPEC CHECKSUMS:
   EXFacebook: 74d53d9da75d1a953f1821dd417594ed18d7a72f
   EXFaceDetector: 347204431405fed65226f43921d43c8c5a003d37
   EXFileSystem: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
-  EXFirebaseAnalytics: 13b3f0a61af72d8429fa957a928383ce905fe911
+  EXFirebaseAnalytics: d393d95417c3a9f8ac3cbd856308785a66a65a8e
   EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
   EXFont: 8326ecf966be559f7ced7c8e221a32fc4d9ed8b0
   EXGL: 7df5a1c0cd23dc7496d95889d4274448de8e21a2
   EXGL_CPP: a70374bf147b423e4ed8dd435006581de7e3c311
   EXGoogleSignIn: d1fcbf367429818e0ba622d236fbb7126acb510b
   EXHaptics: 013b5065946d4dd7b46ea547b58072d45a206dbd
-  EXImageLoader: edbf02910aec4b87dfd637de27181e442468401e
+  EXImageLoader: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
   EXImageManipulator: 97f61d14c292714d66884e83697e794f8cefe0b0
   EXImagePicker: 4126814cba56cc3dc5e7fc47abce0b263da84609
   EXKeepAwake: d045bc2cf1ad5a04f0323cc7c894b95b414042e0
@@ -3925,7 +3925,7 @@ SPEC CHECKSUMS:
   UMFontInterface: d9d3b27af698c5389ae9e20b99ef56a083f491fb
   UMImageLoaderInterface: 14dd2c46c67167491effc9e91250e9510f12709e
   UMPermissionsInterface: 5e83a9167c177e4a0f0a3539345983cc749efb3e
-  UMReactNativeAdapter: 900e80a6cd83823870cf840f35081edb4043b014
+  UMReactNativeAdapter: 126da3486c1a1f11945b649d557d6c2ebb9407b2
   UMSensorsInterface: 48941f70175e2975af1a9386c6d6cb16d8126805
   UMTaskManagerInterface: cb890c79c63885504ddc0efd7a7d01481760aca2
   Yoga: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
@@ -3933,6 +3933,6 @@ SPEC CHECKSUMS:
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 3a66eabee75c5532809ccfc3eca4e6b72c440b0b
+PODFILE CHECKSUM: cc978d0964c38603a1d90f03145d58a04672909b
 
 COCOAPODS: 1.8.4

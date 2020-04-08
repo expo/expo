@@ -30,12 +30,16 @@
 /packages/expo-face-detector                    @sjchmiela @mczernek
 /packages/expo-facebook                         @sjchmiela @mczernek
 /packages/expo-file-system                      @sjchmiela @bbarthec
+/packages/expo-firebase-core                    @IjzerenHein
+/packages/expo-firebase-analytics               @IjzerenHein @EvanBacon
+/packages/expo-firebase-recaptcha               @IjzerenHein
 /packages/expo-font                             @sjchmiela
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @tsapeta @bbarthec
+/packages/expo-image                            @sjchmiela @IjzerenHein
 /packages/expo-image-manipulator                @bbarthec @tsapeta
 /packages/expo-image-picker                     @bbarthec @tsapeta
 /packages/expo-in-app-purchases                 @ide

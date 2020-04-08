@@ -24,6 +24,7 @@ You'll need to have these things installed:
 
 #### For Android builds
 
+- macOS or Linux
 - [Java Development Kit (version 8)](https://jdk.java.net/)
 - gulp-cli (run `npm install -g gulp-cli` to get it)
 

@@ -1,7 +1,7 @@
 import * as Directories from './Directories';
 
-export const STAGING_HOST = 'staging.expo.io';
-export const PRODUCTION_HOST = 'expo.io';
+export const STAGING_API_HOST = 'staging.exp.host';
+export const PRODUCTION_API_HOST = 'exp.host';
 
 export const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 export const IOS_DIR = Directories.getIosDir();

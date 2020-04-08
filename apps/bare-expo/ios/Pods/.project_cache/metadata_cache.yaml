@@ -138,6 +138,10 @@ EXImagePicker:
   LABEL: EXImagePicker
   PROJECT_PATH: EXImagePicker.xcodeproj
   UUID: 9ACF1D2895E366F44F904503F65171CD
+EXInAppPurchases:
+  LABEL: EXInAppPurchases
+  PROJECT_PATH: EXInAppPurchases.xcodeproj
+  UUID: D42675B43F7A8B793138E364CE98BFEE
 EXKeepAwake:
   LABEL: EXKeepAwake
   PROJECT_PATH: EXKeepAwake.xcodeproj

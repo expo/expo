@@ -308,13 +308,13 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
-    CHECKSUM: 13b3f0a61af72d8429fa957a928383ce905fe911
+    CHECKSUM: 6eaf790f19b893077993a261d9734c0713760f61
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
     PROJECT_NAME: EXFirebaseAnalytics
     SPECS:
-      - EXFirebaseAnalytics (2.1.0)
+      - EXFirebaseAnalytics (2.1.1)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
@@ -420,13 +420,13 @@ CACHE_KEYS:
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
       EXImageLoader: 311389058db34474056fe2e893a52953
-    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    CHECKSUM: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
     FILES:
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
     PROJECT_NAME: EXImageLoader
     SPECS:
-      - EXImageLoader (1.0.0)
+      - EXImageLoader (1.0.1)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -451,6 +451,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (8.1.0)
+  EXInAppPurchases:
+    BUILD_SETTINGS_CHECKSUM:
+      EXInAppPurchases: 9de76cf78759ab4168540e85ecee8b86
+    CHECKSUM: 084e1ea266b7b297010d3a1534bd1fe285fba235
+    FILES:
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.m"
+    PROJECT_NAME: EXInAppPurchases
+    SPECS:
+      - EXInAppPurchases (8.1.0)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake: ff09e99980f1b1b84c118d7d2037e232
@@ -550,7 +560,7 @@ CACHE_KEYS:
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
       EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
+    CHECKSUM: 4eb1836866d7527130667ff1b948030a7f73a5ab
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -586,7 +596,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (1.0.0)
+      - EXNotifications (0.1.1)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -608,6 +618,8 @@ CACHE_KEYS:
       expo-image: bcbb57a3ee11d42bb8c5a75d69a0418f
     CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
+      - "../../../../packages/expo-image/ios/EXImageTypes.h"
+      - "../../../../packages/expo-image/ios/EXImageTypes.m"
       - "../../../../packages/expo-image/ios/EXImageView.h"
       - "../../../../packages/expo-image/ios/EXImageView.m"
       - "../../../../packages/expo-image/ios/EXImageViewManager.h"
@@ -946,12 +958,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 816f15a05b128cfbab101cc7184d9687
-      Release: 816f15a05b128cfbab101cc7184d9687
+      Debug: 7a1761168fd8e561cf3cc4be5c1d1807
+      Release: 7a1761168fd8e561cf3cc4be5c1d1807
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
-      Release: e6aedfaad570c1e1a2e18b3c4a18be48
+      Debug: ed06bb52be8bf77ef4920e8ed63a2fd5
+      Release: ed06bb52be8bf77ef4920e8ed63a2fd5
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1712,7 +1724,7 @@ CACHE_KEYS:
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: c576e5ba26e85306cdd748939cafee55
-    CHECKSUM: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+    CHECKSUM: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.m"
@@ -1750,11 +1762,11 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-gesture-handler/README.md"
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.6.0)
+      - RNGestureHandler (1.6.1)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1d95b7b88b09cb2c47f1f272532903e1
-    CHECKSUM: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+    CHECKSUM: 4e102df74a9674fa943e05f97f3362b6e44d0b48
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -1815,7 +1827,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.7.0)
+      - RNReanimated (1.7.1)
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens: d0a154f417562db98591a0dd7d1b9bf7
@@ -1967,7 +1979,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: 330db6c6bc97064a0ce907ee8d5fdbb2
-    CHECKSUM: c8f2b8beb61851b6f2441e54b409d2dbd6478b7d
+    CHECKSUM: 126da3486c1a1f11945b649d557d6c2ebb9407b2
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -1990,7 +2002,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.0)
+      - UMReactNativeAdapter (5.2.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: edab35b62745c17864e65b8dd2612597

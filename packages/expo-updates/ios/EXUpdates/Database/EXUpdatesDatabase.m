@@ -34,7 +34,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo.db";
   sqlite3 *db;
   NSURL *dbUrl = [[EXUpdatesAppController sharedInstance].updatesDirectory URLByAppendingPathComponent:kEXUpdatesDatabaseFilename];
   BOOL shouldInitializeDatabase = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
-  int resultCode = sqlite3_open([[dbUrl absoluteString] UTF8String], &db);
+  int resultCode = sqlite3_open([[dbUrl path] UTF8String], &db);
   if (resultCode != SQLITE_OK) {
     NSLog(@"Error opening SQLite db: %@", [self _errorFromSqlite:_db].localizedDescription);
     sqlite3_close(db);

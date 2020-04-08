@@ -1,6 +1,7 @@
 # Expo
 .expo
 __generated__
+web-build
 
 # macOS
 .DS_Store
@@ -43,6 +44,9 @@ xcuserdata
 # Eclipse
 .project
 .settings
+
+# VSCode
+.history/
 
 # Android
 *.apk
@@ -112,4 +116,3 @@ shellAppWorkspaces
 .env.development.local
 .env.test.local
 .env.production.local
-

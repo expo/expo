@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 
 import errorCodes from './errorCodes';
@@ -38,6 +38,7 @@ class Stripe {
     Platform.select({
       ios: () => this.deviceSupportsApplePayAsync(),
       android: () => this.deviceSupportsAndroidPayAsync(),
+      default: () => Promise.resolve(false),
     })();
 
   // @deprecated use canMakeNativePayPayments
@@ -61,6 +62,7 @@ class Stripe {
     Platform.select({
       ios: () => this.canMakeApplePayPaymentsAsync(options),
       android: () => this.canMakeAndroidPayPaymentsAsync(),
+      default: () => Promise.resolve(false),
     })();
 
   // @deprecated use paymentRequestWithNativePay
@@ -102,7 +104,9 @@ class Stripe {
     options: types.PaymentRequestWithApplePayOptions | types.PaymentRequestWithAndroidPayOptions,
     items: types.PaymentRequestWithApplePayItem[] = []
   ) {
-    return Platform.select<() => Promise<types.AppleToken | types.AndroidToken>>({
+    const nativePaymentFunction = Platform.select<
+      () => Promise<types.AppleToken | types.AndroidToken>
+    >({
       ios: () =>
         this.paymentRequestWithApplePayAsync(
           items,
@@ -112,7 +116,12 @@ class Stripe {
         this.paymentRequestWithAndroidPayAsync(
           options as types.PaymentRequestWithAndroidPayOptions
         ),
-    })();
+      default: () =>
+        Promise.reject(
+          new UnavailabilityError('expo-payments-stripe', 'paymentRequestWithNativePayAsync')
+        ),
+    });
+    return nativePaymentFunction();
   }
 
   // @deprecated use completeNativePayRequest
@@ -125,7 +134,7 @@ class Stripe {
   completeNativePayRequestAsync = () =>
     Platform.select({
       ios: () => this.completeApplePayRequestAsync(),
-      android: () => Promise.resolve(),
+      default: () => Promise.resolve(),
     })();
 
   // @deprecated use cancelNativePayRequest
@@ -138,7 +147,7 @@ class Stripe {
   cancelNativePayRequestAsync = () =>
     Platform.select({
       ios: () => this.cancelApplePayRequestAsync(),
-      android: () => Promise.resolve(),
+      default: () => Promise.resolve(),
     })();
 
   // @deprecated use openNativePaySetup
@@ -148,7 +157,7 @@ class Stripe {
   openNativePaySetupAsync = () =>
     Platform.select({
       ios: () => this.openApplePaySetupAsync(),
-      android: () => Promise.resolve(),
+      default: () => Promise.resolve(),
     })();
 
   paymentRequestWithCardFormAsync = (

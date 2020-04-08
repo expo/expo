@@ -1,0 +1,205 @@
+import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
+export interface PushNotificationTrigger {
+    type: 'push';
+    remoteMessage?: FirebaseRemoteMessage;
+}
+export interface CalendarNotificationTrigger {
+    type: 'calendar';
+    repeats: boolean;
+    dateComponents: {
+        era?: number;
+        year?: number;
+        month?: number;
+        day?: number;
+        hour?: number;
+        minute?: number;
+        second?: number;
+        weekday?: number;
+        weekdayOrdinal?: number;
+        quarter?: number;
+        weekOfMonth?: number;
+        weekOfYear?: number;
+        yearForWeekOfYear?: number;
+        nanosecond?: number;
+        isLeapMonth: boolean;
+        timeZone?: string;
+        calendar?: string;
+    };
+}
+interface Region {
+    type: string;
+    identifier: string;
+    notifyOnEntry: boolean;
+    notifyOnExit: boolean;
+}
+export interface CircularRegion extends Region {
+    type: 'circular';
+    radius: number;
+    center: {
+        latitude: number;
+        longitude: number;
+    };
+}
+export interface BeaconRegion extends Region {
+    type: 'beacon';
+    notifyEntryStateOnDisplay: boolean;
+    major: number | null;
+    minor: number | null;
+    uuid?: string;
+    beaconIdentityConstraint?: {
+        uuid: string;
+        major: number | null;
+        minor: number | null;
+    };
+}
+export interface LocationNotificationTrigger {
+    type: 'location';
+    repeats: boolean;
+    region: CircularRegion | BeaconRegion;
+}
+export interface TimeIntervalNotificationTrigger {
+    type: 'timeInterval';
+    repeats: boolean;
+    seconds: number;
+}
+export interface FirebaseRemoteMessage {
+    collapseKey: string | null;
+    data: {
+        [key: string]: string;
+    };
+    from: string | null;
+    messageId: string | null;
+    messageType: string | null;
+    originalPriority: number;
+    priority: number;
+    sentTime: number;
+    to: string | null;
+    ttl: number;
+    notification: null | {
+        body: string | null;
+        bodyLocalizationArgs: string[] | null;
+        bodyLocalizationKey: string | null;
+        channelId: string | null;
+        clickAction: string | null;
+        color: string | null;
+        usesDefaultLightSettings: boolean;
+        usesDefaultSound: boolean;
+        usesDefaultVibrateSettings: boolean;
+        eventTime: number | null;
+        icon: string | null;
+        imageUrl: string | null;
+        lightSettings: number[] | null;
+        link: string | null;
+        localOnly: boolean;
+        notificationCount: number | null;
+        notificationPriority: number | null;
+        sound: string | null;
+        sticky: boolean;
+        tag: string | null;
+        ticker: string | null;
+        title: string | null;
+        titleLocalizationArgs: string[] | null;
+        titleLocalizationKey: string | null;
+        vibrateTimings: number[] | null;
+        visibility: number | null;
+    };
+}
+export interface UnknownNotificationTrigger {
+    type: 'unknown';
+}
+export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | UnknownNotificationTrigger;
+export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+    repeats?: boolean;
+};
+export interface TimeIntervalTriggerInput {
+    repeats?: boolean;
+    seconds: number;
+}
+export declare type DateTriggerInput = Date | number;
+export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | CalendarTriggerInput;
+export declare enum AndroidNotificationPriority {
+    MIN = "min",
+    LOW = "low",
+    DEFAULT = "default",
+    HIGH = "high",
+    MAX = "max"
+}
+export declare type NotificationContent = {
+    title: string | null;
+    subtitle: string | null;
+    body: string | null;
+    data: {
+        [key: string]: unknown;
+    };
+} & ({
+    launchImageName: string | null;
+    sound: 'default' | 'defaultCritical' | 'unknown' | null;
+    badge: number | null;
+    attachments: {
+        identifier: string | null;
+        url: string | null;
+        type: string | null;
+    }[];
+    summaryArgument?: string | null;
+    summaryArgumentCount?: number;
+    categoryIdentifier: string | null;
+    threadIdentifier: string | null;
+    targetContentIdentifier?: string;
+} | {
+    badge?: number;
+    sound?: 'default' | string;
+    priority?: AndroidNotificationPriority;
+    vibrationPattern?: number[];
+});
+export interface NotificationRequest {
+    identifier: string;
+    content: NotificationContent;
+    trigger: NotificationTrigger;
+}
+export interface NotificationContentInput {
+    title?: string;
+    subtitle?: string;
+    body?: string;
+    data?: {
+        [key: string]: unknown;
+    };
+    badge?: number;
+    sound?: boolean | string;
+    launchImageName?: string;
+    vibrate?: number[];
+    priority?: string;
+    attachments?: {
+        url: string;
+        identifier?: string;
+        typeHint?: string;
+        hideThumbnail?: boolean;
+        thumbnailClipArea?: {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        };
+        thumbnailTime?: number;
+    }[];
+}
+export interface NotificationRequestInput {
+    identifier?: string;
+    content: NotificationContentInput;
+    trigger: NotificationTriggerInput;
+}
+export interface Notification {
+    date: number;
+    request: NotificationRequest;
+}
+export interface NotificationResponse {
+    notification: Notification;
+    actionIdentifier: string;
+    userText?: string;
+}
+export interface NotificationBehavior {
+    shouldShowAlert: boolean;
+    shouldPlaySound: boolean;
+    shouldSetBadge: boolean;
+    priority?: AndroidNotificationPriority;
+}
+export {};

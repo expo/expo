@@ -2,6 +2,7 @@ package expo.modules.image;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import expo.modules.image.enums.ImageResizeMode;
 import expo.modules.image.events.ImageErrorEvent;
 import expo.modules.image.events.ImageLoadEvent;
 import expo.modules.image.events.ImageLoadStartEvent;
@@ -40,11 +42,11 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @Nullable
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ImageLoadStartEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadStartEvent.EVENT_NAME))
-        .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
-        .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
-        .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
-        .build();
+      .put(ImageLoadStartEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadStartEvent.EVENT_NAME))
+      .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
+      .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
+      .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
+      .build();
   }
 
   // Props setters
@@ -52,6 +54,15 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @ReactProp(name = "source")
   public void setSource(ExpoImageView view, @Nullable ReadableMap sourceMap) {
     view.setSource(sourceMap);
+  }
+
+  @ReactProp(name = "resizeMode")
+  public void setResizeMode(ExpoImageView view, String stringValue) {
+    ImageResizeMode resizeMode = ImageResizeMode.fromStringValue(stringValue);
+    if (resizeMode == ImageResizeMode.UNKNOWN) {
+      throw new JSApplicationIllegalArgumentException("Invalid resizeMode: " + stringValue);
+    }
+    view.setResizeMode(resizeMode);
   }
 
   // View lifecycle
