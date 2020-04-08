@@ -52,7 +52,9 @@ Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
-**Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
+__Deprecated__. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
+
+> This property is deprecated, it uses the `package.json`'s `expo` version to determine the SDK version. If you upgraded with `expo upgrade`, this property should have been removed.
 
 ### `"version"`
 
