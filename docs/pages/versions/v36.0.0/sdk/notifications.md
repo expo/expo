@@ -3,6 +3,7 @@ title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notifications'
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
@@ -15,7 +16,7 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
 ## API
 
@@ -23,7 +24,83 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications?platform=ios) to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
+Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
+
+<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
+
+```js
+import React from 'react';
+import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
+export default class AppContainer extends React.Component {
+  state = {
+    expoPushToken: '',
+    notification: {},
+  };
+
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  };
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+        </View>
+        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+      </View>
+    );
+  }
+}
+```
+
+</SnackInline>
 
 ## Subscribing to Notifications
 
@@ -139,7 +216,37 @@ Cancel all scheduled notifications.
 
 A notification category defines a set of actions with which a user may interact with and respond to the incoming notification. You can read more about categories [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
 
-Check out how to implement interactive Notifications in your app by taking a look at the code behind [this Snack](https://snack.expo.io/@documentation/interactivenotificationexample)
+Here's an example of creating a category with different types of interactions:
+
+```jsx
+Notifications.createCategoryAsync('myCategoryName', [
+  {
+    actionId: 'vanillaButton',
+    buttonTitle: 'Plain Option',
+    isDestructive: false,
+    isAuthenticationRequired: false,
+  },
+  {
+    actionId: 'highlightedButton',
+    buttonTitle: 'Destructive!!!',
+    isDestructive: true,
+    isAuthenticationRequired: false,
+  },
+  {
+    actionId: 'requiredAuthenticationButton',
+    buttonTitle: 'Click to Authenticate',
+    isDestructive: false,
+    isAuthenticationRequired: true,
+  },
+  {
+    actionId: 'textResponseButton',
+    buttonTitle: 'Click to Respond with Text',
+    textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+    isDestructive: false,
+    isAuthenticationRequired: false,
+  },
+]);
+```
 
 ### `Notifications.createCategoryAsync(name: string, actions: ActionType[])`
 

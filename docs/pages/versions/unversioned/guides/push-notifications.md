@@ -117,13 +117,6 @@ export default class AppContainer extends React.Component {
     );
   }
 }
-
-/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
-
-    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
-      "ids": ["YOUR RECEIPTID STRING HERE"]
-      }'
-*/
 ```
 
 </SnackInline>
