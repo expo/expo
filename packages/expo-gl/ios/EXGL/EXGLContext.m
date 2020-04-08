@@ -230,7 +230,12 @@
     NSData *imageData;
     NSString *extension;
     
-    if ([format isEqualToString:@"png"]) {
+    if ([format isEqualToString:@"webp"]) {
+      UMLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      imageData = UIImagePNGRepresentation(image);
+      extension = @".png";
+    }
+    else if ([format isEqualToString:@"png"]) {
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     } else {
