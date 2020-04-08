@@ -1,4 +1,4 @@
-import { CameraType } from './CameraModule.types';
+import { CameraType, ImageType } from './CameraModule.types';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/aspectRatio
 export const VIDEO_ASPECT_RATIOS = {
@@ -12,8 +12,8 @@ export const VIDEO_ASPECT_RATIOS = {
 export const PictureSizes = Object.keys(VIDEO_ASPECT_RATIOS);
 
 export const ImageTypeFormat = {
-  jpg: 'image/jpeg',
-  png: 'image/png',
+  [ImageType.jpg]: 'image/jpeg',
+  [ImageType.png]: 'image/png',
 };
 
 export const MinimumConstraints: MediaStreamConstraints = {
@@ -22,8 +22,8 @@ export const MinimumConstraints: MediaStreamConstraints = {
 };
 
 export const CameraTypeToFacingMode = {
-  front: 'user',
-  back: 'environment',
+  [CameraType.front]: 'user',
+  [CameraType.back]: 'environment',
 };
 
 export const FacingModeToCameraType = {

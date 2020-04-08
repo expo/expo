@@ -1,4 +1,4 @@
-import { CameraType } from './CameraModule.types';
+import { CameraType, ImageType } from './CameraModule.types';
 export declare const VIDEO_ASPECT_RATIOS: {
     '3840x2160': number;
     '1920x1080': number;
