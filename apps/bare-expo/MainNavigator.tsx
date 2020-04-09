@@ -74,10 +74,15 @@ const MainNavigator = createBottomTabNavigator(routes, {
   },
 });
 
-const SwitchRedirectNavigator = createSwitchNavigator({
+const switchRoutes: Record<string, any> = {
   main: { screen: MainNavigator, path: '' },
-  Redirect,
-});
+};
+
+if (Redirect) {
+  switchRoutes.redirect = Redirect;
+}
+
+const SwitchRedirectNavigator = createSwitchNavigator(switchRoutes);
 
 const createApp = Platform.select({
   web: input => createBrowserApp(input),
