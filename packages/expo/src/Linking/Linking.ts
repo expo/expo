@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
-import { Platform, LinkingStatic } from 'react-native';
+import { LinkingStatic } from 'react-native';
 import URL from 'url-parse';
 
 import { ParsedURL, QueryParams } from './Linking.types';

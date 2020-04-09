@@ -3,7 +3,7 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { View } from 'react-native';
 
-export default function Redirect() {
+export default function RedirectScreen() {
   const payload = WebBrowser.maybeCompleteAuthSession();
 
   return (
@@ -14,4 +14,4 @@ export default function Redirect() {
   );
 }
 
-Redirect.path = 'redirect';
+RedirectScreen.path = 'redirect';
