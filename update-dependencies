@@ -26,6 +26,10 @@ bin/nix-binstubs \
   xcpretty \
   yarn
 
+# get newer npm
+rm bin/np*
+bin/nix-binstubs nodePackages.npm
+
 # Generate lockfile and nix file for ruby gems
 for gem in fastlane; do
   pushd nix/$gem
