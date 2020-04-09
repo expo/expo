@@ -23,9 +23,9 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
 
     // Turn off logging.
     if (!option || option === GLLoggingOption.DISABLED) {
-      Object.keys(gl).forEach(key => {
-        if (typeof gl[key] === 'function' && gl[key].original) {
-          gl[key] = gl[key].original;
+      Object.entries(gl).forEach(([key, value]) => {
+        if (typeof value === 'function' && value.original) {
+          gl[key] = value.original;
         }
       });
       loggingOption = option;
@@ -33,11 +33,10 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
     }
 
     // Turn on logging.
-    Object.keys(gl).forEach(key => {
-      if (typeof gl[key] !== 'function' || key === '__expoSetLogging') {
+    Object.entries(gl).forEach(([key, originalValue]) => {
+      if (typeof originalValue !== 'function' || key === '__expoSetLogging') {
         return;
       }
-      const original = gl[key];
 
       gl[key] = (...args) => {
         if (loggingOption & GLLoggingOption.METHOD_CALLS) {
@@ -68,7 +67,7 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
           console.log(`ExpoGL: ${key}(${params.join(', ')})`);
         }
 
-        const result = original.apply(gl, args);
+        const result = originalValue.apply(gl, args);
 
         if (loggingOption & GLLoggingOption.METHOD_CALLS) {
           console.log(`ExpoGL:   = ${result}`);
@@ -84,7 +83,7 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
         }
         return result;
       };
-      gl[key].original = original;
+      gl[key].original = originalValue;
     });
 
     loggingOption = option;
