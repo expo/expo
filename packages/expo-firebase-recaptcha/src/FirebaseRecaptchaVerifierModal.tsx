@@ -1,6 +1,14 @@
 import { CodedError } from '@unimodules/core';
 import * as React from 'react';
-import { StyleSheet, Button, View, SafeAreaView, Text, Modal } from 'react-native';
+import {
+  StyleSheet,
+  Button,
+  View,
+  SafeAreaView,
+  Text,
+  Modal,
+  ActivityIndicator,
+} from 'react-native';
 
 import FirebaseRecaptcha from './FirebaseRecaptcha';
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
@@ -12,6 +20,7 @@ interface Props extends Omit<React.ComponentProps<typeof FirebaseRecaptcha>, 'on
 interface State {
   token: string;
   visible: boolean;
+  loaded: boolean;
   resolve?: (token: string) => void;
   reject?: (error: Error) => void;
 }
@@ -26,6 +35,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
   state: State = {
     token: '',
     visible: false,
+    loaded: false,
     resolve: undefined,
     reject: undefined,
   };
@@ -39,11 +49,18 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
       this.setState({
         token: '',
         visible: true,
+        loaded: false,
         resolve,
         reject,
       });
     });
   }
+
+  private onLoad = () => {
+    this.setState({
+      loaded: true,
+    });
+  };
 
   private onVerify = (token: string) => {
     const { resolve } = this.state;
@@ -67,7 +84,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
 
   render() {
     const { title, cancelLabel, ...otherProps } = this.props;
-    const { visible } = this.state;
+    const { visible, loaded } = this.state;
     return (
       <Modal
         visible={visible}
@@ -84,7 +101,21 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
               />
             </View>
           </View>
-          <FirebaseRecaptcha style={styles.container} onVerify={this.onVerify} {...otherProps} />
+          <View style={styles.content}>
+            <FirebaseRecaptcha
+              style={styles.content}
+              onLoad={this.onLoad}
+              onVerify={this.onVerify}
+              {...otherProps}
+            />
+            {!loaded ? (
+              <View style={styles.loader}>
+                <ActivityIndicator size="large" />
+              </View>
+            ) : (
+              undefined
+            )}
+          </View>
         </SafeAreaView>
       </Modal>
     );
@@ -111,5 +142,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+  },
+  loader: {
+    ...StyleSheet.absoluteFillObject,
+    paddingTop: 20,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 });
