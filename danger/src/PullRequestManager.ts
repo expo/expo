@@ -33,9 +33,9 @@ export class PullRequestManager {
   constructor(private pullRequest: PullRequest, private githubApi: GithubApiWrapper) {}
 
   /**
-   * Get suggested changelog entries from PR provided in the constructor.
+   * Gets suggested changelog entries from PR provided in the constructor.
    *
-   * If PR doesn't contais `# Changelog` section, this method returns:
+   * If PR doesn't contain `# Changelog` section, this method returns:
    * {
    *   [DEFAULT_CHANGELOG_ENTRY_KEY]: <title of this pr without tags>
    * }
@@ -75,7 +75,7 @@ export class PullRequestManager {
     return changelogEntries;
   }
 
-  async createOrUpdateRPAsync(
+  async createOrUpdatePRAsync(
     missingEntries: { packageName: string; content: string }[]
   ): Promise<PullRequest | null> {
     const dangerHeadRef = `@danger/add-missing-changelog-to-${this.pullRequest.number}`;
@@ -139,17 +139,17 @@ export class PullRequestManager {
 
     for (const tag of tags) {
       switch (true) {
-        case /\[[\s-_]*(bug)?[\s-_]*fix[\s-_]*\]/i.test(tag):
+        case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
           result.type = ChangelogEntryType.BUG_FIXES;
           break;
-        case /\[[\s-_]*(new)?[\s-_]*feature(s)?[\s-_]*\]/i.test(tag):
+        case /\b(feat|features?)\b/i.test(tag):
           result.type = ChangelogEntryType.NEW_FEATURES;
           break;
-        case /\[[\s-_]*breaking[\s-_]*(change)?[\s-_]*\]/i.test(tag):
+        case /\b(break(ing)?)\b/i.test(tag):
           result.type = ChangelogEntryType.BREAKING_CHANGES;
           break;
         default:
-          result['packageName'] = tag.replace(/\[|\]/g, '').trim();
+          result.packageName = tag.replace(/\[|\]/g, '').trim();
       }
     }
 

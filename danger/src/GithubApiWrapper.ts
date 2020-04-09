@@ -62,9 +62,9 @@ export class GithubApiWrapper {
   }
 
   /**
-   * Create or update branch from the file map.
+   * Creates or updates branch from the file map.
    *
-   * If the branch exists it will be ovewritten (similar behavior to git push --force).
+   * If the branch exists it will be overwritten (similar behavior to git push --force).
    */
   async createOrUpdateBranchFromFileMap(
     fileMap: FileMap,
@@ -87,7 +87,7 @@ export class GithubApiWrapper {
   }
 
   /**
-   * Get currently opened PRs, which are from `ref.fromBranch` to `ref.toBranch`.
+   * Gets currently opened PRs, which are from `ref.fromBranch` to `ref.toBranch`.
    */
   async getOpenPRs(ref: PRReferences): Promise<Octokit.PullsListResponse> {
     const { data: prs } = await this.api.pulls.list({
@@ -100,7 +100,7 @@ export class GithubApiWrapper {
   }
 
   /**
-   * Create a PR as a user, which was provided in the constructor.
+   * Creates a PR as a user, which was provided in the constructor.
    */
   async openPR(options: CreatePROptions): Promise<Octokit.PullsCreateResponse> {
     const { data: pr } = await this.api.pulls.create({
@@ -144,7 +144,7 @@ export class GithubApiWrapper {
   }
 
   /**
-   * Get the base sha for the new branch which will be on the top of the provided one.
+   * Gets the base sha for the new branch which will be on the top of the provided one.
    *
    * @param branchRef The ref in the URL must `heads/branch`, not just `branch`
    */
@@ -157,7 +157,7 @@ export class GithubApiWrapper {
   }
 
   /**
-   * Create or update the git's reference pointing to the provided commit.
+   * Creates or updates the git's reference pointing to the provided commit.
    * If this reference exists, it will be overwritten (similar behavior to git push --force).
    *
    * A Git reference (git ref) is just a file that contains a Git commit SHA-1 hash. When referring
