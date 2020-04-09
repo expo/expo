@@ -20,13 +20,20 @@ function getWebviewSource(firebaseConfig, firebaseVersion) {
     <div id="recaptcha-cont" class="g-recaptcha"></div>
     <script>
     function onloadCallback() {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'load'
+        }));
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-cont", {
         size: "normal",
         callback: function(response) {
-            window.ReactNativeWebView.postMessage(response);
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'verify',
+              token: response
+            }));
         }
         });
         window.recaptchaVerifier.render();
+      }
     }
     </script>
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
@@ -34,12 +41,24 @@ function getWebviewSource(firebaseConfig, firebaseVersion) {
     };
 }
 export default function FirebaseRecaptcha(props) {
-    const { firebaseConfig, firebaseVersion, onVerify, ...otherProps } = props;
+    const { firebaseConfig, firebaseVersion, onVerify, onLoad, ...otherProps } = props;
     if (!firebaseConfig) {
         console.error(`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`);
         return null;
     }
-    return (<WebView javaScriptEnabled automaticallyAdjustContentInsets scalesPageToFit startInLoadingState mixedContentMode="always" source={getWebviewSource(firebaseConfig, firebaseVersion)} onMessage={event => onVerify(event.nativeEvent.data)} {...otherProps}/>);
+    return (<WebView javaScriptEnabled automaticallyAdjustContentInsets scalesPageToFit startInLoadingState mixedContentMode="always" source={getWebviewSource(firebaseConfig, firebaseVersion)} onMessage={event => {
+        const data = JSON.parse(event.nativeEvent.data);
+        switch (data.type) {
+            case 'load':
+                if (onLoad) {
+                    onLoad();
+                }
+                break;
+            case 'verify':
+                onVerify(data.token);
+                break;
+        }
+    }} {...otherProps}/>);
 }
 FirebaseRecaptcha.defaultProps = {
     firebaseConfig: DEFAULT_WEB_APP_OPTIONS,
