@@ -27,7 +27,7 @@ async function emitOrientationEvent() {
     ]);
     SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
         orientationLock,
-        orientation,
+        orientationInfo: { orientation },
     });
 }
 if (canUseEventListeners) {
