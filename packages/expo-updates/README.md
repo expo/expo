@@ -361,7 +361,7 @@ import * as Updates from 'expo-updates';
 
 ### Constants
 
-- **`Updates.manifest` (_object_)** - The [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+- **`Updates.manifest` (_object_)** - If `expo-updates` is enabled, this is the [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running. In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 - **`Updates.isEmergencyLaunch` (_boolean_)** - `expo-updates` does its very best to always launch monotonically newer versions of your app so you don't need to worry about backwards compatibility when you put out an update. In very rare cases, it's possible that `expo-updates` may need to fall back to the update that's embedded in the app binary, even after newer updates have been downloaded and run (an "emergency launch"). This boolean will be `true` if the app is launching under this fallback mechanism and `false` otherwise. If you are concerned about backwards compatibility of future updates to your app, you can use this constant to provide special behavior for this rare case.
 
 ### `Updates.reloadAsync()`

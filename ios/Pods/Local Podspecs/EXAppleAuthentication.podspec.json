@@ -1,6 +1,6 @@
 {
   "name": "EXAppleAuthentication",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "summary": "A unimodule that provides SignIn With Apple",
   "description": "A unimodule that provides SignIn With Apple",
   "license": "MIT",
