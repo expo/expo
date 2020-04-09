@@ -91,7 +91,7 @@ Now we will take the data that we get from the image picker and use it to show t
 
 ```js
 export default function App() {
-  /* @info Initialize a variable to hold our selected image data */let [selectedImage, setSelectedImage] = React.useState(null);/* @end */
+  /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
 
   let openImagePickerAsync = async () => {
