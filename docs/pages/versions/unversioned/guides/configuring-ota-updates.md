@@ -30,7 +30,7 @@ try {
   if (update.isAvailable) {
     await Updates.fetchUpdateAsync();
     // ... notify user of update ...
-    Updates.reloadFromCache();
+    Updates.reloadAsync();
   }
 } catch (e) {
   // handle or log error
