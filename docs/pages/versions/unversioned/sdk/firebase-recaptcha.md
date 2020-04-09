@@ -162,6 +162,8 @@ try {
 
 </SnackInline>
 
+Or open the [Full Phone Authentication test app](https://snack.expo.io/@ijzerenhein/firebase-phone-full-auth-demo).
+
 ## Customizing the appearance
 
 `<FirebaseRecaptchaVerifierModal>` has limited customisation options. You cannot change its appearance, but you can change the **title** and the **cancel-label**.
