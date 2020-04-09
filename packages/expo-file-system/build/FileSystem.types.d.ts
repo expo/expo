@@ -5,15 +5,11 @@ export declare enum FileSystemSessionType {
 export declare type DownloadOptions = {
     md5?: boolean;
     cache?: boolean;
-    headers?: {
-        [name: string]: string;
-    };
+    headers?: Record<string, string>;
     sessionType?: FileSystemSessionType;
 };
 export declare type FileSystemHttpResult = {
-    headers: {
-        [name: string]: string;
-    };
+    headers: Record<string, string>;
     status: number;
     mimeType: string | null;
 };
@@ -26,10 +22,8 @@ export declare type FileSystemDownloadResult = FileSystemHttpResult & {
  */
 export declare type DownloadResult = FileSystemDownloadResult;
 export declare type FileSystemUploadOptions = {
-    headers?: {
-        [name: string]: string;
-    };
-    httpMethod?: FileSystemHttpMethods;
+    headers?: Record<string, string>;
+    httpMethod?: FileSystemHttpMethod;
     sessionType?: FileSystemSessionType;
 };
 export declare type FileSystemUploadResult = FileSystemHttpResult & {
@@ -65,7 +59,7 @@ export declare enum EncodingType {
     UTF8 = "utf8",
     Base64 = "base64"
 }
-export declare enum FileSystemHttpMethods {
+export declare enum FileSystemHttpMethod {
     POST = 0,
     PUT = 1,
     PATCH = 2

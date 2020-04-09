@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
 
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
-@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate*> *tasks;
+@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSessionDownloadTask *> *resumableDownloads;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
@@ -533,13 +533,13 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
   if (!([self checkIfFileDirExists:localUri.path])) {
-    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+    reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
            [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", localUriString, [localUri.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
   if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
            nil);
     return;
@@ -551,21 +551,14 @@ UM_EXPORT_METHOD_AS(downloadAsync,
     return;
   }
 
-  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-  NSDictionary *headers = options[@"headers"];
-  if (headers != nil) {
-    for (NSString *headerKey in headers) {
-        [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
-    }
-  }
-  
+  NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
   NSURLSessionDownloadTask *task = [[self _sessionForType:type] downloadTaskWithRequest:request];
-  EXSessionTaskDelegate *exTask = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
                                                                                   reject:reject
                                                                                 localUrl:localUri
-                                                                      shouldCalculateMd5:[options[@"md5"]boolValue]];
-  [self.tasks setObject:exTask forKey:task];
+                                                                      shouldCalculateMd5:[options[@"md5"] boolValue]];
+  _tasks[task] = taskDelegate;
   [task resume];
 }
 
@@ -578,13 +571,13 @@ UM_EXPORT_METHOD_AS(uploadAsync,
 {
   NSURL *fileUri = [NSURL URLWithString:fileUriString];
   if (![fileUri.scheme isEqualToString:@"file"]) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
            nil);
     return;
   }
   if (!([self _checkIfFileExists:fileUri.path])) {
-    reject(@"E_FILE_NOT_EXISTS",
+    reject(@"ERR_FILE_NOT_EXISTS",
            [NSString stringWithFormat:@"File '%@' does not exist.", fileUri],
            nil);
     return;
@@ -596,7 +589,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     return;
   }
 
-  NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+  NSURLRequest *request = [self _createRequest:[NSURL URLWithString:urlString] headers:options[@"headers"]];
   if (options[@"httpMethod"]) {
     NSString *httpMethod = [self _importHttpMethod:options[@"httpMethod"]];
     if (!httpMethod) {
@@ -605,19 +598,16 @@ UM_EXPORT_METHOD_AS(uploadAsync,
              nil);
       return;
     }
-    [urlRequest setHTTPMethod:httpMethod];
+    
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+    [mutableRequest setHTTPMethod:httpMethod];
+    request = mutableRequest;
   }
-  NSDictionary *headers = options[@"headers"];
-  if (headers != nil) {
-    for (NSString *headerKey in headers) {
-        [urlRequest setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
-    }
-  }
-
+  
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
-  NSURLSessionUploadTask *task = [[self _sessionForType:type] uploadTaskWithRequest:urlRequest fromFile:fileUri];
-  EXSessionTaskDelegate *exTask = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
-  [_tasks setObject:exTask forKey:task];
+  NSURLSessionUploadTask *task = [[self _sessionForType:type] uploadTaskWithRequest:request fromFile:fileUri];
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
+  _tasks[task] = taskDelegate;
   [task resume];
 }
 
@@ -633,13 +623,13 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
   if (!([self checkIfFileDirExists:localUrl.path])) {
-    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+    reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
            [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", fileUri, [localUrl.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
   if (![localUrl.scheme isEqualToString:@"file"]) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
            nil);
     return;
@@ -647,7 +637,7 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   
   NSString *path = localUrl.path;
   if (!([self _permissionsForPath:path] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", fileUri],
            nil);
     return;
@@ -676,8 +666,8 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURLSessionDownloadTask *task = _resumableDownloads[uuid];
-  if (task == nil) {
-    reject(@"E_UNABLE_TO_PAUSE",
+  if (!task) {
+    reject(@"ERR_UNABLE_TO_PAUSE",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
            nil);
     return;
@@ -712,6 +702,18 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
+- (NSURLRequest *)_createRequest:(NSURL *)url headers:(NSDictionary * _Nullable)headers
+{
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  if (headers != nil) {
+    for (NSString *headerKey in headers) {
+      [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
+    }
+  }
+  
+  return request;
+}
+
 - (EXFileSystemSessionType)_importSessionType:(NSNumber * _Nullable)type
 {
   return [type intValue] ?: EXFileSystemBackgroundSession;
@@ -726,14 +728,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
       return _foregroundSession;
   }
   return nil;
-}
-
-- (void)_unregisterIfResumableTaskDelegate:(EXSessionTaskDelegate *)exTask
-{
-  if ([exTask isKindOfClass:[EXSessionResumableDownloadTaskDelegate class]]) {
-    EXSessionResumableDownloadTaskDelegate *exResumableTask = (EXSessionResumableDownloadTaskDelegate *)exTask;
-    [_resumableDownloads removeObjectForKey:exResumableTask.uuid];
-  }
 }
 
 - (BOOL)_checkHeadersDictionary:(NSDictionary * _Nullable)headers
@@ -759,7 +753,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   sessionConfiguration.URLCache = nil;
   return [NSURLSession sessionWithConfiguration:sessionConfiguration
                                        delegate:self
-                                  delegateQueue:[NSOperationQueue mainQueue]];
+                                  delegateQueue:nil];
 }
 
 - (BOOL)_checkIfFileExists:(NSString *)path
@@ -807,23 +801,17 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    NSDictionary *headers = options[@"headers"];
-    if (headers != nil) {
-      for (NSString *headerKey in headers) {
-          [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
-      }
-    }
+    NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
     downloadTask = [session downloadTaskWithRequest:request];
   }
-  EXSessionTaskDelegate *exTask = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
                                                                                            reject:reject
                                                                                          localUrl:fileUrl
-                                                                               shouldCalculateMd5:options[@"md5"]
+                                                                               shouldCalculateMd5:[options[@"md5"] boolValue]
                                                                                   onWriteCallback:onWrite
                                                                                              uuid:uuid];
-  [_tasks setObject:exTask forKey:downloadTask];
-  [_resumableDownloads setObject:downloadTask forKey:uuid];
+  _tasks[downloadTask] = taskDelegate;
+  _resumableDownloads[uuid] = downloadTask;
   [downloadTask resume];
 }
 
@@ -923,6 +911,14 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - NSURLSessionDelegate
 
+- (void)_unregisterIfResumableTaskDelegate:(EXSessionTaskDelegate *)taskDelegate
+{
+  if ([taskDelegate isKindOfClass:[EXSessionResumableDownloadTaskDelegate class]]) {
+    EXSessionResumableDownloadTaskDelegate *exResumableTask = (EXSessionResumableDownloadTaskDelegate *)taskDelegate;
+    [_resumableDownloads removeObjectForKey:exResumableTask.uuid];
+  }
+}
+
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
   EXSessionTaskDelegate *exTask = _tasks[downloadTask];
@@ -948,10 +944,8 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                                       totalBytesWritten:(int64_t)totalBytesWritten
                               totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
-  if (bytesWritten > 0) {
-    EXSessionTaskDelegate *exTask = _tasks[downloadTask];
-    [exTask URLSession:session downloadTask:downloadTask didWriteData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
-  }
+  EXSessionTaskDelegate *exTask = _tasks[downloadTask];
+  [exTask URLSession:session downloadTask:downloadTask didWriteData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data

@@ -2,8 +2,7 @@ export enum FileSystemSessionType {
   /*
    * Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background.
    *
-   * If the task completes while the application is in background, the Promise might be resolved immediately.
-   * However, application execution will be stopped after a couple of seconds and it will be resumed when the application is moved to foreground again.
+   * If the task completes while the application is in background, the Promise will be either resolved immediately or (if the application execution has already been stopped) once the app is moved to foreground again.
    */
   BACKGROUND = 0,
   /*
@@ -16,7 +15,7 @@ export enum FileSystemSessionType {
 export type DownloadOptions = {
   md5?: boolean;
   cache?: boolean;
-  headers?: { [name: string]: string };
+  headers?: Record<string, string>;
   /*
    * iOS only
    */
@@ -24,7 +23,7 @@ export type DownloadOptions = {
 };
 
 export type FileSystemHttpResult = {
-  headers: { [name: string]: string };
+  headers: Record<string, string>;
   status: number;
   mimeType: string | null;
 };
@@ -40,8 +39,8 @@ export type FileSystemDownloadResult = FileSystemHttpResult & {
 export type DownloadResult = FileSystemDownloadResult;
 
 export type FileSystemUploadOptions = {
-  headers?: { [name: string]: string };
-  httpMethod?: FileSystemHttpMethods;
+  headers?: Record<string, string>;
+  httpMethod?: FileSystemHttpMethod;
   sessionType?: FileSystemSessionType;
 };
 
@@ -86,7 +85,7 @@ export enum EncodingType {
   Base64 = 'base64',
 }
 
-export enum FileSystemHttpMethods {
+export enum FileSystemHttpMethod {
   POST = 0,
   PUT = 1,
   PATCH = 2,

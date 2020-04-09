@@ -46,7 +46,7 @@
                                       totalBytesWritten:(int64_t)totalBytesWritten
                               totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
 {
-  if (_onWriteCallback) {
+  if (_onWriteCallback && bytesWritten > 0) {
     _onWriteCallback(downloadTask, bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
   }
 }

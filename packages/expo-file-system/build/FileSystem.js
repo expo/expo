@@ -2,13 +2,13 @@ import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import uuidv4 from 'uuid/v4';
 import ExponentFileSystem from './ExponentFileSystem';
-import { EncodingType, FileSystemHttpMethods, FileSystemSessionType, } from './FileSystem.types';
+import { EncodingType, FileSystemHttpMethod, FileSystemSessionType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
 // Prevent webpack from pruning this.
 const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
-export { EncodingType, FileSystemHttpMethods, FileSystemSessionType, };
+export { EncodingType, FileSystemHttpMethod, FileSystemSessionType, };
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';

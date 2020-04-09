@@ -3,8 +3,7 @@ export var FileSystemSessionType;
     /*
      * Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background.
      *
-     * If the task completes while the application is in background, the Promise might be resolved immediately.
-     * However, application execution will be stopped after a couple of seconds and it will be resumed when the application is moved to foreground again.
+     * If the task completes while the application is in background, the Promise will be either resolved immediately or (if the application execution has already been stopped) once the app is moved to foreground again.
      */
     FileSystemSessionType[FileSystemSessionType["BACKGROUND"] = 0] = "BACKGROUND";
     /*
@@ -18,10 +17,10 @@ export var EncodingType;
     EncodingType["UTF8"] = "utf8";
     EncodingType["Base64"] = "base64";
 })(EncodingType || (EncodingType = {}));
-export var FileSystemHttpMethods;
-(function (FileSystemHttpMethods) {
-    FileSystemHttpMethods[FileSystemHttpMethods["POST"] = 0] = "POST";
-    FileSystemHttpMethods[FileSystemHttpMethods["PUT"] = 1] = "PUT";
-    FileSystemHttpMethods[FileSystemHttpMethods["PATCH"] = 2] = "PATCH";
-})(FileSystemHttpMethods || (FileSystemHttpMethods = {}));
+export var FileSystemHttpMethod;
+(function (FileSystemHttpMethod) {
+    FileSystemHttpMethod[FileSystemHttpMethod["POST"] = 0] = "POST";
+    FileSystemHttpMethod[FileSystemHttpMethod["PUT"] = 1] = "PUT";
+    FileSystemHttpMethod[FileSystemHttpMethod["PATCH"] = 2] = "PATCH";
+})(FileSystemHttpMethod || (FileSystemHttpMethod = {}));
 //# sourceMappingURL=FileSystem.types.js.map
