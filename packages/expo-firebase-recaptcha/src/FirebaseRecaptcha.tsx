@@ -5,6 +5,7 @@ import { WebView } from 'react-native-webview';
 interface Props extends React.ComponentProps<typeof WebView> {
   firebaseConfig?: IFirebaseOptions;
   firebaseVersion?: string;
+  onLoad?: () => any;
   onVerify: (token: string) => any;
 }
 
@@ -29,13 +30,20 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
     <div id="recaptcha-cont" class="g-recaptcha"></div>
     <script>
     function onloadCallback() {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'load'
+        }));
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-cont", {
         size: "normal",
         callback: function(response) {
-            window.ReactNativeWebView.postMessage(response);
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'verify',
+              token: response
+            }));
         }
         });
         window.recaptchaVerifier.render();
+      }
     }
     </script>
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
@@ -44,7 +52,7 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
 }
 
 export default function FirebaseRecaptcha(props: Props) {
-  const { firebaseConfig, firebaseVersion, onVerify, ...otherProps } = props;
+  const { firebaseConfig, firebaseVersion, onVerify, onLoad, ...otherProps } = props;
   if (!firebaseConfig) {
     console.error(
       `FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`
@@ -59,7 +67,19 @@ export default function FirebaseRecaptcha(props: Props) {
       startInLoadingState
       mixedContentMode="always"
       source={getWebviewSource(firebaseConfig, firebaseVersion)}
-      onMessage={event => onVerify(event.nativeEvent.data)}
+      onMessage={event => {
+        const data = JSON.parse(event.nativeEvent.data);
+        switch (data.type) {
+          case 'load':
+            if (onLoad) {
+              onLoad();
+            }
+            break;
+          case 'verify':
+            onVerify(data.token);
+            break;
+        }
+      }}
       {...otherProps}
     />
   );
