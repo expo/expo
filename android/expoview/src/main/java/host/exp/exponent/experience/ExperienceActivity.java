@@ -270,6 +270,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Override 
   public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
     // Check for manifest to avoid calling this when first loading an experience
     if (hasFocus && mManifest != null) {
       runOnUiThread(() -> {
