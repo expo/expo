@@ -701,7 +701,6 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - decrypt_secrets_if_possible
       - yarn_install:
           working_directory: ~/expo/tools-public
       - yarn_install:
