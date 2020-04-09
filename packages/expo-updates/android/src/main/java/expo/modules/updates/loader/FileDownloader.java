@@ -181,7 +181,7 @@ public class FileDownloader {
             .url(url.toString())
             .header("Expo-Platform", "android")
             .header("Expo-Api-Version", "1")
-            .header("Expo-Client-Environment", "STANDALONE");
+            .header("Expo-Updates-Environment", "BARE");
     return requestBuilder.build();
   }
 
@@ -191,7 +191,7 @@ public class FileDownloader {
             .header("Accept", "application/expo+json,application/json")
             .header("Expo-Platform", "android")
             .header("Expo-Api-Version", "1")
-            .header("Expo-Client-Environment", "STANDALONE")
+            .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             .header("Expo-Accept-Signature", "true")
             .cacheControl(CacheControl.FORCE_NETWORK);
