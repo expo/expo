@@ -272,6 +272,12 @@ class FirebaseAnalyticsJS {
         this.userId = undefined;
         this.userProperties = undefined;
     }
+    /**
+     * Enables or disabled debug mode.
+     */
+    async setDebugModeEnabled(isEnabled) {
+        this.options.debug = isEnabled;
+    }
 }
 function encodeQueryArgs(queryArgs) {
     const now = Date.now();

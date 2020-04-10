@@ -84,5 +84,9 @@ declare class FirebaseAnalyticsJS {
      * Clears all analytics data for this instance.
      */
     resetAnalyticsData(): Promise<void>;
+    /**
+     * Enables or disabled debug mode.
+     */
+    setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 }
 export default FirebaseAnalyticsJS;

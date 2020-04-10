@@ -12,5 +12,6 @@ declare const _default: {
     }): Promise<void>;
     resetAnalyticsData(): Promise<void>;
     setUnavailabilityLogging(isEnabled: boolean): void;
+    setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 };
 export default _default;

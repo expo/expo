@@ -51,6 +51,12 @@ function callAnalyticsModule(funcName, ...args) {
         }
         return;
     }
+    // Debug-mode can only be enabled for the pure JS Analytics Tracker
+    // For all other environments, the platform specific method must be used.
+    // https://firebase.google.com/docs/analytics/debugview
+    if (funcName === 'setDebugModeEnabled') {
+        throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    }
     // Make the call
     return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
 }
@@ -81,6 +87,9 @@ export default {
     },
     setUnavailabilityLogging(isEnabled) {
         isUnavailabilityLoggingEnabled = isEnabled;
+    },
+    async setDebugModeEnabled(isEnabled) {
+        return callAnalyticsModule('setDebugModeEnabled', isEnabled);
     },
 };
 //# sourceMappingURL=ExpoFirebaseAnalytics.js.map
