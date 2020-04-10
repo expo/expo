@@ -300,6 +300,16 @@ on the Expo client.
 Analytics.setUnavailabilityLogging(false);
 ```
 
+### setDebugModeEnabled
+
+```tsx
+setDebugModeEnabled(isEnabled: boolean): Promise<void>
+```
+
+Enables debug mode *(Expo client only)* so events can be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+
+This option is **only available on the standard Expo client**. When using a standalone build, the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
+
 # Examples
 
 ## How do people use my app?
