@@ -17,8 +17,10 @@ let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
 
 function callAnalyticsModule(funcName: string, ...args) {
-  if (!ExpoFirebaseAnalytics[funcName]) {
-    throw new UnavailabilityError('expo-firebase-analytics', funcName);
+  if (funcName !== 'setDebugModeEnabled') {
+    if (!ExpoFirebaseAnalytics[funcName]) {
+      throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    }
   }
   if (!DEFAULT_APP_OPTIONS) {
     throw new CodedError(
@@ -68,7 +70,10 @@ function callAnalyticsModule(funcName: string, ...args) {
   // For all other environments, the platform specific method must be used.
   // https://firebase.google.com/docs/analytics/debugview
   if (funcName === 'setDebugModeEnabled') {
-    throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    throw new CodedError(
+      'ERR_FIREBASE_NOTCONFIGURED',
+      `setDebugModeEnabled is not available in this environment. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`
+    );
   }
 
   // Make the call
