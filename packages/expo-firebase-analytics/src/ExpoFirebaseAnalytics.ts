@@ -75,7 +75,7 @@ export default {
     return callAnalyticsModule('logEvent', name, properties);
   },
   async setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void> {
-    return callAnalyticsModule('setAnalyticsEnabled', isEnabled);
+    return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
   },
   async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
     return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);
