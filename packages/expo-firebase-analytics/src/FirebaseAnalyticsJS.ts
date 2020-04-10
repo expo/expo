@@ -319,6 +319,13 @@ class FirebaseAnalyticsJS {
     this.userId = undefined;
     this.userProperties = undefined;
   }
+
+  /**
+   * Enables or disabled debug mode.
+   */
+  async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
+    this.options.debug = isEnabled;
+  }
 }
 
 function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent): string {
