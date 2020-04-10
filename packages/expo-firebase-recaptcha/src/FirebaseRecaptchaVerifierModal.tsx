@@ -82,6 +82,16 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     });
   };
 
+  onDismiss = () => {
+    // onDismiss should be called when the user dismisses the
+    // modal using a swipe gesture. Due to a bug in RN this
+    // unfortunately doesn't work :/
+    //https://github.com/facebook/react-native/issues/26892
+    if (this.state.visible) {
+      this.cancel();
+    }
+  };
+
   render() {
     const { title, cancelLabel, ...otherProps } = this.props;
     const { visible, loaded } = this.state;
@@ -90,7 +100,8 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
         visible={visible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={this.cancel}>
+        onRequestClose={this.cancel}
+        onDismiss={this.onDismiss}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
