@@ -17,6 +17,15 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
                 loaded: true,
             });
         };
+        this.onError = () => {
+            const { reject } = this.state;
+            if (reject) {
+                reject(new CodedError('ERR_FIREBASE_RECAPTCHA_ERROR', 'Failed to load reCAPTCHA'));
+            }
+            this.setState({
+                visible: false,
+            });
+        };
         this.onVerify = (token) => {
             const { resolve } = this.state;
             if (resolve) {
@@ -34,6 +43,15 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
             this.setState({
                 visible: false,
             });
+        };
+        this.onDismiss = () => {
+            // onDismiss should be called when the user dismisses the
+            // modal using a swipe gesture. Due to a bug in RN this
+            // unfortunately doesn't work :/
+            //https://github.com/facebook/react-native/issues/26892
+            if (this.state.visible) {
+                this.cancel();
+            }
         };
     }
     get type() {
@@ -53,7 +71,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
     render() {
         const { title, cancelLabel, ...otherProps } = this.props;
         const { visible, loaded } = this.state;
-        return (<Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={this.cancel}>
+        return (<Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={this.cancel} onDismiss={this.onDismiss}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
@@ -62,7 +80,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
             </View>
           </View>
           <View style={styles.content}>
-            <FirebaseRecaptcha style={styles.content} onLoad={this.onLoad} onVerify={this.onVerify} {...otherProps}/>
+            <FirebaseRecaptcha style={styles.content} onLoad={this.onLoad} onError={this.onError} onVerify={this.onVerify} {...otherProps}/>
             {!loaded ? (<View style={styles.loader}>
                 <ActivityIndicator size="large"/>
               </View>) : (undefined)}

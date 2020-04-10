@@ -21,8 +21,10 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     get type(): string;
     verify(): Promise<string>;
     private onLoad;
+    private onError;
     private onVerify;
     cancel: () => void;
+    onDismiss: () => void;
     render(): JSX.Element;
 }
 export {};

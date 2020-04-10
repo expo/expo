@@ -5,6 +5,7 @@ interface Props extends React.ComponentProps<typeof WebView> {
     firebaseConfig?: IFirebaseOptions;
     firebaseVersion?: string;
     onLoad?: () => any;
+    onError?: () => any;
     onVerify: (token: string) => any;
 }
 declare function FirebaseRecaptcha(props: Props): JSX.Element | null;
