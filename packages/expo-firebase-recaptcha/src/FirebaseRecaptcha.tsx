@@ -28,7 +28,6 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
   <div id="recaptcha-cont" class="g-recaptcha"></div>
   <script>
     function onLoad() {
-      document.getElementById("loading").innerHTML = "onLoad called";
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: 'load'
       }));
