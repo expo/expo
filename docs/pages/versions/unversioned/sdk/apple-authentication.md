@@ -185,6 +185,7 @@ An enum whose values control which pre-defined text to use when rendering an [`A
 
 - **`AppleAuthenticationButtonType.SIGN_IN`** - "Sign in with Apple"
 - **`AppleAuthenticationButtonType.CONTINUE`** - "Continue with Apple"
+- **`AppleAuthenticationButtonType.SIGN_UP`** - "Sign up with Apple" **(requires iOS 13.2 or higher)**
 
 ### `AppleAuthentication.AppleAuthenticationCredentialState`
 
