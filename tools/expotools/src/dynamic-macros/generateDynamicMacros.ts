@@ -10,15 +10,23 @@ import macros from './macros';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
-async function getTemplateSubstitutionsFromSecrets() {
+type TemplateSubstitutions = {
+  [key: string]: string;
+};
+
+async function getTemplateSubstitutionsFromSecrets(): Promise<TemplateSubstitutions> {
   try {
-    return await new JsonFile(path.join(EXPO_DIR, 'secrets', 'keys.json')).readAsync();
+    return await new JsonFile<TemplateSubstitutions>(
+      path.join(EXPO_DIR, 'secrets', 'keys.json')
+    ).readAsync();
   } catch (e) {
     // Don't have access to decrypted secrets, use public keys
     console.log(
       "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
     );
-    return await new JsonFile(path.join(EXPO_DIR, 'template-files', 'keys.json')).readAsync();
+    return await new JsonFile<TemplateSubstitutions>(
+      path.join(EXPO_DIR, 'template-files', 'keys.json')
+    ).readAsync();
   }
 }
 
@@ -95,7 +103,7 @@ async function cleanupDynamicMacrosAsync(args) {
   }
 }
 
-async function readExistingSourceAsync(filepath) {
+async function readExistingSourceAsync(filepath): Promise<string | null> {
   try {
     return await fs.readFile(filepath, 'utf8');
   } catch (e) {
@@ -104,16 +112,21 @@ async function readExistingSourceAsync(filepath) {
 }
 
 async function copyTemplateFileAsync(
-  source,
-  dest,
-  templateSubstitutions,
+  source: string,
+  dest: string,
+  templateSubstitutions: TemplateSubstitutions,
   configuration,
-  isOptional
+  isOptional: boolean
 ): Promise<void> {
   let [currentSourceFile, currentDestFile] = await Promise.all([
     readExistingSourceAsync(source),
     readExistingSourceAsync(dest),
   ]);
+
+  if (!currentSourceFile) {
+    console.error(`Couldn't find ${chalk.magenta(source)} file.`);
+    process.exit(1);
+  }
 
   for (const [textToReplace, value] of Object.entries(templateSubstitutions)) {
     currentSourceFile = currentSourceFile.replace(
