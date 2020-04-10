@@ -35,10 +35,10 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-cont", {
         size: "normal",
         callback: function(response) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'verify',
-              token: response
-            }));
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'verify',
+            token: response
+          }));
         }
       });
       window.recaptchaVerifier.render();
