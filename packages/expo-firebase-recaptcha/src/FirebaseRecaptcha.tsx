@@ -64,7 +64,6 @@ export default function FirebaseRecaptcha(props: Props) {
       javaScriptEnabled
       automaticallyAdjustContentInsets
       scalesPageToFit
-      startInLoadingState
       mixedContentMode="always"
       source={getWebviewSource(firebaseConfig, firebaseVersion)}
       onMessage={event => {
