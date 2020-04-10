@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS, IFirebaseOptions } from 'expo-firebase-core';
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
@@ -53,8 +54,25 @@ function getWebviewSource(firebaseConfig: IFirebaseOptions, firebaseVersion?: st
   };
 }
 
+function validateFirebaseConfig(firebaseConfig?: IFirebaseOptions) {
+  if (!firebaseConfig) {
+    throw new CodedError(
+      'ERR_FIREBASE_RECAPTCHA_CONFIG',
+      `Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`
+    );
+  }
+  const { authDomain } = firebaseConfig;
+  if (!authDomain) {
+    throw new CodedError(
+      'ERR_FIREBASE_RECAPTCHA_CONFIG',
+      `Missing "authDomain" in firebase web configuration.`
+    );
+  }
+}
+
 export default function FirebaseRecaptcha(props: Props) {
   const { firebaseConfig, firebaseVersion, onVerify, onLoad, onError, ...otherProps } = props;
+  validateFirebaseConfig(firebaseConfig);
   if (!firebaseConfig) {
     console.error(
       `FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`
