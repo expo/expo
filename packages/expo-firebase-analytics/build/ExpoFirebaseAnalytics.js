@@ -11,8 +11,10 @@ let pureJSAnalyticsTracker;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
 function callAnalyticsModule(funcName, ...args) {
-    if (!ExpoFirebaseAnalytics[funcName]) {
-        throw new UnavailabilityError('expo-firebase-analytics', funcName);
+    if (funcName !== 'setDebugModeEnabled') {
+        if (!ExpoFirebaseAnalytics[funcName]) {
+            throw new UnavailabilityError('expo-firebase-analytics', funcName);
+        }
     }
     if (!DEFAULT_APP_OPTIONS) {
         throw new CodedError('ERR_FIREBASE_NOTCONFIGURED', `Firebase is not configured. Ensure that you have configured '${Platform.select({
@@ -55,7 +57,7 @@ function callAnalyticsModule(funcName, ...args) {
     // For all other environments, the platform specific method must be used.
     // https://firebase.google.com/docs/analytics/debugview
     if (funcName === 'setDebugModeEnabled') {
-        throw new UnavailabilityError('expo-firebase-analytics', funcName);
+        throw new CodedError('ERR_FIREBASE_NOTCONFIGURED', `setDebugModeEnabled is not available in this environment. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`);
     }
     // Make the call
     return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
