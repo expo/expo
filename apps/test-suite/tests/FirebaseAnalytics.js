@@ -163,5 +163,16 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         expect(error).toBeNull();
       });
     });
+    describe('setDebugModeEnabled()', async () => {
+      itWhenNotConfigured(`fails when not configured`, async () => {
+        let error = null;
+        try {
+          await Analytics.setDebugModeEnabled(true);
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
+    });
   });
 }
