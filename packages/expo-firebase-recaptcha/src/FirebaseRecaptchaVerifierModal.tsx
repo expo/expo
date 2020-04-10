@@ -62,6 +62,16 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     });
   };
 
+  private onError = () => {
+    const { reject } = this.state;
+    if (reject) {
+      reject(new CodedError('ERR_FIREBASE_RECAPTCHA_ERROR', 'Failed to load reCAPTCHA'));
+    }
+    this.setState({
+      visible: false,
+    });
+  };
+
   private onVerify = (token: string) => {
     const { resolve } = this.state;
     if (resolve) {
@@ -116,6 +126,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
             <FirebaseRecaptcha
               style={styles.content}
               onLoad={this.onLoad}
+              onError={this.onError}
               onVerify={this.onVerify}
               {...otherProps}
             />
