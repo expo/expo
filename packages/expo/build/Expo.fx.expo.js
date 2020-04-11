@@ -4,9 +4,10 @@ import './environment/muteWarnings.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 import Constants from 'expo-constants';
+import * as Font from 'expo-font';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import * as React from 'react';
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry, Platform, StyleSheet } from 'react-native';
 import DevAppContainer from './environment/DevAppContainer';
 if (Constants.manifest && typeof Constants.manifest.env === 'object') {
     Object.assign(process.env, Constants.manifest.env);
@@ -29,6 +30,9 @@ if (__DEV__) {
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };
     }
+}
+if (StyleSheet.setStyleAttributePreprocessor) {
+    StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 }
 // polyfill navigator.geolocation
 installWebGeolocationPolyfill();
