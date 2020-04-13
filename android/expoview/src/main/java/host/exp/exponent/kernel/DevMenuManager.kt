@@ -80,6 +80,8 @@ class DevMenuManager {
         val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
         val devMenuView = prepareRootView(devMenuModule.getInitialProps())
 
+        loseFocusInActivity(activity)
+
         // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
         // However, when removing it, we should set it back to the orientation from before showing the dev menu.
         orientationBeforeShowingDevMenu = activity.requestedOrientation
@@ -317,6 +319,13 @@ class DevMenuManager {
     rootView.visibility = View.VISIBLE
 
     return rootView
+  }
+
+  /**
+   * Loses view focus in given activity. It makes sure that system's keyboard is hidden when presenting dev menu view.
+   */
+  private fun loseFocusInActivity(activity: ExperienceActivity) {
+    activity.getCurrentFocus()?.clearFocus()
   }
 
   /**
