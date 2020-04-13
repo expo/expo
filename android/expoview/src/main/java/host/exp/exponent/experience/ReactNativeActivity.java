@@ -278,7 +278,11 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       mContainer.setLayoutParams(layoutParams);
     }
 
-    ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+    try {
+      ExperienceActivityUtils.setRootViewBackgroundColor(mManifest, getRootView());
+    } catch (Exception e) {
+      EXL.e(TAG, e);
+    }
 
     if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);
