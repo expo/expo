@@ -1,6 +1,5 @@
 import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod } from '../AuthRequest.types';
-import { useAuthRequest } from '../AuthRequestHooks';
 import { buildQueryString, getQueryParams } from '../QueryParams';
 
 jest.mock('expo-random', () => ({
@@ -25,7 +24,7 @@ it(`does not allow plain code challenge method`, () => {
     () =>
       // @ts-ignore
       new AuthRequest({ redirectUri: 'com://auth', codeChallengeMethod: CodeChallengeMethod.Plain })
-  ).toThrow(/does not support \`CodeChallengeMethod.Plain\`/);
+  ).toThrow(/does not support `CodeChallengeMethod.Plain`/);
 });
 
 it(`does not allow an empty redirectUri`, () => {
@@ -33,7 +32,7 @@ it(`does not allow an empty redirectUri`, () => {
     () =>
       // @ts-ignore
       new AuthRequest({ redirectUri: '' })
-  ).toThrow(/requires a valid \`redirectUri\`/);
+  ).toThrow(/requires a valid `redirectUri`/);
 });
 
 it(`loads a code verifier with PKCE enabled`, async () => {
