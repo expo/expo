@@ -2,9 +2,11 @@
 
 Provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
 
-# Installation
+# Installation in managed Expo projects
 
-This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects as of SDK 33. You may skip the rest of the installation guide if this applies to you.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/random/).
+
+# Installation in bare React Native projects
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
@@ -25,10 +27,6 @@ No additional set up necessary.
 # Documentation
 
 ```js
-// in managed apps:
-import { Random } from 'expo';
-
-// in bare apps:
 import * as Random from 'expo-random';
 ```
 

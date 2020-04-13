@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-error-rec
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import InstallSection from '~/components/plugins/InstallSection';
 
 This module provides utilities for helping you gracefully handle crashes due to fatal JavaScript errors.
 
@@ -11,7 +12,7 @@ This module provides utilities for helping you gracefully handle crashes due to 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available to [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-error-recovery).
+<InstallSection packageName="expo-error-recovery" />
 
 ## API
 
