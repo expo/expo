@@ -6,13 +6,64 @@ sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthS
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
 <InstallSection packageName="expo-auth-session" />
+
+<details>
+  <summary>Adding native URI schemes in bare workflow</summary>
+
+### Configure for iOS
+
+For iOS 10 and older, you need to set the supported redirect URL schemes in your `Info.plist`:
+
+```plist
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLName</key>
+    <string>com.your.app.identifier</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.myapp.coolredirect</string>
+    </array>
+  </dict>
+</array>
+```
+
+> If you use `com.myapp.coolredirect` then your `redirectUri`s should look something like `com.myapp.coolredirect:/oauthredirect`
+
+- `CFBundleURLName` a globally unique string. Usually you want to use your app iOS bundle identifier.
+- `CFBundleURLSchemes` an array of URL schemes your app can accept. The scheme is the prefix to your OAuth redirect URL.
+
+### Configure for Android
+
+When the auth request is complete it will redirect to your native app. For this to work you need to add a redirect scheme. This is similar to setting up deep-linking.
+
+In your `android/app/build.gradle`:
+
+```groovy
+android {
+  defaultConfig {
+    // ...
+    manifestPlaceholders = [
+      // This is the prefix for your OAuth redirect URL
+      // Note: it doesn't need to match the Android package name.
+      appAuthRedirectScheme: 'com.myapp.coolredirect'
+    ]
+  }
+}
+```
+
+> If you use `com.myapp.coolredirect` then your `redirectUri`s should look something like `com.myapp.coolredirect:/oauthredirect`
+
+For more customization (like https redirects) please refer to the native docs: [capturing the authorization redirect](https://github.com/openid/AppAuth-android#capturing-the-authorization-redirect).
+
+</details>
 
 ## How web browser based authentication flows work
 
@@ -23,7 +74,9 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 - **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../workflow/linking/)), _provided that the URL is in the whitelist of allowed redirect URLs_. Whitelisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
-## What `AuthSession` does for you
+## What `auth.expo.io` does for you
+
+> The `auth.expo.io` proxy is only used when `startAsync` is called, or when `useProxy: true` is passed to the `promptAsync()` method of an `AuthRequest`.
 
 ### It reduces boilerplate
 
@@ -51,46 +104,53 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ## Example
 
-```javascript
+```tsx
 import React from 'react';
 import { Button, StyleSheet, Platform, Text, View } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-
-/* @info Replace <strong>'YOUR_APP_ID'</strong> with your application id from <a href='https://developers.facebook.com' target='_blank'>developers.facebook.com</a> */
-const FB_APP_ID = 'YOUR_APP_ID';
-/* @end */
+import { Linking } from 'expo';
 
 /* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
+/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
+const useProxy = true;
+/* @end */
+
+const redirectUri = Platform.select({
+  web: AuthSession.getRedirectUrl(),
+  default: useProxy ? AuthSession.getRedirectUrl() : Linking.makeUrl(),
+});
+
 export default function App() {
-  const [result, setResult] = React.useState(null);
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useDiscovery` hook to fetch the discovery document. */
+  const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
+  /* @end */
 
-  const handlePressAsync = async () => {
-    let managedUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
-
-    let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync(
-      /* @end */ {
-        /* @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in) */ /* @end */
-        returnUrl: Platform.select({ web: redirectUrl }),
-        authUrl:
-          /* @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.*/ `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` /* @end */ +
-          `&client_id=${FB_APP_ID}` +
-          `&redirect_uri=${
-            /* @info Be sure to call <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent'>encodeURIComponent</a> on any query parameters, or use a library such as <a href='https://github.com/ljharb/qs'>qs</a>. */ encodeURIComponent(
-              redirectUrl
-            ) /* @end */
-          }`,
-      }
-    );
-    setResult(result);
-  };
+  // Create and load an auth request:
+  const [request, result, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: 'native.code',
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="https://docs.expo.io/versions/latest/workflow/linking/">linking here</a>. */
+      redirectUri,
+      /* @end */
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      /* @info There is no secure way to store a client secret locally, this example is using a public demo secret. */
+      clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
+      /* @end */
+    },
+    discovery
+  );
 
   return (
     <View style={styles.container}>
-      <Button title="Open FB Auth" onPress={handlePressAsync} />
+      <Button
+        disabled={!request}
+        title="Auth with Identity"
+        onPress={() => promptAsync({ useProxy })}
+      />
       /* @info In this example, show the authentication result after success. In a real application,
       this would be a weird thing to do, instead you would use this data to match the user with a user
       in your application and sign them in. */
@@ -114,6 +174,71 @@ const styles = StyleSheet.create({
 ```js
 import * as AuthSession from 'expo-auth-session';
 ```
+
+## Hooks
+
+### `useAuthRequest`
+
+```ts
+const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
+```
+
+Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
+When the prompt method completes then the response will be fulfilled.
+
+#### Arguments
+
+- **config (_AuthRequestConfig_)** -- A valid `AuthRequestConfig` that specifies what provider to use.
+- **discovery (_DiscoveryDocument_)** -- A loaded `DiscoveryDocument` with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
+
+#### Returns
+
+- **request (_AuthRequest | null_)** -- An instance of `AuthRequest` that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthResponse | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an `AuthRequestPromptOptions` object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
+
+### `useAutoDiscovery`
+
+```ts
+const discovery = useAutoDiscovery('https://example.com/auth');
+```
+
+Given an OpenID Connect issuer URL, this will fetch and return the `DiscoveryDocument` (a collection of URLs) from the resource provider.
+
+#### Arguments
+
+- **issuer (_string_)** -- URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument | null_)** -- Returns `null` until the `DiscoveryDocument` has been fetched from the provided issuer URL.
+
+## Methods
+
+### `AuthSession.loadAsync()`
+
+Load an authorization request for a code.
+
+#### Arguments
+
+- **config (_AuthRequestConfig_)** -- A valid `AuthRequestConfig` that specifies what provider to use.
+- **discovery (_IssuerOrDiscovery_)** -- A loaded `DiscoveryDocument` or `Issuer` URL. Only `authorizationEndpoint` is required for requesting an authorization code.
+
+#### Returns
+
+- **request (_AuthRequest_)** -- An instance of `AuthRequest` that can be used to prompt the user for authorization.
+
+### `AuthSession.fetchDiscoveryAsync()`
+
+Fetch a `DiscoveryDocument` from a well-known resource provider that supports auto discovery.
+
+#### Arguments
+
+- **issuer (_Issuer_)** -- An `Issuer` URL to fetch from.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document that can be used for authentication.
 
 ### `AuthSession.startAsync(options)`
 
@@ -161,6 +286,107 @@ const url = AuthSession.getRedirectUrl('redirect');
 // Managed: https://auth.expo.io/@your-username/your-app-slug/redirect
 // Web: https://localhost:19006/redirect
 ```
+
+## Classes
+
+### `AuthRequest`
+
+Used to manage an authorization request according to the OAuth spec: [Section 4.1.1][s411].
+You can use this class directly for more info around the authorization.
+
+**Common use-cases**
+
+- Parse a URL returned from the authorization server with `parseReturnUrlAsync()`.
+- Get the built authorization URL with `buildUrlAsync()`.
+- Get a loaded JSON representation of the auth request with crypto state loaded with `getAuthRequestConfigAsync()`.
+
+```ts
+// Create a request.
+const request = new AuthRequest({ ... });
+
+// Prompt for an auth code
+const result = await request.promptAsync(discovery, { useProxy: true });
+
+// Get the URL to invoke
+const url = await request.buildUrlAsync(discovery);
+
+// Get the URL to invoke
+const parsed = await request.parseReturnUrlAsync("<URL From Server>");
+```
+
+### `AuthError`
+
+Represents an authorization response error: [Section 5.2][s52].
+Often times providers will fail to return the proper error message for a given error code.
+This error method will add the missing description for more context on what went wrong.
+
+## Types
+
+### `ResponseType`
+
+The client informs the authorization server of the
+desired grant type by using the a response type: [Section 3.1.1][s311].
+
+| Name  | Description                                     | Spec                   |
+| ----- | ----------------------------------------------- | ---------------------- |
+| Code  | For requesting an authorization code            | [Section 4.1.1][s411]. |
+| Token | For requesting an access token (implicit grant) | [Section 4.2.1][s421]  |
+
+### `AuthRequestConfig`
+
+Represents an OAuth authorization request as JSON.
+
+| Name                | Type                      | Description                                                    | Default | Spec                                |
+| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ----------------------------------- |
+| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]               |
+| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]                  |
+| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]               |
+| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]                  |
+| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]               |
+| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]                  |
+| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]                  |
+| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]              |
+| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [Proof Key for Code Exchange][pkce] |
+| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                               |
+
+### `AuthRequestPromptOptions`
+
+Options passed to the `promptAsync()` method of `AuthRequest`s.
+
+| Name          | Type       | Description                                                                | Default         |
+| ------------- | ---------- | -------------------------------------------------------------------------- | --------------- |
+| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting auth requests              | `false`         |
+| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker | `false`         |
+| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined  | Preloaded value |
+
+### `CodeChallengeMethod`
+
+| Name  | Description                                                            |
+| ----- | ---------------------------------------------------------------------- |
+| S256  | The default and recommended method for transforming the code verifier. |
+| Plain | When used, the code verifier will be sent to the server as-is.         |
+
+### `DiscoveryDocument`
+
+| Name                  | Type               | Description                                                                   | Spec                                    |
+| --------------------- | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------- |
+| authorizationEndpoint | `string`           | Interact with the resource owner and obtain an authorization grant            | [Section 3.1][s31]                      |
+| tokenEndpoint         | `string`           | Obtain an access token by presenting its authorization grant or refresh token | [Section 3.2][s32]                      |
+| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                            | [Section 2.1][s21]                      |
+| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                               | [UserInfo][userinfo]                    |
+| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.                     | [OP Metadata][opmeta]                   |
+| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint                        | [Dynamic Client Registration][oidc-dcr] |
+| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                               | [ProviderMetadata][provider-meta]       |
+
+### `Issuer`
+
+Type: `string`
+
+URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
+
+### `ProviderMetadata`
+
+Metadata describing the [OpenID Provider][provider-meta].
 
 ## Usage in the bare React Native app
 
@@ -219,29 +445,429 @@ const result = await AuthSession.startAsync({
 });
 ```
 
-## OpenID Connect
-
-Auth Session provides methods for making authentication with OpenID connect compliant services easier.
-
-### [Auto Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
-
-You can resolve a discovery document from an **OpenID issuer** like this:
-
-```ts
-import { fetchDiscoveryAsync } from 'expo-auth-session';
-
-(async () => {
-  const issuer = 'https://accounts.google.com';
-  const config = await fetchDiscoveryAsync(issuer);
-
-  console.log('discovery document: ', config);
-})();
-```
-
 ## Advanced usage
 
 ### Filtering out AuthSession events in Linking handlers
 
 There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
+## Examples
+
+- [Google](#google)
+- [Okta](#okta)
+- [Azure v2](#azure-v2)
+- [Identity 4](#identity-4)
+- [Facebook](#facebook)
+- [Uber](#uber)
+- [FitBit](#fitbit)
+- [Reddit](#reddit)
+- [Coinbase](#coinbase)
+- [GitHub](#github)
+- [Slack](#slack)
+- [Spotify](#spotify)
+
+### Google
+
+| Website                     | Provider | PKCE      | Auto Discovery | Client Secret |
+| --------------------------- | -------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-google] | OpenID   | Supported | Available      | No            |
+
+[c-google]: https://developers.google.com/identity/protocols/OAuth2
+
+- You cannot define a custom `redirectUri`, Google will provide you with one.
+- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://accounts.google.com');
+// Request
+const [googleRequest, googleResponse, googlePromptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // For usage in bare and standalone
+    redirectUri: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+    // For usage in managed apps using the proxy
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['openid', 'profile'],
+    // Optional
+    extraParams: {
+      // Change language
+      hl: 'fr',
+      // Select the user
+      login_hint: 'user@gmail.com',
+      // select a prompt type
+      prompt: 'select_account',
+    },
+    scopes: ['openid', 'profile'],
+  },
+  discovery
+);
+```
+
+<!-- End Google -->
+
+### Okta
+
+| Website                          | Provider | PKCE      | Auto Discovery | Client Secret |
+| -------------------------------- | -------- | --------- | -------------- | ------------- |
+| [Sign-up][c-okta] > Applications | OpenID   | Supported | Available      | No            |
+
+[c-okta]: https://developer.okta.com/signup/
+
+- You cannot define a custom `redirectUri`, Okta will provide you with one.
+- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
+// Request
+const [oktaRequest, oktaResponse, oktaPromptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // For usage in bare and standalone
+    redirectUri: 'com.okta.<OKTA_DOMAIN>:/callback',
+    // For usage in managed apps using the proxy
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['openid', 'profile'],
+  },
+  discovery
+);
+```
+
+<!-- End Okta -->
+
+### Azure v2
+
+| Website                     | Provider | PKCE      | Auto Discovery | Client Secret |
+| --------------------------- | -------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-azure2] | OpenID   | Supported | Available      | No            |
+
+[c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+// Request
+const [azureRequest, azureResponse, azurePromptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
+  },
+  discovery
+);
+```
+
+<!-- End Azure v2 -->
+
+### Identity 4
+
+| Website                  | Provider | PKCE     | Auto Discovery | Client Secret |
+| ------------------------ | -------- | -------- | -------------- | ------------- |
+| [More Info][c-identity4] | OpenID   | Required | Available      | No            |
+
+[c-identity4]: https://demo.identityserver.io/
+
+- If `offline_access` isn't included then no refresh token will be returned.
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://demo.identityserver.io');
+// Request
+const [identityRequest, identityResponse, identityPromptAsync] = useAuthRequest(
+  {
+    clientId: 'native.code',
+    redirectUrl: 'io.identityserver.demo:/oauthredirect',
+    scopes: ['openid', 'profile', 'offline_access'],
+  },
+  discovery
+);
+```
+
+<!-- End Identity 4 -->
+
+### Facebook
+
+| Website                 | Provider | PKCE      | Auto Discovery | Client Secret |
+| ----------------------- | -------- | --------- | -------------- | ------------- |
+| [More Info][c-facebook] | OAuth    | Supported | Not Available  | Yes           |
+
+[c-facebook]: https://developers.facebook.com/
+
+- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
+- If `offline_access` isn't included then no refresh token will be returned.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    responseType: ResponseType.Token,
+    clientId: '<YOUR FBID>',
+    redirectUrl: AuthSession.getRedirectUrl(),
+    scopes: ['public_profile', 'user_likes'],
+  },
+  discovery
+);
+```
+
+<!-- Facebook -->
+
+### Uber
+
+| Website                   | Provider  | PKCE      | Auto Discovery | Client Secret |
+| ------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
+
+- The `redirectUri` requires 2 slashes (`://`).
+- `scopes` can be difficult to get approved.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
+  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
+  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['profile', 'delivery'],
+  },
+  discovery
+);
+```
+
+<!-- End Uber -->
+
+### FitBit
+
+| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
+| --------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-fitbit]: https://dev.fitbit.com/apps/new
+
+- The `redirectUri` requires 2 slashes (`://`).
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['activity', 'sleep'],
+  },
+  discovery
+);
+```
+
+<!-- End FitBit -->
+
+### Reddit
+
+| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
+| --------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-reddit] | OAuth 2.0 | Supported | Not Available  | No            |
+
+[c-reddit]: https://www.reddit.com/prefs/apps
+
+- The `redirectUri` requires 2 slashes (`://`).
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['identity'],
+  },
+  discovery
+);
+```
+
+<!-- End Reddit -->
+
+### Coinbase
+
+| Website                       | Provider  | PKCE      | Auto Discovery | Client Secret |
+| ----------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-coinbase]: https://www.coinbase.com/oauth/applications/new
+
+- The `redirectUri` requires 2 slashes (`://`).
+- Scopes must be joined with ':' so just create one long string.
+- Client secret will only be shown once.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
+  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
+  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['wallet:accounts:read'],
+    // PKCE doesn't seem to work with Coinbase.
+    // But you should definitely not be disabling this for a fintech software.
+    usePKCE: false,
+  },
+  discovery
+);
+```
+
+<!-- End Coinbase -->
+
+### GitHub
+
+| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
+| --------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-github]: https://github.com/settings/developers
+
+- The `redirectUri` requires 2 slashes (`://`).
+- Scopes must be joined with ':' so just create one long string.
+- Client secret will only be shown once.
+- `revocationEndpoint` is dynamic and requires your `config.clientId`.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['identity'],
+  },
+  discovery
+);
+```
+
+<!-- End Github -->
+
+### Slack
+
+| Website                    | Provider  | PKCE      | Auto Discovery | Client Secret |
+| -------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-slack] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-slack]: https://api.slack.com/apps
+
+- The `redirectUri` requires 2 slashes (`://`).
+- `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
+- Scopes must be joined with ':' so just create one long string.
+- Navigate to the **"Scopes"** section to enable scopes.
+- `revocationEndpoint` is not available.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://slack.com/oauth/authorize',
+  tokenEndpoint: 'https://slack.com/api/oauth.access',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app://redirect',
+    scopes: ['emoji:read'],
+  },
+  discovery
+);
+```
+
+<!-- End Slack -->
+
+### Spotify
+
+| Website                      | Provider  | PKCE      | Auto Discovery | Client Secret |
+| ---------------------------- | --------- | --------- | -------------- | ------------- |
+| [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  | Required      |
+
+[c-spotify]: https://developer.spotify.com/dashboard/applications
+
+- The `redirectUri` requires 1 slash on iOS (`://`).
+- `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
+- Scopes must be joined with ':' so just create one long string.
+- Navigate to the **"Scopes"** section to enable scopes.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+  tokenEndpoint: 'https://accounts.spotify.com/api/token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    clientSecret: 'CLIENT_SECRET',
+    redirectUri: 'your.app:/redirect',
+    scopes: ['user-read-email', 'playlist-modify-public'],
+  },
+  discovery
+);
+```
+
+<!-- End Spotify -->
+
+<!-- End Examples -->
+
 #
+
+[userinfo]: https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+[provider-meta]: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+[oidc-dcr]: https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration
+[opmeta]: https://openid.net/specs/openid-connect-session-1_0-17.html#OPMetadata
+[s1012]: https://tools.ietf.org/html/rfc6749#section-10.12
+[s62]: https://tools.ietf.org/html/rfc7636#section-6.2
+[s52]: https://tools.ietf.org/html/rfc6749#section-5.2
+[s421]: https://tools.ietf.org/html/rfc6749#section-4.2.1
+[s42]: https://tools.ietf.org/html/rfc7636#section-4.2
+[s411]: https://tools.ietf.org/html/rfc6749#section-4.1.1
+[s311]: https://tools.ietf.org/html/rfc6749#section-3.1.1
+[s311]: https://tools.ietf.org/html/rfc6749#section-3.1.1
+[s312]: https://tools.ietf.org/html/rfc6749#section-3.1.2
+[s33]: https://tools.ietf.org/html/rfc6749#section-3.3
+[s32]: https://tools.ietf.org/html/rfc6749#section-3.2
+[s231]: https://tools.ietf.org/html/rfc6749#section-2.3.1
+[s22]: https://tools.ietf.org/html/rfc6749#section-2.2
+[s21]: https://tools.ietf.org/html/rfc7009#section-2.1
+[s31]: https://tools.ietf.org/html/rfc6749#section-3.1
+[pkce]: https://oauth.net/2/pkce/

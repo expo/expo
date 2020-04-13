@@ -1,6 +1,21 @@
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 
+import { AuthRequest } from './AuthRequest';
+import {
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  ResponseType,
+} from './AuthRequest.types';
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
+import {
+  DiscoveryDocument,
+  fetchDiscoveryAsync,
+  Issuer,
+  IssuerOrDiscovery,
+  ProviderMetadata,
+  resolveDiscoveryAsync,
+} from './Discovery';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 
@@ -77,6 +92,22 @@ export function getRedirectUrl(path?: string): string {
   return sessionUrlProvider.getRedirectUrl(path);
 }
 
+/**
+ * Build an `AuthRequest` and load it before returning.
+ *
+ * @param config
+ * @param issuerOrDiscovery
+ */
+export async function loadAsync(
+  config: AuthRequestConfig,
+  issuerOrDiscovery: IssuerOrDiscovery
+): Promise<AuthRequest> {
+  const request = new AuthRequest(config);
+  const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+  await request.buildUrlAsync(discovery);
+  return request;
+}
+
 async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
   const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
@@ -87,21 +118,19 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
   return result;
 }
 
+export * from './AuthRequestHooks';
+export { AuthError } from './Errors';
+
 export {
+  AuthRequest,
+  AuthRequestConfig,
+  AuthRequestPromptOptions,
+  CodeChallengeMethod,
+  DiscoveryDocument,
+  Issuer,
   IssuerOrDiscovery,
-  Discovery,
+  ProviderMetadata,
+  ResponseType,
   resolveDiscoveryAsync,
   fetchDiscoveryAsync,
-  DiscoveryDocument,
-} from './Discovery';
-
-export * from './AuthRequest';
-
-export * from './AuthRequestHooks';
-
-export {
-  AuthRequestConfig,
-  CodeChallengeMethod,
-  ResponseType,
-  AuthRequestPromptOptions,
-} from './AuthRequest.types';
+};
