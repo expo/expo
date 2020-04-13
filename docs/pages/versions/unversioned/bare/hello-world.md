@@ -59,7 +59,7 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-The iOS side is easiest, so let's do it first. Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
+Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
 
 ### Android configuration
 
