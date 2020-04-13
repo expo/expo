@@ -9,7 +9,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
   private static readonly BASE_URL = `https://auth.expo.io`;
   private static readonly SESSION_PATH = 'expo-auth-session';
   private static readonly USES_CUSTOM_SCHEME =
-    Constants.appOwnership === 'standalone' && manifest.scheme;
+    Constants.appOwnership === 'standalone' && manifest?.scheme;
 
   getDefaultReturnUrl(urlPath?: string): string {
     const hostAddress = ManagedSessionUrlProvider.getHostAddress();
@@ -86,7 +86,7 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
   }
 
   private static getHostAddress(): { hostUri: string; parameters: string | undefined } {
-    let hostUri: string = Constants.manifest.hostUri;
+    let hostUri: string = Constants.manifest?.hostUri;
     if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
       // we're probably not using up-to-date xdl, so just fake it for now
       // we have to remove the /--/ on the end since this will be inserted again later
