@@ -35,13 +35,13 @@ export default function InstallSection({
     <div>
       <TerminalBlock cmd={cmd} />
       <p className={STYLES_P}>
-        To use this in a{' '}
+        If you're installing this in a{' '}
         <a className={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
           bare React Native app
         </a>
-        , follow the{' '}
+        , you should also follow{' '}
         <a className={STYLES_BOLD} href={href}>
-          installation instructions
+          these additional installation instructions
         </a>
         .
       </p>
