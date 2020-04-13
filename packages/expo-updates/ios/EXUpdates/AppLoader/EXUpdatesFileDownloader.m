@@ -146,7 +146,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 {
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-Api-Version"];
-  [request setValue:@"STANDALONE" forHTTPHeaderField:@"Expo-Client-Environment"];
+  [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
 }
 
 - (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request

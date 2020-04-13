@@ -32,7 +32,7 @@ import uploadToAnonymousFilesAsync from 'anonymous-files'; /* @end */
 
 
 export default function App() {
-  let [selectedImage, setSelectedImage] = React.useState(null);
+  const [selectedImage, setSelectedImage] = React.useState(null);
 
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();

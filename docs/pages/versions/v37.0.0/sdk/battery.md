@@ -30,7 +30,7 @@ export default class App extends React.Component {
     batteryLevel: null,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     let batteryLevel = await Battery.getBatteryLevelAsync();
     this.setState({ batteryLevel });
     this._subscribe();

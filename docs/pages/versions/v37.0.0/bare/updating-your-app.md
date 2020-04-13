@@ -157,7 +157,7 @@ It's also possible to turn off these automatic updates, and to instead control u
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
-You can then use the [`Updates`](../../sdk/updates/) module included with this lbirary to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`Updates`](../../sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```javascript
 try {

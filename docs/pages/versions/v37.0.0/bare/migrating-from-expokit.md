@@ -18,7 +18,7 @@ The cleanest way to migrate your project is to initialize a new project with the
 
 - Ensure you have updated your existing project to the same React Native version that is used by the latest version of the Expo SDK and that your existing project is running as expected with all tests passing.
 - Copy your assets and JS/TS source files to your new project.
-- Copy the dependencies from your package.json to your new project, install and configure them.
+- Copy the dependencies from your package.json to your new project, install and configure them. Do not include the `expokit` dependency.
 - Ensure your JS tests pass.
 - Copy custom native code (if any) to your new project.
 - Copy and configure native assets (splash screens, icons).

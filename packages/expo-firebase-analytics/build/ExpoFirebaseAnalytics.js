@@ -61,7 +61,7 @@ export default {
         return callAnalyticsModule('logEvent', name, properties);
     },
     async setAnalyticsCollectionEnabled(isEnabled) {
-        return callAnalyticsModule('setAnalyticsEnabled', isEnabled);
+        return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
     },
     async setCurrentScreen(screenName, screenClassOverride) {
         return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);

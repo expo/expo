@@ -12,9 +12,11 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ## Compatibility
 
-This module requires `expo-cli@3.16.1` or later; make sure your global installation is at least this version before proceeding.
+This module requires `expo-cli@3.17.6` or later; make sure your global installation is at least this version before proceeding.
 
 Additionally, this module is only compatible with Expo SDK 37 or later. For bare workflow projects, if the `expo` package is installed, it must be version `37.0.2` or later.
+
+Finally, this module is not compatible with ExpoKit. Make sure you do not have `expokit` listed as a dependency in package.json before this module.
 
 ### Add the package to your npm dependencies
 
@@ -55,11 +57,13 @@ First, if your app.json file does not yet include an `expo` key, add it with the
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `37.0.0`).
 
-Finally, if you installed `expo-asset` and have other assets (such as images or other media) that are `require`d in your application code, and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
+If you installed `expo-asset` and have other assets (such as images or other media) that are `require`d in your application code, and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
 
 ```json
   "assetBundlePatterns": ["**/*"],
 ```
+
+Finally, if you're migrating from an ExpoKit project to the bare workflow with `expo-updates`, remove the `ios.publishBundlePath`, `ios.publishManifestPath`, `android.publishBundlePath`, and `android.publishManifestPath` keys from your app.json.
 
 ### Configure for iOS
 
@@ -361,7 +365,7 @@ import * as Updates from 'expo-updates';
 
 ### Constants
 
-- **`Updates.manifest` (_object_)** - The [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+- **`Updates.manifest` (_object_)** - If `expo-updates` is enabled, this is the [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running. In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 - **`Updates.isEmergencyLaunch` (_boolean_)** - `expo-updates` does its very best to always launch monotonically newer versions of your app so you don't need to worry about backwards compatibility when you put out an update. In very rare cases, it's possible that `expo-updates` may need to fall back to the update that's embedded in the app binary, even after newer updates have been downloaded and run (an "emergency launch"). This boolean will be `true` if the app is launching under this fallback mechanism and `false` otherwise. If you are concerned about backwards compatibility of future updates to your app, you can use this constant to provide special behavior for this rare case.
 
 ### `Updates.reloadAsync()`

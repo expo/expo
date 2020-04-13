@@ -36,7 +36,7 @@
     "react-native": "*"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "^2.0.0-alpha.0",
+    "@unimodules/core": "*",
     "unimodules-app-loader": "*",
     "unimodules-font-interface": "*",
     "unimodules-image-loader-interface": "*",
