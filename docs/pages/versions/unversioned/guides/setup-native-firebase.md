@@ -82,7 +82,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 
 In the bare workflow, the firebase configuration needs to be added according to the native Firebase SDK installation guides
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
-Below you will find a tailered instruction for use with react-native and the Expo Bare Workflow.
+Below you will find a tailored instruction for use with react-native and the Expo Bare Workflow.
 
 You are free to use any native Firebase packages such as [react-native-firebase](https://invertase.io/oss/react-native-firebase/) in the bare workflow.
 
