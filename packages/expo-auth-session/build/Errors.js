@@ -20,7 +20,7 @@ export class ResponseError extends CodedError {
         const message = errorCodeMessages[errorCodeType][error];
         let errorMessage;
         if (message) {
-            errorMessage = message + error_description ? `\nMore info: ${error_description}` : '';
+            errorMessage = message + (error_description ? `\nMore info: ${error_description}` : '');
         }
         else if (error_description) {
             errorMessage = error_description;
@@ -29,7 +29,7 @@ export class ResponseError extends CodedError {
             errorMessage = 'An unknown error occurred';
         }
         super(error, errorMessage);
-        this.description = error_description;
+        this.description = error_description ?? message;
         this.uri = error_uri;
         this.params = params;
     }

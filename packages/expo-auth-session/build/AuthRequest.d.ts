@@ -12,15 +12,15 @@ export declare class AuthRequest {
      */
     state: Promise<string> | string;
     url: string | null;
+    codeVerifier?: string;
     readonly responseType: ResponseType;
     readonly clientId: string;
     readonly extraParams: Record<string, string>;
     readonly usePKCE?: boolean;
     readonly codeChallengeMethod: CodeChallengeMethod;
-    private readonly redirectUri;
+    readonly redirectUri: string;
     private readonly scopes;
     private readonly clientSecret?;
-    private codeVerifier?;
     private codeChallenge?;
     constructor(request: AuthRequestConfig);
     /**
@@ -34,7 +34,7 @@ export declare class AuthRequest {
      * @param promptOptions
      */
     promptAsync(discovery: AuthDiscoveryDocument, { url, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
-    parseReturnUrlAsync(url: string): Promise<AuthSessionResult>;
+    parseReturnUrl(url: string): AuthSessionResult;
     /**
      * Create the URL for authorization.
      *

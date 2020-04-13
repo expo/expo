@@ -25,7 +25,7 @@ export class AuthRequest {
         this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
         // PKCE defaults to true
         this.usePKCE = request.usePKCE ?? true;
-        invariant(this.codeChallengeMethod === CodeChallengeMethod.Plain, `\`AuthRequest\` does not support \`CodeChallengeMethod.Plain\` as it's not secure.`);
+        invariant(this.codeChallengeMethod !== CodeChallengeMethod.Plain, `\`AuthRequest\` does not support \`CodeChallengeMethod.Plain\` as it's not secure.`);
         invariant(this.redirectUri, `\`AuthRequest\` requires a valid \`redirectUri\`. Ex: ${Platform.select({
             web: 'https://yourwebsite.com/',
             default: 'com.your.app:/oauthredirect',
@@ -103,15 +103,18 @@ export class AuthRequest {
         if (result.type !== 'success') {
             return { type: result.type };
         }
-        return await this.parseReturnUrlAsync(result.url);
+        return this.parseReturnUrl(result.url);
     }
-    async parseReturnUrlAsync(url) {
+    parseReturnUrl(url) {
         const { params, errorCode } = QueryParams.getQueryParams(url);
         const { state, error = errorCode } = params;
-        const shouldNotify = state === this.state;
         let parsedError = null;
-        if (!shouldNotify) {
-            throw new Error('Cross-Site request verification failed. Cached state and returned state do not match.');
+        if (state !== this.state) {
+            // This is a non-standard error
+            parsedError = new AuthError({
+                error: 'state_mismatch',
+                error_description: 'Cross-Site request verification failed. Cached state and returned state do not match.',
+            });
         }
         else if (error) {
             parsedError = new AuthError({ error, ...params });
@@ -139,17 +142,17 @@ export class AuthRequest {
         if (request.codeChallenge) {
             params.code_challenge = request.codeChallenge;
         }
-        if (request.codeChallengeMethod) {
-            params.code_challenge_method = request.codeChallengeMethod;
-        }
-        if (request.clientSecret) {
-            params.client_secret = request.clientSecret;
-        }
         // copy over extra params
         for (const extra in request.extraParams) {
             if (extra in request.extraParams) {
                 params[extra] = request.extraParams[extra];
             }
+        }
+        if (request.codeChallengeMethod) {
+            params.code_challenge_method = request.codeChallengeMethod;
+        }
+        if (request.clientSecret) {
+            params.client_secret = request.clientSecret;
         }
         // These overwrite any extra params
         params.redirect_uri = request.redirectUri;

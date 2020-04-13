@@ -31,16 +31,17 @@ export class AuthRequest {
    */
   public state: Promise<string> | string;
   public url: string | null = null;
+  // Public for testing
+  public codeVerifier?: string;
 
   readonly responseType: ResponseType;
   readonly clientId: string;
   readonly extraParams: Record<string, string>;
   readonly usePKCE?: boolean;
   readonly codeChallengeMethod: CodeChallengeMethod;
-  private readonly redirectUri: string;
+  readonly redirectUri: string;
   private readonly scopes: string[];
   private readonly clientSecret?: string;
-  private codeVerifier?: string;
   private codeChallenge?: string;
 
   constructor(request: AuthRequestConfig) {
@@ -56,7 +57,7 @@ export class AuthRequest {
     this.usePKCE = request.usePKCE ?? true;
 
     invariant(
-      this.codeChallengeMethod === CodeChallengeMethod.Plain,
+      this.codeChallengeMethod !== CodeChallengeMethod.Plain,
       `\`AuthRequest\` does not support \`CodeChallengeMethod.Plain\` as it's not secure.`
     );
     invariant(
@@ -156,19 +157,21 @@ export class AuthRequest {
       return { type: result.type };
     }
 
-    return await this.parseReturnUrlAsync(result.url);
+    return this.parseReturnUrl(result.url);
   }
 
-  async parseReturnUrlAsync(url: string): Promise<AuthSessionResult> {
+  parseReturnUrl(url: string): AuthSessionResult {
     const { params, errorCode } = QueryParams.getQueryParams(url);
     const { state, error = errorCode } = params;
-    const shouldNotify = state === this.state;
 
     let parsedError: AuthError | null = null;
-    if (!shouldNotify) {
-      throw new Error(
-        'Cross-Site request verification failed. Cached state and returned state do not match.'
-      );
+    if (state !== this.state) {
+      // This is a non-standard error
+      parsedError = new AuthError({
+        error: 'state_mismatch',
+        error_description:
+          'Cross-Site request verification failed. Cached state and returned state do not match.',
+      });
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
@@ -198,12 +201,6 @@ export class AuthRequest {
     if (request.codeChallenge) {
       params.code_challenge = request.codeChallenge;
     }
-    if (request.codeChallengeMethod) {
-      params.code_challenge_method = request.codeChallengeMethod;
-    }
-    if (request.clientSecret) {
-      params.client_secret = request.clientSecret;
-    }
 
     // copy over extra params
     for (const extra in request.extraParams) {
@@ -212,10 +209,18 @@ export class AuthRequest {
       }
     }
 
+    if (request.codeChallengeMethod) {
+      params.code_challenge_method = request.codeChallengeMethod;
+    }
+
+    if (request.clientSecret) {
+      params.client_secret = request.clientSecret;
+    }
+
     // These overwrite any extra params
     params.redirect_uri = request.redirectUri;
     params.client_id = request.clientId;
-    params.response_type = request.responseType;
+    params.response_type = request.responseType!;
     params.state = request.state;
     params.scope = request.scopes.join(' ');
 

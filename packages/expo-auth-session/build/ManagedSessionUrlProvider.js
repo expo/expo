@@ -51,8 +51,10 @@ export class ManagedSessionUrlProvider {
         return redirectUrl;
     }
     static getHostUri() {
-        let hostUri = manifest.hostUri;
+        let hostUri = manifest?.hostUri;
         if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
+            if (!Constants.linkingUri)
+                return '';
             // we're probably not using up-to-date xdl, so just fake it for now
             // we have to remove the /--/ on the end since this will be inserted again later
             hostUri = ManagedSessionUrlProvider.removeScheme(Constants.linkingUri).replace(/\/--(\/.*)?$/, '');

@@ -1,5 +1,5 @@
-import * as ExpoNativeCrypto from 'expo-crypto';
-import * as ExpoRandom from 'expo-random';
+import * as Crypto from 'expo-crypto';
+import * as Random from 'expo-random';
 import invariant from 'invariant';
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -9,7 +9,7 @@ async function getRandomValuesAsync(input: Uint8Array): Promise<Uint8Array> {
   // Get access to the underlying raw bytes
   if (input.byteLength !== input.length) input = new Uint8Array(input.buffer);
 
-  const bytes = await ExpoRandom.getRandomBytesAsync(input.length);
+  const bytes = await Random.getRandomBytesAsync(input.length);
 
   for (let i = 0; i < bytes.length; i++) input[i] = bytes[i];
 
@@ -47,11 +47,9 @@ async function deriveChallengeAsync(code: string): Promise<string> {
   // 43 is the minimum, and 128 is the maximum.
   invariant(code.length > 42 && code.length < 129, 'Invalid code length for PKCE.');
 
-  const buffer = await ExpoNativeCrypto.digestStringAsync(
-    ExpoNativeCrypto.CryptoDigestAlgorithm.SHA256,
-    code,
-    { encoding: ExpoNativeCrypto.CryptoEncoding.BASE64 }
-  );
+  const buffer = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, code, {
+    encoding: Crypto.CryptoEncoding.BASE64,
+  });
   return convertToUrlSafeString(buffer);
 }
 
