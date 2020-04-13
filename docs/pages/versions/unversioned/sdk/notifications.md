@@ -67,6 +67,11 @@ export default class AppContainer extends React.Component {
         priority: 'max',
         vibrate: [0, 250, 250, 250],
       });
+    }else{
+        Notifications.scheduleLocalNotificationAsync(
+            {title: 'App Name', body: 'Here's your notification' ,ios: {_displayInForeground: true}}, 
+            {time: new Date().getTime() + 1000}
+            )
     }
   };
 
@@ -93,7 +98,7 @@ export default class AppContainer extends React.Component {
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
-        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+        <Button title={'Press to Send Notification'} onPress={() => this.registerForPushNotificationsAsync()} />
       </View>
     );
   }
