@@ -755,8 +755,6 @@ const [request, response, promptAsync] = useAuthRequest(
 [c-github]: https://github.com/settings/developers
 
 - The `redirectUri` requires 2 slashes (`://`).
-- Scopes must be joined with ':' so just create one long string.
-- Client secret will only be shown once.
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
 ```ts
@@ -821,11 +819,6 @@ const [request, response, promptAsync] = useAuthRequest(
 | [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  | Required      |
 
 [c-spotify]: https://developer.spotify.com/dashboard/applications
-
-- The `redirectUri` requires 1 slash on iOS (`://`).
-- `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
-- Scopes must be joined with ':' so just create one long string.
-- Navigate to the **"Scopes"** section to enable scopes.
 
 ```ts
 // Endpoint
