@@ -2,17 +2,15 @@ import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
-import { resolveDiscoveryAsync } from './Discovery';
-import { AuthResultError } from './Errors';
+import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
- * Represents the authorization request.
- * For more information look at
- * https://tools.ietf.org/html/rfc6749#section-4.1.1
+ * Implements an authorization request.
+ * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export class AuthRequest {
     constructor(request) {
@@ -27,17 +25,15 @@ export class AuthRequest {
         this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
         // PKCE defaults to true
         this.usePKCE = request.usePKCE ?? true;
+        invariant(this.codeChallengeMethod === CodeChallengeMethod.Plain, `\`AuthRequest\` does not support \`CodeChallengeMethod.Plain\` as it's not secure.`);
         invariant(this.redirectUri, `\`AuthRequest\` requires a valid \`redirectUri\`. Ex: ${Platform.select({
             web: 'https://yourwebsite.com/',
             default: 'com.your.app:/oauthredirect',
         })}`);
     }
-    static async buildAsync(config, issuerOrDiscovery) {
-        const request = new AuthRequest(config);
-        const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
-        await request.buildUrlAsync(discovery);
-        return request;
-    }
+    /**
+     * Load and return a valid auth request based on the input config.
+     */
     async getAuthRequestConfigAsync() {
         if (this.usePKCE) {
             await this.ensureCodeIsSetupAsync();
@@ -55,6 +51,12 @@ export class AuthRequest {
             usePKCE: this.usePKCE,
         };
     }
+    /**
+     * Prompt a user to authorize for a code.
+     *
+     * @param discovery
+     * @param promptOptions
+     */
     async promptAsync(discovery, { url, ...options } = {}) {
         if (!url) {
             if (!this.url) {
@@ -68,9 +70,7 @@ export class AuthRequest {
             url = this.url;
         }
         // Prevent accidentally starting to an empty url
-        if (!url) {
-            throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
-        }
+        invariant(url, 'No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
         let startUrl = url;
         let returnUrl = this.redirectUri;
         if (options.useProxy) {
@@ -114,7 +114,7 @@ export class AuthRequest {
             throw new Error('Cross-Site request verification failed. Cached state and returned state do not match.');
         }
         else if (error) {
-            parsedError = new AuthResultError({ error, ...params });
+            parsedError = new AuthError({ error, ...params });
         }
         return {
             type: parsedError ? 'error' : 'success',
@@ -125,13 +125,17 @@ export class AuthRequest {
             errorCode,
         };
     }
+    /**
+     * Create the URL for authorization.
+     *
+     * @param discovery
+     */
     async buildUrlAsync(discovery) {
         const request = await this.getAuthRequestConfigAsync();
         if (!request.state)
             throw new Error('Cannot build request without a valid `state` loaded');
-        // build the query string
-        // coerce to any type for convenience
-        let params = {};
+        // Create a query string
+        const params = {};
         if (request.codeChallenge) {
             params.code_challenge = request.codeChallenge;
         }
@@ -147,20 +151,19 @@ export class AuthRequest {
                 params[extra] = request.extraParams[extra];
             }
         }
-        params = {
-            ...params,
-            // These overwrite any extra params
-            redirect_uri: request.redirectUri,
-            client_id: request.clientId,
-            response_type: request.responseType,
-            state: request.state,
-            scope: request.scopes.join(' '),
-        };
+        // These overwrite any extra params
+        params.redirect_uri = request.redirectUri;
+        params.client_id = request.clientId;
+        params.response_type = request.responseType;
+        params.state = request.state;
+        params.scope = request.scopes.join(' ');
         const query = QueryParams.buildQueryString(params);
+        // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;
         return this.url;
     }
     async getStateAsync() {
+        // Resolve any pending state.
         if (this.state instanceof Promise)
             this.state = await this.state;
         return this.state;

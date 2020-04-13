@@ -1,4 +1,7 @@
 import { CodedError } from '@unimodules/core';
+/**
+ * Server response error.
+ */
 export interface ResponseErrorConfig extends Record<string, any> {
     /**
      * Error code
@@ -13,7 +16,7 @@ export interface ResponseErrorConfig extends Record<string, any> {
      */
     error_uri?: string;
 }
-export interface AuthResultErrorConfig extends ResponseErrorConfig {
+export interface AuthErrorConfig extends ResponseErrorConfig {
     /**
      * Required only if state is used in the initial request
      */
@@ -41,18 +44,12 @@ export declare class ResponseError extends CodedError {
     constructor(params: ResponseErrorConfig, errorCodeType: string);
 }
 /**
- * Extends https://tools.ietf.org/html/rfc6749#section-4.1.2.1
- */
-export declare class TokenResponseError extends ResponseError {
-    constructor(response: ResponseErrorConfig);
-}
-/**
  * Extends https://tools.ietf.org/html/rfc6749#section-5.2
  */
-export declare class AuthResultError extends ResponseError {
+export declare class AuthError extends ResponseError {
     /**
      * Required only if state is used in the initial request
      */
     state?: string;
-    constructor(response: AuthResultErrorConfig);
+    constructor(response: AuthErrorConfig);
 }

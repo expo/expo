@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AuthRequest } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';
-export function useDiscovery(issuerOrDiscovery) {
+/**
+ * Fetch the discovery document from an OpenID Connect issuer.
+ *
+ * @param issuerOrDiscovery
+ */
+export function useAutoDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
     useEffect(() => {
         resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
@@ -10,6 +15,14 @@ export function useDiscovery(issuerOrDiscovery) {
     }, [issuerOrDiscovery]);
     return discovery;
 }
+/**
+ * Load an authorization request.
+ * Returns a loaded request, a response, and a prompt method.
+ * When the prompt method completes then the response will be fulfilled.
+ *
+ * @param config
+ * @param discovery
+ */
 export function useAuthRequest(config, discovery) {
     const [request, setRequest] = useState(null);
     const [result, setResult] = useState(null);
@@ -24,9 +37,8 @@ export function useAuthRequest(config, discovery) {
     }, [request?.url, discovery?.authorizationEndpoint]);
     useEffect(() => {
         if (config && discovery) {
-            AuthRequest.buildAsync({
-                ...config,
-            }, discovery).then(request => setRequest(request));
+            const request = new AuthRequest(config);
+            request.buildUrlAsync(discovery).then(() => setRequest(request));
         }
     }, [
         discovery?.authorizationEndpoint,

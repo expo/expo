@@ -1,4 +1,7 @@
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
+import { AuthRequest } from './AuthRequest';
+import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
+import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
 import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 let _authLock = false;
@@ -59,6 +62,18 @@ export function getDefaultReturnUrl() {
 export function getRedirectUrl(path) {
     return sessionUrlProvider.getRedirectUrl(path);
 }
+/**
+ * Build an `AuthRequest` and load it before returning.
+ *
+ * @param config
+ * @param issuerOrDiscovery
+ */
+export async function loadAsync(config, issuerOrDiscovery) {
+    const request = new AuthRequest(config);
+    const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+    await request.buildUrlAsync(discovery);
+    return request;
+}
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
     const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
@@ -67,8 +82,7 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     }
     return result;
 }
-export { resolveDiscoveryAsync, fetchDiscoveryAsync, } from './Discovery';
-export * from './AuthRequest';
 export * from './AuthRequestHooks';
-export { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
+export { AuthError } from './Errors';
+export { AuthRequest, CodeChallengeMethod, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, };
 //# sourceMappingURL=AuthSession.js.map
