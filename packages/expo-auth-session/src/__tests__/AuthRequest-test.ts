@@ -1,7 +1,7 @@
 import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod } from '../AuthRequest.types';
-import { buildQueryString, getQueryParams } from '../QueryParams';
 import { useAuthRequest } from '../AuthRequestHooks';
+import { buildQueryString, getQueryParams } from '../QueryParams';
 
 jest.mock('expo-random', () => ({
   getRandomBytesAsync: jest.fn(async () => ''),
