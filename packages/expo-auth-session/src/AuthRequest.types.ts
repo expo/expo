@@ -52,7 +52,7 @@ export interface AuthRequestConfig {
    * Specifies what is returned from the authorization server.
    * [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1)
    */
-  responseType: ResponseType;
+  responseType?: ResponseType;
   /**
    * A unique string representing the registration information provided by the client.
    * The client identifier is not a secret; it is exposed to the resource owner and shouldn't be used
@@ -83,7 +83,7 @@ export interface AuthRequestConfig {
    * Method used to generate the code challenge.
    * Defaults to `S256`. You should never use `Plain` as it's not good enough for secure verification.
    */
-  codeChallengeMethod: CodeChallengeMethod;
+  codeChallengeMethod?: CodeChallengeMethod;
   /**
    * Derived from the code verifier by using the `CodeChallengeMethod`.
    * [Section 4.2](https://tools.ietf.org/html/rfc7636#section-4.2)

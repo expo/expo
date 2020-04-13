@@ -186,7 +186,7 @@ export interface DiscoveryDocument {
    */
   registrationEndpoint?: string;
 
-  discoveryDocument: ProviderMetadata;
+  discoveryDocument?: ProviderMetadata;
 }
 
 export type IssuerOrDiscovery = Issuer | DiscoveryDocument;

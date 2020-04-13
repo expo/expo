@@ -1,4 +1,4 @@
-import { getRedirectUrl, useAuthRequest, useDiscovery } from 'expo-auth-session';
+import { getRedirectUrl, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import React from 'react';
 import { Linking } from 'expo';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
@@ -47,7 +47,7 @@ export default function AuthSessionScreen() {
     spotifyDiscovery
   );
 
-  const identityDiscovery = useDiscovery('https://demo.identityserver.io');
+  const identityDiscovery = useAutoDiscovery('https://demo.identityserver.io');
 
   const [, identityResult, identityPromptAsync] = useAuthRequest(
     {
@@ -59,7 +59,7 @@ export default function AuthSessionScreen() {
     identityDiscovery
   );
 
-  const googleDiscovery = useDiscovery('https://accounts.google.com');
+  const googleDiscovery = useAutoDiscovery('https://accounts.google.com');
 
   const [, googleResult, googlePromptAsync] = useAuthRequest(
     {

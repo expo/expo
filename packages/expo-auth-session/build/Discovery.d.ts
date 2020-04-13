@@ -168,7 +168,7 @@ export interface DiscoveryDocument {
      * URL of the OP's [Dynamic Client Registration](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration) Endpoint.
      */
     registrationEndpoint?: string;
-    discoveryDocument: ProviderMetadata;
+    discoveryDocument?: ProviderMetadata;
 }
 export declare type IssuerOrDiscovery = Issuer | DiscoveryDocument;
 /**
