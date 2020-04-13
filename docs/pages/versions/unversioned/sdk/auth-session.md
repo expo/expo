@@ -336,18 +336,18 @@ desired grant type by using the a response type: [Section 3.1.1][s311].
 
 Represents an OAuth authorization request as JSON.
 
-| Name                | Type                      | Description                                                    | Default | Spec                                |
-| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ----------------------------------- |
-| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]               |
-| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]                  |
-| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]               |
-| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]                  |
-| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]               |
-| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]                  |
-| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]                  |
-| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]              |
-| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [Proof Key for Code Exchange][pkce] |
-| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                               |
+| Name                | Type                      | Description                                                    | Default | Spec                   |
+| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ---------------------- |
+| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]  |
+| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]     |
+| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]  |
+| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]     |
+| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]  |
+| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]     |
+| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]     |
+| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012] |
+| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]           |
+| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                  |
 
 ### `AuthRequestPromptOptions`
 
