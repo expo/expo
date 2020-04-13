@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 125
-    versionName '2.15.2'
+    versionCode 126
+    versionName '2.15.3'
     // END VERSIONS
 
     multiDexEnabled true
