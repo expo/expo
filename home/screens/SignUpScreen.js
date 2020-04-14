@@ -20,7 +20,7 @@ const DEBUG = false;
 export default class SignUpScreen extends React.Component {
   static navigationOptions = {
     title: 'Sign Up',
-    headerLeft: <CloseButton />,
+    headerLeft: () => <CloseButton />,
   };
 
   static getDataProps(data) {
