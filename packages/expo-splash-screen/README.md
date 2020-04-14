@@ -300,7 +300,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
 
-**NOTE**: The `expo-splash-screen` cli currently has some issues. Please refer to the manual configuration for now. If you ran `yarn expo-splash-screen` for Android, please delete the created files `android/app/src/main/res/values/colors_splashscreen.xml` and `android/app/src/main/res/values/styles_splashscreen.xml` and follow the **Manual Configuration** instructions.
+🚨The automatic configuration tool is brand new and you may run into issues when using it as we finish polishing it up. If you are unable to run it successfully, please undo the changes made by the command and refer to the "Manual Configuration" section below.
 
 
 ### Manual Configuration
@@ -337,7 +337,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-If `onCreate` method is not existing (i.e. is not overwritten yet), override it including `SplashScreen.show(...)`
+If the `onCreate` method is not yet overridden in your `MainActivity`, override it and include `SplashScreen.show(...)`
 
 ```diff
 + import android.os.Bundle;
