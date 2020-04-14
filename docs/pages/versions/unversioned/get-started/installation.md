@@ -27,7 +27,7 @@ Verify that the installation was successful by running `expo whoami`. You're not
 
 ### Optional: Installing Watchman
 
-Some macOS users encounter issues if they do not have Watchman installed on their machine, so if you are using a Mac we recommend that you install it. [Download and install Watchman](https://facebook.github.io/watchman/docs/install.html).
+Some macOS users encounter issues if they do not have Watchman installed on their machine, so if you are using a Mac we recommend that you install it. [Download and install Watchman](https://facebook.github.io/watchman/docs/install#buildinstall).
 
 > 💡Watchman watches files and records when they change, then triggers actions in response to this, and it's used internally by React Native. 
 
