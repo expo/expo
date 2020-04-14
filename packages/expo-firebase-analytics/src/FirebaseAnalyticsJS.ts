@@ -260,6 +260,15 @@ class FirebaseAnalyticsJS {
   async logEvent(eventName: string, eventParams?: { [key: string]: any }): Promise<void> {
     const event = FirebaseAnalyticsJS.parseEvent(this.options, eventName, eventParams);
     if (!this.enabled) return;
+    if (this.options.debug) {
+      console.log(
+        `FirebaseAnalytics event: "${eventName}", params: ${JSON.stringify(
+          eventParams,
+          undefined,
+          2
+        )}`
+      );
+    }
     return this.addEvent(event);
   }
 
