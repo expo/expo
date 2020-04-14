@@ -758,13 +758,13 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                       | Provider  | PKCE      | Auto Discovery | Client Secret |
 | ----------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-coinbase]: https://www.coinbase.com/oauth/applications/new
 
+- You cannot use the Expo proxy because they don't allow `@` in their redirect URIs.
 - The `redirectUri` requires 2 slashes (`://`).
 - Scopes must be joined with ':' so just create one long string.
-- Client secret will only be shown once.
 
 ```ts
 // Endpoint
@@ -777,12 +777,8 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['wallet:accounts:read'],
-    // PKCE doesn't seem to work with Coinbase.
-    // But you should definitely not be disabling this for a fintech software.
-    usePKCE: false,
   },
   discovery
 );
@@ -830,11 +826,12 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                    | Provider  | PKCE      | Auto Discovery | Client Secret |
 | -------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-slack] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-slack] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-slack]: https://api.slack.com/apps
 
 - The `redirectUri` requires 2 slashes (`://`).
+- `redirectUri` can be defined under the "OAuth & Permissions" section of the website.
 - `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
 - Scopes must be joined with ':' so just create one long string.
 - Navigate to the **"Scopes"** section to enable scopes.
@@ -850,7 +847,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['emoji:read'],
   },
@@ -864,7 +860,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                      | Provider  | PKCE      | Auto Discovery | Client Secret |
 | ---------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 

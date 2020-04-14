@@ -9,8 +9,6 @@ import { getGUID } from '../api/guid';
 import Button from '../components/Button';
 import TitledSwitch from '../components/TitledSwitch';
 
-const AuthJson = require('../../auth.json');
-
 // Web: For testing directly without react navigation set up.
 maybeCompleteAuthSession();
 
@@ -41,6 +39,7 @@ const nativeRedirectUri = Platform.select({
 
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
+  const [usePKCE, setPKCE] = React.useState<boolean>(true);
 
   const redirectUri = React.useMemo(() => {
     if (isInClient) {
@@ -56,16 +55,17 @@ export default function AuthSessionScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
-      <Spotify redirectUri={redirectUri} useProxy={useProxy} />
-      <Reddit redirectUri={redirectUri} useProxy={useProxy} />
-      <Identity redirectUri={redirectUri} useProxy={useProxy} />
-      <FitBit redirectUri={redirectUri} useProxy={useProxy} />
-      <Github redirectUri={redirectUri} useProxy={useProxy} />
-      <Google useProxy={useProxy} />
-      <Coinbase redirectUri={redirectUri} useProxy={useProxy} />
-      <Slack redirectUri={redirectUri} useProxy={useProxy} />
-      <Uber redirectUri={redirectUri} useProxy={useProxy} />
-      <Okta redirectUri={redirectUri} useProxy={useProxy} />
+      <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+      <Spotify redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Reddit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Identity redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <FitBit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Github redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Coinbase redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Google useProxy={useProxy} usePKCE={usePKCE} />
+      <Slack redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Uber redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Okta redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Azure useProxy={useProxy} />
       <LegacyAuthSession />
     </ScrollView>
@@ -76,7 +76,7 @@ AuthSessionScreen.navigationOptions = {
   title: 'AuthSession',
 };
 
-function Result({ title, result }: any) {
+function Result({ title, result, usePKCE }: any) {
   if (result)
     return (
       <Text style={styles.text}>
@@ -86,7 +86,7 @@ function Result({ title, result }: any) {
   return null;
 }
 
-function Google({ useProxy }: any) {
+function Google({ useProxy, usePKCE }: any) {
   const redirectUri = React.useMemo(
     () =>
       Platform.select({
@@ -104,6 +104,7 @@ function Google({ useProxy }: any) {
       clientId: getGUID(),
       redirectUri,
       scopes: ['profile', 'email', 'openid'],
+      usePKCE,
     },
     discovery
   );
@@ -120,8 +121,9 @@ function Google({ useProxy }: any) {
   );
 }
 
+// Only setup for bare apps right now
 // Couldn't get this working. API is really confusing.
-function Azure({ useProxy }: any) {
+function Azure({ useProxy, usePKCE }: any) {
   const redirectUri = React.useMemo(
     () =>
       Platform.select({
@@ -150,6 +152,7 @@ function Azure({ useProxy }: any) {
       },
       // redirectUri: 'msauth.{bundleId}://auth',
       scopes: ['openid', 'profile', 'email', 'offline_access'],
+      usePKCE,
     },
     // discovery
     discovery
@@ -158,7 +161,7 @@ function Azure({ useProxy }: any) {
   return (
     <AuthSection
       title="Azure"
-      disabled={!useProxy && isInClient}
+      disabled={isInClient || Platform.OS === 'web'}
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -167,7 +170,8 @@ function Azure({ useProxy }: any) {
   );
 }
 
-function Okta({ redirectUri, useProxy }: any) {
+// Only setup for bare apps right now
+function Okta({ redirectUri, usePKCE, useProxy }: any) {
   const discovery = useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
   const [request, result, promptAsync] = useAuthRequest(
     // config
@@ -175,6 +179,7 @@ function Okta({ redirectUri, useProxy }: any) {
       clientId: '0oa4su9fhp4F2F4Eg4x6',
       redirectUri,
       scopes: ['openid', 'profile'],
+      usePKCE,
     },
     // discovery
     discovery
@@ -183,6 +188,7 @@ function Okta({ redirectUri, useProxy }: any) {
   return (
     <AuthSection
       title="Okta"
+      disabled={isInClient || Platform.OS === 'web'}
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -195,7 +201,7 @@ function Okta({ redirectUri, useProxy }: any) {
 // We'll only support bare, and proxy in this example
 // If the redirect is invalid with http instead of https on web, then the provider
 // will let you authenticate but it will redirect with no data and the page will appear broken.
-function Reddit({ redirectUri, useProxy }: any) {
+function Reddit({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
   let outputRedirectUri: string = redirectUri;
 
@@ -228,6 +234,7 @@ function Reddit({ redirectUri, useProxy }: any) {
       clientSecret: '',
       redirectUri: outputRedirectUri,
       scopes: ['identity'],
+      usePKCE,
     },
     {
       authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
@@ -248,7 +255,7 @@ function Reddit({ redirectUri, useProxy }: any) {
 
 // TODO: Add button to test using an invalid redirect URI. This is a good example of AuthError.
 // Works for all platforms
-function Github({ redirectUri, useProxy }: any) {
+function Github({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
   let outputRedirectUri: string = redirectUri;
 
@@ -280,6 +287,7 @@ function Github({ redirectUri, useProxy }: any) {
       clientId,
       redirectUri: outputRedirectUri,
       scopes: ['identity'],
+      usePKCE,
     },
     // discovery
     {
@@ -303,7 +311,7 @@ function Github({ redirectUri, useProxy }: any) {
 
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
-function Uber({ redirectUri, useProxy }: any) {
+function Uber({ redirectUri, usePKCE, useProxy }: any) {
   let outputRedirectUri: string = redirectUri;
 
   if (isInClient) {
@@ -328,11 +336,11 @@ function Uber({ redirectUri, useProxy }: any) {
 
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
       clientId: 'kTpT4xf8afVxifoWjx5Nhn-IFamZKp2x',
       redirectUri: outputRedirectUri,
       scopes: [],
+      usePKCE,
       // Enable to test invalid_scope error
       // scopes: ['invalid'],
     },
@@ -359,7 +367,7 @@ function Uber({ redirectUri, useProxy }: any) {
 // Easy to setup
 // Only allows one redirect URI per app (clientId)
 // Refresh doesn't seem to return a new access token :[
-function FitBit({ redirectUri, useProxy }: any) {
+function FitBit({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
   let outputRedirectUri: string;
 
@@ -392,6 +400,7 @@ function FitBit({ redirectUri, useProxy }: any) {
       clientId,
       redirectUri: outputRedirectUri,
       scopes: ['activity', 'sleep'],
+      usePKCE,
     },
     // discovery
     {
@@ -413,7 +422,29 @@ function FitBit({ redirectUri, useProxy }: any) {
 }
 
 // Currently only tested on bare apps
-function Slack({ redirectUri, useProxy }: any) {
+function Slack({ redirectUri, usePKCE, useProxy }: any) {
+  let outputRedirectUri: string;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      outputRedirectUri = redirectUri;
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+    }
+  }
+
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
   // - Add a redirect URI Under [Redirect URLs]
@@ -423,10 +454,10 @@ function Slack({ redirectUri, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     // config
     {
-      clientId: AuthJson.SLACK_CLIENT_ID,
-      clientSecret: AuthJson.SLACK_CLIENT_SECRET,
-      redirectUri,
+      clientId: '58692702102.1023025401076',
+      redirectUri: outputRedirectUri,
       scopes: ['emoji:read'],
+      usePKCE,
     },
     // discovery
     {
@@ -447,7 +478,7 @@ function Slack({ redirectUri, useProxy }: any) {
 }
 
 // Works on all platforms
-function Spotify({ redirectUri, useProxy }: any) {
+function Spotify({ redirectUri, usePKCE, useProxy }: any) {
   let outputRedirectUri: string = redirectUri;
 
   if (isInClient) {
@@ -472,10 +503,10 @@ function Spotify({ redirectUri, useProxy }: any) {
 
   const [request, result, promptAsync] = useAuthRequest(
     {
-      clientId: AuthJson.SPOTIFY_CLIENT_ID,
-      clientSecret: AuthJson.SPOTIFY_CLIENT_SECRET,
+      clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
       redirectUri: outputRedirectUri,
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
+      usePKCE,
     },
     // discovery
     {
@@ -519,17 +550,29 @@ function Identity({ redirectUri, useProxy }: any) {
   );
 }
 
-// Currently only tested with bare native
+// Doesn't work with proxy
 function Coinbase({ redirectUri, useProxy }: any) {
+  let outputRedirectUri: string = redirectUri;
+
+  if (isInClient) {
+    if (!useProxy) {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+    }
+  }
+
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
-      clientId: AuthJson.COINBASE_CLIENT_ID,
-      clientSecret: AuthJson.COINBASE_CLIENT_SECRET,
-      redirectUri,
-      // This shouldn't be done.
-      usePKCE: false,
-      // weird format
+      clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
+      redirectUri: outputRedirectUri,
       scopes: ['wallet:accounts:read'],
     },
     // discovery
@@ -542,7 +585,7 @@ function Coinbase({ redirectUri, useProxy }: any) {
 
   return (
     <AuthSection
-      disabled={isInClient || Platform.OS === 'web'}
+      disabled={useProxy}
       title="Coinbase"
       request={request}
       result={result}
@@ -561,7 +604,8 @@ function AuthSection({ title, request, result, promptAsync, useProxy, disabled }
         buttonStyle={styles.button}
         onPress={() => promptAsync({ useProxy })}
       />
-      <Text>Redirect "{request?.redirectUri}"</Text>
+      <Text style={{ marginBottom: 8 }}>Redirect "{request?.redirectUri}"</Text>
+      <Text>URL "{request?.url}"</Text>
       <Result title={title} result={result} />
     </View>
   );
