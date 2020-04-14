@@ -1,4 +1,5 @@
 import { Linking } from 'expo';
+import * as AuthSession from 'expo-auth-session';
 import { getRedirectUrl, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import Constants from 'expo-constants';
 import React from 'react';
@@ -60,6 +61,7 @@ export default function AuthSessionScreen() {
       <Reddit redirectUri={redirectUri} useProxy={useProxy} />
       <Google useProxy={useProxy} />
       <Azure useProxy={useProxy} />
+      <LegacyAuthSession />
     </ScrollView>
   );
 }
@@ -77,24 +79,6 @@ function Result({ title, result }: any) {
 AuthSessionScreen.navigationOptions = {
   title: 'AuthSession',
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxWidth: '100%',
-    flexWrap: 'wrap',
-  },
-  button: {
-    marginVertical: 16,
-  },
-  text: {
-    marginVertical: 15,
-    maxWidth: '80%',
-    marginHorizontal: 10,
-  },
-});
 
 function Google({ useProxy }: any) {
   const redirectUri = React.useMemo(
@@ -450,3 +434,97 @@ function AuthSection({ title, request, result, promptAsync, useProxy, disabled }
     </View>
   );
 }
+
+const auth0ClientId = '8wmGum25h3KU2grnmZtFvMQeitmIdSDS';
+const auth0Domain = 'https://expo-testing.auth0.com';
+
+/**
+ * Converts an object to a query string.
+ */
+function toQueryString(params: object) {
+  return (
+    '?' +
+    Object.entries(params)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join('&')
+  );
+}
+
+/**
+ * Test the `AuthSession.startAsync` functionality.
+ */
+function LegacyAuthSession() {
+  const [result, setResult] = React.useState<any | null>(null);
+  const isInvalid = Constants.manifest.id !== '@community/native-component-list';
+
+  if (isInvalid) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.oopsTitle}>Hello, developer person!</Text>
+        <Text style={styles.oopsText}>
+          The experience id {Constants.manifest.id} will not work with this due to the authorized
+          callback URL configuration on Auth0{' '}
+        </Text>
+        <Text style={styles.oopsText}>
+          Sign in as @community to use this example, or change the Auth0 client id and domain in
+          AuthSessionScreen.js
+        </Text>
+      </View>
+    );
+  }
+
+  const handlePressAsync = async () => {
+    const redirectUrl = AuthSession.getRedirectUrl();
+    const authUrl =
+      `${auth0Domain}/authorize?` +
+      toQueryString({
+        client_id: auth0ClientId,
+        response_type: 'token',
+        scope: 'openid name',
+        redirect_uri: redirectUrl,
+      });
+
+    const result = await AuthSession.startAsync({ authUrl });
+    setResult(result);
+  };
+
+  return (
+    <View>
+      <Button title="Authenticate using an external service" onPress={handlePressAsync} />
+      <Result title={'Legacy'} result={result} />
+      <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '100%',
+    flexWrap: 'wrap',
+  },
+  button: {
+    marginVertical: 16,
+  },
+  text: {
+    marginVertical: 15,
+    maxWidth: '80%',
+    marginHorizontal: 10,
+  },
+  faintText: {
+    color: '#888',
+    marginHorizontal: 30,
+  },
+  oopsTitle: {
+    fontSize: 25,
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  oopsText: {
+    textAlign: 'center',
+    marginTop: 10,
+    marginHorizontal: 30,
+  },
+});
