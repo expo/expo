@@ -125,7 +125,7 @@ const redirectUri = Platform.select({
 });
 
 export default function App() {
-  /* @info If the provider supports auto discovery then you can pass an issuer to the `useDiscovery` hook to fetch the discovery document. */
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
   const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
   /* @end */
 
