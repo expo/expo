@@ -31,26 +31,39 @@ function makeUrl(url: string): string {
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
-const nativeRedirectUri = Platform.select({
-  // TODO: Bacon: Fix Linking.makeUrl for web
-  web: getAuthSessionRedirectUrl('redirect'),
-  default: isInClient ? getAuthSessionRedirectUrl() : `io.identityserver.demo://oauthredirect`,
-});
+function getCustomRedirectUrl(
+  path: string,
+  options: { scheme?: string; useProxy?: boolean } = {}
+): string {
+  const nativeRedirectUri = Platform.select({
+    // TODO: Bacon: Fix Linking.makeUrl for web
+    web: getAuthSessionRedirectUrl(path),
+    default: isInClient ? getAuthSessionRedirectUrl() : `${options.scheme}://${path}`,
+  });
+
+  if (isInClient) {
+    if (options.useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      return getAuthSessionRedirectUrl();
+    }
+    const url = makeUrl(path);
+    // Normalize the host to `localhost` for other testers
+    return `${url.split('//')[0]}//localhost:${url.split(':')[2]}`;
+  }
+  return Platform.select({
+    // TODO: Bacon: Fix Linking.makeUrl for web
+    web: getAuthSessionRedirectUrl(path),
+    default: nativeRedirectUri,
+  });
+}
 
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
 
-  const redirectUri = React.useMemo(() => {
-    if (isInClient) {
-      return useProxy ? nativeRedirectUri : makeUrl('redirect');
-    }
-    return Platform.select({
-      // TODO: Bacon: Fix Linking.makeUrl for web
-      web: getAuthSessionRedirectUrl('redirect'),
-      default: nativeRedirectUri,
-    });
-  }, [useProxy]);
+  const redirectUri = getCustomRedirectUrl('redirect', { scheme: 'bareexpo', useProxy });
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
@@ -203,7 +216,6 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
 // will let you authenticate but it will redirect with no data and the page will appear broken.
 function Reddit({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
-  let outputRedirectUri: string = redirectUri;
 
   if (isInClient) {
     if (useProxy) {
@@ -212,18 +224,15 @@ function Reddit({ redirectUri, usePKCE, useProxy }: any) {
       // so you'll need to be signed into community or be using the public demo
       clientId = 'IlgcZIpcXF1eKw';
     } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+      // // Normalize the host to `localhost` for other testers
       clientId = 'CPc_adCUQGt9TA';
     }
   } else {
     if (Platform.OS === 'web') {
       // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
       clientId = '9k_oYNO97ly-5w';
     } else {
       // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
       clientId = '2OFsAA7h63LQJQ';
     }
   }
@@ -232,7 +241,7 @@ function Reddit({ redirectUri, usePKCE, useProxy }: any) {
     {
       clientId,
       clientSecret: '',
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['identity'],
       usePKCE,
     },
@@ -257,27 +266,20 @@ function Reddit({ redirectUri, usePKCE, useProxy }: any) {
 // Works for all platforms
 function Github({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
-  let outputRedirectUri: string = redirectUri;
 
   if (isInClient) {
     if (useProxy) {
       // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
       clientId = '2e4298cafc7bc93ceab8';
     } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
       clientId = '7eb5d82d8f160a434564';
     }
   } else {
     if (Platform.OS === 'web') {
-      // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
+      // web apps
       clientId = 'fd9b07204f9d325e8f0e';
     } else {
       // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
       clientId = '498f1fae3ae16f066f34';
     }
   }
@@ -285,7 +287,7 @@ function Github({ redirectUri, usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId,
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['identity'],
       usePKCE,
     },
@@ -312,33 +314,11 @@ function Github({ redirectUri, usePKCE, useProxy }: any) {
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
 function Uber({ redirectUri, usePKCE, useProxy }: any) {
-  let outputRedirectUri: string = redirectUri;
-
-  if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      outputRedirectUri = 'https://auth.expo.io/@community/native-component-list';
-    } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
-    }
-  } else {
-    if (Platform.OS === 'web') {
-      // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
-    } else {
-      // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
-    }
-  }
-
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'kTpT4xf8afVxifoWjx5Nhn-IFamZKp2x',
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: [],
       usePKCE,
       // Enable to test invalid_scope error
@@ -369,28 +349,21 @@ function Uber({ redirectUri, usePKCE, useProxy }: any) {
 // Refresh doesn't seem to return a new access token :[
 function FitBit({ redirectUri, usePKCE, useProxy }: any) {
   let clientId: string;
-  let outputRedirectUri: string;
 
   if (isInClient) {
     if (useProxy) {
       // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      outputRedirectUri = redirectUri;
       clientId = '22BNXR';
     } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+      // Client without proxy
       clientId = '22BNXX';
     }
   } else {
     if (Platform.OS === 'web') {
       // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
       clientId = '22BNXQ';
     } else {
       // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
       clientId = '22BGYS';
     }
   }
@@ -398,7 +371,7 @@ function FitBit({ redirectUri, usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId,
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['activity', 'sleep'],
       usePKCE,
     },
@@ -423,28 +396,6 @@ function FitBit({ redirectUri, usePKCE, useProxy }: any) {
 
 // Currently only tested on bare apps
 function Slack({ redirectUri, usePKCE, useProxy }: any) {
-  let outputRedirectUri: string;
-
-  if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      outputRedirectUri = redirectUri;
-    } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
-    }
-  } else {
-    if (Platform.OS === 'web') {
-      // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
-    } else {
-      // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
-    }
-  }
-
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
   // - Add a redirect URI Under [Redirect URLs]
@@ -455,7 +406,7 @@ function Slack({ redirectUri, usePKCE, useProxy }: any) {
     // config
     {
       clientId: '58692702102.1023025401076',
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['emoji:read'],
       usePKCE,
     },
@@ -479,32 +430,10 @@ function Slack({ redirectUri, usePKCE, useProxy }: any) {
 
 // Works on all platforms
 function Spotify({ redirectUri, usePKCE, useProxy }: any) {
-  let outputRedirectUri: string = redirectUri;
-
-  if (isInClient) {
-    if (useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      outputRedirectUri = 'https://auth.expo.io/@community/native-component-list';
-    } else {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
-    }
-  } else {
-    if (Platform.OS === 'web') {
-      // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
-    } else {
-      // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
-    }
-  }
-
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
       usePKCE,
     },
@@ -552,27 +481,10 @@ function Identity({ redirectUri, useProxy }: any) {
 
 // Doesn't work with proxy
 function Coinbase({ redirectUri, useProxy }: any) {
-  let outputRedirectUri: string = redirectUri;
-
-  if (isInClient) {
-    if (!useProxy) {
-      // Normalize the host to `localhost` for other testers
-      outputRedirectUri = 'exp://localhost:19000/--/redirect';
-    }
-  } else {
-    if (Platform.OS === 'web') {
-      // web apps with uri scheme `https://localhost:19006`
-      outputRedirectUri = 'https://localhost:19006/redirect';
-    } else {
-      // Native bare apps with uri scheme `bareexpo`
-      outputRedirectUri = 'bareexpo://auth';
-    }
-  }
-
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
-      redirectUri: outputRedirectUri,
+      redirectUri,
       scopes: ['wallet:accounts:read'],
     },
     // discovery
