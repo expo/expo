@@ -36,7 +36,7 @@ export async function generateRandomAsync(size) {
  * Proof key for Code Exchange by OAuth Public Clients (RFC 7636), Section 4.1
  * [Section 4.1](https://tools.ietf.org/html/rfc7636#section-4.1)
  */
-async function deriveChallengeAsync(code) {
+export async function deriveChallengeAsync(code) {
     // 43 is the minimum, and 128 is the maximum.
     invariant(code.length > 42 && code.length < 129, 'Invalid code length for PKCE.');
     const buffer = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, code, {
