@@ -28,6 +28,7 @@ class FirebaseAnalyticsJS {
   private options: FirebaseAnalyticsJSOptions;
   private flushEventsPromise: Promise<void> = Promise.resolve();
   private flushEventsTimer: any;
+  private lastTime: number = -1;
   private sequenceNr: number = 1;
 
   constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions) {
@@ -80,19 +81,22 @@ class FirebaseAnalyticsJS {
     if (options.debug) queryArgs._dbg = 1;
     let body;
 
+    const lastTime = this.lastTime;
     if (events.size > 1) {
       body = '';
       events.forEach(event => {
-        body += encodeQueryArgs(event) + '\n';
+        body += encodeQueryArgs(event, this.lastTime) + '\n';
+        this.lastTime = event._et;
       });
     } else if (events.size === 1) {
       const event = events.values().next().value;
+      this.lastTime = event._et;
       queryArgs = {
         ...event,
         ...queryArgs,
       };
     }
-    const args = encodeQueryArgs(queryArgs);
+    const args = encodeQueryArgs(queryArgs, lastTime);
     const url = `${this.url}?${args}`;
     await fetch(url, {
       method: 'POST',
@@ -328,12 +332,15 @@ class FirebaseAnalyticsJS {
   }
 }
 
-function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent): string {
-  const now = Date.now();
-  return Object.keys(queryArgs)
+function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: number): string {
+  let keys = Object.keys(queryArgs);
+  if (lastTime < 0) {
+    keys = keys.filter(key => key !== '_et');
+  }
+  return keys
     .map(key => {
       return `${key}=${encodeURIComponent(
-        key === '_et' ? Math.max(now - queryArgs[key], 0) : queryArgs[key]
+        key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key]
       )}`;
     })
     .join('&');
