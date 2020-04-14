@@ -79,6 +79,7 @@ class FirebaseAnalyticsJS {
     if (options.docLocation) queryArgs.dl = options.docLocation;
     if (options.screenRes) queryArgs.sr = options.screenRes;
     if (options.debug) queryArgs._dbg = 1;
+    if (this.sequenceNr === 2) queryArgs._ss = 1;
     let body;
 
     const lastTime = this.lastTime;
