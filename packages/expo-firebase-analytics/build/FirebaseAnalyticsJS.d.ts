@@ -23,6 +23,7 @@ declare class FirebaseAnalyticsJS {
     private options;
     private flushEventsPromise;
     private flushEventsTimer;
+    private lastTime;
     private sequenceNr;
     constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions);
     /**
