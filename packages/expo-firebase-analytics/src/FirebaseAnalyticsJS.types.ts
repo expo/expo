@@ -29,7 +29,7 @@ export interface FirebaseAnalyticsJSOptions {
    * position of a session as it relates to a user, e.g., a user's 1st or 5th session.
    * https://support.google.com/firebase/answer/9191807
    */
-  sessionNumber: number;
+  sessionNumber?: number;
 
   /**
    * Max cache time in msec (default = 5000).

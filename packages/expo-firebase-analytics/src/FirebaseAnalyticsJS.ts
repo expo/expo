@@ -70,6 +70,7 @@ class FirebaseAnalyticsJS {
       cid: options.clientId,
       sid: options.sessionId,
       _s: this.sequenceNr++,
+      seg: 1,
     };
     if (options.sessionNumber) queryArgs.sct = options.sessionNumber;
     if (options.userLanguage) queryArgs.ul = options.userLanguage;
@@ -79,7 +80,7 @@ class FirebaseAnalyticsJS {
     if (options.docLocation) queryArgs.dl = options.docLocation;
     if (options.screenRes) queryArgs.sr = options.screenRes;
     if (options.debug) queryArgs._dbg = 1;
-    if (this.sequenceNr === 2) queryArgs._ss = 1;
+    if (this.sequenceNr === 2) queryArgs._ss = 1; // Session start
     let body;
 
     const lastTime = this.lastTime;
