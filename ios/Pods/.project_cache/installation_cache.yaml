@@ -7196,7 +7196,7 @@ CACHE_KEYS:
   EXAppleAuthentication:
     BUILD_SETTINGS_CHECKSUM:
       EXAppleAuthentication: 231e6d3e7cdb50c8b662cdf61e99b5bc
-    CHECKSUM: 77b56f8fd953a5471630775320d4942983017a40
+    CHECKSUM: 046c76335343eaa97f6ed8d35a9cf493a2c4d351
     FILES:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.h"
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.m"
@@ -7209,11 +7209,11 @@ CACHE_KEYS:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationRequest.m"
     PROJECT_NAME: EXAppleAuthentication
     SPECS:
-      - EXAppleAuthentication (2.1.0)
+      - EXAppleAuthentication (2.1.1)
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
       EXApplication: 829c6d5611b2866c7f51150821bc8075
-    CHECKSUM: 777c2f1742b381725b3e8c1da41f0113ebfd4694
+    CHECKSUM: 7cf81de6fafccff42f5d1caa5c24a159db6b9437
     FILES:
       - "../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../packages/expo-application/ios/EXApplication/EXApplication.m"
@@ -7221,7 +7221,7 @@ CACHE_KEYS:
       - "../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
-      - EXApplication (2.1.0)
+      - EXApplication (2.1.1)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: ce127c23292472b7f4826cd92eb35fbb
@@ -7283,13 +7283,13 @@ CACHE_KEYS:
   EXBattery:
     BUILD_SETTINGS_CHECKSUM:
       EXBattery: 3a7868f51d8ca27923f64ed32fdd086c
-    CHECKSUM: f2732e40a819d8bf9051211f4ecdd99dcb2b5918
+    CHECKSUM: a30f2aa7c6ccf21ade63ec941579a1f0a7523a8c
     FILES:
       - "../../packages/expo-battery/ios/EXBattery/EXBattery.h"
       - "../../packages/expo-battery/ios/EXBattery/EXBattery.m"
     PROJECT_NAME: EXBattery
     SPECS:
-      - EXBattery (2.1.0)
+      - EXBattery (2.1.1)
   EXBlur:
     BUILD_SETTINGS_CHECKSUM:
       EXBlur: d1e2dbc038263c27c648c99556676aed
@@ -7305,7 +7305,7 @@ CACHE_KEYS:
   EXBranch:
     BUILD_SETTINGS_CHECKSUM:
       EXBranch: 782d411f7fbc655e2ece800c76a55292
-    CHECKSUM: 42f2cd93b1619b2fdddaa409a06418a979f47442
+    CHECKSUM: efcc4fbca3673af2c749fb0ebc1f2a12531fba92
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
@@ -7333,7 +7333,7 @@ CACHE_KEYS:
       - "../../packages/expo-branch/ios/EXBranch/RNBranch/RNBranchProperty.m"
     PROJECT_NAME: EXBranch
     SPECS:
-      - EXBranch (2.1.0)
+      - EXBranch (2.1.1)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
       EXBrightness: ec8961c8ee1a8a09852b43e7ad8510c4
@@ -7381,13 +7381,13 @@ CACHE_KEYS:
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular: 7b86f685ad92a2527a5463d96e6d9b68
-    CHECKSUM: e8e672cb54b6579712801ed437954d171ae81510
+    CHECKSUM: 498a1b35747474ed15806aed58a4710bdef3e73b
     FILES:
       - "../../packages/expo-cellular/ios/EXCellular/EXCellularModule.h"
       - "../../packages/expo-cellular/ios/EXCellular/EXCellularModule.m"
     PROJECT_NAME: EXCellular
     SPECS:
-      - EXCellular (2.1.0)
+      - EXCellular (2.1.1)
   EXConstants:
     BUILD_SETTINGS_CHECKSUM:
       EXConstants: 82210749075f4066f4e3b2675ece1214
@@ -7513,13 +7513,13 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics: 0ff060930264d17d39eb55bf7723fdb8
-    CHECKSUM: 13b3f0a61af72d8429fa957a928383ce905fe911
+    CHECKSUM: d393d95417c3a9f8ac3cbd856308785a66a65a8e
     FILES:
       - "../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
     PROJECT_NAME: EXFirebaseAnalytics
     SPECS:
-      - EXFirebaseAnalytics (2.1.0)
+      - EXFirebaseAnalytics (2.1.2)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 1d808549b6223d57e1cc0b09101db157
@@ -7536,7 +7536,7 @@ CACHE_KEYS:
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: 54a701ae9a0214506a040344456fe670
-    CHECKSUM: 8326ecf966be559f7ced7c8e221a32fc4d9ed8b0
+    CHECKSUM: b60f7a8900e3a12e7be3b2a40e19b22c7b5f89ba
     FILES:
       - "../../packages/expo-font/ios/EXFont/EXFont.h"
       - "../../packages/expo-font/ios/EXFont/EXFont.m"
@@ -7552,7 +7552,7 @@ CACHE_KEYS:
       - "../../packages/expo-font/ios/EXFont/Singletons/EXFontScalersManager.m"
     PROJECT_NAME: EXFont
     SPECS:
-      - EXFont (8.1.0)
+      - EXFont (8.1.1)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
       EXGL: bca8f8421e2d5161f85265d66e770356
@@ -7625,13 +7625,13 @@ CACHE_KEYS:
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
       EXImageLoader: ff130239ac953a821bd3d528b6f13828
-    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    CHECKSUM: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
     FILES:
       - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
     PROJECT_NAME: EXImageLoader
     SPECS:
-      - EXImageLoader (1.0.0)
+      - EXImageLoader (1.0.1)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 5d68aa0d6f2a7fdd838a8783136b6a40
@@ -7745,13 +7745,13 @@ CACHE_KEYS:
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork: 103419567d2a8f5ad5aacd9a0a438bd1
-    CHECKSUM: b8cfa4936341d260779043acc4c366904decef0d
+    CHECKSUM: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
     FILES:
       - "../../packages/expo-network/ios/EXNetwork/EXNetwork.h"
       - "../../packages/expo-network/ios/EXNetwork/EXNetwork.m"
     PROJECT_NAME: EXNetwork
     SPECS:
-      - EXNetwork (2.1.0)
+      - EXNetwork (2.1.1)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
@@ -7927,13 +7927,13 @@ CACHE_KEYS:
   EXVideoThumbnails:
     BUILD_SETTINGS_CHECKSUM:
       EXVideoThumbnails: f4311fc5a4bf4f6ea661c8712ad5ecfe
-    CHECKSUM: 48d74ed69e51b52936d68fe24de8530d2a0500dc
+    CHECKSUM: be6984a3cda1e44c45b5c6278244e99855f99a0a
     FILES:
       - "../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.h"
       - "../../packages/expo-video-thumbnails/ios/EXVideoThumbnails/EXVideoThumbnailsModule.m"
     PROJECT_NAME: EXVideoThumbnails
     SPECS:
-      - EXVideoThumbnails (4.1.0)
+      - EXVideoThumbnails (4.1.1)
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: 59fe782f0e740f61899473481074075b
@@ -10204,7 +10204,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: d1d6fddd8bc592ac726865cf408276d2
-    CHECKSUM: 900e80a6cd83823870cf840f35081edb4043b014
+    CHECKSUM: 126da3486c1a1f11945b649d557d6c2ebb9407b2
     FILES:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -10227,7 +10227,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.1)
+      - UMReactNativeAdapter (5.2.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: 2a69c5e2ded5336edb3dbfcb358ca18f

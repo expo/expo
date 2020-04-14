@@ -60,6 +60,10 @@ export var AppleAuthenticationButtonType;
 (function (AppleAuthenticationButtonType) {
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["SIGN_IN"] = 0] = "SIGN_IN";
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["CONTINUE"] = 1] = "CONTINUE";
+    /**
+     * Requires iOS 13.2 or later.
+     */
+    AppleAuthenticationButtonType[AppleAuthenticationButtonType["SIGN_UP"] = 2] = "SIGN_UP";
 })(AppleAuthenticationButtonType || (AppleAuthenticationButtonType = {}));
 /**
  * Controls the predefined style of the authenticating button.

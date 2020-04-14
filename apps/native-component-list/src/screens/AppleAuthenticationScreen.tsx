@@ -199,6 +199,10 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
               title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.CONTINUE]}`}
               onPress={() => this.setState({ buttonType: AppleAuthenticationButtonType.CONTINUE })}
             />
+            <Button
+              title={`${AppleAuthenticationButtonType[AppleAuthenticationButtonType.SIGN_UP]}`}
+              onPress={() => this.setState({ buttonType: AppleAuthenticationButtonType.SIGN_UP })}
+            />
           </View>
         </View>
         <View style={styles.controlsContainer}>

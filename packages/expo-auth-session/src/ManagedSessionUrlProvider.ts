@@ -10,15 +10,16 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
   private static readonly SESSION_PATH = 'expo-auth-session';
   private static readonly USES_CUSTOM_SCHEME =
     Constants.appOwnership === 'standalone' && manifest.scheme;
-  private static readonly HOST_URI = ManagedSessionUrlProvider.getHostUri();
-  private static readonly IS_EXPO_HOSTED =
-    ManagedSessionUrlProvider.HOST_URI &&
-    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(
-      ManagedSessionUrlProvider.HOST_URI
-    ) ||
-      manifest.developer);
 
-  getDefaultReturnUrl(): string {
+  getDefaultReturnUrl(urlPath?: string): string {
+    const hostAddress = ManagedSessionUrlProvider.getHostAddress();
+    const isExpoHosted =
+      hostAddress.hostUri &&
+      (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(
+        hostAddress.hostUri
+      ) ||
+        manifest.developer);
+
     let scheme = 'exp';
     let path = ManagedSessionUrlProvider.SESSION_PATH;
     const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
@@ -35,13 +36,13 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       );
     }
 
-    let hostUri = ManagedSessionUrlProvider.HOST_URI || '';
-    if (ManagedSessionUrlProvider.USES_CUSTOM_SCHEME && ManagedSessionUrlProvider.IS_EXPO_HOSTED) {
+    let hostUri = hostAddress.hostUri || '';
+    if (ManagedSessionUrlProvider.USES_CUSTOM_SCHEME && isExpoHosted) {
       hostUri = '';
     }
 
     if (path) {
-      if (ManagedSessionUrlProvider.IS_EXPO_HOSTED && hostUri) {
+      if (isExpoHosted && hostUri) {
         path = `/--/${ManagedSessionUrlProvider.removeLeadingSlash(path)}`;
       }
 
@@ -52,9 +53,19 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       path = '';
     }
 
-    hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
+    if (urlPath) {
+      path = [path, urlPath].filter(Boolean).join('/');
+    }
 
-    return encodeURI(`${scheme}://${hostUri}${path}`);
+    let { parameters } = hostAddress;
+    if (parameters) {
+      parameters = `?${parameters}`;
+    } else {
+      parameters = '';
+    }
+
+    hostUri = ManagedSessionUrlProvider.removeTrailingSlash(hostUri);
+    return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
   }
 
   getStartUrl(authUrl: string, returnUrl: string): string {
@@ -74,8 +85,8 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
     return redirectUrl;
   }
 
-  static getHostUri(): string {
-    let hostUri = manifest.hostUri;
+  private static getHostAddress(): { hostUri: string; parameters: string | undefined } {
+    let hostUri: string = Constants.manifest.hostUri;
     if (!hostUri && !ManagedSessionUrlProvider.USES_CUSTOM_SCHEME) {
       // we're probably not using up-to-date xdl, so just fake it for now
       // we have to remove the /--/ on the end since this will be inserted again later
@@ -85,7 +96,13 @@ export class ManagedSessionUrlProvider implements SessionUrlProvider {
       );
     }
 
-    return hostUri;
+    const uriParts = hostUri?.split('?');
+    const parameters = uriParts?.[1];
+    if (uriParts?.length > 0) {
+      hostUri = uriParts[0];
+    }
+
+    return { hostUri, parameters };
   }
 
   private static warnIfAnonymous(id, url): void {

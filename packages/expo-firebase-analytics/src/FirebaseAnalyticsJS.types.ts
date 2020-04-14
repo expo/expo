@@ -95,4 +95,19 @@ export interface FirebaseAnalyticsJSOptions {
    * ```
    */
   customArgs?: { [key: string]: any };
+
+  /**
+   * HTTP headers that are appended to the POST request.
+   *
+   * @example
+   * ```
+   * const analytics = new FirebaseAnalyticsJS(config, {
+   *   appName: 'My Awesome App',
+   *   headers: {
+   *     'user-agent': 'MyAwesomeHTTPClient/1.2.3'
+   *   }
+   * });
+   * ```
+   */
+  headers?: { [key: string]: any };
 }

@@ -29,6 +29,7 @@ const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
 const FileSystem = optionalRequire(() => require('../screens/FileSystemScreen'));
+const FirebaseRecaptcha = optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
 const Font = optionalRequire(() => require('../screens/FontScreen'));
 const Geocoding = optionalRequire(() => require('../screens/GeocodingScreen'));
 const Google = optionalRequire(() => require('../screens/GoogleScreen'));
@@ -36,6 +37,7 @@ const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScree
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
 const ImageManipulator = optionalRequire(() => require('../screens/ImageManipulatorScreen'));
 const ImagePicker = optionalRequire(() => require('../screens/ImagePickerScreen'));
+const InAppPurchases = optionalRequire(() => require('../screens/InAppPurchases/InAppPurchases'));
 const IntentLauncher = optionalRequire(() => require('../screens/IntentLauncherScreen'));
 const KeepAwake = optionalRequire(() => require('../screens/KeepAwakeScreen'));
 const Linking = optionalRequire(() => require('../screens/LinkingScreen'));
@@ -86,6 +88,7 @@ const optionalScreens: {
   FacebookLogin,
   FaceDetector,
   FileSystem,
+  FirebaseRecaptcha,
   Font,
   Google,
   GoogleSignIn,
@@ -98,6 +101,7 @@ const optionalScreens: {
   Geocoding,
   ImageManipulator,
   ImagePicker,
+  InAppPurchases,
   IntentLauncher,
   KeepAwake,
   Linking,

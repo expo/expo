@@ -26,8 +26,8 @@ public class EmbeddedLoader {
 
   private static final String TAG = EmbeddedLoader.class.getSimpleName();
 
-  public static final String MANIFEST_FILENAME = "shell-app-manifest.json";
-  public static final String BUNDLE_FILENAME = "shell-app.bundle";
+  public static final String MANIFEST_FILENAME = "app.manifest";
+  public static final String BUNDLE_FILENAME = "app.bundle";
 
   private static Manifest sEmbeddedManifest = null;
 
@@ -70,7 +70,7 @@ public class EmbeddedLoader {
         sEmbeddedManifest = ManifestFactory.getManifest(context, new JSONObject(manifestString));
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
-        throw new AssertionError("The embedded manifest is invalid or could not be read. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
+        throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have created app.manifest and app.bundle files and added them to the `assets` folder. If you are using Expo CLI, make sure you have run `expo publish` or `expo export` at least once. More information at https://expo.fyi/embedded-assets");
       }
     }
 

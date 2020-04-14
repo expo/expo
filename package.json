@@ -27,9 +27,8 @@
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
-    "eslint": "^6.6.0",
-    "eslint-config-universe": "^2.0.0",
-    "expo-cli": "^3.15.4",
+    "eslint": "^6.8.0",
+    "expo-cli": "^3.17.18",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.19.0"
   },

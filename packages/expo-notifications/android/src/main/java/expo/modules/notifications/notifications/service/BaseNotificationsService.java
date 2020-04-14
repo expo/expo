@@ -48,7 +48,6 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String DROPPED_TYPE = "dropped";
   private static final String RESPONSE_TYPE = "response";
 
-  private static final Intent SEARCH_INTENT = new Intent(NOTIFICATION_EVENT_ACTION);
   private static final int JOB_ID = BaseNotificationsService.class.getName().hashCode();
 
   /**
@@ -163,7 +162,8 @@ public abstract class BaseNotificationsService extends JobIntentService {
    * @param intent  Intent to dispatch
    */
   private static void enqueueWork(Context context, Intent intent) {
-    ResolveInfo resolveInfo = context.getPackageManager().resolveService(SEARCH_INTENT, 0);
+    Intent searchIntent = new Intent(NOTIFICATION_EVENT_ACTION).setPackage(context.getPackageName());
+    ResolveInfo resolveInfo = context.getPackageManager().resolveService(searchIntent, 0);
     if (resolveInfo == null || resolveInfo.serviceInfo == null) {
       Log.e("expo-notifications", String.format("No service capable of handling notifications found (intent = %s). Ensure that you have configured your AndroidManifest.xml properly.", NOTIFICATION_EVENT_ACTION));
       return;

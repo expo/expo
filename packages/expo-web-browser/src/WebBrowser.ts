@@ -127,11 +127,27 @@ export function dismissAuthSession(): void {
   }
 }
 
+/**
+ * Attempts to complete an auth session in the browser.
+ *
+ * @param options
+ */
+export function maybeCompleteAuthSession(
+  options: { skipRedirectCheck?: boolean } = {}
+): { type: 'success' | 'failed'; message: string } {
+  if (ExponentWebBrowser.maybeCompleteAuthSession) {
+    return ExponentWebBrowser.maybeCompleteAuthSession(options);
+  }
+  return { type: 'failed', message: 'Not supported on this platform' };
+}
+
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 
 function _authSessionIsNativelySupported(): boolean {
   if (Platform.OS === 'android') {
     return false;
+  } else if (Platform.OS === 'web') {
+    return true;
   }
 
   const versionNumber = parseInt(String(Platform.Version), 10);

@@ -22,5 +22,6 @@ export * from './TokenEmitter';
 export * from './NotificationsEmitter';
 export * from './NotificationsHandler';
 export * from './NotificationPermissions';
+export * from './Notifications.types';
 export * from './NotificationChannelManager.types';
 //# sourceMappingURL=index.js.map

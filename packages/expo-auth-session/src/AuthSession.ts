@@ -73,8 +73,8 @@ export function getDefaultReturnUrl(): string {
   return sessionUrlProvider.getDefaultReturnUrl();
 }
 
-export function getRedirectUrl(): string {
-  return sessionUrlProvider.getRedirectUrl();
+export function getRedirectUrl(path?: string): string {
+  return sessionUrlProvider.getRedirectUrl(path);
 }
 
 async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
@@ -117,3 +117,11 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
     params,
   };
 }
+
+export {
+  resolveDiscoveryAsync,
+  fetchDiscoveryAsync,
+  Discovery,
+  DiscoveryDocument,
+  IssuerOrDiscovery,
+} from './Discovery';

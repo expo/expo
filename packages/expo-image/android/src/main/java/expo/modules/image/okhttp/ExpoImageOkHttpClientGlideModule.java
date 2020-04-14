@@ -19,8 +19,8 @@ public final class ExpoImageOkHttpClientGlideModule extends LibraryGlideModule {
   @Override
   public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
     OkHttpClient client = new OkHttpClient.Builder()
-        .addNetworkInterceptor(OkHttpClientProgressInterceptor.getInstance())
-        .build();
+      .addNetworkInterceptor(OkHttpClientProgressInterceptor.getInstance())
+      .build();
     OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory(client);
 
     registry.replace(GlideUrl.class, InputStream.class, factory);

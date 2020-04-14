@@ -42,7 +42,6 @@
     "expo-ads-admob",
     "expo-video-thumbnails",
     "expo-module-template",
-    "expo-in-app-purchases",
     "expo-apple-authentication",
     "expo-updates",
     "expo-splash-screen"
@@ -80,9 +79,9 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~37.0.1",
+    "expo": "~37.0.6",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~1.0.0",
+    "expo-notifications": "~0.1.1",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.9.0",
@@ -93,7 +92,7 @@
     "react-native-reanimated": "~1.7.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
-    "react-native-unimodules": "~0.8.0",
+    "react-native-unimodules": "~0.9.0",
     "react-native-web": "^0.11.4",
     "react-navigation": "4.1.0-alpha.0",
     "react-navigation-tabs": "^2.7.0",
@@ -109,6 +108,7 @@
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~37.0.0",
-    "jest-expo-puppeteer": "^0.0.0"
+    "jest-expo-puppeteer": "^1.0.0",
+    "puppeteer": "^2.1.1"
   }
 }

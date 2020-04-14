@@ -2,6 +2,8 @@
 title: Push Notifications
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 Push Notifications are an important feature, no matter what kind of app you're building. Not only is it nice to let users know about something that may interest them, be it a new album being released, a sale or other limited-time-only deal, or that one of their friends sent them a message, but push notifications are proven to help boost user interaction and create a better overall user experience.
 
 Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNS (Apple Push Notification Service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
@@ -12,56 +14,112 @@ There are three main steps to setting up push notifications:
 - calling Expo's Push API with the token when you want to send a notification
 - responding to receiving the notification in your app (maybe upon opening, you want to jump to a particular screen that the notification refers to)
 
-> Reading the full guide is important, but to take a quick look at this in action, check out [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications36?platform=ios)!
+## Example Usage
 
-## Set Up
+The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
 
-### 1. Getting the user's Push Token
+<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
 
-In order to send a push notification, Expo needs to know which device to send it to. Expo takes care of identifying your device with Apple and Google through the Expo push token, which is uniquely generated each time an app is installed on a device. Once you have this token, save it in association with that user account on your server. This token is what you'll provide to Expo's push notification service. Halfway done with the setup!
-
-![Diagram explaining saving tokens](/static/images/saving-token.png)
-
-```javascript
+```js
+import React from 'react';
+import { Text, View, Button, Vibration, Platform } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
-const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
+export default class AppContainer extends React.Component {
+  state = {
+    expoPushToken: '',
+    notification: {},
+  };
 
-export default async function registerForPushNotificationsAsync() {
-  const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-  // only asks if permissions have not already been determined, because
-  // iOS won't necessarily prompt the user a second time.
-  // On Android, permissions are granted on app installation, so
-  // `askAsync` will never prompt the user
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
 
-  // Stop here if the user did not grant permissions
-  if (status !== 'granted') {
-    alert('No notification permissions!');
-    return;
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  };
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
+
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
-  // Get the token that identifies this device
-  let token = await Notifications.getExpoPushTokenAsync();
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
 
-  // POST the token to your backend server from where you can retrieve it to send push notifications.
-  return fetch(PUSH_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      token: {
-        value: token,
+  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
+  sendPushNotification = async () => {
+    const message = {
+      to: this.state.expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+      _displayInForeground: true,
+    };
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
       },
-      user: {
-        username: 'Brent',
-      },
-    }),
-  });
+      body: JSON.stringify(message),
+    });
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+        </View>
+        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+      </View>
+    );
+  }
 }
 ```
+
+</SnackInline>
 
 ### 2. Call Expo's Push API with the user's token to send the Notification
 
@@ -168,7 +226,7 @@ content-type: application/json
 
 This is a "hello world" push notification using cURL that you can send using your CLI (replace the placeholder push token with your own):
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
@@ -251,7 +309,7 @@ Once Expo delivers a notification to the iOS or Android push notification servic
 
 To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The [request body](#push-receipt-request-format) must be a JSON object with a field name `ids` that is an array of ticket ID strings:
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
   "ids": ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
 }'

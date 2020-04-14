@@ -3,8 +3,10 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "2.105.2"
+fastlane_version "2.141.0"
 default_platform :ios
+
+STAGING_API_URL = 'https://staging.exp.host/'
 
 # path relative to Fastfile
 output_directory = File.expand_path('./Deployment')
@@ -181,7 +183,7 @@ platform :android do
 
   private_lane :verify_upload_to_staging do |version_name: |
     require 'open-uri'
-    staging_version = JSON.parse(open("https://staging.expo.io/--/api/v2/versions").read)["androidVersion"]
+    staging_version = JSON.parse(open(URI.join(STAGING_API_URL, "/--/api/v2/versions")).read)["androidVersion"]
     unless staging_version == version_name
       UI.user_error!("APK version #{version_name} is not yet uploaded to staging. Please download from the client_android CI job, test and upload manually.")
     end

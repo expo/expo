@@ -11,6 +11,9 @@ node_modules
 npm-debug.log
 yarn-error.log
 
+# Ruby
+.direnv
+
 # Emacs
 *~
 
@@ -44,6 +47,9 @@ xcuserdata
 # Eclipse
 .project
 .settings
+
+# VSCode
+.history/
 
 # Android
 *.apk

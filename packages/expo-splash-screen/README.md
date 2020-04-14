@@ -2,8 +2,6 @@
 
 `expo-splash-screen` allows you to customize your app's splash screen, which is the initial screen users see when the app is launched, before it has loaded. Splash screens (sometimes called launch screens) provide a user's first experience with your application.
 
-## Content
-
 - [📜	CHANGELOG](./CHANGELOG.md)
 - [🚀 Features](#-features)
 - [📚 API](#-api)
@@ -22,7 +20,7 @@
 
 `expo-splash-screen` contains a built-in feature for taking care of properly displaying your splash screen image. You can use the following resize modes to obtain behavior as if you were using the React Native `<Image>` component's `resizeMode` style.
 
-#### `CONTAIN` resize mode
+### `CONTAIN` resize mode
 
 Scale the image uniformly (maintaining the image's aspect ratio) so that both dimensions the width and height of the image will be equal to or less than the corresponding dimension of the device's screen.
 
@@ -30,7 +28,7 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both di
 |-----------------------------------------------------------|------------------------------------------------------------|
 | <img src="./assets/demo-android-contain.gif" height="350" /> | <img src="./assets/demo-ios-contain.gif" height="350" />  |
 
-#### `COVER` resize mode
+### `COVER` resize mode
 
 Scale the image uniformly (maintaining the image's aspect ratio) so that both the width and height of the image will be equal to or larger than the corresponding dimension of the device's screen.
 
@@ -38,7 +36,7 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both th
 |-----------------------------------------------------------|------------------------------------------------------------|
 | <img src="./assets/demo-android-cover.gif" height="350" /> | <img src="./assets/demo-ios-cover.gif" height="350" />  |
 
-#### `NATIVE` resize mode
+### `NATIVE` resize mode
 
 > **Android only.**
 
@@ -68,7 +66,7 @@ This method makes the native splash screen stay visible until [`SplashScreen.hid
 
 Preventing default autohiding might come in handy if your application needs to prepare/download some resources and/or make some API calls before first rendering some actual view hierarchy.
 
-#### Returns
+### Returns
 
 A `Promise` that resolves to `true` when preventing autohiding succeeded and to `false` if the native splash screen is already prevented from autohiding (for instance, if you've already called this method).
 `Promise` rejection most likely means that native splash screen cannot be prevented from autohiding (it's already hidden when this method was executed).
@@ -77,7 +75,7 @@ A `Promise` that resolves to `true` when preventing autohiding succeeded and to 
 
 Hides the native splash screen. Only works if the native splash screen has been previously prevented from autohiding by calling [`SplashScreen.preventAutoHideAsync()`](#splashscreenpreventautohideasync) method.
 
-#### Returns
+### Returns
 
 A `Promise` that resolves to `true` once the splash screen becomes hidden and to `false` if the splash screen is already hidden.
 
@@ -88,6 +86,7 @@ A `Promise` that resolves to `true` once the splash screen becomes hidden and to
 `App.tsx`
 ```tsx
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
 // Prevent native splash screen from autohiding before App component declaration
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-};
+});
 ```
 
 ### `SplashScreen.preventAutoHideAsync()` in component that initially renders `null`
@@ -131,6 +130,7 @@ const styles = StyleSheet.create({
 `App.tsx`
 ```tsx
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 
 export default class App extends React.Component {
@@ -184,27 +184,33 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-};
+});
 ```
 
 
 ## 💻 Installation in managed Expo projects
 
-[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects are not supported by this unimodule at this moment. Instead, you should use the `Expo.SplashScreen` module that is within the `expo` package.
+[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects are not supported by this unimodule at this moment. Instead, you should use the `SplashScreen` module that is within the `expo` package (`import { SplashScreen } from 'expo'`).
 
 ## 🖥 Installation in bare React Native projects
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
-### Add the package to your dependencies
+## Add the package to your dependencies
 
 ```
 expo install expo-splash-screen
 ```
 
-### 📱 Configure iOS
+## 📱 Configure iOS
 
 Run `pod install` in the `ios` directory after installing the package.
+
+### Automatic configuration
+
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
+
+### Manual Configuration
 
 To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) behavior, you have to provide either a `SplashScreen.storyboard` file or a `SplashScreen.xib` file, and configure your Xcode project accordingly.
 
@@ -290,6 +296,13 @@ The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Sc
 
 To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be hooked into the native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.
 
+### Automatic configuration
+
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
+
+### Manual Configuration
+
+
 #### `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
@@ -322,8 +335,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-
-#### `res/drawable/splashscreen_background.png`
+#### `res/drawable/splashscreen_image.png`
 
 You have to provide your splash screen image and place it under the `res/drawable` directory.
 This image will be loaded as soon as Android mounts your application's native view hierarchy.
@@ -368,7 +380,7 @@ Create the file with the following content:
 + </layer-list>
 ```
 
-##### `NATIVE` mode adjustments
+#### `NATIVE` mode adjustments
 
 If you've selected `SplashScreenImageResizeMode.NATIVE` mode in [`SplashScreen.show`](#splashscreenshowactivity-activity-splashscreenimageresizemode-mode-class-rootviewclass), you should add:
 
@@ -418,9 +430,7 @@ Adjust your application's main `AndroidManifest.xml` to contain an `android:them
   </application>
 
 </manifest>
-
 ```
-
 
 ## 👏 Contributing
 

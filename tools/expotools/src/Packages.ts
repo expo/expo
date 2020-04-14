@@ -97,7 +97,7 @@ class Package {
       const { podspecName } = this;
       return (
         podspecName != null &&
-        fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName))
+        fs.pathExistsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName))
       );
     } else if (platform === 'android') {
       // On Android we need to read expoview's build.gradle file
@@ -147,7 +147,7 @@ async function getListOfPackagesAsync(
     if (!(await fs.lstat(packagePath)).isDirectory()) {
       continue;
     }
-    if (await fs.exists(packageJsonPath)) {
+    if (await fs.pathExists(packageJsonPath)) {
       const packageJson = require(packageJsonPath);
       packages.push(new Package(packagePath, packageJson));
     } else {

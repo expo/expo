@@ -141,12 +141,12 @@ This is Zeit's preferred method for deploying Next.js projects to production.
 - Add a **build** script to your `package.json`
   ```json5
   {
-    "scripts": {
-      "build": "next build"
-    }
+    scripts: {
+      build: 'next build',
+    },
   }
   ```
-- Install the Now CLI: `npm i -g now` 
+- Install the Now CLI: `npm i -g now`
 - Deploy to Now: `now`
 
 ### Image support
@@ -378,7 +378,7 @@ To use it with other services such as ZEIT Now, you would need appropriate confi
 
 Here is an example `now.json` configuration file:
 
-```jsonc
+```json
 {
   "version": 2,
   "routes": [

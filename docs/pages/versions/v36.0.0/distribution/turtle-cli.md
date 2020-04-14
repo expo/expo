@@ -24,6 +24,7 @@ You'll need to have these things installed:
 
 #### For Android builds
 
+- macOS or Linux
 - [Java Development Kit (version 8)](https://jdk.java.net/)
 
 #### For iOS builds
@@ -37,7 +38,7 @@ and you have agreed to the license agreements. Alternatively you can run `sudo x
 
 Install Turtle CLI by running:
 
-```bash
+```sh
 $ npm install -g turtle-cli
 ```
 
@@ -88,7 +89,7 @@ environment variables with the values of the keystore password and key password,
 respectively.
 
 Then, start the standalone app build:
-```bash
+```sh
 $ turtle build:android \\
   --keystore-path /path/to/your/keystore.jks \\
   --keystore-alias PUT_KEYSTORE_ALIAS_HERE
@@ -115,7 +116,7 @@ Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.
 
 Then, start the standalone app build:
-```bash
+```sh
 $ turtle build:ios \\
   --team-id YOUR_TEAM_ID \\
   --dist-p12-path /path/to/your/dist/cert.p12 \\

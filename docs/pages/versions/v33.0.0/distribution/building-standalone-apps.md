@@ -74,7 +74,7 @@ and backup your keystore to a safe location. Once you submit an app to the Googl
 be signed with the same keystore to be accepted by Google. If, for any reason, you delete your project or clear your credentials
 in the future, you will not be able to submit any updates to your app if you have not backed up your keystore.
 
-```bash
+```sh
 [exp] No currently active or previous builds for this project.
 
 Would you like to upload a keystore or have us generate one for you?
@@ -93,7 +93,7 @@ necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
 
-```bash
+```sh
 $ expo build:ios
 [16:44:37] Checking if current build exists...
 
@@ -146,14 +146,14 @@ to start build with `--clear-push-cert`. We will remove certificate from our ser
 
 When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
-If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for you project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `Expo-Signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
+If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for you project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
 
 We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
 - `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
 - `id` - the unique ID of your build
 - `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
 
-Additionally, we send an `Expo-Signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
+Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
 This is how you can implement your server:
 ```javascript
@@ -165,7 +165,7 @@ import safeCompare from 'safe-compare';
 const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
 app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['Expo-Signature'];
+  const expoSignature = req.headers['expo-signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
   hmac.update(req.body);

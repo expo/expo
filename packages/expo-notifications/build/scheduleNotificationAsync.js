@@ -1,31 +1,25 @@
-import { Platform } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 import NotificationScheduler from './NotificationScheduler';
-export default async function scheduleNotificationAsync(notification, trigger) {
-    // Remember current platform-specific options
-    const platformSpecificOptions = notification[Platform.OS] ?? undefined;
-    // Remove all known platform-specific options
-    const { ios, android, identifier, ...baseRequest } = notification;
-    // Merge current platform-specific options
-    const easyBodyNotificationSpec = { ...baseRequest, ...platformSpecificOptions };
-    // Stringify `body`
-    const { body, ...restNotificationSpec } = easyBodyNotificationSpec;
-    const notificationSpec = { ...restNotificationSpec, body: JSON.stringify(body) };
-    // If identifier has not been provided, let's create one.
-    const notificationIdentifier = identifier ?? uuidv4();
-    return await NotificationScheduler.scheduleNotificationAsync(notificationIdentifier, notificationSpec, parseTrigger(trigger[Platform.OS] ?? trigger));
+export default async function scheduleNotificationAsync(request) {
+    return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
 }
 function parseTrigger(userFacingTrigger) {
+    if (userFacingTrigger === null) {
+        return null;
+    }
+    if (userFacingTrigger === undefined) {
+        throw new TypeError('Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.');
+    }
     if (userFacingTrigger instanceof Date) {
-        return { type: 'date', value: userFacingTrigger.getTime() };
+        return { type: 'date', timestamp: userFacingTrigger.getTime() };
     }
     else if (typeof userFacingTrigger === 'number') {
-        return { type: 'date', value: userFacingTrigger };
+        return { type: 'date', timestamp: userFacingTrigger };
     }
     else if ('seconds' in userFacingTrigger) {
         return {
-            type: 'interval',
-            value: userFacingTrigger.seconds,
+            type: 'timeInterval',
+            seconds: userFacingTrigger.seconds,
             repeats: userFacingTrigger.repeats ?? false,
         };
     }

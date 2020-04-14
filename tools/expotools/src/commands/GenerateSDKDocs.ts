@@ -1,8 +1,8 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { Directories } from '../expotools';
 
@@ -59,7 +59,7 @@ async function action(options) {
 
   await JsonFile.setAsync(path.join(DOCS_DIR, 'package.json'), 'version', sdk);
 
-  if (await fs.exists(targetSdkDirectory)) {
+  if (await fs.pathExists(targetSdkDirectory)) {
     console.log(chalk.magenta(`v${sdk}`), 'directory already exists. Skipping copy operation.');
   } else {
     console.log(
@@ -67,13 +67,18 @@ async function action(options) {
     );
 
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
-  };
+  }
 
-  if (await fs.exists(targetExampleDirectory)) {
-    console.log(chalk.magenta(`v${sdk}`), 'examples directory already exists. Skipping copy operation.');
+  if (await fs.pathExists(targetExampleDirectory)) {
+    console.log(
+      chalk.magenta(`v${sdk}`),
+      'examples directory already exists. Skipping copy operation.'
+    );
   } else {
     console.log(
-      `Copying ${chalk.yellow('unversioned')} static examples to ${chalk.yellow(`v${sdk}`)} directory...`
+      `Copying ${chalk.yellow('unversioned')} static examples to ${chalk.yellow(
+        `v${sdk}`
+      )} directory...`
     );
 
     await fs.copy(path.join(STATIC_EXAMPLES_DIR, 'unversioned'), targetExampleDirectory);

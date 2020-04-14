@@ -1,6 +1,7 @@
 import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { getGUID } from '../api/guid';
 
 import GoogleSignInButton from '../components/GoogleSignInButton';
 
@@ -31,14 +32,13 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
       await GoogleSignIn.initAsync({
         isOfflineEnabled: false,
         isPromptEnabled: true,
-        clientId:
-          '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
+        clientId: `${getGUID()}.apps.googleusercontent.com`,
       });
     } catch ({ message }) {
       console.error('Demo: Error: init: ' + message);
     }
     this._syncUserWithStateAsync();
-  }
+  };
 
   _syncUserWithStateAsync = async () => {
     /*
@@ -52,7 +52,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
       if (user) {
         this.setState({
           user: {
-            ...user.toJSON() as { displayName: string, email: string },
+            ...(user.toJSON() as { displayName: string; email: string }),
             photoURL: photoURL || user.photoURL!,
           },
         });
@@ -60,7 +60,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this.setState({ user: undefined });
     }
-  }
+  };
 
   get buttonTitle() {
     return this.state.user ? 'Sign-Out of Google' : 'Sign-In with Google';
@@ -71,9 +71,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {user && <GoogleProfile {...user} />}
-        <GoogleSignInButton onPress={this._toggleAuth}>
-          {this.buttonTitle}
-        </GoogleSignInButton>
+        <GoogleSignInButton onPress={this._toggleAuth}>{this.buttonTitle}</GoogleSignInButton>
       </View>
     );
   }
@@ -84,7 +82,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this._signInAsync();
     }
-  }
+  };
 
   _signOutAsync = async () => {
     try {
@@ -96,7 +94,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } finally {
       this.setState({ user: undefined });
     }
-  }
+  };
 
   _signInAsync = async () => {
     try {
@@ -109,7 +107,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       console.error('login: Error:' + message);
     }
-  }
+  };
 }
 
 const GoogleProfile: React.FunctionComponent<{

@@ -41,6 +41,11 @@ function callAnalyticsModule(funcName: string, ...args) {
         strictNativeEmulation: true,
         appName: Constants.manifest?.name || 'Unnamed Expo project',
         appVersion: Constants.nativeAppVersion || undefined,
+        headers: {
+          // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
+          // Set a user-agent that clearly identifies the Expo client.
+          'user-agent': `Expo/${Constants.nativeAppVersion}`,
+        },
       });
     }
     if (pureJSAnalyticsTracker) {
@@ -70,7 +75,7 @@ export default {
     return callAnalyticsModule('logEvent', name, properties);
   },
   async setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void> {
-    return callAnalyticsModule('setAnalyticsEnabled', isEnabled);
+    return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
   },
   async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
     return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);

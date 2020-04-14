@@ -17,6 +17,10 @@ import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 
 // which we proxy through the adapter
 const ViewPropTypesKeys = Object.keys(ViewPropTypes);
 
+type NativeExpoComponentProps = {
+  proxiedProperties: object;
+};
+
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
@@ -34,8 +38,9 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
   // Set up the React Native native component, which is an adapter to the universal module's view
   // manager
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
-  const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
-  // @ts-ignore: UIManager.getViewManagerConfig is not declared
+  const ReactNativeComponent = requireNativeComponent<NativeExpoComponentProps>(
+    reactNativeViewName
+  );
   const reactNativeUIConfiguration = (UIManager.getViewManagerConfig
     ? UIManager.getViewManagerConfig(reactNativeViewName)
     : UIManager[reactNativeViewName]) || {
