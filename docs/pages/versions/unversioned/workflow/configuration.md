@@ -25,9 +25,9 @@ The following is a list of properties that are available for you under the `"exp
 
 ### `"name"`
 
-**Required**. The name of your app as it appears both within Expo and on your home screen as a standalone app.
+The name of your app as it appears both within Expo and on your home screen as a standalone app.
 
-> **ExpoKit**: To change the name of your app, edit the "Display Name" field in Xcode and the `app_name` string in `android/app/src/main/res/values/strings.xml`.
+> **Bare workflow**: To change the name of your app, edit the "Display Name" field in Xcode and the `app_name` string in `android/app/src/main/res/values/strings.xml`.
 
 ### `"description"`
 
@@ -35,7 +35,7 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
 
 ### `"backgroundColor"`
 
@@ -52,13 +52,13 @@ Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
-**Required**. The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
+The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
 
 ### `"version"`
 
 Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode`- read more about how to version your app [here](../../distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
 
-> **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
+> **Bare workflow**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
 
 ### `"platforms"`
 
