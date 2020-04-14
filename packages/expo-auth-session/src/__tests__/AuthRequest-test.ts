@@ -80,7 +80,7 @@ it(`parses a valid return url`, () => {
   });
 
   const results = request.parseReturnUrl(
-    'https://demo.identityserver.io/connect/authorize?code_challenge=qOMOVEqLn0PTVkRFSSD4H5T-AQyZeZaFcr3fmu5gRKU&code_challenge_method=S256&client_secret=a45500e2a01d48b4939727846ff5ab24&redirect_uri=io.identityserver.demo%3A%2F%2Foauthredirect&client_id=native.code&response_type=code&state=testvalue&scope=openid%20profile%20email%20offline_access'
+    'https://demo.identityserver.io/connect/authorize?code_challenge=qOMOVEqLn0PTVkRFSSD4H5T-AQyZeZaFcr3fmu5gRKU&code_challenge_method=S256&client_secret=foobar&redirect_uri=bareexpo%3A%2F%2Foauthredirect&client_id=native.code&response_type=code&state=testvalue&scope=openid%20profile%20email%20offline_access'
   );
   expect(results.type).toBe('success');
 });
@@ -95,7 +95,7 @@ it(`returns an error when the state doesn't match`, () => {
   });
 
   const results = request.parseReturnUrl(
-    'https://demo.identityserver.io/connect/authorize?code_challenge=qOMOVEqLn0PTVkRFSSD4H5T-AQyZeZaFcr3fmu5gRKU&code_challenge_method=S256&client_secret=a45500e2a01d48b4939727846ff5ab24&redirect_uri=io.identityserver.demo%3A%2F%2Foauthredirect&client_id=native.code&response_type=code&state=testvalue&scope=openid%20profile%20email%20offline_access'
+    'https://demo.identityserver.io/connect/authorize?code_challenge=qOMOVEqLn0PTVkRFSSD4H5T-AQyZeZaFcr3fmu5gRKU&code_challenge_method=S256&client_secret=foobar&redirect_uri=bareexpo%3A%2F%2Foauthredirect&client_id=native.code&response_type=code&state=testvalue&scope=openid%20profile%20email%20offline_access'
   );
   if (results.type !== 'error' || !results.error) throw new Error('Invalid type for test');
   expect(results.error.code).toBe('state_mismatch');

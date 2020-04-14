@@ -50,6 +50,7 @@ function getCustomRedirectUrl(
     }
     const url = makeUrl(path);
     // Normalize the host to `localhost` for other testers
+    // This probably won't work on Android
     return `${url.split('//')[0]}//localhost:${url.split(':')[2]}`;
   }
   return Platform.select({

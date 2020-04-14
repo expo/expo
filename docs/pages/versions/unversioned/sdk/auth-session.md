@@ -612,7 +612,7 @@ const discovery = useAutoDiscovery('https://demo.identityserver.io');
 const [identityRequest, identityResponse, identityPromptAsync] = useAuthRequest(
   {
     clientId: 'native.code',
-    redirectUrl: 'io.identityserver.demo:/oauthredirect',
+    redirectUrl: 'myapp://redirect',
     scopes: ['openid', 'profile', 'offline_access'],
   },
   discovery
