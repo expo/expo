@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-recaptcha",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "reCAPTCHA components for Firebase phone authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,5 +41,5 @@
   "peerDependencies": {
     "react-native-webview": "*"
   },
-  "gitHead": "0be684a680422f986de1781ee4547a276e574d7b"
+  "gitHead": "e8e2d55569a68566dcf0cdc48c35503ec66ea5dc"
 }
