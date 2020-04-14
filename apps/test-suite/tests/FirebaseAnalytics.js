@@ -167,7 +167,7 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
     });
     describe('setDebugModeEnabled()', async () => {
       it(
-        isExpoClient && isWebConfigured
+        isExpoClient && isConfigured && isWebConfigured
           ? `runs on client with web-config`
           : `fails when not on client or without web-config`,
         async () => {
@@ -177,7 +177,7 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
           } catch (e) {
             error = e;
           }
-          if (isExpoClient && isWebConfigured) {
+          if (isExpoClient && isConfigured && isWebConfigured) {
             expect(error).toBeNull();
           } else {
             expect(error).not.toBeNull();
