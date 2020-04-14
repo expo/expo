@@ -137,9 +137,6 @@ export default function App() {
       redirectUri,
       /* @end */
       scopes: ['openid', 'profile', 'email', 'offline_access'],
-      /* @info There is no secure way to store a client secret locally, this example is using a public demo secret. */
-      clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
-      /* @end */
     },
     discovery
   );
@@ -475,6 +472,8 @@ There are many reasons why you might want to handle inbound links into your app,
 [c-google]: https://developers.google.com/identity/protocols/OAuth2
 
 - You cannot define a custom `redirectUri`, Google will provide you with one.
+  - URI schemes must be built into the app, you can do this with **bare and standalone**.
+  - This means you **cannot use in the Expo client** without the proxy service.
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
 ```ts
@@ -653,10 +652,15 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
 | --------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-fitbit]: https://dev.fitbit.com/apps/new
 
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
 ```ts
@@ -688,6 +692,11 @@ const [request, response, promptAsync] = useAuthRequest(
 
 [c-reddit]: https://www.reddit.com/prefs/apps
 
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 
 ```ts
@@ -750,10 +759,15 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
 | --------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-github]: https://github.com/settings/developers
 
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
@@ -768,7 +782,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['identity'],
   },

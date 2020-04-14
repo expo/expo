@@ -4,13 +4,17 @@ import { getRedirectUrl, useAuthRequest, useAutoDiscovery } from 'expo-auth-sess
 import Constants from 'expo-constants';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-
+import { maybeCompleteAuthSession } from 'expo-web-browser';
 import { getGUID } from '../api/guid';
 import Button from '../components/Button';
 import TitledSwitch from '../components/TitledSwitch';
 
 const AuthJson = require('../../auth.json');
 
+// Web: For testing directly without react navigation set up.
+maybeCompleteAuthSession();
+
+// Weird that we always throw errors, wrap this and let the server throw an error.
 function getAuthSessionRedirectUrl(url?: string): string {
   try {
     return getRedirectUrl(url);
@@ -18,6 +22,8 @@ function getAuthSessionRedirectUrl(url?: string): string {
   return '';
 }
 
+// For running in bare-expo which shims out expo package.
+// Can remove when we have expo-linking package.
 function makeUrl(url: string): string {
   try {
     return Linking.makeUrl(url);
@@ -50,21 +56,25 @@ export default function AuthSessionScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
-      <Uber redirectUri={redirectUri} useProxy={useProxy} />
-      <Slack redirectUri={redirectUri} useProxy={useProxy} />
       <Spotify redirectUri={redirectUri} useProxy={useProxy} />
-      <Identity redirectUri={redirectUri} useProxy={useProxy} />
-      <Coinbase redirectUri={redirectUri} useProxy={useProxy} />
-      <Okta redirectUri={redirectUri} useProxy={useProxy} />
-      <Github redirectUri={redirectUri} useProxy={useProxy} />
-      <FitBit redirectUri={redirectUri} useProxy={useProxy} />
       <Reddit redirectUri={redirectUri} useProxy={useProxy} />
+      <Identity redirectUri={redirectUri} useProxy={useProxy} />
+      <FitBit redirectUri={redirectUri} useProxy={useProxy} />
+      <Github redirectUri={redirectUri} useProxy={useProxy} />
       <Google useProxy={useProxy} />
+      <Coinbase redirectUri={redirectUri} useProxy={useProxy} />
+      <Slack redirectUri={redirectUri} useProxy={useProxy} />
+      <Uber redirectUri={redirectUri} useProxy={useProxy} />
+      <Okta redirectUri={redirectUri} useProxy={useProxy} />
       <Azure useProxy={useProxy} />
       <LegacyAuthSession />
     </ScrollView>
   );
 }
+
+AuthSessionScreen.navigationOptions = {
+  title: 'AuthSession',
+};
 
 function Result({ title, result }: any) {
   if (result)
@@ -75,10 +85,6 @@ function Result({ title, result }: any) {
     );
   return null;
 }
-
-AuthSessionScreen.navigationOptions = {
-  title: 'AuthSession',
-};
 
 function Google({ useProxy }: any) {
   const redirectUri = React.useMemo(
@@ -185,47 +191,44 @@ function Okta({ redirectUri, useProxy }: any) {
   );
 }
 
-function Coinbase({ redirectUri, useProxy }: any) {
-  const [request, result, promptAsync] = useAuthRequest(
-    // config
-    {
-      clientId: AuthJson.COINBASE_CLIENT_ID,
-      clientSecret: AuthJson.COINBASE_CLIENT_SECRET,
-      redirectUri,
-      // This shouldn't be done.
-      usePKCE: false,
-      // weird format
-      scopes: ['wallet:accounts:read'],
-    },
-    // discovery
-    {
-      authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
-      tokenEndpoint: 'https://api.coinbase.com/oauth/token',
-      revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
-    }
-  );
-
-  return (
-    <AuthSection
-      title="Coinbase"
-      request={request}
-      result={result}
-      promptAsync={promptAsync}
-      useProxy={useProxy}
-    />
-  );
-}
-
+// Reddit only allows one redirect uri per client Id
+// We'll only support bare, and proxy in this example
+// If the redirect is invalid with http instead of https on web, then the provider
+// will let you authenticate but it will redirect with no data and the page will appear broken.
 function Reddit({ redirectUri, useProxy }: any) {
+  let clientId: string;
+  let outputRedirectUri: string = redirectUri;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      clientId = 'IlgcZIpcXF1eKw';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+      clientId = 'CPc_adCUQGt9TA';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+      clientId = '9k_oYNO97ly-5w';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+      clientId = '2OFsAA7h63LQJQ';
+    }
+  }
+
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
-      clientId: 'CPc_adCUQGt9TA',
+      clientId,
       clientSecret: '',
-      redirectUri,
+      redirectUri: outputRedirectUri,
       scopes: ['identity'],
     },
-    // discovery
     {
       authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
       tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
@@ -244,14 +247,38 @@ function Reddit({ redirectUri, useProxy }: any) {
 }
 
 // TODO: Add button to test using an invalid redirect URI. This is a good example of AuthError.
+// Works for all platforms
 function Github({ redirectUri, useProxy }: any) {
+  let clientId: string;
+  let outputRedirectUri: string = redirectUri;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      clientId = '2e4298cafc7bc93ceab8';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+      clientId = '7eb5d82d8f160a434564';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+      clientId = 'fd9b07204f9d325e8f0e';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+      clientId = '498f1fae3ae16f066f34';
+    }
+  }
+
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
-      clientId: AuthJson.GITHUB_CLIENT_ID,
-      clientSecret: AuthJson.GITHUB_CLIENT_SECRET,
-      // Github requires two slashes
-      redirectUri,
+      clientId,
+      redirectUri: outputRedirectUri,
       scopes: ['identity'],
     },
     // discovery
@@ -274,10 +301,10 @@ function Github({ redirectUri, useProxy }: any) {
   );
 }
 
+// I couldn't get access to any scopes
+// This never returns to the app after authenticating
 function Uber({ redirectUri, useProxy }: any) {
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
-  // I couldn't get access to any scopes
-  // This never returns to the app after authenticating
   const [request, result, promptAsync] = useAuthRequest(
     // config
     {
@@ -306,16 +333,43 @@ function Uber({ redirectUri, useProxy }: any) {
     />
   );
 }
+
+// https://dev.fitbit.com/apps/new
+// Easy to setup
+// Only allows one redirect URI per app (clientId)
+// Refresh doesn't seem to return a new access token :[
 function FitBit({ redirectUri, useProxy }: any) {
-  // https://dev.fitbit.com/apps/new
-  // Easy to setup
-  // Refresh doesn't seem to return a new access token :[
+  let clientId: string;
+  let outputRedirectUri: string;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      outputRedirectUri = redirectUri;
+      clientId = '22BNXR';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+      clientId = '22BNXX';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+      clientId = '22BNXQ';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+      clientId = '22BGYS';
+    }
+  }
+
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
-      clientId: AuthJson.FITBIT_CLIENT_ID,
-      clientSecret: AuthJson.FITBIT_CLIENT_SECRET,
-      redirectUri,
+      clientId,
+      redirectUri: outputRedirectUri,
       scopes: ['activity', 'sleep'],
     },
     // discovery
@@ -337,6 +391,7 @@ function FitBit({ redirectUri, useProxy }: any) {
   );
 }
 
+// Currently only tested on bare apps
 function Slack({ redirectUri, useProxy }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
@@ -370,13 +425,35 @@ function Slack({ redirectUri, useProxy }: any) {
   );
 }
 
+// Works on all platforms
 function Spotify({ redirectUri, useProxy }: any) {
+  let outputRedirectUri: string = redirectUri;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      outputRedirectUri = 'https://auth.expo.io/@community/native-component-list';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+    }
+  }
+
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
       clientId: AuthJson.SPOTIFY_CLIENT_ID,
       clientSecret: AuthJson.SPOTIFY_CLIENT_SECRET,
-      redirectUri,
+      redirectUri: outputRedirectUri,
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
     },
     // discovery
@@ -396,13 +473,14 @@ function Spotify({ redirectUri, useProxy }: any) {
     />
   );
 }
+
+// Works on all platforms
 function Identity({ redirectUri, useProxy }: any) {
   const discovery = useAutoDiscovery('https://demo.identityserver.io');
 
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'native.code',
-      clientSecret: 'a45500e2a01d48b4939727846ff5ab24',
       redirectUri,
       scopes: ['openid', 'profile', 'email', 'offline_access'],
     },
@@ -412,6 +490,39 @@ function Identity({ redirectUri, useProxy }: any) {
   return (
     <AuthSection
       title="Identity"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+// Currently only tested with bare native
+function Coinbase({ redirectUri, useProxy }: any) {
+  const [request, result, promptAsync] = useAuthRequest(
+    // config
+    {
+      clientId: AuthJson.COINBASE_CLIENT_ID,
+      clientSecret: AuthJson.COINBASE_CLIENT_SECRET,
+      redirectUri,
+      // This shouldn't be done.
+      usePKCE: false,
+      // weird format
+      scopes: ['wallet:accounts:read'],
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
+      tokenEndpoint: 'https://api.coinbase.com/oauth/token',
+      revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
+    }
+  );
+
+  return (
+    <AuthSection
+      disabled={isInClient || Platform.OS === 'web'}
+      title="Coinbase"
       request={request}
       result={result}
       promptAsync={promptAsync}
