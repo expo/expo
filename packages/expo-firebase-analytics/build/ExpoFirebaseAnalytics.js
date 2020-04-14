@@ -11,8 +11,16 @@ let pureJSAnalyticsTracker;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
 function callAnalyticsModule(funcName, ...args) {
-    if (funcName !== 'setDebugModeEnabled') {
-        if (!ExpoFirebaseAnalytics[funcName]) {
+    if (!ExpoFirebaseAnalytics[funcName]) {
+        if (funcName === 'setDebugModeEnabled') {
+            // Debug-mode can only be enabled for the pure JS Analytics Tracker
+            // For all other environments, the platform specific method must be used.
+            // https://firebase.google.com/docs/analytics/debugview
+            if (!(DEFAULT_APP_NAME !== '[DEFAULT]' && DEFAULT_WEB_APP_OPTIONS)) {
+                throw new CodedError('ERR_FIREBASE_NOTCONFIGURED', `setDebugModeEnabled is not available in this environment. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`);
+            }
+        }
+        else {
             throw new UnavailabilityError('expo-firebase-analytics', funcName);
         }
     }
@@ -52,12 +60,6 @@ function callAnalyticsModule(funcName, ...args) {
             console.info(`ExpoFirebaseAnalytics.${funcName}: ${JSON.stringify(args)}`);
         }
         return;
-    }
-    // Debug-mode can only be enabled for the pure JS Analytics Tracker
-    // For all other environments, the platform specific method must be used.
-    // https://firebase.google.com/docs/analytics/debugview
-    if (funcName === 'setDebugModeEnabled') {
-        throw new CodedError('ERR_FIREBASE_NOTCONFIGURED', `setDebugModeEnabled is not available in this environment. See "https://firebase.google.com/docs/analytics/debugview" on how to enable debug mode.`);
     }
     // Make the call
     return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
