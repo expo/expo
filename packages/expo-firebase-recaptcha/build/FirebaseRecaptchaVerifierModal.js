@@ -1,6 +1,6 @@
 import { CodedError } from '@unimodules/core';
 import * as React from 'react';
-import { StyleSheet, Button, View, SafeAreaView, Text, Modal } from 'react-native';
+import { StyleSheet, Button, View, SafeAreaView, Text, Modal, ActivityIndicator, } from 'react-native';
 import FirebaseRecaptcha from './FirebaseRecaptcha';
 export default class FirebaseRecaptchaVerifierModal extends React.Component {
     constructor() {
@@ -8,8 +8,23 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
         this.state = {
             token: '',
             visible: false,
+            loaded: false,
             resolve: undefined,
             reject: undefined,
+        };
+        this.onLoad = () => {
+            this.setState({
+                loaded: true,
+            });
+        };
+        this.onError = () => {
+            const { reject } = this.state;
+            if (reject) {
+                reject(new CodedError('ERR_FIREBASE_RECAPTCHA_ERROR', 'Failed to load reCAPTCHA'));
+            }
+            this.setState({
+                visible: false,
+            });
         };
         this.onVerify = (token) => {
             const { resolve } = this.state;
@@ -29,6 +44,15 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
                 visible: false,
             });
         };
+        this.onDismiss = () => {
+            // onDismiss should be called when the user dismisses the
+            // modal using a swipe gesture. Due to a bug in RN this
+            // unfortunately doesn't work :/
+            //https://github.com/facebook/react-native/issues/26892
+            if (this.state.visible) {
+                this.cancel();
+            }
+        };
     }
     get type() {
         return 'recaptcha';
@@ -38,6 +62,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
             this.setState({
                 token: '',
                 visible: true,
+                loaded: false,
                 resolve,
                 reject,
             });
@@ -45,8 +70,8 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
     }
     render() {
         const { title, cancelLabel, ...otherProps } = this.props;
-        const { visible } = this.state;
-        return (<Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={this.cancel}>
+        const { visible, loaded } = this.state;
+        return (<Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={this.cancel} onDismiss={this.onDismiss}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
@@ -54,7 +79,12 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
               <Button title={cancelLabel || FirebaseRecaptchaVerifierModal.defaultProps.cancelLabel} onPress={this.cancel}/>
             </View>
           </View>
-          <FirebaseRecaptcha style={styles.container} onVerify={this.onVerify} {...otherProps}/>
+          <View style={styles.content}>
+            <FirebaseRecaptcha style={styles.content} onLoad={this.onLoad} onError={this.onError} onVerify={this.onVerify} {...otherProps}/>
+            {!loaded ? (<View style={styles.loader}>
+                <ActivityIndicator size="large"/>
+              </View>) : (undefined)}
+          </View>
         </SafeAreaView>
       </Modal>);
     }
@@ -83,6 +113,15 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: 'bold',
+    },
+    content: {
+        flex: 1,
+    },
+    loader: {
+        ...StyleSheet.absoluteFillObject,
+        paddingTop: 20,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
     },
 });
 //# sourceMappingURL=FirebaseRecaptchaVerifierModal.js.map
