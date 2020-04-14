@@ -6,6 +6,7 @@
 #import <UMCore/UMEventEmitter.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
+#import <EXFileSystem/EXSessionTaskDispatcher.h>
 
 @interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface, NSURLSessionDelegate>
 

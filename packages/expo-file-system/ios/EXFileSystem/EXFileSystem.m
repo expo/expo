@@ -35,8 +35,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
 
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
-@property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSessionDownloadTask *> *resumableDownloads;
+@property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -66,8 +65,7 @@ UM_REGISTER_MODULE();
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
     
-    _tasks = [NSMutableDictionary dictionary];
-    _resumableDownloads = [NSMutableDictionary dictionary];
+    _sessionTaskDispatcher = [EXSessionTaskDispatcher new];
     _backgroundSession = [self _createSession:EXFileSystemBackgroundSession];
     _foregroundSession = [self _createSession:EXFileSystemForegroundSession];
     
@@ -121,6 +119,7 @@ UM_REGISTER_MODULE();
 
 - (void)dealloc
 {
+  [_sessionTaskDispatcher deactivate];
   [_backgroundSession invalidateAndCancel];
   [_foregroundSession invalidateAndCancel];
 }
@@ -555,10 +554,10 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
   NSURLSessionDownloadTask *task = [[self _sessionForType:type] downloadTaskWithRequest:request];
   EXSessionTaskDelegate *taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
-                                                                                  reject:reject
-                                                                                localUrl:localUri
-                                                                      shouldCalculateMd5:[options[@"md5"] boolValue]];
-  _tasks[task] = taskDelegate;
+                                                                                        reject:reject
+                                                                                      localUrl:localUri
+                                                                            shouldCalculateMd5:[options[@"md5"] boolValue]];
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
 }
 
@@ -607,7 +606,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
   NSURLSessionUploadTask *task = [[self _sessionForType:type] uploadTaskWithRequest:request fromFile:fileUri];
   EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
-  _tasks[task] = taskDelegate;
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
 }
 
@@ -665,7 +664,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = _resumableDownloads[uuid];
+  NSURLSessionDownloadTask *task = [_sessionTaskDispatcher resumableDownload:uuid];
   if (!task) {
     reject(@"ERR_UNABLE_TO_PAUSE",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
@@ -677,8 +676,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
     UM_ENSURE_STRONGIFY(self);
     resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
-    [self.tasks removeObjectForKey:task];
-    [self.resumableDownloads removeObjectForKey:uuid];
+    [self.sessionTaskDispatcher removeResumableDownload:uuid];
   }];
 }
 
@@ -752,7 +750,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   sessionConfiguration.URLCache = nil;
   return [NSURLSession sessionWithConfiguration:sessionConfiguration
-                                       delegate:self
+                                       delegate:_sessionTaskDispatcher
                                   delegateQueue:nil];
 }
 
@@ -810,8 +808,8 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                                                                                shouldCalculateMd5:[options[@"md5"] boolValue]
                                                                                   onWriteCallback:onWrite
                                                                                              uuid:uuid];
-  _tasks[downloadTask] = taskDelegate;
-  _resumableDownloads[uuid] = downloadTask;
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:downloadTask];
+  [_sessionTaskDispatcher registerResumableDownloadTask:downloadTask uuid:uuid];
   [downloadTask resume];
 }
 
@@ -907,51 +905,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
     return freeFileSystemSizeInBytes;
   }
   return nil;
-}
-
-#pragma mark - NSURLSessionDelegate
-
-- (void)_unregisterIfResumableTaskDelegate:(EXSessionTaskDelegate *)taskDelegate
-{
-  if ([taskDelegate isKindOfClass:[EXSessionResumableDownloadTaskDelegate class]]) {
-    EXSessionResumableDownloadTaskDelegate *exResumableTask = (EXSessionResumableDownloadTaskDelegate *)taskDelegate;
-    [_resumableDownloads removeObjectForKey:exResumableTask.uuid];
-  }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
-{
-  EXSessionTaskDelegate *exTask = _tasks[downloadTask];
-  if (exTask) {
-    [exTask URLSession:session downloadTask:downloadTask didFinishDownloadingToURL:location];
-    [_tasks removeObjectForKey:downloadTask];
-    [self _unregisterIfResumableTaskDelegate:exTask];
-  }
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
-{
-  EXSessionTaskDelegate *exTask = _tasks[task];
-  if (exTask) {
-    [exTask URLSession:session task:task didCompleteWithError:error];
-    [_tasks removeObjectForKey:task];
-    [self _unregisterIfResumableTaskDelegate:exTask];
-  }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
-                                           didWriteData:(int64_t)bytesWritten
-                                      totalBytesWritten:(int64_t)totalBytesWritten
-                              totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-  EXSessionTaskDelegate *exTask = _tasks[downloadTask];
-  [exTask URLSession:session downloadTask:downloadTask didWriteData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
-{
-  EXSessionTaskDelegate *exTask = _tasks[dataTask];
-  [exTask URLSession:session dataTask:dataTask didReceiveData:data];
 }
 
 @end
