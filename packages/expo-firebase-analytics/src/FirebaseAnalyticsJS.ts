@@ -100,7 +100,11 @@ class FirebaseAnalyticsJS {
     const url = `${this.url}?${args}`;
     await fetch(url, {
       method: 'POST',
+      mode: 'no-cors',
       cache: 'no-cache',
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8',
+      },
       ...(options.headers
         ? {
             headers: options.headers,
