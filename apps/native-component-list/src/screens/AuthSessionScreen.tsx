@@ -304,13 +304,34 @@ function Github({ redirectUri, useProxy }: any) {
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
 function Uber({ redirectUri, useProxy }: any) {
+  let outputRedirectUri: string = redirectUri;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      outputRedirectUri = 'https://auth.expo.io/@community/native-component-list';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      outputRedirectUri = 'exp://localhost:19000/--/redirect';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      outputRedirectUri = 'https://localhost:19006/redirect';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      outputRedirectUri = 'bareexpo://auth';
+    }
+  }
+
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
     // config
     {
-      clientId: AuthJson.UBER_CLIENT_ID,
-      clientSecret: AuthJson.UBER_CLIENT_SECRET,
-      redirectUri,
+      clientId: 'kTpT4xf8afVxifoWjx5Nhn-IFamZKp2x',
+      redirectUri: outputRedirectUri,
       scopes: [],
       // Enable to test invalid_scope error
       // scopes: ['invalid'],

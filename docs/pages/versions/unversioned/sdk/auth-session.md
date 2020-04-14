@@ -448,6 +448,42 @@ const result = await AuthSession.startAsync({
 
 There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
+## Redirect URI
+
+Here are a few examples of some common redirect URI patterns you may end up using.
+
+#### Expo Proxy
+
+> `https://auth.expo.io/@yourname/your-app`
+
+Used for a development or production project in the Expo client, or in a standalone build.
+
+The link is constructed from your Expo username and the Expo app name.
+
+You can create this link with using `AuthSession.getRedirectUrl()` from `expo-auth-session`. This `redirectUri` should be used with `promptAsync({ useProxy: true })`.
+
+#### Published project in the Expo Client
+
+> `https://auth.expo.io/@yourname/your-app`
+
+The link is constructed from your
+
+This is when you run `expo publish` and open your app in the Expo client. You can create this link with using `Linking.makeUrl()` from `expo`.
+
+#### Development project in the Expo client
+
+> `exp://localhost:19000`
+
+This is for native projects in the Expo client when you run `expo start`. You can create this link with using `Linking.makeUrl()` from `expo`. This URL is constructed by your Expo servers `port` + `host`. The `localhost` can be swapped out for your IP address.
+
+#### Standalone, Bare, or Custom
+
+> `yourscheme:/*`
+
+In standalone builds, ejecting to bare, or custom client, this is created from the `expo.scheme` property of your `app.json` config. This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
+
+If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
+
 ## Examples
 
 - [Google](#google)
@@ -620,7 +656,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 | Website                   | Provider  | PKCE      | Auto Discovery | Client Secret |
 | ------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  | Required      |
+| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
 
 [c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
 
@@ -638,7 +674,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['profile', 'delivery'],
   },
