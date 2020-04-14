@@ -71,7 +71,7 @@ class FirebaseAnalyticsJS {
       sid: options.sessionId,
       _s: this.sequenceNr++,
     };
-    if (options.sessionId) queryArgs.sid = options.sessionId;
+    if (options.sessionNumber) queryArgs.sct = options.sessionNumber;
     if (options.userLanguage) queryArgs.ul = options.userLanguage;
     if (options.appName) queryArgs.an = options.appName;
     if (options.appVersion) queryArgs.av = options.appVersion;
