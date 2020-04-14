@@ -114,7 +114,9 @@ function Google({ useProxy, usePKCE }: any) {
 
   const [request, result, promptAsync] = useAuthRequest(
     {
-      clientId: getGUID(),
+      clientId: useProxy
+        ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
+        : getGUID(),
       redirectUri,
       scopes: ['profile', 'email', 'openid'],
       usePKCE,
