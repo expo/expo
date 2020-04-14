@@ -49,9 +49,10 @@ class FirebaseAnalyticsJS {
             cid: options.clientId,
             sid: options.sessionId,
             _s: this.sequenceNr++,
+            seg: 1,
         };
-        if (options.sessionId)
-            queryArgs.sid = options.sessionId;
+        if (options.sessionNumber)
+            queryArgs.sct = options.sessionNumber;
         if (options.userLanguage)
             queryArgs.ul = options.userLanguage;
         if (options.appName)
@@ -66,6 +67,8 @@ class FirebaseAnalyticsJS {
             queryArgs.sr = options.screenRes;
         if (options.debug)
             queryArgs._dbg = 1;
+        if (this.sequenceNr === 2)
+            queryArgs._ss = 1; // Session start
         let body;
         const lastTime = this.lastTime;
         if (events.size > 1) {
@@ -87,7 +90,11 @@ class FirebaseAnalyticsJS {
         const url = `${this.url}?${args}`;
         await fetch(url, {
             method: 'POST',
+            mode: 'no-cors',
             cache: 'no-cache',
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8',
+            },
             ...(options.headers
                 ? {
                     headers: options.headers,
@@ -212,6 +219,9 @@ class FirebaseAnalyticsJS {
         const event = FirebaseAnalyticsJS.parseEvent(this.options, eventName, eventParams);
         if (!this.enabled)
             return;
+        if (this.options.debug) {
+            console.log(`FirebaseAnalytics event: "${eventName}", params: ${JSON.stringify(eventParams, undefined, 2)}`);
+        }
         return this.addEvent(event);
     }
     /**
