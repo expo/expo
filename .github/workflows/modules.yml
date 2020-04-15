@@ -1,0 +1,27 @@
+name: Expo Modules
+on: [push]
+
+jobs:
+  ios-test-suite:
+    name: iOS Test Suite
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+        lfs: true
+        submodules: true
+      # Need to still add bin to PATH
+      - name: Freeze yarn.lock files
+        run: echo '--frozen-lockfile true' >> "$HOME/.yarnrc"
+
+
+      # # Homebrew settings
+      # HOMEBREW_NO_INSTALL_CLEANUP: 1
+      # HOMEBREW_NO_AUTO_UPDATE: 1
+      # # fastlane complains if these are not set
+      # LC_ALL: en_US.UTF-8
+      # LANG: en_US.UTF-8
+      # FASTLANE_SKIP_UPDATE_CHECK: 1
+      # FASTLANE_DISABLE_COLORS: 1
+      # CI: 1
+      # # Prevent automatic download of LFS files
+      # GIT_LFS_SKIP_SMUDGE: 1
