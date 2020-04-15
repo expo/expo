@@ -33,3 +33,14 @@ export function getRandomValues<T extends TypedArray>(typedArray: T): T {
   }
   return typedArray;
 }
+
+/*
+// Polyfill `Crypto.getRandomValues`
+// @ts-ignore
+if (!global.crypto || !global.crypto.getRandomValues) {
+  // @ts-ignore
+  global.crypto = global.crypto || {};
+  // @ts-ignore
+  global.crypto.getRandomValues = getRandomValues;
+}
+*/

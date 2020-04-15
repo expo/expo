@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 
 import { btoa, atob } from './Base64';
-import { getRandomValues } from './Crypto';
 
 // Polyfill `btoa`
 // @ts-ignore
@@ -15,15 +14,6 @@ if (!global.btoa) {
 if (!global.atob) {
   // @ts-ignore
   global.atob = atob;
-}
-
-// Polyfill `Crypto.getRandomValues`
-// @ts-ignore
-if (!global.crypto || !global.crypto.getRandomValues) {
-  // @ts-ignore
-  global.crypto = global.crypto || {};
-  // @ts-ignore
-  global.crypto.getRandomValues = getRandomValues;
 }
 
 // Firebase schedules timers with excessive timeouts. On Android this leads
