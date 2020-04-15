@@ -1,5 +1,5 @@
-import { join } from 'path';
 import * as fs from 'fs';
+import { join } from 'path';
 import * as path from 'path';
 
 /**

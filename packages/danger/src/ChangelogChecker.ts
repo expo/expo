@@ -1,11 +1,9 @@
-import './DangerDeclarations';
-
+import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs';
 import { groupBy } from 'lodash';
 import * as path from 'path';
-import spawnAsync from '@expo/spawn-async';
 
-import { createPullRequestManager, ChangelogEntry } from './PullRequestManager';
+import { createPullRequestManager, ChangelogEntry, ChangelogEntryType } from './PullRequestManager';
 import {
   getExpoRepositoryRootDir,
   getFileContentAsync,
@@ -72,7 +70,7 @@ async function runAddChangelogCommandAsync(
       `--author`,
       prAuthor,
       `--type`,
-      entry.type,
+      entryTypeToString(entry.type),
       `--pull-request`,
       `${pr.number}`,
     ]);
@@ -94,7 +92,7 @@ async function runAddChangelogCommandAsync(
 }
 
 function generateReport(
-  missingEntries: Array<{ packageName: string; diff: string }>,
+  missingEntries: { packageName: string; diff: string }[],
   url?: string | null
 ) {
   const message = missingEntries
@@ -163,4 +161,17 @@ export async function checkChangelog(): Promise<void> {
 
   // generates danger report. It will contain result of `et` command as a git diff and link to created PR
   await generateReport(fixedEntries, html_url);
+}
+
+function entryTypeToString(type: ChangelogEntryType): string {
+  switch (type) {
+    case ChangelogEntryType.BUG_FIXES:
+      return 'bug-fix';
+    case ChangelogEntryType.NEW_FEATURES:
+      return 'new-feature';
+    case ChangelogEntryType.BREAKING_CHANGES:
+      return 'breaking-change';
+  }
+
+  throw new Error(`Unknown entry type ${type}.`);
 }

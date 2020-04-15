@@ -1,13 +1,13 @@
+import { Octokit } from '@octokit/rest';
 import { GitHubPRDSL } from 'danger/distribution/dsl/GitHubDSL';
 
-import { Octokit } from '@octokit/rest';
 import { GithubApiWrapper } from './GithubApiWrapper';
 import { getPackageChangelogRelativePath } from './Utils';
 
 export enum ChangelogEntryType {
-  BUG_FIXES = 'bug-fix',
-  NEW_FEATURES = 'new-feature',
-  BREAKING_CHANGES = 'breaking-change',
+  BUG_FIXES = 0,
+  NEW_FEATURES = 1,
+  BREAKING_CHANGES = 2,
 }
 
 export const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
@@ -49,27 +49,30 @@ export class PullRequestManager {
       },
     };
 
-    const changelogTag = this.pullRequest.body
-      .match(/#\schangelog(([^#]*?)\s?)*/i)?.[0]
-      ?.replace(/^-/, '');
-    if (changelogTag) {
-      changelogTag
+    const parseLine: (line: string) => void = line => {
+      const tags = this.parseTagsFromLine(line);
+      if (!tags) {
+        warn(`Couldn't parse line: ${line}.`);
+        return;
+      }
+
+      changelogEntries[tags.packageName] = {
+        type: tags.type,
+        message: line.replace(/\[.*\]/, '').trim(),
+      };
+    };
+
+    parseLine(this.pullRequest.title);
+
+    const changelogSection = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
+    if (changelogSection) {
+      changelogSection
+        .replace(/^-/, '')
         .split('\n')
         .slice(1)
         .map(line => line.trim())
         .filter(line => line.length > 0)
-        .forEach(line => {
-          const tags = this.parseTagsFromLine(line);
-          if (!tags) {
-            warn(`Couldn't parse line: ${line}.`);
-            return;
-          }
-
-          changelogEntries[tags.packageName] = {
-            type: tags.type,
-            message: line.replace(/\[.*\]/, '').trim(),
-          };
-        });
+        .forEach(parseLine);
     }
 
     return changelogEntries;
@@ -132,24 +135,13 @@ export class PullRequestManager {
     if (!tags) {
       return result;
     }
-    // We currently support only two tags - packageName and type.
-    if (tags.length > 2) {
-      return null;
-    }
 
     for (const tag of tags) {
-      switch (true) {
-        case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
-          result.type = ChangelogEntryType.BUG_FIXES;
-          break;
-        case /\b(feat|features?)\b/i.test(tag):
-          result.type = ChangelogEntryType.NEW_FEATURES;
-          break;
-        case /\b(break(ing)?)\b/i.test(tag):
-          result.type = ChangelogEntryType.BREAKING_CHANGES;
-          break;
-        default:
-          result.packageName = tag.replace(/\[|\]/g, '').trim();
+      const entryType = parseEntryType(tag);
+      if (entryType) {
+        result.type = Math.max(result.type, entryType);
+      } else if (isExpoPackage(tag)) {
+        result.packageName = tag.replace(/\[|\]/g, '').trim();
       }
     }
 
@@ -162,4 +154,21 @@ export function createPullRequestManager(api: Octokit, pr: PullRequest): PullReq
     pr,
     new GithubApiWrapper(api, pr.base.user.login, pr.base.repo.name)
   );
+}
+
+function parseEntryType(tag: string): ChangelogEntryType | null {
+  switch (true) {
+    case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
+      return ChangelogEntryType.BUG_FIXES;
+    case /\b(feat|features?)\b/i.test(tag):
+      return ChangelogEntryType.NEW_FEATURES;
+    case /\b(break(ing)?)\b/i.test(tag):
+      return ChangelogEntryType.BREAKING_CHANGES;
+  }
+  return null;
+}
+
+function isExpoPackage(name: string): boolean {
+  const prefixes = ['expo', 'unimodules'];
+  return prefixes.some(prefix => name.startsWith(prefix));
 }

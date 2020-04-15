@@ -7,7 +7,10 @@
   "main": "build/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "build": "tsc -w"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "danger-plugin"
@@ -19,6 +22,7 @@
   },
   "devDependencies": {
     "typescript": "^3.8.3",
-    "@types/globby": "^8.0.0"
+    "@types/globby": "^8.0.0",
+    "expo-module-scripts": "^1.2.0"
   }
 }
