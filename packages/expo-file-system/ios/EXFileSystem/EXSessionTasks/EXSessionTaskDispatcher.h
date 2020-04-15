@@ -9,11 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)registerTaskDelegate:(EXSessionTaskDelegate *)delegate forTask:(NSURLSessionTask *)task;
 
-- (void)registerResumableDownloadTask:(NSURLSessionDownloadTask *)task uuid:(NSString *)uuid;
-
-- (NSURLSessionDownloadTask * _Nullable)resumableDownload:(NSString *)uuid;
-
-- (void)removeResumableDownload:(NSString *)uuid;
+- (void)unregisterTaskDelegate:(NSURLSessionTask *)task;
 
 - (void)deactivate;
 

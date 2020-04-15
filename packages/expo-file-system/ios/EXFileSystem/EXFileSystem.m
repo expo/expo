@@ -12,10 +12,11 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
 
-
 #import <UMCore/UMEventEmitterService.h>
 
+#import <EXFileSystem/EXSessionTaskDispatcher.h>
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
+#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
 #import <EXFileSystem/EXSessionUploadTaskDelegate.h>
 
 NSString * const EXDownloadProgressEventName = @"expo-file-system.downloadProgress";
@@ -36,6 +37,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
+@property (nonatomic, strong) EXResumablesManager *resumableManager;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -65,9 +67,10 @@ UM_REGISTER_MODULE();
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
     
+    _resumableManager = [EXResumablesManager new];
     _sessionTaskDispatcher = [EXSessionTaskDispatcher new];
-    _backgroundSession = [self _createSession:EXFileSystemBackgroundSession];
-    _foregroundSession = [self _createSession:EXFileSystemForegroundSession];
+    _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
+    _foregroundSession = [self _createSession:EXFileSystemForegroundSession delegate:_sessionTaskDispatcher];
     
     [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
     [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
@@ -588,7 +591,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     return;
   }
 
-  NSURLRequest *request = [self _createRequest:[NSURL URLWithString:urlString] headers:options[@"headers"]];
+  NSMutableURLRequest *request = [self _createRequest:[NSURL URLWithString:urlString] headers:options[@"headers"]];
   if (options[@"httpMethod"]) {
     NSString *httpMethod = [self _importHttpMethod:options[@"httpMethod"]];
     if (!httpMethod) {
@@ -598,9 +601,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
       return;
     }
     
-    NSMutableURLRequest *mutableRequest = [request mutableCopy];
-    [mutableRequest setHTTPMethod:httpMethod];
-    request = mutableRequest;
+    [request setHTTPMethod:httpMethod];
   }
   
   EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
@@ -664,7 +665,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_sessionTaskDispatcher resumableDownload:uuid];
+  NSURLSessionDownloadTask *task = [_resumableManager getTask:uuid];
   if (!task) {
     reject(@"ERR_UNABLE_TO_PAUSE",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
@@ -676,7 +677,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
     UM_ENSURE_STRONGIFY(self);
     resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
-    [self.sessionTaskDispatcher removeResumableDownload:uuid];
+    [self.sessionTaskDispatcher unregisterTaskDelegate:task]; // It'll also unregister task from the ResumableManager
   }];
 }
 
@@ -700,7 +701,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
-- (NSURLRequest *)_createRequest:(NSURL *)url headers:(NSDictionary * _Nullable)headers
+- (NSMutableURLRequest *)_createRequest:(NSURL *)url headers:(NSDictionary * _Nullable)headers
 {
   NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
   if (headers != nil) {
@@ -739,7 +740,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return true;
 }
 
-- (NSURLSession *)_createSession:(EXFileSystemSessionType)type
+- (NSURLSession *)_createSession:(EXFileSystemSessionType)type delegate:(id<NSURLSessionDelegate>)delegate
 {
   NSURLSessionConfiguration *sessionConfiguration;
   if (type == EXFileSystemForegroundSession) {
@@ -750,7 +751,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   sessionConfiguration.URLCache = nil;
   return [NSURLSession sessionWithConfiguration:sessionConfiguration
-                                       delegate:_sessionTaskDispatcher
+                                       delegate:delegate
                                   delegateQueue:nil];
 }
 
@@ -803,13 +804,14 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
     downloadTask = [session downloadTaskWithRequest:request];
   }
   EXSessionTaskDelegate *taskDelegate = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
-                                                                                           reject:reject
-                                                                                         localUrl:fileUrl
-                                                                               shouldCalculateMd5:[options[@"md5"] boolValue]
-                                                                                  onWriteCallback:onWrite
-                                                                                             uuid:uuid];
+                                                                                                 reject:reject
+                                                                                               localUrl:fileUrl
+                                                                                     shouldCalculateMd5:[options[@"md5"] boolValue]
+                                                                                        onWriteCallback:onWrite
+                                                                                       resumableManager:_resumableManager
+                                                                                                   uuid:uuid];
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:downloadTask];
-  [_sessionTaskDispatcher registerResumableDownloadTask:downloadTask uuid:uuid];
+  [_resumableManager registerTask:downloadTask uuid:uuid];
   [downloadTask resume];
 }
 

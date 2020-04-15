@@ -6,7 +6,6 @@
 @interface EXSessionTaskDispatcher ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSURLSessionTask *, EXSessionTaskDelegate *> *tasks;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSessionDownloadTask *> *resumableDownloads;
 @property (nonatomic) BOOL isActive;
 
 @end
@@ -17,7 +16,6 @@
 {
   if (self = [super init]) {
     _tasks = [NSMutableDictionary dictionary];
-    _resumableDownloads = [NSMutableDictionary dictionary];
     _isActive = true;
   }
   return self;
@@ -30,24 +28,10 @@
   _tasks[task] = delegate;
 }
 
-- (void)registerResumableDownloadTask:(NSURLSessionDownloadTask *)task uuid:(NSString *)uuid
+- (void)unregisterTaskDelegate:(NSURLSessionTask *)task
 {
-  _resumableDownloads[uuid] = task;
-}
-
-- (NSURLSessionDownloadTask * _Nullable)resumableDownload:(NSString *)uuid
-{
-  return _resumableDownloads[uuid];
-}
-
-- (void)removeResumableDownload:(NSString *)uuid
-{
-  NSURLSessionTask *task = _resumableDownloads[uuid];
-  if (!task)  {
-    return;
-  }
-  
-  [_resumableDownloads removeObjectForKey:uuid];
+  EXSessionTaskDelegate *delegate = _tasks[task];
+  [self _unregisterIfResumableTaskDelegate:delegate];
   [_tasks removeObjectForKey:task];
 }
 
@@ -62,7 +46,7 @@
 {
   if ([taskDelegate isKindOfClass:[EXSessionResumableDownloadTaskDelegate class]]) {
     EXSessionResumableDownloadTaskDelegate *exResumableTask = (EXSessionResumableDownloadTaskDelegate *)taskDelegate;
-    [_resumableDownloads removeObjectForKey:exResumableTask.uuid];
+    [exResumableTask invalid];
   }
 }
 
