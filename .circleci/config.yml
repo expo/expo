@@ -851,6 +851,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - run: sudo apt-get install awscli
       - attach_workspace:
           at: /tmp/workspace
       - deploy:
