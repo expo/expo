@@ -231,8 +231,8 @@ PLATFORMS
 
 DEPENDENCIES
   cocoapods (~> 1.8.4)
-  fastlane
-  xcpretty
+  fastlane (~> 2.145.0)
+  xcpretty (~> 0.3.0)
 
 BUNDLED WITH
    2.1.4
