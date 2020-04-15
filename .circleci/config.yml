@@ -788,17 +788,17 @@ jobs:
     executor: android
     steps:
       - setup
-      - update_submodules
       - install_yarn
+      - update_submodules
       - restore_yarn_cache
       - yarn_install:
-          working_directory: ~/expo
+          working_directory: ~/project
       - save_yarn_cache
       - restore_gradle_cache
       - run:
           name: Android Unit tests
           command: expotools android-unit-tests
-          working_directory: ~/expo
+          working_directory: ~/project
       - save_gradle_cache
       - run:
           name: Save test results
