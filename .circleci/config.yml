@@ -789,6 +789,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - install_yarn
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -796,7 +797,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Android Unit tests
-          command: nix-shell android/shell.nix --run "expotools android-unit-tests"
+          command: expotools android-unit-tests
           working_directory: ~/expo
       - save_gradle_cache
       - run:
