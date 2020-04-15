@@ -5,7 +5,7 @@ reCAPTCHA components for Firebase phone authentication 📱
 # API documentation
 
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/firebase-recaptcha.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/firebase-racaptcha/)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/firebase-recaptcha/)
 
 # Installation
 
