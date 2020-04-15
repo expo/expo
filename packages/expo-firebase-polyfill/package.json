@@ -36,6 +36,6 @@
     "expo-module-scripts": "^1.2.0"
   },
   "dependencies": {
-    "base-64": "^0.1.0"
+    "js-base64": "^2.5.2"
   }
 }
