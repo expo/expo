@@ -95,8 +95,14 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       t.it(
-        'returns Base64 only if requested, and base64 result does not contain newline character',
+        'this long description is forcing us to move testing method signature to the next line, but let's keep method body distinguishable by keeping indentation anyway',
         async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          let picture = await instance.takePictureAsync({ base64: false });	
+          t.expect(picture).toBeDefined();
+          ...
+        }
+      )
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         let picture = await instance.takePictureAsync({ base64: false });
         t.expect(picture).toBeDefined();
