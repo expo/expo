@@ -121,6 +121,20 @@ async function enumerateDevices() {
     }
     return null;
 }
+async function askSensorPermissionAsync() {
+    const requestPermission = DeviceMotionEvent.requestPermission ?? DeviceOrientationEvent.requestPermission;
+    if (!requestPermission)
+        return PermissionStatus.GRANTED;
+    const status = await requestPermission();
+    switch (status) {
+        case 'granted':
+            return PermissionStatus.GRANTED;
+        case 'denied':
+            return PermissionStatus.DENIED;
+        default:
+            return PermissionStatus.UNDETERMINED;
+    }
+}
 async function getMediaMaybeGrantedAsync(targetKind) {
     const devices = await enumerateDevices();
     if (!devices) {
@@ -171,6 +185,22 @@ async function getPermissionAsync(permission, shouldAsk) {
                 }
             }
             break;
+        case 'sensors':
+            if (shouldAsk) {
+                const status = await askSensorPermissionAsync();
+                return {
+                    status: await askSensorPermissionAsync(),
+                    expires: 'never',
+                    granted: status === PermissionStatus.GRANTED,
+                    canAskAgain: false,
+                };
+            }
+            return {
+                status: PermissionStatus.UNDETERMINED,
+                expires: 'never',
+                canAskAgain: true,
+                granted: false,
+            };
         case 'location':
             {
                 const maybeStatus = await getPermissionWithQueryAsync('geolocation');

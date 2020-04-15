@@ -34,6 +34,7 @@ The following table shows you which permissions correspond to which packages.
 | `CALENDAR`                  | `expo-calendar`                           |
 | `REMINDERS`                 | `expo-calendar`                           |
 | `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
+| `SENSORS`                   | `expo-sensors`                            |
 
 ## Usage
 
@@ -202,6 +203,10 @@ The permission type for reading or writing reminders.
 ### `Permissions.SYSTEM_BRIGHTNESS`
 
 The permissions type for changing brightness of the screen
+
+### `Permissions.SENSORS`
+
+The permission for accessing sensors in the web browser.
 
 ## Android: permissions equivalents inside `app.json`
 

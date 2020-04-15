@@ -14,6 +14,7 @@ export type PermissionType =
   | 'contacts'
   | 'calendar'
   | 'reminders'
+  | 'sensors'
   | 'systemBrightness';
 
 export interface PermissionResponse extends UMPermissionResponse {

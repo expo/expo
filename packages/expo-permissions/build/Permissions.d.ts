@@ -10,5 +10,6 @@ export declare const CONTACTS = "contacts";
 export declare const CALENDAR = "calendar";
 export declare const REMINDERS = "reminders";
 export declare const SYSTEM_BRIGHTNESS = "systemBrightness";
+export declare const SENSORS = "sensors";
 export declare function getAsync(...types: PermissionType[]): Promise<PermissionResponse>;
 export declare function askAsync(...types: PermissionType[]): Promise<PermissionResponse>;

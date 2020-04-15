@@ -13,6 +13,7 @@ export const CONTACTS = 'contacts';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
+export const SENSORS = 'sensors';
 export async function getAsync(...types) {
     if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
