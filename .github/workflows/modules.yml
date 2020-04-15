@@ -12,6 +12,7 @@ jobs:
       # Need to still add bin to PATH
       - name: Freeze yarn.lock files
         run: echo '--frozen-lockfile true' >> "$HOME/.yarnrc"
+      - uses: mxschmitt/action-tmate@v2
 
 
       # # Homebrew settings
