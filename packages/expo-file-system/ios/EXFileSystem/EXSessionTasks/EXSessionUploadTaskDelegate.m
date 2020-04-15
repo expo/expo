@@ -32,7 +32,7 @@
   NSURLSessionUploadTask *uploadTask = (NSURLSessionUploadTask *)task;
   NSMutableDictionary *result = [[EXSessionTaskDelegate parseServerResponse:uploadTask.response] mutableCopy];
   // TODO: add support for others response types (different encodings, files)
-  result[@"body"] = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+  result[@"body"] = UMNullIfNil([[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding]);
   self.resolve(result);
 }
 
