@@ -8,9 +8,7 @@ title: Configuration with app.json
 {
   "expo": {
     "name": "My app",
-    "slug": "my-app",
-    "sdkVersion": "UNVERSIONED",
-    "privacy": "public"
+    "slug": "my-app"
   }
 }
 ```

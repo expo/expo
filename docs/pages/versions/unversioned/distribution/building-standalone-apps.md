@@ -32,7 +32,6 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
     "icon": "./path/to/your/app-icon.png",
     "version": "1.0.0",
     "slug": "your-app-slug",
-    "sdkVersion": "XX.0.0",
     "ios": {
       "bundleIdentifier": "com.yourcompany.yourappname",
       "buildNumber": "1.0.0"
@@ -48,7 +47,6 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 - You're probably not surprised that `name`, `icon` and `version` are required.
 - `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
-- The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
@@ -208,7 +206,7 @@ Read the guide on [Uploading Apps to the Apple App Store and Google Play](../upl
 For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 - If you want to change native metadata like the app's name or icon
-- If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
+- If you upgrade to a newer SDK version of your app (which requires new native code)
 
 To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../../distribution/app-stores/#versioning-your-app) for details).
 
