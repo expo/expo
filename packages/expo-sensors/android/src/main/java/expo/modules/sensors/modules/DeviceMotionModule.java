@@ -61,7 +61,8 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Gravity", 9.81);
+        // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
+        put("Gravity", 9.80665);
       }
     });
   }
