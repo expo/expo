@@ -238,7 +238,7 @@ public class PrintModule extends ExportedModule {
     RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
     byte[] fileBytes = new byte[(int)randomAccessFile.length()];
     randomAccessFile.readFully(fileBytes);
-    return Base64.encodeToString(fileBytes, Base64.DEFAULT);
+    return Base64.encodeToString(fileBytes, Base64.NO_WRAP);
   }
 
   private InputStream decodeDataURI(String uri) {
