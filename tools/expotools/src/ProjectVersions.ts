@@ -56,7 +56,7 @@ export async function getSDKVersionsAsync(platform: Platform): Promise<string[]>
     'sdkVersions.json'
   );
 
-  if (!(await fs.exists(sdkVersionsPath))) {
+  if (!(await fs.pathExists(sdkVersionsPath))) {
     throw new Error(`File at path "${sdkVersionsPath}" not found.`);
   }
   const { sdkVersions } = (await JsonFile.readAsync(sdkVersionsPath)) as SDKVersionsObject;

@@ -20,6 +20,42 @@ If you are trying to implement sign in with [Google](../google-sign-in) or [Face
 
 <InstallSection packageName="expo-app-auth" />
 
+## Managed Workflow
+
+> These steps are nearly identical to our **Managed Workflow** guide on [deep linking in React Navigation](https://reactnavigation.org/docs/deep-linking/#set-up-with-expo-projects).
+
+You will want to decide on a URI scheme for your app, this will correspond to the prefix before `://` in a URI. Ex: If your scheme is `mychat` then a link to your app would be `mychat://`.
+
+The scheme only applies to standalone apps and you need to re-build the standalone app for the change to take effect. In the Expo client app you can deep link using `exp://ADDRESS:PORT` where `ADDRESS` is often `127.0.0.1` and `PORT` is often `19000` - the URL is printed when you run `expo start`.
+
+If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your `app.json` by adding a string under the scheme key:
+
+```json
+{
+  "expo": {
+    "scheme": "myapp"
+  }
+}
+```
+
+To create a scheme that is appropriate for the environment, be sure to use `Linking` from `expo`:
+
+```js
+import { Linking } from 'expo';
+
+const prefix = Linking.makeUrl('/');
+// Expo Client: `exp://ADDRESS:PORT`
+// Standalone: `myapp://`
+```
+
+For more info on [Linking in Expo](https://docs.expo.io/versions/latest/workflow/linking).
+
+## Bare Workflow
+
+Carefully follow our in-depth **Bare Workflow** guide for [deep linking](https://reactnavigation.org/docs/deep-linking/#set-up-with-react-native-init-projects).
+
+For more customization (like https redirects) please refer to the native docs: [capturing the authorization redirect](https://github.com/openid/AppAuth-android#capturing-the-authorization-redirect).
+
 ## Usage
 
 Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
@@ -49,7 +85,7 @@ export default function App() {
       <Button
         title="Sign In with Google "
         onPress={async () => {
-          const authState = await signInAsync();
+          const _authState = await signInAsync();
           setAuthState(_authState);
         }}
       />

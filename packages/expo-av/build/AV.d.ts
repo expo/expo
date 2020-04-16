@@ -71,7 +71,7 @@ export interface AV {
 }
 export interface Playback extends AV {
     playAsync(): Promise<AVPlaybackStatus>;
-    loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): any;
+    loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): Promise<AVPlaybackStatus>;
     unloadAsync(): Promise<AVPlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;

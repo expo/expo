@@ -1,16 +1,16 @@
+import { Command } from '@expo/commander';
+import JsonFile from '@expo/json-file';
+import chalk from 'chalk';
+import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import semver from 'semver';
 import process from 'process';
-import JsonFile from '@expo/json-file';
-import { Command } from '@expo/commander';
+import semver from 'semver';
 
 import * as ExpoCLI from '../ExpoCLI';
-import AppConfig from '../typings/AppConfig';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
 import { Directories, HashDirectory, XDL } from '../expotools';
+import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
@@ -19,7 +19,7 @@ type ActionOptions = {
 type ExpoCliStateObject = {
   auth?: {
     username?: string;
-  },
+  };
 };
 
 const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
@@ -53,7 +53,8 @@ async function maybeUpdateHomeSdkVersionAsync(appJson: AppConfig): Promise<void>
     // When publishing the sdkVersion needs to be set to the target sdkVersion. The Expo client will
     // load it as UNVERSIONED, but the server uses this field to know which clients to serve the
     // bundle to.
-    appJson.expo.sdkVersion = appJson.expo.version = targetSdkVersion;
+    appJson.expo.version = targetSdkVersion;
+    appJson.expo.sdkVersion = targetSdkVersion;
   }
 }
 
@@ -131,7 +132,10 @@ async function publishAppAsync(slug: string, url: string): Promise<void> {
  */
 async function updateDevHomeConfigAsync(url: string): Promise<void> {
   const devHomeConfigFilename = 'dev-home-config.json';
-  const devHomeConfigPath = path.join(Directories.getExpoRepositoryRootDir(), devHomeConfigFilename);
+  const devHomeConfigPath = path.join(
+    Directories.getExpoRepositoryRootDir(),
+    devHomeConfigFilename
+  );
   const devManifestsFile = new JsonFile(devHomeConfigPath);
 
   console.log(`Updating dev home config at ${chalk.magenta(devHomeConfigFilename)}...`);
@@ -197,7 +201,7 @@ async function action(options: ActionOptions): Promise<void> {
     await setExpoCliStateAsync(cliStateBackup);
   } else {
     console.log(`Logging out from ${chalk.green(EXPO_HOME_DEV_ACCOUNT_USERNAME)} account...`);
-    await fs.remove(getExpoCliStateAsync());
+    await fs.remove(getExpoCliStatePath());
   }
 
   console.log(`Updating ${chalk.magenta('app.json')} file...`);
@@ -205,18 +209,27 @@ async function action(options: ActionOptions): Promise<void> {
 
   await updateDevHomeConfigAsync(url);
 
-  console.log(chalk.yellow(`Finished publishing. Remember to commit changes of ${chalk.magenta('home/app.json')} and ${chalk.magenta('dev-home-config.json')}.`));
+  console.log(
+    chalk.yellow(`Finished publishing. Remember to commit changes of ${chalk.magenta(
+        'home/app.json'
+      )} and ${chalk.magenta('dev-home-config.json')}.`
+    )
+  );
 }
 
 export default (program: Command) => {
   program
     .command('publish-dev-home')
     .alias('pdh')
-    .description(`Automatically logs in your expo-cli to ${chalk.magenta(EXPO_HOME_DEV_ACCOUNT_USERNAME!)} account, publishes home app for development and logs back to your account.`)
+    .description(
+      `Automatically logs in your expo-cli to ${chalk.magenta(
+        EXPO_HOME_DEV_ACCOUNT_USERNAME!
+      )} account, publishes home app for development and logs back to your account.`
+    )
     .option(
       '-d, --dry',
       'Whether to skip `expo publish` command. Despite this, some files might be changed after running this script.',
-      false,
+      false
     )
     .asyncAction(action);
 };

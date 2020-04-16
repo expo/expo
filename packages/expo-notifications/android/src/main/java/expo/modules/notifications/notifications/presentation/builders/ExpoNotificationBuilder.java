@@ -3,12 +3,16 @@ package expo.modules.notifications.notifications.presentation.builders;
 import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.provider.Settings;
+import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 
 import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.getActionIntent;
@@ -17,6 +21,7 @@ import static expo.modules.notifications.notifications.service.NotificationRespo
  * {@link NotificationBuilder} interpreting a JSON request object.
  */
 public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
+  public static final String EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY = "expo.notification_request";
   private static final String EXTRAS_BODY_KEY = "body";
 
   private static final long[] NO_VIBRATE_PATTERN = new long[]{0, 0};
@@ -69,6 +74,17 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
       builder.setExtras(extras);
     }
 
+    // Save the notification request in extras for later usage
+    // eg. in ExpoNotificationsService when we fetch active notifications.
+    // Otherwise we'd have to create expo.Notification from android.Notification
+    // and deal with two-way interpreting.
+    Bundle requestExtras = new Bundle();
+    // Class loader used in BaseBundle when unmarshalling notification extras
+    // cannot handle expo.modules.notifications.….NotificationRequest
+    // so we go around it by marshalling and unmarshalling the object ourselves.
+    requestExtras.putByteArray(EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY, marshallNotificationRequest(getNotification().getNotificationRequest()));
+    builder.addExtras(requestExtras);
+
     builder.setContentIntent(getActionIntent(getContext(), DEFAULT_ACTION_IDENTIFIER, getNotification()));
 
     return builder;
@@ -77,6 +93,29 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
   @Override
   public Notification build() {
     return createBuilder().build();
+  }
+
+  /**
+   * Marshalls {@link NotificationRequest} into to a byte array.
+   *
+   * @param request Notification request to marshall
+   * @return Given request marshalled to a byte array or null if the process failed.
+   */
+  @Nullable
+  protected byte[] marshallNotificationRequest(NotificationRequest request) {
+    try {
+      Parcel parcel = Parcel.obtain();
+      request.writeToParcel(parcel, 0);
+      byte[] bytes = parcel.marshall();
+      parcel.recycle();
+      return bytes;
+    } catch (Exception e) {
+      // If we couldn't marshall the request, let's not fail the whole build process.
+      // The request is only used to extract source request when fetching displayed notifications.
+      Log.e("expo-notifications", String.format("Could not marshalled notification request: %s.", request.getIdentifier()));
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**

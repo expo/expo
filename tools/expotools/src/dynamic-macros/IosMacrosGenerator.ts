@@ -1,7 +1,7 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import { IosPlist, IosPodsTools } from '@expo/xdl';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import * as Directories from '../Directories';
 import * as ProjectVersions from '../ProjectVersions';
@@ -57,7 +57,7 @@ async function generateBuildConstantsFromMacrosAsync(
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
 
-  if (!(await fs.exists(buildConfigPlistPath))) {
+  if (!(await fs.pathExists(buildConfigPlistPath))) {
     await IosPlist.createBlankAsync(plistPath, plistName);
   }
 
@@ -130,10 +130,7 @@ function validateBuildConstants(config, buildConfiguration) {
   return config;
 }
 
-async function writeTemplatesAsync(
-  expoKitPath: string,
-  templateFilesPath: string,
-) {
+async function writeTemplatesAsync(expoKitPath: string, templateFilesPath: string) {
   if (expoKitPath) {
     await renderExpoKitPodspecAsync(expoKitPath, templateFilesPath);
     await renderExpoKitPodfileAsync(expoKitPath, templateFilesPath);
@@ -195,10 +192,7 @@ export default class IosMacrosGenerator {
     );
 
     // // Generate Podfile and ExpoKit podspec using template files.
-    await writeTemplatesAsync(
-      options.expoKitPath,
-      options.templateFilesPath,
-    );
+    await writeTemplatesAsync(options.expoKitPath, options.templateFilesPath);
   }
 
   async cleanupAsync(options): Promise<void> {

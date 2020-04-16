@@ -2,13 +2,129 @@
 title: Push Notifications
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
 > **Note:**
 >
 > iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
 
-There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to). This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34?platform=ios)!
+There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
+
+## Example Usage
+
+The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
+
+<SnackInline label='Push Notifications' templateId='pushnotifications' dependencies={['expo-constants', 'expo-permissions']}>
+
+```js
+import React from 'react';
+import { Text, View, Button, Vibration, Platform } from 'react-native';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
+export default class AppContainer extends React.Component {
+  state = {
+    expoPushToken: '',
+    notification: {},
+  };
+
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+      this.setState({ expoPushToken: token });
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  };
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
+
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+  }
+
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
+
+  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
+  sendPushNotification = async () => {
+    const message = {
+      to: this.state.expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+      _displayInForeground: true,
+    };
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Origin: {this.state.notification.origin}</Text>
+          <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
+        </View>
+        <Button title={'Press to Send Notification'} onPress={() => this.sendPushNotification()} />
+      </View>
+    );
+  }
+}
+
+/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
+
+    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
+      "ids": ["YOUR RECEIPTID STRING HERE"]
+      }'
+*/
+```
+
+</SnackInline>
 
 ## 1. Save the user's Expo Push Token on your server
 
@@ -23,9 +139,7 @@ import * as Permissions from 'expo-permissions';
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
 export default async function registerForPushNotificationsAsync() {
-  const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
+  const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
   let finalStatus = existingStatus;
 
   // only ask if permissions have not already been determined, because
@@ -70,14 +184,14 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 
 ![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
 
--   [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
--   [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
--   [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
--   [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
--   [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
--   [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
--   [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
--   [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
+- [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node) for Node.js. Maintained by the Expo team.
+- [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python) for Python. Maintained by community developers.
+- [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
+- [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
+- [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
+- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
+- [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
+- [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
 
 Check out the source if you would like to implement it in another language.
 
@@ -97,13 +211,8 @@ Thankfully, handling push notifications is straightforward with Expo, all you ne
 
 ```javascript
 import React from 'react';
-import {
-  Notifications,
-} from 'expo';
-import {
-  Text,
-  View,
-} from 'react-native';
+import { Notifications } from 'expo';
+import { Text, View } from 'react-native';
 
 // This refers to the function defined earlier in this guide
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
@@ -124,13 +233,13 @@ export default class AppContainer extends React.Component {
     this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
 
-  _handleNotification = (notification) => {
-    this.setState({notification: notification});
+  _handleNotification = notification => {
+    this.setState({ notification: notification });
   };
 
   render() {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Origin: {this.state.notification.origin}</Text>
         <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
       </View>
@@ -143,13 +252,13 @@ export default class AppContainer extends React.Component {
 
 Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#eventsubscription)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
 
-| Push was received when...                       | `origin` will be...               |
-| ------------------------------------------------|:-----------------:|
-| App is open and foregrounded                    | `'received'` |
-| App is open and backgrounded, then notification not selected | n/a, no notification is passed to listener |
-| App is open and backgrounded, then notification is selected | `'selected'` |
-| App was not open, and then opened by selecting the push notification | `'selected'` |
-| App was not open, and then opened by tapping the home screen icon | n/a, no notification is passed to listener |
+| Push was received when...                                            |            `origin` will be...             |
+| -------------------------------------------------------------------- | :----------------------------------------: |
+| App is open and foregrounded                                         |                `'received'`                |
+| App is open and backgrounded, then notification not selected         | n/a, no notification is passed to listener |
+| App is open and backgrounded, then notification is selected          |                `'selected'`                |
+| App was not open, and then opened by selecting the push notification |                `'selected'`                |
+| App was not open, and then opened by tapping the home screen icon    | n/a, no notification is passed to listener |
 
 ## HTTP/2 API
 
@@ -172,7 +281,7 @@ This API currently does not require any authentication.
 
 This is a "hello world" request using cURL (replace the placeholder push token with your own):
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
@@ -183,21 +292,25 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends four messages:
 
 ```json
-[{
-  "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
-  "sound": "default",
-  "body": "Hello world!"
-}, {
-  "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
-  "badge": 1,
-  "body": "You've got mail"
-}, {
-  "to": [
-    "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
-    "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
-  ],
-  "body": "Breaking news!"
-}]
+[
+  {
+    "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+    "sound": "default",
+    "body": "Hello world!"
+  },
+  {
+    "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
+    "badge": 1,
+    "body": "You've got mail"
+  },
+  {
+    "to": [
+      "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
+      "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
+    ],
+    "body": "Breaking news!"
+  }
+]
 ```
 
 Upon success, the HTTP response will be a JSON object whose `data` field is an array of **push tickets**, each of which corresponds to the message at its respective index in the request. Continuing the above example, this is what a successful response body looks like:
@@ -205,10 +318,10 @@ Upon success, the HTTP response will be a JSON object whose `data` field is an a
 ```json
 {
   "data": [
-    {"status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"},
-    {"status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ"},
-    {"status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
+    { "status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" },
+    { "status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY" },
+    { "status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ" },
+    { "status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA" }
   ]
 }
 ```
@@ -219,7 +332,7 @@ If you send a single message that isn't wrapped in an array to a single recipien
 
 Each push ticket indicates whether Expo successfully received the notification and, when successful, a receipt ID to later retrieve a push receipt. When there is an error receiving a message, the ticket's status will be "error" and the ticket will contain information about the error and might not contain a receipt ID. More information about the response format is documented below.
 
-> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service. 
+> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service.
 
 #### Push receipts
 
@@ -227,7 +340,7 @@ After receiving a batch of notifications, Expo enqueues each notification to be 
 
 To fetch the push receipts, send a POST request to `https://exp.host/--/api/v2/push/getReceipts`. The request body must be a JSON object with a field name "ids" that is an array of receipt ID strings:
 
-```bash
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
   "ids": ["XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"]
 }'
@@ -350,7 +463,7 @@ type PushMessage = {
 
   /**
    * Remote URL of a custom icon that replaces the default notification icon.
-  */
+   */
   icon?: string,
 
   /**
@@ -364,8 +477,8 @@ type PushMessage = {
    * the "Default" channel is user-facing and you may not be able to fully
    * delete it.
    */
-  channelId?: string
-}
+  channelId?: string,
+};
 ```
 
 ### Response format
@@ -374,10 +487,12 @@ The response is a JSON object with two optional fields, `data` and `errors`. If 
 
 ```json
 {
-  "errors": [{
-    "code": "INTERNAL_SERVER_ERROR",
-    "message": "An unknown error occurred."
-  }]
+  "errors": [
+    {
+      "code": "INTERNAL_SERVER_ERROR",
+      "message": "An unknown error occurred."
+    }
+  ]
 }
 ```
 
@@ -385,16 +500,19 @@ If there are errors that affect individual messages but not the entire request, 
 
 ```json
 {
-  "data": [{
-    "status": "error",
-    "message": "\\\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\\\" is not a registered push notification recipient",
-    "details": {
-      "error": "DeviceNotRegistered"
+  "data": [
+    {
+      "status": "error",
+      "message": "\\\"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\\\" is not a registered push notification recipient",
+      "details": {
+        "error": "DeviceNotRegistered"
+      }
+    },
+    {
+      "status": "ok",
+      "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
     }
-  }, {
-    "status": "ok",
-    "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-  }]
+  ]
 }
 ```
 
@@ -452,7 +570,6 @@ The HTTP status code will be 200 also if all of the messages were successfully d
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS.
 
 If Expo couldn't deliver the message to the Android or iOS push notification service, the receipt's details may also include service-specific information. This is useful mostly for debugging and reporting possible bugs to Expo.
-
 
 # FAQ
 

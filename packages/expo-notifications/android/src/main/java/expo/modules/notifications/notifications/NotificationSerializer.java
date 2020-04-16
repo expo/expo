@@ -51,15 +51,19 @@ public class NotificationSerializer {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", content.getTitle());
     serializedContent.putString("subtitle", content.getSubtitle());
-    serializedContent.putString("message", content.getText());
-    serializedContent.putBundle("body", toBundle(content.getBody()));
+    serializedContent.putString("body", content.getText());
+    serializedContent.putBundle("data", toBundle(content.getBody()));
     if (content.getBadgeCount() != null) {
       serializedContent.putInt("badge", content.getBadgeCount().intValue());
+    } else {
+      serializedContent.putString("badge", null);
     }
     if (content.shouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
     } else if (content.getSound() != null) {
       serializedContent.putString("sound", content.getSound().toString());
+    } else {
+      serializedContent.putString("sound", null);
     }
     if (content.getPriority() != null) {
       serializedContent.putString("priority", content.getPriority().getEnumValue());
@@ -123,11 +127,12 @@ public class NotificationSerializer {
       bundle.putString("type", "push");
       bundle.putBundle("remoteMessage", RemoteMessageSerializer.toBundle(((FirebaseNotificationTrigger) trigger).getRemoteMessage()));
     } else if (trigger instanceof TimeIntervalTrigger) {
-      bundle.putString("type", "interval");
+      bundle.putString("type", "timeInterval");
       bundle.putBoolean("repeats", ((TimeIntervalTrigger) trigger).isRepeating());
-      bundle.putLong("value", ((TimeIntervalTrigger) trigger).getTimeInterval());
+      bundle.putLong("seconds", ((TimeIntervalTrigger) trigger).getTimeInterval());
     } else if (trigger instanceof DateTrigger) {
       bundle.putString("type", "date");
+      bundle.putBoolean("repeats", false);
       bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
     } else {
       bundle.putString("type", "unknown");

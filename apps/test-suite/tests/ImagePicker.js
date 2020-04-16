@@ -103,6 +103,8 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
         if (!image.cancelled) {
           expect(typeof image.base64).toBe('string');
           expect(image.base64).not.toBe('');
+          expect(image.base64).not.toContain('\n');
+          expect(image.base64).not.toContain('\r');
         }
       });
 

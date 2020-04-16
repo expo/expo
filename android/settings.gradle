@@ -36,6 +36,7 @@ includeUnimodulesProjects(
         'expo-notifications',
         'expo-in-app-purchases',
         'expo-updates',
+        'expo-splash-screen',
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]
 ]

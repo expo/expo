@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.1.1",
+  "version": "8.1.3",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -48,14 +48,14 @@
   },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
-    "expo-updates": "~0.0.1-rc.1",
-    "path-browserify": "^1.0.0",
     "invariant": "^2.2.4",
+    "md5-file": "^3.2.3",
+    "path-browserify": "^1.0.0",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "d766e90826c0d45eb1190bf91aed6dd5ca551512"
+  "gitHead": "691527b37b3ecf241c65db632bfe70b3bbb5da24"
 }

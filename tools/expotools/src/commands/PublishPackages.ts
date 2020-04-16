@@ -572,7 +572,7 @@ async function _bumpVersionsAsync({
 
   console.log(chalk.yellow('>'), `Updated package version in ${chalk.magenta('package.json')}`);
 
-  if (fs.existsSync(path.join(pkg.path, 'android/build.gradle'))) {
+  if (fs.pathExistsSync(path.join(pkg.path, 'android/build.gradle'))) {
     // update version and versionName in android/build.gradle
 
     const buildGradlePath = path.relative(EXPO_DIR, path.join(pkg.path, 'android/build.gradle'));
@@ -848,7 +848,7 @@ async function _gitAddAndCommitAsync(allConfigs: Map<string, PipelineConfig>): P
         // Add to git index.
         for (const file of files) {
           const fullPath = path.join(pkg.path, file);
-          if (await fs.exists(fullPath)) {
+          if (await fs.pathExists(fullPath)) {
             await _gitAddAsync(file, pkg.path);
           }
         }

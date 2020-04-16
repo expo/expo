@@ -260,7 +260,7 @@ export async function test(t) {
         await Notifications.presentNotificationAsync({
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
       });
@@ -270,13 +270,8 @@ export async function test(t) {
         await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
         await Notifications.presentNotificationAsync({
           title: 'Look at that kitten! ➡️',
-          message: 'What a cutie!',
-          ios: {
-            attachments: [{ uri: fileUri }],
-          },
-          android: {
-            thumbnailUri: fileUri,
-          },
+          body: 'What a cutie!',
+          attachments: [{ uri: fileUri }],
         });
       });
     });
@@ -611,6 +606,56 @@ export async function test(t) {
       });
     });
 
+    t.describe('getPresentedNotificationsAsync()', () => {
+      const identifier = 'test-containing-id';
+      const notificationStatuses = {};
+
+      t.beforeAll(() => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+          }),
+          handleSuccess: notificationId => {
+            notificationStatuses[notificationId] = true;
+          },
+        });
+      });
+
+      t.it('resolves with an array containing a displayed notification', async () => {
+        await Notifications.presentNotificationAsync(
+          {
+            title: 'Sample title',
+            subtitle: 'What an event!',
+            body: 'An interesting event has just happened',
+            badge: 1,
+          },
+          identifier
+        );
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+
+      t.it('resolves with an array that does not contain a canceled notification', async () => {
+        await Notifications.dismissNotificationAsync(identifier);
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).not.toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+    });
+
     t.describe('dismissNotificationAsync()', () => {
       t.it('resolves for a valid notification ID', async () => {
         const identifier = 'test-id';
@@ -618,7 +663,7 @@ export async function test(t) {
           identifier,
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
         await Notifications.dismissNotificationAsync(identifier);
@@ -652,7 +697,11 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).toContain(
           t.jasmine.objectContaining({
@@ -660,8 +709,8 @@ export async function test(t) {
             content: t.jasmine.objectContaining(notification),
             trigger: t.jasmine.objectContaining({
               repeats: false,
-              value: trigger.seconds,
-              type: 'interval',
+              seconds: trigger.seconds,
+              type: 'timeInterval',
             }),
           })
         );
@@ -671,7 +720,11 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         await Notifications.cancelScheduledNotificationAsync(identifier);
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
@@ -682,7 +735,7 @@ export async function test(t) {
       const identifier = 'test-scheduled-notification';
       const notification = {
         title: 'Scheduled notification',
-        body: { key: 'value' },
+        data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
       };
@@ -698,10 +751,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
           subscription.remove();
@@ -721,10 +775,11 @@ export async function test(t) {
               };
             },
           });
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
           Notifications.setNotificationHandler(null);
@@ -743,13 +798,14 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(() => {
               timesSpyHasBeenCalled += 1;
             });
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
                 seconds: 5,
                 repeats: true,
-              }
-            );
+              },
+            });
             await waitFor(12000);
             t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
             subscription.remove();
@@ -766,14 +822,13 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(
               notificationReceivedSpy
             );
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
-                ios: {
-                  second: (new Date().getSeconds() + 5) % 60,
-                },
-              }
-            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                second: (new Date().getSeconds() + 5) % 60,
+              },
+            });
             await waitFor(6000);
             t.expect(notificationReceivedSpy).toHaveBeenCalled();
             subscription.remove();
@@ -794,10 +849,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await Notifications.cancelScheduledNotificationAsync(identifier);
           await waitFor(6000);
           t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
@@ -818,10 +874,11 @@ export async function test(t) {
             notificationReceivedSpy
           );
           for (let i = 0; i < 3; i += 1) {
-            await Notifications.scheduleNotificationAsync(
-              { identifier: `notification-${i}`, ...notification },
-              { seconds: 5 }
-            );
+            await Notifications.scheduleNotificationAsync({
+              identifier: `notification-${i}`,
+              content: notification,
+              trigger: { seconds: 5 },
+            });
           }
           await Notifications.cancelAllScheduledNotificationsAsync();
           await waitFor(6000);
@@ -885,15 +942,15 @@ export async function test(t) {
                   clearInterval(userInteractionTimeout);
                   userInteractionTimeout = null;
                 }
-                await Notifications.scheduleNotificationAsync(
-                  {
-                    identifier,
+                await Notifications.scheduleNotificationAsync({
+                  identifier,
+                  content: {
                     title: 'Hello from the application!',
                     message:
                       'You can now return to the app and let the test know the notification has been shown.',
                   },
-                  { seconds: 1 }
-                );
+                  trigger: { seconds: 1 },
+                });
                 notificationSent = true;
               } else if (state === 'active' && notificationSent) {
                 const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
@@ -967,7 +1024,7 @@ export async function test(t) {
           }
           const notificationSpec = {
             title: 'Tap me!',
-            message: 'Better be quick!',
+            body: 'Better be quick!',
           };
           await Notifications.presentNotificationAsync(notificationSpec);
           let iterations = 0;

@@ -83,7 +83,7 @@ In case you lose your upload keystore (or it's compromised), you can ask Google 
 - If you want to handle it create the upload certificate yourself:
   - Generate a new keystore
   - Extract the upload certificate with
-    ```bash
+    ```sh
     keytool -export -rfc
       -keystore your-upload-keystore.jks
       -alias upload-alias

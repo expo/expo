@@ -23,6 +23,8 @@ declare class FirebaseAnalyticsJS {
     private options;
     private flushEventsPromise;
     private flushEventsTimer;
+    private lastTime;
+    private sequenceNr;
     constructor(config: FirebaseAnalyticsJSConfig, options: FirebaseAnalyticsJSOptions);
     /**
      * Sends 1 or more coded-events to the back-end.
@@ -83,5 +85,9 @@ declare class FirebaseAnalyticsJS {
      * Clears all analytics data for this instance.
      */
     resetAnalyticsData(): Promise<void>;
+    /**
+     * Enables or disabled debug mode.
+     */
+    setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 }
 export default FirebaseAnalyticsJS;

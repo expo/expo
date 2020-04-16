@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
@@ -30,10 +30,10 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails",
   "peerDependencies": {
-    "@unimodules/core": "~1.0.0"
+    "@unimodules/core": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "gitHead": "ec7998e573483e31acc25e52cb31a0df8c0a6784"
 }

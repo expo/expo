@@ -40,7 +40,7 @@ We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/en/c
 "jest": {
   "preset": "jest-expo",
   "transformIgnorePatterns": [
-    "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base)"
+    "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
   ]
 }
 ```
@@ -119,7 +119,7 @@ Now run the test again, you should see **/coverage/** in your app directory! Fin
 
 As promised, let's talk about how to set up the tests, right now we have a single `.test.js` in the root of our Expo project. This can get messy quickly, the easiest way is to create a `__tests__` directory (anywhere you'd like) and put all the tests there. For example see below:
 
-```bash
+```sh
 __tests__/
 ├─ components/
 │  └─ button.test.js
@@ -138,7 +138,7 @@ src/
 
 This **could** cause a lot of long import paths though (`../../src/components/button`), so another option would be to have multiple `__tests__` directories:
 
-```bash
+```sh
 src/
 ├─ components/
 ├─ __tests__/
@@ -151,7 +151,7 @@ So if we move `__tests__` within `components`, the _button.test.js_ import of `<
 
 Another option for test/file structure:
 
-```bash
+```sh
 src/
 ├─ components/
 │  ├─ button.js

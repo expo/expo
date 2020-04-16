@@ -1,4 +1,4 @@
-export interface NativeCalendarTrigger {
+export interface CalendarTriggerInput {
     type: 'calendar';
     repeats?: boolean;
     value: {
@@ -15,15 +15,13 @@ export interface NativeCalendarTrigger {
         second?: number;
     };
 }
-export interface NativeTimeIntervalTrigger {
-    type: 'interval';
-    repeats?: boolean;
-    value: number;
+export interface TimeIntervalTriggerInput {
+    type: 'timeInterval';
+    repeats: boolean;
+    seconds: number;
 }
-export declare type NativeDateTrigger = {
+export interface DateTriggerInput {
     type: 'date';
-    value: number;
-};
-export declare type IosNotificationTrigger = null | NativeTimeIntervalTrigger | NativeDateTrigger | NativeCalendarTrigger;
-export declare type AndroidNotificationTrigger = NativeTimeIntervalTrigger | NativeDateTrigger | null;
-export declare type NativeNotificationTrigger = IosNotificationTrigger | AndroidNotificationTrigger;
+    timestamp: number;
+}
+export declare type NotificationTriggerInput = null | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput;

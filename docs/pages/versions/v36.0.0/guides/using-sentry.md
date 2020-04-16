@@ -4,24 +4,26 @@ title: Using Sentry
 
 [Sentry](http://getsentry.com/) is a crash reporting and aggregation platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
-It notifies you of exceptions that your users run into while using your app and organizes for you to triage from their web dashboard. Reported exceptions include sourcemapped stacktraces and other relevant context (device id, platform, Expo version, etc.) automatically; you can also provide other context that is specific to your application, like the current route and user id.
+It notifies you of exceptions or errors that your users run into while using your app, and organizes them for you on a web dashboard. Reported exceptions include sourcemapped stacktraces and other relevant context (device id, platform, Expo version, etc.) automatically; you can also provide additional context that is specific to your application, like the current route and user id.
 
 ## Why Sentry?
 
-- Sentry treats React Native as a first-class citizen and we have collaborated with Sentry to make sure Expo is too.
-- It's easy to set up and use.
+- Sentry treats React Native as a first-class citizen and we have collaborated with Sentry to make sure Expo is, too.
+- It's very easy to set up and use
 - It scales to meet the demands of even the largest projects.
 - It works on most platforms, so you can use the same service for reporting your server, CLI, or desktop app errors as you use for your Expo app.
 - We trust it for our projects at Expo.
 - It is free for up to 5,000 events per month.
 
-## Add Sentry to your Expo project
+> Note: Native crash reporting is not available with `sentry-expo`.
+
+## How to add Sentry to your Expo project
 
 ### Sign up for a Sentry account and create a project
 
 - [Sign up for a Sentry account](https://sentry.io/signup/)
 - Once you have signed up, you will be prompted to create a project. Enter the name of your project and continue.
-- Copy your "DSN", you will need it shortly.
+- Copy your "DSN", you will need it shortly. (If you already have a project, you can find your DSN in your Sentry Dashboard > Project Settings > DSN.
 - Go to the [Sentry API](https://sentry.io/api/) section and create an auth token. You can use the default configuration, this token will never be made available to users of your app. Ensure you have `project:write` selected under scopes. Copy your auth token and save it for later.
 - Go to your project dashboard by going to [sentry.io](https://sentry.io) and selecting your project. Next go to the settings tab and copy the name of your project, we will need this. The "legacy name" will not work for our purposes.
 - Go to your organization settings by going to [sentry.io](https://sentry.io), press the button in the top left of your screen with the arrow beside it and select "organization settings". Copy the name of your organization. The "legacy name" will not work for our purposes.
@@ -38,7 +40,7 @@ import * as Sentry from 'sentry-expo';
 Sentry.init({
   dsn: 'YOUR DSN HERE',
   enableInExpoDevelopment: true,
-  debug: true
+  debug: true,
 });
 ```
 
@@ -48,7 +50,6 @@ Sentry.init({
 {
   "expo": {
     // ... your existing configuration
-
     "hooks": {
       "postPublish": [
         {
@@ -85,12 +86,16 @@ In order to use the published release source maps with Issues in Sentry, you'll 
 // e.g. in your `App.js`
 import Constants from 'expo-constants';
 
-// ... initialize Sentry first
+// ... initialize Sentry first, shown above
 
 Sentry.setRelease(Constants.manifest.revisionId);
 ```
 
 Note that the `revisionId` is not available in the manifest when running in development mode (using Expo CLI), defaulting to `undefined`.
+
+### Testing Sentry
+
+If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
 ## Error reporting semantics
 

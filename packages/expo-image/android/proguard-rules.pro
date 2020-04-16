@@ -8,3 +8,8 @@
 }
 
 -dontwarn com.bumptech.glide.load.resource.bitmap.VideoDecoder
+
+# https://bumptech.github.io/glide/doc/configuration.html#applications
+
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep class com.bumptech.glide.GeneratedAppGlideModuleImpl

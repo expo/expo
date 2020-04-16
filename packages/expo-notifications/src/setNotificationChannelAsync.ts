@@ -1,4 +1,4 @@
-import { NotificationChannel, NotificationChannelInput } from './NotificationChannelManager';
+import { NotificationChannel, NotificationChannelInput } from './NotificationChannelManager.types';
 
 export default async function setNotificationChannelAsync(
   channelId: string,

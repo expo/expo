@@ -6,6 +6,8 @@ export const name = 'FirebaseAnalytics';
 
 export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
   const isConfigured = !!FirebaseCore.DEFAULT_APP_OPTIONS;
+  const isWebConfigured = !!FirebaseCore.DEFAULT_WEB_APP_OPTIONS;
+  const isExpoClient = FirebaseCore.DEFAULT_APP_NAME !== '[DEFAULT]';
   const itWhenConfigured = isConfigured ? it : xit;
   const itWhenNotConfigured = isConfigured ? xit : it;
 
@@ -162,6 +164,26 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         }
         expect(error).toBeNull();
       });
+    });
+    describe('setDebugModeEnabled()', async () => {
+      it(
+        isExpoClient && isConfigured && isWebConfigured
+          ? `runs on client with web-config`
+          : `fails when not on client or without web-config`,
+        async () => {
+          let error = null;
+          try {
+            await Analytics.setDebugModeEnabled(true);
+          } catch (e) {
+            error = e;
+          }
+          if (isExpoClient && isConfigured && isWebConfigured) {
+            expect(error).toBeNull();
+          } else {
+            expect(error).not.toBeNull();
+          }
+        }
+      );
     });
   });
 }

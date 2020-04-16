@@ -133,11 +133,13 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
       'Using Expo for web',
       'Ejecting from Managed Workflow',
       'Migrating from ExpoKit',
+      'Updating your App',
     ],
   },
   {

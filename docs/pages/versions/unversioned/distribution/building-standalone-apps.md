@@ -32,7 +32,6 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
     "icon": "./path/to/your/app-icon.png",
     "version": "1.0.0",
     "slug": "your-app-slug",
-    "sdkVersion": "XX.0.0",
     "ios": {
       "bundleIdentifier": "com.yourcompany.yourappname",
       "buildNumber": "1.0.0"
@@ -48,7 +47,6 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 - You're probably not surprised that `name`, `icon` and `version` are required.
 - `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
-- The `sdkVersion` tells Expo what Expo runtime version to use, which corresponds to a React Native version. Although `"XX.0.0"` is listed in the example, you already have an `sdkVersion` in your app.json and should not change it except when you want to update to a new version of Expo.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
@@ -77,7 +75,7 @@ and backup your keystore to a safe location. Once you submit an app to the Googl
 be signed with the same keystore to be accepted by Google. If, for any reason, you delete your project or clear your credentials
 in the future, you will not be able to submit any updates to your app if you have not backed up your keystore.
 
-```bash
+```sh
 [exp] No currently active or previous builds for this project.
 
 Would you like to upload a keystore or have us generate one for you?
@@ -96,7 +94,7 @@ necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
 
-```bash
+```sh
 $ expo build:ios
 [16:44:37] Checking if current build exists...
 
@@ -149,15 +147,16 @@ to start build with `--clear-push-cert`. We will remove certificate from our ser
 
 When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
 
-If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for your project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `Expo-Signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
+If you would like to, we can also call your webhook once the build has finished. You can set up a webhook for your project using `expo webhooks:set --event build --url <webhook-url>` command. You will be asked to type a webhook secret. It has to be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine. We promise you that we keep your secret securely encrypted in our database.
 
 We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
 
 - `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
 - `id` - the unique ID of your build
 - `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
+- `releaseChannel` - the release channel the build is part of.
 
-Additionally, we send an `Expo-Signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
+Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
 This is how you can implement your server:
 
@@ -170,7 +169,7 @@ import safeCompare from 'safe-compare';
 const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
 app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['Expo-Signature'];
+  const expoSignature = req.headers['expo-signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
   hmac.update(req.body);
@@ -207,7 +206,7 @@ Read the guide on [Uploading Apps to the Apple App Store and Google Play](../upl
 For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 - If you want to change native metadata like the app's name or icon
-- If you upgrade to a newer `sdkVersion` of your app (which requires new native code)
+- If you upgrade to a newer SDK version of your app (which requires new native code)
 
 To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../../distribution/app-stores/#versioning-your-app) for details).
 

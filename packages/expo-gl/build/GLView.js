@@ -2,6 +2,7 @@ import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, } fr
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { configureLogging } from './GLUtils';
 const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
@@ -108,7 +109,7 @@ export class WebGLObject {
         this.id = id; // Native GL object id
     }
     toString() {
-        return `[WebGLObject ${this.id}]`;
+        return `[${this.constructor.name} ${this.id}]`;
     }
 }
 const wrapObject = (type, id) => {
@@ -135,15 +136,24 @@ class WebGLUniformLocation {
     constructor(id) {
         this.id = id; // Native GL object id
     }
+    toString() {
+        return `[${this.constructor.name} ${this.id}]`;
+    }
 }
 class WebGLActiveInfo {
     constructor(obj) {
         Object.assign(this, obj);
     }
+    toString() {
+        return `[${this.constructor.name} ${JSON.stringify(this)}]`;
+    }
 }
 class WebGLShaderPrecisionFormat {
     constructor(obj) {
         Object.assign(this, obj);
+    }
+    toString() {
+        return `[${this.constructor.name} ${JSON.stringify(this)}]`;
     }
 }
 // WebGL2 classes
@@ -353,42 +363,7 @@ const getGl = (exglCtxId) => {
     const viewport = gl.getParameter(gl.VIEWPORT);
     gl.drawingBufferWidth = viewport[2];
     gl.drawingBufferHeight = viewport[3];
-    // Enable/disable logging of all GL function calls
-    let enableLogging = false;
-    // $FlowIssue: Flow wants a "value" field
-    Object.defineProperty(gl, 'enableLogging', {
-        configurable: true,
-        get() {
-            return enableLogging;
-        },
-        set(enable) {
-            if (enable === enableLogging) {
-                return;
-            }
-            if (enable) {
-                Object.keys(gl).forEach(key => {
-                    if (typeof gl[key] === 'function') {
-                        const original = gl[key];
-                        gl[key] = (...args) => {
-                            console.log(`EXGL: ${key}(${args.join(', ')})`);
-                            const r = original.apply(gl, args);
-                            console.log(`EXGL:    = ${r}`);
-                            return r;
-                        };
-                        gl[key].original = original;
-                    }
-                });
-            }
-            else {
-                Object.keys(gl).forEach(key => {
-                    if (typeof gl[key] === 'function' && gl[key].original) {
-                        gl[key] = gl[key].original;
-                    }
-                });
-            }
-            enableLogging = enable;
-        },
-    });
+    configureLogging(gl);
     return gl;
 };
 const getContextId = (exgl) => {

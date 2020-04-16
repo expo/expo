@@ -7,6 +7,8 @@
 #import <ABI34_0_0UMCore/ABI34_0_0UMUtilities.h>
 #import <ABI34_0_0EXConstants/ABI34_0_0EXConstantsService.h>
 
+static const NSString *kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+
 @interface ABI34_0_0EXConstantsService ()
 
 @property (nonatomic, strong) NSString *sessionId;
@@ -44,6 +46,7 @@ ABI34_0_0UM_REGISTER_MODULE();
            @"isHeadless": @(NO),
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
+           @"installationId": [[self class] installationId],
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildVersion],
@@ -395,6 +398,16 @@ ABI34_0_0UM_REGISTER_MODULE();
 + (NSString *)deviceName
 {
   return [UIDevice currentDevice].name;
+}
+
++ (NSString *)installationId
+{
+  NSString *uuid = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallUUIDKey];
+  if (!uuid) {
+    uuid = [[NSUUID UUID] UUIDString];
+    [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:kEXDeviceInstallUUIDKey];
+  }
+  return uuid;
 }
 
 

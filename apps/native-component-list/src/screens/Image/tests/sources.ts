@@ -5,6 +5,12 @@ const imageTests: ImageTestGroup = {
   name: 'Sources',
   tests: [
     {
+      name: `uri:.jpg (redirecting)`,
+      props: {
+        source: images.uri_random_unsplash,
+      },
+    },
+    {
       name: `require(1.jpg)`,
       props: {
         source: images.require_jpg1,
@@ -43,6 +49,13 @@ const imageTests: ImageTestGroup = {
     {
       name: `uri:.ico`,
       props: {
+        source: images.uri_ico,
+      },
+    },
+    {
+      name: `uri:.ico and intrinsic content size`,
+      props: {
+        defaultStyle: {},
         source: images.uri_ico,
       },
     },

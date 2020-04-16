@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,16 +32,19 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "expo-application": "*",
-    "expo-constants": "*",
+    "expo-application": "^2.1.0",
+    "expo-constants": "<10.0.0",
     "unimodules-permissions-interface": "*"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806",
+  "gitHead": "760658eab1d3ba6ef334d9779f2c5f28dfafc286",
   "dependencies": {
     "badgin": "^1.1.5",
+    "expo-application": "~2.1.1",
+    "expo-constants": "<10.0.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@types/uuid": "^3.4.7"
+    "@types/uuid": "^3.4.7",
+    "expo-module-scripts": "~1.2.0"
   }
 }

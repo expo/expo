@@ -29,7 +29,7 @@ function getBlurStyle({ intensity, tint }) {
         backgroundColor: getBackgroundColor(intensity, tint),
     };
     if (isBlurSupported()) {
-        style.backdropFilter = `blur(${intensity * 0.8}px)`;
+        style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
     }
     return style;
 }

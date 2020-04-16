@@ -1,0 +1,1 @@
+{"version":3,"file":"deprecated.web.js","sourceRoot":"","sources":["../src/deprecated.web.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,OAAO,MAAM,mBAAmB,CAAC;AAC7C,OAAO,EAAE,OAAO,EAAE,CAAC","sourcesContent":["import * as Updates from './Updates/Updates';\nexport { Updates };\n"]}

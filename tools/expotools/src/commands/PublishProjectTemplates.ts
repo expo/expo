@@ -1,13 +1,13 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import semver from 'semver';
-import inquirer from 'inquirer';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
+import path from 'path';
+import semver from 'semver';
 
-import { Directories } from '../expotools';
 import { getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
+import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
@@ -30,7 +30,7 @@ async function shouldAssignLatestTagAsync(
 
 async function action(options) {
   if (!options.sdkVersion) {
-    const { version: expoSdkVersion } = await JsonFile.readAsync<{version: string}>(
+    const { version: expoSdkVersion } = await JsonFile.readAsync<{ version: string }>(
       path.join(EXPO_DIR, 'packages/expo/package.json')
     );
     const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
@@ -105,7 +105,7 @@ async function action(options) {
 
     const appJsonPath = path.join(template.path, 'app.json');
     if (
-      (await fs.exists(appJsonPath)) &&
+      (await fs.pathExists(appJsonPath)) &&
       (await JsonFile.getAsync(appJsonPath, 'expo.sdkVersion', null))
     ) {
       // Make sure SDK version in `app.json` is correct

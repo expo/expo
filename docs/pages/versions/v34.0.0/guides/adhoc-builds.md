@@ -26,7 +26,7 @@ You are given a choice of letting `expo-cli` create the necessary credentials fo
 
 Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](https://docs.expo.io/versions/latest/distribution/security) on what these credentials are and how we store them.
 
-```bash
+```sh
 $ expo client:ios
 [16:44:37] Checking if current build exists...
 
@@ -68,7 +68,7 @@ We'll also help you handle your Push Notifications service key and provisioning 
 
 In order to install your custom build of the Expo client on your iOS device, we will need to determine your device UDID so we can configure your provisioning profile and authorize your device to download the Expo client.
 
-```bash
+```sh
 Custom builds of the Expo client can only be installed on devices which have been registered with Apple at build-time.
 These devices are currently registered on your Apple Developer account:
 ┌───────────────┬──────────────────────────────────────────┐
@@ -82,7 +82,7 @@ These devices are currently registered on your Apple Developer account:
 
 If you would like to install the Expo client on an iOS device that is not listed above, follow the prompts to register your device.
 
-```bash
+```sh
 ? Would you like to register new devices to use the Expo client with? Yes
 
 ==================
@@ -113,7 +113,7 @@ On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. 
 
 You can monitor the status of your Expo client build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
 
-```bash
+```sh
 ==================
 [QR Code redacted]
 ==================

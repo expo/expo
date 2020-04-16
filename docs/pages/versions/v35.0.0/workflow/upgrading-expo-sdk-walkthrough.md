@@ -6,7 +6,7 @@ If you are a couple of versions behind, upgrading your projects Expo SDK version
 
 Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo client for development or build new binaries via `expo build`. You will still be able to publish OTA updates via `expo publish` however. Deprecations **will not** affect standalone apps you have in production.
 
-> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
+> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit).
 
 ## SDK 35
 
@@ -100,12 +100,12 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 - If using the default `.babelrc`, change it to `babel.config.js`:
 
 ```javascript
-module.exports = function (api) {
-  api.cache(true)
+module.exports = function(api) {
+  api.cache(true);
   return {
-    presets: ['babel-preset-expo']
-  }
-}
+    presets: ['babel-preset-expo'],
+  };
+};
 ```
 
 - Delete your project’s node_modules directory and run npm install again
@@ -241,7 +241,6 @@ module.exports = function (api) {
 - On iOS, calling `Notifications.getExpoPushToken()` will throw an error if you don’t have permission to send notifications. We recommend call `Permissions.getAsync(Permissions.NOTIFICATIONS)` and, if needed and you haven’t asked before, `Permissions.askAsync(Permissions.NOTIFICATIONS)` before getting push token.
 - React native 0.53.0 removed the TextInput autoGrow prop. [Commit](https://github.com/facebook/react-native/commit/dabb78b1278d922e18b2a84059460689da12578b#diff-b48972356bc8dca4a00747d002fc3dd5).
 
-
 ## SDK 25 [DEPRECATED]
 
 [Blog Post](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7)
@@ -314,7 +313,24 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 #### Notes
 
-- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component. [See a Snack example here](https://snack.expo.io/@notbrent/imagebackground-example?platform=ios).
+- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component, like this:
+
+````jsx
+  <View style={styles.container}>
+    <ImageBackground
+      source={require('./path/to/image.png')}
+      style={{
+        width: 280,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 30,
+    }}>
+      <Text style={{ color: '#fff', fontSize: 18 }}>
+        The universe... what a concept. You know, the universe is a little bit like the human hand. For example, you have groundmen's center right here and then you have undiscovered worlds and uh, um and sector 8 and up here is tittleman's crest so you can kinda picture it's a little bit like a leaf or uhh, umm, it's not a bowl.
+      </Text>
+    </ImageBackground>
+  </View>
+```
 
 - React Native now defaults `enableBabelRCLookup` (recursive) to false in Metro bundler (the packager used by React Native / Expo). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 
@@ -396,3 +412,4 @@ Secure Store
 Payments
 
 - We’d previously announced Stripe support on iOS as part of our experimental DangerZone APIs. The Payments API was using the Stripe SDK on iOS. We learned that Apple sometimes rejects apps which contain the Stripe SDK but don’t offer anything for sale. To help your App Review process go more smoothly, we’ve decided to remove the Stripe SDK and experimental Payments API from apps built with the Expo standalone builder. We’re still excited to give developers a way to let users pay for goods when they need to and we’ll announce more ways to do so shortly.
+````

@@ -1,9 +1,7 @@
 {
   "expo": {
-    "name": "Blank Template (TypeScript)",
+    "name": "HelloWorld",
     "slug": "expo-template-blank-typescript",
-    "privacy": "public",
-    "sdkVersion": "37.0.0",
     "platforms": [
       "ios",
       "android",

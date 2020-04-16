@@ -2,7 +2,7 @@
 title: Linking
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
 ## Introduction
 
@@ -68,7 +68,56 @@ export default class Anchor extends React.Component {
 
 The following example illustrates the difference between opening a web link with `WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
 
-<SnackEmbed snackId="H11a8rk7b" />
+<SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-constants"]}>
+
+```js
+import React, { Component } from 'react';
+import { Button, Linking, View, StyleSheet } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
+
+export default class App extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Button
+          title="Open URL with ReactNative.Linking"
+          onPress={this._handleOpenWithLinking}
+          style={styles.button}
+        />
+        <Button
+          title="Open URL with Expo.WebBrowser"
+          onPress={this._handleOpenWithWebBrowser}
+          style={styles.button}
+        />
+      </View>
+    );
+  }
+
+  _handleOpenWithLinking = () => {
+    Linking.openURL('https://expo.io');
+  };
+
+  _handleOpenWithWebBrowser = () => {
+    WebBrowser.openBrowserAsync('https://expo.io');
+  };
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+  button: {
+    marginVertical: 10,
+  },
+});
+```
+
+</SnackInline>
 
 ### Opening links to other apps
 

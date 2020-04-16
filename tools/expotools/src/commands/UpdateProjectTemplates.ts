@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import JsonFile from '@expo/json-file';
 import { Command } from '@expo/commander';
+import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { PACKAGES_DIR } from '../Constants';
 import { Template, getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
@@ -102,7 +102,7 @@ async function yarnTemplateAsync(templatePath: string): Promise<void> {
 
   const yarnLockPath = path.join(templatePath, 'yarn.lock');
 
-  if (await fs.exists(yarnLockPath)) {
+  if (await fs.pathExists(yarnLockPath)) {
     // We do want to always install the newest possible versions that match bundledNativeModules versions,
     // so let's remove yarn.lock before updating re-yarning dependencies.
     await fs.remove(yarnLockPath);
@@ -126,7 +126,7 @@ async function updateTemplateSdkVersionAsync(
 ): Promise<void> {
   const appJsonPath = path.join(templatePath, 'app.json');
 
-  if (await fs.exists(appJsonPath)) {
+  if (await fs.pathExists(appJsonPath)) {
     console.log(chalk.yellow('>'), `Setting SDK version to ${chalk.cyan(sdkVersion)}...`);
     await JsonFile.setAsync(appJsonPath, 'expo.sdkVersion', sdkVersion);
   }

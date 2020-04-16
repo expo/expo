@@ -39,6 +39,12 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.Updates;
+  }
+});
 Object.defineProperty(exports, "Accelerometer", {
   enumerable: true,
   get: function () {
@@ -459,17 +465,13 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.Updates = exports.AR = void 0;
+exports.Logs = exports.SplashScreen = exports.AR = void 0;
 
 require("./Expo.fx");
 
 var AR = _interopRequireWildcard(require("./AR"));
 
 exports.AR = AR;
-
-var Updates = _interopRequireWildcard(require("./Updates/Updates"));
-
-exports.Updates = Updates;
 
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
@@ -490,6 +492,8 @@ var _Notifications = _interopRequireDefault(require("./Notifications/Notificatio
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
+
+var _deprecated = require("./deprecated");
 
 var _removed = require("./removed");
 

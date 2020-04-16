@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "36.0.0",
+  "version": "37.0.0",
   "private": true,
   "scripts": {
     "dev": "node server.js",
@@ -27,7 +27,7 @@
     "hotshot": "^1.0.5",
     "next": "^8.0.0",
     "nprogress": "0.2.0",
-    "prismjs": "^1.11.0",
+    "prism-react-renderer": "1.0.2",
     "prop-types": "15.6.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",

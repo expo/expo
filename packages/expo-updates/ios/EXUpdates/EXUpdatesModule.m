@@ -25,12 +25,20 @@ UM_EXPORT_MODULE(ExpoUpdates);
 
 - (NSDictionary *)constantsToExport
 {
+  if (![EXUpdatesConfig sharedInstance].isEnabled) {
+    return @{
+      @"isEnabled": @(NO)
+    };
+  }
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
   EXUpdatesUpdate *launchedUpdate = controller.launchedUpdate;
   if (!launchedUpdate) {
-    return @{};
+    return @{
+      @"isEnabled": @(NO)
+    };
   } else {
     return @{
+      @"isEnabled": @(YES),
       @"manifest": launchedUpdate.rawManifest,
       @"localAssets": controller.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(controller.isEmergencyLaunch)

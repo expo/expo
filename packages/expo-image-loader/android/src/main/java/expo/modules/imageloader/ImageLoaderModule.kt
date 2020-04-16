@@ -73,11 +73,13 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
   }
 
   override fun loadImageForManipulationFromURL(url: String, resultListener: ImageLoader.ResultListener) {
+    val normalizedUrl = normalizeAssetsUrl(url)
+
     Glide.with(context)
       .asBitmap()
       .diskCacheStrategy(DiskCacheStrategy.NONE)
       .skipMemoryCache(true)
-      .load(url)
+      .load(normalizedUrl)
       .into(object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           resultListener.onSuccess(resource)
@@ -87,5 +89,13 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
           resultListener.onFailure(Exception("Loading bitmap failed"))
         }
       })
+  }
+
+  private fun normalizeAssetsUrl(url: String): String {
+    var actualUrl = url
+    if (url.startsWith("asset:///")) {
+      actualUrl = "file:///android_asset/" + url.split("/").last()
+    }
+    return actualUrl
   }
 }

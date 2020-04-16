@@ -1,12 +1,21 @@
 package expo.modules.notifications.notifications.service;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
+import android.os.Parcel;
+import android.service.notification.StatusBarNotification;
+import android.util.Log;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleObserver;
@@ -15,6 +24,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import expo.modules.notifications.notifications.NotificationManager;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 
@@ -139,6 +149,57 @@ public class ExpoNotificationsService extends BaseNotificationsService {
   protected void onNotificationPresent(expo.modules.notifications.notifications.model.Notification notification, NotificationBehavior behavior) {
     String tag = notification.getNotificationRequest().getIdentifier();
     NotificationManagerCompat.from(this).notify(tag, ANDROID_NOTIFICATION_ID, getNotification(notification, behavior));
+  }
+
+  /**
+   * Callback called to fetch a collection of currently displayed notifications.
+   *
+   * <b>Note:</b> This feature is only supported on Android 23+.
+   *
+   * @return A collection of currently displayed notifications.
+   */
+  @Override
+  protected Collection<Notification> getDisplayedNotifications() {
+    // getActiveNotifications() is not supported on platforms below Android 23
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return Collections.emptyList();
+    }
+
+    android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    Collection<Notification> notifications = new ArrayList<>();
+    StatusBarNotification[] activeNotifications = manager.getActiveNotifications();
+    for (StatusBarNotification statusBarNotification : activeNotifications) {
+      Notification notification = getNotification(statusBarNotification);
+      if (notification != null) {
+        notifications.add(notification);
+      }
+    }
+    return notifications;
+  }
+
+  @Nullable
+  protected Notification getNotification(StatusBarNotification statusBarNotification) {
+    android.app.Notification notification = statusBarNotification.getNotification();
+    byte[] notificationRequestByteArray = notification.extras.getByteArray(ExpoNotificationBuilder.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY);
+    if (notificationRequestByteArray != null) {
+      try {
+        Parcel parcel = Parcel.obtain();
+        parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
+        parcel.setDataPosition(0);
+        NotificationRequest request = NotificationRequest.CREATOR.createFromParcel(parcel);
+        parcel.recycle();
+        Date notificationDate = new Date(statusBarNotification.getPostTime());
+        return new Notification(request, notificationDate);
+      } catch (Exception e) {
+        // Let's catch all the exceptions -- there's nothing we can do here
+        // and we'd rather return an array without a single, invalid notification
+        // than throw an exception and return none.
+        @SuppressLint("DefaultLocale")
+        String message = String.format("Could not have unmarshalled NotificationRequest from (%s, %d).", statusBarNotification.getTag(), statusBarNotification.getId());
+        Log.e("expo-notifications", message);
+      }
+    }
+    return null;
   }
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {

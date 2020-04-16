@@ -1,6 +1,5 @@
 import './Expo.fx';
 import * as AR from './AR';
-import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 export { Logs };
@@ -10,7 +9,7 @@ export { default as Linking } from './Linking/Linking';
 export { default as Notifications } from './Notifications/Notifications';
 export { AR };
 export { SplashScreen };
-export { Updates };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
+export { Updates } from './deprecated';
 export { Accelerometer, AdMobBanner, AdMobInterstitial, AdMobRewarded, Animated, Amplitude, AppAuth, Asset, Audio, BackgroundFetch, BarCodeScanner, Barometer, BlurView, Brightness, Calendar, Camera, Constants, Contacts, Crypto, DocumentPicker, Easing, Facebook, FacebookAds, FaceDetector, FileSystem, Font, GestureHandler, GL, GLView, GoogleSignIn, Google, Gyroscope, Haptic, Haptics, Icon, ImageManipulator, ImagePicker, IntentLauncher, IntentLauncherAndroid, KeepAwake, LinearGradient, LocalAuthentication, Localization, Location, Magnetometer, MagnetometerUncalibrated, MailComposer, MapView, MediaLibrary, Pedometer, Permissions, Print, PublisherBanner, Random, ScreenOrientation, SecureStore, Segment, Sensors, Sharing, SMS, Speech, SQLite, Svg, takeSnapshotAsync, TaskManager, Transition, Transitioning, Video, WebBrowser, WebView, } from './removed';

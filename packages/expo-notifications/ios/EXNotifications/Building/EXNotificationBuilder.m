@@ -17,12 +17,25 @@ UM_REGISTER_MODULE();
   UNMutableNotificationContent *content = [UNMutableNotificationContent new];
   [content setTitle:[request objectForKey:@"title" verifyingClass:[NSString class]]];
   [content setSubtitle:[request objectForKey:@"subtitle" verifyingClass:[NSString class]]];
-  [content setBody:[request objectForKey:@"message" verifyingClass:[NSString class]]];
+  [content setBody:[request objectForKey:@"body" verifyingClass:[NSString class]]];
   [content setLaunchImageName:[request objectForKey:@"launchImageName" verifyingClass:[NSString class]]];
   [content setBadge:[request objectForKey:@"badge" verifyingClass:[NSNumber class]]];
-  [content setUserInfo:[request objectForKey:@"body" verifyingClass:[NSDictionary class]]];
+  [content setUserInfo:[request objectForKey:@"data" verifyingClass:[NSDictionary class]]];
   if ([request objectForKey:@"sound" verifyingClass:[NSNumber class]]) {
     [content setSound:[request[@"sound"] boolValue] ? [UNNotificationSound defaultSound] : nil];
+  } else if ([request objectForKey:@"sound" verifyingClass:[NSString class]]) {
+    NSString *soundName = [request objectForKey:@"sound"];
+    if ([@"default" isEqualToString:soundName]) {
+      [content setSound:[UNNotificationSound defaultSound]];
+    } else if ([@"defaultCritical" isEqualToString:soundName]) {
+      if (@available(iOS 12.0, *)) {
+        [content setSound:[UNNotificationSound defaultCriticalSound]];
+      } else {
+        [content setSound:[UNNotificationSound defaultSound]];
+      }
+    } else {
+      [content setSound:[UNNotificationSound soundNamed:soundName]];
+    }
   }
   NSMutableArray<UNNotificationAttachment *> *attachments = [NSMutableArray new];
   [[request objectForKey:@"attachments" verifyingClass:[NSArray class]] enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {

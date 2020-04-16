@@ -2,24 +2,27 @@ import * as AppAuth from 'expo-app-auth';
 import React from 'react';
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 
-const GUID = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9';
-const config = {
-  issuer: 'https://accounts.google.com',
-  clientId: `${GUID}.apps.googleusercontent.com`,
-  scopes: ['openid', 'profile'],
-};
+import { getGUID } from '../api/guid';
+
+function getConfig() {
+  return {
+    issuer: 'https://accounts.google.com',
+    clientId: `${getGUID()}.apps.googleusercontent.com`,
+    scopes: ['openid', 'profile'],
+  };
+}
 
 const StorageKey = '@Storage:Key';
 
 async function signInAsync() {
-  const authState = await AppAuth.authAsync(config);
+  const authState = await AppAuth.authAsync(getConfig());
   await cacheAuthAsync(authState);
   console.log('signInAsync', authState);
   return authState;
 }
 
 async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
-  const authState = await AppAuth.refreshAsync(config, refreshToken);
+  const authState = await AppAuth.refreshAsync(getConfig(), refreshToken);
   console.log('refresh', authState);
   await cacheAuthAsync(authState);
   return authState;
@@ -48,15 +51,13 @@ function checkIfTokenExpired({ accessTokenExpirationDate }: { accessTokenExpirat
 
 async function signOutAsync({ accessToken }: { accessToken: string }) {
   try {
-    await AppAuth.revokeAsync(config, {
+    await AppAuth.revokeAsync(getConfig(), {
       token: accessToken,
       isClientIdProvided: true,
     });
     await AsyncStorage.removeItem(StorageKey);
-    return;
   } catch (error) {
     alert('Failed to revoke token: ' + error.message);
-    return;
   }
 }
 
@@ -64,7 +65,7 @@ interface State {
   authState?: any;
 }
 
-export default class AuthSessionScreen extends React.Component<{}, State> {
+export default class AuthSessionScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'AuthSession',
   };
@@ -82,7 +83,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  }
+  };
 
   _toggleAuthAsync = async () => {
     try {
@@ -96,7 +97,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  }
+  };
 
   get hasAuth() {
     return this.state.authState;

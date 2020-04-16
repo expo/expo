@@ -4,8 +4,9 @@ set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
 bucket="docs.expo.io"
+target="${1-$scriptdir/out}"
 
-aws s3 sync "${scriptdir}/out" "s3://${bucket}" --delete
+aws s3 sync "$target" "s3://${bucket}" --delete
 
 aws s3 cp \
   --recursive \
@@ -44,6 +45,6 @@ do
   aws s3 cp \
     --metadata-directive REPLACE \
     --website-redirect "/${redirects[$i]}" \
-    "${scriptdir}/out/404.html" \
+    "$target/404.html" \
     "s3://${bucket}/${i}"
 done

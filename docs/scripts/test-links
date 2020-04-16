@@ -21,6 +21,17 @@ declare -a externalLinks=(
   "/versions/latest/guides/offline-support/" # https://github.com/expo/expo-cli/tree/master/packages/xdl/caches
 )
 
+opening_attempts=0
+until $(curl --silent --fail --head --output /dev/null "${@}"); do
+  if [ $opening_attempts -eq 5 ]; then
+    echo "can't connect to server at $@"
+    exit 1
+  fi
+  opening_attempts=$(($opening_attempts+1))
+  printf '.'
+  sleep 1
+done
+
 for l in "${externalLinks[@]}"; do
   url="${@}${l}"
   echo $url

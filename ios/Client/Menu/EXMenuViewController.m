@@ -54,6 +54,7 @@
   [super viewWillAppear:animated];
   [self _maybeRebuildRootView];
   [self _forceRootViewToRenderHack];
+  [_reactRootView becomeFirstResponder];
 }
 
 - (BOOL)shouldAutorotate

@@ -1,0 +1,63 @@
+{
+  "name": "expo-splash-screen-command",
+  "version": "0.1.1",
+  "description": "Supplementary module for 'expo-splash-screen' providing installation command",
+  "main": "build/SplashScreen.js",
+  "types": "build/SplashScreen.d.ts",
+  "bin": {
+    "expo-splash-screen": "./bin/configure.js"
+  },
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-splash-screen",
+    "expo-splash-screen-command"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-splash-screen-command"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/packages/expo-splash-screen-command",
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "@expo/commander": "^2.21.1",
+    "@react-native-community/cli-platform-android": "^3.0.3",
+    "@react-native-community/cli-platform-ios": "^3.0.0",
+    "chalk": "^3.0.0",
+    "color-string": "^1.5.3",
+    "core-js": "^3.6.4",
+    "expo-module-scripts": "^1.1.1",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^7.0.1",
+    "xcode": "^2.1.0"
+  },
+  "peerDependencies": {
+    "expo-splash-screen": "1.0.0"
+  },
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  },
+  "devDependencies": {
+    "@types/color-string": "^1.5.0",
+    "@types/fs-extra": "^8.0.1",
+    "@types/inquirer": "^6.5.0"
+  },
+  "gitHead": "58cc7088dae609832c85dba393372ed1a06b00db"
+}

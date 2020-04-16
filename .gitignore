@@ -1,6 +1,7 @@
 # Expo
 .expo
 __generated__
+web-build
 
 # macOS
 .DS_Store
@@ -9,6 +10,9 @@ __generated__
 node_modules
 npm-debug.log
 yarn-error.log
+
+# Ruby
+.direnv
 
 # Emacs
 *~
@@ -43,6 +47,9 @@ xcuserdata
 # Eclipse
 .project
 .settings
+
+# VSCode
+.history/
 
 # Android
 *.apk
@@ -112,4 +119,3 @@ shellAppWorkspaces
 .env.development.local
 .env.test.local
 .env.production.local
-
