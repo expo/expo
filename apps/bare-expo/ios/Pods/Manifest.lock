@@ -15,7 +15,7 @@ PODS:
   - EXAppAuth (9.0.0):
     - AppAuth (~> 1.2)
     - UMCore
-  - EXApplication (2.1.0):
+  - EXApplication (2.1.1):
     - UMCore
   - EXAV (8.1.0):
     - UMCore
@@ -30,7 +30,7 @@ PODS:
     - UMPermissionsInterface
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBattery (2.1.0):
+  - EXBattery (2.1.1):
     - UMCore
   - EXBluetooth (1.0.0):
     - UMCore
@@ -42,7 +42,7 @@ PODS:
   - EXCalendar (8.1.0):
     - UMCore
     - UMPermissionsInterface
-  - EXCellular (2.1.0):
+  - EXCellular (2.1.1):
     - UMCore
   - EXConstants (9.0.0):
     - UMConstantsInterface
@@ -68,14 +68,14 @@ PODS:
   - EXFileSystem (8.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.1.1):
+  - EXFirebaseAnalytics (2.2.0):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
   - EXFirebaseCore (1.0.0):
     - Firebase/Core (= 6.14.0)
     - UMCore
-  - EXFont (8.1.0):
+  - EXFont (8.1.1):
     - UMCore
     - UMFontInterface
   - EXGL (8.1.0):
@@ -124,7 +124,7 @@ PODS:
   - EXMediaLibrary (8.1.0):
     - UMCore
     - UMPermissionsInterface
-  - EXNetwork (2.1.0):
+  - EXNetwork (2.1.1):
     - UMCore
   - EXNotifications (0.1.1):
     - UMCore
@@ -840,16 +840,16 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: bc6221f0fb9c8af700ae3d26f2d9b803e1ccff7a
   EXAppAuth: 26cc5ad605079dab36f6209322cf21f528c44328
-  EXApplication: 777c2f1742b381725b3e8c1da41f0113ebfd4694
+  EXApplication: 7cf81de6fafccff42f5d1caa5c24a159db6b9437
   EXAV: 2edd9cd30fe98d04b55325303c7ff01db02d1d0f
   EXBackgroundFetch: d876383d77a17fab25b2bd98437b6cf2297de353
   EXBarCodeScanner: 69c482f1dc8492493ccae692093d6e9914081a09
-  EXBattery: f2732e40a819d8bf9051211f4ecdd99dcb2b5918
+  EXBattery: a30f2aa7c6ccf21ade63ec941579a1f0a7523a8c
   EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
   EXBlur: aa14d84bff6e9c2232fbcaf54ad809eee1cc41dc
   EXBrightness: 4afe561b25d674d7949409a73135faf8f1f627aa
   EXCalendar: 1339d99ca2246559121f86c050f29f689ccf773d
-  EXCellular: e8e672cb54b6579712801ed437954d171ae81510
+  EXCellular: 498a1b35747474ed15806aed58a4710bdef3e73b
   EXConstants: 5304709b1bea70a4828f48ba4c7fc3ec3b2d9b17
   EXContacts: b24026570adb4dc8c4db0f12b90d608978f72561
   EXCrypto: c4ade2e300874e9175dbf0015734f411fe165d50
@@ -858,9 +858,9 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 8f4c21ab2f51bf75defe4536f841a37de59b0661
   EXFacebook: 74d53d9da75d1a953f1821dd417594ed18d7a72f
   EXFileSystem: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
-  EXFirebaseAnalytics: 6eaf790f19b893077993a261d9734c0713760f61
+  EXFirebaseAnalytics: 004095b49bd4f29dc3281a6eafb6dfb1a151cb44
   EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
-  EXFont: 8326ecf966be559f7ced7c8e221a32fc4d9ed8b0
+  EXFont: b60f7a8900e3a12e7be3b2a40e19b22c7b5f89ba
   EXGL: 7df5a1c0cd23dc7496d95889d4274448de8e21a2
   EXGL_CPP: a70374bf147b423e4ed8dd435006581de7e3c311
   EXGoogleSignIn: d1fcbf367429818e0ba622d236fbb7126acb510b
@@ -876,7 +876,7 @@ SPEC CHECKSUMS:
   EXLocation: bbd487fd96a18a3ad9725389bbb94c4a5f78edf3
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 30a65e1eef453c6e7a76754febeb88c0d0fba232
-  EXNetwork: b8cfa4936341d260779043acc4c366904decef0d
+  EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
   EXNotifications: 4eb1836866d7527130667ff1b948030a7f73a5ab
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
