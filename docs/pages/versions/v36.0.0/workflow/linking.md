@@ -195,7 +195,7 @@ To pass some data into your app, you can append it as a path or query string on 
 let redirectUrl = Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
 ```
 
-This would return something like `myapp:///path/into/app?hello=world&goodbye=now` for a standalone app.
+This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
 
 When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
@@ -210,7 +210,7 @@ _handleUrl = url => {
 ```
 
 If you opened a URL like
-`myapp:///path/into/app?hello=world&goodbye=now`, this would alert
+`myapp://path/into/app?hello=world&goodbye=now`, this would alert
 `Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
 
 ### Example: linking back to your app from WebBrowser
