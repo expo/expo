@@ -75,6 +75,12 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 > - project = SENTRY_PROJECT
 > - authToken = SENTRY_AUTH_TOKEN
 > - (optional) url = SENTRY_URL
+>
+> You can pass them in directly like this:
+>
+> ```
+> SENTRY_PROJECT=myCoolProject expo publish
+> ```
 
 ### Publish your app with sourcemaps
 
