@@ -55,7 +55,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
     }
   }
 
-  let { params, errorCode } = parseUrl(result.url);
+  const { params, errorCode } = parseUrl(result.url);
 
   return {
     type: errorCode ? 'error' : 'success',
@@ -79,7 +79,7 @@ export function getRedirectUrl(): string {
 
 async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
-  let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
+  const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
   if (result.type === 'cancel' || result.type === 'dismiss') {
     return { type: result.type };
   }
@@ -88,16 +88,16 @@ async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInR
 }
 
 function parseUrl(url: string): { errorCode: string | null; params: { [key: string]: string } } {
-  let parts = url.split('#');
-  let hash = parts[1];
-  let partsWithoutHash = parts[0].split('?');
-  let queryString = partsWithoutHash[partsWithoutHash.length - 1];
+  const parts = url.split('#');
+  const hash = parts[1];
+  const partsWithoutHash = parts[0].split('?');
+  const queryString = partsWithoutHash[partsWithoutHash.length - 1];
 
   // Get query string (?hello=world)
-  let parsedSearch = qs.parse(queryString);
+  const parsedSearch = qs.parse(queryString);
 
   // Pull errorCode off of params
-  let { errorCode } = parsedSearch;
+  const { errorCode } = parsedSearch;
   delete parsedSearch.errorCode;
 
   // Get hash (#abc=example)
@@ -107,7 +107,7 @@ function parseUrl(url: string): { errorCode: string | null; params: { [key: stri
   }
 
   // Merge search and hash
-  let params = {
+  const params = {
     ...parsedSearch,
     ...parsedHash,
   };

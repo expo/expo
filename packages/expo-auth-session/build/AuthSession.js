@@ -42,7 +42,7 @@ export async function startAsync(options) {
             throw new Error('Unexpected AuthSession result with missing type');
         }
     }
-    let { params, errorCode } = parseUrl(result.url);
+    const { params, errorCode } = parseUrl(result.url);
     return {
         type: errorCode ? 'error' : 'success',
         params,
@@ -61,21 +61,21 @@ export function getRedirectUrl() {
 }
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
-    let result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
+    const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
     if (result.type === 'cancel' || result.type === 'dismiss') {
         return { type: result.type };
     }
     return result;
 }
 function parseUrl(url) {
-    let parts = url.split('#');
-    let hash = parts[1];
-    let partsWithoutHash = parts[0].split('?');
-    let queryString = partsWithoutHash[partsWithoutHash.length - 1];
+    const parts = url.split('#');
+    const hash = parts[1];
+    const partsWithoutHash = parts[0].split('?');
+    const queryString = partsWithoutHash[partsWithoutHash.length - 1];
     // Get query string (?hello=world)
-    let parsedSearch = qs.parse(queryString);
+    const parsedSearch = qs.parse(queryString);
     // Pull errorCode off of params
-    let { errorCode } = parsedSearch;
+    const { errorCode } = parsedSearch;
     delete parsedSearch.errorCode;
     // Get hash (#abc=example)
     let parsedHash = {};
@@ -83,7 +83,7 @@ function parseUrl(url) {
         parsedHash = qs.parse(hash);
     }
     // Merge search and hash
-    let params = {
+    const params = {
         ...parsedSearch,
         ...parsedHash,
     };
