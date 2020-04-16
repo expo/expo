@@ -546,7 +546,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   NSURL *localUri = [NSURL URLWithString:localUriString];
   if (!([self checkIfFileDirExists:localUri.path])) {
     reject(@"E_FILESYSTEM_WRONG_DESTINATION",
-           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", localUriString],
+           [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", localUriString, [localUri.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
@@ -601,7 +601,7 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   NSURL *localUrl = [NSURL URLWithString:fileUri];
   if (!([self checkIfFileDirExists:localUrl.path])) {
     reject(@"E_FILESYSTEM_WRONG_DESTINATION",
-           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", fileUri],
+           [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", fileUri, [localUrl.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
