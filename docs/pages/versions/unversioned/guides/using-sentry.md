@@ -76,7 +76,7 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 > - authToken = SENTRY_AUTH_TOKEN
 > - (optional) url = SENTRY_URL
 >
-> You can use these in your [`app.config`](../../workflow/configuration#appconfig), or pass them in directly like this:
+> You can use these in your [`app.config`](../../workflow/configuration/#appconfig), or pass them in directly like this:
 >
 > ```
 > SENTRY_PROJECT=myCoolProject expo publish
