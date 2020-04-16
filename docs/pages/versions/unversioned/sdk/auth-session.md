@@ -62,7 +62,9 @@ const FB_APP_ID = 'YOUR_APP_ID';
 /* @end */
 
 /* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
+if (Platform.OS === 'web') {
+  WebBrowser.maybeCompleteAuthSession();
+}
 /* @end */
 
 export default function App() {
@@ -91,9 +93,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Open FB Auth" onPress={handlePressAsync} />
-      /* @info In this example, show the authentication result after success. In a real application,
-      this would be a weird thing to do, instead you would use this data to match the user with a user
-      in your application and sign them in. */
+      /* @info In this example, show the authentication result after success. In a real application, this would be a weird thing to do, instead you would use this data to match the user with a user in your application and sign them in. */
       {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
       /* @end */
     </View>
