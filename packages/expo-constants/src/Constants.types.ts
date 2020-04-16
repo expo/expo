@@ -39,6 +39,7 @@ export interface AppManifest {
   orientation?: string;
   primaryColor?: string;
   icon?: string;
+  releaseChannel?: string;
   notification?: {
     icon?: string;
     color?: string;
