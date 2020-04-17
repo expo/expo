@@ -114,7 +114,7 @@ public class FileSystemModule extends ExportedModule {
     File file = uriToFile(uri);
     File dir = file.getParentFile();
     if (!dir.exists()) {
-      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist. Please make sure directory '" + file.getParent() + "' exists before calling downloadAsync.");
     }
   }
 
