@@ -1,6 +1,9 @@
 import amplitude from 'amplitude-js'
 
-const ExpoAmplitude = {
+export default {
+  get name(): string {
+    return 'ExpoAmplitude';
+  },
   initialize: (apiKey: string, options?: amplitude.Config) => {
     amplitude.getInstance().init(apiKey, undefined, options)
   },
@@ -16,5 +19,3 @@ const ExpoAmplitude = {
   },
   setGroup: amplitude.getInstance().setGroup,
 }
-
-export default ExpoAmplitude
