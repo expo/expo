@@ -1,6 +1,6 @@
 import DeviceSensor from './DeviceSensor';
 export interface DeviceMotionMeasurement {
-    acceleration: {
+    acceleration: null | {
         x: number;
         y: number;
         z: number;
@@ -18,7 +18,7 @@ export interface DeviceMotionMeasurement {
     /**
      * Device's rate of rotation in space expressed in degrees per second (deg/s).
      */
-    rotationRate: {
+    rotationRate: null | {
         /**
          * x axis rotation.
          */
