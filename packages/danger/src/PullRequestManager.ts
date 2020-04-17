@@ -26,6 +26,11 @@ export type ChangelogEntries = {
 
 export type PullRequest = GitHubPRDSL | Octokit.PullsListResponseItem;
 
+type ParsingResult = {
+  packageName: string | typeof DEFAULT_CHANGELOG_ENTRY_KEY;
+  type: ChangelogEntryType;
+};
+
 const dangerMessage = `Add missing changelog`;
 const dangerTags = `[danger][bot]`;
 
@@ -50,14 +55,9 @@ export class PullRequestManager {
     };
 
     const parseLine: (line: string) => void = line => {
-      const tags = this.parseTagsFromLine(line);
-      if (!tags) {
-        warn(`Couldn't parse line: ${line}.`);
-        return;
-      }
-
-      changelogEntries[tags.packageName] = {
-        type: tags.type,
+      const parsingResult = this.parseTagsFromLine(line);
+      changelogEntries[parsingResult.packageName] = {
+        type: parsingResult.type,
         message: line.replace(/\[.*\]/, '').trim(),
       };
     };
@@ -120,13 +120,8 @@ export class PullRequestManager {
     });
   }
 
-  private parseTagsFromLine(
-    line: string
-  ): { packageName: string | typeof DEFAULT_CHANGELOG_ENTRY_KEY; type: ChangelogEntryType } | null {
-    const result: {
-      packageName: string | typeof DEFAULT_CHANGELOG_ENTRY_KEY;
-      type: ChangelogEntryType;
-    } = {
+  private parseTagsFromLine(line: string): ParsingResult {
+    const result: ParsingResult = {
       type: DEFAULT_ENTRY_TYPE,
       packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
     };
@@ -138,7 +133,7 @@ export class PullRequestManager {
 
     for (const tag of tags) {
       const entryType = parseEntryType(tag);
-      if (entryType) {
+      if (entryType !== null) {
         result.type = Math.max(result.type, entryType);
       } else if (isExpoPackage(tag)) {
         result.packageName = tag.replace(/\[|\]/g, '').trim();
@@ -158,12 +153,12 @@ export function createPullRequestManager(api: Octokit, pr: PullRequest): PullReq
 
 function parseEntryType(tag: string): ChangelogEntryType | null {
   switch (true) {
-    case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
-      return ChangelogEntryType.BUG_FIXES;
-    case /\b(feat|features?)\b/i.test(tag):
-      return ChangelogEntryType.NEW_FEATURES;
     case /\b(break(ing)?)\b/i.test(tag):
       return ChangelogEntryType.BREAKING_CHANGES;
+    case /\b(feat|features?)\b/i.test(tag):
+      return ChangelogEntryType.NEW_FEATURES;
+    case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
+      return ChangelogEntryType.BUG_FIXES;
   }
   return null;
 }
