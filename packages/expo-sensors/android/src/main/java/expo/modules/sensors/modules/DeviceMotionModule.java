@@ -34,7 +34,7 @@ import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
 
 public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
-  private int mUpdateInterval = 100;
+  private int mUpdateInterval = 1.0f / 60.0f;
   private float[] mRotationMatrix = new float[9];
   private float[] mRotationResult = new float[3];
 
