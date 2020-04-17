@@ -598,10 +598,10 @@ jobs:
       - run:
           name: Build
           command: fastlane ios create_simulator_build
-      - save_cache:
-          key: client-ios-simulator-{{ .Revision }}
+      - persist_to_workspace:
+          root: ios
           paths:
-            - ~/project/ios/simulator-build
+            - simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
       - job-status-change/status
@@ -618,8 +618,8 @@ jobs:
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
-      - restore_cache:
-          key: client-ios-simulator-{{ .Revision }}
+      - attach_workspace:
+          at: ios/simulator-build
       - run: expotools client-build --platform ios --release
 
   expo_client_build:
