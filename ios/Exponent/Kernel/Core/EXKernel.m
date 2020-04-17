@@ -11,6 +11,7 @@
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
 #import "EXHomeModule.h"
+#import "EXDevMenuManager.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
@@ -63,6 +64,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
+
+    // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
+    [[EXDevMenuManager sharedInstance] setDelegate:self];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -270,12 +274,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      if ([self->_browserController isMenuVisible]) {
-        EXHomeModule *homeModule = [self nativeModuleForAppManager:self->_appRegistry.homeAppRecord.appManager named:@"ExponentKernel"];
-        [homeModule requestToCloseDevMenu];
-      } else {
-        [self->_browserController toggleMenuWithCompletion:nil];
-      }
+      [[EXDevMenuManager sharedInstance] toggle];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -402,6 +401,26 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       [self->_browserController moveAppToVisible:appRecord];
     }];
   }
+}
+
+#pragma mark - EXDevMenuDelegateProtocol
+
+- (RCTBridge *)mainBridgeForDevMenuManager:(EXDevMenuManager *)manager
+{
+  return _appRegistry.homeAppRecord.appManager.reactBridge;
+}
+
+- (nullable RCTBridge *)appBridgeForDevMenuManager:(EXDevMenuManager *)manager
+{
+  if (_visibleApp == _appRegistry.homeAppRecord) {
+    return nil;
+  }
+  return _visibleApp.appManager.reactBridge;
+}
+
+- (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility
+{
+  return !visibility || _visibleApp != _appRegistry.homeAppRecord;
 }
 
 @end
