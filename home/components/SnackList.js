@@ -6,7 +6,7 @@ import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { useTheme, withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
-import SnackCard from './SnackCard';
+import SnackListItem from './SnackListItem';
 
 @withNavigation
 class SnackList extends React.PureComponent {
@@ -105,13 +105,11 @@ class SnackList extends React.PureComponent {
 
   _renderItem = ({ item: snack, index }) => {
     return (
-      <SnackCard
+      <SnackListItem
         key={index.toString()}
-        projectName={snack.name}
-        slug={snack.slug}
-        projectUrl={snack.fullName}
-        description={snack.description}
-        fullWidthBorder
+        url={snack.fullName}
+        title={snack.name}
+        subtitle={snack.description}
       />
     );
   };
