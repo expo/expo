@@ -15,7 +15,7 @@
 - (nonnull RCTBridge *)mainBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 /**
- * Returns the bridge of the currently shown app. It as a context of what the dev menu displays.
+ * Returns the bridge of the currently shown app. It is a context of what the dev menu displays.
  */
 - (nullable RCTBridge *)appBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
