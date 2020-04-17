@@ -352,9 +352,9 @@ UM_REGISTER_MODULE();
       };
       // Rate of rotation of the hosting device in space expressed in degrees per second.
       result[@"rotationRate"] = @{
-        @"alpha": @([strongSelf radiansToDegrees:data.rotationRate.z]),
+        @"alpha": @([strongSelf radiansToDegrees:data.rotationRate.x]),
         @"beta": @([strongSelf radiansToDegrees:data.rotationRate.y]),
-        @"gamma": @([strongSelf radiansToDegrees:data.rotationRate.x])
+        @"gamma": @([strongSelf radiansToDegrees:data.rotationRate.z])
       };
     }
 
