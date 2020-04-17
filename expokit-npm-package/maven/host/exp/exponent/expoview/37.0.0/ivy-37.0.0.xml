@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="37.0.0" status="integration" publication="20200409165554"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="37.0.0" status="integration" publication="20200417104832"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -291,7 +291,7 @@
     <dependency org="host.exp.exponent" name="expo-sqlite" rev="8.1.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-task-manager" rev="8.1.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-video-thumbnails" rev="4.1.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-web-browser" rev="8.1.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-web-browser" rev="8.1.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="unimodules-app-loader" rev="1.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-barcode-scanner-interface" rev="5.1.0" conf="compileOnly-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-camera-interface" rev="5.1.0" conf="compileOnly-&gt;default"/>

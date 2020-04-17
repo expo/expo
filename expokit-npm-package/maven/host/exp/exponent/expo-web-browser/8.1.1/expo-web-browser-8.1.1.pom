@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-web-browser</artifactId>
-  <version>8.1.0</version>
+  <version>8.1.1</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>

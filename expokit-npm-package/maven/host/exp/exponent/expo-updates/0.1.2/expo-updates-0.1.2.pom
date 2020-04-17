@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-updates</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
