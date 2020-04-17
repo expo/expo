@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMPermissionsInterface'
+  s.dependency 'UMFileSystemInterface'
 end
