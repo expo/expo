@@ -372,7 +372,6 @@ workflows:
       - home
       - expotools
       - client_android
-      - client_ios
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
@@ -404,18 +403,18 @@ workflows:
       - client_android_apk_release:
           requires:
             - client_android_apk_release_approve
-      - client_ios_simulator_release_approve:
-          type: approval
-          requires:
-            - client_ios
-          filters:
-            branches:
-              only:
-                - /.*sdk-\d+/
-                - /.*all-ci.*/
+      - client_ios:
+          filters:  # run for ALL branches, and ios-simulator-v* tags
+            tags:
+              only: /^ios-simulator-v*/
       - client_ios_simulator_release:
           requires:
-            - client_ios_simulator_release_approve
+            - client_ios
+          filters:  # run for NO branches, and ios-simulator-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^ios-simulator-v*/
 
   shell_app:
     jobs:
