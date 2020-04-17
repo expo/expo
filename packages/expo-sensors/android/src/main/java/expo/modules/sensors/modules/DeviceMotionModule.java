@@ -251,9 +251,9 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     }
 
     if (mRotationRateEvent != null) {
-      rotationRate.putDouble("alpha", Math.toDegrees(mRotationRateEvent.values[2]));
-      rotationRate.putDouble("beta", Math.toDegrees(mRotationRateEvent.values[0]));
-      rotationRate.putDouble("gamma", Math.toDegrees(mRotationRateEvent.values[1]));
+      rotationRate.putDouble("alpha", Math.toDegrees(mRotationRateEvent.values[0]));
+      rotationRate.putDouble("beta", Math.toDegrees(mRotationRateEvent.values[1]));
+      rotationRate.putDouble("gamma", Math.toDegrees(mRotationRateEvent.values[2]));
       map.putBundle("rotationRate", rotationRate);
       interval = mRotationRateEvent.timestamp;
     }

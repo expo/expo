@@ -17,11 +17,27 @@ export interface DeviceMotionMeasurement {
     beta: number;
     gamma: number;
   };
+  /**
+   * Device's rate of rotation in space expressed in degrees per second (deg/s).
+   */
   rotationRate: {
+    /**
+     * x axis rotation.
+     */
     alpha: number;
+    /**
+     * y axis rotation.
+     */
     beta: number;
+    /**
+     * z axis rotation.
+     */
     gamma: number;
   };
+  /**
+   * Interval at which data is obtained from the native platform. Expressed in **milliseconds**.
+   */
+  interval: number;
   orientation: number;
 }
 
