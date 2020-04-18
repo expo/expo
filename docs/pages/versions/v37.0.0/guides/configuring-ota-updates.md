@@ -25,12 +25,14 @@ Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will p
 You can then use the [`Updates`](../../sdk/updates/) module to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```javascript
+import * as Updates from 'expo-updates';
+
 try {
   const update = await Updates.checkForUpdateAsync();
   if (update.isAvailable) {
     await Updates.fetchUpdateAsync();
     // ... notify user of update ...
-    Updates.reloadFromCache();
+    await Updates.reloadAsync();
   }
 } catch (e) {
   // handle or log error

@@ -27,7 +27,7 @@
   "expo-facebook": "~8.1.0",
   "expo-file-system": "~8.1.0",
   "expo-firebase-core": "~1.0.0",
-  "expo-firebase-analytics": "~2.1.2",
+  "expo-firebase-analytics": "~2.2.0",
   "expo-font": "~8.1.1",
   "expo-gl": "~8.1.0",
   "expo-gl-cpp": "~8.1.0",

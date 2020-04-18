@@ -14,56 +14,30 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 <InstallSection packageName="expo-auth-session" />
 
-<details>
-  <summary>Adding native URI schemes in bare workflow</summary>
+In **bare-workflow** you can use the [`uri-scheme` package](https://www.npmjs.com/package/uri-scheme) to easily add, remove, list, and open your URIs.
 
-### Configure for iOS
+To make your native app handle `mycoolredirect://` simply run:
 
-For iOS 10 and older, you need to set the supported redirect URL schemes in your `Info.plist`:
-
-```plist
-<key>CFBundleURLTypes</key>
-<array>
-  <dict>
-    <key>CFBundleURLName</key>
-    <string>com.your.app.identifier</string>
-    <key>CFBundleURLSchemes</key>
-    <array>
-      <string>com.myapp.coolredirect</string>
-    </array>
-  </dict>
-</array>
+```sh
+npx uri-scheme mycoolredirect
 ```
 
-> If you use `com.myapp.coolredirect` then your `redirectUri`s should look something like `com.myapp.coolredirect:/oauthredirect`
+You should now be able to see a list of all your project's schemes by running:
 
-- `CFBundleURLName` a globally unique string. Usually you want to use your app iOS bundle identifier.
-- `CFBundleURLSchemes` an array of URL schemes your app can accept. The scheme is the prefix to your OAuth redirect URL.
-
-### Configure for Android
-
-When the auth request is complete it will redirect to your native app. For this to work you need to add a redirect scheme. This is similar to setting up deep-linking.
-
-In your `android/app/build.gradle`:
-
-```groovy
-android {
-  defaultConfig {
-    // ...
-    manifestPlaceholders = [
-      // This is the prefix for your OAuth redirect URL
-      // Note: it doesn't need to match the Android package name.
-      appAuthRedirectScheme: 'com.myapp.coolredirect'
-    ]
-  }
-}
+```sh
+npx uri-scheme list
 ```
 
-> If you use `com.myapp.coolredirect` then your `redirectUri`s should look something like `com.myapp.coolredirect:/oauthredirect`
+You can test it to ensure it works like this:
 
-For more customization (like https redirects) please refer to the native docs: [capturing the authorization redirect](https://github.com/openid/AppAuth-android#capturing-the-authorization-redirect).
+```sh
+# Rebuild the native apps, be sure to use an emulator
+npx react-native run-ios
+npx react-native run-android
 
-</details>
+# Open a URI scheme
+npx uri-scheme open mycoolredirect://some/redirect
+```
 
 ## How web browser based authentication flows work
 
@@ -112,7 +86,9 @@ import * as WebBrowser from 'expo-web-browser';
 import { Linking } from 'expo';
 
 /* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
+if (Platform.OS === 'web') {
+  WebBrowser.maybeCompleteAuthSession();
+}
 /* @end */
 
 /* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */

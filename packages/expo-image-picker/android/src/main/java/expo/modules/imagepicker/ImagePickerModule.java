@@ -643,7 +643,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     Bundle response = new Bundle();
     response.putString("uri", uri);
     if (base64) {
-      response.putString("base64", Base64.encodeToString(base64OutputStream.toByteArray(), Base64.DEFAULT));
+      response.putString("base64", Base64.encodeToString(base64OutputStream.toByteArray(), Base64.NO_WRAP));
     }
     response.putInt("width", width);
     response.putInt("height", height);

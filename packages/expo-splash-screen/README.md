@@ -300,8 +300,10 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
 
-### Manual Configuration
+🚨The automatic configuration tool is brand new and you may run into issues when using it as we finish polishing it up. If you are unable to run it successfully, please undo the changes made by the command and refer to the "Manual Configuration" section below.
 
+
+### Manual Configuration
 
 #### `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
 
@@ -313,7 +315,7 @@ You can use this method to customize how the splash screen view will be presente
 
 Modify `MainActivity.{java,kt}` or any other activity that is marked in the application main `AndroidManifest.xml` as a main activity of your application (main activity is marked with the [`android.intent.action.MAIN`](https://developer.android.com/reference/android/content/Intent#ACTION_MAIN) intent filter. You can take a look at [this example from official Android docs](https://developer.android.com/guide/topics/manifest/manifest-intro#example)).
 
-Ensure `SplashScreen.show(...)` method is called after `super.onCreate(...)` (if `onCreate` method is not overwritten yet, override it including `SplashScreen.show(...)`).
+Ensure `SplashScreen.show(...)` method is called after `super.onCreate(...)`
 
 ```diff
 + import expo.modules.splashscreen.SplashScreen;
@@ -326,6 +328,27 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
++   // SplashScreen.show(...) has to be called after super.onCreate(...)
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
+    ...
+  }
+
+  // other methods
+}
+```
+
+If the `onCreate` method is not yet overridden in your `MainActivity`, override it and include `SplashScreen.show(...)`
+
+```diff
++ import android.os.Bundle;
++ import expo.modules.splashscreen.SplashScreen;
++ import expo.modules.splashscreen.SplashScreenImageResizeMode;
+
+public class MainActivity extends ReactActivity {
+
++  @Override
++  protected void onCreate(Bundle savedInstanceState) {
++    super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
 +   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
     ...

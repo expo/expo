@@ -62,19 +62,20 @@ const FB_APP_ID = 'YOUR_APP_ID';
 /* @end */
 
 /* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-WebBrowser.maybeCompleteAuthSession();
+if (Platform.OS === 'web') {
+  WebBrowser.maybeCompleteAuthSession();
+}
 /* @end */
 
 export default function App() {
   const [result, setResult] = React.useState(null);
 
   const handlePressAsync = async () => {
-    let managedUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
+    let redirectUrl = /* @info <strong>AuthSession.getRedirectUrl()</strong> gets the appropriate URL on <em>https://auth.expo.io</em> to redirect back to your application. Read more about it below. */ AuthSession.getRedirectUrl(); /* @end */
 
     let result = /* @info <strong>AuthSession.startAsync</strong> returns a Promise that resolves to an object with the information that was passed back from your authentication provider, for example the user id. */ await AuthSession.startAsync(
       /* @end */ {
         /* @info authUrl is a required parameter -- it is the URL that points to the sign in page for your chosen authentication service (in this case, we are using Facebook sign in) */ /* @end */
-        returnUrl: Platform.select({ web: redirectUrl }),
         authUrl:
           /* @info The particular URL and the format you need to use for this depend on your authentication service. For Facebook, information was found <a href='https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/' target='_blank'>here</a>.*/ `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` /* @end */ +
           `&client_id=${FB_APP_ID}` +
@@ -91,9 +92,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Open FB Auth" onPress={handlePressAsync} />
-      /* @info In this example, show the authentication result after success. In a real application,
-      this would be a weird thing to do, instead you would use this data to match the user with a user
-      in your application and sign them in. */
+      /* @info In this example, show the authentication result after success. In a real application, this would be a weird thing to do, instead you would use this data to match the user with a user in your application and sign them in. */
       {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
       /* @end */
     </View>
