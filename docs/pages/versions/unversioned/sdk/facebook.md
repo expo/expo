@@ -28,14 +28,15 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 - **The Expo client app**
 
-  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
+  - In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. To use your app's own Facebook App ID (and thus send related app events to your Facebook developer console), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
+  - Add `host.exp.exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
 
 ![](/static/images/facebook-app-settings.png)
 
 - **iOS standalone app**
 
   - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured above. If you still have the `host.exp.Exponent` ID listed there, remove it.
-  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
   - Also in your [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
 - **Android standalone app**
