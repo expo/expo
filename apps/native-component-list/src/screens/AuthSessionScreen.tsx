@@ -204,7 +204,7 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
   return (
     <AuthSection
       title="Okta"
-      disabled={isInClient || Platform.OS === 'web'}
+      disabled={Platform.OS === 'web'}
       request={request}
       result={result}
       promptAsync={promptAsync}
