@@ -41,6 +41,4 @@ do
   throwIfFileDoesntExist $PATH_TO_CHECK
 done
 
-throwIfFileDoesntExist "android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java"
-
 popd
