@@ -4,7 +4,7 @@ export default {
   get name(): string {
     return 'ExpoAmplitude';
   },
-  initialize: (apiKey: string, options?: amplitude.Config) => {
+  initialize(apiKey: string, options?: amplitude.Config) {
     amplitude.getInstance().init(apiKey, undefined, options)
   },
   setUserId: amplitude.getInstance().setUserId,
