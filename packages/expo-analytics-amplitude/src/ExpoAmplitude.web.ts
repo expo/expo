@@ -21,7 +21,7 @@ export default {
   },
   logEventWithProperties(
     eventName: string,
-    properties: { [name: string]: any },
+    properties: Record<string, any>,
   ) {
     amplitude.getInstance().logEvent(eventName, properties)
   },
