@@ -85,7 +85,7 @@ async function action(options) {
   }
 }
 
-export default program => {
+export default (program) => {
   program
     .command('generate-sdk-docs')
     .option('--sdk <string>', 'SDK version of docs to generate.')

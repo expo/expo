@@ -14,7 +14,7 @@ export async function getAvailableProjectTemplatesAsync(): Promise<Template[]> {
   const templates = await fs.readdir(TEMPLATES_DIR);
 
   return Promise.all<Template>(
-    templates.map(async template => {
+    templates.map(async (template) => {
       const packageJson = await JsonFile.readAsync<Template>(
         path.join(TEMPLATES_DIR, template, 'package.json')
       );

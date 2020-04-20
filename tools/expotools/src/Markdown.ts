@@ -99,7 +99,7 @@ class ExpoChangelogRenderer {
   blockquote(quote: string): string {
     const text = quote
       .split(EOL)
-      .map(line => '> ' + line)
+      .map((line) => '> ' + line)
       .join(EOL);
 
     return text + EOL;
