@@ -184,11 +184,11 @@ Finally, the following props are available to control the playback of the video,
 
 - `videoRef.dismissFullscreenPlayer()`
 
-This dismisses the fullscreen video view.
+  This dismisses the fullscreen video view.
 
-#### Returns
+  #### Returns
 
-A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
+  A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
 The rest of the API on the `Video` component ref is the same as the API for `Audio.Sound`-- see the [AV documentation](../av/) for further information:
 

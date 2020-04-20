@@ -74,7 +74,7 @@ export class Changelog {
   async addChangeAsync(entry: ChangelogEntry): Promise<void> {
     const tokens = [...(await this.getTokensAsync())];
     const sectionIndex = tokens.findIndex(
-      token =>
+      (token) =>
         token.type === Markdown.TokenType.HEADING &&
         token.depth === VERSION_HEADING_DEPTH &&
         token.text === entry.version
@@ -94,11 +94,13 @@ export class Changelog {
           entry.message[entry.message.length - 1] === '.' ? entry.message : `${entry.message}.`;
 
         const pullRequestLinks = (entry.pullRequests || [])
-          .map(pullRequest => `[#${pullRequest}](https://github.com/expo/expo/pull/${pullRequest})`)
+          .map(
+            (pullRequest) => `[#${pullRequest}](https://github.com/expo/expo/pull/${pullRequest})`
+          )
           .join(', ');
 
         const authors = entry.authors
-          .map(author => `[@${author}](https://github.com/${author})`)
+          .map((author) => `[@${author}](https://github.com/${author})`)
           .join(', ');
 
         const pullRequestInformations = `${pullRequestLinks} by ${authors}`.trim();

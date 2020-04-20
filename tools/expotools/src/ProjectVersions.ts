@@ -34,7 +34,7 @@ export async function androidAppVersionAsync(): Promise<string> {
   const match = buildGradleContent.match(/versionName ['"]([^'"]+?)['"]/);
 
   if (!match) {
-    throw new Error('Can\'t obtain `versionName` from app\'s build.gradle');
+    throw new Error("Can't obtain `versionName` from app's build.gradle");
   }
   return match[1];
 }

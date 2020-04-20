@@ -11,7 +11,9 @@ type ActionOptions = {
 };
 
 async function generateModuleWithExpoCLI(unimoduleDirectory) {
-  console.log(`Creating new unimodule under ${chalk.magenta(path.relative(EXPO_DIR, unimoduleDirectory))}...`);
+  console.log(
+    `Creating new unimodule under ${chalk.magenta(path.relative(EXPO_DIR, unimoduleDirectory))}...`
+  );
 
   await spawnAsync('expo', ['generate-module', unimoduleDirectory], {
     cwd: EXPO_DIR,
@@ -22,7 +24,11 @@ async function generateModuleWithExpoCLI(unimoduleDirectory) {
 async function setupExpoModuleScripts(unimoduleDirectory) {
   const packageJsonPath = path.join(unimoduleDirectory, 'package.json');
   const packageJson = new JsonFile(packageJsonPath);
-  const moduleScriptsVersion = await JsonFile.getAsync(path.join(PACKAGES_DIR, 'expo-module-scripts', 'package.json'), 'version', '') as string;
+  const moduleScriptsVersion = (await JsonFile.getAsync(
+    path.join(PACKAGES_DIR, 'expo-module-scripts', 'package.json'),
+    'version',
+    ''
+  )) as string;
 
   console.log(`Installing ${chalk.bold.green('expo-module-scripts')}...`);
 
@@ -33,27 +39,27 @@ async function setupExpoModuleScripts(unimoduleDirectory) {
   console.log(`Setting up ${chalk.magenta(path.relative(EXPO_DIR, packageJsonPath))}...`);
 
   await packageJson.setAsync('scripts', {
-    'build': 'expo-module build',
-    'clean': 'expo-module clean',
-    'lint': 'expo-module lint',
-    'test': 'expo-module test',
-    'prepare': 'expo-module prepare',
-    'prepublishOnly': 'expo-module prepublishOnly',
-    'expo-module': 'expo-module'
+    build: 'expo-module build',
+    clean: 'expo-module clean',
+    lint: 'expo-module lint',
+    test: 'expo-module test',
+    prepare: 'expo-module prepare',
+    prepublishOnly: 'expo-module prepublishOnly',
+    'expo-module': 'expo-module',
   });
 
   await packageJson.setAsync('repository', {
-    'type': 'git',
-    'url': 'https://github.com/expo/expo.git',
-    'directory': path.relative(EXPO_DIR, unimoduleDirectory),
+    type: 'git',
+    url: 'https://github.com/expo/expo.git',
+    directory: path.relative(EXPO_DIR, unimoduleDirectory),
   });
 
   await packageJson.setAsync('bugs', {
-    'url': 'https://github.com/expo/expo/issues',
+    url: 'https://github.com/expo/expo/issues',
   });
 
   await packageJson.setAsync('jest', {
-    'preset': 'expo-module-scripts/ios',
+    preset: 'expo-module-scripts/ios',
   });
 
   // `expo generate-module` left some junk fields in package.json

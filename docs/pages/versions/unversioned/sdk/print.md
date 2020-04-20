@@ -22,13 +22,13 @@ import * as Print from 'expo-print';
 
 ### `Print.printAsync(options)`
 
-Prints a document or HTML.
+Prints a document or HTML, on web this prints the HTML from the page.
 
 #### Arguments
 
 - **options (_object_)** -- A map defining what should be printed:
-  - **uri (_string_)** -- URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI starting with `data:application/pdf;base64,`. This only supports PDF, not other types of document (e.g. images).
-  - **html (_string_)** -- HTML string to print.
+  - **uri (_string_)** -- URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI starting with `data:application/pdf;base64,`. This only supports PDF, not other types of document (e.g. images). **Available on Android and iOS only.**
+  - **html (_string_)** -- HTML string to print. **Available on Android and iOS only.**
   - **width (_number_)** -- Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper format with 72 PPI. **Available only with `html` option.**
   - **height (_number_)** -- Height of the single page in pixels. Defaults to `792` which is a height of US Letter paper format with 72 PPI. **Available only with `html` option.**
   - **markupFormatterIOS (_string_)** -- **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter) instead of WebView. Might be removed in the future releases.
@@ -41,7 +41,7 @@ Prints a document or HTML.
 
 ### `Print.printToFileAsync(options)`
 
-Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#expofilesystemcachedirectory).
+Prints HTML to PDF file and saves it to [app's cache directory](../filesystem/#expofilesystemcachedirectory). On web this method opens the print dialog.
 
 #### Arguments
 

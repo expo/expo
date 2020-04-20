@@ -13,7 +13,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf build",
-    "et": "bin/expotools.js"
+    "et": "bin/expotools.js",
+    "postinstall": "expo-module configure"
   },
   "bin": {
     "et": "bin/expotools.js",
@@ -77,7 +78,11 @@
     "xcode": "^2.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.0",
     "@types/fs-extra": "^8.1.0",
+    "babel-preset-expo": "^8.1.0",
+    "expo-module-scripts": "^1.2.0",
+    "prettier": "^2.0.4",
     "typescript": "^3.8.3"
   }
 }

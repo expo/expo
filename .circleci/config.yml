@@ -372,7 +372,6 @@ workflows:
       - home
       - expotools
       - client_android
-      - client_ios
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
@@ -404,18 +403,18 @@ workflows:
       - client_android_apk_release:
           requires:
             - client_android_apk_release_approve
-      - client_ios_simulator_release_approve:
-          type: approval
-          requires:
-            - client_ios
-          filters:
-            branches:
-              only:
-                - /.*sdk-\d+/
-                - /.*all-ci.*/
+      - client_ios:
+          filters:  # run for ALL branches, and ios-simulator-v* tags
+            tags:
+              only: /^ios-simulator-v*/
       - client_ios_simulator_release:
           requires:
-            - client_ios_simulator_release_approve
+            - client_ios
+          filters:  # run for NO branches, and ios-simulator-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^ios-simulator-v*/
 
   shell_app:
     jobs:
@@ -598,10 +597,10 @@ jobs:
       - run:
           name: Build
           command: fastlane ios create_simulator_build
-      - save_cache:
-          key: client-ios-simulator-{{ .Revision }}
+      - persist_to_workspace:
+          root: ios
           paths:
-            - ~/project/ios/simulator-build
+            - simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
       - job-status-change/status
@@ -618,8 +617,8 @@ jobs:
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
-      - restore_cache:
-          key: client-ios-simulator-{{ .Revision }}
+      - attach_workspace:
+          at: ios/simulator-build
       - run: expotools client-build --platform ios --release
 
   expo_client_build:
@@ -706,12 +705,7 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - decrypt_secrets_if_possible
       - install_yarn
-      - yarn_install:
-          working_directory: ~/project/tools-public
-      - yarn_install:
-          working_directory: ~/project/tools
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
       - run:

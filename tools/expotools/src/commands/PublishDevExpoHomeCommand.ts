@@ -210,7 +210,8 @@ async function action(options: ActionOptions): Promise<void> {
   await updateDevHomeConfigAsync(url);
 
   console.log(
-    chalk.yellow(`Finished publishing. Remember to commit changes of ${chalk.magenta(
+    chalk.yellow(
+      `Finished publishing. Remember to commit changes of ${chalk.magenta(
         'home/app.json'
       )} and ${chalk.magenta('dev-home-config.json')}.`
     )

@@ -154,14 +154,18 @@ async function copyTemplateFileAsync(
 }
 
 type TemplatePaths = Record<string, string>;
-type CheckIgnoredTemplatePaths = string[];
+type TemplatePathsFile = {
+  paths: TemplatePaths;
+  generateOnly: TemplatePaths;
+};
 
 async function copyTemplateFilesAsync(platform: string, args: any, templateSubstitutions: any) {
   const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
-  const templatePaths = (await new JsonFile(
+  const templatePathsFile = (await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
-  ).readAsync()) as TemplatePaths;
-  const checkIgnoredTemplatePaths = await readCheckIgnoredTemplatePaths(platform);
+  ).readAsync()) as TemplatePathsFile;
+  const templatePaths = { ...templatePathsFile.paths, ...templatePathsFile.generateOnly };
+  const checkIgnoredTemplatePaths = Object.values(templatePathsFile.generateOnly);
   const promises: Promise<any>[] = [];
   const skipTemplates: string[] = args.skipTemplates || [];
   for (const [source, dest] of Object.entries(templatePaths)) {
@@ -173,7 +177,7 @@ async function copyTemplateFilesAsync(platform: string, args: any, templateSubst
       continue;
     }
 
-    const isOptional = checkIgnoredTemplatePaths.includes(source);
+    const isOptional = checkIgnoredTemplatePaths.includes(dest);
     console.log(
       'Rendering %s from template %s %s...',
       chalk.cyan(path.join(EXPO_DIR, dest)),
@@ -193,16 +197,6 @@ async function copyTemplateFilesAsync(platform: string, args: any, templateSubst
   }
 
   await Promise.all(promises);
-}
-
-async function readCheckIgnoredTemplatePaths(platform: string): Promise<CheckIgnoredTemplatePaths> {
-  const fileContents = (await readExistingSourceAsync(`${platform}-paths.check-ignore`)) || '';
-  const fileContentsTrimmed = fileContents.trim();
-  if (fileContentsTrimmed) {
-    return fileContentsTrimmed.split('\n');
-  } else {
-    return [];
-  }
 }
 
 export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutionsAsync };
