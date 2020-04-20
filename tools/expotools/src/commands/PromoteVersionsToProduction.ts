@@ -13,7 +13,7 @@ async function action() {
 
   // since there is only one versions cache, we need to wait a small
   // amount of time so that the cache is invalidated before fetching from prod
-  await new Promise(resolve => setTimeout(resolve, 10));
+  await new Promise((resolve) => setTimeout(resolve, 10));
 
   Config.api.host = PRODUCTION_API_HOST;
   const versionsProd = await Versions.versionsAsync();

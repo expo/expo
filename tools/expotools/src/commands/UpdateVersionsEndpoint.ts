@@ -39,7 +39,9 @@ async function askForCorrectnessAsync(): Promise<boolean> {
     {
       type: 'confirm',
       name: 'isCorrect',
-      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green('staging')} config.`,
+      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green(
+        'staging'
+      )} config.`,
       default: true,
     },
   ]);
@@ -62,10 +64,10 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
     return;
   }
 
-  console.log(`\nHere is the diff of changes to apply on ${chalk.green('staging')} version config:`);
   console.log(
-    jsondiffpatch.formatters.console.format(delta!, previousVersions),
+    `\nHere is the diff of changes to apply on ${chalk.green('staging')} version config:`
   );
+  console.log(jsondiffpatch.formatters.console.format(delta!, previousVersions));
 
   const isCorrect = await askForCorrectnessAsync();
 
@@ -79,7 +81,7 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
 
     console.log(
       chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-      chalk.blue(`https://${STAGING_API_HOST}/--/api/v2/versions`),
+      chalk.blue(`https://${STAGING_API_HOST}/--/api/v2/versions`)
     );
   } else {
     console.log(chalk.yellow('Canceled'));
@@ -170,7 +172,10 @@ async function action(options: ActionOptions) {
     delete newVersions.sdkVersions[sdkVersion];
   }
 
-  const delta = jsondiffpatch.diff(versions.sdkVersions[sdkVersion], newVersions.sdkVersions[sdkVersion]);
+  const delta = jsondiffpatch.diff(
+    versions.sdkVersions[sdkVersion],
+    newVersions.sdkVersions[sdkVersion]
+  );
 
   await applyChangesToStagingAsync(delta, versions.sdkVersions[sdkVersion], newVersions);
 }
@@ -191,7 +196,11 @@ export default (program: Command) => {
     .option('-k, --key [string]', 'A custom, dotted key that you want to set in the configuration.')
     .option('-v, --value [any]', 'Value for the custom key to be set in the configuration.')
     .option('--delete', 'Deletes config entry under key specified by `--key` flag.', false)
-    .option('--delete-sdk', 'Deletes configuration for SDK specified by `--sdkVersion` flag.', false)
+    .option(
+      '--delete-sdk',
+      'Deletes configuration for SDK specified by `--sdkVersion` flag.',
+      false
+    )
     .option('--reset', 'Resets changes on staging to the state from production.', false)
     .asyncAction(action);
 };

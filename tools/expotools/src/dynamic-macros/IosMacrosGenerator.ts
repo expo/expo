@@ -21,7 +21,7 @@ async function modifyInfoPlistAsync(
 
   console.log('Modifying Info.plist at %s ...', chalk.cyan(path.relative(EXPO_DIR, infoPlistPath)));
 
-  const result = await IosPlist.modifyAsync(dir, filename, config => {
+  const result = await IosPlist.modifyAsync(dir, filename, (config) => {
     if (templateSubstitutions.FABRIC_API_KEY) {
       config.Fabric = {
         APIKey: templateSubstitutions.FABRIC_API_KEY,
@@ -66,7 +66,7 @@ async function generateBuildConstantsFromMacrosAsync(
     chalk.cyan(path.relative(EXPO_DIR, buildConfigPlistPath))
   );
 
-  const result = await IosPlist.modifyAsync(plistPath, plistName, config => {
+  const result = await IosPlist.modifyAsync(plistPath, plistName, (config) => {
     if (config.USE_GENERATED_DEFAULTS === false) {
       // this flag means don't generate anything, let the user override.
       return config;
