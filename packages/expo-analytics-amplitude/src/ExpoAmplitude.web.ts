@@ -7,15 +7,25 @@ export default {
   initialize(apiKey: string, options?: amplitude.Config) {
     amplitude.getInstance().init(apiKey, undefined, options)
   },
-  setUserId: amplitude.getInstance().setUserId,
-  setUserProperties: amplitude.getInstance().setUserProperties,
-  clearUserProperties: amplitude.getInstance().clearUserProperties,
-  logEvent: amplitude.getInstance().logEvent,
-  logEventWithProperties: (
+  setUserId(userId: string) {
+    amplitude.getInstance().setUserId(userId)
+  },
+  setUserProperties(userProperties: { [name: string]: any }) {
+    amplitude.getInstance().setUserProperties(userProperties)
+  },
+  clearUserProperties() {
+    amplitude.getInstance().clearUserProperties()
+  },
+  logEvent(eventName: string) {
+    amplitude.getInstance().logEvent(eventName)
+  },
+  logEventWithProperties(
     eventName: string,
     properties: { [name: string]: any },
-  ) => {
+  ) {
     amplitude.getInstance().logEvent(eventName, properties)
   },
-  setGroup: amplitude.getInstance().setGroup,
+  setGroup(groupType: string, groupNames: string[]) {
+    amplitude.getInstance().setGroup(groupType, groupNames)
+  }
 }
