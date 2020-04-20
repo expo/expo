@@ -26,7 +26,7 @@ If you get to the point where you need to have full control over the native code
 
 ## Bare workflow
 
-In the bare workflow the developer has complete control, along with the complexity that comes with that. You can use most APIs in the Expo SDK, but the build service, notifications, over-the-air updates, and easy configuration with app.json are not yet supported. You can refer to tutorials and guides that are oriented towards native iOS and Android apps and React Native for alternatives.
+In the bare workflow the developer has complete control, along with the complexity that comes with that. You can use most APIs in the Expo SDK, but the build service and easy configuration with app.json are not yet supported. You can refer to tutorials and guides that are oriented towards native iOS and Android apps and React Native for alternatives.
 
 <!-- <img src="/static/images/project-lifecycle-workflows.png" className="wide-image" /> -->
 
