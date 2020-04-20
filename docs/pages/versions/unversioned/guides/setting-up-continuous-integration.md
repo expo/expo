@@ -400,7 +400,7 @@ publish: &publish
 
     - run:
         name: Installing dependencies
-        command: npm install
+        command: npm ci
 
     - run:
         name: Login into Expo
