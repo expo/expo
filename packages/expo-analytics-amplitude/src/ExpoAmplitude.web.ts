@@ -10,7 +10,7 @@ export default {
   setUserId(userId: string) {
     amplitude.getInstance().setUserId(userId)
   },
-  setUserProperties(userProperties: { [name: string]: any }) {
+  setUserProperties(userProperties: Record<string, any>) {
     amplitude.getInstance().setUserProperties(userProperties)
   },
   clearUserProperties() {
