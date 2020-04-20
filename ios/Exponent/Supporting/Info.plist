@@ -31,6 +31,7 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 		<dict>
@@ -70,6 +71,8 @@
 	</dict>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
+	<key>FacebookAppID</key>
+	<string>1696089354000816</string>
 	<key>FacebookAutoInitEnabled</key>
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
@@ -82,7 +85,18 @@
 	<array>
 		<string>waze</string>
 		<string>fbapi</string>
-		<string>fb-messenger-api</string>
+		<string>fbapi20130214</string>
+		<string>fbapi20130410</string>
+		<string>fbapi20130702</string>
+		<string>fbapi20131010</string>
+		<string>fbapi20131219</string>
+		<string>fbapi20140410</string>
+		<string>fbapi20140116</string>
+		<string>fbapi20150313</string>
+		<string>fbapi20150629</string>
+		<string>fbapi20160328</string>
+		<string>fbauth</string>
+		<string>fb-messenger-share-api</string>
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>

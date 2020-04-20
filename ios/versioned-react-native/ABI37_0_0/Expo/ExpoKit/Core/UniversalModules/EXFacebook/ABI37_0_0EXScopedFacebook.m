@@ -48,21 +48,16 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
     BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
 
-    NSString *facebookAppId = params[@"manifest"][@"facebookAppId"];
+    NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
     NSString *facebookDisplayName = params[@"manifest"][@"facebookDisplayName"];
 
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
-      // FacebookAppId is a prerequisite for initialization.
       // This happens even before the app foregrounds, which mimics
       // the mechanism behind ABI37_0_0EXFacebookAppDelegate.
-      if (facebookAppId) {
-        [FBSDKSettings setAppID:facebookAppId];
-        [FBSDKSettings setDisplayName:facebookDisplayName];
-        [FBSDKApplicationDelegate initializeSDK:nil];
-        _isInitialized = YES;
-      } else {
-        ABI37_0_0UMLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
-      }
+      [FBSDKSettings setAppID:scopedFacebookAppId];
+      [FBSDKSettings setDisplayName:facebookDisplayName];
+      [FBSDKApplicationDelegate initializeSDK:nil];
+      _isInitialized = YES;
     }
   }
   return self;
@@ -74,7 +69,8 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
                    rejecter:(ABI37_0_0UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
-  [super initializeWithAppId:appId appName:appName resolver:resolve rejecter:reject];
+  NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
+  [super initializeWithAppId:scopedFacebookAppId appName:appName resolver:resolve rejecter:reject];
 }
 
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(ABI37_0_0UMPromiseResolveBlock)resolve rejecter:(ABI37_0_0UMPromiseRejectBlock)reject
