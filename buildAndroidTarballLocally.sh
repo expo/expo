@@ -10,10 +10,6 @@ mkdir -p $ARTIFACTS_DIR
 rm -rf $TEMP_DIR
 mkdir -p $TEMP_DIR
 
-# only check-dynamic-macros-android.sh is used
-mkdir -p $TEMP_DIR/tools-public
-ln -s ${ROOT_DIR}/tools-public/check-dynamic-macros-android.sh $TEMP_DIR/tools-public/check-dynamic-macros-android.sh
-
 # we use the root android project as a shell app template
 ln -s ${ROOT_DIR}/android $TEMP_DIR/android
 # We wouldn't want to use any versioned ABI in a standalone app
