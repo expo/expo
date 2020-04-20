@@ -526,9 +526,6 @@ function AuthSection({ title, request, result, promptAsync, useProxy, disabled }
   );
 }
 
-const auth0ClientId = '8wmGum25h3KU2grnmZtFvMQeitmIdSDS';
-const auth0Domain = 'https://expo-testing.auth0.com';
-
 /**
  * Converts an object to a query string.
  */
@@ -547,7 +544,16 @@ function toQueryString(params: object) {
 function LegacyAuthSession() {
   const [result, setResult] = React.useState<any | null>(null);
   const isInvalid = Constants.manifest.id !== '@community/native-component-list';
-
+  const redirectUrl = AuthSession.getRedirectUrl();
+  const auth0Domain = 'https://expo-testing.auth0.com';
+  const authUrl =
+    `${auth0Domain}/authorize` +
+    toQueryString({
+      client_id: '8wmGum25h3KU2grnmZtFvMQeitmIdSDS',
+      response_type: 'token',
+      scope: 'openid name',
+      redirect_uri: redirectUrl,
+    });
   if (isInvalid) {
     return (
       <View style={styles.container}>
@@ -560,21 +566,13 @@ function LegacyAuthSession() {
           Sign in as @community to use this example, or change the Auth0 client id and domain in
           AuthSessionScreen.js
         </Text>
+        <Text style={styles.faintText}>Auth Url: {authUrl}</Text>
+        <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
       </View>
     );
   }
 
   const handlePressAsync = async () => {
-    const redirectUrl = AuthSession.getRedirectUrl();
-    const authUrl =
-      `${auth0Domain}/authorize?` +
-      toQueryString({
-        client_id: auth0ClientId,
-        response_type: 'token',
-        scope: 'openid name',
-        redirect_uri: redirectUrl,
-      });
-
     const result = await AuthSession.startAsync({ authUrl });
     setResult(result);
   };
@@ -582,7 +580,8 @@ function LegacyAuthSession() {
   return (
     <View>
       <Button title="Authenticate using an external service" onPress={handlePressAsync} />
-      <Result title={'Legacy'} result={result} />
+      <Result title="Legacy" result={result} />
+      <Text style={styles.faintText}>Auth Url: {authUrl}</Text>
       <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
     </View>
   );
