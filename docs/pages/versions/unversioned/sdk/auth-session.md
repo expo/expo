@@ -85,7 +85,7 @@ import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Linking } from 'expo';
 
-/* @info <strong>Web only:</string> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 if (Platform.OS === 'web') {
   WebBrowser.maybeCompleteAuthSession();
 }
@@ -432,33 +432,35 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 > `https://auth.expo.io/@yourname/your-app`
 
-Used for a development or production project in the Expo client, or in a standalone build.
-
-The link is constructed from your Expo username and the Expo app name.
-
-You can create this link with using `AuthSession.getRedirectUrl()` from `expo-auth-session`. This `redirectUri` should be used with `promptAsync({ useProxy: true })`.
+- Used for a development or production project in the Expo client, or in a standalone build.
+- The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
+- You can create this link with using `AuthSession.getRedirectUrl()` from `expo-auth-session`. This `redirectUri` should be used with `promptAsync({ useProxy: true })`.
 
 #### Published project in the Expo Client
 
-> `https://auth.expo.io/@yourname/your-app`
+> `exp://exp.host/@yourname/your-app`
 
-The link is constructed from your
-
-This is when you run `expo publish` and open your app in the Expo client. You can create this link with using `Linking.makeUrl()` from `expo`.
+- Used for a production project in the Expo client.
+- The link is constructed from your Expo username and the Expo app name, which are appended to the Expo client URI scheme.
+- This is used when you run `expo publish` and open your app in the Expo client.
+- You can create this link with using `Linking.makeUrl()` from `expo`.
 
 #### Development project in the Expo client
 
 > `exp://localhost:19000`
 
-This is for native projects in the Expo client when you run `expo start`. You can create this link with using `Linking.makeUrl()` from `expo`. This URL is constructed by your Expo servers `port` + `host`. The `localhost` can be swapped out for your IP address.
+- This is for native projects in the Expo client when you run `expo start`.
+- You can create this link with using `Linking.makeUrl()` from `expo`.
+- This URL is constructed by your Expo servers `port` + `host`.
+  - The `localhost` can be swapped out for your IP address.
 
 #### Standalone, Bare, or Custom
 
 > `yourscheme:/*`
 
-In standalone builds, ejecting to bare, or custom client, this is created from the `expo.scheme` property of your `app.json` config. This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
-
-If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
+- In standalone builds, ejecting to bare, or custom client, this is created from the `expo.scheme` property of your `app.json` config.
+  - This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
+- If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
 
 ## Examples
 
@@ -483,16 +485,15 @@ If you change the `expo.scheme` after ejecting then you'll need to use the `expo
 
 [c-google]: https://developers.google.com/identity/protocols/OAuth2
 
-- You cannot define a custom `redirectUri`, Google will provide you with one.
-  - URI schemes must be built into the app, you can do this with **bare and standalone**.
-  - This means you **cannot use in the Expo client** without the proxy service.
-- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
+- Google will provide you with a custom `redirectUri` which you cannot use in the Expo client.
+  - URI schemes must be built into the app, you can do this with **bare, standalone, and custom clients**.
+  - You can still use **cannot use in the Expo client** without the proxy service, just be sure to configure the project as a website.
 
 ```ts
 // Endpoint
 const discovery = useAutoDiscovery('https://accounts.google.com');
 // Request
-const [googleRequest, googleResponse, googlePromptAsync] = useAuthRequest(
+const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
     // For usage in bare and standalone
@@ -532,7 +533,7 @@ const [googleRequest, googleResponse, googlePromptAsync] = useAuthRequest(
 // Endpoint
 const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
 // Request
-const [oktaRequest, oktaResponse, oktaPromptAsync] = useAuthRequest(
+const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
     // For usage in bare and standalone
@@ -559,7 +560,7 @@ const [oktaRequest, oktaResponse, oktaPromptAsync] = useAuthRequest(
 // Endpoint
 const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
 // Request
-const [azureRequest, azureResponse, azurePromptAsync] = useAuthRequest(
+const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
     redirectUri: 'your.app://redirect',
@@ -585,7 +586,7 @@ const [azureRequest, azureResponse, azurePromptAsync] = useAuthRequest(
 // Endpoint
 const discovery = useAutoDiscovery('https://demo.identityserver.io');
 // Request
-const [identityRequest, identityResponse, identityPromptAsync] = useAuthRequest(
+const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'native.code',
     redirectUrl: 'myapp://redirect',
@@ -685,7 +686,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['activity', 'sleep'],
   },
@@ -720,7 +720,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app://redirect',
     scopes: ['identity'],
   },
@@ -850,7 +849,6 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
     redirectUri: 'your.app:/redirect',
     scopes: ['user-read-email', 'playlist-modify-public'],
   },
