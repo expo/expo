@@ -87,6 +87,23 @@ If you don't know what this means, let us handle it! :)
 
 > **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
 
+If you choose to upload your own keystore, you must have the following at hand:
+
+- Keystore
+- Keystore alias
+- Keystore password and key password
+
+You can enter them interactively by selecting `2) I want to upload my own keystore!` after running `expo build:android`. You can also, with the enviroment variables `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD` set, supply the arguments directly from the command line:
+
+```
+sh
+$ expo build:android \\
+  --keystore-path /path/to/your/keystore.jks \\
+  --keystore-alias PUT_KEYSTORE_ALIAS_HERE
+```
+
+Both of the command line arguments must be provided and both of the enviroment variables must be set in order for this to work.
+
 ### If you choose to build for iOS
 
 You are given a choice of letting the Expo client create the
