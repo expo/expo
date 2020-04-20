@@ -13,6 +13,11 @@ mkdir -p $TEMP_DIR
 # only check-dynamic-macros-android.sh is used
 mkdir -p $TEMP_DIR/tools-public
 ln -s ${ROOT_DIR}/tools-public/check-dynamic-macros-android.sh $TEMP_DIR/tools-public/check-dynamic-macros-android.sh
+# check-dynamic-macros-android.sh uses those two files
+# to know existence of which files to verify
+mkdir -p $TEMP_DIR/template-files
+ln -s ${ROOT_DIR}/template-files/android-paths.check-ignore
+ln -s ${ROOT_DIR}/template-files/android-paths.json
 
 # we use the root android project as a shell app template
 ln -s ${ROOT_DIR}/android $TEMP_DIR/android
