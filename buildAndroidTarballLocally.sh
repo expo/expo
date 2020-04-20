@@ -9,19 +9,28 @@ TEMP_DIR="/tmp/android-shell-app"
 mkdir -p $ARTIFACTS_DIR
 rm -rf $TEMP_DIR
 mkdir -p $TEMP_DIR
-ln -s ${ROOT_DIR}/tools-public $TEMP_DIR/tools-public
-ln -s ${ROOT_DIR}/secrets $TEMP_DIR/secrets
-ln -s ${ROOT_DIR}/template-files $TEMP_DIR/template-files
+
+# only check-dynamic-macros-android.sh is used
+mkdir -p $TEMP_DIR/tools-public
+ln -s ${ROOT_DIR}/tools-public/check-dynamic-macros-android.sh $TEMP_DIR/tools-public/check-dynamic-macros-android.sh
+
+# we use the root android project as a shell app template
 ln -s ${ROOT_DIR}/android $TEMP_DIR/android
+# We wouldn't want to use any versioned ABI in a standalone app
+# and it makes the shell app smaller.
+rm -rf $TEMP_DIR/android/versioned-abis
+
+# root package.json defines a dependency on react-native-unimodules,
+# which we require when building the shell app
 ln -s ${ROOT_DIR}/package.json $TEMP_DIR/package.json
-ln -s ${ROOT_DIR}/expokit-npm-package $TEMP_DIR/expokit-npm-package
+
+# packages are used by the optional-modules-linking-code in XDL
+# see xdl/AndroidShellApp.js
 ln -s ${ROOT_DIR}/packages $TEMP_DIR/packages
 
-# generate dynamic macros
-mkdir -p $TEMP_DIR/android/expoview/src/main/java/host/exp/exponent/generated/
-cd $TEMP_DIR/tools-public
+# generate dynamic macros (we can do it here, as the contents are already `ln -s`-ed)
 et android-generate-dynamic-macros --configuration release
-rm -rf $TEMP_DIR/secrets
 
+# build the artifact
 cd $TEMP_DIR; tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
 rm -rf $TEMP_DIR
