@@ -543,7 +543,27 @@ function toQueryString(params: object) {
  */
 function LegacyAuthSession() {
   const [result, setResult] = React.useState<any | null>(null);
-  const isInvalid = Constants.manifest.id !== '@community/native-component-list';
+  const id = (Constants.manifest || {}).id;
+  const isInvalid = id !== '@community/native-component-list';
+
+  if (isInvalid) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.oopsTitle}>Hello, developer person!</Text>
+        <Text style={styles.oopsText}>
+          The experience id {id} will not work with this due to the authorized callback URL
+          configuration on Auth0{' '}
+        </Text>
+        <Text style={styles.oopsText}>
+          Sign in as @community to use this example, or change the Auth0 client id and domain in
+          AuthSessionScreen.js
+        </Text>
+        {isInClient && (
+          <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
+        )}
+      </View>
+    );
+  }
   const redirectUrl = AuthSession.getRedirectUrl();
   const auth0Domain = 'https://expo-testing.auth0.com';
   const authUrl =
@@ -554,23 +574,6 @@ function LegacyAuthSession() {
       scope: 'openid name',
       redirect_uri: redirectUrl,
     });
-  if (isInvalid) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.oopsTitle}>Hello, developer person!</Text>
-        <Text style={styles.oopsText}>
-          The experience id {Constants.manifest.id} will not work with this due to the authorized
-          callback URL configuration on Auth0{' '}
-        </Text>
-        <Text style={styles.oopsText}>
-          Sign in as @community to use this example, or change the Auth0 client id and domain in
-          AuthSessionScreen.js
-        </Text>
-        <Text style={styles.faintText}>Auth Url: {authUrl}</Text>
-        <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
-      </View>
-    );
-  }
 
   const handlePressAsync = async () => {
     const result = await AuthSession.startAsync({ authUrl });
