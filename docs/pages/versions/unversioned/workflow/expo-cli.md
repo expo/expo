@@ -76,7 +76,8 @@ Alias: `expo ba`
 | `--release-channel` [channel] | Pull bundle from specified release channel. If not specified, the `default` channel is used. |
 | `--no-publish` | Prevents an OTA update from occurring during the build process. |
 | `--no-wait` | Exit immediately after scheduling build. |
-| `--keystore-path` [path] | Path to your Keystore file. |
+| `--keystore-path` [path] | Path to your Keystore file. You must also provide `--keystore-alias` and enviroment variables: `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD`.|
+| `--keystore-alias` [path] | the keystore alias for the file provided in `--keystore-path`. |
 | `--public-url` [url] | The url of an externally hosted manifest for self-hosted apps. |
 | `--type`, `-t` [type] | Select the type of build: [app-bundle or apk] The default is apk. |
 | `--config` [path] | Specify a path to app.json. |
