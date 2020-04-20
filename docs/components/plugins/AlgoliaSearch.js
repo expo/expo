@@ -122,8 +122,9 @@ class AlgoliaSearch extends React.Component {
     this.hotshot = new Hotshot({
       combos: [
         {
-          keyCodes: [16, 191], // shift + / (otherwise known as '?')
-          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
+          keyCodes: [191], // open search by pressing / key
+          callback: () =>
+            setTimeout(() => document.getElementById('algolia-search-box').focus(), 16),
         },
       ],
     });
