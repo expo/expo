@@ -32,8 +32,8 @@ You can test it to ensure it works like this:
 
 ```sh
 # Rebuild the native apps, be sure to use an emulator
-npx react-native run-ios
-npx react-native run-android
+yarn ios
+yarn android
 
 # Open a URI scheme
 npx uri-scheme open mycoolredirect://some/redirect
