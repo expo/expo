@@ -5,7 +5,7 @@
 @interface EXSessionResumableDownloadTaskDelegate ()
 
 @property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWriteCallback;
-@property (weak, nonatomic) EXResumablesManager *manger;
+@property (weak, nonatomic) EXResumableManager *manger;
 @property (strong, nonatomic) NSString *uuid;
 
 @end
@@ -17,7 +17,7 @@
                        localUrl:(NSURL *)localUrl
              shouldCalculateMd5:(BOOL)shouldCalculateMd5
                 onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
-                resumableManager:(EXResumablesManager *)manager
+                resumableManager:(EXResumableManager *)manager
                            uuid:(NSString *)uuid;
 {
   if (self = [super initWithResolve:resolve
@@ -31,11 +31,6 @@
   return self;
 }
 
-- (void)invalid
-{
-  [_manger unregisterTask:_uuid];
-}
-
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
   if (error) {
@@ -47,7 +42,15 @@
                   [NSString stringWithFormat:@"Unable to download file: %@", error.description],
                   error);
     }
+    
+    [_manger unregisterTask:_uuid];
   }
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
+{
+  [super URLSession:session downloadTask:downloadTask didFinishDownloadingToURL:location];
+  [_manger unregisterTask:_uuid];
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask

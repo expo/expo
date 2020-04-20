@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)registerTaskDelegate:(EXSessionTaskDelegate *)delegate forTask:(NSURLSessionTask *)task;
 
-- (void)unregisterTaskDelegate:(NSURLSessionTask *)task;
-
 - (void)deactivate;
 
 @end

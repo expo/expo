@@ -4,9 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXResumablesManager : NSObject
+@interface EXResumableManager : NSObject
 
-- (NSURLSessionDownloadTask * _Nullable)getTask:(NSString *)uuid;
+- (NSURLSessionDownloadTask * _Nullable)taskForId:(NSString *)uuid;
 
 - (void)registerTask:(NSURLSessionDownloadTask *)task uuid:(NSString *)uuid;
 

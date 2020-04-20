@@ -14,6 +14,7 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
+#import <EXFileSystem/EXResumableManager.h>
 #import <EXFileSystem/EXSessionTaskDispatcher.h>
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
 #import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
@@ -37,7 +38,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
-@property (nonatomic, strong) EXResumablesManager *resumableManager;
+@property (nonatomic, strong) EXResumableManager *resumableManager;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -67,7 +68,7 @@ UM_REGISTER_MODULE();
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
     
-    _resumableManager = [EXResumablesManager new];
+    _resumableManager = [EXResumableManager new];
     _sessionTaskDispatcher = [EXSessionTaskDispatcher new];
     _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
     _foregroundSession = [self _createSession:EXFileSystemForegroundSession delegate:_sessionTaskDispatcher];
@@ -665,7 +666,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_resumableManager getTask:uuid];
+  NSURLSessionDownloadTask *task = [_resumableManager taskForId:uuid];
   if (!task) {
     reject(@"ERR_UNABLE_TO_PAUSE",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
@@ -677,7 +678,6 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
     UM_ENSURE_STRONGIFY(self);
     resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
-    [self.sessionTaskDispatcher unregisterTaskDelegate:task]; // It'll also unregister task from the ResumableManager
   }];
 }
 
@@ -715,7 +715,10 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 - (EXFileSystemSessionType)_importSessionType:(NSNumber * _Nullable)type
 {
-  return [type intValue] ?: EXFileSystemBackgroundSession;
+  if (type == nil) {
+    return EXFileSystemBackgroundSession;
+  }
+  return [type intValue];
 }
 
 - (NSURLSession *)_sessionForType:(EXFileSystemSessionType)type

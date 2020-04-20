@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXResumablesManager.h"
+#import <EXFileSystem/EXResumableManager.h>
 
-@interface EXResumablesManager ()
+@interface EXResumableManager ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSessionDownloadTask *> *resumableDownloads;
 
 @end
 
-@implementation EXResumablesManager
+@implementation EXResumableManager
 
 - (instancetype)init
 {
@@ -23,7 +23,7 @@
   _resumableDownloads[uuid] = task;
 }
 
-- (NSURLSessionDownloadTask * _Nullable)getTask:(NSString *)uuid
+- (NSURLSessionDownloadTask * _Nullable)taskForId:(NSString *)uuid
 {
   return _resumableDownloads[uuid];
 }

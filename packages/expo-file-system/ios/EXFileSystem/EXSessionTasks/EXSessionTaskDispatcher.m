@@ -28,26 +28,9 @@
   _tasks[task] = delegate;
 }
 
-- (void)unregisterTaskDelegate:(NSURLSessionTask *)task
-{
-  EXSessionTaskDelegate *delegate = _tasks[task];
-  [self _unregisterIfResumableTaskDelegate:delegate];
-  [_tasks removeObjectForKey:task];
-}
-
 - (void)deactivate
 {
   _isActive = false;
-}
-
-#pragma mark - helpers
-
-- (void)_unregisterIfResumableTaskDelegate:(EXSessionTaskDelegate *)taskDelegate
-{
-  if ([taskDelegate isKindOfClass:[EXSessionResumableDownloadTaskDelegate class]]) {
-    EXSessionResumableDownloadTaskDelegate *exResumableTask = (EXSessionResumableDownloadTaskDelegate *)taskDelegate;
-    [exResumableTask invalid];
-  }
 }
 
 #pragma mark - dispatcher
@@ -59,7 +42,6 @@
     if (exTask) {
       [exTask URLSession:session downloadTask:downloadTask didFinishDownloadingToURL:location];
       [_tasks removeObjectForKey:downloadTask];
-      [self _unregisterIfResumableTaskDelegate:exTask];
     }
   }
 }
@@ -71,7 +53,6 @@
     if (exTask) {
       [exTask URLSession:session task:task didCompleteWithError:error];
       [_tasks removeObjectForKey:task];
-      [self _unregisterIfResumableTaskDelegate:exTask];
     }
   }
 }
