@@ -36,17 +36,16 @@ export function useAuthRequest(
 ): [
   AuthRequest | null,
   AuthSessionResult | null,
-  (options: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ] {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const [result, setResult] = useState<AuthSessionResult | null>(null);
 
   const promptAsync = useCallback(
-    async (options: AuthRequestPromptOptions) => {
+    async (options: AuthRequestPromptOptions = {}) => {
       if (!discovery || !request) {
         throw new Error('Cannot prompt to authenticate until the request has finished loading.');
       }
-      console.log(request);
       const result = await request?.promptAsync(discovery, options);
       setResult(result);
       return result;
