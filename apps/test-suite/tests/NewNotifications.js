@@ -764,7 +764,7 @@ export async function test(t) {
       );
 
       t.it(
-        'triggers a notification which triggers the handler',
+        'triggers a notification which triggers the handler (`seconds` trigger)',
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
@@ -779,6 +779,31 @@ export async function test(t) {
             identifier,
             content: notification,
             trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (`Date` trigger)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+              };
+            },
+          });
+          const trigger = new Date(Date.now() + 5 * 1000);
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
