@@ -104,8 +104,9 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
     return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[interval unsignedIntegerValue]
                                                               repeats:[repeats boolValue]];
   } else if ([dateNotificationTriggerType isEqualToString:triggerType]) {
-    NSNumber *timestamp = [params objectForKey:dateNotificationTriggerTimestampKey verifyingClass:[NSNumber class]];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp unsignedIntegerValue]];
+    NSNumber *timestampMs = [params objectForKey:dateNotificationTriggerTimestampKey verifyingClass:[NSNumber class]];
+    NSUInteger timestamp = [timestampMs unsignedIntegerValue] / 1000;
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp];
 
     return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[date timeIntervalSinceNow]
                                                               repeats:NO];
