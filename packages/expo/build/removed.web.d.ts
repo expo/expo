@@ -39,6 +39,7 @@ export declare const IntentLauncher: null;
 export declare const IntentLauncherAndroid: null;
 export declare const KeepAwake: null;
 export declare const LinearGradient: null;
+export declare const Linking: null;
 export declare const LocalAuthentication: null;
 export declare const Localization: null;
 export declare const Location: null;

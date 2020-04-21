@@ -261,6 +261,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { LinearGradient } from 'expo' -> import { LinearGradient } from 'expo-linear-gradient'`, 'LinearGradient', 'expo-linear-gradient');
         },
     },
+    Linking: {
+        enumerable: true,
+        get() {
+            removedModule(`import { Linking } from 'expo' -> import Linking from 'expo-linking'`, 'Linking', 'expo-linking');
+        },
+    },
     LocalAuthentication: {
         enumerable: true,
         get() {

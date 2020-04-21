@@ -15,12 +15,6 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
-Object.defineProperty(exports, "Linking", {
-  enumerable: true,
-  get: function () {
-    return _Linking.default;
-  }
-});
 Object.defineProperty(exports, "Notifications", {
   enumerable: true,
   get: function () {
@@ -291,6 +285,12 @@ Object.defineProperty(exports, "LinearGradient", {
     return _removed.LinearGradient;
   }
 });
+Object.defineProperty(exports, "Linking", {
+  enumerable: true,
+  get: function () {
+    return _removed.Linking;
+  }
+});
 Object.defineProperty(exports, "LocalAuthentication", {
   enumerable: true,
   get: function () {
@@ -484,8 +484,6 @@ exports.Logs = Logs;
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
-
-var _Linking = _interopRequireDefault(require("./Linking/Linking"));
 
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
