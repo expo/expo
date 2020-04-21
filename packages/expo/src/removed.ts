@@ -468,7 +468,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       removedModule(
-        `import { Linking } from 'expo' -> import * as Linking from 'expo-linking'`,
+        `import { Linking } from 'expo' -> import Linking from 'expo-linking'`,
         'Linking',
         'expo-linking'
       );
