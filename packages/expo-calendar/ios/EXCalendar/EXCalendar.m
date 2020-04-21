@@ -18,10 +18,20 @@
 @property (nonatomic, strong) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic) EKEntityMask permittedEntities;
 
 @end
 
 @implementation EXCalendar
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _permittedEntities = 0;
+  }
+  
+  return self;
+}
 
 UM_EXPORT_MODULE(ExpoCalendar);
 
@@ -42,6 +52,7 @@ UM_EXPORT_MODULE(ExpoCalendar);
 {
   if (!_eventStore) {
     _eventStore = [[EKEventStore alloc] init];
+    [self _initializePermittedEntities];
   }
   return _eventStore;
 }
@@ -54,18 +65,26 @@ UM_EXPORT_METHOD_AS(getCalendarsAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![self _checkCalendarPermissions:reject]) {
-    return;
-  }
-
   NSArray *calendars;
   if (!typeString) {
+    if(![self _checkCalendarPermissions:reject] || ![self _checkRemindersPermissions:reject]) {
+      return;
+    }
+    
     NSArray *eventCalendars = [self.eventStore calendarsForEntityType:EKEntityTypeEvent];
     NSArray *reminderCalendars = [self.eventStore calendarsForEntityType:EKEntityTypeReminder];
     calendars = [eventCalendars arrayByAddingObjectsFromArray:reminderCalendars];
   } else if ([typeString isEqualToString:@"event"]) {
+    if (![self _checkCalendarPermissions:reject]) {
+      return;
+    }
+    
     calendars = [self.eventStore calendarsForEntityType:EKEntityTypeEvent];
   } else if ([typeString isEqualToString:@"reminder"]) {
+    if (![self _checkRemindersPermissions:reject]) {
+      return;
+    }
+    
     calendars = [self.eventStore calendarsForEntityType:EKEntityTypeReminder];
   } else {
     reject(@"E_INVALID_CALENDAR_ENTITY_TYPE",
@@ -86,6 +105,10 @@ UM_EXPORT_METHOD_AS(getDefaultCalendarAsync,
                     getDefaultCalendarAsync:(UMPromiseResolveBlock)resolve
                     rejector:(UMPromiseRejectBlock)reject)
 {
+  if (![self _checkCalendarPermissions:reject]) {
+    return;
+  }
+
   EKCalendar *defaultCalendar = [self.eventStore defaultCalendarForNewEvents];
   if (defaultCalendar == nil) {
     return reject(@"E_CALENDARS_NOT_FOUND", @"Could not find default calendars", nil);
@@ -956,24 +979,74 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return EKEventAvailabilityNotSupported;
 }
 
-- (BOOL)_checkPermissions:(Class)permissionsRequester reject:(UMPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(EKEntityType)entity reject:(UMPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCalendarPermissionRequester class]]) {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [[permissionsRequester permissionType] uppercaseString]];
-    reject(@"E_MISSING_PERMISSION", errorMessage, nil);
+  if (_eventStore && _permittedEntities & entity) {
+    return YES;
+  }
+  
+  Class requesterClass;
+  switch (entity) {
+    case EKEntityTypeEvent:
+      requesterClass = [EXCalendarPermissionRequester class];
+      break;
+    case EKEntityTypeReminder:
+      requesterClass = [EXRemindersPermissionRequester class];
+      break;
+    default: {
+      NSString *errorMessage = [NSString stringWithFormat:@"Unknown entity: %lu.", (unsigned long)entity];
+      reject(@"ERR_UNKNOWN_ENTITY", errorMessage, nil);
+      return NO;
+    }
+  }
+  
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:requesterClass]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [[requesterClass permissionType] uppercaseString]];
+    reject(@"ERR_MISSING_PERMISSION", errorMessage, nil);
     return NO;
   }
+  
+  [self _resetEventStoreIfPermissionsWasChanged:1 << entity];  
   return YES;
 }
 
 - (BOOL)_checkCalendarPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:[EXCalendarPermissionRequester class] reject:reject];
+  return [self _checkPermissions:EKEntityTypeEvent reject:reject];
 }
 
 - (BOOL)_checkRemindersPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:[EXRemindersPermissionRequester class] reject:reject];
+  return [self _checkPermissions:EKEntityTypeReminder reject:reject];
 }
 
+- (void)_initializePermittedEntities
+{
+  EKEntityMask permittedEntities = 0;
+  if ([_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCalendarPermissionRequester class]]) {
+    permittedEntities |= EKEntityMaskEvent;
+  }
+  
+  if ([_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXRemindersPermissionRequester class]]) {
+    permittedEntities |= EKEntityMaskReminder;
+  }
+  
+  _permittedEntities = permittedEntities;
+}
+
+// During the construction, EKEventStore checks permissions and loads data to which has access.
+// If the user granted only partial permission and called a Calendar function, we get as a result an EKEventStore object only contains one type of entity.
+// However, in the future user can add permission, so we need to reset EKEventStore to get all available data.
+- (void)_resetEventStoreIfPermissionsWasChanged:(EKEntityMask)newEntity
+{
+  if (!_eventStore) {
+    return;
+  }
+  
+  if ((_permittedEntities & newEntity) == newEntity) {
+    return;
+  }
+  [self.eventStore reset]; // We can safely reset the store, cause all changes are committed immediately.
+  _permittedEntities |= newEntity;
+}
 @end
