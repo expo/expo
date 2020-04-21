@@ -2,6 +2,7 @@ import { Record } from 'immutable';
 
 const SettingsState = Record({
   preferredAppearance: 'no-preference',
+  devMenuSettings: null,
 });
 
 export default (state, action) => {
@@ -11,6 +12,10 @@ export default (state, action) => {
     case 'setPreferredAppearance': {
       const { preferredAppearance } = action.payload;
       return state.merge({ preferredAppearance });
+    }
+    case 'setDevMenuSettings': {
+      const devMenuSettings = state.get('devMenuSettings');
+      return state.set('devMenuSettings', { ...devMenuSettings, ...action.payload });
     }
     default:
       return state || new SettingsState();
