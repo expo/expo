@@ -21,6 +21,21 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 32px;
 `;
 
+function shouldSkipTitle(info, parentGroup) {
+  if (parentGroup && info.name === parentGroup.name) {
+    // If the title of the group is Expo SDK and the section within it has the same name
+    // then we shouldn't show the title twice. You might want to organize your group like
+    // so it is collapsable
+    return true;
+  } else if (info.posts && (info.posts[0].sidebarTitle || info.posts[0].name) === info.name) {
+    // If the first child post in the group has the same name as the group, then hide the
+    // group title, lest we be very repetititve
+    return true;
+  }
+
+  return false;
+}
+
 export default class DocumentationSidebar extends React.Component {
   static defaultProps = {
     routes: [],
@@ -38,7 +53,7 @@ export default class DocumentationSidebar extends React.Component {
     );
   };
 
-  _renderCategoryElements = info => {
+  _renderCategoryElements = (info, parentGroup) => {
     if (info.children) {
       return (
         <DocumentationSidebarGroup
@@ -46,21 +61,20 @@ export default class DocumentationSidebar extends React.Component {
           url={this.props.url}
           info={info}
           asPath={this.props.asPath}>
-          {info.children.map(categoryInfo => this._renderCategoryElements(categoryInfo))}
+          {info.children.map(categoryInfo => this._renderCategoryElements(categoryInfo, info))}
         </DocumentationSidebarGroup>
       );
     }
 
-    const titleElement =
-      info.name === 'Introduction' ? null : (
-        <DocumentationSidebarTitle
-          key={info.sidebarTitle ? info.sidebarTitle : info.name}
-          info={info}
-          url={this.props.url}
-          asPath={this.props.asPath}>
-          {info.sidebarTitle ? info.sidebarTitle : info.name}
-        </DocumentationSidebarTitle>
-      );
+    const titleElement = shouldSkipTitle(info, parentGroup) ? null : (
+      <DocumentationSidebarTitle
+        key={info.sidebarTitle ? info.sidebarTitle : info.name}
+        info={info}
+        url={this.props.url}
+        asPath={this.props.asPath}>
+        {info.sidebarTitle ? info.sidebarTitle : info.name}
+      </DocumentationSidebarTitle>
+    );
 
     let postElements;
     if (info.posts) {

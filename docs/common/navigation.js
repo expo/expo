@@ -8,7 +8,8 @@ const GROUPS = {
   'The Basics': ['Introduction', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
   'Bare Workflow': ['Essentials'],
-  'API Reference': ['Expo SDK', 'React Native'],
+  'Expo SDK': ['Expo SDK'],
+  'React Native': ['React Native'],
 };
 
 // This array provides the ordering for pages within each section
