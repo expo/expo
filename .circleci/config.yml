@@ -522,8 +522,15 @@ jobs:
     executor: js
     steps:
       - setup
-      - run: sudo apt-get install rsync
-      - yarn_restore_and_install:
+      # We can't use yarn_restore_and_install since it
+      # triggers the postinstall script which we don't
+      # want to do here.
+      - restore_yarn_cache:
+          working_directory: ~/project/tools/expotools
+      - yarn:
+          command: install --ignore-scripts
+          working_directory: ~/project/tools/expotools
+      - save_yarn_cache:
           working_directory: ~/project/tools/expotools
       - yarn:
           command: tsc
