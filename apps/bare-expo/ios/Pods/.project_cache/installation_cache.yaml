@@ -535,8 +535,8 @@ CACHE_KEYS:
       - EXMailComposer (8.1.0)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary: adcb24559bcb02b9ee78a3ced033ba71
-    CHECKSUM: 30a65e1eef453c6e7a76754febeb88c0d0fba232
+      EXMediaLibrary: 99f4bb60549d317396910bc178e6b1c9
+    CHECKSUM: 02a13521d05ca381b08f7d745a9602569eade072
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
