@@ -33,11 +33,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
-  "unimodulePeerDependencies" : {
-    "expo-constants": "*",
-    "expo-web-browser": "*"
-  },
   "dependencies": {
+    "expo-constants": "^9.0.0",
+    "expo-web-browser": "^8.1.0",
+    "expo-random": "^8.1.0",
+    "expo-crypto": "^8.1.0",
     "qs": "6.9.1"
   },
   "devDependencies": {
