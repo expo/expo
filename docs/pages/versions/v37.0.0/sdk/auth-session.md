@@ -19,7 +19,7 @@ In **bare-workflow** you can use the [`uri-scheme` package](https://www.npmjs.co
 To make your native app handle `mycoolredirect://` simply run:
 
 ```sh
-npx uri-scheme mycoolredirect
+npx uri-scheme add mycoolredirect
 ```
 
 You should now be able to see a list of all your project's schemes by running:
