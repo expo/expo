@@ -9,9 +9,11 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
-<TableOfContentSection title='Methods' contents={['Installation', 'Example', 'Hooks', 'Methods', 'Classes', 'Types', 'Redirect URI', 'Guides', 'Advanced usage']} />
-
 <PlatformsSection android emulator ios simulator web />
+
+<TableOfContentSection title='Table of contents' contents={['Installation', 'Example', 'Hooks', 'Methods', 'Classes', 'Types', 'Redirect URI patterns', 'Guides to integrate with popular providers', 'Advanced usage']} />
+
+<br />
 
 ## Installation
 
@@ -364,7 +366,7 @@ URL using the `https` scheme with no query or fragment component that the OP ass
 
 Metadata describing the [OpenID Provider][provider-meta].
 
-## Redirect URI
+## Redirect URI patterns
 
 Here are a few examples of some common redirect URI patterns you may end up using.
 
@@ -402,7 +404,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
 - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
 
-## Guides
+## Guides to integrate with popular providers
 
 - [Google](#google)
 - [Okta](#okta)
