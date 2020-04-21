@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- `react-native-view-shot` is no longer installed by default, install it with `expo install react-native-view-shot`. ([#7950](https://github.com/expo/expo/pull/7950) by [@evanbacon](https://github.com/evanbacon))
+
 - `FileSystem.getContentUriAsync` now returns a string. ([#7192](https://github.com/expo/expo/pull/7192) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
