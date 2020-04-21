@@ -45,6 +45,7 @@ const skippedExports: string[] = [
   'IntentLauncherAndroid',
   'KeepAwake',
   'LinearGradient',
+  'Linking',
   'LocalAuthentication',
   'Localization',
   'Location',
