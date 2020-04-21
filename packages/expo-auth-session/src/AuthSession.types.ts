@@ -1,3 +1,5 @@
+import { AuthError } from './Errors';
+
 export type AuthSessionOptions = {
   authUrl: string;
   returnUrl?: string;
@@ -9,6 +11,7 @@ export type AuthSessionResult =
   | {
       type: 'error' | 'success';
       errorCode: string | null;
+      error?: AuthError | null;
       params: { [key: string]: string };
       url: string;
     };

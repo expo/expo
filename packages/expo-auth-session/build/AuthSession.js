@@ -1,5 +1,8 @@
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
-import qs from 'qs';
+import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
+import { AuthRequest } from './AuthRequest';
+import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
+import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
+import { getQueryParams } from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
 let _authLock = false;
 const sessionUrlProvider = getSessionUrlProvider();
@@ -42,7 +45,7 @@ export async function startAsync(options) {
             throw new Error('Unexpected AuthSession result with missing type');
         }
     }
-    const { params, errorCode } = parseUrl(result.url);
+    const { params, errorCode } = getQueryParams(result.url);
     return {
         type: errorCode ? 'error' : 'success',
         params,
@@ -59,6 +62,18 @@ export function getDefaultReturnUrl() {
 export function getRedirectUrl(path) {
     return sessionUrlProvider.getRedirectUrl(path);
 }
+/**
+ * Build an `AuthRequest` and load it before returning.
+ *
+ * @param config
+ * @param issuerOrDiscovery
+ */
+export async function loadAsync(config, issuerOrDiscovery) {
+    const request = new AuthRequest(config);
+    const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+    await request.buildUrlAsync(discovery);
+    return request;
+}
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
     const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
@@ -67,30 +82,7 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     }
     return result;
 }
-function parseUrl(url) {
-    const parts = url.split('#');
-    const hash = parts[1];
-    const partsWithoutHash = parts[0].split('?');
-    const queryString = partsWithoutHash[partsWithoutHash.length - 1];
-    // Get query string (?hello=world)
-    const parsedSearch = qs.parse(queryString);
-    // Pull errorCode off of params
-    const { errorCode } = parsedSearch;
-    delete parsedSearch.errorCode;
-    // Get hash (#abc=example)
-    let parsedHash = {};
-    if (parts[1]) {
-        parsedHash = qs.parse(hash);
-    }
-    // Merge search and hash
-    const params = {
-        ...parsedSearch,
-        ...parsedHash,
-    };
-    return {
-        errorCode,
-        params,
-    };
-}
-export { resolveDiscoveryAsync, fetchDiscoveryAsync, } from './Discovery';
+export * from './AuthRequestHooks';
+export { AuthError } from './Errors';
+export { AuthRequest, CodeChallengeMethod, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, };
 //# sourceMappingURL=AuthSession.js.map
