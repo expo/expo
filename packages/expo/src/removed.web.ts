@@ -42,6 +42,7 @@ export const IntentLauncher = null;
 export const IntentLauncherAndroid = null;
 export const KeepAwake = null;
 export const LinearGradient = null;
+export const Linking = null;
 export const LocalAuthentication = null;
 export const Localization = null;
 export const Location = null;

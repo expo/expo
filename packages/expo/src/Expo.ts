@@ -7,7 +7,6 @@ import * as Logs from './logs/Logs';
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Linking } from './Linking/Linking';
 export { default as Notifications } from './Notifications/Notifications';
 
 // The following should all be extracted from this package
@@ -103,6 +102,8 @@ export {
   KeepAwake,
   // @ts-ignore
   LinearGradient,
+  // @ts-ignore
+  Linking,
   // @ts-ignore
   LocalAuthentication,
   // @ts-ignore
