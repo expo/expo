@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## [0.1.2] - 2020-04-21
 
 ### 🛠 Breaking changes
 
