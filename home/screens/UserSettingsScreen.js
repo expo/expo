@@ -143,7 +143,7 @@ export default class UserSettingsScreen extends React.Component {
     return (
       <View style={styles.sectionWrapper}>
         <SectionLabelContainer>
-          <SectionLabelText>DEV MENU GESTURES</SectionLabelText>
+          <SectionLabelText>DEVELOPER MENU GESTURES</SectionLabelText>
         </SectionLabelContainer>
         <TouchableHighlight
           onPress={this._toggleMotionGesture}
@@ -171,7 +171,7 @@ export default class UserSettingsScreen extends React.Component {
 
         <View style={SharedStyles.genericCardDescriptionContainer}>
           <Text style={SharedStyles.genericCardDescriptionText}>
-            Selected gestures will toggle the dev menu while inside an experience. The menu allows
+            Selected gestures will toggle the developer menu while inside an experience. The menu allows
             you to reload or return to home in a published experience, and exposes developer tools
             in development mode.
           </Text>
