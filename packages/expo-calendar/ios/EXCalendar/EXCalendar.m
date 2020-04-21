@@ -1044,7 +1044,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   }
   
   if ((_permittedEntities & newEntity) == newEntity) {
-      return;
+    return;
   }
   [self.eventStore reset]; // We can safely reset the store, cause all changes are committed immediately.
   _permittedEntities |= newEntity;
