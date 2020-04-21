@@ -3,6 +3,7 @@ title: Linking
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
@@ -14,6 +15,10 @@ This module is an extension of the React Native [Linking module](https://faceboo
 For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
 
 <PlatformsSection android emulator ios simulator web />
+
+## Installation
+
+<InstallSection packageName="expo-linking" />
 
 ## API
 
