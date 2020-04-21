@@ -52,7 +52,7 @@ function _removeTrailingSlashAndQueryString(url: string) {
 
 function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   let scheme = 'exp';
-  const manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+  const manifestScheme = manifest.scheme ?? manifest?.detach?.scheme;
 
   if (Constants.appOwnership === 'standalone' && manifestScheme) {
     scheme = manifestScheme;

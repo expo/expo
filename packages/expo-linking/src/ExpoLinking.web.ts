@@ -1,6 +1,7 @@
-import invariant from 'invariant';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import invariant from 'fbjs/lib/invariant';
 
-import { URLListener, NativeURLListener } from './Linking.types';
+import { NativeURLListener, URLListener } from './Linking.types';
 
 const EventTypes = ['url'];
 
@@ -45,12 +46,17 @@ class Linking {
   }
 
   async getInitialURL(): Promise<string> {
+    if (!canUseDOM) return '';
+
     return window.location.href;
   }
 
   async openURL(url: string): Promise<void> {
     _validateURL(url);
-    window.location.href = url;
+    if (canUseDOM) {
+      // @ts-ignore
+      window.location = new URL(url, window.location).toString();
+    }
   }
 }
 
