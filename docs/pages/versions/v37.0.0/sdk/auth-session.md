@@ -5,8 +5,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthS
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
+
+<TableOfContentSection title='Methods' contents={['Installation', 'Example', 'Hooks', 'Methods', 'Classes', 'Types', 'Redirect URI', 'Guides', 'Advanced usage']} />
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -361,69 +364,6 @@ URL using the `https` scheme with no query or fragment component that the OP ass
 
 Metadata describing the [OpenID Provider][provider-meta].
 
-## Usage in the bare React Native app
-
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
-
-### Proxy Service
-
-This service is responsible for:
-
-- redirecting traffic from your application to the authentication service
-- redirecting response from the auth service to your application using a deep link
-
-To better understand how it works, check out this implementation in `node.js`:
-
-```js
-const http = require('http');
-const url = require('url');
-
-const PORT = PORT;
-const DEEP_LINK = DEEP_LINK_TO_YOUR_APPLICATION;
-
-function redirect(response, url) {
-  response.writeHead(302, {
-    Location: url,
-  });
-  response.end();
-}
-
-http
-  .createServer((request, response) => {
-    // get parameters from request
-    const parameters = url.parse(request.url, true).query;
-
-    // if parameters contain authServiceUrl, this request comes from the application
-    if (parameters.authServiceUrl) {
-      // redirect user to the authUrl
-      redirect(response, decodeURIComponent(parameters.authServiceUrl));
-      return;
-    }
-
-    // redirect response from the auth service to your application
-    redirect(response, DEEP_LINK);
-  })
-  .listen(PORT);
-```
-
-Client code which works with this service:
-
-```js
-const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
-const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
-const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
-const result = await AuthSession.startAsync({
-  authUrl,
-  returnUrl: YOUR_DEEP_LINK,
-});
-```
-
-## Advanced usage
-
-### Filtering out AuthSession events in Linking handlers
-
-There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
-
 ## Redirect URI
 
 Here are a few examples of some common redirect URI patterns you may end up using.
@@ -462,7 +402,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
 - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
 
-## Examples
+## Guides
 
 - [Google](#google)
 - [Okta](#okta)
@@ -859,6 +799,69 @@ const [request, response, promptAsync] = useAuthRequest(
 <!-- End Spotify -->
 
 <!-- End Examples -->
+
+## Usage in the bare React Native app
+
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+
+### Proxy Service
+
+This service is responsible for:
+
+- redirecting traffic from your application to the authentication service
+- redirecting response from the auth service to your application using a deep link
+
+To better understand how it works, check out this implementation in `node.js`:
+
+```js
+const http = require('http');
+const url = require('url');
+
+const PORT = PORT;
+const DEEP_LINK = DEEP_LINK_TO_YOUR_APPLICATION;
+
+function redirect(response, url) {
+  response.writeHead(302, {
+    Location: url,
+  });
+  response.end();
+}
+
+http
+  .createServer((request, response) => {
+    // get parameters from request
+    const parameters = url.parse(request.url, true).query;
+
+    // if parameters contain authServiceUrl, this request comes from the application
+    if (parameters.authServiceUrl) {
+      // redirect user to the authUrl
+      redirect(response, decodeURIComponent(parameters.authServiceUrl));
+      return;
+    }
+
+    // redirect response from the auth service to your application
+    redirect(response, DEEP_LINK);
+  })
+  .listen(PORT);
+```
+
+Client code which works with this service:
+
+```js
+const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
+const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
+const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
+const result = await AuthSession.startAsync({
+  authUrl,
+  returnUrl: YOUR_DEEP_LINK,
+});
+```
+
+## Advanced usage
+
+### Filtering out AuthSession events in Linking handlers
+
+There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
 #
 
