@@ -1,5 +1,6 @@
-import React from 'react';
 import * as Sentry from '@sentry/browser';
+import React from 'react';
+
 import navigation from '~/common/navigation';
 
 const REDIRECT_SUFFIX = '?redirected';
@@ -17,13 +18,15 @@ export default class Error extends React.Component {
   };
 
   componentDidMount() {
-    let location;
+    this._maybeRedirect();
+  }
 
+  _maybeRedirect = () => {
     if (typeof window === 'undefined') {
       return;
     }
 
-    let { pathname, search } = window.location;
+    const { pathname } = window.location;
 
     if (window.location.search === REDIRECT_SUFFIX) {
       Sentry.captureMessage(`Redirect failed`);
@@ -31,51 +34,57 @@ export default class Error extends React.Component {
       return;
     }
 
-    if (isValidPath(pathname)) {
-      let redirectPath = pathname;
+    let redirectPath = pathname;
 
-      // index.html is no longer a thing in our docs
-      if (pathIncludesIndexHtml(redirectPath)) {
-        redirectPath = redirectPath.replace('index.html', '');
-      }
+    console.log({ redirectPath });
 
-      // Remove the .html extension if it is included in the path
-      if (pathIncludesHtmlExtension(redirectPath)) {
-        redirectPath = redirectPath.replace('.html', '');
-      }
+    // index.html is no longer a thing in our docs
+    if (pathIncludesIndexHtml(redirectPath)) {
+      redirectPath = redirectPath.replace('index.html', '');
+    }
 
-      // Unsure why this is happening, but sometimes URLs end up with /null in
-      // the last path part
-      // https://docs.expo.io/versions/latest/sdk/overview/null
-      if (endsInNull(redirectPath)) {
-        redirectPath = redirectPath.replace(/null$/, '');
-      }
+    // Remove the .html extension if it is included in the path
+    if (pathIncludesHtmlExtension(redirectPath)) {
+      redirectPath = redirectPath.replace('.html', '');
+    }
 
-      // Add a trailing slash if there is not one
-      if (redirectPath[redirectPath.length - 1] !== '/') {
-        redirectPath = `${redirectPath}/`;
-      }
+    // Unsure why this is happening, but sometimes URLs end up with /null in
+    // the last path part
+    // https://docs.expo.io/versions/latest/sdk/overview/null
+    if (endsInNull(redirectPath)) {
+      redirectPath = redirectPath.replace(/null$/, '');
+    }
 
-      // A list of pages we know are renamed and can redirect
-      if (RENAMED_PAGES[redirectPath]) {
-        redirectPath = RENAMED_PAGES[redirectPath];
-      }
+    // Add a trailing slash if there is not one
+    if (redirectPath[redirectPath.length - 1] !== '/') {
+      redirectPath = `${redirectPath}/`;
+    }
 
-      // Check if the version is documented, replace it with latest if not
-      if (!isVersionDocumented(redirectPath)) {
-        redirectPath = replaceVersionWithLatest(redirectPath);
-      }
+    // A list of pages we know are renamed and can redirect
+    if (RENAMED_PAGES[redirectPath]) {
+      redirectPath = RENAMED_PAGES[redirectPath];
+    }
 
-      if (redirectPath !== pathname) {
-        this.setState({ redirectPath });
-        return;
-      }
+    // Check if the version is documented, replace it with latest if not
+    if (!isVersionDocumented(redirectPath)) {
+      redirectPath = replaceVersionWithLatest(redirectPath);
+    }
+
+    // Remove versioning from path if this section is no longer versioned
+    console.log(redirectPath);
+    if (isVersionedPath(redirectPath) && !pathRequiresVersioning(redirectPath)) {
+      redirectPath = removeVersionFromPath(redirectPath);
+    }
+
+    if (redirectPath !== pathname) {
+      this.setState({ redirectPath });
+      return;
     }
 
     // We are confident now that we can render a not found error
     this.setState({ notFound: true });
     Sentry.captureMessage(`Page not found (404)`);
-  }
+  };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.redirectPath !== this.state.redirectPath && typeof window !== 'undefined') {
@@ -163,13 +172,13 @@ export default class Error extends React.Component {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-let supportedVersions = Object.keys(navigation).filter(v => v.match(/^v/));
+const supportedVersions = Object.keys(navigation).filter(v => v.match(/^v/));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path) {
-  let pathParts = path.split(/\//);
+  const pathParts = path.split(/\//);
   //  eg: ["", "versions", "v32.0.0", ""]
-  let version = pathParts[2];
+  const version = pathParts[2];
   if (supportedVersions.includes(version)) {
     return true;
   } else {
@@ -185,17 +194,28 @@ function pathIncludesIndexHtml(path) {
   return !!path.match(/index\.html$/);
 }
 
-const VERSION_PART_PATTERN = `(v\\d+\\.\\d+\.\\d+)|latest|unversioned`;
-const VALID_PATH_PATTERN = `^\\/versions\\/${VERSION_PART_PATTERN}`;
+const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+\.\\d+)`;
+const VERSIONED_PATH_PATTERN = `^\\/versions\\/${VERSION_PART_PATTERN}`;
+const SDK_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/sdk`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
-function isValidPath(path) {
-  return !!path.match(new RegExp(VALID_PATH_PATTERN));
+function isVersionedPath(path) {
+  console.log(path);
+  console.log(VERSIONED_PATH_PATTERN);
+  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
 }
 
 // Replace an unsupported SDK version with latest
 function replaceVersionWithLatest(path) {
   return path.replace(new RegExp(VERSION_PART_PATTERN), 'latest');
+}
+
+function pathRequiresVersioning(path) {
+  return path.match(new RegExp(SDK_PATH_PATTERN));
+}
+
+function removeVersionFromPath(path) {
+  return path.replace(new RegExp(VERSIONED_PATH_PATTERN), '');
 }
 
 // Not sure why this happens but sometimes the URL ends in /null
@@ -206,41 +226,33 @@ function endsInNull(path) {
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES = {
-  '/versions/latest/introduction/project-lifecycle/':
-    '/versions/latest/introduction/managed-vs-bare/',
-  '/versions/latest/guides/': '/versions/latest/workflow/exploring-managed-workflow/',
+  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
+  '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/sdk/overview/',
-  '/versions/latest/guides/building-standalone-apps/':
-    '/versions/latest/distribution/building-standalone-apps/',
-  '/versions/latest/guides/genymotion/': '/versions/latest/workflow/android-studio-emulator/',
-  '/versions/latest/workflow/upgrading-expo/':
-    '/versions/latest/workflow/upgrading-expo-sdk-walkthrough/',
-  '/versions/latest/workflow/create-react-native-app/':
-    'versions/latest/workflow/glossary-of-terms/#create-react-native-app',
-  '/versions/latest/expokit/': '/versions/latest/expokit/overview/',
-  '/versions/latest/guides/detach/': '/versions/latest/expokit/eject/',
-  '/versions/latest/expokit/detach/': '/versions/latest/expokit/eject/',
+  '/guides/building-standalone-apps/': '/distribution/building-standalone-apps/',
+  '/guides/genymotion/': '/workflow/android-studio-emulator/',
+  '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
+  '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
+  '/expokit/': '/expokit/overview/',
+  '/guides/detach/': '/expokit/eject/',
+  '/expokit/detach/': '/expokit/eject/',
 
   // Lots of old links pointing to guides when they have moved elsewhere
-  '/versions/latest/guides/configuration/': '/versions/latest/workflow/configuration/',
-  '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
-  '/versions/latest/guides/publishing/': '/versions/latest/workflow/publishing/',
-  '/versions/latest/guides/linking/': '/versions/latest/workflow/linking/',
-  '/versions/latest/guides/up-and-running/': '/versions/latest/workflow/up-and-running/',
-  '/versions/latest/guides/debugging/': '/versions/latest/workflow/debugging/',
-  '/versions/latest/guides/logging/': '/versions/latest/workflow/logging/',
-  '/versions/latest/introduction/troubleshooting-proxies/':
-    '/versions/latest/guides/troubleshooting-proxies/',
-  '/versions/latest/introduction/running-in-the-browser/':
-    '/versions/latest/guides/running-in-the-browser/',
+  '/guides/configuration/': '/workflow/configuration/',
+  '/guides/expokit/': '/expokit/overview/',
+  '/guides/publishing/': '/workflow/publishing/',
+  '/guides/linking/': '/vworkflow/linking/',
+  '/guides/up-and-running/': '/workflow/up-and-running/',
+  '/guides/debugging/': '/workflow/debugging/',
+  '/guides/logging/': '/workflow/logging/',
+  '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
+  '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
 
   // Changes from redoing the getting started workflow, SDK35+
-  '/versions/latest/workflow/up-and-running/': '/versions/latest/get-started/installation/',
-  '/versions/latest/introduction/additional-resources/':
-    '/versions/latest/next-steps/additional-resources/',
-  '/versions/latest/introduction/already-used-react-native/':
-    '/versions/latest/workflow/already-used-react-native/',
-  '/versions/latest/introduction/community/': '/versions/latest/next-steps/community/',
-  '/versions/latest/introduction/installation/': '/versions/latest/get-started/installation/',
-  '/versions/latest/workflow/exploring-managed-workflow/': '/versions/latest/introduction/walkthrough/',
+  '/workflow/up-and-running/': '/get-started/installation/',
+  '/introduction/additional-resources/': '/next-steps/additional-resources/',
+  '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
+  '/introduction/community/': '/next-steps/community/',
+  '/introduction/installation/': '/get-started/installation/',
+  '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
 };
