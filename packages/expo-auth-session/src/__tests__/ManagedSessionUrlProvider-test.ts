@@ -35,17 +35,17 @@ describe(`getDefaultReturnUrl`, () => {
     expect(result).toEqual('exp://exp.host/@example/abc/--/expo-auth-session');
   });
 
-  it(`checks url with the release chanel`, () => {
+  it(`checks url with the release channel`, () => {
     mockProperty(
       Constants.manifest,
       'hostUri',
-      'exp.host/@example/abc?release-chanel=release-chanel'
+      'exp.host/@example/abc?release-channel=release-channel'
     );
 
     const result = managedSessionUrlProvider.getDefaultReturnUrl();
 
     expect(result).toEqual(
-      'exp://exp.host/@example/abc/--/expo-auth-session?release-chanel=release-chanel'
+      'exp://exp.host/@example/abc/--/expo-auth-session?release-channel=release-channel'
     );
   });
 });
