@@ -6,19 +6,13 @@
 #import "EXHomeModuleManager.h"
 #import "EXManifestResource.h"
 #import "EXKernel.h"
-#import "EXKernelDevMotionHandler.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
+#import "EXDevMenuManager.h"
 
 @implementation EXHomeModuleManager
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [EXKernelDevMotionHandler sharedInstance];
-  }
-  return self;
-}
+// TODO: (@tsapeta) Move all of those dev menu methods out of here and make them independent of the kernel.
 
 - (BOOL)homeModuleShouldEnableDevtools:(__unused EXHomeModule *)module
 {
@@ -45,15 +39,6 @@
 {
   [[EXKernel sharedInstance] reloadVisibleApp];
   [module requestToCloseDevMenu];
-}
-
-- (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController setIsMenuVisible:NO completion:^{}];
-    });
-  }
 }
 
 - (void)homeModuleDidSelectGoToHome:(EXHomeModule *)module

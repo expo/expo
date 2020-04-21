@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -20,10 +20,11 @@ export default class UserSettingsScreen extends React.Component {
   };
 
   static getDataProps(data) {
-    let { settings } = data;
+    const { settings } = data;
 
     return {
       preferredAppearance: settings.preferredAppearance,
+      devMenuSettings: settings.devMenuSettings,
     };
   }
 
@@ -34,6 +35,7 @@ export default class UserSettingsScreen extends React.Component {
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
         {this._renderAppearanceOptions()}
+        {this._renderMenuGestureOptions()}
 
         <View style={{ marginTop: 30 }}>
           <TouchableHighlight
@@ -59,11 +61,29 @@ export default class UserSettingsScreen extends React.Component {
     this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
   };
 
+  _toggleMotionGesture = () => {
+    this.props.dispatch(
+      SettingsActions.setDevMenuSetting(
+        'motionGestureEnabled',
+        !this.props.devMenuSettings.motionGestureEnabled
+      )
+    );
+  };
+
+  _toggleTouchGesture = () => {
+    this.props.dispatch(
+      SettingsActions.setDevMenuSetting(
+        'touchGestureEnabled',
+        !this.props.devMenuSettings.touchGestureEnabled
+      )
+    );
+  };
+
   _renderAppearanceOptions() {
     const { preferredAppearance } = this.props;
 
     return (
-      <View style={{ marginTop: 25 }}>
+      <View style={styles.sectionWrapper}>
         <SectionLabelContainer>
           <SectionLabelText>THEME</SectionLabelText>
         </SectionLabelContainer>
@@ -113,6 +133,53 @@ export default class UserSettingsScreen extends React.Component {
     );
   }
 
+  _renderMenuGestureOptions() {
+    const { devMenuSettings } = this.props;
+
+    if (!devMenuSettings || Platform.OS !== 'ios') {
+      return null;
+    }
+
+    return (
+      <View style={styles.sectionWrapper}>
+        <SectionLabelContainer>
+          <SectionLabelText>DEVELOPER MENU GESTURES</SectionLabelText>
+        </SectionLabelContainer>
+        <TouchableHighlight
+          onPress={this._toggleMotionGesture}
+          underlayColor={Colors.light.greyUnderlayColor}
+          style={styles.button}>
+          <GenericCardContainer>
+            <GenericCardBody style={styles.cardBody}>
+              <GenericCardTitle>Shake device</GenericCardTitle>
+            </GenericCardBody>
+            {devMenuSettings.motionGestureEnabled && this._renderCheckmark()}
+          </GenericCardContainer>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          onPress={this._toggleTouchGesture}
+          underlayColor={Colors.light.greyUnderlayColor}
+          style={styles.button}>
+          <GenericCardContainer>
+            <GenericCardBody style={styles.cardBody}>
+              <GenericCardTitle>Three-finger long press</GenericCardTitle>
+            </GenericCardBody>
+            {devMenuSettings.touchGestureEnabled && this._renderCheckmark()}
+          </GenericCardContainer>
+        </TouchableHighlight>
+
+        <View style={SharedStyles.genericCardDescriptionContainer}>
+          <Text style={SharedStyles.genericCardDescriptionText}>
+            Selected gestures will toggle the developer menu while inside an experience. The menu allows
+            you to reload or return to home in a published experience, and exposes developer tools
+            in development mode.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   _renderCheckmark() {
     return (
       <View style={styles.cardIconRight}>
@@ -125,6 +192,9 @@ export default class UserSettingsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  sectionWrapper: {
+    marginTop: 25,
   },
   cardBody: {
     paddingTop: 15,

@@ -1,29 +1,31 @@
-
-#import "EXMenuViewController.h"
-#import "EXKernel.h"
-#import "EXAppLoader.h"
-#import "EXKernelAppRegistry.h"
-#import "EXReactAppManager.h"
-#import "EXUtil.h"
-#import "EXScreenOrientationManager.h"
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
 
-@interface EXMenuViewController ()
+#import "EXDevMenuViewController.h"
+#import "EXDevMenuManager.h"
+#import "EXKernel.h"
+#import "EXAppLoader.h"
+#import "EXKernelAppRegistry.h"
+#import "EXUtil.h"
+
+@interface EXDevMenuViewController ()
 
 @property (nonatomic, strong) RCTRootView *reactRootView;
 @property (nonatomic, assign) BOOL hasCalledJSLoadedNotification;
 
 @end
 
-@interface RCTRootView (EXMenuView)
+@interface RCTRootView (EXDevMenuView)
 
 - (void)javaScriptDidLoad:(NSNotification *)notification;
 - (void)hideLoadingView;
 
 @end
 
-@implementation EXMenuViewController
+@implementation EXDevMenuViewController
+
+# pragma mark - UIViewController
 
 - (void)viewDidLoad
 {
@@ -62,15 +64,29 @@
   return YES;
 }
 
+/**
+ * Overrides UIViewController's method that returns interface orientations that the view controller supports.
+ * If EXDevMenuViewController is currently shown we want to use its supported orientations so the UI rotates
+ * when we open the dev menu while in the unsupported orientation.
+ * Otherwise, returns interface orientations supported by the current experience.
+ */
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
   return UIInterfaceOrientationMaskPortrait;
 }
 
+/**
+ * Same case as above with `supportedInterfaceOrientations` method.
+ * If we don't override this, we can get incorrect orientation while changing device orientation when the dev menu is visible.
+ */
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
   return UIInterfaceOrientationPortrait;
 }
+
+#pragma mark - API
+
+
 
 #pragma mark - internal
 
@@ -93,9 +109,10 @@
 - (void)_forceRootViewToRenderHack
 {
   if (!_hasCalledJSLoadedNotification) {
+    RCTBridge *mainBridge = [[EXDevMenuManager sharedInstance] mainBridge];
     NSNotification *notif = [[NSNotification alloc] initWithName:RCTJavaScriptDidLoadNotification
                                                           object:nil
-                                                        userInfo:@{ @"bridge": [self _homeReactBridge] }];
+                                                        userInfo:@{ @"bridge": mainBridge }];
     [_reactRootView javaScriptDidLoad:notif];
     _hasCalledJSLoadedNotification = YES;
   }
@@ -103,16 +120,17 @@
 
 - (void)_maybeRebuildRootView
 {
-  if (!_reactRootView
-      || _reactRootView.bridge != [self _homeReactBridge]) // this can happen if the home bridge restarted for some reason (e.g. due to an error)
-  {
+  RCTBridge *mainBridge = [[EXDevMenuManager sharedInstance] mainBridge];
+
+  // Main bridge might change if the home bridge restarted for some reason (e.g. due to an error)
+  if (!_reactRootView || _reactRootView.bridge != mainBridge) {
     if (_reactRootView) {
       [_reactRootView removeFromSuperview];
       _reactRootView = nil;
     }
     _hasCalledJSLoadedNotification = NO;
 
-    _reactRootView = [[RCTRootView alloc] initWithBridge:[self _homeReactBridge] moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
+    _reactRootView = [[RCTRootView alloc] initWithBridge:mainBridge moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
     _reactRootView.frame = self.view.bounds;
 
     // By default react root view has white background,
@@ -126,12 +144,6 @@
   } else if (_reactRootView) {
     _reactRootView.appProperties = [self _getInitialPropsForVisibleApp];
   }
-}
-
-- (RCTBridge *)_homeReactBridge
-{
-  EXReactAppManager *mgr = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-  return mgr.reactBridge;
 }
 
 @end
