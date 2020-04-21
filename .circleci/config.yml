@@ -522,6 +522,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - run: sudo apt-get install rsync
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
       - yarn:
