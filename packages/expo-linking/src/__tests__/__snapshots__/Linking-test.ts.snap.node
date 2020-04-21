@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`makeUrl queries makes url "" 1`] = `"exp://"`;
+exports[`makeUrl queries makes url "" 1`] = `""`;
 
-exports[`makeUrl queries makes url "path/into/app" 1`] = `"exp:///path/into/app"`;
+exports[`makeUrl queries makes url "path/into/app" 1`] = `""`;
 
-exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"exp:///some/path?emptyParam="`;
+exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `""`;
 
-exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp:///some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `""`;
 
-exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `"exp:///some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `""`;
 
-exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `"exp:///some/path?shouldEscape=%25252b%252520"`;
+exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `""`;
 
-exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `"exp:///some/path"`;
+exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `""`;
 
 exports[`parse parses "custom://" 1`] = `
 Object {
