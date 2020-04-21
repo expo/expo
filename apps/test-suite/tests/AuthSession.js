@@ -1,6 +1,11 @@
 import * as AuthSession from 'expo-auth-session';
+import * as PKCE from 'expo-auth-session/build/PKCE';
 
 export const name = 'AuthSession';
+
+// Open ID RP cert testing server http://openid.net/certification/rp_testing
+// TODO(Bacon): Test exchanges
+// const testUri = "https://rp.certification.openid.net:8080/expo-auth-session/";
 
 export async function test({ describe, it, expect, jasmine }) {
   describe('OpenID Connect Auto Discovery', () => {
@@ -16,6 +21,28 @@ export async function test({ describe, it, expect, jasmine }) {
       expect(discovery.userInfoEndpoint).toEqual(
         'https://openidconnect.googleapis.com/v1/userinfo'
       );
+    });
+  });
+
+  describe('PKCE', () => {
+    it(`creates the expected challenge for a valid code`, async () => {
+      const code = await PKCE.generateRandomAsync(43);
+      const challenge = await PKCE.deriveChallengeAsync(code);
+      expect(challenge).toBeTruthy();
+      // No `==` in the base64 encoded result.
+      expect(challenge.indexOf('=') < 0);
+    });
+
+    it(`generateRandom produces different values`, async () => {
+      const code1 = await PKCE.generateRandomAsync(10);
+      const code2 = await PKCE.generateRandomAsync(10);
+      expect(code1).not.toEqual(code2);
+    });
+
+    it(`produces the right base64 encoded challenge`, async () => {
+      const CODE = new Array(12).join('expo');
+      const challenge = await PKCE.deriveChallengeAsync(CODE);
+      expect(challenge).toEqual('J0cfOVZk6FKn67XzdP8stPFJ7bw2UY0hACisxoIefkU');
     });
   });
 }
