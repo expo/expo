@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
 import { Platform } from 'react-native';
 import URL from 'url-parse';
@@ -56,7 +57,6 @@ function ensureLeadingSlash(input, shouldAppend) {
     }
     return input;
 }
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 function makeUrl(path = '', queryParams = {}) {
     if (Platform.OS === 'web') {
         if (!canUseDOM)
