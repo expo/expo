@@ -282,7 +282,7 @@ Configuration for remote (push) notifications.
     /*
       Whether or not to display notifications when the app is in the foreground on iOS.
       `_displayInForeground` option in the individual push notification message overrides this option.
-      Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Learn more: https://docs.expo.io/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
       Defaults to `false`.
     */
     "iosDisplayInForeground": BOOLEAN,
@@ -825,7 +825,7 @@ Configuration for how and when the app should request OTA JavaScript updates
         Local path or remote url to an image to fill the background of the loading screen in 'cover' mode.
         Image size and aspect ratio are up to you.
         Pay extra attention to the size of each image.
-        See here: https://docs.expo.io/versions/latest/guides/splash-screens.html#differences-between-environments-android
+        See here: https://docs.expo.io/guides/splash-screens.html#differences-between-environments-android
         Must be a .png
         For more information see https://developer.android.com/training/multiscreen/screendensities
       */

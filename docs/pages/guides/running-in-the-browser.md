@@ -39,7 +39,7 @@ The Expo Unimodules and dev-tools are highly composable and can be used in _any_
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
 - Add web dependencies: `yarn add react-native-web react-dom expo`
   - On web all of the unused Expo, and React Native modules will be tree-shaken during the production build.
-- Modify (or create) your project's [`app.json`](https://docs.expo.io/versions/latest/workflow/configuration/):
+- Modify (or create) your project's [`app.json`](../../workflow/configuration/):
 
   ```diff
   {
