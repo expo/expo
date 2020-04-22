@@ -70,6 +70,7 @@ export default function AuthSessionScreen() {
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
       <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+      <Twitch redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Spotify redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Reddit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Identity redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
@@ -502,6 +503,33 @@ function Coinbase({ redirectUri, useProxy }: any) {
     <AuthSection
       disabled={useProxy}
       title="Coinbase"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+function Twitch({ redirectUri, usePKCE, useProxy }: any) {
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'r7jomrc4hiz5wm1wgdzmwr1ccb454h',
+      redirectUri,
+      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      usePKCE,
+    },
+    {
+      authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
+      tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
+      revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
+    }
+  );
+
+  return (
+    <AuthSection
+      disabled={useProxy}
+      title="Twitch"
       request={request}
       result={result}
       promptAsync={promptAsync}

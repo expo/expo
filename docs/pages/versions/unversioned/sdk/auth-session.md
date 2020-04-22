@@ -410,6 +410,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 - [Okta](#okta)
 - [Azure v2](#azure-v2)
 - [Identity 4](#identity-4)
+- [Twitch](#twitch)
 - [Facebook](#facebook)
 - [Uber](#uber)
 - [FitBit](#fitbit)
@@ -505,7 +506,7 @@ const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['openid', 'profile', 'email', 'offline_access'],
   },
   discovery
@@ -531,7 +532,7 @@ const discovery = useAutoDiscovery('https://demo.identityserver.io');
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'native.code',
-    redirectUrl: 'myapp://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['openid', 'profile', 'offline_access'],
   },
   discovery
@@ -539,6 +540,37 @@ const [request, response, promptAsync] = useAuthRequest(
 ```
 
 <!-- End Identity 4 -->
+
+### Twitch
+
+| Website                     | Provider   | PKCE      | Auto Discovery | Client Secret | Scopes           |
+| --------------------------- | ---------- | --------- | -------------- | ------------- | ---------------- |
+| [Get your Config][c-twitch] | OAuth/OIDC | Supported | Not Available  | Code Exchange | [Info][s-twitch] |
+
+[c-twitch]: https://dev.twitch.tv/console/apps/create
+[s-twitch]: https://dev.twitch.tv/docs/authentication#scopes
+
+- You will need to enable 2FA on Twitch to create an application.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
+  tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
+  revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: '<YOUR_ID>',
+    redirectUrl: AuthSession.getRedirectUrl(),
+    scopes: ['openid', 'user_read', 'analytics:read:games'],
+  },
+  discovery
+);
+```
+
+<!-- End Twitch -->
 
 ### Facebook
 
@@ -560,7 +592,6 @@ const discovery = {
 // Request
 const [request, response, promptAsync] = useAuthRequest(
   {
-    responseType: ResponseType.Token,
     clientId: '<YOUR FBID>',
     redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['public_profile', 'user_likes'],
@@ -593,7 +624,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['profile', 'delivery'],
   },
   discovery
@@ -628,7 +659,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['activity', 'sleep'],
   },
   discovery
@@ -662,7 +693,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['identity'],
   },
   discovery
@@ -694,7 +725,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['wallet:accounts:read'],
   },
   discovery
@@ -730,7 +761,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['identity'],
   },
   discovery
@@ -764,7 +795,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['emoji:read'],
   },
   discovery
@@ -791,7 +822,7 @@ const discovery = {
 const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
-    redirectUri: 'your.app:/redirect',
+    redirectUrl: AuthSession.getRedirectUrl(),
     scopes: ['user-read-email', 'playlist-modify-public'],
   },
   discovery
