@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -691,26 +690,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
-
-    // only these permissions, which show a dialog to the user should be scoped.
-    boolean isDangerousPermission;
-    try {
-      PermissionInfo permissionInfo = getPackageManager().getPermissionInfo(permission, PackageManager.GET_META_DATA);
-      isDangerousPermission = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) != 0;
-    } catch (PackageManager.NameNotFoundException e) {
-      return PackageManager.PERMISSION_DENIED;
-    }
-
-    if (Constants.isStandaloneApp() || !isDangerousPermission) {
-      return globalResult;
-    }
-
-    if (globalResult == PackageManager.PERMISSION_GRANTED &&
-        mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
-      return PackageManager.PERMISSION_GRANTED;
-    } else {
-      return PackageManager.PERMISSION_DENIED;
-    }
+    return mExpoKernelServiceRegistry.getPermissionsKernelService().getFinalPermissions(globalResult, getPackageManager(), permission, mExperienceId);
   }
 
   public RNObject getDevSupportManager() {

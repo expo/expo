@@ -1,6 +1,8 @@
 package host.exp.exponent.kernel.services;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,14 +13,14 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class PermissionsKernelService extends BaseKernelService {
 
-  ExponentSharedPreferences mExponentSharedPreferences;
+  private ExponentSharedPreferences mExponentSharedPreferences;
 
   public PermissionsKernelService(Context context, ExponentSharedPreferences exponentSharedPreferences) {
     super(context);
     mExponentSharedPreferences = exponentSharedPreferences;
   }
 
-  public void grantPermissions(String permission, ExperienceId experienceId) {
+  public void grantScopedPermissions(String permission, ExperienceId experienceId) {
     try {
       JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
       if (metadata == null) {
@@ -49,7 +51,7 @@ public class PermissionsKernelService extends BaseKernelService {
     }
   }
 
-  public void revokePermissions(String permission, ExperienceId experienceId) {
+  public void revokeScopedPermissions(String permission, ExperienceId experienceId) {
     try {
       JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
       if (metadata == null) {
@@ -84,13 +86,39 @@ public class PermissionsKernelService extends BaseKernelService {
         if (permissions.has(permission)) {
           JSONObject permissionsObject = permissions.getJSONObject(permission);
           return permissionsObject.has("status") &&
-              permissionsObject.getString("status").equals("granted");
+            permissionsObject.getString("status").equals("granted");
         }
       }
     } catch (JSONException e) {
       e.printStackTrace();
     }
     return false;
+  }
+
+  public int getFinalPermissions(int globalPermissionStatus, PackageManager packageManager, String permission, ExperienceId experienceId) {
+    // only these permissions, which show a dialog to the user should be scoped.
+    boolean isDangerousPermission;
+    try {
+      isDangerousPermission = isDangerousPermission(permission, packageManager);
+    } catch (PackageManager.NameNotFoundException e) {
+      return PackageManager.PERMISSION_DENIED;
+    }
+
+    if (Constants.isStandaloneApp() || !isDangerousPermission) {
+      return globalPermissionStatus;
+    }
+
+    if (globalPermissionStatus == PackageManager.PERMISSION_GRANTED &&
+      hasGrantedPermissions(permission, experienceId)) {
+      return PackageManager.PERMISSION_GRANTED;
+    } else {
+      return PackageManager.PERMISSION_DENIED;
+    }
+  }
+
+  private boolean isDangerousPermission(String permission, PackageManager packageManager) throws PackageManager.NameNotFoundException {
+    PermissionInfo permissionInfo = packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA);
+    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) != 0;
   }
 
   @Override
