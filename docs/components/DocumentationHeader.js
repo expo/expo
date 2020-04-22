@@ -49,6 +49,26 @@ const STYLES_NAV = css`
   }
 `;
 
+const HIDDEN_ON_MOBILE = css`
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    display: none;
+  }
+`;
+
+const SECTION_LINKS_WRAPPER = css`
+  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
+    padding-left: 10px;
+    margin-left: 15px;
+    border-left-width: 1px;
+    border-left-color: #eee;
+    border-left-style: solid;
+  }
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    margin-left: 15px;
+  }
+`;
+
 const STYLES_TITLE_TEXT = css`
   white-space: nowrap;
   padding: 0 0 0 8px;
@@ -57,7 +77,7 @@ const STYLES_TITLE_TEXT = css`
   padding-bottom: 2px;
   font-family: ${Constants.fonts.demi};
 
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
 `;
@@ -119,9 +139,11 @@ const SECTION_LINK_INACTIVE = css`
   color: #000 !important;
 `;
 
-function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style }) {
+function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style, className }) {
   return (
-    <div style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround, ...style }}>
+    <div
+      className={className}
+      style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround, ...style }}>
       {children.map((child, i) => (
         <div key={i.toString()} style={{ paddingLeft: i === 0 ? 0 : spaceBetween }}>
           {child}
@@ -145,50 +167,7 @@ export default class DocumentationHeader extends React.PureComponent {
 
             <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
 
-            <SectionContainer
-              spaceBetween={15}
-              style={{
-                paddingLeft: 10,
-                marginLeft: 15,
-                borderLeftWidth: 1,
-                borderLeftColor: '#eee',
-                borderLeftStyle: 'solid',
-              }}>
-              <Link href="/">
-                <a
-                  className={`${SECTION_LINK} ${
-                    this.props.activeSection === 'starting'
-                      ? SECTION_LINK_ACTIVE
-                      : SECTION_LINK_INACTIVE
-                  } `}>
-                  Get Started
-                </a>
-              </Link>
-              <Link href="/guides">
-                <a
-                  className={`${SECTION_LINK}
-                    ${
-                      this.props.activeSection === 'general'
-                        ? SECTION_LINK_ACTIVE
-                        : SECTION_LINK_INACTIVE
-                    }
-                  `}>
-                  Guides
-                </a>
-              </Link>
-              <Link href="/versions/latest/">
-                <a
-                  className={`${SECTION_LINK}
-                    ${
-                      this.props.activeSection === 'reference'
-                        ? SECTION_LINK_ACTIVE
-                        : SECTION_LINK_INACTIVE
-                    }
-                  `}>
-                  API Reference
-                </a>
-              </Link>
-            </SectionContainer>
+            {this._renderSectionLinks()}
           </div>
         </div>
         <div className={STYLES_RIGHT}>
@@ -215,4 +194,47 @@ export default class DocumentationHeader extends React.PureComponent {
       </header>
     );
   }
+
+  _renderSectionLinks = () => {
+    return (
+      <div className={SECTION_LINKS_WRAPPER}>
+        <SectionContainer spaceBetween={15}>
+          <Link href="/">
+            <a
+              className={`${SECTION_LINK} ${
+                this.props.activeSection === 'starting'
+                  ? SECTION_LINK_ACTIVE
+                  : SECTION_LINK_INACTIVE
+              } `}>
+              Get Started
+            </a>
+          </Link>
+          <Link href="/guides">
+            <a
+              className={`${SECTION_LINK}
+                    ${
+                      this.props.activeSection === 'general'
+                        ? SECTION_LINK_ACTIVE
+                        : SECTION_LINK_INACTIVE
+                    }
+                  `}>
+              Guides
+            </a>
+          </Link>
+          <Link href="/versions/latest/">
+            <a
+              className={`${SECTION_LINK}
+                    ${
+                      this.props.activeSection === 'reference'
+                        ? SECTION_LINK_ACTIVE
+                        : SECTION_LINK_INACTIVE
+                    }
+                  `}>
+              API Reference
+            </a>
+          </Link>
+        </SectionContainer>
+      </div>
+    );
+  };
 }

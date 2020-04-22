@@ -25,7 +25,7 @@ const STYLES_DOCUMENT = css`
   }
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    padding: 32px 16px 48px 16px;
+    padding: 20px 16px 48px 16px;
   }
 `;
 
