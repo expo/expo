@@ -300,20 +300,6 @@ const groupNav = nav => {
   let sections = [];
   let groupNameToSectionIndex = {};
   nav.forEach(section => {
-    // This moves the "Overview" post to the top of the Expo SDK section
-    if (section.name === 'Expo SDK') {
-      let overview;
-      section.posts.forEach(post => {
-        if (post.name === 'Overview') {
-          overview = post;
-        }
-      });
-      if (overview) {
-        section.posts.splice(section.posts.indexOf(overview), 1);
-        section.posts.unshift(overview);
-      }
-    }
-
     // If it's grouped then we add it
     let groupName = getGroupForSectionName(section.name);
     if (groupName) {
