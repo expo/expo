@@ -75,8 +75,9 @@ export default class DocumentationSidebarGroup extends React.Component {
       isOpen = isOpen || window.sidebarState[props.info.name];
     }
 
+    // default to always open
     this.state = {
-      isOpen,
+      isOpen: props.info.name === 'Depreacted' ? isOpen : true,
     };
   }
 
@@ -118,13 +119,14 @@ export default class DocumentationSidebarGroup extends React.Component {
       const pathname = stripVersionFromPath(this.props.url.pathname);
       const asPath = stripVersionFromPath(this.props.asPath);
 
-      if ( (linkUrl === pathname || linkUrl === asPath) ||
-        (linkUrl === '//') // accounts for 'index' page (Getting to know Expo)
+      if (
+        linkUrl === pathname ||
+        linkUrl === asPath ||
+        linkUrl === '//' // accounts for 'index' page (Getting to know Expo)
       ) {
         result = true;
       }
     };
-
 
     let posts = [];
     sections.forEach(section => {
@@ -137,7 +139,7 @@ export default class DocumentationSidebarGroup extends React.Component {
 
   _toggleIsOpen = () => {
     let isOpen = this.state.isOpen;
-    this.setState({isOpen: !isOpen});
+    this.setState({ isOpen: !isOpen });
     window.sidebarState[this.props.info.name] = !isOpen;
   };
 

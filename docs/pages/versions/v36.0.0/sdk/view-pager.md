@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/react-native-community/react-native-viewpager
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '../../../../components/plugins/Video'
+import Video from '~/components/plugins/Video'
 
 **`@react-native-community/viewpager`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 

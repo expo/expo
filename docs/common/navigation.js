@@ -5,28 +5,29 @@ const packageVersion = require('../package.json').version;
 // - Each section is a top-level folder within the version directory
 // - The groups of sections are expressed only below, there is no representation of them in the filesystem
 const GROUPS = {
-  'The Basics': ['Introduction', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
+  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
+  'Managed Workflow': ['Fundamentals', 'Distributing Your App', 'Assorted Guides'],
+  Depreacted: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
-  'API Reference': ['Expo SDK', 'React Native'],
+  'Expo SDK': ['Expo SDK'],
+  'React Native': ['React Native'],
 };
 
 // This array provides the ordering for pages within each section
 const sections = [
   {
-    name: 'Introduction',
+    name: 'Get Started',
+    reference: ['Installation', 'Create a new app'],
+  },
+  {
+    name: 'Conceptual Overview',
     reference: [
-      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
       'Frequently asked questions',
       'Common Questions',
     ],
-  },
-  {
-    name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
   },
   {
     name: 'Tutorial',
@@ -47,7 +48,7 @@ const sections = [
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
   },
   {
-    name: 'Guides',
+    name: 'Assorted Guides',
     reference: [
       'App Icons',
       'Assets',
@@ -249,16 +250,16 @@ const sections = [
 // TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
 // move this logic to GROUPS instead
 const ROOT = [
-  'Introduction',
   'Get Started',
   'Tutorial',
+  'Conceptual Overview',
   'Fundamentals',
-  'Guides',
   'Distributing Your App',
-  'ExpoKit',
+  'Assorted Guides',
   'Essentials',
   'Expo SDK',
   'React Native',
+  'ExpoKit',
 ];
 
 const sortAccordingToReference = (arr, reference) => {
@@ -299,20 +300,6 @@ const groupNav = nav => {
   let sections = [];
   let groupNameToSectionIndex = {};
   nav.forEach(section => {
-    // This moves the "Overview" post to the top of the Expo SDK section
-    if (section.name === 'Expo SDK') {
-      let overview;
-      section.posts.forEach(post => {
-        if (post.name === 'Overview') {
-          overview = post;
-        }
-      });
-      if (overview) {
-        section.posts.splice(section.posts.indexOf(overview), 1);
-        section.posts.unshift(overview);
-      }
-    }
-
     // If it's grouped then we add it
     let groupName = getGroupForSectionName(section.name);
     if (groupName) {
@@ -335,10 +322,19 @@ const groupNav = nav => {
   return sections;
 };
 
-const sortedNavigation = Object.assign(
-  ...Object.entries(prevaledNavigationData).map(([version, versionNavigation]) => ({
+const sortedReference = Object.assign(
+  ...Object.entries(prevaledNavigationData.reference).map(([version, versionNavigation]) => ({
     [version]: groupNav(sortNav(versionNavigation)),
   }))
 );
 
-module.exports = { ...sortedNavigation, latest: sortedNavigation['v' + packageVersion] };
+const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
+const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
+
+module.exports = {
+  generalDirectories: prevaledNavigationData.generalDirectories,
+  startingDirectories: prevaledNavigationData.startingDirectories,
+  starting: sortedStarting,
+  general: sortedGeneral,
+  reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+};

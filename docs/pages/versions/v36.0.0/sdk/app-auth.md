@@ -48,7 +48,7 @@ const prefix = Linking.makeUrl('/');
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](https://docs.expo.io/versions/latest/workflow/linking).
+For more info on [Linking in Expo](../../workflow/linking).
 
 ## Bare Workflow
 

@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sharing'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '../../../../components/plugins/Video'
+import Video from '~/components/plugins/Video'
 
 **`expo-sharing`** allows you to share files directly with other compatible applications.
 
