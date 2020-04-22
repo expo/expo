@@ -24,7 +24,7 @@ This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts/#getcontac
 
 ## These packages work in bare React Native apps too
 
-The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an app that you would like to add one of these packages too, read about [integrating into existing apps](../../bare/existing-apps/).
+The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps/).
 
 ## Each Expo SDK version depends on a React Native version
 
