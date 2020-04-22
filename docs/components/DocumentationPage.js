@@ -1,19 +1,17 @@
 import Router from 'next/router';
+import * as React from 'react';
 import { css } from 'react-emotion';
 
-import * as React from 'react';
-import * as Utilities from '~/common/utilities';
 import * as Constants from '~/common/constants';
-import * as WindowUtils from '~/common/window';
-import { VERSIONS } from '~/common/versions';
-
 import navigation from '~/common/navigation';
-
-import DocumentationHeader from '~/components/DocumentationHeader';
+import * as Utilities from '~/common/utilities';
+import { VERSIONS } from '~/common/versions';
+import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationSidebar from '~/components/DocumentationSidebar';
+import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
+import DocumentationSidebar from '~/components/DocumentationSidebar';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 
@@ -29,18 +27,6 @@ const STYLES_DOCUMENT = css`
     padding: 32px 16px 48px 16px;
   }
 `;
-
-const mutateRouteDataForRender = data => {
-  data.forEach(element => {
-    if (element.href) {
-      element.as = Utilities.replaceVersionInUrl(element.href, 'latest');
-    }
-
-    if (element.posts) {
-      mutateRouteDataForRender(element.posts);
-    }
-  });
-};
 
 export default class DocumentationPage extends React.Component {
   state = {
@@ -71,9 +57,6 @@ export default class DocumentationPage extends React.Component {
   }
 
   _handleResize = () => {
-    // NOTE(jim): Handles switching between web and mobile layouts.
-    const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
       window.scrollTo(0, 0);
     }
@@ -103,25 +86,53 @@ export default class DocumentationPage extends React.Component {
     });
   };
 
-  render() {
-    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
-    const canonicalUrl = `https://docs.expo.io${Utilities.replaceVersionInUrl(
-      this.props.url.pathname,
-      'latest'
-    )}`;
+  _isReferencePath = () => {
+    return this.props.url.pathname.startsWith('/versions');
+  };
 
+  _isGeneralPath = () => {
+    return !this.isReferencePath();
+  };
+
+  _getCanonicalUrl = () => {
+    if (this._isReferencePath()) {
+      return `https://docs.expo.io${Utilities.replaceVersionInUrl(
+        this.props.url.pathname,
+        'latest'
+      )}`;
+    } else {
+      return `https://docs.expo.io/${this.props.url.pathname}`;
+    }
+  };
+
+  _getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
     }
     this._version = version;
+    return version;
+  };
 
-    const routes = navigation[version];
+  _getRoutes = () => {
+    const version = this._getVersion();
+
+    if (this._isReferencePath()) {
+      return navigation.reference[version];
+    } else {
+      return navigation.general;
+    }
+  };
+
+  render() {
+    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
+    const version = this._getVersion();
+    const routes = this._getRoutes();
 
     const headerElement = (
       <DocumentationHeader
         pathname={this.props.url.pathname}
-        version={this._version}
+        version={version}
         isMenuActive={this.state.isMenuActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
@@ -131,7 +142,14 @@ export default class DocumentationPage extends React.Component {
     );
 
     const sidebarElement = (
-      <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
+      <DocumentationSidebar
+        url={this.props.url}
+        asPath={this.props.asPath}
+        routes={routes}
+        version={version}
+        onSetVersion={this._handleSetVersion}
+        isVersionSelectorHidden={!this._isReferencePath()}
+      />
     );
 
     return (
@@ -143,13 +161,13 @@ export default class DocumentationPage extends React.Component {
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           {version === 'unversioned' && <meta name="robots" content="noindex" />}
-          {version !== 'unversioned' && <link rel="canonical" href={canonicalUrl} />}
+          {version !== 'unversioned' && <link rel="canonical" href={this._getCanonicalUrl()} />}
         </Head>
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider value={{ version: this._version }}>
+            <DocumentationPageContext.Provider value={{ version }}>
               {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter

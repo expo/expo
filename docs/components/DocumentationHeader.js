@@ -1,14 +1,12 @@
-import { css } from 'react-emotion';
 import Link from 'next/link';
-
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import { css } from 'react-emotion';
 
+import * as Constants from '~/common/constants';
 import BrandLogo from '~/components/icons/BrandLogo';
-import MenuIcon from '~/components/icons/Menu';
 import DismissIcon from '~/components/icons/DismissIcon';
+import MenuIcon from '~/components/icons/Menu';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_LOGO = css`
   display: flex;
@@ -52,7 +50,6 @@ const STYLES_NAV = css`
 `;
 
 const STYLES_TITLE_TEXT = css`
-  width: 170px;
   white-space: nowrap;
   padding: 0 0 0 8px;
   font-size: 1.3rem;
@@ -101,6 +98,22 @@ const STYLES_MENU_BUTTON_VISIBLE = css`
   display: flex;
 `;
 
+const SECTION_LINK_CONTAINER = css`
+  display: flex;
+`;
+
+function SectionContainer({ spaceBetween = 0, spaceAround = 0, children }) {
+  return (
+    <div style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround }}>
+      {children.map((child, i) => (
+        <div key={i.toString()} style={{ paddingLeft: i === 0 ? 0 : spaceBetween }}>
+          {child}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default class DocumentationHeader extends React.PureComponent {
   render() {
     return (
@@ -113,12 +126,17 @@ export default class DocumentationHeader extends React.PureComponent {
               </a>
             </Link>
 
-            <h1 className={STYLES_TITLE_TEXT}>Documentation</h1>
-          </div>
+            <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
 
-          {!this.props.isVersionSelectorHidden && (
-            <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
-          )}
+            <SectionContainer spaceAround={20} spaceBetween={10}>
+              <Link href="/">
+                <a>Concepts and Guides</a>
+              </Link>
+              <Link href="/versions/latest/">
+                <a>API Reference</a>
+              </Link>
+            </SectionContainer>
+          </div>
         </div>
         <div className={STYLES_RIGHT}>
           {!this.props.isAlogliaSearchHidden && (

@@ -1,12 +1,11 @@
-import styled, { keyframes, css } from 'react-emotion';
-
 import * as React from 'react';
-import * as Utilities from '~/common/utilities';
-import * as Constants from '~/common/constants';
+import { css } from 'react-emotion';
 
+import * as Constants from '~/common/constants';
+import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
-import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
+import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
@@ -96,6 +95,10 @@ export default class DocumentationSidebar extends React.Component {
 
     return (
       <nav className={STYLES_SIDEBAR} {...customDataAttributes}>
+        {!this.props.isVersionSelectorHidden && (
+          <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
+        )}
+
         {this.props.routes.map(categoryInfo => this._renderCategoryElements(categoryInfo))}
       </nav>
     );
