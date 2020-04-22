@@ -127,7 +127,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.1):
     - UMCore
-  - EXNotifications (0.1.1):
+  - EXNotifications (0.1.2):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (8.1.0):
@@ -171,7 +171,7 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXWebBrowser (8.1.0):
+  - EXWebBrowser (8.2.0):
     - UMCore
   - FBLazyVector (0.61.4)
   - FBReactNativeSpec (0.61.4):
@@ -878,7 +878,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 02a13521d05ca381b08f7d745a9602569eade072
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
-  EXNotifications: 4eb1836866d7527130667ff1b948030a7f73a5ab
+  EXNotifications: a6f8365569503dfd9e43b901784bcaf1a8b738e8
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
@@ -893,7 +893,7 @@ SPEC CHECKSUMS:
   EXSQLite: 877ad6c8eb169353a2f94d5ad26510ffadd46a1f
   EXStoreReview: 8a238c698c0cc2f7f46b21b6fa05c070003fd3cd
   EXTaskManager: 6cc65abbc1b226524d551ef2a08a7afe8be03044
-  EXWebBrowser: 4118b18d151fd03c935bd9de4cd312d2b33ec2c5
+  EXWebBrowser: c8abe4e22f30322949da381d4f6faa8d94ba6b59
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
   FBReactNativeSpec: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
   FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d

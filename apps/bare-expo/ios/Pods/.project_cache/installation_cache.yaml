@@ -560,7 +560,7 @@ CACHE_KEYS:
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
       EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: 4eb1836866d7527130667ff1b948030a7f73a5ab
+    CHECKSUM: a6f8365569503dfd9e43b901784bcaf1a8b738e8
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -596,7 +596,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.1.1)
+      - EXNotifications (0.1.2)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -787,13 +787,13 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: 8a03493ab01357acaad4113c212a979d
-    CHECKSUM: 4118b18d151fd03c935bd9de4cd312d2b33ec2c5
+    CHECKSUM: c8abe4e22f30322949da381d4f6faa8d94ba6b59
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (8.1.0)
+      - EXWebBrowser (8.2.0)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector: db36a67e420fa1be73e35e9a4f9553c4
