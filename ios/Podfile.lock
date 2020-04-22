@@ -1655,7 +1655,7 @@ PODS:
   - EXVideoThumbnails (4.1.1):
     - UMCore
     - UMFileSystemInterface
-  - EXWebBrowser (8.1.0):
+  - EXWebBrowser (8.2.0):
     - UMCore
   - Fabric (1.10.2)
   - FBAudienceNetwork (5.7.1):
@@ -3861,7 +3861,7 @@ SPEC CHECKSUMS:
   EXStoreReview: 8a238c698c0cc2f7f46b21b6fa05c070003fd3cd
   EXTaskManager: 6cc65abbc1b226524d551ef2a08a7afe8be03044
   EXVideoThumbnails: be6984a3cda1e44c45b5c6278244e99855f99a0a
-  EXWebBrowser: 4118b18d151fd03c935bd9de4cd312d2b33ec2c5
+  EXWebBrowser: c8abe4e22f30322949da381d4f6faa8d94ba6b59
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3

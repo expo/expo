@@ -36,7 +36,7 @@
     "expo-location": "~8.1.0",
     "expo-permissions": "~8.1.0",
     "expo-task-manager": "~8.1.0",
-    "expo-web-browser": "~8.1.0",
+    "expo-web-browser": "~8.2.0",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
     "immutable": "^3.8.1",
