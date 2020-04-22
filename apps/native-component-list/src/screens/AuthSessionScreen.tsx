@@ -73,6 +73,7 @@ export default function AuthSessionScreen() {
       <Spotify redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Reddit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Identity redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Facebook redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <FitBit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Github redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Coinbase redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
@@ -397,7 +398,44 @@ function FitBit({ redirectUri, usePKCE, useProxy }: any) {
   );
 }
 
-// Currently only tested on bare apps
+function Facebook({ usePKCE, useProxy }: any) {
+  const redirectUri = React.useMemo(
+    () =>
+      Platform.select({
+        web: getAuthSessionRedirectUrl('redirect'),
+        default: useProxy ? getAuthSessionRedirectUrl() : `fb145668956753819://redirect`,
+      }),
+    [useProxy]
+  ) as string;
+
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: '145668956753819',
+      redirectUri,
+      scopes: ['public_profile', 'user_likes'],
+      usePKCE,
+      extraParams: {
+        display: 'popup',
+      },
+    },
+    {
+      authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+      tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+    }
+  );
+
+  return (
+    <AuthSection
+      title="Facebook"
+      disabled={isInClient && !useProxy}
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
 function Slack({ redirectUri, usePKCE, useProxy }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
