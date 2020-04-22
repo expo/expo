@@ -118,19 +118,32 @@ export default class DocumentationPage extends React.Component {
     if (!version || VERSIONS.indexOf(version) === -1) {
       version = VERSIONS[0];
     }
+    if (!version) {
+      version = 'latest';
+    }
+
     this._version = version;
     return version;
   };
 
   _getRoutes = () => {
-    const version = this._getVersion();
-
     if (this._isReferencePath()) {
+      const version = this._getVersion();
       return navigation.reference[version];
     } else if (this._isGeneralPath()) {
       return navigation.general;
     } else if (this._isGettingStartedPath()) {
       return navigation.starting;
+    }
+  };
+
+  _getActiveTopLevelSection = () => {
+    if (this._isReferencePath()) {
+      return 'reference';
+    } else if (this._isGeneralPath()) {
+      return 'general';
+    } else if (this._isGettingStartedPath()) {
+      return 'starting';
     }
   };
 
@@ -141,8 +154,9 @@ export default class DocumentationPage extends React.Component {
 
     const headerElement = (
       <DocumentationHeader
+        activeSection={this._getActiveTopLevelSection()}
         pathname={this.props.url.pathname}
-        version={version}
+        version={this._version}
         isMenuActive={this.state.isMenuActive}
         isAlogiaSearchHidden={this.state.isMenuActive}
         onSetVersion={this._handleSetVersion}
@@ -156,7 +170,7 @@ export default class DocumentationPage extends React.Component {
         url={this.props.url}
         asPath={this.props.asPath}
         routes={routes}
-        version={version}
+        version={this._version}
         onSetVersion={this._handleSetVersion}
         isVersionSelectorHidden={!this._isReferencePath()}
       />
@@ -170,14 +184,16 @@ export default class DocumentationPage extends React.Component {
         isMenuActive={this.state.isMenuActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          {version === 'unversioned' && <meta name="robots" content="noindex" />}
-          {version !== 'unversioned' && <link rel="canonical" href={this._getCanonicalUrl()} />}
+          {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
+          {this._version !== 'unversioned' && (
+            <link rel="canonical" href={this._getCanonicalUrl()} />
+          )}
         </Head>
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
             <H1>{this.props.title}</H1>
-            <DocumentationPageContext.Provider value={{ version }}>
+            <DocumentationPageContext.Provider value={{ version: this._version }}>
               {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter
@@ -187,7 +203,12 @@ export default class DocumentationPage extends React.Component {
             />
           </div>
         ) : (
-          <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
+          <DocumentationSidebar
+            url={this.props.url}
+            asPath={this.props.asPath}
+            routes={routes}
+            isVersionSelectorHidden={!this._isReferencePath()}
+          />
         )}
       </DocumentationNestedScrollLayout>
     );
