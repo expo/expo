@@ -230,7 +230,7 @@ export default class DocumentationHeader extends React.PureComponent {
                         : SECTION_LINK_INACTIVE
                     }
                   `}>
-              API Reference
+              <span className={HIDDEN_ON_MOBILE}>API</span> Reference
             </a>
           </Link>
         </SectionContainer>
