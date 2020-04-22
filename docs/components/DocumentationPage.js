@@ -207,6 +207,8 @@ export default class DocumentationPage extends React.Component {
             url={this.props.url}
             asPath={this.props.asPath}
             routes={routes}
+            version={this._version}
+            onSetVersion={this._handleSetVersion}
             isVersionSelectorHidden={!this._isReferencePath()}
           />
         )}
