@@ -2,8 +2,6 @@
 title: Hosting An App on Your Servers
 ---
 
-> **WARNING:** This feature is in beta.
-
 Normally, when over-the-air (OTA) updates are enabled, your app will fetch JS bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, OTA updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your app on your own servers to better suit your use case.
 
 For simplicity, the rest of this article will refer to hosting an app for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
@@ -101,10 +99,10 @@ When we bundle your app, minification is always enabled. In order to see the ori
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
 
 ### Multimanifests
-As new Expo SDK versions are released, you may want to serve multiple versions of your app from your server endpoint. For example, if you first released your app with SDK 29 and later upgraded to SDK 30, you'd want users with your old standalone binary to receive the SDK 29 version, and those with the new standalone binary to receive the SDK 30 version.  
+As new Expo SDK versions are released, you may want to serve multiple versions of your app from your server endpoint. For example, if you first released your app with SDK 29 and later upgraded to SDK 30, you'd want users with your old standalone binary to receive the SDK 29 version, and those with the new standalone binary to receive the SDK 30 version.
 In order to do this, you can run `expo export` with some merge flags to combine previously exported apps into a single multiversion app which you can serve from your servers.
 
-Here is an example workflow:  
+Here is an example workflow:
 1. Release your app with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the app (SDK 29) to a directory named `sdk29`.
 
 2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion app in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
