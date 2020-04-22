@@ -49,6 +49,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
     BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
 
     NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
+    UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
     NSString *facebookDisplayName = params[@"manifest"][@"facebookDisplayName"];
 
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
@@ -69,6 +70,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
                    rejecter:(UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
+  UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
   [super initializeWithAppId:scopedFacebookAppId appName:appName resolver:resolve rejecter:reject];
 }
