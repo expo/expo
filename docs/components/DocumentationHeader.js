@@ -137,7 +137,7 @@ export default class DocumentationHeader extends React.PureComponent {
       <header className={STYLES_NAV}>
         <div className={STYLES_LEFT}>
           <div className={STYLES_LOGO_CONTAINER}>
-            <Link href="/versions/">
+            <Link href="/">
               <a className={STYLES_LOGO}>
                 <BrandLogo />
               </a>
