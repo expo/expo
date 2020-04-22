@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/react-native-community/react-native-datetimep
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '../../../../components/plugins/Video'
+import Video from '~/components/plugins/Video'
 
 A component that provides access to the system UI for date and time selection.
 

@@ -1,14 +1,12 @@
-import { css } from 'react-emotion';
 import Link from 'next/link';
-
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import { css } from 'react-emotion';
 
+import * as Constants from '~/common/constants';
 import BrandLogo from '~/components/icons/BrandLogo';
-import MenuIcon from '~/components/icons/Menu';
 import DismissIcon from '~/components/icons/DismissIcon';
+import MenuIcon from '~/components/icons/Menu';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import VersionSelector from '~/components/VersionSelector';
 
 const STYLES_LOGO = css`
   display: flex;
@@ -42,7 +40,7 @@ const STYLES_NAV = css`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 48px;
+  height: 58px;
   width: 100%;
   padding: 0 24px 0 24px;
 
@@ -52,7 +50,6 @@ const STYLES_NAV = css`
 `;
 
 const STYLES_TITLE_TEXT = css`
-  width: 170px;
   white-space: nowrap;
   padding: 0 0 0 8px;
   font-size: 1.3rem;
@@ -60,7 +57,7 @@ const STYLES_TITLE_TEXT = css`
   padding-bottom: 2px;
   font-family: ${Constants.fonts.demi};
 
-  @media screen and (max-width: 340px) {
+  @media screen and (max-width: 400px) {
     display: none;
   }
 `;
@@ -101,6 +98,39 @@ const STYLES_MENU_BUTTON_VISIBLE = css`
   display: flex;
 `;
 
+const SECTION_LINK_CONTAINER = css`
+  display: flex;
+`;
+
+const SECTION_LINK = css`
+  text-decoration: none;
+  font-weight: 900;
+  font-family: expo-brand-demi, sans-serif;
+  :hover {
+    opacity: 0.5;
+  }
+`;
+
+const SECTION_LINK_ACTIVE = css`
+  text-decoration: underline;
+`;
+
+const SECTION_LINK_INACTIVE = css`
+  color: #000 !important;
+`;
+
+function SectionContainer({ spaceBetween = 0, spaceAround = 0, children, style }) {
+  return (
+    <div style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround, ...style }}>
+      {children.map((child, i) => (
+        <div key={i.toString()} style={{ paddingLeft: i === 0 ? 0 : spaceBetween }}>
+          {child}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default class DocumentationHeader extends React.PureComponent {
   render() {
     return (
@@ -113,12 +143,53 @@ export default class DocumentationHeader extends React.PureComponent {
               </a>
             </Link>
 
-            <h1 className={STYLES_TITLE_TEXT}>Documentation</h1>
-          </div>
+            <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
 
-          {!this.props.isVersionSelectorHidden && (
-            <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
-          )}
+            <SectionContainer
+              spaceBetween={15}
+              style={{
+                paddingLeft: 10,
+                marginLeft: 15,
+                borderLeftWidth: 1,
+                borderLeftColor: '#eee',
+                borderLeftStyle: 'solid',
+              }}>
+              <Link href="/">
+                <a
+                  className={`${SECTION_LINK} ${
+                    this.props.activeSection === 'starting'
+                      ? SECTION_LINK_ACTIVE
+                      : SECTION_LINK_INACTIVE
+                  } `}>
+                  Get Started
+                </a>
+              </Link>
+              <Link href="/guides">
+                <a
+                  className={`${SECTION_LINK}
+                    ${
+                      this.props.activeSection === 'general'
+                        ? SECTION_LINK_ACTIVE
+                        : SECTION_LINK_INACTIVE
+                    }
+                  `}>
+                  Guides
+                </a>
+              </Link>
+              <Link href="/versions/latest/">
+                <a
+                  className={`${SECTION_LINK}
+                    ${
+                      this.props.activeSection === 'reference'
+                        ? SECTION_LINK_ACTIVE
+                        : SECTION_LINK_INACTIVE
+                    }
+                  `}>
+                  API Reference
+                </a>
+              </Link>
+            </SectionContainer>
+          </div>
         </div>
         <div className={STYLES_RIGHT}>
           {!this.props.isAlogliaSearchHidden && (

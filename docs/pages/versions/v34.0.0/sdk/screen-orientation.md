@@ -11,7 +11,7 @@ This API allows changing supported screen orientations at runtime. This will tak
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](https://docs.expo.io/versions/latest/guides/customizing-webpack/#resizeobserver).
+> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../guides/customizing-webpack/#resizeobserver).
 
 #### Platform Compatibility
 

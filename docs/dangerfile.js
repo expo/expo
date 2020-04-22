@@ -49,4 +49,5 @@ function warnIfOnlyOneVersionChanged() {
   });
 }
 
-warnIfOnlyOneVersionChanged();
+// Skip this for now
+// warnIfOnlyOneVersionChanged();
