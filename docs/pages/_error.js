@@ -36,8 +36,6 @@ export default class Error extends React.Component {
 
     let redirectPath = pathname;
 
-    console.log({ redirectPath });
-
     // index.html is no longer a thing in our docs
     if (pathIncludesIndexHtml(redirectPath)) {
       redirectPath = redirectPath.replace('index.html', '');
@@ -71,7 +69,6 @@ export default class Error extends React.Component {
     }
 
     // Remove versioning from path if this section is no longer versioned
-    console.log(redirectPath);
     if (isVersionedPath(redirectPath) && !pathRequiresVersioning(redirectPath)) {
       redirectPath = removeVersionFromPath(redirectPath);
     }
@@ -200,8 +197,6 @@ const SDK_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/sdk`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path) {
-  console.log(path);
-  console.log(VERSIONED_PATH_PATTERN);
   return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
 }
 
