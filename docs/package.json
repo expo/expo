@@ -8,7 +8,7 @@
     "export": "yarn run build && next export",
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
-    "test-links": "./scripts/test-links"
+    "test-links": "node ./scripts/test-links.js"
   },
   "dependencies": {
     "@expo/spawn-async": "^1.5.0",
@@ -40,6 +40,7 @@
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
     "minimist": "^1.2.2",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "puppeteer": "^3.0.1"
   }
 }

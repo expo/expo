@@ -89,7 +89,7 @@ export default class Error extends React.Component {
       // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
         window.location = `${this.state.redirectPath}?redirected`;
-      }, 2000);
+      }, 1200);
     }
   }
 
@@ -131,7 +131,9 @@ export default class Error extends React.Component {
             Hold tight, we are redirecting you to where we think this URL was intended to take you!
           </p>
           <p style={styles.link}>
-            <a href={this.state.redirectPath}>Click here to possibly go there more quickly!</a>
+            <a id="redirect-link" href={this.state.redirectPath}>
+              Click here to possibly go there more quickly!
+            </a>
           </p>
         </>
       );
@@ -139,7 +141,7 @@ export default class Error extends React.Component {
       return (
         <>
           <h1>🏳️</h1>
-          <p style={styles.description}>
+          <p style={styles.description} id="__redirect_failed">
             We took an educated guess and tried to direct you to the right page, but it seems that
             did not work out! Maybe it doesn't exist anymore! 😔
           </p>
@@ -152,7 +154,7 @@ export default class Error extends React.Component {
       return (
         <>
           <h1>🤯</h1>
-          <p style={styles.description}>
+          <p style={styles.description} id="__not_found">
             <strong style={{ fontWeight: 'bold' }}>Uh oh, we couldn't find this page!</strong> We've
             made note of this and will investigate, but it's possible that the page you're looking
             for no longer exists!
@@ -251,4 +253,8 @@ const RENAMED_PAGES = {
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
   '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
+
+  // Move overview to index
+  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/sdk/',
+  '/versions/latest/sdk/overview/': '/versions/latest/sdk/',
 };
