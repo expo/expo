@@ -55,10 +55,15 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
       // This happens even before the app foregrounds, which mimics
       // the mechanism behind EXFacebookAppDelegate.
-      [FBSDKSettings setAppID:scopedFacebookAppId];
-      [FBSDKSettings setDisplayName:facebookDisplayName];
-      [FBSDKApplicationDelegate initializeSDK:nil];
-      _isInitialized = YES;
+      // Check for FacebookAppId in case this is a custom client build
+      if (scopedFacebookAppId) {
+        [FBSDKSettings setAppID:scopedFacebookAppId];
+        [FBSDKSettings setDisplayName:facebookDisplayName];
+        [FBSDKApplicationDelegate initializeSDK:nil];
+        _isInitialized = YES;
+      } else {
+        UMLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
+      }
     }
   }
   return self;
