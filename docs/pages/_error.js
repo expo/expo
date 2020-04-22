@@ -254,5 +254,6 @@ const RENAMED_PAGES = {
   '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
   '/introduction/community/': '/next-steps/community/',
   '/introduction/installation/': '/get-started/installation/',
+  '/versions/latest/overview/': '/versions/latest/',
   '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
 };

@@ -1,6 +1,7 @@
 import Router from 'next/router';
 import * as React from 'react';
 import { css } from 'react-emotion';
+import some from 'lodash/some';
 
 import * as Constants from '~/common/constants';
 import navigation from '~/common/navigation';
@@ -91,7 +92,14 @@ export default class DocumentationPage extends React.Component {
   };
 
   _isGeneralPath = () => {
-    return !this.isReferencePath();
+    return !this._isReferencePath() && !this._isGettingStartedPath();
+  };
+
+  _isGettingStartedPath = () => {
+    return (
+      this.props.url.pathname === '/' ||
+      some(navigation.startingDirectories, name => this.props.url.pathname.startsWith(`/${name}`))
+    );
   };
 
   _getCanonicalUrl = () => {
@@ -119,8 +127,10 @@ export default class DocumentationPage extends React.Component {
 
     if (this._isReferencePath()) {
       return navigation.reference[version];
-    } else {
+    } else if (this._isGeneralPath()) {
       return navigation.general;
+    } else if (this._isGettingStartedPath()) {
+      return navigation.starting;
     }
   };
 

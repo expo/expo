@@ -1,14 +1,14 @@
 // @preval
 
-const path = require('path');
 const fm = require('front-matter');
 const fs = require('fs-extra');
+const path = require('path');
 
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name
 const DIR_MAPPING = {
   introduction: 'Conceptual Overview',
-  guides: 'Guides',
+  guides: 'Assorted Guides',
   'managed-workflow': 'Managed Workflow',
   bare: 'Essentials',
   tutorials: 'Tutorials',
@@ -66,7 +66,7 @@ const generateGeneralNavLinks = (path_, arr = null) => {
   return arr;
 };
 
-const generateReferenceNavLinks = (path_, arr) => {
+const generateReferenceNavLinks = (path_, arr = []) => {
   const items = fs.readdirSync(path_);
 
   for (var i = 0; i < items.length; i++) {
@@ -106,27 +106,38 @@ const generateReferenceNavLinks = (path_, arr) => {
   return arr;
 };
 
+// Find directories within the versions subdirectory
 const REFERENCE_PATH_PREFIX = './pages/versions';
 const referenceDirectories = fs
   .readdirSync(REFERENCE_PATH_PREFIX, { withFileTypes: true })
   .filter(f => f.isDirectory())
   .map(f => f.name);
 
+// A manual list of directories to pull in to the getting started tutorial
+const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
+
+// Find any directories that aren't reference or starting directories. Also exclude the api
+// directory, which is just a shortcut.
 const ROOT_PATH_PREFIX = './pages';
 const generalDirectories = fs
   .readdirSync(ROOT_PATH_PREFIX, { withFileTypes: true })
   .filter(f => f.isDirectory())
   .map(f => f.name)
-  .filter(name => name !== 'versions' && name !== 'api');
+  .filter(name => name !== 'api' && name !== 'versions' && !startingDirectories.includes(name));
 
 module.exports = {
+  startingDirectories,
+  generalDirectories,
+  starting: startingDirectories.map(directory =>
+    generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
+  ),
   general: generalDirectories.map(directory =>
-    generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`, null)
+    generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
   reference: referenceDirectories.reduce(
     (obj, version) => ({
       ...obj,
-      [version]: generateReferenceNavLinks(`${REFERENCE_PATH_PREFIX}/${version}`, []),
+      [version]: generateReferenceNavLinks(`${REFERENCE_PATH_PREFIX}/${version}`),
     }),
     {}
   ),

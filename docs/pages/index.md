@@ -1,5 +1,5 @@
 ---
-title: Expo Documentation
+title: Introduction to Expo
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';

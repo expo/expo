@@ -7,20 +7,20 @@ sidebar_title: Native Firebase
 It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app. 
 
 
-# Create Firebase project
+## Create Firebase project
 
 If you have not done so already, create a Firebase project for your app by clicking on **Add project** in the [Firebase Console](https://console.firebase.google.com/).
 
 This will guide you through a series of steps to create your own Firebase project.
 
 
-# Managed Workflow Setup
+## Managed Workflow Setup
 
 Some (but not all) native Firebase features can be used with the Managed Workflow. The most notable native feature is Firebase Analytics,
 which is otherwise unavailable in react-native using the Firebase JavaScript SDK.
 
 
-## Android
+### Android
 
 - Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
 - **Make sure that the Android package name is the same as the value of `android.package` in your app.json.**
@@ -38,7 +38,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 }
 ```
 
-## iOS
+### iOS
 
 - Open **Project overview** in the firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `ios.bundleIdentifier` in your app.json.**
@@ -56,7 +56,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 }
 ```
 
-## Web
+### Web
 
 - Open **Project overview** in the firebase console and click on the Web icon or + button to **Add Firebase to your iOS app**.
 - Register the app & copy the config into your **`app.json`** under the key **`web.config.firebase`**.
@@ -78,7 +78,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 }
 ```
 
-# Bare Workflow Setup
+## Bare Workflow Setup
 
 In the bare workflow, the firebase configuration needs to be added according to the native Firebase SDK installation guides
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
@@ -86,7 +86,7 @@ Below you will find a tailored instruction for use with react-native and the Exp
 
 You are free to use any native Firebase packages such as [react-native-firebase](https://invertase.io/oss/react-native-firebase/) in the bare workflow.
 
-## Android
+### Android
 
 - Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
 - **Make sure that the Android package name is the same as the value of `applicationId` in your `android/app/build.gradle `.**
@@ -105,7 +105,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```
 - Finally rebuild your native Android app: `yarn react-native run-android`
 
-## iOS
+### iOS
 
 - Open **Project overview** in the firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `Bundle Identifier` of your iOS project.**
@@ -126,7 +126,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```
 - Rebuild your iOS project to see the changes: `yarn react-native run-ios`
 
-## Usage with react-native-firebase
+### Usage with react-native-firebase
 
 After following the iOS and Android setup, you can optionally configure your project to work with `react-native-firebase` version 6 as well.
 

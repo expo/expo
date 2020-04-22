@@ -6,7 +6,8 @@ const packageVersion = require('../package.json').version;
 // - The groups of sections are expressed only below, there is no representation of them in the filesystem
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
+  'Managed Workflow': ['Fundamentals', 'Distributing Your App', 'Assorted Guides'],
+  Depreacted: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
   'React Native': ['React Native'],
@@ -47,7 +48,7 @@ const sections = [
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
   },
   {
-    name: 'Guides',
+    name: 'Assorted Guides',
     reference: [
       'App Icons',
       'Assets',
@@ -253,12 +254,12 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
-  'Guides',
   'Distributing Your App',
-  'ExpoKit',
+  'Assorted Guides',
   'Essentials',
   'Expo SDK',
   'React Native',
+  'ExpoKit',
 ];
 
 const sortAccordingToReference = (arr, reference) => {
@@ -341,11 +342,13 @@ const sortedReference = Object.assign(
   }))
 );
 
-console.log({ data: prevaledNavigationData.general });
-// const sortedGeneral = prevaledNavigationData.general;
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
+const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 
 module.exports = {
+  generalDirectories: prevaledNavigationData.generalDirectories,
+  startingDirectories: prevaledNavigationData.startingDirectories,
+  starting: sortedStarting,
   general: sortedGeneral,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
 };

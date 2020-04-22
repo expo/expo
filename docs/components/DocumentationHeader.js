@@ -130,7 +130,10 @@ export default class DocumentationHeader extends React.PureComponent {
 
             <SectionContainer spaceAround={20} spaceBetween={10}>
               <Link href="/">
-                <a>Concepts and Guides</a>
+                <a>Get Started</a>
+              </Link>
+              <Link href="/guides">
+                <a>Guides</a>
               </Link>
               <Link href="/versions/latest/">
                 <a>API Reference</a>
