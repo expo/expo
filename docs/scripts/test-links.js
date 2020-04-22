@@ -21,37 +21,42 @@ const externalLinks = [
 ];
 
 (async () => {
-  const notFound = [];
-  const redirectsFailed = [];
+  try {
+    const notFound = [];
+    const redirectsFailed = [];
 
-  const browser = await puppeteer.launch();
-  for (const link of externalLinks) {
-    const page = await browser.newPage();
-    await page.goto(`${url}${link}`);
-
-    if ((await page.$$('#__not_found')).length) {
-      notFound.push(link);
-    } else if ((await page.$$('#redirect-link')).length) {
-      await page.click('#redirect-link');
-      if ((await page.$$('#__redirect_failed')).length) {
-        redirectsFailed.push(link);
-      }
+    const browser = await puppeteer.launch();
+    for (const link of externalLinks) {
+      const page = await browser.newPage();
+      await page.goto(`${url}${link}`);
 
       if ((await page.$$('#__not_found')).length) {
         notFound.push(link);
+      } else if ((await page.$$('#redirect-link')).length) {
+        await page.click('#redirect-link');
+        if ((await page.$$('#__redirect_failed')).length) {
+          redirectsFailed.push(link);
+        }
+
+        if ((await page.$$('#__not_found')).length) {
+          notFound.push(link);
+        }
       }
-    }
 
-    await page.close();
-  }
-  await browser.close();
-
-  if (notFound.length || redirectsFailed.length) {
-    if (notFound.length) {
-      console.error(`Pages not found for links: ${notFound.join(',')}`);
-    } else if (redirectsFailed.length) {
-      console.error(`Redirects failed for links: ${redirectsFailed.join(',')}`);
+      await page.close();
     }
+    await browser.close();
+
+    if (notFound.length || redirectsFailed.length) {
+      if (notFound.length) {
+        console.error(`Pages not found for links: ${notFound.join(',')}`);
+      } else if (redirectsFailed.length) {
+        console.error(`Redirects failed for links: ${redirectsFailed.join(',')}`);
+      }
+      process.exit(-1);
+    }
+  } catch (e) {
+    console.error(e);
     process.exit(-1);
   }
 })();
