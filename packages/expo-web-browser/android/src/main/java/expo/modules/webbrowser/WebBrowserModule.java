@@ -6,8 +6,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import org.unimodules.core.ExportedModule;
@@ -20,6 +18,8 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import expo.modules.webbrowser.error.NoPreferredPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
@@ -43,6 +43,7 @@ public class WebBrowserModule extends ExportedModule {
 
   private final static String NO_PREFERRED_PACKAGE_MSG = "Cannot determine preferred package without satisfying it.";
 
+  private ModuleRegistry mModuleRegistry;
   private CustomTabsActivitiesHelper mCustomTabsResolver;
   private CustomTabsConnectionHelper mConnectionHelper;
 
@@ -57,7 +58,8 @@ public class WebBrowserModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
+    mModuleRegistry = moduleRegistry;
+    mCustomTabsResolver = moduleRegistry.getModule(CustomTabsActivitiesHelper.class);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
   }
 
@@ -66,7 +68,7 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.warmUp(packageName);
-      Bundle result = new Bundle();
+      Bundle result = mModuleRegistry.createBundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } catch (NoPreferredPackageFound ex) {
@@ -79,11 +81,11 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       if (mConnectionHelper.coolDown(packageName)) {
-        Bundle result = new Bundle();
+        Bundle result = mModuleRegistry.createBundle();
         result.putString(SERVICE_PACKAGE_KEY, packageName);
         promise.resolve(result);
       } else {
-        promise.resolve(new Bundle());
+        promise.resolve(mModuleRegistry.createBundle());
       }
     } catch (NoPreferredPackageFound ex) {
       promise.reject(ex);
@@ -95,7 +97,7 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
-      Bundle result = new Bundle();
+      Bundle result = mModuleRegistry.createBundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } catch (NoPreferredPackageFound ex) {
@@ -116,7 +118,7 @@ public class WebBrowserModule extends ExportedModule {
         defaultCustomTabsPackage = defaultPackage;
       }
 
-      Bundle result = new Bundle();
+      Bundle result = mModuleRegistry.createBundle();
       result.putStringArrayList(BROWSER_PACKAGES_KEY, activities);
       result.putStringArrayList(SERVICE_PACKAGES_KEY, services);
       result.putString(PREFERRED_BROWSER_PACKAGE, preferredPackage);
@@ -138,7 +140,7 @@ public class WebBrowserModule extends ExportedModule {
       List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
         mCustomTabsResolver.startCustomTabs(intent);
-        Bundle result = new Bundle();
+        Bundle result = mModuleRegistry.createBundle();
         result.putString("type", "opened");
         promise.resolve(result);
       } else {
