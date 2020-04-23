@@ -5,7 +5,7 @@ title: Sharing the image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video'
 
-Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](../../sdk/sharing/).
+Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](/versions/latest/sdk/sharing/).
 
 ## Installing expo-sharing
 

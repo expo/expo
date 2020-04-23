@@ -44,7 +44,7 @@ If that sounds like you, you can see what we offer at https://expo.io/developer-
 
 Managed Expo projects don't support custom native code, including third-party libraries which require custom native components. In a managed project, you only write JavaScript.
 
-In [our SDK](../../sdk/overview/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JavaScript as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates.
+In [our SDK](/versions/latest/sdk/overview/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JavaScript as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates.
 
 However, if you need something custom that isn't possible with the native modules provided in the SDK, like on-the-fly video processing or low-level control over the Bluetooth radio to do a firmware update and [other features requested here](https://expo.canny.io/feature-requests), you can run `expo eject` and have full control over the underlying native projects.
 

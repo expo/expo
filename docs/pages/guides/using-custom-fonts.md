@@ -73,7 +73,7 @@ In general, it's best to use assets from your project when possible.
 
 Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready.
 
-A great way we can do that is to use the [`<AppLoading />`](../../sdk/app-loading) component. In its simplest form, you can just render it while you're waiting for your app to load.
+A great way we can do that is to use the [`<AppLoading />`](/versions/latest/sdk/app-loading) component. In its simplest form, you can just render it while you're waiting for your app to load.
 
 Sometimes -- particularly on the web -- people choose to render their content in a platform default font while their custom font is loading. Or, alternatively, to render the rest of their content, that doesn't depend on the custom font while the font is loading.
 
@@ -103,7 +103,7 @@ Here is a minimal, complete example.
 
 If you don't want to use the `useFonts` hook, you can use `Font.loadAsync` directly.
 
-What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](../../sdk/font).
+What is happening under the hood is that your fonts are being loaded using `Font.loadAysnc` from the [`expo-font` library](/versions/latest/sdk/font).
 
 You can use that directly if you prefer, or if you want to have more fine-grained control over when your fonts are loaded before rendering.
 

@@ -21,7 +21,7 @@ You can also run your own server to host your updates, provided it conforms to t
 
 > If you're using `expo export` or `expo publish`, you're welcome to skip this section as it will be taken care of for you!
 
-The `expo-updates` implementation requires a single URL (provided at build-time) to which it will make requests for new updates. These requests may happen when users launch your app in production (depending on your app's configuration settings) and when your app calls [`Updates.fetchUpdateAsync()`](../../sdk/updates/#updatesfetchupdateasync). Requests will be sent with the following headers:
+The `expo-updates` implementation requires a single URL (provided at build-time) to which it will make requests for new updates. These requests may happen when users launch your app in production (depending on your app's configuration settings) and when your app calls [`Updates.fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync). Requests will be sent with the following headers:
 
 ```
 'Accept': 'application/expo+json,application/json',
@@ -145,7 +145,7 @@ Some common configuration patterns are explained below:
 
 ### Automatic Updates
 
-By default, `expo-updates` will immediately launch your app with a previously downloaded (or embedded) update when a user opens your app from being closed. It will additionally check for updates asynchronously in the background, and will try to fetch the latest published version. If a new update is available, `expo-updates` will try to download it and notify the running JavaScript of its success or failure using [events](../../sdk/updates/#updatesaddlistenereventlistener). A newly fetched update will be launched next time the user swipes closed and reopens the app; if you want to run it sooner, you can call [`Updates.reloadAsync`](../../sdk/updates/#updatesreloadasync) in your application code at an appropriate time.
+By default, `expo-updates` will immediately launch your app with a previously downloaded (or embedded) update when a user opens your app from being closed. It will additionally check for updates asynchronously in the background, and will try to fetch the latest published version. If a new update is available, `expo-updates` will try to download it and notify the running JavaScript of its success or failure using [events](/versions/latest/sdk/updates/#updatesaddlistenereventlistener). A newly fetched update will be launched next time the user swipes closed and reopens the app; if you want to run it sooner, you can call [`Updates.reloadAsync`](/versions/latest/sdk/updates/#updatesreloadasync) in your application code at an appropriate time.
 
 You may also configure `expo-updates` to wait a specific amount of time to launch when a user opens the app by using the `launchWaitMs` setting. If a new update can be downloaded within this time, the new update will be launched right away, rather than waiting for the user to swipe closed and reopen the app. (Note, however, that if users have a slow network connection, your app can be delayed on the launch screen for as many milliseconds as `launchWaitMs`, so we recommend being conservative with this setting unless it's critically important for users to have the most recent update on each launch.) If no update is available, a previously downloaded update will be launched as soon as `expo-updates` is able to determine this.
 
@@ -157,7 +157,7 @@ It's also possible to turn off these automatic updates, and to instead control u
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
-You can then use the [`Updates`](../../sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`Updates`](/versions/latest/sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```javascript
 try {

@@ -15,10 +15,10 @@ The most up-to-date installation and configuration instructions are kept [in the
 
 ## Installing libraries from the Expo SDK
 
-The short version: find an Expo package that you would liek to use in the API reference or by searching this documentation, eg: [expo-web-browser](../../sdk/webbrowser/),install it with npm, then run `pod install` in the `ios` directory and re-run your app.
+The short version: find an Expo package that you would liek to use in the API reference or by searching this documentation, eg: [expo-web-browser](/versions/latest/sdk/webbrowser/),install it with npm, then run `pod install` in the `ios` directory and re-run your app.
 
 The longer, more detailed version: check out [Install an Expo SDK package](../hello-world/#install-an-expo-sdk-package) in the "Up and Running" guide.
 
 ## That's it!
 
-You're ready to go. Might I suggest checking out [expo-updates](../../sdk/updates/)?
+You're ready to go. Might I suggest checking out [expo-updates](/versions/latest/sdk/updates/)?

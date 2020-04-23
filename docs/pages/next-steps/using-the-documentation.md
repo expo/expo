@@ -10,6 +10,6 @@ The "Managed Workflow" section also contains many how-to guides that show you ho
 
 **"Bare Workflow"**: this section helps you to up and running with the bare workflow (we only cover the managed workflow in "The Basics"), lists the [supported APIs from the Expo SDK](../../bare/unimodules-full-list/), and includes other how-to guides for integrating Expo tools into bare React Native apps.
 
-**"API Reference"** includes information on every module in the Expo SDK, from [AR](../../sdk/AR/) to [WebView](../../sdk/webview) and everything in between. You can browse this section to get an idea of what capabilities are available to you and refer back to it when you want to use an API.
+**"API Reference"** includes information on every module in the Expo SDK, from [AR](/versions/latest/sdk/AR/) to [WebView](/versions/latest/sdk/webview) and everything in between. You can browse this section to get an idea of what capabilities are available to you and refer back to it when you want to use an API.
 
 We strive to make our documentation as good as it can be, but it can't possibly answer everyone's questions all the time. Sometimes you might need to get some help [from the community](../community/) or read a book or work through a course listed in [external resources](../additional-resources/).
