@@ -330,7 +330,7 @@ executors:
     resource_class: small
   web:
     docker:
-      - image: circleci/node:latest-browsers
+      - image: circleci/node:13.8.0-buster-browsers
     working_directory: /home/circleci/expo
     resource_class: small
     environment:
