@@ -47,20 +47,20 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
     BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
-
+    
     NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-    UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
-    NSString *facebookDisplayName = params[@"manifest"][@"facebookDisplayName"];
+    NSString *manifestFacebookAppId = params[@"manifest"][@"facebookAppId"];
 
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
       // This happens even before the app foregrounds, which mimics
       // the mechanism behind EXFacebookAppDelegate.
       // Check for FacebookAppId in case this is a custom client build
       if (scopedFacebookAppId) {
-        [FBSDKSettings setAppID:scopedFacebookAppId];
-        [FBSDKSettings setDisplayName:facebookDisplayName];
         [FBSDKApplicationDelegate initializeSDK:nil];
         _isInitialized = YES;
+        if (manifestFacebookAppId) {
+          UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
+        }
       } else {
         UMLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
       }
@@ -75,7 +75,9 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
                    rejecter:(UMPromiseRejectBlock)reject
 {
   _isInitialized = YES;
-  UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
+  if (appId) {
+    UMLogInfo(@"Overriding Facebook App ID with the Expo Client's. To test your own Facebook App ID, you'll need to build a standalone app. Refer to our documentation for more info- https://docs.expo.io/versions/latest/sdk/facebook/");
+  }
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
   [super initializeWithAppId:scopedFacebookAppId appName:appName resolver:resolve rejecter:reject];
 }

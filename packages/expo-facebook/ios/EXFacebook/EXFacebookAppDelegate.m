@@ -6,10 +6,6 @@
 #import <UMCore/UMAppDelegateWrapper.h>
 #import <objc/runtime.h>
 
-@protocol EXOverriddingFBSDKInternalUtility <NSObject>
-
-@end
-
 @implementation EXFacebookAppDelegate
 
 UM_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
