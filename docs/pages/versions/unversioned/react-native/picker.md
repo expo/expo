@@ -3,6 +3,8 @@ id: picker
 title: Picker
 ---
 
+> **Deprecated.** Use [react-native-community/react-native-picker](https://github.com/react-native-community/react-native-picker) instead.
+
 Renders the native picker component on Android and iOS. Example:
 
 ```jsx
