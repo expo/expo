@@ -2,9 +2,9 @@ import { Octokit } from '@octokit/rest';
 import { GitHubPRDSL } from 'danger/distribution/dsl/GitHubDSL';
 import { GithubApiWrapper } from './GithubApiWrapper';
 export declare enum ChangelogEntryType {
-    BUG_FIXES = "bug-fix",
-    NEW_FEATURES = "new-feature",
-    BREAKING_CHANGES = "breaking-change"
+    BUG_FIXES = 0,
+    NEW_FEATURES = 1,
+    BREAKING_CHANGES = 2
 }
 export declare const DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 export declare type ChangelogEntry = {

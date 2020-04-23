@@ -4,9 +4,9 @@ const GithubApiWrapper_1 = require("./GithubApiWrapper");
 const Utils_1 = require("./Utils");
 var ChangelogEntryType;
 (function (ChangelogEntryType) {
-    ChangelogEntryType["BUG_FIXES"] = "bug-fix";
-    ChangelogEntryType["NEW_FEATURES"] = "new-feature";
-    ChangelogEntryType["BREAKING_CHANGES"] = "breaking-change";
+    ChangelogEntryType[ChangelogEntryType["BUG_FIXES"] = 0] = "BUG_FIXES";
+    ChangelogEntryType[ChangelogEntryType["NEW_FEATURES"] = 1] = "NEW_FEATURES";
+    ChangelogEntryType[ChangelogEntryType["BREAKING_CHANGES"] = 2] = "BREAKING_CHANGES";
 })(ChangelogEntryType = exports.ChangelogEntryType || (exports.ChangelogEntryType = {}));
 exports.DEFAULT_ENTRY_TYPE = ChangelogEntryType.BUG_FIXES;
 exports.DEFAULT_CHANGELOG_ENTRY_KEY = 'default';
@@ -27,32 +27,30 @@ class PullRequestManager {
      * Otherwise, it tries to parse PR's body.
      */
     parseChangelogSuggestionFromDescription() {
-        var _a, _b;
+        var _a;
         const changelogEntries = {
             [exports.DEFAULT_CHANGELOG_ENTRY_KEY]: {
                 type: exports.DEFAULT_ENTRY_TYPE,
                 message: this.pullRequest.title.replace(/\[.*\]/, '').trim(),
             },
         };
-        const changelogTag = (_b = (_a = this.pullRequest.body
-            .match(/#\schangelog(([^#]*?)\s?)*/i)) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.replace(/^-/, '');
-        if (changelogTag) {
-            changelogTag
+        const parseLine = line => {
+            const parsingResult = this.parseTagsFromLine(line);
+            changelogEntries[parsingResult.packageName] = {
+                type: parsingResult.type,
+                message: line.replace(/\[.*\]/, '').trim(),
+            };
+        };
+        parseLine(this.pullRequest.title);
+        const changelogSection = (_a = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)) === null || _a === void 0 ? void 0 : _a[0];
+        if (changelogSection) {
+            changelogSection
+                .replace(/^-/, '')
                 .split('\n')
                 .slice(1)
                 .map(line => line.trim())
                 .filter(line => line.length > 0)
-                .forEach(line => {
-                const tags = this.parseTagsFromLine(line);
-                if (!tags) {
-                    warn(`Couldn't parse line: ${line}.`);
-                    return;
-                }
-                changelogEntries[tags.packageName] = {
-                    type: tags.type,
-                    message: line.replace(/\[.*\]/, '').trim(),
-                };
-            });
+                .forEach(parseLine);
         }
         return changelogEntries;
     }
@@ -95,23 +93,13 @@ class PullRequestManager {
         if (!tags) {
             return result;
         }
-        // We currently support only two tags - packageName and type.
-        if (tags.length > 2) {
-            return null;
-        }
         for (const tag of tags) {
-            switch (true) {
-                case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
-                    result.type = ChangelogEntryType.BUG_FIXES;
-                    break;
-                case /\b(feat|features?)\b/i.test(tag):
-                    result.type = ChangelogEntryType.NEW_FEATURES;
-                    break;
-                case /\b(break(ing)?)\b/i.test(tag):
-                    result.type = ChangelogEntryType.BREAKING_CHANGES;
-                    break;
-                default:
-                    result.packageName = tag.replace(/\[|\]/g, '').trim();
+            const entryType = parseEntryType(tag);
+            if (entryType !== null) {
+                result.type = Math.max(result.type, entryType);
+            }
+            else if (isExpoPackage(tag)) {
+                result.packageName = tag.replace(/\[|\]/g, '').trim();
             }
         }
         return result;
@@ -122,4 +110,19 @@ function createPullRequestManager(api, pr) {
     return new PullRequestManager(pr, new GithubApiWrapper_1.GithubApiWrapper(api, pr.base.user.login, pr.base.repo.name));
 }
 exports.createPullRequestManager = createPullRequestManager;
+function parseEntryType(tag) {
+    switch (true) {
+        case /\b(break(ing)?)\b/i.test(tag):
+            return ChangelogEntryType.BREAKING_CHANGES;
+        case /\b(feat|features?)\b/i.test(tag):
+            return ChangelogEntryType.NEW_FEATURES;
+        case /\b(bug|fix|bugfix|bug-fix)\b/i.test(tag):
+            return ChangelogEntryType.BUG_FIXES;
+    }
+    return null;
+}
+function isExpoPackage(name) {
+    const prefixes = ['expo', 'unimodules'];
+    return prefixes.some(prefix => name.startsWith(prefix));
+}
 //# sourceMappingURL=PullRequestManager.js.map

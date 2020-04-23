@@ -68,7 +68,7 @@ export declare class GithubApiWrapper {
      */
     private updateOrCreateReference;
     /**
-     * Check if the reference exists via Github api.
+     * Checks if the reference exists via Github api.
      *
      * @param ref The ref in the URL must `heads/branch`, not just `branch`
      */

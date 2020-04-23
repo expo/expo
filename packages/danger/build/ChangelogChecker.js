@@ -38,8 +38,8 @@ function getSuggestedChangelogEntries(packageNames) {
     const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
-        const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message, (_b !== null && _b !== void 0 ? _b : defaultEntry.message));
-        const type = (_d = (_c = suggestedEntries[packageName]) === null || _c === void 0 ? void 0 : _c.type, (_d !== null && _d !== void 0 ? _d : defaultEntry.type));
+        const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;
+        const type = (_d = (_c = suggestedEntries[packageName]) === null || _c === void 0 ? void 0 : _c.type) !== null && _d !== void 0 ? _d : defaultEntry.type;
         return {
             packageName,
             message,
@@ -58,7 +58,7 @@ async function runAddChangelogCommandAsync(suggestedEntries) {
             `--author`,
             prAuthor,
             `--type`,
-            entry.type,
+            entryTypeToString(entry.type),
             `--pull-request`,
             `${pr.number}`,
         ]);
@@ -122,4 +122,15 @@ async function checkChangelog() {
     await generateReport(fixedEntries, html_url);
 }
 exports.checkChangelog = checkChangelog;
+function entryTypeToString(type) {
+    switch (type) {
+        case PullRequestManager_1.ChangelogEntryType.BUG_FIXES:
+            return 'bug-fix';
+        case PullRequestManager_1.ChangelogEntryType.NEW_FEATURES:
+            return 'new-feature';
+        case PullRequestManager_1.ChangelogEntryType.BREAKING_CHANGES:
+            return 'breaking-change';
+    }
+    throw new Error(`Unknown entry type ${type}.`);
+}
 //# sourceMappingURL=ChangelogChecker.js.map
