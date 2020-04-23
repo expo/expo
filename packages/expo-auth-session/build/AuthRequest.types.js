@@ -30,4 +30,34 @@ export var ResponseType;
      */
     ResponseType["Token"] = "token";
 })(ResponseType || (ResponseType = {}));
+/**
+ * Should the user be prompted to login or consent again.
+ * This can be used to present a dialog for switching accounts after the user has already been logged in.
+ *
+ * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+ */
+export var Prompt;
+(function (Prompt) {
+    /**
+     * Server must not display any auth or consent UI. Can be used to check for existing auth or consent.
+     * An error is returned if a user isn't already authenticated or the client doesn't have pre-configured consent for the requested claims, or does not fulfill other conditions for processing the request.
+     * The error code will typically be `login_required`, `interaction_required`, or another code defined in [Section 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).
+     */
+    Prompt["None"] = "none";
+    /**
+     * The server should prompt the user to reauthenticate.
+     * If it cannot reauthenticate the End-User, it must return an error, typically `login_required`.
+     */
+    Prompt["Login"] = "login";
+    /**
+     * Server should prompt the user for consent before returning information to the client.
+     * If it cannot obtain consent, it must return an error, typically `consent_required`.
+     */
+    Prompt["Consent"] = "consent";
+    /**
+     * Server should prompt the user to select an account. Can be used to switch accounts.
+     * If it can't obtain an account selection choice made by the user, it must return an error, typically `account_selection_required`.
+     */
+    Prompt["SelectAccount"] = "select_account";
+})(Prompt || (Prompt = {}));
 //# sourceMappingURL=AuthRequest.types.js.map

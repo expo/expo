@@ -22,6 +22,7 @@ export declare class AuthRequest {
     private readonly scopes;
     private readonly clientSecret?;
     private codeChallenge?;
+    private prompt?;
     constructor(request: AuthRequestConfig);
     /**
      * Load and return a valid auth request based on the input config.

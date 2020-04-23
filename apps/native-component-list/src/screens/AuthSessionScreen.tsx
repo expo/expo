@@ -1,10 +1,11 @@
 import { Linking } from 'expo';
 import * as AuthSession from 'expo-auth-session';
-import { getRedirectUrl, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { getRedirectUrl, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
+
 import { getGUID } from '../api/guid';
 import Button from '../components/Button';
 import TitledSwitch from '../components/TitledSwitch';
@@ -63,24 +64,32 @@ function getCustomRedirectUrl(
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
+  const [prompt, setSwitch] = React.useState<undefined | Prompt>(undefined);
 
   const redirectUri = getCustomRedirectUrl('redirect', { scheme: 'bareexpo', useProxy });
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
+      {isInClient && (
+        <TitledSwitch
+          title="Switch Accounts"
+          value={!!prompt}
+          setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
+        />
+      )}
       <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
-      <Spotify redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Reddit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Identity redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <FitBit redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Github redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Coinbase redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Google useProxy={useProxy} usePKCE={usePKCE} />
-      <Slack redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Uber redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Okta redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Azure useProxy={useProxy} />
+      <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Identity prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <FitBit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Github prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Coinbase prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Google prompt={prompt} useProxy={useProxy} usePKCE={usePKCE} />
+      <Slack prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Uber prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Okta prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Azure prompt={prompt} useProxy={useProxy} />
       <LegacyAuthSession />
     </ScrollView>
   );
@@ -90,7 +99,7 @@ AuthSessionScreen.navigationOptions = {
   title: 'AuthSession',
 };
 
-function Result({ title, result, usePKCE }: any) {
+function Result({ title, result }: any) {
   if (result)
     return (
       <Text style={styles.text}>
@@ -100,7 +109,7 @@ function Result({ title, result, usePKCE }: any) {
   return null;
 }
 
-function Google({ useProxy, usePKCE }: any) {
+function Google({ useProxy, prompt, usePKCE }: any) {
   const redirectUri = React.useMemo(
     () =>
       Platform.select({
@@ -119,6 +128,7 @@ function Google({ useProxy, usePKCE }: any) {
         ? '29635966244-bc5tjrdacdaktqorhinsbtda80tchl7n.apps.googleusercontent.com'
         : getGUID(),
       redirectUri,
+      prompt,
       scopes: ['profile', 'email', 'openid'],
       usePKCE,
     },
@@ -139,7 +149,7 @@ function Google({ useProxy, usePKCE }: any) {
 
 // Only setup for bare apps right now
 // Couldn't get this working. API is really confusing.
-function Azure({ useProxy, usePKCE }: any) {
+function Azure({ useProxy, prompt, usePKCE }: any) {
   const redirectUri = React.useMemo(
     () =>
       Platform.select({
@@ -163,6 +173,7 @@ function Azure({ useProxy, usePKCE }: any) {
     {
       clientId: '96891596-721b-4ae1-8e67-674809373165',
       redirectUri,
+      prompt,
       extraParams: {
         domain_hint: 'live.com',
       },
@@ -187,13 +198,14 @@ function Azure({ useProxy, usePKCE }: any) {
 }
 
 // Only setup for bare apps right now
-function Okta({ redirectUri, usePKCE, useProxy }: any) {
+function Okta({ redirectUri, prompt, usePKCE, useProxy }: any) {
   const discovery = useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
   const [request, result, promptAsync] = useAuthRequest(
     // config
     {
       clientId: '0oa4su9fhp4F2F4Eg4x6',
       redirectUri,
+      prompt,
       scopes: ['openid', 'profile'],
       usePKCE,
     },
@@ -217,7 +229,7 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
 // We'll only support bare, and proxy in this example
 // If the redirect is invalid with http instead of https on web, then the provider
 // will let you authenticate but it will redirect with no data and the page will appear broken.
-function Reddit({ redirectUri, usePKCE, useProxy }: any) {
+function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -245,6 +257,7 @@ function Reddit({ redirectUri, usePKCE, useProxy }: any) {
       clientId,
       clientSecret: '',
       redirectUri,
+      prompt,
       scopes: ['identity'],
       usePKCE,
     },
@@ -267,7 +280,7 @@ function Reddit({ redirectUri, usePKCE, useProxy }: any) {
 
 // TODO: Add button to test using an invalid redirect URI. This is a good example of AuthError.
 // Works for all platforms
-function Github({ redirectUri, usePKCE, useProxy }: any) {
+function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -293,6 +306,7 @@ function Github({ redirectUri, usePKCE, useProxy }: any) {
       redirectUri,
       scopes: ['identity'],
       usePKCE,
+      prompt,
     },
     // discovery
     {
@@ -316,7 +330,7 @@ function Github({ redirectUri, usePKCE, useProxy }: any) {
 
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
-function Uber({ redirectUri, usePKCE, useProxy }: any) {
+function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -324,6 +338,7 @@ function Uber({ redirectUri, usePKCE, useProxy }: any) {
       redirectUri,
       scopes: [],
       usePKCE,
+      prompt,
       // Enable to test invalid_scope error
       // scopes: ['invalid'],
     },
@@ -350,7 +365,7 @@ function Uber({ redirectUri, usePKCE, useProxy }: any) {
 // Easy to setup
 // Only allows one redirect URI per app (clientId)
 // Refresh doesn't seem to return a new access token :[
-function FitBit({ redirectUri, usePKCE, useProxy }: any) {
+function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -376,6 +391,7 @@ function FitBit({ redirectUri, usePKCE, useProxy }: any) {
       clientId,
       redirectUri,
       scopes: ['activity', 'sleep'],
+      prompt,
       usePKCE,
     },
     // discovery
@@ -397,8 +413,7 @@ function FitBit({ redirectUri, usePKCE, useProxy }: any) {
   );
 }
 
-// Currently only tested on bare apps
-function Slack({ redirectUri, usePKCE, useProxy }: any) {
+function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
   // - Add a redirect URI Under [Redirect URLs]
@@ -411,6 +426,7 @@ function Slack({ redirectUri, usePKCE, useProxy }: any) {
       clientId: '58692702102.1023025401076',
       redirectUri,
       scopes: ['emoji:read'],
+      prompt,
       usePKCE,
     },
     // discovery
@@ -432,13 +448,14 @@ function Slack({ redirectUri, usePKCE, useProxy }: any) {
 }
 
 // Works on all platforms
-function Spotify({ redirectUri, usePKCE, useProxy }: any) {
+function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
       redirectUri,
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
       usePKCE,
+      prompt,
     },
     // discovery
     {
@@ -459,13 +476,14 @@ function Spotify({ redirectUri, usePKCE, useProxy }: any) {
 }
 
 // Works on all platforms
-function Identity({ redirectUri, useProxy }: any) {
+function Identity({ redirectUri, prompt, useProxy }: any) {
   const discovery = useAutoDiscovery('https://demo.identityserver.io');
 
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'native.code',
       redirectUri,
+      prompt,
       scopes: ['openid', 'profile', 'email', 'offline_access'],
     },
     discovery
@@ -483,11 +501,12 @@ function Identity({ redirectUri, useProxy }: any) {
 }
 
 // Doesn't work with proxy
-function Coinbase({ redirectUri, useProxy }: any) {
+function Coinbase({ redirectUri, prompt, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
       redirectUri,
+      prompt,
       scopes: ['wallet:accounts:read'],
     },
     // discovery
