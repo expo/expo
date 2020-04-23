@@ -47,14 +47,18 @@
     return;
   }
 
-  NSMutableDictionary *result = [[EXSessionTaskDelegate parseServerResponse:downloadTask.response] mutableCopy];
+  self.resolve([self parseServerResponse:downloadTask.response]);
+}
+
+- (NSDictionary *)parseServerResponse:(NSURLResponse *)response
+{
+  NSMutableDictionary *result = [[super parseServerResponse:response] mutableCopy];
   result[@"uri"] = _localUrl.absoluteString;
   if (_shouldCalculateMd5) {
     NSData *data = [NSData dataWithContentsOfURL:_localUrl];
     result[@"md5"] = [data md5String];
   }
-
-  self.resolve(result);
+  return result;
 }
 
 @end

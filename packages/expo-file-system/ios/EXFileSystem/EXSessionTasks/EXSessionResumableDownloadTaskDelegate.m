@@ -5,7 +5,7 @@
 @interface EXSessionResumableDownloadTaskDelegate ()
 
 @property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWriteCallback;
-@property (weak, nonatomic) EXResumableManager *manger;
+@property (weak, nonatomic) EXResumableManager *manager;
 @property (strong, nonatomic) NSString *uuid;
 
 @end
@@ -25,7 +25,7 @@
                            localUrl:localUrl
                  shouldCalculateMd5:shouldCalculateMd5]) {
     _onWriteCallback = onWriteCallback;
-    _manger = manager;
+    _manager = manager;
     _uuid = uuid;
   }
   return self;
@@ -43,14 +43,8 @@
                   error);
     }
     
-    [_manger unregisterTask:_uuid];
+    [_manager unregisterTask:_uuid];
   }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
-{
-  [super URLSession:session downloadTask:downloadTask didFinishDownloadingToURL:location];
-  [_manger unregisterTask:_uuid];
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask

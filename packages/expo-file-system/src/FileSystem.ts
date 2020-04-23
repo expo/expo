@@ -12,7 +12,7 @@ import {
   EncodingType,
   FileInfo,
   FileSystemDownloadResult,
-  FileSystemHttpMethod,
+  FileSystemAcceptedHttpMethod,
   FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
@@ -38,7 +38,7 @@ export {
   EncodingType,
   FileInfo,
   FileSystemDownloadResult,
-  FileSystemHttpMethod,
+  FileSystemAcceptedHttpMethod,
   FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
@@ -174,7 +174,11 @@ export async function downloadAsync(
   if (!ExponentFileSystem.downloadAsync) {
     throw new UnavailabilityError('expo-file-system', 'downloadAsync');
   }
-  return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+
+  return await ExponentFileSystem.downloadAsync(uri, fileUri, {
+    sessionType: FileSystemSessionType.BACKGROUND,
+    ...options,
+  });
 }
 
 export async function uploadAsync(
@@ -185,7 +189,12 @@ export async function uploadAsync(
   if (!ExponentFileSystem.uploadAsync) {
     throw new UnavailabilityError('expo-file-system', 'uploadAsync');
   }
-  return await ExponentFileSystem.uploadAsync(url, fileUri, options);
+
+  return await ExponentFileSystem.uploadAsync(url, fileUri, {
+    sessionType: FileSystemSessionType.BACKGROUND,
+    ...options,
+    httpMethod: (options.httpMethod || 'POST').toUpperCase(),
+  });
 }
 
 export function createDownloadResumable(

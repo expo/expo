@@ -27,12 +27,6 @@ typedef NS_ENUM(NSInteger, EXFileSystemSessionType) {
   EXFileSystemForegroundSession = 1,
 };
 
-typedef NS_ENUM(NSInteger, EXFileSystemHTTPMethod) {
-  EXFileSystemPostMethod = 0,
-  EXFileSystemPutMethod = 1,
-  EXFileSystemPatchMethod = 2,
-};
-
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSURLSession *backgroundSession;
@@ -554,9 +548,16 @@ UM_EXPORT_METHOD_AS(downloadAsync,
     return;
   }
 
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
+  }
+  
   NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
-  EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
-  NSURLSessionDownloadTask *task = [[self _sessionForType:type] downloadTaskWithRequest:request];
+  NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request];
   EXSessionTaskDelegate *taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
                                                                                         reject:reject
                                                                                       localUrl:localUri
@@ -573,6 +574,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
                        rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *fileUri = [NSURL URLWithString:fileUriString];
+  NSString *httpMethod = options[@"httpMethod"];
   if (![fileUri.scheme isEqualToString:@"file"]) {
     reject(@"ERR_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
@@ -591,22 +593,22 @@ UM_EXPORT_METHOD_AS(uploadAsync,
            nil);
     return;
   }
+  if (!httpMethod) {
+    reject(@"ERR_FILESYSTEM_MISSING_HTTP_METHOD", @"Missing HTTP method.", nil);
+    return;
+  }
 
   NSMutableURLRequest *request = [self _createRequest:[NSURL URLWithString:urlString] headers:options[@"headers"]];
-  if (options[@"httpMethod"]) {
-    NSString *httpMethod = [self _importHttpMethod:options[@"httpMethod"]];
-    if (!httpMethod) {
-      reject(@"ERR_FILESYSTEM_INVALID_HTTP_METHOD",
-             [NSString stringWithFormat:@"Invalid http method %@", options[@"httpMethod"]],
-             nil);
-      return;
-    }
-    
-    [request setHTTPMethod:httpMethod];
+  [request setHTTPMethod:httpMethod];
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
   }
   
-  EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
-  NSURLSessionUploadTask *task = [[self _sessionForType:type] uploadTaskWithRequest:request fromFile:fileUri];
+  NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromFile:fileUri];
   EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
@@ -713,14 +715,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return request;
 }
 
-- (EXFileSystemSessionType)_importSessionType:(NSNumber * _Nullable)type
-{
-  if (type == nil) {
-    return EXFileSystemBackgroundSession;
-  }
-  return [type intValue];
-}
-
 - (NSURLSession *)_sessionForType:(EXFileSystemSessionType)type
 {
   switch (type) {
@@ -763,19 +757,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [[NSFileManager defaultManager] fileExistsAtPath:path];
 }
 
-- (NSString * _Nullable)_importHttpMethod:(NSNumber *)httpMethod
-{
-  switch ([httpMethod intValue]) {
-    case EXFileSystemPostMethod:
-      return @"POST";
-    case EXFileSystemPutMethod:
-      return @"PUT";
-    case EXFileSystemPatchMethod:
-      return @"PATCH";
-  }
-  return nil;
-}
-
 - (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url
                                        fileUrl:(NSURL *)fileUrl
                                           uuid:(NSString *)uuid
@@ -798,8 +779,14 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   };
   
   NSURLSessionDownloadTask *downloadTask;
-  EXFileSystemSessionType type = [self _importSessionType:options[@"sessionType"]];
-  NSURLSession *session = [self _sessionForType:type];
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
+  }
+  
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {

@@ -14,7 +14,7 @@
   return self;
 }
 
-+ (NSDictionary *)parseServerResponse:(NSURLResponse *)response
+- (NSDictionary *)parseServerResponse:(NSURLResponse *)response
 {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
   return @{

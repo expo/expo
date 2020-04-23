@@ -17,10 +17,4 @@ export var EncodingType;
     EncodingType["UTF8"] = "utf8";
     EncodingType["Base64"] = "base64";
 })(EncodingType || (EncodingType = {}));
-export var FileSystemHttpMethod;
-(function (FileSystemHttpMethod) {
-    FileSystemHttpMethod[FileSystemHttpMethod["POST"] = 0] = "POST";
-    FileSystemHttpMethod[FileSystemHttpMethod["PUT"] = 1] = "PUT";
-    FileSystemHttpMethod[FileSystemHttpMethod["PATCH"] = 2] = "PATCH";
-})(FileSystemHttpMethod || (FileSystemHttpMethod = {}));
 //# sourceMappingURL=FileSystem.types.js.map

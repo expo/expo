@@ -30,10 +30,15 @@
   // We only set EXSessionUploadTaskDelegates as delegates of upload tasks
   // so it should be safe to assume that this is what we will receive here.
   NSURLSessionUploadTask *uploadTask = (NSURLSessionUploadTask *)task;
-  NSMutableDictionary *result = [[EXSessionTaskDelegate parseServerResponse:uploadTask.response] mutableCopy];
+  self.resolve([self parseServerResponse:uploadTask.response]);
+}
+
+- (NSDictionary *)parseServerResponse:(NSURLResponse *)response
+{
+  NSMutableDictionary *result = [[super parseServerResponse:response] mutableCopy];
   // TODO: add support for others response types (different encodings, files)
   result[@"body"] = UMNullIfNil([[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding]);
-  self.resolve(result);
+  return result;
 }
 
 @end

@@ -2,13 +2,13 @@ import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import uuidv4 from 'uuid/v4';
 import ExponentFileSystem from './ExponentFileSystem';
-import { EncodingType, FileSystemHttpMethod, FileSystemSessionType, } from './FileSystem.types';
+import { EncodingType, FileSystemSessionType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
 // Prevent webpack from pruning this.
 const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
-export { EncodingType, FileSystemHttpMethod, FileSystemSessionType, };
+export { EncodingType, FileSystemSessionType, };
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';
@@ -102,13 +102,20 @@ export async function downloadAsync(uri, fileUri, options = {}) {
     if (!ExponentFileSystem.downloadAsync) {
         throw new UnavailabilityError('expo-file-system', 'downloadAsync');
     }
-    return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+    return await ExponentFileSystem.downloadAsync(uri, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        ...options,
+    });
 }
 export async function uploadAsync(url, fileUri, options = {}) {
     if (!ExponentFileSystem.uploadAsync) {
         throw new UnavailabilityError('expo-file-system', 'uploadAsync');
     }
-    return await ExponentFileSystem.uploadAsync(url, fileUri, options);
+    return await ExponentFileSystem.uploadAsync(url, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        ...options,
+        httpMethod: (options.httpMethod || 'POST').toUpperCase(),
+    });
 }
 export function createDownloadResumable(uri, fileUri, options, callback, resumeData) {
     return new DownloadResumable(uri, fileUri, options, callback, resumeData);

@@ -40,7 +40,7 @@ export type DownloadResult = FileSystemDownloadResult;
 
 export type FileSystemUploadOptions = {
   headers?: Record<string, string>;
-  httpMethod?: FileSystemHttpMethod;
+  httpMethod?: FileSystemAcceptedHttpMethod;
   sessionType?: FileSystemSessionType;
 };
 
@@ -85,11 +85,7 @@ export enum EncodingType {
   Base64 = 'base64',
 }
 
-export enum FileSystemHttpMethod {
-  POST = 0,
-  PUT = 1,
-  PATCH = 2,
-}
+export type FileSystemAcceptedHttpMethod = 'POST' | 'PUT' | 'PATCH';
 
 export type ReadingOptions = {
   encoding?: EncodingType | 'utf8' | 'base64';

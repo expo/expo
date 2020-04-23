@@ -24,4 +24,6 @@
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data;
 
+- (NSDictionary *)parseServerResponse:(NSURLResponse *)response;
+
 @end
