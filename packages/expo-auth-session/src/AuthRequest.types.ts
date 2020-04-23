@@ -30,6 +30,36 @@ export enum ResponseType {
   Token = 'token',
 }
 
+/**
+ * Should the user be prompted to login or consent again.
+ * This can be used to present a dialog for switching accounts after the user has already been logged in.
+ *
+ * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+ */
+export enum Prompt {
+  /**
+   * Server must not display any auth or consent UI. Can be used to check for existing auth or consent.
+   * An error is returned if a user isn't already authenticated or the client doesn't have pre-configured consent for the requested claims, or does not fulfill other conditions for processing the request.
+   * The error code will typically be `login_required`, `interaction_required`, or another code defined in [Section 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).
+   */
+  None = 'none',
+  /**
+   * The server should prompt the user to reauthenticate.
+   * If it cannot reauthenticate the End-User, it must return an error, typically `login_required`.
+   */
+  Login = 'login',
+  /**
+   * Server should prompt the user for consent before returning information to the client.
+   * If it cannot obtain consent, it must return an error, typically `consent_required`.
+   */
+  Consent = 'consent',
+  /**
+   * Server should prompt the user to select an account. Can be used to switch accounts.
+   * If it can't obtain an account selection choice made by the user, it must return an error, typically `account_selection_required`.
+   */
+  SelectAccount = 'select_account',
+}
+
 export type AuthRequestPromptOptions = {
   url?: string;
   /**
@@ -50,6 +80,7 @@ export type AuthRequestPromptOptions = {
 export interface AuthRequestConfig {
   /**
    * Specifies what is returned from the authorization server.
+   *
    * [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1)
    */
   responseType?: ResponseType;
@@ -59,23 +90,27 @@ export interface AuthRequestConfig {
    * alone for client authentication.
    *
    * The client identifier is unique to the authorization server.
+   *
    * [Section 2.2](https://tools.ietf.org/html/rfc6749#section-2.2)
    */
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
    * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.io/versions/latest/workflow/linking/).
+   *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */
   redirectUri: string;
   /**
    * List of strings to request access to.
+   *
    * [Section 3.3](https://tools.ietf.org/html/rfc6749#section-3.3)
    */
   scopes: string[];
   /**
    * Client secret supplied by an auth provider.
    * There is no secure way to store this on the client.
+   *
    * [Section 2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1)
    */
   clientSecret?: string;
@@ -86,9 +121,17 @@ export interface AuthRequestConfig {
   codeChallengeMethod?: CodeChallengeMethod;
   /**
    * Derived from the code verifier by using the `CodeChallengeMethod`.
+   *
    * [Section 4.2](https://tools.ietf.org/html/rfc7636#section-4.2)
    */
   codeChallenge?: string;
+  /**
+   * Informs the server if the user should be prompted to login or consent again.
+   * This can be used to present a dialog for switching accounts after the user has already been logged in.
+   *
+   * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+   */
+  prompt?: Prompt;
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
