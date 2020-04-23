@@ -212,6 +212,13 @@ public class UpdatesController {
     return mLauncher.getLocalAssetFiles();
   }
 
+  public boolean isUsingLocalAssetFiles() {
+    if (mLauncher == null) {
+      return false;
+    }
+    return mLauncher.isUsingLocalAssetFiles();
+  }
+
   // other getters
 
   public Uri getUpdateUrl() {
@@ -275,7 +282,7 @@ public class UpdatesController {
     UpdatesDatabase database = getDatabase();
     DatabaseLauncher launcher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
     mLauncher = launcher;
-    if (mSelectionPolicy.shouldLoadNewUpdate(EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity(), launcher.getLaunchableUpdate(database))) {
+    if (mSelectionPolicy.shouldLoadNewUpdate(EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity(), launcher.getLaunchableUpdate(database, context))) {
       new EmbeddedLoader(context, database, mUpdatesDirectory).loadEmbeddedUpdate();
     }
     launcher.launch(database, context, new Launcher.LauncherCallback() {

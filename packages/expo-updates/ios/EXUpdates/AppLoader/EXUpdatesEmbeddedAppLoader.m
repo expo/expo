@@ -9,6 +9,8 @@ NSString * const kEXUpdatesEmbeddedManifestName = @"app";
 NSString * const kEXUpdatesEmbeddedManifestType = @"manifest";
 NSString * const kEXUpdatesEmbeddedBundleFilename = @"app";
 NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
+NSString * const kEXUpdatesBareEmbeddedBundleFilename = @"main";
+NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
 
 @implementation EXUpdatesEmbeddedAppLoader
 
@@ -29,7 +31,7 @@ NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
                                      userInfo:@{}];
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
-        embeddedManifest = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest];
+        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:(NSDictionary *)manifest];
         if (!embeddedManifest.updateId) {
           @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                          reason:@"The embedded manifest is invalid. If you are making a release build for the first time, make sure you have run `expo publish` at least once."

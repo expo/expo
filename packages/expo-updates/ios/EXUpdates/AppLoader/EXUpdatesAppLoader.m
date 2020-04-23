@@ -108,10 +108,14 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       }
     }
 
-    self->_assetsToLoad = [self->_updateManifest.assets mutableCopy];
+    if (self->_updateManifest.assets && self->_updateManifest.assets.count > 0) {
+      self->_assetsToLoad = [self->_updateManifest.assets mutableCopy];
 
-    for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
-      [self downloadAsset:asset];
+      for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
+        [self downloadAsset:asset];
+      }
+    } else {
+      [self _finish];
     }
   });
 }
@@ -206,7 +210,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     if (![self->_erroredAssets count]) {
       NSError *updateReadyError;
-      [database markUpdateReadyWithId:self->_updateManifest.updateId error:&updateReadyError];
+      [database markUpdateFinished:self->_updateManifest error:&updateReadyError];
       if (updateReadyError) {
         [self->_arrayLock unlock];
         [self _finishWithError:updateReadyError];

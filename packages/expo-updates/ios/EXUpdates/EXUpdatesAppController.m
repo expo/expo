@@ -213,6 +213,11 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return _launcher.assetFilesMap ?: nil;
 }
 
+- (BOOL)isUsingLocalAssetFiles
+{
+  return _launcher.isUsingLocalAssetFiles ?: NO;
+}
+
 # pragma mark - internal
 
 - (void)_maybeFinish

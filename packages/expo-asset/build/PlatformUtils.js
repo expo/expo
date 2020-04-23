@@ -8,7 +8,11 @@ export const IS_MANAGED_ENV = !!Constants.appOwnership;
 // In the future (SDK38+) expo-updates is likely to be used in managed apps, so we decide
 // that you are in a bare app with updates if you're not in a managed app and you have
 // local assets available.
-export const IS_BARE_ENV_WITH_UPDATES = !IS_MANAGED_ENV && !!NativeModulesProxy.ExpoUpdates?.isEnabled;
+export const IS_BARE_ENV_WITH_UPDATES = !IS_MANAGED_ENV &&
+    // compat for older versions of expo-updates that don't export the `isUsingLocalAssets` property
+    (NativeModulesProxy.ExpoUpdates?.hasOwnProperty('isUsingLocalAssets')
+        ? !!NativeModulesProxy.ExpoUpdates?.isUsingLocalAssets
+        : !!NativeModulesProxy.ExpoUpdates?.isEnabled);
 export const IS_ENV_WITH_UPDATES_ENABLED = IS_MANAGED_ENV || IS_BARE_ENV_WITH_UPDATES;
 // If it's not managed or bare w/ updates, then it must be bare w/o updates!
 export const IS_BARE_ENV_WITHOUT_UPDATES = !IS_MANAGED_ENV && !IS_BARE_ENV_WITH_UPDATES;

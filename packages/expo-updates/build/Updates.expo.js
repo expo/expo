@@ -7,6 +7,7 @@ export * from './Updates.types';
 export const localAssets = {};
 export const manifest = Constants.manifest ?? {};
 export const isEmergencyLaunch = false;
+export const isUsingLocalAssets = false;
 export async function reloadAsync() {
     if (!ExponentUpdates.reloadFromCache) {
         throw new UnavailabilityError('Updates', 'reloadAsync');

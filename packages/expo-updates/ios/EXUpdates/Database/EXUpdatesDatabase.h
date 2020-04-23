@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (void)addNewAssets:(NSArray<EXUpdatesAsset *> *)assets toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (BOOL)addExistingAsset:(EXUpdatesAsset *)asset toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (void)updateAsset:(EXUpdatesAsset *)asset error:(NSError ** _Nullable)error;
-- (void)markUpdateReadyWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
+- (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)deleteUnusedAssetsWithError:(NSError ** _Nullable)error;

@@ -3,6 +3,7 @@ import { Listener, LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, Update
 export * from './Updates.types';
 export declare const localAssets: LocalAssets;
 export declare const isEmergencyLaunch: boolean;
+export declare const isUsingLocalAssets: boolean;
 export declare const manifest: Manifest | object;
 export declare function reloadAsync(): Promise<void>;
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;

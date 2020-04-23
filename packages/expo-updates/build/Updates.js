@@ -4,6 +4,7 @@ import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';
 export const localAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
+export const isUsingLocalAssets = ExpoUpdates.isUsingLocalAssets || false;
 let _manifest = ExpoUpdates.manifest;
 if (ExpoUpdates.manifestString) {
     _manifest = JSON.parse(ExpoUpdates.manifestString);
