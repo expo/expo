@@ -6,6 +6,7 @@ import {
   AuthRequestPromptOptions,
   CodeChallengeMethod,
   ResponseType,
+  Prompt,
 } from './AuthRequest.types';
 import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
 import {
@@ -129,6 +130,7 @@ export {
   DiscoveryDocument,
   Issuer,
   IssuerOrDiscovery,
+  Prompt,
   ProviderMetadata,
   ResponseType,
   resolveDiscoveryAsync,
