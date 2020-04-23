@@ -71,13 +71,11 @@ export default function AuthSessionScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
-      {isInClient && (
-        <TitledSwitch
-          title="Switch Accounts"
-          value={!!prompt}
-          setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
-        />
-      )}
+      <TitledSwitch
+        title="Switch Accounts"
+        value={!!prompt}
+        setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
+      />
       <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
       <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
@@ -433,6 +431,9 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
       prompt,
       extraParams: {
         display: 'popup',
+        // Rerequest decliened permissions, to test this,
+        // add "email" to the scopes and try again (be sure not to allow email permission).
+        auth_type: 'rerequest',
       },
     },
     {
@@ -571,7 +572,7 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
 
 function AuthSection({ title, request, result, promptAsync, useProxy, disabled }: any) {
   return (
-    <View>
+    <View style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 8 }}>
       <Button
         disabled={disabled}
         title={title}

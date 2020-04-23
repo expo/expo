@@ -590,6 +590,8 @@ const [request, response, promptAsync] = useAuthRequest(
     extraParams: {
       // Use `popup` on web for a better experience
       display: Platform.select({ web: 'popup' }),
+      // Optionally you can use this to rerequest declined permissions
+      auth_type: 'rerequest',
     },
   },
   discovery
