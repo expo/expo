@@ -20,11 +20,24 @@ export class AuthRequest {
         this.redirectUri = request.redirectUri;
         this.scopes = request.scopes;
         this.clientSecret = request.clientSecret;
+        this.prompt = request.prompt;
         this.state = request.state ?? PKCE.generateRandomAsync(10);
         this.extraParams = request.extraParams ?? {};
         this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
         // PKCE defaults to true
         this.usePKCE = request.usePKCE ?? true;
+        // Some warnings in development about potential confusing application code
+        if (__DEV__) {
+            if (this.prompt && this.extraParams.prompt) {
+                console.warn(`\`AuthRequest\` \`extraParams.prompt\` will be overwritten by \`prompt\`.`);
+            }
+            if (this.clientSecret && this.extraParams.client_secret) {
+                console.warn(`\`AuthRequest\` \`extraParams.client_secret\` will be overwritten by \`clientSecret\`.`);
+            }
+            if (this.codeChallengeMethod && this.extraParams.code_challenge_method) {
+                console.warn(`\`AuthRequest\` \`extraParams.code_challenge_method\` will be overwritten by \`codeChallengeMethod\`.`);
+            }
+        }
         invariant(this.codeChallengeMethod !== CodeChallengeMethod.Plain, `\`AuthRequest\` does not support \`CodeChallengeMethod.Plain\` as it's not secure.`);
         invariant(this.redirectUri, `\`AuthRequest\` requires a valid \`redirectUri\`. Ex: ${Platform.select({
             web: 'https://yourwebsite.com/',
@@ -46,6 +59,7 @@ export class AuthRequest {
             clientSecret: this.clientSecret,
             codeChallenge: this.codeChallenge,
             codeChallengeMethod: this.codeChallengeMethod,
+            prompt: this.prompt,
             state: await this.getStateAsync(),
             extraParams: this.extraParams,
             usePKCE: this.usePKCE,
@@ -153,6 +167,9 @@ export class AuthRequest {
         }
         if (request.clientSecret) {
             params.client_secret = request.clientSecret;
+        }
+        if (request.prompt) {
+            params.prompt = request.prompt;
         }
         // These overwrite any extra params
         params.redirect_uri = request.redirectUri;

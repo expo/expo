@@ -41,16 +41,16 @@ const errorCodeMessages = {
       'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.  (This error code is needed because a 503 Service Unavailable HTTP status code cannot be returned to the client via an HTTP redirect.)',
     // Open ID Connect error codes
     interaction_required:
-      'The Authorization Server requires End-User interaction of some form to proceed. This error may be returned when the prompt parameter value in the Authentication Request is none, but the Authentication Request cannot be completed without displaying a user interface for End-User interaction.',
+      'Auth server requires user interaction of some form to proceed. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user interaction.',
     login_required:
-      'The Authorization Server requires End-User authentication. This error may be returned when the prompt parameter value in the Authentication Request is none, but the Authentication Request cannot be completed without displaying a user interface for End-User authentication.',
+      'Auth server requires user authentication. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user authentication.',
     account_selection_required:
-      'The End-User is required to select a session at the Authorization Server. The End-User may be authenticated at the Authorization Server with different associated accounts, but the End-User did not select a session. This error may be returned when the prompt parameter value in the Authentication Request is `none`, but the Authentication Request cannot be completed without displaying a user interface to prompt for a session to use.',
+      'User is required to select a session at the auth server. The user may be authenticated at the auth server with different associated accounts, but the user did not select a session. This error may be returned when the prompt parameter value in the auth request is `none`, but the auth request cannot be completed without displaying a user interface to prompt for a session to use.',
     consent_required:
-      'The Authorization Server requires End-User consent. This error may be returned when the prompt parameter value in the Authentication Request is none, but the Authentication Request cannot be completed without displaying a user interface for End-User consent.',
+      'Auth server requires user consent. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user consent.',
     invalid_request_uri:
-      'The request_uri in the Authorization Request returns an error or contains invalid data.',
-    invalid_request_object: 'The request parameter contains an invalid Request Object.',
+      'The `request_uri` in the auth request returns an error or contains invalid data.',
+    invalid_request_object: 'The request parameter contains an invalid request object.',
     request_not_supported:
       'The OP does not support use of the `request` parameter defined in Section 6. (https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests)',
     request_uri_not_supported:
