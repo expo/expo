@@ -1,5 +1,5 @@
 import { AuthRequest } from '../AuthRequest';
-import { CodeChallengeMethod } from '../AuthRequest.types';
+import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
 import { buildQueryString, getQueryParams } from '../QueryParams';
 
 jest.mock('expo-random', () => ({
@@ -140,11 +140,13 @@ it(`loads an auth request`, async () => {
     scopes: [],
     redirectUri: 'foo://bar',
     usePKCE: true,
+    prompt: Prompt.SelectAccount,
     extraParams: { code_challenge: 'custom-value' },
   });
   await request.buildUrlAsync(mockDiscovery);
 
   expect(request.url).toMatch(/https:\/\/demo.io/);
+  expect(request.url).toContain('prompt=select_account');
   expect(request.codeVerifier).toBeDefined();
   expect(typeof request.state).toBe('string');
 });
