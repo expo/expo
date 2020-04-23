@@ -690,7 +690,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
-    return mExpoKernelServiceRegistry.getPermissionsKernelService().getFinalPermissions(globalResult, getPackageManager(), permission, mExperienceId);
+    return mExpoKernelServiceRegistry.getPermissionsKernelService().getPermissions(globalResult, getPackageManager(), permission, mExperienceId);
   }
 
   public RNObject getDevSupportManager() {

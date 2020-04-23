@@ -95,7 +95,7 @@ public class PermissionsKernelService extends BaseKernelService {
     return false;
   }
 
-  public int getFinalPermissions(int globalPermissionStatus, PackageManager packageManager, String permission, ExperienceId experienceId) {
+  public int getPermissions(int globalPermissionStatus, PackageManager packageManager, String permission, ExperienceId experienceId) {
     // only these permissions, which show a dialog to the user should be scoped.
     boolean isDangerousPermission;
     try {
