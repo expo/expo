@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-test-core",
+  "platforms": ["ios", "android"]
+}
