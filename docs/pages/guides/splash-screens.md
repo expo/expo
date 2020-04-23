@@ -2,7 +2,7 @@
 title: Create a Splash Screen
 ---
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../../sdk/app-loading/) component or [SplashScreen module](../../sdk/splash-screen/).
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](/versions/latest/sdk/app-loading/) component or [SplashScreen module](/versions/latest/sdk/splash-screen/).
 
 ## Customize the splash screen for your app
 
@@ -77,7 +77,7 @@ Any of the splash options can be configured on a per-platform basis by nesting t
 
 As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. However, if you want to control the moment of splash screen visibility change use `SplashScreen`.
 
-Read more about [AppLoading](../../sdk/app-loading/) and [SplashScreen](../../sdk/splash-screen/).
+Read more about [AppLoading](/versions/latest/sdk/app-loading/) and [SplashScreen](/versions/latest/sdk/splash-screen/).
 
 ### Differences between environments - iOS
 

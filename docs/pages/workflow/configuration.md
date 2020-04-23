@@ -13,7 +13,7 @@ title: Configuration with app.json
 }
 ```
 
-Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
+Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](/versions/latest/sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
 > 👉 **Using ExpoKit?** [Jump to the ExpoKit usage section](#expokit). Note that ExpoKit is deprecated and will no longer be supported after SDK 38.
 
@@ -103,7 +103,7 @@ The relative path to your main JavaScript file.
 
 ### `"extra"`
 
-Any extra fields you want to pass to your experience. Values are accessible via `Constants.manifest.extra` ([read more](../../sdk/constants/#expoconstantsmanifest))
+Any extra fields you want to pass to your experience. Values are accessible via `Constants.manifest.extra` ([read more](/versions/latest/sdk/constants/#expoconstantsmanifest))
 
 ### `"rnCliPath"`
 

@@ -4,7 +4,7 @@ title: Already used React Native?
 
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
-You can use just about every part of the [Expo SDK](../../sdk/overview/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../../bare/hello-world/). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
+You can use just about every part of the [Expo SDK](/versions/latest/sdk/overview/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../../bare/hello-world/). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
 
 ## Expo managed workflow
 
@@ -30,7 +30,7 @@ In the managed workflow, you can share your app with anyone, anywhere in the wor
 
 - Instead of having to sign up several external testers through iTunes connect, you can easily have them download the Expo client app and immediately have a working version on their phone.
 
-We talk about permissions we set within `app.json`, but there's also the [Permissions API](../../sdk/permissions/). Permissions inside `app.json` are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
+We talk about permissions we set within `app.json`, but there's also the [Permissions API](/versions/latest/sdk/permissions/). Permissions inside `app.json` are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
 
 ## How does Expo work?
 

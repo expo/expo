@@ -166,7 +166,7 @@ module.exports = function(api) {
 
 #### Notes
 
-- Some field names in `Contacts` were changed. See the [documentation](../../sdk/contacts) for more information.
+- Some field names in `Contacts` were changed. See the [documentation](/versions/latest/sdk/contacts) for more information.
 
 ## SDK 28
 
@@ -216,7 +216,7 @@ module.exports = function(api) {
 
 - `View.propTypes` has been removed from React Native, so if your code (or any of your dependent libraries) uses it, that will break. Use `ViewPropTypes` instead. We strongly recommend running your app with the dev flag disabled to test whether it’s affected by this change.
 - We changed the format of `Constants.linkingUri` (see Linking changes above), so if your code makes assumptions about this, you should double check that.
-- [Camera roll permissions](../../sdk/permissions/#expopermissionscamera_roll) are now required to use ImagePicker.launchCameraAsync() and ImagePicker.launchImageLibraryAsync(). You can ask for them by calling `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+- [Camera roll permissions](/versions/latest/sdk/permissions/#expopermissionscamera_roll) are now required to use ImagePicker.launchCameraAsync() and ImagePicker.launchImageLibraryAsync(). You can ask for them by calling `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
 
 ## SDK 26
 

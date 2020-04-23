@@ -17,13 +17,13 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 ## Make app loading seamless
 
 - Add a [splash screen](../../guides/splash-screens/), the very first thing your users see after they select your app.
-- Use [AppLoading](../../sdk/app-loading/) to ensure your interface is ready before the user sees it.
+- Use [AppLoading](/versions/latest/sdk/app-loading/) to ensure your interface is ready before the user sees it.
 - [Preload and cache your assets](../../guides/preloading-and-caching-assets/) so your app loads quickly, even with a poor internet connection.
 
 ## Play nicely with the system UI
 
 - Configure the [status bar](../../guides/configuring-statusbar/) so it doesn't clash with your interface.
-- Use [native gestures](../../sdk/gesture-handler/) whenever possible.
+- Use [native gestures](/versions/latest/sdk/gesture-handler/) whenever possible.
 - Use interface elements that make sense on the device. For example, see the [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/overview/themes/).
 
 ## Tailor your app metadata
@@ -40,10 +40,10 @@ You'll use the `app.json` file to specify the version of your app, but there are
 - [`android.versionCode`](../../workflow/configuration/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
 - [`ios.buildNumber`](../../workflow/configuration/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
 
-To access these values at runtime, you can use the [Expo Constants API](../../sdk/constants/):
+To access these values at runtime, you can use the [Expo Constants API](/versions/latest/sdk/constants/):
 
-- Use [`Constants.nativeAppVersion`](../../sdk/constants/#constantsnativeappversion) to access the `version` value listed above.
-- Use [`Constants.nativeBuildVersion`](../../sdk/constants/#constantsnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
+- Use [`Constants.nativeAppVersion`](/versions/latest/sdk/constants/#constantsnativeappversion) to access the `version` value listed above.
+- Use [`Constants.nativeBuildVersion`](/versions/latest/sdk/constants/#constantsnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
 
 ## Privacy Policy
 
@@ -74,7 +74,7 @@ To access these values at runtime, you can use the [Expo Constants API](../../sd
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../../sdk/permissions/) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../../workflow/configuration) key in `app.json`, for example:
+If your app asks for [system permissions](/versions/latest/sdk/permissions/) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../../workflow/configuration) key in `app.json`, for example:
 
 ```
 "infoPlist": {
@@ -86,7 +86,7 @@ The full list of keys Expo provides by default can be seen [here](https://github
 
 ## Localizing system dialogs on iOS
 
-If your app uses a language besides English, you can optionally provide [localized](../../sdk/localization/) strings for the system dialogs. For example, in `app.json`, you can provide
+If your app uses a language besides English, you can optionally provide [localized](/versions/latest/sdk/localization/) strings for the system dialogs. For example, in `app.json`, you can provide
 
 ```
 "locales": {

@@ -157,7 +157,7 @@ Check out the source if you would like to implement it in another language.
 
 You can now successfully send a notification to your app! If all you wanted was purely informational notifications, then you can stop here. But Expo provides the capabilities to do much more: maybe you want to update the UI based on the notification, or maybe navigate to a particular screen if a notification was selected.
 
-Like most things with Expo, handling received notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](../../sdk/notifications).
+Like most things with Expo, handling received notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](/versions/latest/sdk/notifications).
 
 ```javascript
 import React from 'react';
@@ -201,7 +201,7 @@ export default class AppContainer extends React.Component {
 
 > **Important Note**: On iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, otherwise the user will never see them. You can handle this specific case in your listener by checking if the `origin` of the notification is `received`. Notifications that arrive while the app is foregrounded on iOS do not show up in the system notification list.
 
-Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#notification)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
+Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](/versions/latest/sdk/notifications/#notification)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
 
 | Push was received when...                                            |          `origin` will be...          |
 | -------------------------------------------------------------------- | :-----------------------------------: |

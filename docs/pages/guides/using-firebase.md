@@ -6,7 +6,7 @@ title: Using Firebase
 
 ## Usage with Expo
 
-If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore, Database, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analaytics](../../sdk/firebase-analytics) for that.
+If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore, Database, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analaytics](/versions/latest/sdk/firebase-analytics) for that.
 If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
@@ -123,7 +123,7 @@ You can add whichever provider makes sense for you, or even add multiple provide
 
 To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is neccessary to verify that you are not a bot.
 
-Please follow the instructions for the [expo-firebase-recaptcha](../../sdk/firebase-recaptcha) package on how to use phone auth.
+Please follow the instructions for the [expo-firebase-recaptcha](/versions/latest/sdk/firebase-recaptcha) package on how to use phone auth.
 
 ### Reenable Data Access Security Rule
 
@@ -232,7 +232,7 @@ In order to record analytics events, the Expo Firebase Core and Analytics packag
 
 This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on the standard Expo client.
 
-To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](../../sdk/firebase-analytics) package.
+To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) package.
 
 ```javascript
 import * as Analytics from 'expo-firebase-analytics';
