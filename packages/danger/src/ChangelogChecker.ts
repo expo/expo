@@ -3,7 +3,12 @@ import * as fs from 'fs';
 import { groupBy } from 'lodash';
 import * as path from 'path';
 
-import { createPullRequestManager, ChangelogEntry, ChangelogEntryType } from './PullRequestManager';
+import {
+  createPullRequestManager,
+  ChangelogEntry,
+  ChangelogEntryType,
+  DEFAULT_CHANGELOG_ENTRY_KEY,
+} from './PullRequestManager';
 import {
   getExpoRepositoryRootDir,
   getFileContentAsync,
@@ -42,10 +47,9 @@ function isChangelogModified(packageName: string, modifiedFiles: string[]): bool
 
 function getSuggestedChangelogEntries(packageNames: string[]): PackageChangelogEntry[] {
   const {
-    DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry,
+    [DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry,
     ...suggestedEntries
   } = pullRequestManager.parseChangelogSuggestionFromDescription();
-
   return packageNames.map(packageName => {
     const message = suggestedEntries[packageName]?.message ?? defaultEntry.message;
     const type = suggestedEntries[packageName]?.type ?? defaultEntry.type;

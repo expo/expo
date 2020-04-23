@@ -85,11 +85,12 @@ class PullRequestManager {
         });
     }
     parseTagsFromLine(line) {
+        var _a;
         const result = {
             type: exports.DEFAULT_ENTRY_TYPE,
             packageName: exports.DEFAULT_CHANGELOG_ENTRY_KEY,
         };
-        const tags = line.match(/\[[^\]]*\]/g);
+        const tags = (_a = line.match(/\[[^\]]*\]/g)) === null || _a === void 0 ? void 0 : _a.map(tag => tag.slice(1, tag.length - 1));
         if (!tags) {
             return result;
         }
@@ -99,7 +100,7 @@ class PullRequestManager {
                 result.type = Math.max(result.type, entryType);
             }
             else if (isExpoPackage(tag)) {
-                result.packageName = tag.replace(/\[|\]/g, '').trim();
+                result.packageName = tag.trim();
             }
         }
         return result;

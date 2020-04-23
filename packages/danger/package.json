@@ -17,12 +17,10 @@
   ],
   "dependencies": {
     "danger": "^9.2.10",
-    "lodash": "^4.17.15",
+    "lodash": "^4.6.0",
     "@expo/spawn-async": "^1.5.0"
   },
   "devDependencies": {
-    "typescript": "^3.8.3",
-    "@types/globby": "^8.0.0",
     "expo-module-scripts": "^1.2.0"
   }
 }

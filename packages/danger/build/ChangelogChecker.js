@@ -35,7 +35,7 @@ function isChangelogModified(packageName, modifiedFiles) {
         !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
 }
 function getSuggestedChangelogEntries(packageNames) {
-    const { DEFAULT_CHANGELOG_ENTRY_KEY: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
+    const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
         var _a, _b, _c, _d;
         const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;

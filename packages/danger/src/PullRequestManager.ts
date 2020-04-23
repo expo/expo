@@ -126,7 +126,7 @@ export class PullRequestManager {
       packageName: DEFAULT_CHANGELOG_ENTRY_KEY,
     };
 
-    const tags = line.match(/\[[^\]]*\]/g);
+    const tags = line.match(/\[[^\]]*\]/g)?.map(tag => tag.slice(1, tag.length - 1));
     if (!tags) {
       return result;
     }
@@ -136,7 +136,7 @@ export class PullRequestManager {
       if (entryType !== null) {
         result.type = Math.max(result.type, entryType);
       } else if (isExpoPackage(tag)) {
-        result.packageName = tag.replace(/\[|\]/g, '').trim();
+        result.packageName = tag.trim();
       }
     }
 
