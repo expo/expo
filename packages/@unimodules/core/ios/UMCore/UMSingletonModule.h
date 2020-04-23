@@ -6,9 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UMSingletonModule : NSObject
 
-@property (nonatomic) int priority;
-
 + (const NSString *)name;
+
+- (const NSInteger)priority;
 
 @end
 

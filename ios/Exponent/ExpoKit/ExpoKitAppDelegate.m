@@ -11,7 +11,8 @@
 
 UM_REGISTER_SINGLETON_MODULE(ExpoKitAppDelegate)
 
-- (int)priority {
+- (const NSInteger)priority
+{
   return -1;
 }
 
