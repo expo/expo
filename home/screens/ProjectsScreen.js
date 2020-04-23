@@ -11,31 +11,28 @@ import {
   Platform,
   RefreshControl,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { withNavigationFocus, withNavigation, Themed } from 'react-navigation';
-
 import { connect } from 'react-redux';
 import semver from 'semver';
-import ScrollView from '../components/NavigationScrollView';
+
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import ScrollView from '../components/NavigationScrollView';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
 import HistoryActions from '../redux/HistoryActions';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import NoProjectTools from '../components/NoProjectTools';
 import NoProjectsOpen from '../components/NoProjectsOpen';
 import ProjectTools from '../components/ProjectTools';
-import SharedStyles from '../constants/SharedStyles';
-import SmallProjectCard from '../components/SmallProjectCard';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
-import { SectionLabelContainer, GenericCardBody, GenericCardContainer } from '../components/Views';
-import { SectionLabelText, StyledText } from '../components/Text';
+import { StyledText } from '../components/Text';
+import ListItem from '../components/ListItem';
+import ProjectListItem from '../components/ProjectListItem';
+import SectionHeader from '../components/SectionHeader';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
@@ -105,53 +102,47 @@ export default class ProjectsScreen extends React.Component {
   }
 
   render() {
-    const { projects } = this.state;
+    const { projects, isNetworkAvailable, isRefreshing } = this.state;
 
     return (
       <View style={styles.container}>
         <ScrollView
           refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this._handleRefreshAsync}
-            />
+            <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
           }
           key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2, 4] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-          <SectionLabelContainer>
-            <SectionLabelText>
-              {(Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR') ||
+          <SectionHeader
+            title={
+              (Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR') ||
               (Platform.OS === 'android' && !Constants.isDevice)
-                ? 'CLIPBOARD'
-                : 'TOOLS'}
-            </SectionLabelText>
-          </SectionLabelContainer>
+                ? 'Clipboard'
+                : 'Tools'
+            }
+          />
           {this._renderProjectTools()}
 
-          <SectionLabelContainer>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <SectionHeader
+            title="Recently in development"
+            buttonLabel="Help"
+            onPress={this._handlePressHelpProjects}
+            leftContent={
               <DevIndicator
-                style={{ marginRight: 7 }}
+                style={styles.devIndicator}
                 isActive={projects && projects.length}
-                isNetworkAvailable={this.state.isNetworkAvailable}
+                isNetworkAvailable={isNetworkAvailable}
               />
-              <SectionLabelText>RECENTLY IN DEVELOPMENT</SectionLabelText>
-            </View>
-            <TouchableOpacity onPress={this._handlePressHelpProjects} style={styles.clearButton}>
-              <Text style={styles.clearButtonText}>HELP</Text>
-            </TouchableOpacity>
-          </SectionLabelContainer>
+            }
+          />
           {this._renderProjects()}
 
-          <SectionLabelContainer>
-            <SectionLabelText>RECENTLY OPENED</SectionLabelText>
-            <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
-              <Text style={styles.clearButtonText}>CLEAR</Text>
-            </TouchableOpacity>
-          </SectionLabelContainer>
-
+          <SectionHeader
+            title="Recently opened"
+            buttonLabel="Clear"
+            onPress={this._handlePressClearHistory}
+          />
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
@@ -252,11 +243,7 @@ export default class ProjectsScreen extends React.Component {
 
   _renderProjectTools = () => {
     if (IS_RESTRICTED) {
-      return (
-        <View style={{ marginBottom: 10 }}>
-          <NoProjectTools />
-        </View>
-      );
+      return <NoProjectTools />;
     } else {
       return <ProjectTools pollForUpdates={this.props.isFocused} />;
     }
@@ -269,15 +256,7 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderEmptyRecentHistory = () => {
-    return (
-      <GenericCardContainer key="empty-history">
-        <GenericCardBody>
-          <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
-            You haven't opened any projects recently.
-          </Text>
-        </GenericCardBody>
-      </GenericCardContainer>
-    );
+    return <ListItem subtitle={`You haven't opened any projects recently.`} last />;
   };
 
   _renderRecentHistoryItems = () => {
@@ -290,27 +269,29 @@ export default class ProjectsScreen extends React.Component {
       }
     };
 
-    return this.props.recentHistory.map((project, i) => (
-      <SmallProjectCard
-        key={project.manifestUrl}
-        iconUrl={project.manifest && project.manifest.iconUrl}
-        releaseChannel={
-          /* 28/11/17(brentvatne) - we can remove extractReleaseChannel in a couple of months
+    return this.props.recentHistory.map((project, i) => {
+      const username = project.manifestUrl.includes('exp://exp.host')
+        ? extractUsername(project.manifestUrl)
+        : undefined;
+      /* 28/11/17(brentvatne) - we can remove extractReleaseChannel in a couple of months
           when project history is unlikely to include any projects with release channels */
-          (project.manifest && project.manifest.releaseChannel) ||
-          extractReleaseChannel(project.manifestUrl)
-        }
-        platform={project.platform}
-        projectName={project.manifest && project.manifest.name}
-        username={
-          project.manifestUrl.includes('exp://exp.host')
-            ? extractUsername(project.manifestUrl)
-            : null
-        }
-        projectUrl={project.manifestUrl}
-        fullWidthBorder={i === this.props.recentHistory.count() - 1}
-      />
-    ));
+      let releaseChannel =
+        project.manifest?.releaseChannel || extractReleaseChannel(project.manifestUrl);
+      releaseChannel = releaseChannel === 'default' ? undefined : releaseChannel;
+      return (
+        <ProjectListItem
+          key={project.manifestUrl}
+          url={project.manifestUrl}
+          image={project.manifest?.iconUrl}
+          platform={project.platform}
+          title={project.manifest?.name}
+          subtitle={username || project.manifestUrl}
+          username={username}
+          releaseChannel={releaseChannel}
+          last={i === this.props.recentHistory.count() - 1}
+        />
+      );
+    });
   };
 
   _renderConstants = () => {
@@ -361,23 +342,21 @@ export default class ProjectsScreen extends React.Component {
 
     if (projects && projects.length) {
       return (
-        <View style={styles.inDevelopmentContainer}>
+        <View>
           {projects.map((project, i) => (
-            <SmallProjectCard
-              icon={
+            <ProjectListItem
+              key={project.url}
+              url={project.url}
+              image={
                 project.source === 'desktop'
                   ? require('../assets/cli.png')
                   : require('../assets/snack.png')
               }
-              projectName={project.description}
+              imageStyle={styles.projectImageStyle}
+              title={project.description}
               platform={project.platform}
-              key={project.url}
-              projectUrl={project.url}
-              iconBorderStyle={{
-                borderWidth: 1,
-                borderColor: 'rgba(0, 0, 32, 0.1)',
-              }}
-              fullWidthBorder={i === projects.length - 1}
+              subtitle={project.url}
+              last={i === projects.length - 1}
             />
           ))}
         </View>
@@ -392,39 +371,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  inDevelopmentContainer: {
-    marginBottom: 15,
-  },
-  infoContainer: {
-    paddingTop: 13,
-    flexDirection: 'column',
-    alignSelf: 'stretch',
-    paddingBottom: 10,
-  },
   contentContainer: {
     paddingTop: 5,
   },
-  clearButton: {
-    alignItems: 'flex-end',
-    flex: 1,
-  },
-  clearButtonText: {
-    color: Colors.light.greyText,
-    fontSize: 11,
-    letterSpacing: 0.92,
-    ...Platform.select({
-      ios: {
-        fontWeight: '500',
-      },
-    }),
+  projectImageStyle: {
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 32, 0.1)',
   },
   constantsContainer: {
     paddingHorizontal: 20,
-    paddingTop: 15,
     paddingBottom: 20,
     justifyContent: 'flex-end',
     alignItems: 'center',
     flex: 1,
+  },
+  devIndicator: {
+    marginRight: 7,
   },
   deviceIdText: {
     fontSize: 11,
