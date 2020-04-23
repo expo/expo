@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <EXSplashScreen/EXSplashScreenService.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLauncher.h>
@@ -10,6 +11,7 @@
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -83,9 +85,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _launcher = launcher;
     [launcher launchUpdate];
 
-    if (_delegate) {
-      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }
+    [self _finishWithSuccess:self.launchAssetUrl != nil];
 
     return;
   }
@@ -215,6 +215,20 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 
 # pragma mark - internal
 
+- (void)_finishWithSuccess:(BOOL)success
+{
+  if (_delegate) {
+    [EXUpdatesUtils runBlockOnMainThread:^{
+      [self->_delegate appController:self didStartWithSuccess:success];
+      EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+      if (splashScreenService) {
+        UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+        [splashScreenService showSplashScreenFor:rootViewController];
+      }
+    }];
+  }
+}
+
 - (void)_maybeFinish
 {
   if (!_isTimerFinished || !_isReadyToLaunch) {
@@ -234,11 +248,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  if (self->_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
-      [self->_delegate appController:self didStartWithSuccess:YES];
-    }];
-  }
+  [self _finishWithSuccess:YES];
 }
 
 - (void)_timerDidFire
@@ -354,11 +364,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   _launcher = launcher;
   [launcher launchUpdateWithFatalError:error];
 
-  if (_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
-      [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }];
-  }
+  [self _finishWithSuccess:self.launchAssetUrl != nil];
 }
 
 @end
