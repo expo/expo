@@ -13,8 +13,8 @@ import FeatureFlags from '../FeatureFlags';
 import ProjectCard from './ProjectCard';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
-import { SectionLabelContainer } from './Views';
-import { StyledText, SectionLabelText } from './Text';
+import { StyledText } from './Text';
+import SectionHeader from './SectionHeader';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -110,15 +110,8 @@ class ExploreTab extends React.Component {
   }
 
   _renderHeader = () => {
-    if (this.props.listTitle) {
-      return (
-        <SectionLabelContainer>
-          <SectionLabelText>{this.props.listTitle}</SectionLabelText>
-        </SectionLabelContainer>
-      );
-    } else {
-      return <View />;
-    }
+    const { listTitle } = this.props;
+    return listTitle ? <SectionHeader title={listTitle} /> : <View />;
   };
 
   _renderItem = ({ item: app, index }: { item: Object, index: number }) => {
