@@ -14,6 +14,7 @@ export { AR };
 export { SplashScreen };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
+export { default as Linking } from 'expo-linking';
 
 // @ts-ignore
 export { Updates } from './deprecated';
@@ -102,8 +103,6 @@ export {
   KeepAwake,
   // @ts-ignore
   LinearGradient,
-  // @ts-ignore
-  Linking,
   // @ts-ignore
   LocalAuthentication,
   // @ts-ignore

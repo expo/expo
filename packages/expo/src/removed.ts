@@ -464,16 +464,6 @@ Object.defineProperties(module.exports, {
       );
     },
   },
-  Linking: {
-    enumerable: true,
-    get() {
-      removedModule(
-        `import { Linking } from 'expo' -> import Linking from 'expo-linking'`,
-        'Linking',
-        'expo-linking'
-      );
-    },
-  },
 
   LocalAuthentication: {
     enumerable: true,
