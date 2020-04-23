@@ -27,7 +27,9 @@ export interface AuthErrorConfig extends ResponseErrorConfig {
 
 const errorCodeMessages = {
   // https://tools.ietf.org/html/rfc6749#section-4.1.2.1
+  // https://openid.net/specs/openid-connect-core-1_0.html#AuthError
   auth: {
+    // OAuth 2.0
     invalid_request: `The request is missing a required parameter, includes an invalid parameter value, includes a parameter more than once, or is otherwise malformed.`,
     unauthorized_client: `The client is not authorized to request an authorization code using this method.`,
     access_denied: `The resource owner or authorization server denied the request.`,
@@ -37,6 +39,24 @@ const errorCodeMessages = {
       'The authorization server encountered an unexpected condition that prevented it from fulfilling the request. (This error code is needed because a 500 Internal Server Error HTTP status code cannot be returned to the client via an HTTP redirect.)',
     temporarily_unavailable:
       'The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.  (This error code is needed because a 503 Service Unavailable HTTP status code cannot be returned to the client via an HTTP redirect.)',
+    // Open ID Connect error codes
+    interaction_required:
+      'Auth server requires user interaction of some form to proceed. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user interaction.',
+    login_required:
+      'Auth server requires user authentication. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user authentication.',
+    account_selection_required:
+      'User is required to select a session at the auth server. The user may be authenticated at the auth server with different associated accounts, but the user did not select a session. This error may be returned when the prompt parameter value in the auth request is `none`, but the auth request cannot be completed without displaying a user interface to prompt for a session to use.',
+    consent_required:
+      'Auth server requires user consent. This error may be returned when the prompt parameter value in the auth request is none, but the auth request cannot be completed without displaying a user interface for user consent.',
+    invalid_request_uri:
+      'The `request_uri` in the auth request returns an error or contains invalid data.',
+    invalid_request_object: 'The request parameter contains an invalid request object.',
+    request_not_supported:
+      'The OP does not support use of the `request` parameter defined in Section 6. (https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests)',
+    request_uri_not_supported:
+      'The OP does not support use of the `request_uri` parameter defined in Section 6. (https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests)',
+    registration_not_supported:
+      'The OP does not support use of the `registration` parameter defined in Section 7.2.1. (https://openid.net/specs/openid-connect-core-1_0.html#RegistrationParameter)',
   },
 };
 

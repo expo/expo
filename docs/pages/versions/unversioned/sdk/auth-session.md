@@ -314,18 +314,19 @@ desired grant type by using the a response type: [Section 3.1.1][s311].
 
 Represents an OAuth authorization request as JSON.
 
-| Name                | Type                      | Description                                                    | Default | Spec                   |
-| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ---------------------- |
-| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]  |
-| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]     |
-| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]  |
-| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]     |
-| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]  |
-| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]     |
-| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]     |
-| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012] |
-| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]           |
-| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                  |
+| Name                | Type                      | Description                                                    | Default | Spec                            |
+| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
+| responseType        | `ResponseType`            | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
+| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
+| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
+| prompt              | `Prompt`                  | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
+| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]              |
+| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]           |
+| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]              |
+| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]              |
+| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]          |
+| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]                    |
+| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                           |
 
 ### `AuthRequestPromptOptions`
 
@@ -343,6 +344,20 @@ Options passed to the `promptAsync()` method of `AuthRequest`s.
 | ----- | ---------------------------------------------------------------------- |
 | S256  | The default and recommended method for transforming the code verifier. |
 | Plain | When used, the code verifier will be sent to the server as-is.         |
+
+### `Prompt`
+
+Informs the server if the user should be prompted to login or consent again.
+This can be used to present a dialog for switching accounts after the user has already been logged in. You should use this in favor of clearing cookies (which is mostly not possible on iOS).
+
+[Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+
+| Name          | Description                                                                                        | Errors                                   |
+| ------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| None          | Server must not display any auth or consent UI. Can be used to check for existing auth or consent. | `login_required`, `interaction_required` |
+| Login         | Server should prompt the user to reauthenticate.                                                   | `login_required`                         |
+| Consent       | Server should prompt the user for consent before returning information to the client.              | `consent_required`                       |
+| SelectAccount | Server should prompt the user to select an account. Can be used to switch accounts.                | `account_selection_required`             |
 
 ### `DiscoveryDocument`
 
@@ -443,14 +458,16 @@ const [request, response, promptAsync] = useAuthRequest(
     // For usage in managed apps using the proxy
     redirectUri: AuthSession.getRedirectUrl(),
     scopes: ['openid', 'profile'],
+
+    // Optionally should the user be prompted to select or switch accounts
+    prompt: Prompt.SelectAccount,
+
     // Optional
     extraParams: {
       // Change language
       hl: 'fr',
       // Select the user
       login_hint: 'user@gmail.com',
-      // select a prompt type
-      prompt: 'select_account',
     },
     scopes: ['openid', 'profile'],
   },
@@ -870,6 +887,8 @@ There are many reasons why you might want to handle inbound links into your app,
 [userinfo]: https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
 [provider-meta]: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
 [oidc-dcr]: https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration
+[oidc-autherr]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
+[oidc-authreq]: https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest
 [opmeta]: https://openid.net/specs/openid-connect-session-1_0-17.html#OPMetadata
 [s1012]: https://tools.ietf.org/html/rfc6749#section-10.12
 [s62]: https://tools.ietf.org/html/rfc7636#section-6.2
