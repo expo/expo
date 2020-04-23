@@ -73,6 +73,11 @@ export default class Error extends React.Component {
       redirectPath = removeVersionFromPath(redirectPath);
     }
 
+    // Catch any redirects to sdk paths without versions and send to the latest version
+    if (redirectPath.startsWith('/sdk/')) {
+      redirectPath = `/versions/latest${redirectPath}`;
+    }
+
     if (redirectPath !== pathname) {
       this.setState({ redirectPath });
       return;
