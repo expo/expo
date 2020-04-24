@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *type;
 @property (nullable, nonatomic, strong) NSURL *url;
 @property (nullable, nonatomic, strong) NSDictionary *metadata;
+@property (nullable, nonatomic, strong) NSString *mainBundleDir; // used for embedded assets
 @property (nullable, nonatomic, strong) NSString *mainBundleFilename; // used for embedded assets
 @property (nonatomic, assign) BOOL isLaunchAsset;
 
