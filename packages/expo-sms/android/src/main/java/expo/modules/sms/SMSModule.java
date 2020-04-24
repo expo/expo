@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Telephony;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -17,9 +19,13 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.UIManager;
 
+import androidx.annotation.Nullable;
+
 public class SMSModule extends ExportedModule implements LifecycleEventListener {
   private static final String TAG = "ExpoSMS";
   private static final String ERROR_TAG = "E_SMS";
+
+  private static final String OPTIONS_ATTACHMENTS_KEY = "attachments";
 
   private ModuleRegistry mModuleRegistry;
   private Promise mPendingPromise;
@@ -53,23 +59,42 @@ public class SMSModule extends ExportedModule implements LifecycleEventListener 
   }
 
   @ExpoMethod
-  public void sendSMSAsync(final ArrayList<String> addresses, final String message, final Promise promise) {
+  public void sendSMSAsync(
+      final ArrayList<String> addresses,
+      final String message,
+      final @Nullable Map<String, Object> options,
+      final Promise promise) {
     if (mPendingPromise != null) {
       promise.reject(ERROR_TAG + "_SENDING_IN_PROGRESS", "Different SMS sending in progress. Await the old request and then try again.");
       return;
     }
 
-    final Intent SMSIntent = new Intent(Intent.ACTION_SENDTO);
+    Intent SMSIntent = new Intent(Intent.ACTION_SEND);
+    String defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(getContext());
+    if (defaultSMSPackage != null){
+      SMSIntent.setPackage(defaultSMSPackage);
+    } else {
+      promise.reject(ERROR_TAG + "_NO_SMS_APP", "No messaging application available");
+      return;
+    }
+    SMSIntent.setType("text/plain");
     final String smsTo = constructRecipients(addresses);
-    SMSIntent.setData(Uri.parse("smsto:" + smsTo));
+    SMSIntent.putExtra("address", smsTo);
+
     SMSIntent.putExtra("exit_on_sent", true);
     SMSIntent.putExtra("compose_mode", true);
     SMSIntent.putExtra(Intent.EXTRA_TEXT, message);
     SMSIntent.putExtra("sms_body", message);
 
-    if (SMSIntent.resolveActivity(getContext().getPackageManager()) == null) {
-      promise.reject(ERROR_TAG + "_NO_SMS_APP", "No messaging application available");
-      return;
+    if (options != null) {
+      if (options.containsKey(OPTIONS_ATTACHMENTS_KEY)) {
+        final List<Map<String, String>> attachments = (List<Map<String, String>>) options.get(OPTIONS_ATTACHMENTS_KEY);
+        if (attachments != null && !attachments.isEmpty()) {
+          Map<String, String> attachment = attachments.get(0);
+          SMSIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.get("uri")));
+          SMSIntent.setType(attachment.get("mimeType"));
+        }
+      }
     }
 
     mPendingPromise = promise;
