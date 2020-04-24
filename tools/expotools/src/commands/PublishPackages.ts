@@ -81,7 +81,7 @@ const getWorkspacesInfoAsync = (() => {
 
   return async (): Promise<{ [key: string]: WorkspaceProject }> => {
     if (!cache) {
-      const child = await spawnAsync('yarn', ['workspaces', 'info', '--json'], {
+      const child = await spawnAsync('yarn', ['--json', 'workspaces', 'info'], {
         cwd: EXPO_DIR,
       });
       const output = JSON.parse(child.stdout);
