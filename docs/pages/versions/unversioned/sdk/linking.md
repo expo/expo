@@ -22,6 +22,10 @@ For information and examples on how to use this API and the `react-native` Linki
 
 ## API
 
+```js
+import * as Linking from 'expo-linking';
+```
+
 <TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} />
 
 ## Methods
