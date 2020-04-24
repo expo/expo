@@ -60,10 +60,7 @@ public class UpdatesModule extends ExportedModule {
         if (localAssetFiles != null) {
           Map<String, String> localAssets = new HashMap<>();
           for (AssetEntity asset : localAssetFiles.keySet()) {
-            String localAssetsKey = UpdatesUtils.getLocalAssetsKey(asset);
-            if (localAssetsKey != null) {
-              localAssets.put(localAssetsKey, localAssetFiles.get(asset));
-            }
+            localAssets.put(asset.key, localAssetFiles.get(asset));
           }
           constants.put("localAssets", localAssets);
         }

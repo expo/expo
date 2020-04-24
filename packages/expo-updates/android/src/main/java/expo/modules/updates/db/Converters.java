@@ -32,12 +32,12 @@ public class Converters {
 
   @TypeConverter
   public static Uri stringToUri(String string) {
-    return Uri.parse(string);
+    return string == null ? null : Uri.parse(string);
   }
 
   @TypeConverter
   public static String uriToString(Uri uri) {
-    return uri.toString();
+    return uri == null ? null : uri.toString();
   }
 
 
