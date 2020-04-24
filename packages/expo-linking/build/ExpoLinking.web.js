@@ -2,18 +2,13 @@ import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 const EventTypes = ['url'];
 const listeners = [];
-function _validateURL(url) {
-    invariant(typeof url === 'string', `Invalid URL: should be a string. Instead found: ${url}`);
-    invariant(url, 'Invalid URL: cannot be empty');
-}
-// TODO: Bacon: For better parity this should extend EventEmitter like React Native.
-class Linking {
+export default {
     addEventListener(type, listener) {
         invariant(EventTypes.indexOf(type) !== -1, `Linking.addEventListener(): ${type} is not a valid event`);
         const nativeListener = nativeEvent => listener({ url: window.location.href, nativeEvent });
         listeners.push({ listener, nativeListener });
         window.addEventListener('message', nativeListener, false);
-    }
+    },
     removeEventListener(type, listener) {
         invariant(EventTypes.indexOf(type) !== -1, `Linking.removeEventListener(): ${type} is not a valid event.`);
         const listenerIndex = listeners.findIndex(pair => pair.listener === listener);
@@ -21,23 +16,21 @@ class Linking {
         const nativeListener = listeners[listenerIndex].nativeListener;
         window.removeEventListener('message', nativeListener, false);
         listeners.splice(listenerIndex, 1);
-    }
+    },
     async canOpenURL(url) {
-        _validateURL(url);
+        // In reality this should be able to return false for links like `chrome://` on chrome.
         return true;
-    }
+    },
     async getInitialURL() {
         if (!canUseDOM)
             return '';
         return window.location.href;
-    }
+    },
     async openURL(url) {
-        _validateURL(url);
         if (canUseDOM) {
             // @ts-ignore
             window.location = new URL(url, window.location).toString();
         }
-    }
-}
-export default new Linking();
+    },
+};
 //# sourceMappingURL=ExpoLinking.web.js.map

@@ -1,13 +1,21 @@
+import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
-import { Platform, LinkingStatic } from 'react-native';
+import { useEffect, useState } from 'react';
+import { InteractionManager, Platform } from 'react-native';
 import URL from 'url-parse';
 
-import Linking from './ExpoLinking';
+import NativeLinking from './ExpoLinking';
 import { ParsedURL, QueryParams } from './Linking.types';
 
 const { manifest } = Constants;
+
+function validateURL(url: string): void {
+  invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
+  invariant(url, 'Invalid URL: cannot be empty');
+}
 
 function usesCustomScheme(): boolean {
   return Constants.appOwnership === 'standalone' && manifest.scheme;
@@ -71,7 +79,23 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   return input;
 }
 
-function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
+/**
+ * Create a URL that works for the environment the app is currently running in.
+ * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
+ *
+ * **Examples**
+ *
+ * - Bare, Standalone: yourscheme://
+ * - Web (dev): https://localhost:19006/
+ * - Web (prod): https://myapp.com/
+ * - Expo Client (dev): exp://128.0.0.1:19000/--/
+ * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ *
+ * @param path addition path components to append to the base URL.
+ * @param queryParams An object of parameters that will be converted into a query string.
+ */
+export function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   if (Platform.OS === 'web') {
     if (!canUseDOM) return '';
 
@@ -97,6 +121,14 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
     console.warn(
       'Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/'
     );
+  } else if (!Constants.manifest) {
+    // Bare-workflow
+    if (!manifestScheme) {
+      throw new Error(
+        "Cannot determine what scheme to use when making a URL because the `expo.scheme` property is not defined in the project's app.json"
+      );
+    }
+    scheme = manifestScheme;
   }
 
   let hostUri = getHostUri() || '';
@@ -145,10 +177,13 @@ function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   return encodeURI(`${scheme}://${hostUri}${path}${queryString}`);
 }
 
-function parse(url: string): ParsedURL {
-  if (!url) {
-    throw new Error('parse cannot be called with a null value');
-  }
+/**
+ * Returns the components and query parameters for a given URL.
+ *
+ * @param url Input URL to parse
+ */
+export function parse(url: string): ParsedURL {
+  validateURL(url);
 
   const parsed = URL(url, /* parseQueryString */ true);
 
@@ -197,8 +232,12 @@ function parse(url: string): ParsedURL {
   };
 }
 
-async function parseInitialURLAsync(): Promise<ParsedURL> {
-  const initialUrl = await Linking.getInitialURL();
+/**
+ * **Native:** Parses the link that opened the app. If no link opened the app, all the fields will be \`null\`.
+ * **Web:** Parses the current window URL.
+ */
+export async function parseInitialURLAsync(): Promise<ParsedURL> {
+  const initialUrl = await NativeLinking.getInitialURL();
   if (!initialUrl) {
     return {
       scheme: null,
@@ -211,19 +250,85 @@ async function parseInitialURLAsync(): Promise<ParsedURL> {
   return parse(initialUrl);
 }
 
-interface ExpoLinking extends LinkingStatic {
-  makeUrl: typeof makeUrl;
-  parse: typeof parse;
-  parseInitialURLAsync: typeof parseInitialURLAsync;
+/**
+ * Launch an Android intent with optional extras
+ *
+ * @platform android
+ */
+export async function sendIntent(
+  action: string,
+  extras?: { key: string; value: string | number | boolean }[]
+): Promise<void> {
+  if (Platform.OS === 'android') {
+    return await NativeLinking.sendIntent(action, extras);
+  }
+  throw new UnavailabilityError('Linking', 'sendIntent');
 }
 
-// @ts-ignore fix this...
-const newLinking = new Linking.constructor();
+/**
+ * Attempt to open the system settings for an the app.
+ *
+ * @platform ios
+ */
+export async function openSettings(): Promise<void> {
+  if (Platform.OS === 'web') {
+    throw new UnavailabilityError('Linking', 'openSettings');
+  }
+  if (NativeLinking.openSettings) {
+    return await NativeLinking.openSettings();
+  }
+  await openURL('app-settings:');
+}
 
-newLinking.makeUrl = makeUrl;
-newLinking.parse = parse;
-newLinking.parseInitialURLAsync = parseInitialURLAsync;
+/**
+ * If the app launch was triggered by an app link,
+ * it will give the link url, otherwise it will give `null`
+ */
+export async function getInitialURL(): Promise<string | null> {
+  if (Platform.OS === 'android') {
+    await InteractionManager.runAfterInteractions();
+  }
+  return (await NativeLinking.getInitialURL()) ?? null;
+}
 
-export default newLinking as ExpoLinking;
+/**
+ * Try to open the given `url` with any of the installed apps.
+ */
+export async function openURL(url: string): Promise<true> {
+  validateURL(url);
+  return await NativeLinking.openURL(url);
+}
+
+/**
+ * Determine whether or not an installed app can handle a given URL.
+ * On web this always returns true because there is no API for detecting what URLs can be opened.
+ */
+export async function canOpenURL(url: string): Promise<boolean> {
+  validateURL(url);
+  return await NativeLinking.canOpenURL(url);
+}
+
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ */
+export function useUrl(): string | null {
+  const [url, setLink] = useState<string | null>(null);
+
+  function onChange(event: { url: string }) {
+    setLink(event.url);
+  }
+
+  useEffect(() => {
+    getInitialURL().then(url => setLink(url));
+    addEventListener('url', onChange);
+    return () => removeEventListener('url', onChange);
+  }, []);
+
+  return url;
+}
 
 export * from './Linking.types';
+
+const { addEventListener, removeEventListener } = NativeLinking;
+
+export { addEventListener, removeEventListener };

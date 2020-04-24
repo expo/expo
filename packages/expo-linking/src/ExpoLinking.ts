@@ -1,2 +1,12 @@
 import { Linking } from 'react-native';
-export default Linking;
+import NativeLinking from 'react-native/Libraries/Linking/NativeLinking';
+
+export default {
+  addEventListener: Linking.addEventListener,
+  removeEventListener: Linking.removeEventListener,
+  canOpenURL: NativeLinking.canOpenURL,
+  openSettings: NativeLinking.openSettings,
+  getInitialURL: NativeLinking.getInitialURL,
+  openURL: NativeLinking.openURL,
+  sendIntent: NativeLinking.sendIntent,
+};

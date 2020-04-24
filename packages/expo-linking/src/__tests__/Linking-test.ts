@@ -1,4 +1,4 @@
-import Linking from '../Linking';
+import * as Linking from '../Linking';
 import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {

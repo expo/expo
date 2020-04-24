@@ -1,10 +1,17 @@
+import { UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
-import { Platform } from 'react-native';
+import { useEffect, useState } from 'react';
+import { InteractionManager, Platform } from 'react-native';
 import URL from 'url-parse';
-import Linking from './ExpoLinking';
+import NativeLinking from './ExpoLinking';
 const { manifest } = Constants;
+function validateURL(url) {
+    invariant(typeof url === 'string', 'Invalid URL: should be a string. Was: ' + url);
+    invariant(url, 'Invalid URL: cannot be empty');
+}
 function usesCustomScheme() {
     return Constants.appOwnership === 'standalone' && manifest.scheme;
 }
@@ -57,7 +64,23 @@ function ensureLeadingSlash(input, shouldAppend) {
     }
     return input;
 }
-function makeUrl(path = '', queryParams = {}) {
+/**
+ * Create a URL that works for the environment the app is currently running in.
+ * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
+ *
+ * **Examples**
+ *
+ * - Bare, Standalone: yourscheme://
+ * - Web (dev): https://localhost:19006/
+ * - Web (prod): https://myapp.com/
+ * - Expo Client (dev): exp://128.0.0.1:19000/--/
+ * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ *
+ * @param path addition path components to append to the base URL.
+ * @param queryParams An object of parameters that will be converted into a query string.
+ */
+export function makeUrl(path = '', queryParams = {}) {
     if (Platform.OS === 'web') {
         if (!canUseDOM)
             return '';
@@ -81,6 +104,13 @@ function makeUrl(path = '', queryParams = {}) {
     }
     else if (Constants.appOwnership === 'expo' && !manifestScheme) {
         console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
+    }
+    else if (!Constants.manifest) {
+        // Bare-workflow
+        if (!manifestScheme) {
+            throw new Error("Cannot determine what scheme to use when making a URL because the `expo.scheme` property is not defined in the project's app.json");
+        }
+        scheme = manifestScheme;
     }
     let hostUri = getHostUri() || '';
     if (usesCustomScheme() && isExpoHosted()) {
@@ -124,10 +154,13 @@ function makeUrl(path = '', queryParams = {}) {
     hostUri = removeTrailingSlash(hostUri);
     return encodeURI(`${scheme}://${hostUri}${path}${queryString}`);
 }
-function parse(url) {
-    if (!url) {
-        throw new Error('parse cannot be called with a null value');
-    }
+/**
+ * Returns the components and query parameters for a given URL.
+ *
+ * @param url Input URL to parse
+ */
+export function parse(url) {
+    validateURL(url);
     const parsed = URL(url, /* parseQueryString */ true);
     for (const param in parsed.query) {
         parsed.query[param] = decodeURIComponent(parsed.query[param]);
@@ -167,8 +200,12 @@ function parse(url) {
         scheme,
     };
 }
-async function parseInitialURLAsync() {
-    const initialUrl = await Linking.getInitialURL();
+/**
+ * **Native:** Parses the link that opened the app. If no link opened the app, all the fields will be \`null\`.
+ * **Web:** Parses the current window URL.
+ */
+export async function parseInitialURLAsync() {
+    const initialUrl = await NativeLinking.getInitialURL();
     if (!initialUrl) {
         return {
             scheme: null,
@@ -179,10 +216,71 @@ async function parseInitialURLAsync() {
     }
     return parse(initialUrl);
 }
-// @ts-ignore fix this...
-const newLinking = new Linking.constructor();
-newLinking.makeUrl = makeUrl;
-newLinking.parse = parse;
-newLinking.parseInitialURLAsync = parseInitialURLAsync;
-export default newLinking;
+/**
+ * Launch an Android intent with optional extras
+ *
+ * @platform android
+ */
+export async function sendIntent(action, extras) {
+    if (Platform.OS === 'android') {
+        return await NativeLinking.sendIntent(action, extras);
+    }
+    throw new UnavailabilityError('Linking', 'sendIntent');
+}
+/**
+ * Attempt to open the system settings for an the app.
+ *
+ * @platform ios
+ */
+export async function openSettings() {
+    if (Platform.OS === 'web') {
+        throw new UnavailabilityError('Linking', 'openSettings');
+    }
+    if (NativeLinking.openSettings) {
+        return await NativeLinking.openSettings();
+    }
+    await openURL('app-settings:');
+}
+/**
+ * If the app launch was triggered by an app link,
+ * it will give the link url, otherwise it will give `null`
+ */
+export async function getInitialURL() {
+    if (Platform.OS === 'android') {
+        await InteractionManager.runAfterInteractions();
+    }
+    return (await NativeLinking.getInitialURL()) ?? null;
+}
+/**
+ * Try to open the given `url` with any of the installed apps.
+ */
+export async function openURL(url) {
+    validateURL(url);
+    return await NativeLinking.openURL(url);
+}
+/**
+ * Determine whether or not an installed app can handle a given URL.
+ * On web this always returns true because there is no API for detecting what URLs can be opened.
+ */
+export async function canOpenURL(url) {
+    validateURL(url);
+    return await NativeLinking.canOpenURL(url);
+}
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ */
+export function useUrl() {
+    const [url, setLink] = useState(null);
+    function onChange(event) {
+        setLink(event.url);
+    }
+    useEffect(() => {
+        getInitialURL().then(url => setLink(url));
+        addEventListener('url', onChange);
+        return () => removeEventListener('url', onChange);
+    }, []);
+    return url;
+}
+const { addEventListener, removeEventListener } = NativeLinking;
+export { addEventListener, removeEventListener };
 //# sourceMappingURL=Linking.js.map
