@@ -7,7 +7,9 @@ function processAttachments(attachments) {
     }
     attachments = Array.isArray(attachments) ? attachments : [attachments];
     if (Platform.OS === 'android' && attachments.length > 1) {
-        console.warn('Android only supports a single attachment. The first array item is used.');
+        if (__DEV__) {
+            console.warn('Android only supports a single attachment. The first array item is used.');
+        }
         attachments = attachments.slice(0, 1);
     }
     return attachments;
