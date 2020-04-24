@@ -47,7 +47,11 @@ Opens the default UI/app for sending SMS messages with prefilled addresses and m
 
 - **addresses (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
-- **message (_string_)** -- Message to be sent
+- **message (_string_)** -- Message to be sent.
+
+- **options (_optional_) (_object_)** -- A map defining additional sms configuration options
+
+  - **attachments (_optional_) (_Array<\object_\>|_object_)** -- An array of [SMSAttachment](#smsattachment) objects or single object. Android supports only one attachment.
 
 #### Returns
 
@@ -66,6 +70,21 @@ Android does not provide information about the status of the SMS message, so on 
 ```javascript
 const { result } = await SMS.sendSMSAsync(
   ['0123456789', '9876543210'],
-  'My sample HelloWorld message'
+  'My sample HelloWorld message',
+  attachments: {
+    uri: 'path/myfile.png',
+    mimeType: 'image/png',
+    filename: 'myfile.png',
+  }
 );
 ```
+
+## Related types
+
+### SMSAttachment
+
+An object that is used to describe an attachment that is included with a SMS message.
+
+- **uri (_string_)** -- the content URI of the attachment. The URI needs be a content URI so that it can be accessed by other applications outside of Expo. (See [FileSystem.getContentUriAsync](../filesystem/#filesystemgetcontenturiasyncfileuri))
+- **mimeType (_string_)** -- the mime type of the attachment such as `image/png`
+- **filename (_string_)** -- the filename of the attachment
