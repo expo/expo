@@ -1,4 +1,32 @@
 import * as Linking from '../Linking';
+
+jest.mock('react-native/Libraries/Linking/NativeLinking', () => {
+  const ReactNative = require.requireActual('react-native');
+  // Mock a natively defined test module
+  ReactNative.NativeModules.NativeUnimoduleProxy.modulesConstants = {
+    ExpoTest: { testConstant: 'test' },
+  };
+  ReactNative.NativeModules.NativeUnimoduleProxy.exportedMethods = {
+    ...ReactNative.NativeModules.NativeUnimoduleProxy.exportedMethods,
+    ExpoTest: [{ key: 0, name: 'testAsync', argumentsCount: 1 }],
+  };
+  return {
+    async addEventListener(): Promise<void> {},
+    async removeEventListener(): Promise<void> {},
+    async canOpenURL(): Promise<boolean> {
+      return true;
+    },
+    async openSettings(): Promise<void> {},
+    async getInitialURL(): Promise<string | null> {
+      return null;
+    },
+    async openURL(): Promise<true> {
+      return true;
+    },
+    async sendIntent(): Promise<void> {},
+  };
+});
+
 import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
