@@ -186,6 +186,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _enforceDesiredDeviceOrientation];
+
+    // Reset the root view background color and window color if we switch between Expo home and project
+    [self _setBackgroundColor:self.view];
   });
   [_appRecord.appManager appStateDidBecomeActive];
 }
@@ -291,8 +294,8 @@ NS_ASSUME_NONNULL_BEGIN
   [self.view sendSubviewToBack:_contentView];
   [reactView becomeFirstResponder];
 
-  // NOTE(brentvatne): Set root view background color after adding as subview so we can access window
-  [self _setRootViewBackgroundColor:reactView];
+  // Set root view background color after adding as subview so we can access window
+  [self _setBackgroundColor:reactView];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -454,18 +457,17 @@ NS_ASSUME_NONNULL_BEGIN
   return UIUserInterfaceStyleLight;
 }
 
-#pragma mark - root view background color
+#pragma mark - root view and window background color
 
-- (void)_setRootViewBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor:(UIView *)view
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
 
     if (backgroundColor) {
       view.backgroundColor = backgroundColor;
-
       // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
-      // root view, leaving this as-is for now.
+      // root view, we can do if use case is presented to us.
       view.window.backgroundColor = backgroundColor;
     } else {
       view.backgroundColor = [UIColor whiteColor];
