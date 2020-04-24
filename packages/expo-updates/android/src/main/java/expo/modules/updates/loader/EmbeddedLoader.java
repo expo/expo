@@ -35,9 +35,11 @@ public class EmbeddedLoader {
   private Context mContext;
   private UpdatesDatabase mDatabase;
   private File mUpdatesDirectory;
+  private float mPixelDensity;
 
   private UpdateEntity mUpdateEntity;
   private ArrayList<AssetEntity> mErroredAssetList = new ArrayList<>();
+  private ArrayList<AssetEntity> mSkippedAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mExistingAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mFinishedAssetList = new ArrayList<>();
 
@@ -45,6 +47,7 @@ public class EmbeddedLoader {
     mContext = context;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
+    mPixelDensity = context.getResources().getDisplayMetrics().density;
   }
 
   public boolean loadEmbeddedUpdate() {
@@ -60,6 +63,7 @@ public class EmbeddedLoader {
   public void reset() {
     mUpdateEntity = null;
     mErroredAssetList = new ArrayList<>();
+    mSkippedAssetList = new ArrayList<>();
     mExistingAssetList = new ArrayList<>();
     mFinishedAssetList = new ArrayList<>();
   }
@@ -79,8 +83,30 @@ public class EmbeddedLoader {
   }
 
   public static byte[] copyAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
+    if (asset.embeddedAssetFilename != null) {
+      return copyContextAssetAndGetHash(asset, destination, context);
+    } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
+      return copyResourceAndGetHash(asset, destination, context);
+    } else {
+      throw new AssertionError("Failed to copy asset " + asset.key + " from APK assets or resources because not enough information was provided.");
+    }
+  }
+
+  public static byte[] copyContextAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
     try (
         InputStream inputStream = context.getAssets().open(asset.embeddedAssetFilename)
+    ) {
+      return UpdatesUtils.sha256AndWriteToFile(inputStream, destination);
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e);
+      throw e;
+    }
+  }
+
+  public static byte[] copyResourceAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
+    int id = context.getResources().getIdentifier(asset.resourcesFilename, asset.resourcesFolder, context.getPackageName());
+    try (
+      InputStream inputStream = context.getResources().openRawResource(id)
     ) {
       return UpdatesUtils.sha256AndWriteToFile(inputStream, destination);
     } catch (Exception e) {
@@ -115,6 +141,11 @@ public class EmbeddedLoader {
 
   private void copyAllAssets(ArrayList<AssetEntity> assetList) {
     for (AssetEntity asset : assetList) {
+      if (shouldSkipAsset(asset)) {
+        mSkippedAssetList.add(asset);
+        continue;
+      }
+
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(asset.key);
       if (matchingDbEntry != null) {
         mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, asset);
@@ -140,7 +171,8 @@ public class EmbeddedLoader {
           asset.relativePath = filename;
           mFinishedAssetList.add(asset);
         } catch (FileNotFoundException e) {
-          throw new AssertionError("APK bundle must contain the expected embedded asset " + asset.embeddedAssetFilename);
+          throw new AssertionError("APK bundle must contain the expected embedded asset " +
+            (asset.embeddedAssetFilename != null ? asset.embeddedAssetFilename : asset.resourcesFilename));
         } catch (Exception e) {
           mErroredAssetList.add(asset);
         }
@@ -164,8 +196,32 @@ public class EmbeddedLoader {
     }
     mDatabase.assetDao().insertAssets(mFinishedAssetList, mUpdateEntity);
     if (mErroredAssetList.size() == 0) {
-      mDatabase.updateDao().markUpdateFinished(mUpdateEntity);
+      mDatabase.updateDao().markUpdateFinished(mUpdateEntity, mSkippedAssetList.size() != 0);
     }
     // TODO: maybe try downloading failed assets in background
+  }
+
+  private boolean shouldSkipAsset(AssetEntity asset) {
+    if (asset.scales == null || asset.scale == null) {
+      return false;
+    }
+    return pickClosestScale(asset.scales) != asset.scale;
+  }
+
+  // https://developer.android.com/guide/topics/resources/providing-resources.html#BestMatch
+  // If a perfect match is not available, the OS will pick the next largest scale.
+  // If only smaller scales are available, the OS will choose the largest available one.
+  private float pickClosestScale(Float[] scales) {
+    float closestScale = Float.MAX_VALUE;
+    float largestScale = 0;
+    for (float scale : scales) {
+      if (scale >= mPixelDensity && (scale < closestScale)) {
+        closestScale = scale;
+      }
+      if (scale > largestScale) {
+        largestScale = scale;
+      }
+    }
+    return closestScale < Float.MAX_VALUE ? closestScale : largestScale;
   }
 }

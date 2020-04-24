@@ -53,7 +53,9 @@ const destinationDir = process.argv[4];
         subdirectory: asset.httpServerLocation,
       };
       if (platform === 'ios') {
-        assetInfoForManifest.nsBundleFilename = asset.name + '@' + scale + 'x';
+        assetInfoForManifest.nsBundleDir = getBasePath(asset);
+        assetInfoForManifest.nsBundleFilename =
+          scale === 1 ? asset.name : asset.name + '@' + scale + 'x';
       } else if (platform === 'android') {
         assetInfoForManifest.scales = asset.scales;
         assetInfoForManifest.resourcesFilename = getAndroidResourceIdentifier(asset);

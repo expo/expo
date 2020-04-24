@@ -57,6 +57,18 @@ public class AssetEntity {
   @Ignore
   public String embeddedAssetFilename = null;
 
+  @Ignore
+  public String resourcesFilename = null;
+
+  @Ignore
+  public String resourcesFolder = null;
+
+  @Ignore
+  public Float scale = null;
+
+  @Ignore
+  public Float[] scales = null;
+
   public AssetEntity(String key, String type) {
     this.key = key;
     this.type = type;

@@ -27,6 +27,35 @@ NS_ASSUME_NONNULL_BEGIN
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
 
+  NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
+
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesBareEmbeddedBundleFileType];
+  jsBundleAsset.isLaunchAsset = YES;
+  jsBundleAsset.mainBundleFilename = kEXUpdatesBareEmbeddedBundleFilename;
+  [processedAssets addObject:jsBundleAsset];
+
+  for (NSDictionary *assetDict in (NSArray *)assets) {
+    NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
+    id packagerHash = assetDict[@"packagerHash"];
+    id type = assetDict[@"type"];
+    id mainBundleDir = assetDict[@"nsBundleDir"];
+    id mainBundleFilename = assetDict[@"nsBundleFilename"];
+    NSAssert(packagerHash && [packagerHash isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
+    NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
+    NSAssert(mainBundleFilename && [mainBundleFilename isKindOfClass:[NSString class]], @"asset nsBundleFilename should be a nonnull string");
+    if (mainBundleDir) {
+      NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
+    }
+
+    NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+    asset.mainBundleDir = mainBundleDir;
+    asset.mainBundleFilename = mainBundleFilename;
+
+    [processedAssets addObject:asset];
+  }
+
   update.updateId = uuid;
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
   update.runtimeVersion = [EXUpdatesUtils getRuntimeVersion];
@@ -35,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   update.status = EXUpdatesUpdateStatusEmbedded;
   update.keep = YES;
-  update.assets = [NSMutableArray new];
+  update.assets = processedAssets;
 
   return update;
 }
