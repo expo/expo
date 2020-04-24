@@ -534,8 +534,6 @@ jobs:
     executor: mac
     steps:
       - setup
-      - skip_unless_changed:
-          paths: tools/expotools ios fastlane Gemfile.lock
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
@@ -549,8 +547,6 @@ jobs:
     executor: mac
     steps:
       - setup
-      - skip_unless_changed:
-          paths: tools-public tools/expotools ios fastlane Gemfile.lock
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
@@ -584,8 +580,6 @@ jobs:
         default: true
     steps:
       - setup
-      - skip_unless_changed:
-          paths: tools-public tools/expotools ios
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
@@ -632,8 +626,6 @@ jobs:
     executor: android
     steps:
       - setup
-      - skip_unless_changed:
-          paths: android tools-public tools packages
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - install_yarn
       - yarn_restore_and_install:
