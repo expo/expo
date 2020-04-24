@@ -7,7 +7,9 @@ export const name = 'FirebaseRecaptcha';
 
 const style = { width: 200, height: 200 };
 
-const firebaseConfig = {};
+const firebaseConfig = {
+  authDomain: 'something.your-domain.com',
+};
 
 export async function test(
   { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
