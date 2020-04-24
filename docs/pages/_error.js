@@ -230,7 +230,8 @@ function endsInNull(path) {
 const RENAMED_PAGES = {
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
   '/guides/': '/workflow/exploring-managed-workflow/',
-  '/versions/latest/sdk/': '/versions/latest/sdk/overview/',
+  '/versions/latest/sdk/': '/versions/latest/',
+  '/versions/latest/sdk/overview/': '/versions/latest/',
   '/guides/building-standalone-apps/': '/distribution/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
@@ -260,6 +261,5 @@ const RENAMED_PAGES = {
   '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
 
   // Move overview to index
-  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/sdk/',
-  '/versions/latest/sdk/overview/': '/versions/latest/sdk/',
+  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 };
