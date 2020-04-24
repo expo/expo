@@ -347,6 +347,12 @@ Expo provides details regarding any errors that occur during this entire process
 
 Inside both push tickets and push receipts, look for a `details` object with an `error` field. If present, it may be one of the following values, and you should handle these errors like so:
 
+#### Push ticket errors
+
+- `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
+
+#### Push receipt errors
+
 - `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
 - `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
@@ -360,6 +366,10 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
 
 - `PUSH_TOO_MANY_EXPERIENCE_IDS`: you are trying to send push notifications to different Expo experiences, for example `@username/projectAAA` and `@username/projectBBB`. Check the `details` field for a mapping of experience names to their associated push tokens from the request, and remove any from another experience.
+
+- `PUSH_TOO_MANY_NOTIFICATIONS`: you are trying to send more than 100 push notifications in one request. Make sure you are only sending 100 (or less) notifications in each request.
+
+- `PUSH_TOO_MANY_RECEIPTS`: you are trying to get more than 1000 push receipts in one request. Make sure you are only sending an array of 1000 (or less) ticket ID strings to get your push receipts.
 
 ## FAQ
 
