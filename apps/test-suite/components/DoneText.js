@@ -10,16 +10,14 @@ export default function DoneText({ done, numFailed, results }) {
         </Text>
       )}
       {done && (
-        <React.Fragment>
-          <Text testID="test_suite_text_results" style={styles.doneMessage}>
-            Complete: {numFailed}
-            {numFailed === 1 ? ' test' : ' tests'} failed.
-          </Text>
-          <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
-            {results}
-          </Text>
-        </React.Fragment>
+        <Text testID="test_suite_text_results" style={styles.doneMessage}>
+          Complete: {numFailed}
+          {numFailed === 1 ? ' test' : ' tests'} failed.
+        </Text>
       )}
+      <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
+        {results}
+      </Text>
     </View>
   );
 }
