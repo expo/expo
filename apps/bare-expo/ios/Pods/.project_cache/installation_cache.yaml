@@ -308,13 +308,13 @@ CACHE_KEYS:
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
-    CHECKSUM: 004095b49bd4f29dc3281a6eafb6dfb1a151cb44
+    CHECKSUM: 535e764dcb3facfa1668d81e422b685eb93c1c9f
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
     PROJECT_NAME: EXFirebaseAnalytics
     SPECS:
-      - EXFirebaseAnalytics (2.2.0)
+      - EXFirebaseAnalytics (2.3.0)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
