@@ -35,8 +35,32 @@
     }
     return views.firstObject;
   }
-  
-  @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
+
+  // TODO (@bbarthec): handle fallbacking to default RN Launch Screen view better
+  // @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN" reason:@"Couln't locate neither 'SplashScreen.storyboard' file nor 'SplashScreen.xib' file. Create one of these in the project to make 'expo-splash-screen' work (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios)." userInfo:nil];
+
+  return [self createSplashScreenViewFallback];
+}
+
+- (nonnull UIView *)createSplashScreenViewFallback
+{
+  UIView *view;
+  NSArray *views;
+  @try {
+    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+    views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
+  } @catch (NSException *_) {
+    NSLog(@"LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
+  }
+  if (views) {
+    view = views.firstObject;
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  } else {
+    view = [UIView new];
+    view.backgroundColor = [UIColor whiteColor];
+  }
+
+  return view;
 }
 
 @end

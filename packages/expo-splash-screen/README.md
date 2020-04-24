@@ -292,6 +292,46 @@ The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Sc
 
 <img src="./assets/configuration-ios-selectLaunchScreen.png" height="350" />
 
+#### `AppDelegate.m`
+
+<!-- TODO (@bbarthec): what would happen if `expo-splash-screen` was added prior to `expo-updated` ➡️ SplashScreen registration would be doubled and unless `expo-updates` replaces rootViewController sth bad might happen 🤔 -->
+> `expo-updates`: this step is already covered if you're using this package.
+
+Update `AppDelegate.m` with the registration of the native splash screen view.
+Ensure that splash screen view registration is performed after `UIViewController` that is assigned to the main `UIWindow` of your application is created and configured.
+
+```diff
+ #import "AppDelegate.h"
+
+ #import <React/RCTBundleURLProvider.h>
+ #import <React/RCTRootView.h>
+
++#import <EXSplashScreen/EXSplashScreenService.h>
++#import <UMCore/UMModuleRegistryProvider.h>
+
+ @implementation AppDelegate
+
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+ {
+   // ...other code
+
+    UIViewController *rootViewController = [UIViewController new];
+    rootViewController.view = rootView;
+    self.window.rootViewController = rootViewController;
+    [self.window makeKeyAndVisible];
+
++   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
++   [splashScreenService showSplashScreenFor:rootViewController];
+
+   // ...other code
+
+   return YES;
+ }
+
+ @end
+ }
+```
+
 ### 🤖 Configure Android
 
 To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be hooked into the native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.

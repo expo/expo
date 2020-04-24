@@ -86,13 +86,4 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   [[self.splashScreenControllers objectForKey:viewController] onAppContentWillReload];
 }
 
-# pragma mark - UIApplicationDelegate
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  UIViewController *rootViewController = [[UIApplication.sharedApplication keyWindow] rootViewController];
-  [self showSplashScreenFor:rootViewController];
-  return YES;
-}
-
 @end

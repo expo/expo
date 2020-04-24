@@ -15,6 +15,8 @@ You can use it to configure your native iOS and Android project according to you
 
 ### 📱 iOS
 
+> Installation command does not handle changes that have to be applied in `AppDelegate.m` file yet 😔 Please configure this part manually.
+
 - Configures background color for native splash screen.
 - Configures [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen) to show given `.png` image.
 - supports [`CONTAIN`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#contain-resize-mode) and [`COVER`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#cover-resize-mode) modes from [`expo-splash-screen`](https://github.com/expo/expo/tree/master/packages/expo-splash-screen)

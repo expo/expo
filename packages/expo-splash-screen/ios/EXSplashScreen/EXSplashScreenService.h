@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXSplashScreenService : UMSingletonModule <EXSplashScreenService, UIApplicationDelegate>
+@interface EXSplashScreenService : UMSingletonModule <EXSplashScreenService>
 @end
 
 NS_ASSUME_NONNULL_END
