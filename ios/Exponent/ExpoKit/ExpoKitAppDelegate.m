@@ -11,6 +11,11 @@
 
 UM_REGISTER_SINGLETON_MODULE(ExpoKitAppDelegate)
 
+- (const NSInteger)priority
+{
+  return -1;
+}
+
 #pragma mark - Handling URLs
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
