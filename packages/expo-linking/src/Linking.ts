@@ -8,7 +8,7 @@ import { InteractionManager, Platform } from 'react-native';
 import URL from 'url-parse';
 
 import NativeLinking from './ExpoLinking';
-import { ParsedURL, QueryParams } from './Linking.types';
+import { ParsedURL, URLListener, QueryParams } from './Linking.types';
 
 const { manifest } = Constants;
 
@@ -225,6 +225,25 @@ export function parse(url: string): ParsedURL {
 }
 
 /**
+ * Add a handler to Linking changes by listening to the `url` event type
+ * and providing the handler
+ *
+ * See https://facebook.github.io/react-native/docs/linking.html#addeventlistener
+ */
+export function addEventListener(type: string, handler: URLListener) {
+  NativeLinking.addEventListener(type, handler);
+}
+
+/**
+ * Remove a handler by passing the `url` event type and the handler.
+ *
+ * See https://facebook.github.io/react-native/docs/linking.html#removeeventlistener
+ */
+export function removeEventListener(type: string, handler: URLListener) {
+  NativeLinking.removeEventListener(type, handler);
+}
+
+/**
  * **Native:** Parses the link that opened the app. If no link opened the app, all the fields will be \`null\`.
  * **Web:** Parses the current window URL.
  */
@@ -320,7 +339,3 @@ export function useUrl(): string | null {
 }
 
 export * from './Linking.types';
-
-const { addEventListener, removeEventListener } = NativeLinking;
-
-export { addEventListener, removeEventListener };

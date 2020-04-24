@@ -1,5 +1,5 @@
-import * as Linking from 'expo-linking';
 import * as IntentLauncher from 'expo-intent-launcher';
+import * as Linking from 'expo-linking';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
@@ -14,7 +14,7 @@ function TextInputButton({ text }: { text: string }) {
 
   React.useEffect(() => {
     onChangeText(text);
-  }, []);
+  }, [text]);
 
   const onChangeText = async (text: string) => {
     let parsedTextResult = '';
@@ -61,13 +61,10 @@ export default function LinkingScreen() {
   const url = Linking.useUrl();
 
   React.useEffect(() => {
-    Linking.addEventListener('url', onEvent);
-    return () => Linking.removeEventListener('url', onEvent);
-  }, []);
-
-  const onEvent = ({ url }: any) => {
-    alert(`Linking url event: ${url}`);
-  };
+    if (url) {
+      alert(`Linking url event: ${url}`);
+    }
+  }, [url]);
 
   return (
     <ScrollView style={styles.container}>
