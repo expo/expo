@@ -71,17 +71,16 @@ export default function AuthSessionScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
       {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
-      {isInClient && (
-        <TitledSwitch
-          title="Switch Accounts"
-          value={!!prompt}
-          setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
-        />
-      )}
+      <TitledSwitch
+        title="Switch Accounts"
+        value={!!prompt}
+        setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
+      />
       <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
       <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Identity prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Facebook prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <FitBit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Github prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Coinbase prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
@@ -413,6 +412,48 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
+function Facebook({ usePKCE, prompt, useProxy }: any) {
+  const redirectUri = React.useMemo(
+    () =>
+      Platform.select({
+        web: getAuthSessionRedirectUrl('redirect'),
+        default: useProxy ? getAuthSessionRedirectUrl() : `fb145668956753819://redirect`,
+      }),
+    [useProxy]
+  ) as string;
+
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: '145668956753819',
+      redirectUri,
+      scopes: ['public_profile', 'user_likes'],
+      usePKCE,
+      prompt,
+      extraParams: {
+        display: 'popup',
+        // Rerequest decliened permissions, to test this,
+        // add "email" to the scopes and try again (be sure not to allow email permission).
+        auth_type: 'rerequest',
+      },
+    },
+    {
+      authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+      tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+    }
+  );
+
+  return (
+    <AuthSection
+      title="Facebook"
+      disabled={isInClient && !useProxy}
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
 function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
@@ -531,7 +572,7 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
 
 function AuthSection({ title, request, result, promptAsync, useProxy, disabled }: any) {
   return (
-    <View>
+    <View style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 8 }}>
       <Button
         disabled={disabled}
         title={title}

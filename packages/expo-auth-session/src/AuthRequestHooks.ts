@@ -62,6 +62,7 @@ export function useAuthRequest(
     discovery?.authorizationEndpoint,
     config.clientId,
     config.redirectUri,
+    config.prompt,
     config.scopes.join(','),
     config.clientSecret,
     config.codeChallenge,

@@ -566,7 +566,14 @@ const [request, response, promptAsync] = useAuthRequest(
 [c-facebook]: https://developers.facebook.com/
 
 - Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
-- If `offline_access` isn't included then no refresh token will be returned.
+- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
+  - **Standalone:**
+    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
+    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
+  - **Bare:**
+    - Run `npx uri-scheme add <YOUR FBID>`
+    - Rebuild with `yarn ios` & `yarn android`
+- You can still test native auth in the client by using the Expo proxy `useProxy`
 
 ```ts
 // Endpoint
@@ -577,16 +584,21 @@ const discovery = {
 // Request
 const [request, response, promptAsync] = useAuthRequest(
   {
-    responseType: ResponseType.Token,
     clientId: '<YOUR FBID>',
-    redirectUrl: AuthSession.getRedirectUrl(),
+    redirectUri: AuthSession.getRedirectUrl(),
     scopes: ['public_profile', 'user_likes'],
+    extraParams: {
+      // Use `popup` on web for a better experience
+      display: Platform.select({ web: 'popup' }),
+      // Optionally you can use this to rerequest declined permissions
+      auth_type: 'rerequest',
+    },
   },
   discovery
 );
 ```
 
-<!-- Facebook -->
+<!-- End Facebook -->
 
 ### Uber
 
