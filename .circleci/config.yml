@@ -16,25 +16,10 @@ commands:
           command: |
             if [ "$CIRCLE_BRANCH" = "" ]; then
               echo "Can't determine branch.  Continuing the job."
+            elif [ "$CIRCLE_BRANCH" = "master" ]; then
+              echo "Branch is master. Continuing the job."
             else
-              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(
-                curl -Ss \
-                  "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?filter=successful&limit=1" \
-                | jq -r '.[0]["vcs_revision"]'
-              )
-
               GIT_BASE_REVISION=<< pipeline.git.base_revision >>
-
-              if [[ ${LAST_SUCCESSFUL_COMMIT_ON_BRANCH} == "null" ]]; then
-                echo "No previous successful build detected for branch $CIRCLE_BRANCH"
-              else
-                echo "Previous successful build detected for branch $CIRCLE_BRANCH"
-                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
-                  GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
-                else
-                  echo "Commit not found, it might have been rebased out of the branch."
-                fi
-              fi
 
               if [[ ${GIT_BASE_REVISION} == "" ]]; then
                 # If a job has never been run on master before, maybe this could happen
