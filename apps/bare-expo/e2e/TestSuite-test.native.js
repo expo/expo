@@ -41,9 +41,9 @@ describe('test-suite', () => {
           url: `bareexpo://test-suite/select/${testName}`,
         });
         await sleepAsync(100);
-        await detoxExpect(element(by.id('test_suite_container'))).toBeVisible();
+        await detoxExpect(element(by.id('test_suite_container'))).toExist();
         await waitFor(element(by.id('test_suite_text_results')))
-          .toBeVisible()
+          .toExist()
           .withTimeout(MIN_TIME);
 
         const input = await getTextAsync('test_suite_final_results');
