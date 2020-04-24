@@ -68,3 +68,9 @@ A promise that resolves to an object with the following keys:
 
 - **path (_string_)** -- The path specified by the url used to open the app.
 - **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.
+
+## Hooks
+
+### `Linking.useUrl()`
+
+Returns the initial URL followed by any subsequent changes to the URL.
