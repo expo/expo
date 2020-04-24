@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>host.exp.Exponent</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -77,6 +77,8 @@
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<false/>
+	<key>FacebookDisplayName</key>
+	<string>Expo Client</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>GADDelayAppMeasurementInit</key>
