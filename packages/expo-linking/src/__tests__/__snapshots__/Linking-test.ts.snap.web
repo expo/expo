@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`makeUrl queries makes url "" 1`] = `"exp://localhost"`;
+exports[`makeUrl queries makes url "" 1`] = `"http://localhost"`;
 
-exports[`makeUrl queries makes url "path/into/app" 1`] = `"exp://localhost/path/into/app"`;
+exports[`makeUrl queries makes url "path/into/app" 1`] = `"http://localhost/path/into/app"`;
 
-exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"exp://localhost/some/path?emptyParam="`;
+exports[`makeUrl queries makes url {"emptyParam": ""} 1`] = `"http://localhost/some/path?emptyParam="`;
 
-exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`makeUrl queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"http://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
 
-exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`makeUrl queries makes url {"lotsOfSlashes": "/////"} 1`] = `"http://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
 
-exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://localhost/some/path?shouldEscape=%25252b%252520"`;
+exports[`makeUrl queries makes url {"shouldEscape": "%2b%20"} 1`] = `"http://localhost/some/path?shouldEscape=%25252b%252520"`;
 
-exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `"exp://localhost/some/path"`;
+exports[`makeUrl queries makes url {"undefinedParam": undefined} 1`] = `"http://localhost/some/path"`;
 
 exports[`parse parses "custom://" 1`] = `
 Object {

@@ -1,5 +1,5 @@
-import Linking from '../Linking/Linking';
-import { QueryParams } from '../Linking/Linking.types';
+import * as Linking from '../Linking';
+import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
   test.each<string>([
