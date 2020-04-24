@@ -8,6 +8,8 @@ orbs:
 commands:
   skip_unless_changed:
     parameters:
+      workflow_name:
+        type: string
       paths:
         type: string
     steps:
@@ -16,10 +18,23 @@ commands:
           command: |
             if [ "$CIRCLE_BRANCH" = "" ]; then
               echo "Can't determine branch.  Continuing the job."
-            elif [ "$CIRCLE_BRANCH" = "master" ]; then
-              echo "Branch is master. Continuing the job."
             else
+              echo "Looking for previous successful ${CIRCLE_JOB} jobs for branch ${CIRCLE_BRANCH}"
+              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}")
+
               GIT_BASE_REVISION=<< pipeline.git.base_revision >>
+
+              if [[ "${LAST_SUCCESSFUL_COMMIT_ON_BRANCH}" == "" ]]; then
+                echo "No previous successful job detected for branch $CIRCLE_BRANCH"
+                echo "The job will be skipped unless this branch introduces relevant changes."
+              else
+                echo "Previous successful build found for commit $LAST_SUCCESSFUL_COMMIT_ON_BRANCH"
+                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                  GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
+                else
+                  echo "Commit not found in repo, it might have been rebased out of the branch."
+                fi
+              fi
 
               if [[ ${GIT_BASE_REVISION} == "" ]]; then
                 # If a job has never been run on master before, maybe this could happen
@@ -370,6 +385,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: sdk
           paths: yarn.lock packages
       - update_submodules
       - restore_yarn_cache
@@ -389,6 +405,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: sdk
           paths: apps/bare-expo apps/test-suite yarn.lock packages
       - update_submodules
       - restore_yarn_cache
@@ -408,6 +425,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: client
           paths: home yarn.lock
       - update_submodules
       - restore_yarn_cache
@@ -430,6 +448,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: client
           paths: tools/expotools
       # We can't use yarn_restore_and_install since it
       # triggers the postinstall script which we don't
@@ -451,6 +470,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: sdk
           paths: apps/bare-expo apps/test-suite yarn.lock packages Gemfile.lock
       - bundle_install
       - update_submodules
@@ -508,6 +528,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: client
           paths: tools/expotools ios fastlane Gemfile.lock
       - update_submodules
       - git_lfs_pull
@@ -674,6 +695,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: client
           paths: android fastlane tools-public Gemfile.lock yarn.lock
       - update_submodules
       - install_yarn
@@ -707,6 +729,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: client
           paths: android fastlane tools/expotools Gemfile.lock yarn.lock
       - install_yarn
       - update_submodules
@@ -764,6 +787,7 @@ jobs:
     steps:
       - setup
       - skip_unless_changed:
+          workflow_name: docs
           paths: docs
       - update_submodules
       - install_puppeteer_dependencies
