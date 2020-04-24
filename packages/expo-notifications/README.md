@@ -42,7 +42,7 @@ In order to be able to receive push notifications on the device:
 
 ### Configure for Android
 
-In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/versions/latest/guides/native-firebase/#bare-workflow-setup).
+In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
 
 ### Add your project's credentials to Expo server (optional)
 
