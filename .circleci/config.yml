@@ -583,6 +583,7 @@ jobs:
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
+          no_output_timeout: 30m
           command: yarn ios:detox:build:release
       - run:
           name: Run tests
