@@ -19,7 +19,7 @@ commands:
             else
               LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(
                 curl -Ss \
-                  "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?filter=completed&limit=1" \
+                  "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?filter=successful&limit=1" \
                 | jq -r '.[0]["vcs_revision"]'
               )
 
