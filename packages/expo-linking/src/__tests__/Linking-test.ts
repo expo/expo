@@ -1,4 +1,5 @@
 import * as Linking from '../Linking';
+import { QueryParams } from '../Linking.types';
 
 jest.mock('react-native/Libraries/Linking/NativeLinking', () => {
   const ReactNative = require.requireActual('react-native');
@@ -26,8 +27,6 @@ jest.mock('react-native/Libraries/Linking/NativeLinking', () => {
     async sendIntent(): Promise<void> {},
   };
 });
-
-import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
   test.each<string>([

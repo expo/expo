@@ -285,12 +285,6 @@ Object.defineProperty(exports, "LinearGradient", {
     return _removed.LinearGradient;
   }
 });
-Object.defineProperty(exports, "Linking", {
-  enumerable: true,
-  get: function () {
-    return _removed.Linking;
-  }
-});
 Object.defineProperty(exports, "LocalAuthentication", {
   enumerable: true,
   get: function () {
@@ -465,9 +459,26 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.AR = void 0;
+exports.Logs = exports.SplashScreen = exports.AR = exports.Linking = void 0;
 
 require("./Expo.fx");
+
+function Linking() {
+  const data = _interopRequireWildcard(require("expo-linking"));
+
+  Linking = function () {
+    return data;
+  };
+
+  return data;
+}
+
+Object.defineProperty(exports, "Linking", {
+  enumerable: true,
+  get: function () {
+    return Linking();
+  }
+});
 
 var AR = _interopRequireWildcard(require("./AR"));
 
