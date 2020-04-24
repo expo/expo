@@ -105,13 +105,6 @@ export function makeUrl(path = '', queryParams = {}) {
     else if (Constants.appOwnership === 'expo' && !manifestScheme) {
         console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
     }
-    else if (!Constants.manifest) {
-        // Bare-workflow
-        if (!manifestScheme) {
-            throw new Error("Cannot determine what scheme to use when making a URL because the `expo.scheme` property is not defined in the project's app.json");
-        }
-        scheme = manifestScheme;
-    }
     let hostUri = getHostUri() || '';
     if (usesCustomScheme() && isExpoHosted()) {
         hostUri = '';

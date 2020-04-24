@@ -1,6 +1,6 @@
 # expo-linking
 
-Create and open links universally.
+Create and open deep links universally.
 
 # API documentation
 

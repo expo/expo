@@ -1,7 +1,7 @@
 {
   "name": "expo-linking",
   "version": "1.0.0",
-  "description": "Create and open links universally",
+  "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
   "scripts": {
