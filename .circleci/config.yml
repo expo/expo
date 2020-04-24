@@ -29,7 +29,7 @@ commands:
                 echo "No previous successful build detected for branch $CIRCLE_BRANCH"
               else
                 echo "Previous successful build detected for branch $CIRCLE_BRANCH"
-                if git show --pretty=oneline -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
                   GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
                 else
                   echo "Commit not found, it might have been rebased out of the branch."
