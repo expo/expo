@@ -4,7 +4,7 @@ import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'fbjs/lib/invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import URL from 'url-parse';
 import NativeLinking from './ExpoLinking';
 const { manifest } = Constants;
@@ -256,9 +256,6 @@ export async function openSettings() {
  * it will give the link url, otherwise it will give `null`
  */
 export async function getInitialURL() {
-    if (Platform.OS === 'android') {
-        await InteractionManager.runAfterInteractions();
-    }
     return (await NativeLinking.getInitialURL()) ?? null;
 }
 /**

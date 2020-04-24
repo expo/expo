@@ -1,4 +1,4 @@
-import { ParsedURL, URLListener, QueryParams } from './Linking.types';
+import { ParsedURL, QueryParams, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.

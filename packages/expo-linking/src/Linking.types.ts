@@ -7,7 +7,7 @@ export type ParsedURL = {
   queryParams: QueryParams | null;
 };
 
-export type EventType = { url: string; nativeEvent: MessageEvent };
+export type EventType = { url: string; nativeEvent?: MessageEvent };
 
 export type URLListener = (event: EventType) => void;
 

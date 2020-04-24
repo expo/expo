@@ -9,7 +9,7 @@ export declare type ParsedURL = {
 };
 export declare type EventType = {
     url: string;
-    nativeEvent: MessageEvent;
+    nativeEvent?: MessageEvent;
 };
 export declare type URLListener = (event: EventType) => void;
 export declare type NativeURLListener = (nativeEvent: MessageEvent) => void;
