@@ -192,7 +192,7 @@ export default {
 };
 
 // Crypto
-const isCryptoAvailable = !!(window?.crypto as any);
+const isCryptoAvailable = canUseDOM && !!(window?.crypto as any);
 
 const isSubtleCryptoAvailable = isCryptoAvailable && !!(window.crypto.subtle as any);
 
