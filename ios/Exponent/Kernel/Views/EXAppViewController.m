@@ -78,9 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  // TODO(brentvatne): probably this should not just be UIColor whiteColor?
   self.view.backgroundColor = [UIColor whiteColor];
-
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
   [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
@@ -286,14 +284,15 @@ NS_ASSUME_NONNULL_BEGIN
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  [self _setRootViewBackgroundColor:reactView];
   
   [_contentView removeFromSuperview];
   _contentView = reactView;
   [self.view addSubview:_contentView];
   [self.view sendSubviewToBack:_contentView];
-
   [reactView becomeFirstResponder];
+
+  // NOTE(brentvatne): Set root view background color after adding as subview so we can access window
+  [self _setRootViewBackgroundColor:reactView];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -464,8 +463,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (backgroundColor) {
       view.backgroundColor = backgroundColor;
+
+      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
+      // root view, leaving this as-is for now.
+      view.window.backgroundColor = backgroundColor;
     } else {
       view.backgroundColor = [UIColor whiteColor];
+
+      // NOTE(brentvatne): we used to use white as a default background color for window but this caused
+      // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
+      // users expect the background behind these to be black, which is the default if backgroundColor is nil.
+      view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
