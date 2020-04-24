@@ -13,7 +13,7 @@ In the managed workflow section we discuss topics as they apply specifically to 
 - [Expo CLI](../workflow/expo-cli/)
 - [Debugging](../workflow/debugging/)
 - [iOS Simulator](../workflow/ios-simulator/)
-- [Android Emulator](../workflow/android-emulator/)
+- [Android Emulator](../workflow/android-studio-emulator/)
 - [App Icons](../guides/app-icons/)
 - [Splash Screens](../guides/splash-screens/)
 - [Distributing your App on the App Store and Play Store](../distribution/introduction/)

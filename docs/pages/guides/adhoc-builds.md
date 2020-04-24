@@ -2,7 +2,7 @@
 title: Installing a Custom iOS Expo client
 ---
 
-Build and install a custom version of the [Expo client](../../versions/latest/introduction/installation/#mobile-client-expo-for-ios-and-android) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
+Build and install a custom version of the [Expo client](../../get-started/installation/#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
 
 #### Installation overview
 
@@ -24,7 +24,7 @@ Run `expo client:ios`
 
 You are given a choice of letting `expo-cli` create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
 
-Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../../versions/latest/distribution/security) on what these credentials are and how we store them.
+Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../../distribution/security) on what these credentials are and how we store them.
 
 ```sh
 $ expo client:ios
