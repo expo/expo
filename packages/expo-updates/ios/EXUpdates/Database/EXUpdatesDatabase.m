@@ -274,9 +274,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  if (update.status != EXUpdatesUpdateStatusEmbedded) {
-    update.status = EXUpdatesUpdateStatusReady;
-  }
+  update.status = EXUpdatesUpdateStatusReady;
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";
   [self _executeSql:updateSql
            withArgs:@[
