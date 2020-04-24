@@ -1,7 +1,9 @@
 import './Expo.fx';
+import * as Linking from 'expo-linking';
 import * as AR from './AR';
 import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
+export { Linking };
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
@@ -97,8 +99,6 @@ IntentLauncherAndroid,
 KeepAwake, 
 // @ts-ignore
 LinearGradient, 
-// @ts-ignore
-Linking, 
 // @ts-ignore
 LocalAuthentication, 
 // @ts-ignore
