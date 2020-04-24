@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (void)addNewAssets:(NSArray<EXUpdatesAsset *> *)assets toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (BOOL)addExistingAsset:(EXUpdatesAsset *)asset toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (void)updateAsset:(EXUpdatesAsset *)asset error:(NSError ** _Nullable)error;
+- (void)mergeAsset:(EXUpdatesAsset *)asset withExistingEntry:(EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error;
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
@@ -29,6 +30,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithError:(NSError ** _Nullable)error;
 - (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
+- (nullable EXUpdatesAsset *)assetWithPackagerKey:(NSString *)packagerKey error:(NSError ** _Nullable)error;
 
 @end
 

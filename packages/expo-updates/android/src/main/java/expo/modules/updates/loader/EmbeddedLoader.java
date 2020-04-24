@@ -115,6 +115,18 @@ public class EmbeddedLoader {
 
   private void copyAllAssets(ArrayList<AssetEntity> assetList) {
     for (AssetEntity asset : assetList) {
+      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithPackagerKey(asset.packagerKey);
+      if (matchingDbEntry != null) {
+        mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, asset);
+        asset = matchingDbEntry;
+      }
+
+      // if we already have a local copy of this asset, don't try to download it again!
+      if (asset.relativePath != null && new File(mUpdatesDirectory, asset.relativePath).exists()) {
+        mExistingAssetList.add(asset);
+        continue;
+      }
+
       String filename = UpdatesUtils.createFilenameForAsset(asset);
       File destination = new File(mUpdatesDirectory, filename);
 
@@ -136,7 +148,7 @@ public class EmbeddedLoader {
     }
 
     for (AssetEntity asset : mExistingAssetList) {
-      boolean existingAssetFound = mDatabase.assetDao().addExistingAssetToUpdate(mUpdateEntity, asset.url, asset.isLaunchAsset);
+      boolean existingAssetFound = mDatabase.assetDao().addExistingAssetToUpdate(mUpdateEntity, asset, asset.isLaunchAsset);
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk

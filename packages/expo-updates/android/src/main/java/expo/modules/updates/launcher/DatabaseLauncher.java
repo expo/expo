@@ -151,7 +151,7 @@ public class DatabaseLauncher implements Launcher {
         ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
         for (AssetEntity embeddedAsset : embeddedAssets) {
-          if (embeddedAsset.url.equals(asset.url)) {
+          if (embeddedAsset.packagerKey.equals(asset.packagerKey)) {
             matchingEmbeddedAsset = embeddedAsset;
             break;
           }

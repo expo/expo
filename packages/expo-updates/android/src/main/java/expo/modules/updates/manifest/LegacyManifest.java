@@ -92,7 +92,8 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity(mBundleUrl, "js");
+    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
+    bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
     assetList.add(bundleAssetEntity);
@@ -108,7 +109,8 @@ public class LegacyManifest implements Manifest {
             : bundledAsset.substring(prefixLength);
           String type = extensionIndex > 0 ? bundledAsset.substring(extensionIndex + 1) : "";
 
-          AssetEntity assetEntity = new AssetEntity(Uri.withAppendedPath(getAssetsUrlBase(), hash), type);
+          AssetEntity assetEntity = new AssetEntity(hash + "." + type, type);
+          assetEntity.url = Uri.withAppendedPath(getAssetsUrlBase(), hash);
           assetEntity.embeddedAssetFilename = bundledAsset;
           assetList.add(assetEntity);
         } catch (JSONException e) {

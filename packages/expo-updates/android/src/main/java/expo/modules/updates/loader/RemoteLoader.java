@@ -131,6 +131,24 @@ public class RemoteLoader {
   private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
+      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithPackagerKey(assetEntity.packagerKey);
+      if (matchingDbEntry != null) {
+        mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, assetEntity);
+        assetEntity = matchingDbEntry;
+      }
+
+      // if we already have a local copy of this asset, don't try to download it again!
+      if (assetEntity.relativePath != null && new File(mUpdatesDirectory, assetEntity.relativePath).exists()) {
+        handleAssetDownloadCompleted(assetEntity, true, false);
+        continue;
+      }
+
+      if (assetEntity.url == null) {
+        Log.e(TAG, "Failed to download asset with no URL provided");
+        handleAssetDownloadCompleted(assetEntity, false, false);
+        continue;
+      }
+
       FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mContext, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
@@ -160,7 +178,7 @@ public class RemoteLoader {
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
         for (AssetEntity asset : mExistingAssetList) {
-          boolean existingAssetFound = mDatabase.assetDao().addExistingAssetToUpdate(mUpdateEntity, asset.url, asset.isLaunchAsset);
+          boolean existingAssetFound = mDatabase.assetDao().addExistingAssetToUpdate(mUpdateEntity, asset, asset.isLaunchAsset);
           if (!existingAssetFound) {
             // the database and filesystem have gotten out of sync
             // do our best to create a new entry for this file even though it already existed on disk

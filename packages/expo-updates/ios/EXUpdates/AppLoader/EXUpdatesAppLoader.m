@@ -111,8 +111,33 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     if (self->_updateManifest.assets && self->_updateManifest.assets.count > 0) {
       self->_assetsToLoad = [self->_updateManifest.assets mutableCopy];
 
+      NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
       for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
-        [self downloadAsset:asset];
+        // before downloading, check to see if we already have this asset in the database
+        NSError *matchingAssetError;
+        EXUpdatesAsset *matchingDbEntry = [database assetWithPackagerKey:asset.packagerKey error:&matchingAssetError];
+
+        if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
+          [self downloadAsset:asset];
+        } else {
+          NSError *mergeError;
+          [database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
+          if (mergeError) {
+            NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
+          }
+          // make sure the file actually exists on disk
+          dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
+            NSURL *urlOnDisk = [updatesDirectory URLByAppendingPathComponent:asset.filename];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[urlOnDisk path]]) {
+              // file already exists, we don't need to download it again
+              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self handleAssetDownloadAlreadyExists:asset];
+              });
+            } else {
+              [self downloadAsset:asset];
+            }
+          });
+        }
       }
     } else {
       [self _finish];
@@ -134,7 +159,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 - (void)handleAssetDownloadWithError:(NSError *)error asset:(EXUpdatesAsset *)asset
 {
   // TODO: retry. for now log an error
-  NSLog(@"error loading file: %@: %@", asset.url.absoluteString, error.localizedDescription);
+  NSLog(@"error loading asset %@: %@", asset.packagerKey, error.localizedDescription);
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_erroredAssets addObject:asset];

@@ -7,10 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesAsset
 
-- (instancetype)initWithUrl:(NSURL *)url type:(NSString *)type
+- (instancetype)initWithPackagerKey:(NSString *)packagerKey type:(NSString *)type
 {
   if (self = [super init]) {
-    _url = url;
+    _packagerKey = packagerKey;
     _type = type;
   }
   return self;
@@ -18,13 +18,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)localAssetsKey
 {
-  if (!_localAssetsKey) {
-    NSString *remoteFilename = _url.lastPathComponent;
-    if (remoteFilename) {
-      _localAssetsKey = [NSString stringWithFormat:@"%@.%@", remoteFilename, _type];
+  return _packagerKey;
+}
+
+- (nullable NSString *)filename
+{
+  if (!_filename) {
+    // for legacy purposes, we try to use the asset URL as the basis for the filename on disk
+    // and fall back to the packagerKey if it doesn't exist
+    if (_url) {
+      _filename = [NSString stringWithFormat:@"%@.%@",
+                   [EXUpdatesUtils sha256WithData:[_url.absoluteString dataUsingEncoding:NSUTF8StringEncoding]],
+                   _type];
+    } else {
+      _filename = _packagerKey;
     }
   }
-  return _localAssetsKey;
+  return _filename;
 }
 
 @end

@@ -1,9 +1,7 @@
 package expo.modules.updates.db.dao;
 
-import android.net.Uri;
-
+import androidx.annotation.Nullable;
 import androidx.room.Update;
-import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateAssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -50,14 +47,14 @@ public abstract class AssetDao {
   @Query("DELETE FROM assets WHERE marked_for_deletion = 1;")
   public abstract void _deleteAssetsMarkedForDeletion();
 
-  @Query("SELECT id FROM assets WHERE url = :url LIMIT 1;")
-  public abstract List<Long> _loadAssetWithUrl(Uri url);
+  @Query("SELECT * FROM assets WHERE packager_key = :packagerKey LIMIT 1;")
+  public abstract List<AssetEntity> _loadAssetWithPackagerKey(String packagerKey);
 
 
   /**
    * for public use
    */
-  @Query("SELECT assets.id, url, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
+  @Query("SELECT assets.id, url, packager_key, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
           " FROM assets" +
           " INNER JOIN updates_assets ON updates_assets.asset_id = assets.id" +
           " INNER JOIN updates ON updates_assets.update_id = updates.id" +
@@ -78,13 +75,29 @@ public abstract class AssetDao {
     }
   }
 
+  public @Nullable AssetEntity loadAssetWithPackagerKey(String packagerKey) {
+    List<AssetEntity> assets = _loadAssetWithPackagerKey(packagerKey);
+    if (assets.size() > 0) {
+      return assets.get(0);
+    }
+    return null;
+  }
+
+  public void mergeAndUpdateAsset(AssetEntity existingEntity, AssetEntity newEntity) {
+    // if the existing entry came from an embedded manifest, it may not have a URL in the database
+    if (newEntity.url != null && existingEntity.url == null) {
+      existingEntity.url = newEntity.url;
+      updateAsset(existingEntity);
+    }
+  }
+
   @Transaction
-  public boolean addExistingAssetToUpdate(UpdateEntity update, Uri url, boolean isLaunchAsset) {
-    List<Long> assetIdList = _loadAssetWithUrl(url);
-    if (assetIdList.size() < 1) {
+  public boolean addExistingAssetToUpdate(UpdateEntity update, AssetEntity asset, boolean isLaunchAsset) {
+    AssetEntity existingAssetEntry = loadAssetWithPackagerKey(asset.packagerKey);
+    if (existingAssetEntry == null) {
       return false;
     }
-    long assetId = assetIdList.get(0);
+    long assetId = existingAssetEntry.id;
     _insertUpdateAsset(new UpdateAssetEntity(update.id, assetId));
     if (isLaunchAsset) {
       _setUpdateLaunchAsset(assetId, update.id);

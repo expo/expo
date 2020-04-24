@@ -7,8 +7,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * properties determined by asset source
  */
-@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSString *packagerKey;
 @property (nonatomic, strong) NSString *type;
+@property (nullable, nonatomic, strong) NSURL *url;
 @property (nullable, nonatomic, strong) NSDictionary *metadata;
 @property (nullable, nonatomic, strong) NSString *mainBundleFilename; // used for embedded assets
 @property (nonatomic, assign) BOOL isLaunchAsset;
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, nonatomic, strong) NSString *localAssetsKey;
 
-- (instancetype)initWithUrl:(NSURL *)url type:(NSString *)type;
+- (instancetype)initWithPackagerKey:(NSString *)packagerKey type:(NSString *)type;
 
 @end
 
