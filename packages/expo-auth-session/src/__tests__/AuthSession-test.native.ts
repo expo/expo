@@ -11,6 +11,39 @@ function mockConstants(constants: { [key: string]: any } = {}): void {
   });
 }
 
+function eraseConstants(): void {
+  jest.doMock('expo-constants', () => {
+    return {
+      manifest: null,
+    };
+  });
+}
+
+describe('Bare', () => {
+  afterEach(() => {
+    jest.resetModules();
+  });
+  const originalWarn = console.warn;
+
+  beforeEach(() => {
+    console.warn = jest.fn();
+  });
+  afterEach(() => (console.warn = originalWarn));
+
+  it(`Cannot create a URI automatically`, () => {
+    eraseConstants();
+    const { makeRedirectUri } = require('../AuthSession');
+    expect(makeRedirectUri()).toBe('');
+    expect(console.warn).toHaveBeenCalled();
+  });
+  it(`Use native value`, () => {
+    eraseConstants();
+
+    const { makeRedirectUri } = require('../AuthSession');
+    // Test that the path is omitted
+    expect(makeRedirectUri({ path: 'bacon', native: 'value:/somn' })).toBe('value:/somn');
+  });
+});
 describe('Managed', () => {
   describe('Standalone', () => {
     afterEach(() => {
@@ -38,6 +71,22 @@ describe('Managed', () => {
       });
       const { makeRedirectUri } = require('../AuthSession');
       expect(makeRedirectUri({ path: 'bacon' })).toBe('demo:///bacon');
+    });
+
+    it(`Uses native instead of generating a value`, () => {
+      mockConstants({
+        linkingUri: 'exp://exp.host/@test/test',
+        manifest: {
+          scheme: 'demo',
+        },
+        appOwnership: 'standalone',
+      });
+      const { makeRedirectUri } = require('../AuthSession');
+      expect(
+        makeRedirectUri({
+          native: 'native.thing://somn',
+        })
+      ).toBe('native.thing://somn');
     });
   });
 
