@@ -5,12 +5,11 @@ import { ParsedURL, QueryParams, URLListener } from './Linking.types';
  *
  * **Examples**
  *
- * - Bare, Standalone: yourscheme://
- * - Web (dev): https://localhost:19006/
- * - Web (prod): https://myapp.com/
- * - Expo Client (dev): exp://128.0.0.1:19000/--/
- * - Expo Client (prod): exp://exp.host/@yourname/your-app/
- * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ * - Bare, Standalone, Custom: `yourscheme:///path`
+ * - Web (dev): `https://localhost:19006/path`
+ * - Web (prod): `https://myapp.com/path`
+ * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path addition path components to append to the base URL.
  * @param queryParams An object of parameters that will be converted into a query string.
