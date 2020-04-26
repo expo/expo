@@ -2,10 +2,10 @@ name: Publish Expo Web
 on:
   pull_request:
     types: [opened, synchronize]
-  paths:
-    - yarn.lock
-    - apps/**
-    - packages/**
+    paths:
+      - yarn.lock
+      - apps/**
+      - packages/**
 
 jobs:
   build:
