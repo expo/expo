@@ -2,9 +2,9 @@ name: Publish Expo Web
 on:
   pull_request:
     types: [opened, synchronize]
-  # paths:
-  #   - /apps/
-  #   - /packages/
+  paths:
+    - /apps/
+    - /packages/
 
 # on:
 #   push:
