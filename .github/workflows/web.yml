@@ -16,8 +16,12 @@ jobs:
           fetch-depth: 1
       - name: Pull LFS files
         run: git lfs pull
-      - name: Yarn
-        run: yarn
+      - name: Cache Node.js modules
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}
+      - run: yarn --frozen-lockfile
       - name: Build Website
         working-directory: ./apps/bare-expo
         run: yarn build:web
