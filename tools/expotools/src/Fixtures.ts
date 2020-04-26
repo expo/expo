@@ -17,7 +17,7 @@ import WebSocket from 'ws';
 import { Api, Exp, ProjectSettings, UrlUtils, UserManager } from '@expo/xdl';
 import spawnAsync from '@expo/spawn-async';
 
-import sleepAsync from './utils/sleepAsync';
+import { sleepAsync } from './Utils';
 
 type FixtureServer = 'manifest' | 'packager' | 'tests';
 
