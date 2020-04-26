@@ -1,0 +1,46 @@
+name: Publish Expo Web
+on:
+  pull_request:
+    types: [opened, synchronize]
+  # paths:
+  #   - /apps/
+  #   - /packages/
+
+# on:
+#   push:
+#     branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Pull LFS files
+        run: git lfs pull
+      - name: Yarn
+        run: yarn
+      - name: Build Website
+        working-directory: ./apps/bare-expo
+        run: yarn build:web
+      - name: Publish Website
+        working-directory: ./apps/bare-expo
+        env:
+          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+          BUILD_ID: ${{ github.sha }}
+        run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
+      - name: Set deploy url to env variable
+        run: echo "::set-env name=ZEIT_DEPLOY::$(cat deploy-url.txt)"
+      - name: Alias with PR number
+        working-directory: ./apps/bare-expo
+        env:
+          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+          SITE_ALIAS: expo-web-${{ github.event.number }}.now.sh
+        run: npx now alias --token=${ZEIT_TOKEN} `cat deploy-url.txt` $SITE_ALIAS
+      - name: Add comment with deploy url
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: 'Web Native Component List deployed to:<br>- <a target="_blank" href="expo-web-${{ github.event.number }}.now.sh">expo-web-${{ github.event.number }}.now.sh</a>'
