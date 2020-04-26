@@ -43,4 +43,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: 'Web Native Component List deployed to:<br>- <a target="_blank" href="expo-web-${{ github.event.number }}.now.sh">expo-web-${{ github.event.number }}.now.sh</a>'
+          msg: 'Web Native Component List deployed to:<br>- <a target="_blank" href="https://expo-web-${{ github.event.number }}.now.sh/">expo-web-${{ github.event.number }}.now.sh</a>'
