@@ -74,18 +74,18 @@ In order to be able to deep link back into your app, you will need to set a `sch
 ## Guides
 
 <SocialGrid>
-  <SocialGridItem title="Azure" href="#azure" image="/static/images/sdk/auth-session/azure.png" />
-  <SocialGridItem title="Coinbase" href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
-  <SocialGridItem title="Facebook" href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
-  <SocialGridItem title="Fitbit" href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
-  <SocialGridItem title="Github" href="#github" image="/static/images/sdk/auth-session/github.png" />
-  <SocialGridItem title="Google" href="#google" image="/static/images/sdk/auth-session/google.png" />
-  <SocialGridItem title="Identity 4" href="#identity-4" image="/static/images/sdk/auth-session/identity4.png" />
-  <SocialGridItem title="Okta" href="#okta" image="/static/images/sdk/auth-session/okta.png" />
-  <SocialGridItem title="Reddit" href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
-  <SocialGridItem title="Slack" href="#slack" image="/static/images/sdk/auth-session/slack.png" />
-  <SocialGridItem title="Spotify" href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
-  <SocialGridItem title="Uber" href="#uber" image="/static/images/sdk/auth-session/uber.png" />
+  <SocialGridItem title="Identity 4" protocol={['OAuth 2', 'OpenID']} href="#identity-4" image="/static/images/sdk/auth-session/identity4.png" />
+  <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
+  <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
+  <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
+  <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
+  <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
+  <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
+  <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
+  <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
+  <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
+  <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
+  <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
 </SocialGrid>
 
 <br />
@@ -153,6 +153,186 @@ export default function App() {
 </SnackInline>
 
 <!-- End Identity 4 -->
+
+### Azure
+
+<CreateAppButton name="Azure" href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview" />
+
+| Website                     | Provider | PKCE      | Auto Discovery |
+| --------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-azure2] | OpenID   | Supported | Available      |
+
+[c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
+  },
+  discovery
+);
+```
+
+<!-- End Azure -->
+
+### Coinbase
+
+<CreateAppButton name="Coinbase" href="https://www.coinbase.com/oauth/applications/new" />
+
+| Website                       | Provider  | PKCE      | Auto Discovery |
+| ----------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  |
+
+[c-coinbase]: https://www.coinbase.com/oauth/applications/new
+
+- You cannot use the Expo proxy because they don't allow `@` in their redirect URIs.
+- The `redirectUri` requires 2 slashes (`://`).
+- Scopes must be joined with ':' so just create one long string.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
+  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
+  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['wallet:accounts:read'],
+  },
+  discovery
+);
+```
+
+<!-- End Coinbase -->
+
+### Facebook
+
+<CreateAppButton name="Facebook" href="https://developers.facebook.com/" />
+
+| Website                 | Provider | PKCE      | Auto Discovery |
+| ----------------------- | -------- | --------- | -------------- |
+| [More Info][c-facebook] | OAuth    | Supported | Not Available  |
+
+[c-facebook]: https://developers.facebook.com/
+
+- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
+- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
+  - **Standalone:**
+    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
+    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
+  - **Bare:**
+    - Run `npx uri-scheme add <YOUR FBID>`
+    - Rebuild with `yarn ios` & `yarn android`
+- You can still test native auth in the client by using the Expo proxy `useProxy`
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: '<YOUR FBID>',
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['public_profile', 'user_likes'],
+    extraParams: {
+      // Use `popup` on web for a better experience
+      display: Platform.select({ web: 'popup' }),
+      // Optionally you can use this to rerequest declined permissions
+      auth_type: 'rerequest',
+    },
+  },
+  discovery
+);
+```
+
+<!-- End Facebook -->
+
+### FitBit
+
+<CreateAppButton name="FitBit" href="https://dev.fitbit.com/apps/new" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  |
+
+[c-fitbit]: https://dev.fitbit.com/apps/new
+
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
+- The `redirectUri` requires 2 slashes (`://`).
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['activity', 'sleep'],
+  },
+  discovery
+);
+```
+
+<!-- End FitBit -->
+
+### GitHub
+
+<CreateAppButton name="Github" href="https://github.com/settings/developers" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  |
+
+[c-github]: https://github.com/settings/developers
+
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
+- The `redirectUri` requires 2 slashes (`://`).
+- `revocationEndpoint` is dynamic and requires your `config.clientId`.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['identity'],
+  },
+  discovery
+);
+```
+
+<!-- End Github -->
 
 ### Google
 
@@ -231,147 +411,6 @@ const [request, response, promptAsync] = useAuthRequest(
 
 <!-- End Okta -->
 
-### Azure
-
-<CreateAppButton name="Azure" href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview" />
-
-| Website                     | Provider | PKCE      | Auto Discovery |
-| --------------------------- | -------- | --------- | -------------- |
-| [Get Your Config][c-azure2] | OpenID   | Supported | Available      |
-
-[c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
-
-```ts
-// Endpoint
-const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['openid', 'profile', 'email', 'offline_access'],
-  },
-  discovery
-);
-```
-
-<!-- End Azure v2 -->
-
-### Facebook
-
-<CreateAppButton name="Facebook" href="https://developers.facebook.com/" />
-
-| Website                 | Provider | PKCE      | Auto Discovery |
-| ----------------------- | -------- | --------- | -------------- |
-| [More Info][c-facebook] | OAuth    | Supported | Not Available  |
-
-[c-facebook]: https://developers.facebook.com/
-
-- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
-- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-  - **Standalone:**
-    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
-    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
-  - **Bare:**
-    - Run `npx uri-scheme add <YOUR FBID>`
-    - Rebuild with `yarn ios` & `yarn android`
-- You can still test native auth in the client by using the Expo proxy `useProxy`
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: '<YOUR FBID>',
-    redirectUri: AuthSession.getRedirectUrl(),
-    scopes: ['public_profile', 'user_likes'],
-    extraParams: {
-      // Use `popup` on web for a better experience
-      display: Platform.select({ web: 'popup' }),
-      // Optionally you can use this to rerequest declined permissions
-      auth_type: 'rerequest',
-    },
-  },
-  discovery
-);
-```
-
-<!-- End Facebook -->
-
-### Uber
-
-<CreateAppButton name="Uber" href="https://developer.uber.com/docs/riders/guides/authentication/introduction" />
-
-| Website                   | Provider  | PKCE      | Auto Discovery |
-| ------------------------- | --------- | --------- | -------------- |
-| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  |
-
-[c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
-
-- The `redirectUri` requires 2 slashes (`://`).
-- `scopes` can be difficult to get approved.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
-  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
-  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['profile', 'delivery'],
-  },
-  discovery
-);
-```
-
-<!-- End Uber -->
-
-### FitBit
-
-<CreateAppButton name="FitBit" href="https://dev.fitbit.com/apps/new" />
-
-| Website                     | Provider  | PKCE      | Auto Discovery |
-| --------------------------- | --------- | --------- | -------------- |
-| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  |
-
-[c-fitbit]: https://dev.fitbit.com/apps/new
-
-- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
-  - Web: `https://yourwebsite.com/*`
-- The `redirectUri` requires 2 slashes (`://`).
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['activity', 'sleep'],
-  },
-  discovery
-);
-```
-
-<!-- End FitBit -->
-
 ### Reddit
 
 <CreateAppButton name="Reddit" href="https://www.reddit.com/prefs/apps" />
@@ -407,78 +446,6 @@ const [request, response, promptAsync] = useAuthRequest(
 ```
 
 <!-- End Reddit -->
-
-### Coinbase
-
-<CreateAppButton name="Coinbase" href="https://www.coinbase.com/oauth/applications/new" />
-
-| Website                       | Provider  | PKCE      | Auto Discovery |
-| ----------------------------- | --------- | --------- | -------------- |
-| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  |
-
-[c-coinbase]: https://www.coinbase.com/oauth/applications/new
-
-- You cannot use the Expo proxy because they don't allow `@` in their redirect URIs.
-- The `redirectUri` requires 2 slashes (`://`).
-- Scopes must be joined with ':' so just create one long string.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
-  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
-  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['wallet:accounts:read'],
-  },
-  discovery
-);
-```
-
-<!-- End Coinbase -->
-
-### GitHub
-
-<CreateAppButton name="Github" href="https://github.com/settings/developers" />
-
-| Website                     | Provider  | PKCE      | Auto Discovery |
-| --------------------------- | --------- | --------- | -------------- |
-| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  |
-
-[c-github]: https://github.com/settings/developers
-
-- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
-  - Web: `https://yourwebsite.com/*`
-- The `redirectUri` requires 2 slashes (`://`).
-- `revocationEndpoint` is dynamic and requires your `config.clientId`.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/access_token',
-  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['identity'],
-  },
-  discovery
-);
-```
-
-<!-- End Github -->
 
 ### Slack
 
@@ -544,6 +511,39 @@ const [request, response, promptAsync] = useAuthRequest(
 ```
 
 <!-- End Spotify -->
+
+### Uber
+
+<CreateAppButton name="Uber" href="https://developer.uber.com/docs/riders/guides/authentication/introduction" />
+
+| Website                   | Provider  | PKCE      | Auto Discovery |
+| ------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  |
+
+[c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
+
+- The `redirectUri` requires 2 slashes (`://`).
+- `scopes` can be difficult to get approved.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
+  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
+  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['profile', 'delivery'],
+  },
+  discovery
+);
+```
+
+<!-- End Uber -->
 
 <!-- End Guides -->
 
