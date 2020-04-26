@@ -1,27 +1,54 @@
 import path from 'path';
-import glob from 'glob';
 import fs from 'fs-extra';
+import glob from 'glob-promise';
 
 import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
 import * as Directories from './Directories';
+import * as Npm from './Npm';
 
 const ANDROID_DIR = Directories.getAndroidDir();
 const IOS_DIR = Directories.getIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
+ * Cached list of packages or `null` if they haven't been loaded yet. See `getListOfPackagesAsync`.
+ */
+let cachedPackages: Package[] | null = null;
+
+/**
+ * An object representing `package.json` structure.
+ */
+export type PackageJson = {
+  name: string;
+  version: string;
+  scripts: { [key: string]: string };
+  gitHead?: string;
+  [key: string]: any;
+};
+
+/**
+ * Type of package's dependency returned by `getDependencies`.
+ */
+export type PackageDependency = {
+  name: string;
+  group: string;
+  versionRange: string;
+};
+
+/**
  * Represents a package in the monorepo.
  */
-class Package {
+export class Package {
   path: string;
-  packageJson: any;
+  packageJson: PackageJson;
   unimoduleJson: any;
+  packageView?: Npm.PackageViewType | null;
 
-  constructor(path: string, packageJson: { [key: string]: any }) {
-    this.path = path;
-    this.packageJson = packageJson;
-    this.unimoduleJson = readUnimoduleJsonAtDirectory(path);
+  constructor(rootPath: string, packageJson?: PackageJson) {
+    this.path = rootPath;
+    this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
+    this.unimoduleJson = readUnimoduleJsonAtDirectory(rootPath);
   }
 
   get packageName(): string {
@@ -67,12 +94,7 @@ class Package {
   }
 
   get androidSubdirectory(): string {
-    return (
-      (this.unimoduleJson &&
-        this.unimoduleJson.android &&
-        this.unimoduleJson.android.subdirectory) ||
-      'android'
-    );
+    return this.unimoduleJson?.android?.subdirectory ?? 'android';
   }
 
   get androidPackageName(): string | null {
@@ -87,16 +109,16 @@ class Package {
     return match?.[1] ?? null;
   }
 
+  get changelogPath(): string {
+    return path.join(this.path, 'CHANGELOG.md');
+  }
+
   isUnimodule() {
     return !!this.unimoduleJson;
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    return (
-      this.unimoduleJson &&
-      this.unimoduleJson.platforms &&
-      this.unimoduleJson.platforms.includes(platform)
-    );
+    return this.unimoduleJson?.platforms?.includes(platform) ?? false;
   }
 
   isIncludedInExpoClientOnPlatform(platform: 'ios' | 'android'): boolean {
@@ -138,36 +160,82 @@ class Package {
     }
     throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
   }
+
+  async getPackageViewAsync(): Promise<Npm.PackageViewType | null> {
+    if (this.packageView !== undefined) {
+      return this.packageView;
+    }
+    return await Npm.getPackageViewAsync(this.packageName, this.packageVersion);
+  }
+
+  getDependencies(includeAll: boolean = false): PackageDependency[] {
+    const depsGroups = includeAll
+      ? ['dependencies', 'devDependencies', 'peerDependencies', 'unimodulePeerDependencies']
+      : ['dependencies'];
+
+    const dependencies = depsGroups.map((group) => {
+      const deps = this.packageJson[group];
+
+      return !deps
+        ? []
+        : Object.entries(deps).map(([name, versionRange]) => {
+            return {
+              name,
+              group,
+              versionRange: versionRange as string,
+            };
+          });
+    });
+    return ([] as PackageDependency[]).concat(...dependencies);
+  }
+
+  dependsOn(packageName: string): boolean {
+    return this.getDependencies().some((dep) => dep.name === packageName);
+  }
+
+  /**
+   * Iterates through dist tags returned by npm to determine the tag to which given version is bound.
+   */
+  async getDistTagAsync(version: string = this.packageVersion): Promise<string | null> {
+    const pkgView = await this.getPackageViewAsync();
+
+    if (pkgView) {
+      for (const tag in pkgView.distTags) {
+        if (pkgView.distTags[tag] === version) {
+          return tag;
+        }
+      }
+    }
+    return null;
+  }
+
+  async hasLocalPodDependencyAsync(podName?: string | null): Promise<boolean> {
+    if (!podName) {
+      return false;
+    }
+    const podspecPath = path.join(this.path, 'ios/Local Podspecs', `${podName}.podspec.json`);
+    return await fs.pathExists(podspecPath);
+  }
 }
 
 /**
  * Resolves to an array of Package instances that represent Expo packages inside given directory.
- *
- * @param dir Directory at which the function will look for packages. Defaults to `packages`.
- * @param packages Array of already found packages (used when traversing the directory recursively).
  */
-async function getListOfPackagesAsync(
-  dir: string = PACKAGES_DIR,
-  packages: Package[] = []
-): Promise<Package[]> {
-  const dirs = await fs.readdir(dir);
+export async function getListOfPackagesAsync(): Promise<Package[]> {
+  if (!cachedPackages) {
+    const paths = await glob('**/package.json', {
+      cwd: PACKAGES_DIR,
+      ignore: ['**/example/**', '**/node_modules/**'],
+    });
+    cachedPackages = paths.map((packageJsonPath) => {
+      const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
+      const packagePath = path.dirname(fullPackageJsonPath);
+      const packageJson = require(fullPackageJsonPath);
 
-  for (const dirName of dirs) {
-    const packagePath = path.join(dir, dirName);
-    const packageJsonPath = path.join(packagePath, 'package.json');
-
-    if (!(await fs.lstat(packagePath)).isDirectory()) {
-      continue;
-    }
-    if (await fs.pathExists(packageJsonPath)) {
-      const packageJson = require(packageJsonPath);
-      packages.push(new Package(packagePath, packageJson));
-    } else {
-      // Recursively add packages under directories without package.json file.
-      await getListOfPackagesAsync(packagePath, packages);
-    }
+      return new Package(packagePath, packageJson);
+    });
   }
-  return packages;
+  return cachedPackages;
 }
 
 function readUnimoduleJsonAtDirectory(dir: string) {
@@ -178,5 +246,3 @@ function readUnimoduleJsonAtDirectory(dir: string) {
     return null;
   }
 }
-
-export { Package, getListOfPackagesAsync };
