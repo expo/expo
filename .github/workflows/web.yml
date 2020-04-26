@@ -23,10 +23,10 @@ jobs:
           key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}
       - run: yarn --frozen-lockfile
       - name: Build Website
-        working-directory: ./apps/bare-expo
+        working-directory: ./apps/native-component-list
         run: yarn build:web
       - name: Publish Website
-        working-directory: ./apps/bare-expo
+        working-directory: ./apps/native-component-list
         env:
           ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
           BUILD_ID: ${{ github.sha }}
@@ -34,7 +34,7 @@ jobs:
       - name: Set deploy url to env variable
         run: echo "::set-env name=ZEIT_DEPLOY::$(cat deploy-url.txt)"
       - name: Alias with PR number
-        working-directory: ./apps/bare-expo
+        working-directory: ./apps/native-component-list
         env:
           ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
           SITE_ALIAS: expo-web-${{ github.event.number }}.now.sh
