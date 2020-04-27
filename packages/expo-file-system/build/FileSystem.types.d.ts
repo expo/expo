@@ -23,7 +23,7 @@ export declare type FileSystemDownloadResult = FileSystemHttpResult & {
 export declare type DownloadResult = FileSystemDownloadResult;
 export declare type FileSystemUploadOptions = {
     headers?: Record<string, string>;
-    httpMethod?: FileSystemAcceptedHttpMethod;
+    httpMethod?: FileSystemAcceptedUploadHttpMethod;
     sessionType?: FileSystemSessionType;
 };
 export declare type FileSystemUploadResult = FileSystemHttpResult & {
@@ -59,7 +59,7 @@ export declare enum EncodingType {
     UTF8 = "utf8",
     Base64 = "base64"
 }
-export declare type FileSystemAcceptedHttpMethod = 'POST' | 'PUT' | 'PATCH';
+export declare type FileSystemAcceptedUploadHttpMethod = 'POST' | 'PUT' | 'PATCH';
 export declare type ReadingOptions = {
     encoding?: EncodingType | 'utf8' | 'base64';
     position?: number;

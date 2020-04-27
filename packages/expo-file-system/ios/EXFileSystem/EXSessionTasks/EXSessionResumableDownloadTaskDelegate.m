@@ -42,9 +42,9 @@
                   [NSString stringWithFormat:@"Unable to download file: %@", error.description],
                   error);
     }
-    
-    [_manager unregisterTask:_uuid];
   }
+
+  [_manager unregisterTask:_uuid];
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask
