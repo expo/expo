@@ -71,7 +71,6 @@ public class FileSystemModule extends ExportedModule {
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
-
   private ModuleRegistry mModuleRegistry;
   private OkHttpClient mClient;
 
@@ -477,6 +476,12 @@ public class FileSystemModule extends ExportedModule {
       ensurePermission(fileUri, Permission.READ);
       checkIfFileExists(fileUri);
 
+      if (!options.containsKey("httpMethod")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
+        return;
+      }
+      String method = (String) options.get("httpMethod");
+
       Request.Builder requestBuilder = new Request.Builder().url(url);
       if (options != null && options.containsKey(HEADER_KEY)) {
         final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
@@ -486,15 +491,7 @@ public class FileSystemModule extends ExportedModule {
       }
 
       RequestBody body = RequestBody.create(null, uriToFile(fileUri));
-
-      if (!options.containsKey("httpMethod")) {
-        promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
-        return;
-      }
-      String method = (String) options.get("httpMethod");
-
       requestBuilder.method(method, body);
-
       getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
