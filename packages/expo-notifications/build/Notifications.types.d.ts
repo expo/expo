@@ -147,6 +147,10 @@ export declare type NotificationContent = {
     targetContentIdentifier?: string;
 } | {
     badge?: number;
+    /**
+     * Format: '#AARRGGBB'
+     */
+    color?: string;
     priority?: AndroidNotificationPriority;
     vibrationPattern?: number[];
 });
@@ -167,6 +171,11 @@ export interface NotificationContentInput {
     launchImageName?: string;
     vibrate?: number[];
     priority?: string;
+    /**
+     * Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+     * see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+     */
+    color?: string;
     attachments?: {
         url: string;
         identifier?: string;
