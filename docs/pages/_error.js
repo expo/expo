@@ -258,6 +258,7 @@ const RENAMED_PAGES = {
   '/introduction/community/': '/next-steps/community/',
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
+  '/versions/latest/introduction/installation/': '/get-started/installation/',
   '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
 
   // Move overview to index
