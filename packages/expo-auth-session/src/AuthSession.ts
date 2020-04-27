@@ -1,3 +1,6 @@
+import { Platform } from '@unimodules/core';
+import Constants from 'expo-constants';
+import * as Linking from 'expo-linking';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 
 import { AuthRequest } from './AuthRequest';
@@ -5,10 +8,14 @@ import {
   AuthRequestConfig,
   AuthRequestPromptOptions,
   CodeChallengeMethod,
-  ResponseType,
   Prompt,
+  ResponseType,
 } from './AuthRequest.types';
-import { AuthSessionOptions, AuthSessionResult } from './AuthSession.types';
+import {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
+} from './AuthSession.types';
 import {
   DiscoveryDocument,
   fetchDiscoveryAsync,
@@ -89,7 +96,65 @@ export function getDefaultReturnUrl(): string {
   return sessionUrlProvider.getDefaultReturnUrl();
 }
 
+/**
+ * Deprecated: Use `makeRedirectUri({ path, useProxy })` instead.
+ *
+ * @param path
+ */
 export function getRedirectUrl(path?: string): string {
+  return sessionUrlProvider.getRedirectUrl(path);
+}
+
+/**
+ * Create a redirect url for the current platform.
+ * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
+ * - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+ *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
+ * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
+ *
+ * @param options Additional options for configuring the path.
+ */
+export function makeRedirectUri({
+  native,
+  path,
+  preferLocalhost,
+  useProxy,
+}: AuthSessionRedirectUriOptions = {}): string {
+  if (Platform.OS !== 'web') {
+    // Bare workflow
+    if (!Constants.manifest) {
+      if (!native) {
+        // TODO(Bacon): Link to docs or fyi
+        console.warn(
+          "makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes."
+        );
+      }
+      // Returning an empty string makes types easier to work with.
+      // Server will throw an error about the invalid URI scheme.
+      return native || '';
+    }
+    // Should use the user-defined native scheme in standalone builds
+    if (Constants.appOwnership === 'standalone' && native) {
+      return native;
+    }
+  }
+  if (!useProxy || Platform.OS === 'web') {
+    const url = Linking.makeUrl(path);
+
+    if (preferLocalhost) {
+      const ipAddress = url.match(
+        /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/
+      );
+      // Only replace if an IP address exists
+      if (ipAddress?.length) {
+        const [protocol, path] = url.split(ipAddress[0]);
+        return `${protocol}localhost${path}`;
+      }
+    }
+
+    return url;
+  }
+  // Attempt to use the proxy
   return sessionUrlProvider.getRedirectUrl(path);
 }
 
@@ -105,7 +170,7 @@ export async function loadAsync(
 ): Promise<AuthRequest> {
   const request = new AuthRequest(config);
   const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
-  await request.buildUrlAsync(discovery);
+  await request.makeAuthUrlAsync(discovery);
   return request;
 }
 
@@ -123,6 +188,9 @@ export * from './AuthRequestHooks';
 export { AuthError } from './Errors';
 
 export {
+  AuthSessionOptions,
+  AuthSessionRedirectUriOptions,
+  AuthSessionResult,
   AuthRequest,
   AuthRequestConfig,
   AuthRequestPromptOptions,

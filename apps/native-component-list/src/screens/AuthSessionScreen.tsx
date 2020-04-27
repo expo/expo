@@ -1,6 +1,5 @@
-import { Linking } from 'expo';
 import * as AuthSession from 'expo-auth-session';
-import { getRedirectUrl, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -13,60 +12,19 @@ import TitledSwitch from '../components/TitledSwitch';
 // Web: For testing directly without react navigation set up.
 maybeCompleteAuthSession();
 
-// Weird that we always throw errors, wrap this and let the server throw an error.
-function getAuthSessionRedirectUrl(url?: string): string {
-  try {
-    return getRedirectUrl(url);
-  } catch (_) {}
-  return '';
-}
-
-// For running in bare-expo which shims out expo package.
-// Can remove when we have expo-linking package.
-function makeUrl(url: string): string {
-  try {
-    return Linking.makeUrl(url);
-  } catch (_) {}
-  return '';
-}
-
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
-
-function getCustomRedirectUrl(
-  path: string,
-  options: { scheme?: string; useProxy?: boolean } = {}
-): string {
-  const nativeRedirectUri = Platform.select({
-    // TODO: Bacon: Fix Linking.makeUrl for web
-    web: getAuthSessionRedirectUrl(path),
-    default: isInClient ? getAuthSessionRedirectUrl() : `${options.scheme}://${path}`,
-  });
-
-  if (isInClient) {
-    if (options.useProxy) {
-      // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
-      // so you'll need to be signed into community or be using the public demo
-      return getAuthSessionRedirectUrl();
-    }
-    const url = makeUrl(path);
-    // Normalize the host to `localhost` for other testers
-    // This probably won't work on Android
-    return `${url.split('//')[0]}//localhost:${url.split(':')[2]}`;
-  }
-  return Platform.select({
-    // TODO: Bacon: Fix Linking.makeUrl for web
-    web: getAuthSessionRedirectUrl(path),
-    default: nativeRedirectUri,
-  });
-}
 
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | Prompt>(undefined);
 
-  const redirectUri = getCustomRedirectUrl('redirect', { scheme: 'bareexpo', useProxy });
+  const redirectUri = makeRedirectUri({
+    native: 'bareexpo://redirect',
+    path: 'redirect',
+    preferLocalhost: true,
+    useProxy,
+  });
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
@@ -109,16 +67,12 @@ function Result({ title, result }: any) {
 }
 
 function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = React.useMemo(
-    () =>
-      Platform.select({
-        web: getAuthSessionRedirectUrl('redirect'),
-        default: useProxy
-          ? getAuthSessionRedirectUrl()
-          : `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
-      }),
-    [useProxy]
-  );
+  const redirectUri = makeRedirectUri({
+    path: 'redirect',
+    preferLocalhost: true,
+    useProxy,
+    native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
+  });
   const discovery = useAutoDiscovery('https://accounts.google.com');
 
   const [request, result, promptAsync] = useAuthRequest(
@@ -149,19 +103,15 @@ function Google({ useProxy, prompt, usePKCE }: any) {
 // Only setup for bare apps right now
 // Couldn't get this working. API is really confusing.
 function Azure({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = React.useMemo(
-    () =>
-      Platform.select({
-        web: getAuthSessionRedirectUrl('redirect'),
-        default: useProxy
-          ? getAuthSessionRedirectUrl()
-          : Platform.select<string>({
-              ios: 'msauth.dev.expo.Payments://auth',
-              android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
-            }),
-      }),
-    [useProxy]
-  ) as string;
+  const redirectUri = makeRedirectUri({
+    path: 'redirect',
+    preferLocalhost: true,
+    useProxy,
+    native: Platform.select<string>({
+      ios: 'msauth.dev.expo.Payments://auth',
+      android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
+    }),
+  });
 
   // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
   const discovery = useAutoDiscovery(
@@ -413,14 +363,12 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
 }
 
 function Facebook({ usePKCE, prompt, useProxy }: any) {
-  const redirectUri = React.useMemo(
-    () =>
-      Platform.select({
-        web: getAuthSessionRedirectUrl('redirect'),
-        default: useProxy ? getAuthSessionRedirectUrl() : `fb145668956753819://redirect`,
-      }),
-    [useProxy]
-  ) as string;
+  const redirectUri = makeRedirectUri({
+    path: 'redirect',
+    preferLocalhost: true,
+    useProxy,
+    native: `fb145668956753819:///redirect`,
+  });
 
   const [request, result, promptAsync] = useAuthRequest(
     {
