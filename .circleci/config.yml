@@ -44,7 +44,7 @@ commands:
 
               echo "Checking for changes since $GIT_BASE_REVISION touching circle config or << parameters.paths >>:"
 
-              if git log --name-status --exit-code --format=oneline "$CIRCLE_SHA1..$GIT_BASE_REVISION" -- .circleci/config.yml << parameters.paths >>; then
+              if TERM=xterm git log --name-status --exit-code --format=oneline "$CIRCLE_SHA1..$GIT_BASE_REVISION" -- .circleci/config.yml << parameters.paths >>; then
                 echo "No changes found in watched paths.  Ending job."
                 circleci-agent step halt
               else
