@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String VIBRATE_KEY = "vibrate";
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
+  private static final String COLOR_KEY = "color";
 
   private SoundResolver mSoundResolver;
 
@@ -34,7 +36,8 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
         .setText(getText(payload))
         .setBody(getBody(payload))
         .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload));
+        .setBadgeCount(getBadgeCount(payload))
+        .setColor(getColor(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -139,5 +142,16 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   protected NotificationPriority getPriority(JSONObject payload) {
     String priorityString = payload.optString(PRIORITY_KEY);
     return NotificationPriority.fromEnumValue(priorityString);
+  }
+
+  protected Number getColor(JSONObject payload) {
+    try {
+      return payload.has(COLOR_KEY) ? Color.parseColor(payload.getString(COLOR_KEY)) : null;
+    } catch (IllegalArgumentException e) {
+      Log.e("expo-notifications", "Could not have parsed color passed in notification.");
+    } catch (JSONException e) {
+      Log.e("expo-notifications", "Could not have parsed a non-string color value passed in notification.");
+    }
+    return null;
   }
 }
