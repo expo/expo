@@ -6,43 +6,546 @@ sourceCodeUrl: 'https://github.com/expo/expo/blob/sdk-36/packages/expo/src/AuthS
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
+import SnackInline from '~/components/plugins/SnackInline';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
 <PlatformsSection android emulator ios simulator web />
 
-<TableOfContentSection title='Table of contents' contents={['Installation', 'Example', 'Hooks', 'Methods', 'Classes', 'Types', 'Redirect URI patterns', 'Guides to integrate with popular providers', 'Advanced usage']} />
-
-<br />
+<TableOfContentSection title="Table of contents" contents={[
+"Installation",
+"Guides",
+"API",
+"Hooks",
+"Methods",
+"Classes",
+"Types",
+"Redirect URI patterns",
+"Advanced usage"
+]} />
 
 ## Installation
 
 <InstallSection packageName="expo-auth-session" />
 
-In **bare-workflow** you can use the [`uri-scheme` package](https://www.npmjs.com/package/uri-scheme) to easily add, remove, list, and open your URIs.
+In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
+
+[n-uri-scheme]: https://www.npmjs.com/package/uri-scheme
 
 To make your native app handle `mycoolredirect://` simply run:
 
-```sh
-npx uri-scheme add mycoolredirect
-```
+<TerminalBlock cmd={['npx uri-scheme add mycoolredirect']} />
+
+<br />
 
 You should now be able to see a list of all your project's schemes by running:
 
-```sh
-npx uri-scheme list
-```
+<TerminalBlock cmd={['npx uri-scheme list']} />
+
+<br />
 
 You can test it to ensure it works like this:
 
-```sh
-# Rebuild the native apps, be sure to use an emulator
-yarn ios
-yarn android
+<TerminalBlock cmd={[
+'# Rebuild the native apps, be sure to use an emulator',
+'yarn ios',
+'yarn android',
+'',
+'# Open a URI scheme',
+'npx uri-scheme open mycoolredirect://some/redirect'
+]} />
 
-# Open a URI scheme
-npx uri-scheme open mycoolredirect://some/redirect
+### Usage in standalone apps
+
+`app.json`
+
+```json
+{
+  "expo": {
+    "scheme": "mycoolredirect"
+  }
+}
 ```
+
+In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.config.js`, or `app.json`, and then build your standalone app (it can't be updated with an OTA update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
+
+## Guides
+
+<SocialGrid>
+  <SocialGridItem title="Identity 4" protocol={['OAuth 2', 'OpenID']} href="#identity-4" image="/static/images/sdk/auth-session/identity4.png" />
+  <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
+  <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
+  <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
+  <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
+  <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
+  <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
+  <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
+  <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
+  <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
+  <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
+  <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
+</SocialGrid>
+
+<br />
+
+### Identity 4
+
+| Website                  | Provider | PKCE     | Auto Discovery |
+| ------------------------ | -------- | -------- | -------------- |
+| [More Info][c-identity4] | OpenID   | Required | Available      |
+
+[c-identity4]: https://demo.identityserver.io/
+
+- If `offline_access` isn't included then no refresh token will be returned.
+
+<SnackInline label='Identity 4 Auth' dependencies={['expo-auth-session', 'expo-web-browser']}>
+
+```tsx
+import React from 'react';
+import { Button, Platform, Text, View } from 'react-native';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Linking } from 'expo';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+if (Platform.OS === 'web') {
+  WebBrowser.maybeCompleteAuthSession();
+}
+/* @end */
+
+/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
+const useProxy = true;
+/* @end */
+
+const redirectUri = Platform.select({
+  web: AuthSession.getRedirectUrl(),
+  default: useProxy ? AuthSession.getRedirectUrl() : Linking.makeUrl(),
+});
+
+export default function App() {
+  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
+  const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
+  /* @end */
+
+  // Create and load an auth request
+  const [request, result, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: 'native.code',
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../workflow/linking/">linking here</a>. */
+      redirectUri,
+      /* @end */
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+    },
+    discovery
+  );
+
+  return (
+    <>
+      <Button title="Login!" disabled={!request} onPress={() => promptAsync({ useProxy })} />
+      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+    </>
+  );
+}
+```
+
+</SnackInline>
+
+<!-- End Identity 4 -->
+
+### Azure
+
+<CreateAppButton name="Azure" href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview" />
+
+| Website                     | Provider | PKCE      | Auto Discovery |
+| --------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-azure2] | OpenID   | Supported | Available      |
+
+[c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['openid', 'profile', 'email', 'offline_access'],
+  },
+  discovery
+);
+```
+
+<!-- End Azure -->
+
+### Coinbase
+
+<CreateAppButton name="Coinbase" href="https://www.coinbase.com/oauth/applications/new" />
+
+| Website                       | Provider  | PKCE      | Auto Discovery |
+| ----------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  |
+
+[c-coinbase]: https://www.coinbase.com/oauth/applications/new
+
+- You cannot use the Expo proxy because they don't allow `@` in their redirect URIs.
+- The `redirectUri` requires 2 slashes (`://`).
+- Scopes must be joined with ':' so just create one long string.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
+  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
+  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['wallet:accounts:read'],
+  },
+  discovery
+);
+```
+
+<!-- End Coinbase -->
+
+### Facebook
+
+<CreateAppButton name="Facebook" href="https://developers.facebook.com/" />
+
+| Website                 | Provider | PKCE      | Auto Discovery |
+| ----------------------- | -------- | --------- | -------------- |
+| [More Info][c-facebook] | OAuth    | Supported | Not Available  |
+
+[c-facebook]: https://developers.facebook.com/
+
+- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
+- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
+  - **Standalone:**
+    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
+    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
+  - **Bare:**
+    - Run `npx uri-scheme add <YOUR FBID>`
+    - Rebuild with `yarn ios` & `yarn android`
+- You can still test native auth in the client by using the Expo proxy `useProxy`
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
+  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: '<YOUR FBID>',
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['public_profile', 'user_likes'],
+    extraParams: {
+      // Use `popup` on web for a better experience
+      display: Platform.select({ web: 'popup' }),
+      // Optionally you can use this to rerequest declined permissions
+      auth_type: 'rerequest',
+    },
+  },
+  discovery
+);
+```
+
+<!-- End Facebook -->
+
+### FitBit
+
+<CreateAppButton name="FitBit" href="https://dev.fitbit.com/apps/new" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  |
+
+[c-fitbit]: https://dev.fitbit.com/apps/new
+
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
+- The `redirectUri` requires 2 slashes (`://`).
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
+  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
+  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['activity', 'sleep'],
+  },
+  discovery
+);
+```
+
+<!-- End FitBit -->
+
+### GitHub
+
+<CreateAppButton name="Github" href="https://github.com/settings/developers" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  |
+
+[c-github]: https://github.com/settings/developers
+
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
+- The `redirectUri` requires 2 slashes (`://`).
+- `revocationEndpoint` is dynamic and requires your `config.clientId`.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['identity'],
+  },
+  discovery
+);
+```
+
+<!-- End Github -->
+
+### Google
+
+<CreateAppButton name="Google" href="https://developers.google.com/identity/protocols/OAuth2" />
+
+| Website                     | Provider | PKCE      | Auto Discovery |
+| --------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-google] | OpenID   | Supported | Available      |
+
+[c-google]: https://developers.google.com/identity/protocols/OAuth2
+
+- Google will provide you with a custom `redirectUri` which you cannot use in the Expo client.
+  - URI schemes must be built into the app, you can do this with **bare, standalone, and custom clients**.
+  - You can still use **cannot use in the Expo client** without the proxy service, just be sure to configure the project as a website.
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://accounts.google.com');
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // For usage in bare and standalone
+    redirectUri: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
+    // For usage in managed apps using the proxy
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['openid', 'profile'],
+
+    // Optionally should the user be prompted to select or switch accounts
+    prompt: Prompt.SelectAccount,
+
+    // Optional
+    extraParams: {
+      // Change language
+      hl: 'fr',
+      // Select the user
+      login_hint: 'user@gmail.com',
+    },
+    scopes: ['openid', 'profile'],
+  },
+  discovery
+);
+```
+
+<!-- End Google -->
+
+### Okta
+
+<CreateAppButton name="Okta" href="https://developer.okta.com/signup" />
+
+| Website                          | Provider | PKCE      | Auto Discovery |
+| -------------------------------- | -------- | --------- | -------------- |
+| [Sign-up][c-okta] > Applications | OpenID   | Supported | Available      |
+
+[c-okta]: https://developer.okta.com/signup/
+
+- You cannot define a custom `redirectUri`, Okta will provide you with one.
+- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
+
+```ts
+// Endpoint
+const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // For usage in bare and standalone
+    redirectUri: 'com.okta.<OKTA_DOMAIN>:/callback',
+    // For usage in managed apps using the proxy
+    redirectUri: AuthSession.getRedirectUrl(),
+    scopes: ['openid', 'profile'],
+  },
+  discovery
+);
+```
+
+<!-- End Okta -->
+
+### Reddit
+
+<CreateAppButton name="Reddit" href="https://www.reddit.com/prefs/apps" />
+
+| Website                     | Provider  | PKCE      | Auto Discovery |
+| --------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-reddit] | OAuth 2.0 | Supported | Not Available  |
+
+[c-reddit]: https://www.reddit.com/prefs/apps
+
+- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
+  - Expo Client: `exp://localhost:19000/--/*`
+  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://*`
+  - Web: `https://yourwebsite.com/*`
+- The `redirectUri` requires 2 slashes (`://`).
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
+  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['identity'],
+  },
+  discovery
+);
+```
+
+<!-- End Reddit -->
+
+### Slack
+
+<CreateAppButton name="Slack" href="https://api.slack.com/apps" />
+
+| Website                    | Provider  | PKCE      | Auto Discovery |
+| -------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-slack] | OAuth 2.0 | Supported | Not Available  |
+
+[c-slack]: https://api.slack.com/apps
+
+- The `redirectUri` requires 2 slashes (`://`).
+- `redirectUri` can be defined under the "OAuth & Permissions" section of the website.
+- `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
+- Scopes must be joined with ':' so just create one long string.
+- Navigate to the **"Scopes"** section to enable scopes.
+- `revocationEndpoint` is not available.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://slack.com/oauth/authorize',
+  tokenEndpoint: 'https://slack.com/api/oauth.access',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['emoji:read'],
+  },
+  discovery
+);
+```
+
+<!-- End Slack -->
+
+### Spotify
+
+<CreateAppButton name="Spotify" href="https://developer.spotify.com/dashboard/applications" />
+
+| Website                      | Provider  | PKCE      | Auto Discovery |
+| ---------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  |
+
+[c-spotify]: https://developer.spotify.com/dashboard/applications
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+  tokenEndpoint: 'https://accounts.spotify.com/api/token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app:/redirect',
+    scopes: ['user-read-email', 'playlist-modify-public'],
+  },
+  discovery
+);
+```
+
+<!-- End Spotify -->
+
+### Uber
+
+<CreateAppButton name="Uber" href="https://developer.uber.com/docs/riders/guides/authentication/introduction" />
+
+| Website                   | Provider  | PKCE      | Auto Discovery |
+| ------------------------- | --------- | --------- | -------------- |
+| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  |
+
+[c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
+
+- The `redirectUri` requires 2 slashes (`://`).
+- `scopes` can be difficult to get approved.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
+  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
+  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    redirectUri: 'your.app://redirect',
+    scopes: ['profile', 'delivery'],
+  },
+  discovery
+);
+```
+
+<!-- End Uber -->
+
+<!-- End Guides -->
 
 ## How web browser based authentication flows work
 
@@ -77,77 +580,7 @@ If you are authenticating with a popular social provider, when you are ready to 
 
 **Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
-### Usage in standalone apps
-
-In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.json`, and then build your standalone app (it can't be updated with an OTA update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal.
-
-## Example
-
-```tsx
-import React from 'react';
-import { Button, StyleSheet, Platform, Text, View } from 'react-native';
-import * as AuthSession from 'expo-auth-session';
-import * as WebBrowser from 'expo-web-browser';
-import { Linking } from 'expo';
-
-/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
-if (Platform.OS === 'web') {
-  WebBrowser.maybeCompleteAuthSession();
-}
-/* @end */
-
-/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
-const useProxy = true;
-/* @end */
-
-const redirectUri = Platform.select({
-  web: AuthSession.getRedirectUrl(),
-  default: useProxy ? AuthSession.getRedirectUrl() : Linking.makeUrl(),
-});
-
-export default function App() {
-  /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
-  const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
-  /* @end */
-
-  // Create and load an auth request:
-  const [request, result, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: 'native.code',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../workflow/linking/">linking here</a>. */
-      redirectUri,
-      /* @end */
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
-    },
-    discovery
-  );
-
-  return (
-    <View style={styles.container}>
-      <Button
-        disabled={!request}
-        title="Auth with Identity"
-        onPress={() => promptAsync({ useProxy })}
-      />
-      /* @info In this example, show the authentication result after success. In a real application,
-      this would be a weird thing to do, instead you would use this data to match the user with a user
-      in your application and sign them in. */
-      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
-      /* @end */
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
-
-## API
+# API
 
 ```js
 import * as AuthSession from 'expo-auth-session';
@@ -166,14 +599,14 @@ When the prompt method completes then the response will be fulfilled.
 
 #### Arguments
 
-- **config (_AuthRequestConfig_)** -- A valid `AuthRequestConfig` that specifies what provider to use.
-- **discovery (_DiscoveryDocument_)** -- A loaded `DiscoveryDocument` with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
+- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
+- **discovery (_DiscoveryDocument_)** -- A loaded [`DiscoveryDocument`](#DiscoveryDocument) with endpoints used for authenticating. Only `authorizationEndpoint` is required for requesting an authorization code.
 
 #### Returns
 
-- **request (_AuthRequest | null_)** -- An instance of `AuthRequest` that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **request (_AuthRequest | null_)** -- An instance of [`AuthRequest`](AuthRequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
 - **response (_AuthResponse | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
-- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an `AuthRequestPromptOptions` object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#AuthRequestPromptOptions) object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
 
 ### `useAutoDiscovery`
 
@@ -181,7 +614,7 @@ When the prompt method completes then the response will be fulfilled.
 const discovery = useAutoDiscovery('https://example.com/auth');
 ```
 
-Given an OpenID Connect issuer URL, this will fetch and return the `DiscoveryDocument` (a collection of URLs) from the resource provider.
+Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDocument`](#DiscoveryDocument) (a collection of URLs) from the resource provider.
 
 #### Arguments
 
@@ -189,7 +622,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the `DiscoveryDoc
 
 #### Returns
 
-- **discovery (_DiscoveryDocument | null_)** -- Returns `null` until the `DiscoveryDocument` has been fetched from the provided issuer URL.
+- **discovery (_DiscoveryDocument | null_)** -- Returns `null` until the [`DiscoveryDocument`](#DiscoveryDocument) has been fetched from the provided issuer URL.
 
 ## Methods
 
@@ -199,8 +632,8 @@ Load an authorization request for a code.
 
 #### Arguments
 
-- **config (_AuthRequestConfig_)** -- A valid `AuthRequestConfig` that specifies what provider to use.
-- **discovery (_IssuerOrDiscovery_)** -- A loaded `DiscoveryDocument` or `Issuer` URL. Only `authorizationEndpoint` is required for requesting an authorization code.
+- **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
+- **discovery (_IssuerOrDiscovery_)** -- A loaded [`DiscoveryDocument`](#DiscoveryDocument) or issuer URL. (Only `authorizationEndpoint` is required for requesting an authorization code).
 
 #### Returns
 
@@ -332,11 +765,11 @@ Represents an OAuth authorization request as JSON.
 
 Options passed to the `promptAsync()` method of `AuthRequest`s.
 
-| Name          | Type       | Description                                                                | Default         |
-| ------------- | ---------- | -------------------------------------------------------------------------- | --------------- |
-| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting auth requests              | `false`         |
-| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker | `false`         |
-| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined  | Preloaded value |
+| Name          | Type       | Description                                                                                 | Default         |
+| ------------- | ---------- | ------------------------------------------------------------------------------------------- | --------------- |
+| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests. Only works in managed native apps | `false`         |
+| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker                  | `false`         |
+| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined                   | Preloaded value |
 
 ### `CodeChallengeMethod`
 
@@ -418,418 +851,6 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 - In standalone builds, ejecting to bare, or custom client, this is created from the `expo.scheme` property of your `app.json` config.
   - This value must be built into the native app, meaning you cannot use it with the App store or Play store Expo client.
 - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them.
-
-## Guides to integrate with popular providers
-
-- [Google](#google)
-- [Okta](#okta)
-- [Azure v2](#azure-v2)
-- [Identity 4](#identity-4)
-- [Facebook](#facebook)
-- [Uber](#uber)
-- [FitBit](#fitbit)
-- [Reddit](#reddit)
-- [Coinbase](#coinbase)
-- [GitHub](#github)
-- [Slack](#slack)
-- [Spotify](#spotify)
-
-### Google
-
-| Website                     | Provider | PKCE      | Auto Discovery | Client Secret |
-| --------------------------- | -------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-google] | OpenID   | Supported | Available      | No            |
-
-[c-google]: https://developers.google.com/identity/protocols/OAuth2
-
-- Google will provide you with a custom `redirectUri` which you cannot use in the Expo client.
-  - URI schemes must be built into the app, you can do this with **bare, standalone, and custom clients**.
-  - You can still use **cannot use in the Expo client** without the proxy service, just be sure to configure the project as a website.
-
-```ts
-// Endpoint
-const discovery = useAutoDiscovery('https://accounts.google.com');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    // For usage in bare and standalone
-    redirectUri: 'com.googleusercontent.apps.GOOGLE_GUID://redirect',
-    // For usage in managed apps using the proxy
-    redirectUri: AuthSession.getRedirectUrl(),
-    scopes: ['openid', 'profile'],
-
-    // Optionally should the user be prompted to select or switch accounts
-    prompt: Prompt.SelectAccount,
-
-    // Optional
-    extraParams: {
-      // Change language
-      hl: 'fr',
-      // Select the user
-      login_hint: 'user@gmail.com',
-    },
-    scopes: ['openid', 'profile'],
-  },
-  discovery
-);
-```
-
-<!-- End Google -->
-
-### Okta
-
-| Website                          | Provider | PKCE      | Auto Discovery | Client Secret |
-| -------------------------------- | -------- | --------- | -------------- | ------------- |
-| [Sign-up][c-okta] > Applications | OpenID   | Supported | Available      | No            |
-
-[c-okta]: https://developer.okta.com/signup/
-
-- You cannot define a custom `redirectUri`, Okta will provide you with one.
-- You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
-
-```ts
-// Endpoint
-const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    // For usage in bare and standalone
-    redirectUri: 'com.okta.<OKTA_DOMAIN>:/callback',
-    // For usage in managed apps using the proxy
-    redirectUri: AuthSession.getRedirectUrl(),
-    scopes: ['openid', 'profile'],
-  },
-  discovery
-);
-```
-
-<!-- End Okta -->
-
-### Azure v2
-
-| Website                     | Provider | PKCE      | Auto Discovery | Client Secret |
-| --------------------------- | -------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-azure2] | OpenID   | Supported | Available      | No            |
-
-[c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
-
-```ts
-// Endpoint
-const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['openid', 'profile', 'email', 'offline_access'],
-  },
-  discovery
-);
-```
-
-<!-- End Azure v2 -->
-
-### Identity 4
-
-| Website                  | Provider | PKCE     | Auto Discovery | Client Secret |
-| ------------------------ | -------- | -------- | -------------- | ------------- |
-| [More Info][c-identity4] | OpenID   | Required | Available      | No            |
-
-[c-identity4]: https://demo.identityserver.io/
-
-- If `offline_access` isn't included then no refresh token will be returned.
-
-```ts
-// Endpoint
-const discovery = useAutoDiscovery('https://demo.identityserver.io');
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'native.code',
-    redirectUrl: 'myapp://redirect',
-    scopes: ['openid', 'profile', 'offline_access'],
-  },
-  discovery
-);
-```
-
-<!-- End Identity 4 -->
-
-### Facebook
-
-| Website                 | Provider | PKCE      | Auto Discovery | Client Secret |
-| ----------------------- | -------- | --------- | -------------- | ------------- |
-| [More Info][c-facebook] | OAuth    | Supported | Not Available  | Yes           |
-
-[c-facebook]: https://developers.facebook.com/
-
-- Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
-- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-  - **Standalone:**
-    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
-    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
-  - **Bare:**
-    - Run `npx uri-scheme add <YOUR FBID>`
-    - Rebuild with `yarn ios` & `yarn android`
-- You can still test native auth in the client by using the Expo proxy `useProxy`
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
-  tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: '<YOUR FBID>',
-    redirectUri: AuthSession.getRedirectUrl(),
-    scopes: ['public_profile', 'user_likes'],
-    extraParams: {
-      // Use `popup` on web for a better experience
-      display: Platform.select({ web: 'popup' }),
-      // Optionally you can use this to rerequest declined permissions
-      auth_type: 'rerequest',
-    },
-  },
-  discovery
-);
-```
-
-<!-- End Facebook -->
-
-### Uber
-
-| Website                   | Provider  | PKCE      | Auto Discovery | Client Secret |
-| ------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-uber] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-uber]: https://developer.uber.com/docs/riders/guides/authentication/introduction
-
-- The `redirectUri` requires 2 slashes (`://`).
-- `scopes` can be difficult to get approved.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
-  tokenEndpoint: 'https://login.uber.com/oauth/v2/token',
-  revocationEndpoint: 'https://login.uber.com/oauth/v2/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['profile', 'delivery'],
-  },
-  discovery
-);
-```
-
-<!-- End Uber -->
-
-### FitBit
-
-| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
-| --------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-fitbit] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-fitbit]: https://dev.fitbit.com/apps/new
-
-- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
-  - Web: `https://yourwebsite.com/*`
-- The `redirectUri` requires 2 slashes (`://`).
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
-  tokenEndpoint: 'https://api.fitbit.com/oauth2/token',
-  revocationEndpoint: 'https://api.fitbit.com/oauth2/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['activity', 'sleep'],
-  },
-  discovery
-);
-```
-
-<!-- End FitBit -->
-
-### Reddit
-
-| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
-| --------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-reddit] | OAuth 2.0 | Supported | Not Available  | No            |
-
-[c-reddit]: https://www.reddit.com/prefs/apps
-
-- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
-  - Web: `https://yourwebsite.com/*`
-- The `redirectUri` requires 2 slashes (`://`).
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
-  tokenEndpoint: 'https://www.reddit.com/api/v1/access_token',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['identity'],
-  },
-  discovery
-);
-```
-
-<!-- End Reddit -->
-
-### Coinbase
-
-| Website                       | Provider  | PKCE      | Auto Discovery | Client Secret |
-| ----------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-coinbase] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-coinbase]: https://www.coinbase.com/oauth/applications/new
-
-- You cannot use the Expo proxy because they don't allow `@` in their redirect URIs.
-- The `redirectUri` requires 2 slashes (`://`).
-- Scopes must be joined with ':' so just create one long string.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
-  tokenEndpoint: 'https://api.coinbase.com/oauth/token',
-  revocationEndpoint: 'https://api.coinbase.com/oauth/revoke',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['wallet:accounts:read'],
-  },
-  discovery
-);
-```
-
-<!-- End Coinbase -->
-
-### GitHub
-
-| Website                     | Provider  | PKCE      | Auto Discovery | Client Secret |
-| --------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-github] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-github]: https://github.com/settings/developers
-
-- Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
-  - Expo Client: `exp://localhost:19000/--/*`
-  - Expo Client + Proxy: `https://auth.expo.io/@you/your-app`
-  - Standalone or Bare: `com.your.app://*`
-  - Web: `https://yourwebsite.com/*`
-- The `redirectUri` requires 2 slashes (`://`).
-- `revocationEndpoint` is dynamic and requires your `config.clientId`.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/access_token',
-  revocationEndpoint: 'https://github.com/settings/connections/applications/<CLIENT_ID>',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['identity'],
-  },
-  discovery
-);
-```
-
-<!-- End Github -->
-
-### Slack
-
-| Website                    | Provider  | PKCE      | Auto Discovery | Client Secret |
-| -------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-slack] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-slack]: https://api.slack.com/apps
-
-- The `redirectUri` requires 2 slashes (`://`).
-- `redirectUri` can be defined under the "OAuth & Permissions" section of the website.
-- `clientId` and `clientSecret` can be found in the **"App Credentials"** section.
-- Scopes must be joined with ':' so just create one long string.
-- Navigate to the **"Scopes"** section to enable scopes.
-- `revocationEndpoint` is not available.
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://slack.com/oauth/authorize',
-  tokenEndpoint: 'https://slack.com/api/oauth.access',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app://redirect',
-    scopes: ['emoji:read'],
-  },
-  discovery
-);
-```
-
-<!-- End Slack -->
-
-### Spotify
-
-| Website                      | Provider  | PKCE      | Auto Discovery | Client Secret |
-| ---------------------------- | --------- | --------- | -------------- | ------------- |
-| [Get Your Config][c-spotify] | OAuth 2.0 | Supported | Not Available  | Code Exchange |
-
-[c-spotify]: https://developer.spotify.com/dashboard/applications
-
-```ts
-// Endpoint
-const discovery = {
-  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-  tokenEndpoint: 'https://accounts.spotify.com/api/token',
-};
-// Request
-const [request, response, promptAsync] = useAuthRequest(
-  {
-    clientId: 'CLIENT_ID',
-    redirectUri: 'your.app:/redirect',
-    scopes: ['user-read-email', 'playlist-modify-public'],
-  },
-  discovery
-);
-```
-
-<!-- End Spotify -->
-
-<!-- End Examples -->
 
 ## Usage in the bare React Native app
 
