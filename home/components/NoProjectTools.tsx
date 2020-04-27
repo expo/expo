@@ -16,6 +16,6 @@ export default class NoProjectTools extends React.Component {
   }
 
   private handlePressAsync = async () => {
-    Linking.openURL('https://docs.expo.io/versions/latest/introduction/installation/');
+    Linking.openURL('https://docs.expo.io/get-started/installation/');
   };
 }
