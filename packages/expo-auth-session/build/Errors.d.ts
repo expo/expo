@@ -23,7 +23,7 @@ export interface AuthErrorConfig extends ResponseErrorConfig {
     state?: string;
 }
 /**
- * Extends https://tools.ietf.org/html/rfc6749#section-4.1.2.1
+ * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
  */
 export declare class ResponseError extends CodedError {
     /**
@@ -44,7 +44,7 @@ export declare class ResponseError extends CodedError {
     constructor(params: ResponseErrorConfig, errorCodeType: string);
 }
 /**
- * Extends https://tools.ietf.org/html/rfc6749#section-5.2
+ * [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2)
  */
 export declare class AuthError extends ResponseError {
     /**
@@ -52,4 +52,10 @@ export declare class AuthError extends ResponseError {
      */
     state?: string;
     constructor(response: AuthErrorConfig);
+}
+/**
+ * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
+ */
+export declare class TokenError extends ResponseError {
+    constructor(response: ResponseErrorConfig);
 }

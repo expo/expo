@@ -63,7 +63,13 @@ export class TokenResponse {
   issuedAt: number;
 
   constructor(response: TokenResponseConfig) {
-    this.applyResponseConfig(response);
+    this.accessToken = response.accessToken;
+    this.tokenType = response.tokenType ?? 'bearer';
+    this.expiresIn = response.expiresIn;
+    this.refreshToken = response.refreshToken;
+    this.scope = response.scope;
+    this.idToken = response.idToken;
+    this.issuedAt = response.issuedAt ?? getCurrentTime();
   }
 
   private applyResponseConfig(response: TokenResponseConfig) {

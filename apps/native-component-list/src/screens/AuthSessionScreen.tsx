@@ -1,9 +1,9 @@
 import * as AuthSession from 'expo-auth-session';
 import { makeRedirectUri, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
 import Constants from 'expo-constants';
+import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { maybeCompleteAuthSession } from 'expo-web-browser';
 
 import { getGUID } from '../api/guid';
 import Button from '../components/Button';

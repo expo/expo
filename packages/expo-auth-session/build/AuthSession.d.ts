@@ -29,5 +29,7 @@ export declare function makeRedirectUri({ native, path, preferLocalhost, useProx
  */
 export declare function loadAsync(config: AuthRequestConfig, issuerOrDiscovery: IssuerOrDiscovery): Promise<AuthRequest>;
 export * from './AuthRequestHooks';
-export { AuthError } from './Errors';
+export { AuthError, TokenError } from './Errors';
 export { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult, AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, DiscoveryDocument, Issuer, IssuerOrDiscovery, Prompt, ProviderMetadata, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, };
+export { TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, revokeAsync, refreshAsync, exchangeCodeAsync, requestUserInfoAsync, } from './TokenRequest';
+export * from './TokenRequest.types';

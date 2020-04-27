@@ -155,6 +155,7 @@ export interface DiscoveryDocument {
     revocationEndpoint?: string;
     /**
      * URL of the OP's UserInfo Endpoint.
+     *
      * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
      */
     userInfoEndpoint?: string;
