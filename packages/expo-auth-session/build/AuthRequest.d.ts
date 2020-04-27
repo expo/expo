@@ -1,9 +1,10 @@
-import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, ResponseType } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, ResponseType, Prompt } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument } from './Discovery';
 declare type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 /**
  * Implements an authorization request.
+ *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export declare class AuthRequest {
@@ -13,16 +14,16 @@ export declare class AuthRequest {
     state: Promise<string> | string;
     url: string | null;
     codeVerifier?: string;
+    codeChallenge?: string;
     readonly responseType: ResponseType;
     readonly clientId: string;
     readonly extraParams: Record<string, string>;
     readonly usePKCE?: boolean;
     readonly codeChallengeMethod: CodeChallengeMethod;
     readonly redirectUri: string;
-    private readonly scopes;
-    private readonly clientSecret?;
-    private codeChallenge?;
-    private prompt?;
+    readonly scopes: string[];
+    readonly clientSecret?: string;
+    readonly prompt?: Prompt;
     constructor(request: AuthRequestConfig);
     /**
      * Load and return a valid auth request based on the input config.

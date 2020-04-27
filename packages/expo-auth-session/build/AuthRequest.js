@@ -10,6 +10,7 @@ const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
  * Implements an authorization request.
+ *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export class AuthRequest {

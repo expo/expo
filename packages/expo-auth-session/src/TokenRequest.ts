@@ -95,11 +95,11 @@ export class TokenResponse {
   }
 
   async refreshAsync(
-    tokenRequest: TokenRequestConfig,
+    config: Omit<RefreshTokenRequestConfig, 'grantType' | 'refreshToken'>,
     discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
   ): Promise<TokenResponse> {
     const request = new RefreshTokenRequest({
-      ...tokenRequest,
+      ...config,
       refreshToken: this.refreshToken,
     });
     const response = await request.performAsync(discovery);
@@ -166,7 +166,6 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
 
   validateRequest() {
     // Additional validation for the authorization_code grant type
-    // From iOS
     if (this.grantType === GrantType.AuthorizationCode) {
       // redirect URI must not be nil
       invariant(
@@ -261,7 +260,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> {
-  constructor(options) {
+  constructor(options: Omit<AccessTokenRequestConfig, 'grantType'>) {
     invariant(
       options.redirectUri,
       `\`AccessTokenRequest\` requires a valid \`redirectUri\` (it must also match the one used in the auth request). Example: ${Platform.select(
@@ -286,7 +285,7 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> {
 }
 
 export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig> {
-  constructor(options) {
+  constructor(options: Omit<RefreshTokenRequestConfig, 'grantType'>) {
     invariant(options.refreshToken, `\`RefreshTokenRequest\` requires a valid \`refreshToken\`.`);
     super({
       grantType: GrantType.RefreshToken,
@@ -313,7 +312,7 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
   token: string;
   tokenTypeHint?: TokenTypeHint;
 
-  constructor(request) {
+  constructor(request: RevokeTokenRequestConfig) {
     super(request);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
@@ -389,7 +388,7 @@ export function revokeAsync(
  * @param discovery The `tokenEndpoint` for a provider.
  */
 export function refreshAsync(
-  config: RefreshTokenRequestConfig,
+  config: Omit<RefreshTokenRequestConfig, 'grantType'>,
   discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
 ): Promise<TokenResponse> {
   const request = new RefreshTokenRequest(config);
@@ -403,7 +402,7 @@ export function refreshAsync(
  * @param discovery The `tokenEndpoint` for a provider.
  */
 export function exchangeCodeAsync(
-  config: AccessTokenRequestConfig,
+  config: Omit<AccessTokenRequestConfig, 'grantType'>,
   discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
 ): Promise<TokenResponse> {
   const request = new AccessTokenRequest(config);

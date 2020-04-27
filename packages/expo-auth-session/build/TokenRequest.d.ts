@@ -31,7 +31,7 @@ export declare class TokenResponse {
     constructor(response: TokenResponseConfig);
     private applyResponseConfig;
     getRequestConfig(): TokenResponseConfig;
-    refreshAsync(tokenRequest: TokenRequestConfig, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
+    refreshAsync(config: Omit<RefreshTokenRequestConfig, 'grantType' | 'refreshToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
     shouldRefresh(): boolean;
 }
 declare class Request<T, B> {
@@ -67,10 +67,10 @@ declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, Toke
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> {
-    constructor(options: any);
+    constructor(options: Omit<AccessTokenRequestConfig, 'grantType'>);
 }
 export declare class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig> {
-    constructor(options: any);
+    constructor(options: Omit<RefreshTokenRequestConfig, 'grantType'>);
 }
 /**
  * Revocation request for a given token.
@@ -82,7 +82,7 @@ export declare class RevokeTokenRequest extends Request<RevokeTokenRequestConfig
     clientSecret?: string;
     token: string;
     tokenTypeHint?: TokenTypeHint;
-    constructor(request: any);
+    constructor(request: RevokeTokenRequestConfig);
     /**
      * Perform a token revocation request.
      *
@@ -111,14 +111,14 @@ export declare function revokeAsync(config: RevokeTokenRequestConfig, discovery:
  * @param config
  * @param discovery The `tokenEndpoint` for a provider.
  */
-export declare function refreshAsync(config: RefreshTokenRequestConfig, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
+export declare function refreshAsync(config: Omit<RefreshTokenRequestConfig, 'grantType'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
 /**
  * Exchange an auth code for an access token that can be used to get data from the provider.
  *
  * @param config
  * @param discovery The `tokenEndpoint` for a provider.
  */
-export declare function exchangeCodeAsync(config: AccessTokenRequestConfig, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
+export declare function exchangeCodeAsync(config: Omit<AccessTokenRequestConfig, 'grantType'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
 /**
  * Request generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *

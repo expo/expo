@@ -62,9 +62,9 @@ export class TokenResponse {
             expiresIn: this.expiresIn,
         };
     }
-    async refreshAsync(tokenRequest, discovery) {
+    async refreshAsync(config, discovery) {
         const request = new RefreshTokenRequest({
-            ...tokenRequest,
+            ...config,
             refreshToken: this.refreshToken,
         });
         const response = await request.performAsync(discovery);
@@ -114,7 +114,6 @@ class TokenRequest extends Request {
     }
     validateRequest() {
         // Additional validation for the authorization_code grant type
-        // From iOS
         if (this.grantType === GrantType.AuthorizationCode) {
             // redirect URI must not be nil
             invariant(this.redirectUri, `A \`TokenRequest\` was created with a \`grantType\` (${this.grantType}) that requires a \`redirectUri\`, but a nullish \`redirectUri\` was given`);
