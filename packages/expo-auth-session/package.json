@@ -34,17 +34,18 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
   "dependencies": {
-    "expo-constants": "^9.0.0",
+    "expo-constants": "~9.0.0",
+    "expo-crypto": "~8.1.0",
+    "expo-linking": "~1.0.0",
+    "expo-random": "~8.1.0",
     "expo-web-browser": "~8.2.0",
-    "expo-random": "^8.1.0",
-    "expo-crypto": "^8.1.0",
     "qs": "6.9.1"
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
-  "gitHead": "2f1fb3daa49eca6b03e903a45db312bbfe3e4b5c"
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

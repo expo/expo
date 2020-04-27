@@ -1,6 +1,5 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
-
-const { URL } = window;
 
 export type Headers = Record<string, string> & {
   'Content-Type': string;
@@ -16,7 +15,11 @@ export type FetchRequest = {
 };
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
-  const url = new URL(requestUrl);
+  if (!canUseDOM) {
+    // @ts-ignore
+    return;
+  }
+  const url = new window.URL(requestUrl);
 
   const request: Omit<RequestInit, 'headers'> & { headers: HeadersInit } = {
     method: fetchRequest.method,

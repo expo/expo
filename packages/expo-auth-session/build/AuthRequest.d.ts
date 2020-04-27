@@ -41,7 +41,7 @@ export declare class AuthRequest {
      *
      * @param discovery
      */
-    buildUrlAsync(discovery: AuthDiscoveryDocument): Promise<string>;
+    makeAuthUrlAsync(discovery: AuthDiscoveryDocument): Promise<string>;
     private getStateAsync;
     private ensureCodeIsSetupAsync;
 }

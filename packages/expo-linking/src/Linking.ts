@@ -51,15 +51,11 @@ function removeLeadingSlash(url: string): string {
   return url.replace(/^\//, '');
 }
 
-function removeTrailingSlash(url: string): string {
-  return url.replace(/\/$/, '');
-}
-
 function removeTrailingSlashAndQueryString(url: string): string {
   return url.replace(/\/?\?.*$/, '');
 }
 
-function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
+function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.endsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(0, input.length - 1);
@@ -69,7 +65,7 @@ function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
   return input;
 }
 
-function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
+function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.startsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(1);
@@ -85,12 +81,11 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  *
  * **Examples**
  *
- * - Bare, Standalone: yourscheme://
- * - Web (dev): https://localhost:19006/
- * - Web (prod): https://myapp.com/
- * - Expo Client (dev): exp://128.0.0.1:19000/--/
- * - Expo Client (prod): exp://exp.host/@yourname/your-app/
- * - Expo Client (prod): exp://exp.host/@yourname/your-app/
+ * - Bare, Standalone, Custom: `yourscheme:///path`
+ * - Web (dev): `https://localhost:19006/path`
+ * - Web (prod): `https://myapp.com/path`
+ * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
+ * - Expo Client (prod): `exp://exp.host/@yourname/your-app/--/path`
  *
  * @param path addition path components to append to the base URL.
  * @param queryParams An object of parameters that will be converted into a query string.
@@ -99,14 +94,14 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
   if (Platform.OS === 'web') {
     if (!canUseDOM) return '';
 
-    const origin = ensureTrailingSlash(window.location.origin, false);
+    const origin = ensureLeadingSlash(window.location.origin, false);
     let queryString = qs.stringify(queryParams);
     if (queryString) {
       queryString = `?${queryString}`;
     }
 
     let outputPath = path;
-    if (outputPath) outputPath = ensureLeadingSlash(path, true);
+    if (outputPath) outputPath = ensureTrailingSlash(path, true);
 
     return encodeURI(`${origin}${outputPath}${queryString}`);
   }
@@ -132,7 +127,6 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
     if (isExpoHosted() && hostUri) {
       path = `/--/${removeLeadingSlash(path)}`;
     }
-
     if (!path.startsWith('/')) {
       path = `/${path}`;
     }
@@ -164,7 +158,7 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
     queryString = `?${queryString}`;
   }
 
-  hostUri = removeTrailingSlash(hostUri);
+  hostUri = ensureTrailingSlash(hostUri, false);
 
   return encodeURI(`${scheme}://${hostUri}${path}${queryString}`);
 }
