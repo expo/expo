@@ -15,9 +15,11 @@ export default function DoneText({ done, numFailed, results }) {
           {numFailed === 1 ? ' test' : ' tests'} failed.
         </Text>
       )}
-      <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
-        {results}
-      </Text>
+      {done && (
+        <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
+          {results}
+        </Text>
+      )}
     </View>
   );
 }
