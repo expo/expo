@@ -7,7 +7,7 @@ const packageVersion = require('../package.json').version;
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': ['Fundamentals', 'Distributing Your App', 'Assorted Guides'],
-  Depreacted: ['ExpoKit'],
+  Deprecated: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
   'React Native': ['React Native'],

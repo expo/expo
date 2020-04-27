@@ -77,7 +77,7 @@ export default class DocumentationSidebarGroup extends React.Component {
 
     // default to always open
     this.state = {
-      isOpen: props.info.name === 'Depreacted' ? isOpen : true,
+      isOpen: props.info.name === 'Deprecated' ? isOpen : true,
     };
   }
 
