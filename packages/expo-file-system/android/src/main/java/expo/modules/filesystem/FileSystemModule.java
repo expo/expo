@@ -37,8 +37,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.CookieHandler;
-import java.nio.file.LinkOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -83,7 +81,6 @@ public class FileSystemModule extends ExportedModule {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   @Override
@@ -318,7 +315,7 @@ public class FileSystemModule extends ExportedModule {
           if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
             promise.resolve(null);
           } else {
-            promise.reject("E_FILE_NOT_FOUND",
+            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
               "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
@@ -335,13 +332,13 @@ public class FileSystemModule extends ExportedModule {
   public void moveAsync(Map<String, Object> options, Promise promise) {
     try {
       if (!options.containsKey("from")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
       Uri fromUri = Uri.parse((String) options.get("from"));
       ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '" + fromUri + "' isn't movable.");
       if (!options.containsKey("to")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
       Uri toUri = Uri.parse((String) options.get("to"));
@@ -353,7 +350,7 @@ public class FileSystemModule extends ExportedModule {
         if (from.renameTo(to)) {
           promise.resolve(null);
         } else {
-          promise.reject("E_FILE_NOT_MOVED",
+          promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
             "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
       } else {
@@ -369,13 +366,13 @@ public class FileSystemModule extends ExportedModule {
   public void copyAsync(Map<String, Object> options, Promise promise) {
     try {
       if (!options.containsKey("from")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.");
         return;
       }
       Uri fromUri = Uri.parse((String) options.get("from"));
       ensurePermission(fromUri, Permission.READ);
       if (!options.containsKey("to")) {
-        promise.reject("E_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
+        promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.");
         return;
       }
       Uri toUri = Uri.parse((String) options.get("to"));
@@ -423,7 +420,7 @@ public class FileSystemModule extends ExportedModule {
         if (success || (setIntermediates && previouslyCreated)) {
           promise.resolve(null);
         } else {
-          promise.reject("E_DIRECTORY_NOT_CREATED",
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
             "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
@@ -450,7 +447,7 @@ public class FileSystemModule extends ExportedModule {
           }
           promise.resolve(result);
         } else {
-          promise.reject("E_DIRECTORY_NOT_READ",
+          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
             "Directory '" + uri + "' could not be read.");
         }
       } else {
@@ -491,9 +488,14 @@ public class FileSystemModule extends ExportedModule {
       } else if ("file".equals(uri.getScheme())) {
         Request.Builder requestBuilder = new Request.Builder().url(url);
         if (options != null && options.containsKey(HEADER_KEY)) {
-          final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
-          for (String key : headers.keySet()) {
-            requestBuilder.addHeader(key, headers.get(key).toString());
+          try {
+            final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+            for (String key : headers.keySet()) {
+              requestBuilder.addHeader(key, (String) headers.get(key));
+            }
+          } catch (ClassCastException exception) {
+            promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception);
+            return;
           }
         }
         getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
@@ -543,7 +545,7 @@ public class FileSystemModule extends ExportedModule {
       promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to access total disk capacity", e);
     }
   }
 
@@ -560,7 +562,7 @@ public class FileSystemModule extends ExportedModule {
       promise.resolve(storageDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to determine free disk storage capacity", e);
     }
   }
 
@@ -575,7 +577,7 @@ public class FileSystemModule extends ExportedModule {
         File file = uriToFile(fileUri);
         promise.resolve(contentUriFromFile(file).toString());
       } else {
-        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
+        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: " + uri + ". Please use other uri.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());

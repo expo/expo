@@ -1,0 +1,69 @@
+name: Publish Expo Web
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - yarn.lock
+      - apps/**
+      - packages/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          lfs: true
+      - name: Cache Node.js modules
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}
+      #  Setup Expo CLI action
+      - name: Setup Expo
+        uses: expo/expo-github-action@v5
+        with:
+          expo-version: 3.x
+          expo-username: ${{ secrets.EXPO_CLI_USERNAME }}
+          expo-password: ${{ secrets.EXPO_CLI_PASSWORD }}
+          expo-cache: true
+
+      - run: yarn --frozen-lockfile
+
+      # Send comment to the thread
+      - name: Publish Expo app
+        working-directory: ./apps/native-component-list
+        run: expo publish --release-channel=pr-${{ github.event.number }}
+      # Get Expo link for the comment
+      - name: Get expo link
+        id: expo
+        run: echo "::set-output name=path::@community/native-component-list?release-channel=pr-${{ github.event.number }}"
+      # Build the Expo website
+      - name: Build Website
+        working-directory: ./apps/native-component-list
+        run: yarn build:web
+      # Deploy Expo web to now
+      - name: Publish Website
+        working-directory: ./apps/native-component-list
+        env:
+          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+          BUILD_ID: ${{ github.sha }}
+        run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
+      # Save variable
+      - name: Set deploy url to env variable
+        run: echo "::set-env name=ZEIT_DEPLOY::$(cat deploy-url.txt)"
+      # Alias the now deployment URL
+      - name: Alias with PR number
+        working-directory: ./apps/native-component-list
+        env:
+          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+          SITE_ALIAS: expo-web-${{ github.event.number }}.now.sh
+        run: npx now alias --token=${ZEIT_TOKEN} `cat deploy-url.txt` $SITE_ALIAS
+      # Send comment to the thread
+      - name: Add comment with deploy url
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: Native Component List for this branch is ready<br>- [expo-web-${{ github.event.number }}.now.sh](https://expo-web-${{ github.event.number }}.now.sh/)<br>- [expo.io/${{ steps.expo.outputs.path }}](https://expo.io/${{ steps.expo.outputs.path }})<br><br><a href="https://exp.host/${{ steps.expo.outputs.path }}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=exp://exp.host/${{ steps.expo.outputs.path }}" height="200px" width="200px"></a>.

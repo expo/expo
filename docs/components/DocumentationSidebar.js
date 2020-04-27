@@ -26,7 +26,10 @@ function shouldSkipTitle(info, parentGroup) {
     // then we shouldn't show the title twice. You might want to organize your group like
     // so it is collapsable
     return true;
-  } else if (info.posts && (info.posts[0].sidebarTitle || info.posts[0].name) === info.name) {
+  } else if (
+    info.posts &&
+    ((info.posts[0] || {}).sidebarTitle || (info.posts[0] || {}).name) === info.name
+  ) {
     // If the first child post in the group has the same name as the group, then hide the
     // group title, lest we be very repetititve
     return true;
