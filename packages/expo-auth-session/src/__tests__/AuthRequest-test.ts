@@ -128,7 +128,7 @@ it(`can override the code_challenge with extraParams`, async () => {
     extraParams: { code_challenge: 'custom-value' },
   });
 
-  const url = await request.buildUrlAsync(mockDiscovery);
+  const url = await request.makeAuthUrlAsync(mockDiscovery);
   expect(getQueryParams(url).params.code_challenge).toBe('custom-value');
 });
 
@@ -143,7 +143,7 @@ it(`loads an auth request`, async () => {
     prompt: Prompt.SelectAccount,
     extraParams: { code_challenge: 'custom-value' },
   });
-  await request.buildUrlAsync(mockDiscovery);
+  await request.makeAuthUrlAsync(mockDiscovery);
 
   expect(request.url).toMatch(/https:\/\/demo.io/);
   expect(request.url).toContain('prompt=select_account');
