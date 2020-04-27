@@ -14,7 +14,7 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-#import <EXFileSystem/EXResumableManager.h>
+#import <EXFileSystem/EXResumablesManager.h>
 #import <EXFileSystem/EXSessionTaskDispatcher.h>
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
 #import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemSessionType) {
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
-@property (nonatomic, strong) EXResumableManager *resumableManager;
+@property (nonatomic, strong) EXResumablesManager *resumableManager;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -62,7 +62,7 @@ UM_REGISTER_MODULE();
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
     
-    _resumableManager = [EXResumableManager new];
+    _resumableManager = [EXResumablesManager new];
     _sessionTaskDispatcher = [EXSessionTaskDispatcher new];
     _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
     _foregroundSession = [self _createSession:EXFileSystemForegroundSession delegate:_sessionTaskDispatcher];

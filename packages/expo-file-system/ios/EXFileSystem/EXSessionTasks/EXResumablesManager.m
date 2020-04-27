@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXFileSystem/EXResumableManager.h>
+#import <EXFileSystem/EXResumablesManager.h>
 
-@interface EXResumableManager ()
+@interface EXResumablesManager ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSURLSessionDownloadTask *> *resumableDownloads;
 
 @end
 
-@implementation EXResumableManager
+@implementation EXResumablesManager
 
 - (instancetype)init
 {

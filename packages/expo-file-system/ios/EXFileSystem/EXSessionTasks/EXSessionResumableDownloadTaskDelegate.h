@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
-#import <EXFileSystem/EXResumableManager.h>
+#import <EXFileSystem/EXResumablesManager.h>
 
 typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite);
 
@@ -12,7 +12,7 @@ typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task
                        localUrl:(NSURL *)localUrl
              shouldCalculateMd5:(BOOL)shouldCalculateMd5
                 onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
-               resumableManager:(EXResumableManager *)manager
+               resumableManager:(EXResumablesManager *)manager
                            uuid:(NSString *)uuid;
 
 @end
