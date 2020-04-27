@@ -13,9 +13,11 @@ import android.provider.MediaStore.Images.Media;
 import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -225,32 +227,33 @@ final class MediaLibraryUtils {
     return MEDIA_TYPES.get(mediaType);
   }
 
-  static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) {
+  static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
     final String uri = cursor.getString(localUriIndex);
 
     if (mediaType == Files.FileColumns.MEDIA_TYPE_VIDEO) {
-      Uri photoUri = Uri.parse("file://" + uri);
-      try {
-        AssetFileDescriptor photoDescriptor = contentResolver.openAssetFileDescriptor(photoUri, "r");
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        try {
-          retriever.setDataSource(photoDescriptor.getFileDescriptor());
-          int videoWidth = Integer.parseInt(
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-          );
-          int videoHeight = Integer.parseInt(
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-          );
-          int videoOrientation = Integer.parseInt(
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
-          );
-          return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation);
-        } catch (NumberFormatException e) {
-        } finally {
+      Uri videoUri = Uri.parse("file://" + uri);
+      MediaMetadataRetriever retriever = null;
+      try (AssetFileDescriptor photoDescriptor = contentResolver.openAssetFileDescriptor(videoUri, "r")) {
+        retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+        int videoWidth = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+        );
+        int videoHeight = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+        );
+        int videoOrientation = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+        );
+        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation);
+      } catch (NumberFormatException e) {
+        Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: " + e.getMessage());
+      } catch (FileNotFoundException e) {
+        Log.e("expo-media-library", String.format("ContentResolver failed to read %s: %s", uri, e.getMessage()));
+      } finally {
+        if (retriever != null) {
           retriever.release();
-          photoDescriptor.close();
         }
-      } catch (Exception e) {
       }
     }
 
@@ -261,7 +264,8 @@ final class MediaLibraryUtils {
     int height = cursor.getInt(heightIndex);
     int orientation = cursor.getInt(orientationIndex);
 
-    if (width <= 0 || height <= 0) {
+    // If the image doesn't have the required information, we can get them from Bitmap.Options
+    if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE && (width <= 0 || height <= 0)) {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
       BitmapFactory.decodeFile(uri, options);
