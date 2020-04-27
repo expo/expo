@@ -25,7 +25,7 @@ function githubUrl(path) {
     } else {
       path = path.replace('/versions/latest/', '/versions/unversioned/');
     }
-  } else if (path.match(/v\d+\.\d+\.\d+\/?$/)) {
+  } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
     if (path[path.length - 1] === '/') {
       path = `${path}index`;
     } else {

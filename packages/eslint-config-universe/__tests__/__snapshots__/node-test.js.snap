@@ -194,22 +194,10 @@ Object {
   "errorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
-      "column": 21,
-      "endColumn": 23,
-      "endLine": 1,
-      "line": 1,
-      "message": "Forbidden extra non-null assertion.",
-      "messageId": "noExtraNonNullAssertion",
-      "nodeType": "TSNonNullExpression",
-      "ruleId": "@typescript-eslint/no-extra-non-null-assertion",
-      "severity": 1,
-    },
-  ],
-  "output": "export const blah = 3!!;
+  "messages": Array [],
+  "output": "export const blah = 3!;
 ",
-  "warningCount": 1,
+  "warningCount": 0,
 }
 `;
 

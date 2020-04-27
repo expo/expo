@@ -23,8 +23,6 @@ function getPlatformGUID(config) {
     const guid = guidFromClientId(platformClientId);
     return guid;
 }
-// TODO: Bacon: ensure this is valid for all cases.
-const PROJECT_NUMBER_LENGTH = 11; // eslint-disable-line
 const PROJECT_ID_LENGTH = 32;
 function isValidGUID(guid) {
     const components = guid.split('-');
@@ -61,6 +59,15 @@ function guidFromClientId(clientId) {
     }
     return guid;
 }
+/**
+ * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
+ *
+ * Get started in:
+ * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ *
+ * @param config
+ */
 export async function logInAsync(config) {
     if (config.behavior !== undefined) {
         console.warn("Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34");
@@ -78,12 +85,24 @@ export async function logInAsync(config) {
     const redirectUrl = config.redirectUrl
         ? config.redirectUrl
         : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
+    const extras = {};
+    if (config.language) {
+        // The OpenID property `ui_locales` doesn't seem to work as expected,
+        // but `hl` will work to change the UI language.
+        // Reference: https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230
+        extras.hl = config.language;
+    }
+    if (config.loginHint) {
+        // Reference https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+        extras.login_hint = config.loginHint;
+    }
     try {
         const logInResult = await AppAuth.authAsync({
             issuer: 'https://accounts.google.com',
             scopes,
             redirectUrl,
             clientId,
+            additionalParameters: extras,
         });
         // Web login only returns an accessToken so use it to fetch the same info as the native login
         // does.

@@ -5,7 +5,6 @@ class UnimodulesPlugin implements Plugin<Project> {
             project.android.sourceSets {
                 main {
                     java {
-                        srcDir 'src'
                         exclude '**/flutter/**'
                     }
                 }
@@ -22,7 +21,7 @@ class UnimodulesPlugin implements Plugin<Project> {
                 } else {
                     // There's no package.json and no pubspec.yaml
                     throw new GradleException(
-                        "'unimodules-core.gradle' used in a project that seems to be neither a Flutter nor a React Native project."
+                        "'unimodules-core.gradle' used in a project that seems not to be React Native project."
                     )
                 }
 

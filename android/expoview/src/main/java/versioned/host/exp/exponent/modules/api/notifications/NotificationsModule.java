@@ -150,8 +150,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void getExponentPushTokenAsync(final Promise promise) {
     String uuid = mExponentSharedPreferences.getUUID();
     if (uuid == null) {
-      // This should have been set by ExponentNotificationIntentService when Activity was created/resumed.
-      promise.reject("Couldn't get GCM token on device.");
+      // This should have been set by ExponentNotificationIntentService via
+      // ExpoFcmMessagingService#onNewToken -> FcmRegistrationIntentService.registerForeground -> ExponentNotificationIntentService#onHandleIntent
+      // (#onNewToken is supposed to be called when a token is generated after app install, see
+      // https://developers.google.com/android/reference/com/google/firebase/messaging/FirebaseMessagingService#onNewToken(java.lang.String)).
+      // If it hasn't been set, the app probably couldn't register at FCM (invalid configuration?).
+      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token on device. Check that your FCM configuration is valid.");
       return;
     }
 
@@ -165,12 +169,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFailure(Exception e) {
-          promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+          promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device. Check that your FCM configuration is valid.", e);
         }
       });
     } catch (JSONException e) {
-      promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
-      return;
+      promise.reject("E_GET_PUSH_TOKEN_FAILED", "Couldn't get push token for device. Check that your FCM configuration is valid.", e);
     }
   }
 

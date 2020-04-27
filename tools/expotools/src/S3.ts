@@ -84,7 +84,7 @@ export async function downloadAsync(
       .createReadStream();
 
     file
-      .on('error', e => {
+      .on('error', (e) => {
         reject(e);
       })
       .on('close', () => {
@@ -92,7 +92,7 @@ export async function downloadAsync(
       });
 
     reader
-      .on('error', e => {
+      .on('error', (e) => {
         reject(e);
       })
       .pipe(file);
@@ -123,7 +123,7 @@ export async function downloadFromRedirectAsync(s3Path: string, dest: string): P
     let file = fse.createWriteStream(dest);
 
     file
-      .on('error', e => {
+      .on('error', (e) => {
         reject(e);
       })
       .on('close', () => {
@@ -131,7 +131,7 @@ export async function downloadFromRedirectAsync(s3Path: string, dest: string): P
       });
 
     reader
-      .on('error', e => {
+      .on('error', (e) => {
         reject(e);
       })
       .pipe(file);

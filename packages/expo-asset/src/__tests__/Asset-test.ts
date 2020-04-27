@@ -37,6 +37,7 @@ const mockImageMetadata = {
   hash: 'cafecafecafecafecafecafecafecafe',
   scales: [1],
   httpServerLocation: '/assets',
+  fileHashes: ['cafecafecafecafecafecafecafecafe'],
 };
 
 afterEach(() => {
@@ -226,6 +227,7 @@ describe('embedding', () => {
       ...mockImageMetadata,
       hash: 'test1',
       type: 'png',
+      fileHashes: ['test1'],
     });
     expect(asset.localUri).toBe('file:///Expo.app/asset_test1.png');
   });

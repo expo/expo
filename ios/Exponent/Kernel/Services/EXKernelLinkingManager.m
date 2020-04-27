@@ -203,7 +203,10 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
       urlToTransform = launchOptionsUrl;
     }
   }
-  return [[self class] uriTransformedForLinking:urlToTransform isUniversalLink:NO];
+
+  NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:urlToTransform resolvingAgainstBaseURL:YES];
+  
+  return [[self class] uriTransformedForLinking:urlToTransform isUniversalLink:[urlComponents.scheme isEqualToString:@"https"]];
 }
 
 + (NSURL *)_uriNormalizedForLinking: (NSURL *)uri

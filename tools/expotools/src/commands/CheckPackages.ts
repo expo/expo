@@ -67,7 +67,7 @@ async function action(options) {
     console.log(
       `${chalk.green(`🏁 ${passCount} packages passed`)},`,
       `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
-      failedPackages.map(failedPackage => chalk.yellow(failedPackage)).join(', ')
+      failedPackages.map((failedPackage) => chalk.yellow(failedPackage)).join(', ')
     );
     process.exit(1);
   }
@@ -75,7 +75,7 @@ async function action(options) {
 
 function consoleErrorOutput(output: string, label: string, color: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
-  console.error(lines.map(line => `${chalk.gray(label)} ${color(line)}`).join('\n'));
+  console.error(lines.map((line) => `${chalk.gray(label)} ${color(line)}`).join('\n'));
 }
 
 async function runScriptAsync(
@@ -122,7 +122,7 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
 
   if (lines.length > 0) {
     console.error(chalk.bold.red(`The following build files need to be rebuilt and committed:`));
-    lines.map(line => {
+    lines.map((line) => {
       const filePath = path.join(EXPO_DIR, line.replace(/^\s*\S+\s*/g, ''));
       console.error(chalk.yellow(path.relative(pkg.path, filePath)));
     });

@@ -534,6 +534,11 @@ _WRAP_METHOD_IS_OBJECT(Renderbuffer)
 
 _WRAP_METHOD(renderbufferStorage, 4) {
   EXJS_UNPACK_ARGV(GLenum target, GLint internalformat, GLsizei width, GLsizei height);
+
+  // WebGL allows `GL_DEPTH_STENCIL` flag to be passed here,
+  // however OpenGL ES seems to require sized format, so we fall back to `GL_DEPTH24_STENCIL8`.
+  internalformat = internalformat == GL_DEPTH_STENCIL ? GL_DEPTH24_STENCIL8 : internalformat;
+
   addToNextBatch([=] {
     glRenderbufferStorage(target, internalformat, width, height);
   });

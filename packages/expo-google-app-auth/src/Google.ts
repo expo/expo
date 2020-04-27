@@ -5,11 +5,35 @@ import { Platform } from 'react-native';
 
 const isInExpo = Constants.appOwnership === 'expo';
 export type GoogleLogInConfig = {
+  /**
+   * Used in the Expo Play Store client app on Android (development only).
+   *
+   * - Create an Android OAuth Client ID from the [Credentials Page](https://console.developers.google.com/apis/credentials).
+   * - Run `openssl rand -base64 32 | openssl sha1 -c` in your terminal, it will output a string that looks like A1:B2:C3 but longer.
+   * - Paste the output from the previous step into the "Signing-certificate fingerprint" text field.
+   * - Use `host.exp.exponent` as the "Package name".
+   */
   androidClientId?: string;
+  /**
+   * Used in the Expo App Store client app on iOS (development only).
+   *
+   * - Select "iOS Application" as the Application Type from the [Credentials Page](https://console.developers.google.com/apis/credentials).
+   * - Use `host.exp.exponent` as the bundle identifier.
+   */
   iosClientId?: string;
+  /**
+   * Used in your custom Android app (production).
+   * Visit the docs page [Deploying to a standalone app on Android](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-android) for more info.
+   */
   androidStandaloneAppClientId?: string;
+  /**
+   * Used in your custom iOS app (production).
+   * Visit the docs page [Deploying to a standalone app on iOS](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios) for more info.
+   */
   iosStandaloneAppClientId?: string;
-  /** Deprecated: You will need to use expo-google-sign-in to do server side authentication outside of the Expo client */
+  /**
+   * **Deprecated:** [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
+   */
   webClientId?: string;
   /**
    * System authentication is very different from web auth.
@@ -22,7 +46,20 @@ export type GoogleLogInConfig = {
    * If this isn't defined then it will be infered from the correct client ID.
    */
   redirectUrl?: string;
-  /* If no other client IDs are defined this will be used. */
+  /**
+   * Language for the sign in UI, in the form of ISO 639-1 language code optionally followed by a dash
+   * and ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
+   * Only set this value if it's different from the system default (which you can access via expo-localization).
+   */
+  language?: string;
+  /**
+   * If the user's email address is known ahead of time, it can be supplied to be the default option.
+   * If the user has approved access for this app in the past then auth may return without any further interaction.
+   */
+  loginHint?: string;
+  /**
+   * If no other client IDs are defined this will be used.
+   */
   clientId?: string;
 };
 
@@ -83,9 +120,6 @@ function getPlatformGUID(config: GoogleLogInConfig) {
   return guid;
 }
 
-// TODO: Bacon: ensure this is valid for all cases.
-const PROJECT_NUMBER_LENGTH = 11; // eslint-disable-line
-
 const PROJECT_ID_LENGTH = 32;
 
 function isValidGUID(guid: string) {
@@ -131,6 +165,15 @@ function guidFromClientId(clientId: string): string {
   return guid;
 }
 
+/**
+ * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
+ *
+ * Get started in:
+ * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ *
+ * @param config
+ */
 export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult> {
   if (config.behavior !== undefined) {
     console.warn(
@@ -156,12 +199,26 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
   const redirectUrl = config.redirectUrl
     ? config.redirectUrl
     : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
+
+  const extras: Record<string, string> = {};
+  if (config.language) {
+    // The OpenID property `ui_locales` doesn't seem to work as expected,
+    // but `hl` will work to change the UI language.
+    // Reference: https://github.com/googleapis/google-api-nodejs-client/blob/9d0dd2b6fa03c5e32efb0e39daac6291ebad2c3d/src/apis/customsearch/v1.ts#L230
+    extras.hl = config.language;
+  }
+  if (config.loginHint) {
+    // Reference https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+    extras.login_hint = config.loginHint;
+  }
+
   try {
     const logInResult = await AppAuth.authAsync({
       issuer: 'https://accounts.google.com',
       scopes,
       redirectUrl,
       clientId,
+      additionalParameters: extras,
     });
 
     // Web login only returns an accessToken so use it to fetch the same info as the native login

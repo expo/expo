@@ -15,12 +15,6 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
-Object.defineProperty(exports, "Linking", {
-  enumerable: true,
-  get: function () {
-    return _Linking.default;
-  }
-});
 Object.defineProperty(exports, "Notifications", {
   enumerable: true,
   get: function () {
@@ -37,6 +31,12 @@ Object.defineProperty(exports, "DangerZone", {
   enumerable: true,
   get: function () {
     return _DangerZone.default;
+  }
+});
+Object.defineProperty(exports, "Updates", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.Updates;
   }
 });
 Object.defineProperty(exports, "Accelerometer", {
@@ -459,17 +459,30 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.Updates = exports.AR = void 0;
+exports.Logs = exports.SplashScreen = exports.AR = exports.Linking = void 0;
 
 require("./Expo.fx");
+
+function Linking() {
+  const data = _interopRequireWildcard(require("expo-linking"));
+
+  Linking = function () {
+    return data;
+  };
+
+  return data;
+}
+
+Object.defineProperty(exports, "Linking", {
+  enumerable: true,
+  get: function () {
+    return Linking();
+  }
+});
 
 var AR = _interopRequireWildcard(require("./AR"));
 
 exports.AR = AR;
-
-var Updates = _interopRequireWildcard(require("./Updates/Updates"));
-
-exports.Updates = Updates;
 
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
@@ -483,13 +496,13 @@ var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
 
-var _Linking = _interopRequireDefault(require("./Linking/Linking"));
-
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 
 var _DangerZone = _interopRequireDefault(require("./DangerZone"));
+
+var _deprecated = require("./deprecated");
 
 var _removed = require("./removed");
 

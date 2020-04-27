@@ -140,6 +140,16 @@ export default class TestScreen extends React.Component {
               app._failures += `${matcherName}: ${message}\n`;
             });
             failedSpecs.push(result);
+            if (app._isMounted) {
+              const result = {
+                magic: '[TEST-SUITE-INPROGRESS]',
+                failed: failedSpecs.length,
+                failures: app._failures,
+                results: app._results,
+              };
+              const jsonResult = JSON.stringify(result);
+              app.setState({ numFailed: failedSpecs.length, results: jsonResult });
+            }
           }
         }
       },

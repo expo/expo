@@ -1,4 +1,4 @@
-# expo-background-fetch
+# expo-task-manager
 
 Expo universal module for TaskManager API
 
@@ -9,7 +9,7 @@ Expo universal module for TaskManager API
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). 
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/task-manager/).
 
 # Installation in bare React Native projects
 
@@ -37,4 +37,4 @@ No additional set up necessary.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

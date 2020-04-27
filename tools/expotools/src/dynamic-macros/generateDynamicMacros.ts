@@ -1,25 +1,32 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import JsonFile from '@expo/json-file';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
-import macros from './macros';
 import { Directories } from '../expotools';
-
-import IosMacrosGenerator from './IosMacrosGenerator';
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
+import IosMacrosGenerator from './IosMacrosGenerator';
+import macros from './macros';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
-async function getTemplateSubstitutionsFromSecrets() {
+type TemplateSubstitutions = {
+  [key: string]: string;
+};
+
+async function getTemplateSubstitutionsFromSecrets(): Promise<TemplateSubstitutions> {
   try {
-    return await new JsonFile(path.join(EXPO_DIR, 'secrets', 'keys.json')).readAsync();
+    return await new JsonFile<TemplateSubstitutions>(
+      path.join(EXPO_DIR, 'secrets', 'keys.json')
+    ).readAsync();
   } catch (e) {
     // Don't have access to decrypted secrets, use public keys
     console.log(
       "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
     );
-    return await new JsonFile(path.join(EXPO_DIR, 'template-files', 'keys.json')).readAsync();
+    return await new JsonFile<TemplateSubstitutions>(
+      path.join(EXPO_DIR, 'template-files', 'keys.json')
+    ).readAsync();
   }
 }
 
@@ -96,7 +103,7 @@ async function cleanupDynamicMacrosAsync(args) {
   }
 }
 
-async function readExistingSourceAsync(filepath) {
+async function readExistingSourceAsync(filepath): Promise<string | null> {
   try {
     return await fs.readFile(filepath, 'utf8');
   } catch (e) {
@@ -105,16 +112,21 @@ async function readExistingSourceAsync(filepath) {
 }
 
 async function copyTemplateFileAsync(
-  source,
-  dest,
-  templateSubstitutions,
+  source: string,
+  dest: string,
+  templateSubstitutions: TemplateSubstitutions,
   configuration,
-  isOptional
+  isOptional: boolean
 ): Promise<void> {
   let [currentSourceFile, currentDestFile] = await Promise.all([
     readExistingSourceAsync(source),
     readExistingSourceAsync(dest),
   ]);
+
+  if (!currentSourceFile) {
+    console.error(`Couldn't find ${chalk.magenta(source)} file.`);
+    process.exit(1);
+  }
 
   for (const [textToReplace, value] of Object.entries(templateSubstitutions)) {
     currentSourceFile = currentSourceFile.replace(
@@ -141,25 +153,23 @@ async function copyTemplateFileAsync(
   }
 }
 
-interface AndroidPaths {
-  paths: {
-    [id: string]: string
-  },
-  generateOnly: {
-    [id: string]: string
-  }
-}
+type TemplatePaths = Record<string, string>;
+type TemplatePathsFile = {
+  paths: TemplatePaths;
+  generateOnly: TemplatePaths;
+};
 
-async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
+async function copyTemplateFilesAsync(platform: string, args: any, templateSubstitutions: any) {
   const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
-  const templatePathsFile = await new JsonFile(
+  const templatePathsFile = (await new JsonFile(
     path.join(templateFilesPath, `${platform}-paths.json`)
-  ).readAsync() as unknown as AndroidPaths;
-  const promises: Promise<any>[] = [];
-  const skipTemplates: Array<string> = args.skipTemplates || [];
+  ).readAsync()) as TemplatePathsFile;
   const templatePaths = { ...templatePathsFile.paths, ...templatePathsFile.generateOnly };
+  const checkIgnoredTemplatePaths = Object.values(templatePathsFile.generateOnly);
+  const promises: Promise<any>[] = [];
+  const skipTemplates: string[] = args.skipTemplates || [];
   for (const [source, dest] of Object.entries(templatePaths)) {
-    if (skipTemplates.includes(source)){
+    if (skipTemplates.includes(source)) {
       console.log(
         'Skipping template %s ...',
         chalk.cyan(path.join(templateFilesPath, platform, source))
@@ -167,10 +177,10 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
       continue;
     }
 
-    const isOptional = !!templatePathsFile.generateOnly[source];
+    const isOptional = checkIgnoredTemplatePaths.includes(dest);
     console.log(
       'Rendering %s from template %s %s...',
-      chalk.cyan(path.join(EXPO_DIR, dest as string, source)),
+      chalk.cyan(path.join(EXPO_DIR, dest)),
       chalk.cyan(path.join(templateFilesPath, platform, source)),
       isOptional ? chalk.yellow('(Optional) ') : ''
     );
@@ -178,7 +188,7 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
     promises.push(
       copyTemplateFileAsync(
         path.join(templateFilesPath, platform, source),
-        path.join(EXPO_DIR, dest as string, source),
+        path.join(EXPO_DIR, dest),
         templateSubstitutions,
         args.configuration,
         isOptional

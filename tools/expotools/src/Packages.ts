@@ -68,15 +68,21 @@ class Package {
 
   get androidSubdirectory(): string {
     return (
-      this.unimoduleJson && this.unimoduleJson.android && this.unimoduleJson.android.subdirectory
-    ) || 'android';
+      (this.unimoduleJson &&
+        this.unimoduleJson.android &&
+        this.unimoduleJson.android.subdirectory) ||
+      'android'
+    );
   }
 
   get androidPackageName(): string | null {
     if (!this.isSupportedOnPlatform('android')) {
       return null;
     }
-    const buildGradle = fs.readFileSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'), 'utf8');
+    const buildGradle = fs.readFileSync(
+      path.join(this.path, this.androidSubdirectory, 'build.gradle'),
+      'utf8'
+    );
     const match = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m);
     return match?.[1] ?? null;
   }
@@ -86,9 +92,11 @@ class Package {
   }
 
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    return this.unimoduleJson &&
+    return (
+      this.unimoduleJson &&
       this.unimoduleJson.platforms &&
-      this.unimoduleJson.platforms.includes(platform);
+      this.unimoduleJson.platforms.includes(platform)
+    );
   }
 
   isIncludedInExpoClientOnPlatform(platform: 'ios' | 'android'): boolean {
@@ -97,19 +105,23 @@ class Package {
       const { podspecName } = this;
       return (
         podspecName != null &&
-        fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName))
+        fs.pathExistsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName))
       );
     } else if (platform === 'android') {
       // On Android we need to read expoview's build.gradle file
       const buildGradle = fs.readFileSync(path.join(ANDROID_DIR, 'expoview/build.gradle'), 'utf8');
       const match = buildGradle.search(
-        new RegExp(`addUnimodulesDependencies\\([^\\)]+configuration\\s*:\\s*'api'[^\\)]+exclude\\s*:\\s*\\[[^\\]]*'${this.packageName}'[^\\]]*\\][^\\)]+\\)`)
+        new RegExp(
+          `addUnimodulesDependencies\\([^\\)]+configuration\\s*:\\s*'api'[^\\)]+exclude\\s*:\\s*\\[[^\\]]*'${this.packageName}'[^\\]]*\\][^\\)]+\\)`
+        )
       );
       // this is somewhat brittle so we do a quick-and-dirty sanity check:
       // 'expo-in-app-purchases' should never be included so if we don't find a match
       // for that package, something is wrong.
       if (this.packageName === 'expo-in-app-purchases' && match === -1) {
-        throw new Error("'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check expoview/build.gradle format");
+        throw new Error(
+          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check expoview/build.gradle format"
+        );
       }
       return match === -1;
     }
@@ -147,7 +159,7 @@ async function getListOfPackagesAsync(
     if (!(await fs.lstat(packagePath)).isDirectory()) {
       continue;
     }
-    if (await fs.exists(packageJsonPath)) {
+    if (await fs.pathExists(packageJsonPath)) {
       const packageJson = require(packageJsonPath);
       packages.push(new Package(packagePath, packageJson));
     } else {

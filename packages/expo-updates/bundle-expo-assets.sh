@@ -3,7 +3,8 @@
 set -eo pipefail
 
 if [ "$CONFIGURATION" == "Debug" ]; then
-  echo "Skipping asset bundling in debug mode."
+  export NODE_BINARY=node
+  ../node_modules/react-native/scripts/react-native-xcode.sh
   exit 0
 fi
 
@@ -12,4 +13,3 @@ export PATH="$(if [ -f ~/.expo/PATH ]; then echo $PATH:$(cat ~/.expo/PATH); else
 dest="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 expo bundle-assets --platform ios --dest "$dest"
 popd
-

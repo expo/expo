@@ -1,7 +1,7 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import { IosPlist, IosPodsTools } from '@expo/xdl';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import * as Directories from '../Directories';
 import * as ProjectVersions from '../ProjectVersions';
@@ -21,7 +21,7 @@ async function modifyInfoPlistAsync(
 
   console.log('Modifying Info.plist at %s ...', chalk.cyan(path.relative(EXPO_DIR, infoPlistPath)));
 
-  const result = await IosPlist.modifyAsync(dir, filename, config => {
+  const result = await IosPlist.modifyAsync(dir, filename, (config) => {
     if (templateSubstitutions.FABRIC_API_KEY) {
       config.Fabric = {
         APIKey: templateSubstitutions.FABRIC_API_KEY,
@@ -57,7 +57,7 @@ async function generateBuildConstantsFromMacrosAsync(
   const plistPath = path.dirname(buildConfigPlistPath);
   const plistName = path.basename(buildConfigPlistPath);
 
-  if (!(await fs.exists(buildConfigPlistPath))) {
+  if (!(await fs.pathExists(buildConfigPlistPath))) {
     await IosPlist.createBlankAsync(plistPath, plistName);
   }
 
@@ -66,7 +66,7 @@ async function generateBuildConstantsFromMacrosAsync(
     chalk.cyan(path.relative(EXPO_DIR, buildConfigPlistPath))
   );
 
-  const result = await IosPlist.modifyAsync(plistPath, plistName, config => {
+  const result = await IosPlist.modifyAsync(plistPath, plistName, (config) => {
     if (config.USE_GENERATED_DEFAULTS === false) {
       // this flag means don't generate anything, let the user override.
       return config;
@@ -130,10 +130,7 @@ function validateBuildConstants(config, buildConfiguration) {
   return config;
 }
 
-async function writeTemplatesAsync(
-  expoKitPath: string,
-  templateFilesPath: string,
-) {
+async function writeTemplatesAsync(expoKitPath: string, templateFilesPath: string) {
   if (expoKitPath) {
     await renderExpoKitPodspecAsync(expoKitPath, templateFilesPath);
     await renderExpoKitPodfileAsync(expoKitPath, templateFilesPath);
@@ -195,10 +192,7 @@ export default class IosMacrosGenerator {
     );
 
     // // Generate Podfile and ExpoKit podspec using template files.
-    await writeTemplatesAsync(
-      options.expoKitPath,
-      options.templateFilesPath,
-    );
+    await writeTemplatesAsync(options.expoKitPath, options.templateFilesPath);
   }
 
   async cleanupAsync(options): Promise<void> {

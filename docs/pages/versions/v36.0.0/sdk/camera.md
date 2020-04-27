@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run [this snack](https://snack.expo.io/@charliecruzan/camerja) on your device to see all these features working together!
+**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [snack below](##example-usage) on your device to see all these features working together!
 
 <PlatformsSection android ios web />
 
@@ -110,6 +110,8 @@ if (await Camera.isAvailableAsync()) {
 ```
 
 ### `Camera.getAvailableCameraTypesAsync(): string[]`
+
+_Web Only_
 
 Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
 
