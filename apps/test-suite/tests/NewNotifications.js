@@ -738,6 +738,7 @@ export async function test(t) {
         data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
+        color: '#FF0000',
       };
 
       t.afterEach(async () => {
@@ -758,6 +759,37 @@ export async function test(t) {
           });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          subscription.remove();
+        },
+        10000
+      );
+
+      t.fit(
+        'triggers a notification which contains the custom color',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          if (Platform.OS === 'android') {
+            t.expect(notificationReceivedSpy).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({
+                request: t.jasmine.objectContaining({
+                  content: t.jasmine.objectContaining({
+                    // #AARRGGBB
+                    color: '#FFFF0000',
+                  }),
+                }),
+              })
+            );
+          }
           subscription.remove();
         },
         10000
