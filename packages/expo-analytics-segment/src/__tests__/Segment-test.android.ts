@@ -6,16 +6,8 @@ const mockOptions = {
   iosWriteKey: 'ios-write-key',
 };
 
-it(`initializes`, () => {
-  console.log(Object.keys(ExponentSegment));
+it(`initializes once for android`, () => {
   Segment.initialize(mockOptions);
-
   expect(ExponentSegment.initialize).toHaveBeenCalledWith(mockOptions.androidWriteKey);
-  expect(ExponentSegment.initialize).not.toHaveBeenCalled();
-});
-
-it(`does not initialize`, () => {
-  Segment.initialize({ iosWriteKey: 'ios-write-key' });
-
-  expect(ExponentSegment.initialize).not.toHaveBeenCalled();
+  expect(ExponentSegment.initialize).toHaveBeenCalledTimes(1);
 });
