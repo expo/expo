@@ -14,6 +14,15 @@
   return self;
 }
 
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
+{
+  if (error) {
+    self.reject(@"ERR_FILESYSTEM_CANNOT_DOWNLOAD",
+                [NSString stringWithFormat:@"Unable to download file: %@", error.description],
+                error);
+  }
+}
+
 - (NSDictionary *)parseServerResponse:(NSURLResponse *)response
 {
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -22,15 +31,6 @@
     @"headers": [httpResponse allHeaderFields],
     @"mimeType": UMNullIfNil([httpResponse MIMEType])
   };
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
-{
-  if (error) {
-    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
-                [NSString stringWithFormat:@"Unable to download file: %@", error.description],
-                error);
-  }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location

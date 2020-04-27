@@ -38,7 +38,7 @@
     if (error.code == NSURLErrorCancelled) {
       self.resolve([NSNull null]);
     } else {
-      self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_DOWNLOAD",
+      self.reject(@"ERR_FILESYSTEM_CANNOT_DOWNLOAD",
                   [NSString stringWithFormat:@"Unable to download file: %@", error.description],
                   error);
     }

@@ -32,7 +32,7 @@
   if ([fileManager fileExistsAtPath:_localUrl.path]) {
     [fileManager removeItemAtURL:_localUrl error:&error];
     if (error) {
-      self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_REMOVE",
+      self.reject(@"ERR_FILESYSTEM_CANNOT_REMOVE",
                   [NSString stringWithFormat:@"Unable to remove file from local URI: '%@'", error.description],
                   error);
       return;
@@ -41,7 +41,7 @@
 
   [fileManager moveItemAtURL:location toURL:_localUrl error:&error];
   if (error) {
-    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_SAVE",
+    self.reject(@"ERR_FILESYSTEM_CANNOT_SAVE",
                 [NSString stringWithFormat:@"Unable to save file to local URI: '%@'", error.description],
                 error);
     return;

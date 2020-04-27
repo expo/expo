@@ -11,7 +11,6 @@
 - (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
                          reject:(UMPromiseRejectBlock)reject;
 
-+ (NSDictionary *)parseServerResponse:(NSURLResponse *)response;
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location;
 

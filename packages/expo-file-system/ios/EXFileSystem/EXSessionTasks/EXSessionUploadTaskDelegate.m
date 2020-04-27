@@ -21,7 +21,7 @@
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
   if (error) {
-    self.reject(@"ERR_FILE_SYSTEM_UNABLE_TO_UPLOAD_FILE.",
+    self.reject(@"ERR_FILESYSTEM_CANNOT_UPLOAD",
                 [NSString stringWithFormat:@"Unable to upload the file: '%@'", error.description],
                 error);
     return;
