@@ -112,19 +112,13 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void initializeAndroid(final String writeKey, Promise promise) {
+  public void initialize(final String writeKey, Promise promise) {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
     builder.tag(Integer.toString(sCurrentTag++));
     builder.use(FirebaseIntegration.FACTORY);
     mClient = builder.build();
     mClient.optOut(!getEnabledPreferenceValue());
     promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void initializeIOS(final String writeKey, Promise promise) {
-    // NO-OP. Need this here because Segment has different keys for iOS and Android.
-    promise.reject("E_WRONG_PLATFORM", "Method initializeIOS should not be called on Android, please file an issue on GitHub.");
   }
 
   @ExpoMethod
