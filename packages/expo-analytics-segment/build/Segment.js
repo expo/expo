@@ -9,7 +9,12 @@ export function initialize(options) {
         ios: options.iosWriteKey,
         android: options.androidWriteKey,
     });
-    ExponentSegment.initialize(platformWriteKey);
+    if (platformWriteKey) {
+        ExponentSegment.initialize(platformWriteKey);
+    }
+    else {
+        throw new Error('You must provide a platform-specific write key to initialize Segment.');
+    }
 }
 export function identify(userId) {
     if (!ExponentSegment.identify) {
