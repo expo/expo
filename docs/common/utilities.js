@@ -23,6 +23,10 @@ export const generateSlug = (slugger, node, length = 7) => {
   return slug;
 };
 
+export const isVersionedUrl = url => {
+  return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
+};
+
 export const replaceVersionInUrl = (url, replaceWith) => {
   const urlArr = url.split('/');
   urlArr[2] = replaceWith;
