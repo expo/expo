@@ -21,10 +21,10 @@ UM_REGISTER_MODULE();
   [content setLaunchImageName:[request objectForKey:@"launchImageName" verifyingClass:[NSString class]]];
   [content setBadge:[request objectForKey:@"badge" verifyingClass:[NSNumber class]]];
   [content setUserInfo:[request objectForKey:@"data" verifyingClass:[NSDictionary class]]];
-  if ([request objectForKey:@"sound" verifyingClass:[NSNumber class]]) {
+  if ([request[@"sound"] isKindOfClass:[NSNumber class]]) {
     [content setSound:[request[@"sound"] boolValue] ? [UNNotificationSound defaultSound] : nil];
-  } else if ([request objectForKey:@"sound" verifyingClass:[NSString class]]) {
-    NSString *soundName = [request objectForKey:@"sound"];
+  } else if ([request[@"sound"] isKindOfClass:[NSString class]]) {
+    NSString *soundName = request[@"sound"];
     if ([@"default" isEqualToString:soundName]) {
       [content setSound:[UNNotificationSound defaultSound]];
     } else if ([@"defaultCritical" isEqualToString:soundName]) {
