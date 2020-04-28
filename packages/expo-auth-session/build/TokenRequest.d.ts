@@ -58,7 +58,7 @@ declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, Toke
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export declare class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> implements AccessTokenRequestConfig {
-    readonly code?: string;
+    readonly code: string;
     readonly redirectUri: string;
     constructor(options: AccessTokenRequestConfig);
     getQueryBody(): Record<string, string>;

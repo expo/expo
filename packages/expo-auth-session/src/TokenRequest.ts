@@ -207,7 +207,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
     }
 
     if (this.scopes) {
-      queryBody.scope = Array.isArray(this.scopes) ? this.scopes.join(' ') : undefined;
+      queryBody.scope = this.scopes.join(' ');
     }
 
     if (this.extraParams) {
@@ -228,7 +228,7 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
  */
 export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
   implements AccessTokenRequestConfig {
-  readonly code?: string;
+  readonly code: string;
   readonly redirectUri: string;
 
   constructor(options: AccessTokenRequestConfig) {
@@ -315,7 +315,7 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
 
   private getHeaders(): Headers {
     const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-    if (typeof this.clientSecret !== 'undefined') {
+    if (typeof this.clientSecret !== 'undefined' && this.clientId) {
       // If client secret exists, it should be converted to base64
       // https://tools.ietf.org/html/rfc6749#section-2.3.1
       const encodedClientId = encodeURIComponent(this.clientId);

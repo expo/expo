@@ -153,7 +153,7 @@ class TokenRequest extends Request {
             queryBody.client_id = this.clientId;
         }
         if (this.scopes) {
-            queryBody.scope = Array.isArray(this.scopes) ? this.scopes.join(' ') : undefined;
+            queryBody.scope = this.scopes.join(' ');
         }
         if (this.extraParams) {
             for (const extra in this.extraParams) {
@@ -227,7 +227,7 @@ export class RevokeTokenRequest extends Request {
     }
     getHeaders() {
         const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-        if (typeof this.clientSecret !== 'undefined') {
+        if (typeof this.clientSecret !== 'undefined' && this.clientId) {
             // If client secret exists, it should be converted to base64
             // https://tools.ietf.org/html/rfc6749#section-2.3.1
             const encodedClientId = encodeURIComponent(this.clientId);
