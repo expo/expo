@@ -696,6 +696,42 @@ Fetch a `DiscoveryDocument` from a well-known resource provider that supports au
 
 - **discovery (_DiscoveryDocument_)** -- A discovery document that can be used for authentication.
 
+### `AuthSession.exchangeCodeAsync()`
+
+Exchange an authorization code for an access token that can be used to get data from the provider.
+
+#### Arguments
+
+- **config (_TokenRequestConfig_)** -- Configuration used to exchange the code for a token. The `grantType` is locked to `GrantType.AuthorizationCode`.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `tokenEndpoint` URL.
+
+### `AuthSession.refreshAsync()`
+
+Refresh an access token.
+
+#### Arguments
+
+- **config (_TokenRequestConfig_)** -- Configuration used to refresh the given access token. The `grantType` is locked to `GrantType.RefreshToken`.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `tokenEndpoint` URL.
+
+### `AuthSession.revokeAsync()`
+
+Revoke a token with a provider. This makes the token unusable, effectively requiring the user to login again.
+
+#### Arguments
+
+- **config (_RevokeTokenRequestConfig_)** -- Configuration used to revoke a refresh or access token.
+
+#### Returns
+
+- **discovery (_DiscoveryDocument_)** -- A discovery document with a valid `revocationEndpoint` URL. Many providers do not support this feature.
+
 ### `AuthSession.startAsync(options)`
 
 Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application; if you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.

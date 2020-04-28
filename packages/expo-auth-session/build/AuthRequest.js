@@ -2,6 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
+import { TokenResponse } from './TokenRequest';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
@@ -123,6 +124,7 @@ export class AuthRequest {
     parseReturnUrl(url) {
         const { params, errorCode } = QueryParams.getQueryParams(url);
         const { state, error = errorCode } = params;
+        let tokenResponse = null;
         let parsedError = null;
         if (state !== this.state) {
             // This is a non-standard error
@@ -134,11 +136,27 @@ export class AuthRequest {
         else if (error) {
             parsedError = new AuthError({ error, ...params });
         }
+        if (params.access_token) {
+            tokenResponse = new TokenResponse({
+                accessToken: params.access_token,
+                refreshToken: params.refresh_token,
+                scope: params.scope,
+                state: params.state,
+                idToken: params.id_token,
+                // @ts-ignore: Expected string
+                tokenType: params.token_type,
+                // @ts-ignore: Expected number
+                expiresIn: params.expires_in,
+                // @ts-ignore: Expected number
+                issuedAt: params.issued_at,
+            });
+        }
         return {
             type: parsedError ? 'error' : 'success',
             error: parsedError,
             url,
             params,
+            tokenResponse,
             // Return errorCode for legacy
             errorCode,
         };
@@ -178,6 +196,13 @@ export class AuthRequest {
         params.response_type = request.responseType;
         params.state = request.state;
         params.scope = request.scopes.join(' ');
+        // If "Implicit Grant Flow" then delete the code challenge.
+        // This is required for Google auth, if there are problems in the future then
+        // we should add a check for google in `discovery.authorizationEndpoint`.
+        if (params.response_type === ResponseType.Token) {
+            delete params.code_challenge;
+            delete params.code_challenge_method;
+        }
         const query = QueryParams.buildQueryString(params);
         // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;

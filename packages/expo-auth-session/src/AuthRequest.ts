@@ -9,6 +9,7 @@ import {
   ResponseType,
   Prompt,
 } from './AuthRequest.types';
+import { TokenResponse } from './TokenRequest';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
@@ -27,13 +28,12 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
  *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
-export class AuthRequest {
+export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
   public state: Promise<string> | string;
   public url: string | null = null;
-  // Public for testing
   public codeVerifier?: string;
   public codeChallenge?: string;
 
@@ -186,6 +186,7 @@ export class AuthRequest {
     const { params, errorCode } = QueryParams.getQueryParams(url);
     const { state, error = errorCode } = params;
 
+    let tokenResponse: TokenResponse | null = null;
     let parsedError: AuthError | null = null;
     if (state !== this.state) {
       // This is a non-standard error
@@ -197,12 +198,28 @@ export class AuthRequest {
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
+    if (params.access_token) {
+      tokenResponse = new TokenResponse({
+        accessToken: params.access_token,
+        refreshToken: params.refresh_token,
+        scope: params.scope,
+        state: params.state,
+        idToken: params.id_token,
+        // @ts-ignore: Expected string
+        tokenType: params.token_type,
+        // @ts-ignore: Expected number
+        expiresIn: params.expires_in,
+        // @ts-ignore: Expected number
+        issuedAt: params.issued_at,
+      });
+    }
 
     return {
       type: parsedError ? 'error' : 'success',
       error: parsedError,
       url,
       params,
+      tokenResponse,
       // Return errorCode for legacy
       errorCode,
     };
@@ -249,6 +266,14 @@ export class AuthRequest {
     params.response_type = request.responseType!;
     params.state = request.state;
     params.scope = request.scopes.join(' ');
+
+    // If "Implicit Grant Flow" then delete the code challenge.
+    // This is required for Google auth, if there are problems in the future then
+    // we should add a check for google in `discovery.authorizationEndpoint`.
+    if (params.response_type === ResponseType.Token) {
+      delete params.code_challenge;
+      delete params.code_challenge_method;
+    }
 
     const query = QueryParams.buildQueryString(params);
     // Store the URL for later

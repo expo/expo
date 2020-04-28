@@ -7,7 +7,7 @@ declare type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpo
  *
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
-export declare class AuthRequest {
+export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     /**
      * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
      */

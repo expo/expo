@@ -53,6 +53,7 @@ export async function startAsync(options) {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
+        tokenResponse: null,
         url: result.url,
     };
 }

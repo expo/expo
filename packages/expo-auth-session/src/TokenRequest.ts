@@ -5,18 +5,18 @@ import * as ServiceConfig from './Discovery';
 import { ResponseErrorConfig, TokenError } from './Errors';
 import { Headers, requestAsync } from './Fetch';
 import {
-  AccessTokenRequestConfig,
   GrantType,
-  RefreshTokenRequestConfig,
   RevokeTokenRequestConfig,
   ServerTokenResponseConfig,
   TokenRequestConfig,
   TokenResponseConfig,
   TokenType,
   TokenTypeHint,
+  RefreshTokenRequestConfig,
+  AccessTokenRequestConfig,
 } from './TokenRequest.types';
 
-function getCurrentTime() {
+function getCurrentTime(): number {
   return Math.floor(Date.now() / 1000);
 }
 
@@ -25,7 +25,7 @@ function getCurrentTime() {
  *
  * [Section 5.1](https://tools.ietf.org/html/rfc6749#section-5.1)
  */
-export class TokenResponse {
+export class TokenResponse implements TokenResponseConfig {
   /**
    * Determines whether a token refresh request must be made to refresh the tokens
    *
@@ -51,14 +51,11 @@ export class TokenResponse {
   }
 
   accessToken: string;
-  /**
-   * Access token type
-   * [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
-   */
   tokenType: TokenType;
   expiresIn?: number;
   refreshToken?: string;
   scope?: string;
+  state?: string;
   idToken?: string;
   issuedAt: number;
 
@@ -68,6 +65,7 @@ export class TokenResponse {
     this.expiresIn = response.expiresIn;
     this.refreshToken = response.refreshToken;
     this.scope = response.scope;
+    this.state = response.state;
     this.idToken = response.idToken;
     this.issuedAt = response.issuedAt ?? getCurrentTime();
   }
@@ -78,6 +76,7 @@ export class TokenResponse {
     this.expiresIn = response.expiresIn ?? this.expiresIn;
     this.refreshToken = response.refreshToken ?? this.refreshToken;
     this.scope = response.scope ?? this.scope;
+    this.state = response.state ?? this.state;
     this.idToken = response.idToken ?? this.idToken;
     this.issuedAt = response.issuedAt ?? this.issuedAt ?? getCurrentTime();
   }
@@ -88,6 +87,7 @@ export class TokenResponse {
       idToken: this.idToken,
       refreshToken: this.refreshToken,
       scope: this.scope,
+      state: this.state,
       tokenType: this.tokenType,
       issuedAt: this.issuedAt,
       expiresIn: this.expiresIn,
@@ -95,7 +95,7 @@ export class TokenResponse {
   }
 
   async refreshAsync(
-    config: Omit<RefreshTokenRequestConfig, 'grantType' | 'refreshToken'>,
+    config: Omit<TokenRequestConfig, 'grantType' | 'refreshToken'>,
     discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
   ): Promise<TokenResponse> {
     const request = new RefreshTokenRequest({
@@ -117,15 +117,11 @@ export class TokenResponse {
 }
 
 class Request<T, B> {
-  constructor(protected request: T) {
-    this.validateRequest();
-  }
+  constructor(protected request: T) {}
 
   async performAsync(discovery: ServiceConfig.DiscoveryDocument): Promise<B> {
     throw new Error('performAsync must be extended');
   }
-
-  validateRequest() {}
 
   getRequestConfig(): T {
     throw new Error('getRequestConfig must be extended');
@@ -141,44 +137,23 @@ class Request<T, B> {
  * A generic token request.
  */
 class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
-  clientId: string;
-  clientSecret?: string;
-  grantType: GrantType;
-  code?: string;
-  refreshToken?: string;
-  redirectUri: string;
-  extraParams?: Record<string, string>;
-  scope?: string;
-  codeVerifier?: string;
+  readonly clientId: string;
+  readonly clientSecret?: string;
+  readonly scopes?: string[];
+  readonly extraParams?: Record<string, string>;
 
-  constructor(request) {
+  constructor(request, public grantType: GrantType) {
     super(request);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
-    this.grantType = request.grantType;
-    this.code = request.code;
-    this.refreshToken = request.refreshToken;
-    this.redirectUri = request.redirectUri;
     this.extraParams = request.extraParams;
-    this.scope = request.scope;
-    this.codeVerifier = request.codeVerifier;
-  }
-
-  validateRequest() {
-    // Additional validation for the authorization_code grant type
-    if (this.grantType === GrantType.AuthorizationCode) {
-      // redirect URI must not be nil
-      invariant(
-        this.redirectUri,
-        `A \`TokenRequest\` was created with a \`grantType\` (${this.grantType}) that requires a \`redirectUri\`, but a nullish \`redirectUri\` was given`
-      );
-    }
+    this.scopes = request.scopes;
   }
 
   private getHeaders(): Headers {
     const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     if (typeof this.clientSecret !== 'undefined') {
-      // If client secret exists, it should be coverted to base64
+      // If client secret exists, it should be converted to base64
       // https://tools.ietf.org/html/rfc6749#section-2.3.1
       const encodedClientId = encodeURIComponent(this.clientId);
       const encodedClientSecret = encodeURIComponent(this.clientSecret);
@@ -191,6 +166,11 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
   }
 
   async performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>) {
+    // redirect URI must not be nil
+    invariant(
+      discovery.tokenEndpoint,
+      `Cannot invoke \`performAsync()\` without a valid tokenEndpoint`
+    );
     const response = await requestAsync<ServerTokenResponseConfig | ResponseErrorConfig>(
       discovery.tokenEndpoint,
       {
@@ -217,50 +197,41 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
   }
 
   getQueryBody() {
-    const map: Record<string, string> = {
-      redirect_uri: this.redirectUri,
+    const queryBody: Record<string, string> = {
       grant_type: this.grantType,
     };
 
-    if (this.code) {
-      map.code = this.code;
-    }
-
-    if (this.refreshToken) {
-      map.refresh_token = this.refreshToken;
-    }
-
     if (!this.clientSecret) {
       // Only add the client ID if client secret is not present, otherwise pass the client id with the secret in the request body.
-      map.client_id = this.clientId;
+      queryBody.client_id = this.clientId;
     }
 
-    if (this.codeVerifier) {
-      map.code_verifier = this.codeVerifier;
-    }
-
-    if (this.scope) {
-      map.scope = this.scope;
+    if (this.scopes) {
+      queryBody.scope = Array.isArray(this.scopes) ? this.scopes.join(' ') : undefined;
     }
 
     if (this.extraParams) {
       for (const extra in this.extraParams) {
-        if (extra in this.extraParams && !(extra in map)) {
-          map[extra] = this.extraParams[extra];
+        if (extra in this.extraParams && !(extra in queryBody)) {
+          queryBody[extra] = this.extraParams[extra];
         }
       }
     }
-    return map;
+    return queryBody;
   }
 }
 
 /**
- * Access token request. Exchange a code for a user access token.
+ * Access token request. Exchange an authorization code for a user access token.
  *
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
-export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> {
-  constructor(options: Omit<AccessTokenRequestConfig, 'grantType'>) {
+export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
+  implements AccessTokenRequestConfig {
+  readonly code?: string;
+  readonly redirectUri: string;
+
+  constructor(options: AccessTokenRequestConfig) {
     invariant(
       options.redirectUri,
       `\`AccessTokenRequest\` requires a valid \`redirectUri\` (it must also match the one used in the auth request). Example: ${Platform.select(
@@ -270,34 +241,54 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig> {
         }
       )}`
     );
-    super({
-      grantType: GrantType.AuthorizationCode,
-      code: options.code,
-      refreshToken: options.refreshToken,
-      redirectUri: options.redirectUri,
-      clientId: options.clientId,
-      extraParams: options.extraParams,
-      clientSecret: options.clientSecret,
-      scope: Array.isArray(options.scopes) ? options.scopes.join(' ') : undefined,
-      codeVerifier: options.codeVerifier,
-    });
+
+    invariant(
+      options.code,
+      `\`AccessTokenRequest\` requires a valid authorization \`code\`. This is what's received from the authorization server after an auth request.`
+    );
+    super(options, GrantType.AuthorizationCode);
+    this.code = options.code;
+    this.redirectUri = options.redirectUri;
+  }
+
+  getQueryBody() {
+    const queryBody: Record<string, string> = super.getQueryBody();
+
+    if (this.redirectUri) {
+      queryBody.redirect_uri = this.redirectUri;
+    }
+
+    if (this.code) {
+      queryBody.code = this.code;
+    }
+
+    return queryBody;
   }
 }
 
-export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig> {
-  constructor(options: Omit<RefreshTokenRequestConfig, 'grantType'>) {
+/**
+ * Refresh request.
+ *
+ * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+ */
+export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig>
+  implements RefreshTokenRequestConfig {
+  readonly refreshToken?: string;
+
+  constructor(options: RefreshTokenRequestConfig) {
     invariant(options.refreshToken, `\`RefreshTokenRequest\` requires a valid \`refreshToken\`.`);
-    super({
-      grantType: GrantType.RefreshToken,
-      code: options.code,
-      refreshToken: options.refreshToken,
-      redirectUri: options.redirectUri,
-      clientId: options.clientId,
-      extraParams: options.extraParams,
-      clientSecret: options.clientSecret,
-      scope: Array.isArray(options.scopes) ? options.scopes.join(' ') : undefined,
-      codeVerifier: options.codeVerifier,
-    });
+    super(options, GrantType.RefreshToken);
+    this.refreshToken = options.refreshToken;
+  }
+
+  getQueryBody() {
+    const queryBody = super.getQueryBody();
+
+    if (this.refreshToken) {
+      queryBody.refresh_token = this.refreshToken;
+    }
+
+    return queryBody;
   }
 }
 
@@ -306,18 +297,35 @@ export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig>
  *
  * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
-export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolean> {
-  clientId?: string;
-  clientSecret?: string;
-  token: string;
-  tokenTypeHint?: TokenTypeHint;
+export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolean>
+  implements RevokeTokenRequestConfig {
+  readonly clientId?: string;
+  readonly clientSecret?: string;
+  readonly token: string;
+  readonly tokenTypeHint?: TokenTypeHint;
 
   constructor(request: RevokeTokenRequestConfig) {
     super(request);
+    invariant(request.token, `\`RevokeTokenRequest\` requires a valid \`token\` to revoke.`);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
     this.token = request.token;
     this.tokenTypeHint = request.tokenTypeHint;
+  }
+
+  private getHeaders(): Headers {
+    const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    if (typeof this.clientSecret !== 'undefined') {
+      // If client secret exists, it should be converted to base64
+      // https://tools.ietf.org/html/rfc6749#section-2.3.1
+      const encodedClientId = encodeURIComponent(this.clientId);
+      const encodedClientSecret = encodeURIComponent(this.clientSecret);
+      const credentials = `${encodedClientId}:${encodedClientSecret}`;
+      const basicAuth = encodeBase64NoWrap(credentials);
+      headers.Authorization = `Basic ${basicAuth}`;
+    }
+
+    return headers;
   }
 
   /**
@@ -326,16 +334,13 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
    * @param discovery The `revocationEndpoint` for a provider.
    */
   async performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'revocationEndpoint'>) {
-    const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-
     invariant(
       discovery.revocationEndpoint,
       `Cannot revoke token without a valid revocation endpoint in the authorization service configuration.`
     );
-
-    await requestAsync<boolean>(discovery.revocationEndpoint!, {
+    await requestAsync<boolean>(discovery.revocationEndpoint, {
       method: 'POST',
-      headers,
+      headers: this.getHeaders(),
       body: this.getQueryBody(),
     });
 
@@ -352,18 +357,49 @@ export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolea
   }
 
   getQueryBody(): Record<string, string> {
-    const body: Record<string, string> = { token: this.token };
+    const queryBody: Record<string, string> = { token: this.token };
     if (this.tokenTypeHint) {
-      body.token_type_hint = this.tokenTypeHint;
+      queryBody.token_type_hint = this.tokenTypeHint;
     }
+    // Include client creds https://tools.ietf.org/html/rfc6749#section-2.3.1
     if (this.clientId) {
-      body.client_id = this.clientId;
+      queryBody.client_id = this.clientId;
     }
     if (this.clientSecret) {
-      body.client_secret = this.clientSecret;
+      queryBody.client_secret = this.clientSecret;
     }
-    return body;
+    return queryBody;
   }
+}
+
+/**
+ * Exchange an auth code for an access token that can be used to get data from the provider.
+ *
+ * @param config
+ * @param discovery The `tokenEndpoint` for a provider.
+ */
+export function exchangeCodeAsync(
+  config: AccessTokenRequestConfig,
+  discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
+): Promise<TokenResponse> {
+  const request = new AccessTokenRequest(config);
+  return request.performAsync(discovery);
+}
+
+/**
+ * Refresh an access token. Often this just requires the `refreshToken` and `scopes` parameters.
+ *
+ * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+ *
+ * @param config
+ * @param discovery The `tokenEndpoint` for a provider.
+ */
+export function refreshAsync(
+  config: RefreshTokenRequestConfig,
+  discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
+): Promise<TokenResponse> {
+  const request = new RefreshTokenRequest(config);
+  return request.performAsync(discovery);
 }
 
 /**
@@ -378,34 +414,6 @@ export function revokeAsync(
   discovery: Pick<ServiceConfig.DiscoveryDocument, 'revocationEndpoint'>
 ): Promise<boolean> {
   const request = new RevokeTokenRequest(config);
-  return request.performAsync(discovery);
-}
-
-/**
- * Refresh a token.
- *
- * @param config
- * @param discovery The `tokenEndpoint` for a provider.
- */
-export function refreshAsync(
-  config: Omit<RefreshTokenRequestConfig, 'grantType'>,
-  discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
-): Promise<TokenResponse> {
-  const request = new RefreshTokenRequest(config);
-  return request.performAsync(discovery);
-}
-
-/**
- * Exchange an auth code for an access token that can be used to get data from the provider.
- *
- * @param config
- * @param discovery The `tokenEndpoint` for a provider.
- */
-export function exchangeCodeAsync(
-  config: Omit<AccessTokenRequestConfig, 'grantType'>,
-  discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>
-): Promise<TokenResponse> {
-  const request = new AccessTokenRequest(config);
   return request.performAsync(discovery);
 }
 
