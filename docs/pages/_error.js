@@ -63,6 +63,14 @@ export default class Error extends React.Component {
       redirectPath = RENAMED_PAGES[redirectPath];
     }
 
+    // Catch any unversioned paths which are also renamed
+    if (redirectPath.startsWith('/versions/latest/')) {
+      const unversionedPath = redirectPath.replace('/versions/latest', '');
+      if (RENAMED_PAGES[unversionedPath]) {
+        redirectPath = RENAMED_PAGES[unversionedPath];
+      }
+    }
+
     // Check if the version is documented, replace it with latest if not
     if (!isVersionDocumented(redirectPath)) {
       redirectPath = replaceVersionWithLatest(redirectPath);
@@ -245,7 +253,7 @@ const RENAMED_PAGES = {
   '/guides/expokit/': '/expokit/overview/',
   '/guides/publishing/': '/workflow/publishing/',
   '/guides/linking/': '/vworkflow/linking/',
-  '/guides/up-and-running/': '/workflow/up-and-running/',
+  '/guides/up-and-running/': '/get-started/installation/',
   '/guides/debugging/': '/workflow/debugging/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
@@ -263,4 +271,8 @@ const RENAMED_PAGES = {
 
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
+
+  // Additional redirects based on Sentry (04/28/2020)
+  '/next-steps/installation/': '/get-started/installation/',
+  '/guides/release-channels/': '/distribution/release-channels/',
 };
