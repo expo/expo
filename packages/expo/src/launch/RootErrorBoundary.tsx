@@ -35,8 +35,6 @@ let _appLoadingIsMounted: boolean;
  * currently only works with <AppLoading /> and not SplashScreen.preventAutoHide()!
  * - We only want to update the error state when the splash screen is visible, after
  * the splash screen is gone we don't want to do anything in this component.
- * - On iOS the splash screen hides itself, but we provide a uniform error
- * screen with Android.
  * - On Android it is necessary for us to render some content in order to hide
  * the splash screen, just calling `ExponentAppLoadingManager.finishedAsync()`
  * is not sufficient.
