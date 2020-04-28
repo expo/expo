@@ -5,6 +5,7 @@
 #import <EXFileSystem/EXFileSystem.h>
 
 #import <CommonCrypto/CommonDigest.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
@@ -27,6 +28,12 @@ typedef NS_ENUM(NSInteger, EXFileSystemSessionType) {
   EXFileSystemForegroundSession = 1,
 };
 
+typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
+  EXFileSystemInvalidType = -1,
+  EXFileSystemBinaryContent = 0,
+  EXFileSystemMultipart = 1,
+};
+ 
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSURLSession *backgroundSession;
@@ -575,6 +582,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
 {
   NSURL *fileUri = [NSURL URLWithString:fileUriString];
   NSString *httpMethod = options[@"httpMethod"];
+  EXFileSystemUploadType type = [self _importUploadType:options[@"uploadType"]];
   if (![fileUri.scheme isEqualToString:@"file"]) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
@@ -608,7 +616,26 @@ UM_EXPORT_METHOD_AS(uploadAsync,
     return;
   }
   
-  NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromFile:fileUri];
+  NSURLSessionUploadTask *task;
+  if (type == EXFileSystemBinaryContent) {
+    task = [session uploadTaskWithRequest:request fromFile:fileUri];
+  } else if (type == EXFileSystemMultipart) {
+    NSString *boundaryString = [[NSUUID UUID] UUIDString];
+    [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundaryString] forHTTPHeaderField:@"Content-Type"];
+    NSData *httpBody = [self _createBodyWithBoundary:boundaryString
+                                             fileUri:fileUri
+                                          parameters:options[@"parameters"]
+                                           fieldName:options[@"fieldName"]
+                                            mimeType:options[@"mimeType"]];
+    [request setHTTPBody:httpBody];
+    task = [session uploadTaskWithStreamedRequest:request];
+  } else {
+    reject(@"ERR_FILESYSTEM_INVALID_UPLOAD_TYPE",
+           [NSString stringWithFormat:@"Invalid upload type: '%@'.", options[@"uploadType"]],
+           nil);
+    return;
+  }
+  
   EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
@@ -702,6 +729,61 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 #pragma mark - Internal methods
+
+- (EXFileSystemUploadType)_importUploadType:(NSNumber * _Nullable)type
+{
+  switch ([type intValue]) {
+    case EXFileSystemBinaryContent:
+      return EXFileSystemBinaryContent;
+    case EXFileSystemMultipart:
+      return EXFileSystemMultipart;
+  }
+  
+  return EXFileSystemInvalidType;
+}
+
+// Borrowed from http://stackoverflow.com/questions/2439020/wheres-the-iphone-mime-type-database
+- (NSString *)_guessMIMETypeFromPath:(NSString *)path
+{
+  CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+  CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+  CFRelease(UTI);
+  if (!MIMEType) {
+    return @"application/octet-stream";
+  }
+  return (__bridge NSString *)(MIMEType);
+}
+
+- (NSData *)_createBodyWithBoundary:(NSString *)boundary
+                            fileUri:(NSURL *)fileUri
+                         parameters:(NSDictionary * _Nullable)parameters
+                          fieldName:(NSString * _Nullable)fieldName
+                           mimeType:(NSString * _Nullable)mimetype
+{
+
+  NSMutableData *body = [NSMutableData data];
+  NSData *data = [NSData dataWithContentsOfURL:fileUri];
+  NSString *filename  = [[fileUri path] lastPathComponent];
+
+  if (!mimetype) {
+    mimetype = [self _guessMIMETypeFromPath:[fileUri path]];
+  }
+
+  [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
+    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", parameterKey] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"%@\r\n", parameterValue] dataUsingEncoding:NSUTF8StringEncoding]];
+  }];
+
+  [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", fieldName ?: filename, filename]    dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", mimetype] dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:data];
+  [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+
+  return body;
+}
 
 - (NSMutableURLRequest *)_createRequest:(NSURL *)url headers:(NSDictionary * _Nullable)headers
 {
