@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -52,6 +54,7 @@ import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -105,6 +108,13 @@ public class FileSystemModule extends ExportedModule {
 
   private File uriToFile(Uri uri) {
     return new File(uri.getPath());
+  }
+
+  private void checkIfFileExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    if (!file.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
   }
 
   private void checkIfFileDirExists(Uri uri) throws IOException {
@@ -453,6 +463,61 @@ public class FileSystemModule extends ExportedModule {
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void uploadAsync(final String fileUriString, final String url, final Map<String, Object> options, final Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(fileUriString);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileExists(fileUri);
+
+      if (!options.containsKey("httpMethod")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
+        return;
+      }
+      String method = (String) options.get("httpMethod");
+
+      Request.Builder requestBuilder = new Request.Builder().url(url);
+      if (options != null && options.containsKey(HEADER_KEY)) {
+        final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+        for (String key : headers.keySet()) {
+          requestBuilder.addHeader(key, headers.get(key).toString());
+        }
+      }
+
+      RequestBody body = RequestBody.create(null, uriToFile(fileUri));
+      requestBuilder.method(method, body);
+      getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          Log.e(TAG, String.valueOf(e.getMessage()));
+          promise.reject(e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          Bundle result = new Bundle();
+          try {
+            if (response.body() != null) {
+              result.putString("body", response.body().string());
+            } else {
+              result.putString("body", null);
+            }
+          } catch (IOException exception) {
+            promise.reject(exception);
+            return;
+          }
+          result.putInt("status", response.code());
+          result.putBundle("headers", translateHeaders(response.headers()));
+          response.close();
+          promise.resolve(result);
+        }
+      });
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
