@@ -1270,7 +1270,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   showBadge: boolean;
-  soundUri: string | null;
+  sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;
   vibrationPattern: number[] | null;
   enableLights: boolean;
@@ -1293,7 +1293,7 @@ export interface NotificationChannelInput {
   lightColor?: string;
   lockscreenVisibility?: AndroidNotificationVisibility;
   showBadge?: boolean;
-  soundUri?: string | null;
+  sound?: string | null;
   audioAttributes?: Partial<AudioAttributes>;
   vibrationPattern?: number[] | null;
   enableLights?: boolean;
