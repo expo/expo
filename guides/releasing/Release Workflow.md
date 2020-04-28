@@ -472,7 +472,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 **How:**
 
-- TODO: need a script for this. For now talk to @tsapeta
+- Use the `et promote-packages` script (TODO: add more detailed instructions once this script lands)
 
 ## 6.6. Publishing final project templates
 
