@@ -1,14 +1,6 @@
 import Constants from 'expo-constants';
 import * as React from 'react';
-import {
-  AppState,
-  Alert,
-  Clipboard,
-  Platform,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { AppState, Alert, Clipboard, Platform, StyleSheet, View } from 'react-native';
 import {
   withNavigationFocus,
   withNavigation,
@@ -28,6 +20,7 @@ import NoProjectsOpen from '../components/NoProjectsOpen';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
 import ProjectListItem from '../components/ProjectListItem';
 import ProjectTools from '../components/ProjectTools';
+import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import HistoryActions from '../redux/HistoryActions';
