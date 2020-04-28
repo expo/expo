@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeModules, StyleSheet, Text, View } from 'react-native';
+import { NativeModules } from 'react-native';
 import { getAppLoadingLifecycleEmitter } from './AppLoading';
 const { ExponentAppLoadingManager } = NativeModules;
 async function finishedAsync() {
@@ -12,16 +12,21 @@ let _appLoadingIsMounted;
 /**
  * This component is never rendered in production!
  *
- * In production the app will just hard crash on errors, unless the developer decides to handle
- * them by overriding the global error handler and swallowing the error, in which case they are
- * responsible for determining how to recover from this state.
+ * In production the app will just hard crash on errors, unless the developer
+ * decides to handle them by overriding the global error handler and swallowing
+ * the error, in which case they are responsible for determining how to recover
+ * from this state.
  *
- * - The sole purpose of this component is to hide the splash screen if an error
- * occurs that prevents it from being hidden. Please note that this currently only works
- * with <AppLoading /> and not SplashScreen.preventAutoHide()!
- * - On iOS the splash screen hides itself, but we provide a uniform error screen with Android.
- * - On Android it is necessary for us to render some content in order to hide the splash screen,
- * just calling `ExponentAppLoadingManager.finishedAsync()` is not sufficient.
+ * - The sole purpose of this component is to hide the splash screen if an
+ * error occurs that prevents it from being hidden. Please note that this
+ * currently only works with <AppLoading /> and not SplashScreen.preventAutoHide()!
+ * - We only want to update the error state when the splash screen is visible, after
+ * the splash screen is gone we don't want to do anything in this component.
+ * - On iOS the splash screen hides itself, but we provide a uniform error
+ * screen with Android.
+ * - On Android it is necessary for us to render some content in order to hide
+ * the splash screen, just calling `ExponentAppLoadingManager.finishedAsync()`
+ * is not sufficient.
  *
  */
 export default class RootErrorBoundary extends React.Component {
@@ -63,47 +68,19 @@ export default class RootErrorBoundary extends React.Component {
         }
         return null;
     }
-    componentDidCatch(_error, _errorInfo) {
+    componentDidCatch(error, _errorInfo) {
         if (_appLoadingIsMounted) {
             finishedAsync();
         }
+        throw error;
     }
     render() {
         if (this.state.error) {
-            return (<View style={styles.container}>
-          <Text style={styles.warningIcon}>⚠️</Text>
-          <Text style={[styles.paragraph, { color: '#000' }]}>
-            You are seeing this screen because a fatal error was encountered before the splash
-            screen was hidden.
-          </Text>
-          <Text style={styles.paragraph}>
-            Review your application logs for more information, then come back and reload this app
-            when you are ready. In production, your app would have crashed and closed.
-          </Text>
-        </View>);
+            return null;
         }
         else {
             return this.props.children;
         }
     }
 }
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    paragraph: {
-        marginBottom: 10,
-        textAlign: 'center',
-        marginHorizontal: 30,
-        maxWidth: 350,
-        fontSize: 15,
-        color: '#888',
-    },
-    warningIcon: {
-        fontSize: 40,
-        marginBottom: 20,
-    },
-});
 //# sourceMappingURL=RootErrorBoundary.js.map
