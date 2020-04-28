@@ -19,40 +19,69 @@ type State = {
   error: Error | null;
 };
 
+// Store this outside of the component so it is available inside getDerivedStateFromError
+let _appLoadingIsMounted: boolean;
+
+/**
+ * This component is never rendered in production!
+ *
+ * In production the app will just hard crash on errors, unless the developer
+ * decides to handle them by overriding the global error handler and swallowing
+ * the error, in which case they are responsible for determining how to recover
+ * from this state.
+ *
+ * - The sole purpose of this component is to hide the splash screen if an
+ * error occurs that prevents it from being hidden. Please note that this
+ * currently only works with <AppLoading /> and not SplashScreen.preventAutoHide()!
+ * - The content is only visible if the user dismisses the redbox that appears
+ * above the splash screen.
+ * - We only want to update the error state when the splash screen is visible, after
+ * the splash screen is gone we don't want to do anything in this component.
+ * - On iOS the splash screen hides itself, but we provide a uniform error
+ * screen with Android.
+ * - On Android it is necessary for us to render some content in order to hide
+ * the splash screen, just calling `ExponentAppLoadingManager.finishedAsync()`
+ * is not sufficient.
+ *
+ */
 export default class RootErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    // In production the app will just hard crash on errors, unless the developer decides to handle
-    // them by overriding the global error handler and swallowing the error, in which case they are
-    // responsible for determining how to recover from this state.
-    if (__DEV__) {
-      getAppLoadingLifecycleEmitter().once('componentDidMount', this._subscribeToGlobalErrors);
-      getAppLoadingLifecycleEmitter().once(
-        'componentWillUnmount',
-        this._unsubscribeFromGlobalErrors
-      );
-    }
+    _appLoadingIsMounted = false;
+    getAppLoadingLifecycleEmitter().once('componentDidMount', this._subscribeToGlobalErrors);
+    getAppLoadingLifecycleEmitter().once('componentWillUnmount', this._unsubscribeFromGlobalErrors);
 
     this.state = {
       error: null,
     };
   }
 
-  _appLoadingIsMounted = false;
+  /**
+   * Test this by adding `throw new Error('example')` to your root component
+   * when the AppLoading component is rendered.
+   */
+  static getDerivedStateFromError(_error: Error) {
+    if (_appLoadingIsMounted) {
+      return { error: true };
+    }
+
+    return null;
+  }
+
+  componentDidCatch(_error: Error, _errorInfo: any) {
+    if (_appLoadingIsMounted) {
+      finishedAsync();
+    }
+  }
 
   _subscribeToGlobalErrors = () => {
-    this._appLoadingIsMounted = true;
-
-    // Bacon: This isn't supported in RNWeb yet
-    const ErrorUtils = global.ErrorUtils;
-
-    if (!ErrorUtils) return;
+    _appLoadingIsMounted = true;
 
     const originalErrorHandler = ErrorUtils.getGlobalHandler();
 
     ErrorUtils.setGlobalHandler((error, isFatal) => {
-      if (this._appLoadingIsMounted) {
+      if (_appLoadingIsMounted) {
         finishedAsync();
 
         if (isFatal) {
@@ -68,19 +97,8 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
     // We don't remove the global error handler that we set here because it is conceivable that the
     // user may add error handlers *after* we subscribe, and we don't want to override those, so
     // instead we just gate the call
-    this._appLoadingIsMounted = false;
+    _appLoadingIsMounted = false;
   };
-
-  // Test this by adding `throw new Error('example')` to your root component
-  componentDidCatch(error: Error) {
-    if (this._appLoadingIsMounted) {
-      finishedAsync();
-
-      this.setState({ error });
-    }
-
-    console.error(error);
-  }
 
   render() {
     if (this.state.error) {
@@ -88,11 +106,12 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.warningIcon}>⚠️</Text>
           <Text style={[styles.paragraph, { color: '#000' }]}>
-            A fatal error was encountered while rendering the root component.
+            You are seeing this screen because a fatal error was encountered before the splash
+            screen was hidden.
           </Text>
           <Text style={styles.paragraph}>
-            Review your application logs for more information, and reload the app when the issue is
-            resolved. In production, your app would have crashed.
+            Review your application logs for more information, then come back and reload this app
+            when you are ready. In production, your app would have crashed and closed.
           </Text>
         </View>
       );

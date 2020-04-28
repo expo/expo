@@ -23,6 +23,7 @@ export default function withExpoRoot<P extends InitialProps>(
       ...props,
       exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
     };
+
     if (__DEV__) {
       return (
         <RootErrorBoundary>
