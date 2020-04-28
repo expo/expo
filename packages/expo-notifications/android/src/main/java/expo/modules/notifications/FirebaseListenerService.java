@@ -91,7 +91,7 @@ public class FirebaseListenerService extends FirebaseMessagingService {
       identifier = UUID.randomUUID().toString();
     }
     JSONObject payload = new JSONObject(remoteMessage.getData());
-    NotificationContent content = new JSONNotificationContentBuilder().setPayload(payload).build();
+    NotificationContent content = new JSONNotificationContentBuilder(this).setPayload(payload).build();
     NotificationRequest request = new NotificationRequest(identifier, content, new FirebaseNotificationTrigger(remoteMessage));
     return new Notification(request, new Date(remoteMessage.getSentTime()));
   }
