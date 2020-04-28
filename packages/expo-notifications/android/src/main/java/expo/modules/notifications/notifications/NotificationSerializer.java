@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -61,7 +63,7 @@ public class NotificationSerializer {
     if (content.shouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
     } else if (content.getSound() != null) {
-      serializedContent.putString("sound", content.getSound().toString());
+      serializedContent.putString("sound", "custom");
     } else {
       serializedContent.putString("sound", null);
     }
