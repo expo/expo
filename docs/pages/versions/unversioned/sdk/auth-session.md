@@ -394,7 +394,6 @@ const [request, response, promptAsync] = useAuthRequest(
       // Select the user
       login_hint: 'user@gmail.com',
     },
-    scopes: ['openid', 'profile'],
   },
   discovery
 );
@@ -702,7 +701,7 @@ Exchange an authorization code for an access token that can be used to get data 
 
 #### Arguments
 
-- **config (_TokenRequestConfig_)** -- Configuration used to exchange the code for a token. The `grantType` is locked to `GrantType.AuthorizationCode`.
+- **config (_TokenRequestConfig_)** -- Configuration used to exchange the code for a token.
 
 #### Returns
 
@@ -714,7 +713,7 @@ Refresh an access token.
 
 #### Arguments
 
-- **config (_TokenRequestConfig_)** -- Configuration used to refresh the given access token. The `grantType` is locked to `GrantType.RefreshToken`.
+- **config (_TokenRequestConfig_)** -- Configuration used to refresh the given access token.
 
 #### Returns
 
@@ -905,17 +904,90 @@ This can be used to present a dialog for switching accounts after the user has a
 | Consent       | Server should prompt the user for consent before returning information to the client.              | `consent_required`                       |
 | SelectAccount | Server should prompt the user to select an account. Can be used to switch accounts.                | `account_selection_required`             |
 
+### `GrantType`
+
+Grant type values used in dynamic client registration and auth requests.
+
+[Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
+
+| Name              | Description                                                       |
+| ----------------- | ----------------------------------------------------------------- |
+| AuthorizationCode | Used for exchanging an authorization code for one or more tokens. |
+| Implicit          | Used when obtaining an access token.                              |
+| RefreshToken      | Used when exchanging a refresh token for a new token.             |
+| ClientCredentials | Used for client credentials flow.                                 |
+
+### `TokenTypeHint`
+
+A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
+
+[Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+
+| Name         | Description               |
+| ------------ | ------------------------- |
+| AccessToken  | Provided an access token. |
+| RefreshToken | Provided a refresh token. |
+
 ### `DiscoveryDocument`
 
-| Name                  | Type               | Description                                                                   | Spec                                    |
-| --------------------- | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------- |
-| authorizationEndpoint | `string`           | Interact with the resource owner and obtain an authorization grant            | [Section 3.1][s31]                      |
-| tokenEndpoint         | `string`           | Obtain an access token by presenting its authorization grant or refresh token | [Section 3.2][s32]                      |
-| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                            | [Section 2.1][s21]                      |
-| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                               | [UserInfo][userinfo]                    |
-| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.                     | [OP Metadata][opmeta]                   |
-| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint                        | [Dynamic Client Registration][oidc-dcr] |
-| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                               | [ProviderMetadata][provider-meta]       |
+| Name                  | Type               | Description                                                          | Spec                                    |
+| --------------------- | ------------------ | -------------------------------------------------------------------- | --------------------------------------- |
+| authorizationEndpoint | `string`           | Interact with the resource owner and obtain an authorization grant   | [Section 3.1][s31]                      |
+| tokenEndpoint         | `string`           | Obtain an access token by presenting its auth grant or refresh token | [Section 3.2][s32]                      |
+| revocationEndpoint    | `?string`          | Used to revoke a token (generally for signing out)                   | [Section 2.1][s21]                      |
+| userInfoEndpoint      | `?string`          | URL to return info about the authenticated user                      | [UserInfo][userinfo]                    |
+| endSessionEndpoint    | `?string`          | URL to request that the End-User be logged out at the OP.            | [OP Metadata][opmeta]                   |
+| registrationEndpoint  | `?string`          | URL of the OP's "Dynamic Client Registration" endpoint               | [Dynamic Client Registration][oidc-dcr] |
+| discoveryDocument     | `ProviderMetadata` | All metadata about the provider                                      | [ProviderMetadata][provider-meta]       |
+
+### `TokenRequestConfig`
+
+Shared properties for token requests (refresh, exchange, revoke).
+
+| Name         | Type                      | Description                                             | Spec |
+| ------------ | ------------------------- | ------------------------------------------------------- | ---- |
+| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22] |
+| clientSecret | `?string`                 | Client secret supplied by an auth provider              |      | [Section 2.3.1][s231] |
+| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A` |
+| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33] |
+
+### `AccessTokenRequestConfig`
+
+> Extends `TokenRequestConfig` meaning all properties of `TokenRequestConfig` can be used.
+
+Config used to exchange an authorization code for an access token.
+
+[Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
+
+| Name        | Type      | Description                                                                                              | Spec                  |
+| ----------- | --------- | -------------------------------------------------------------------------------------------------------- | --------------------- |
+| code        | `string`  | The authorization code received from the authorization server.                                           | [Section 3.1][s31]    |
+| redirectUri | `?string` | If the `redirectUri` parameter was included in the `AuthRequest`, then it must be supplied here as well. | [Section 3.1.2][s312] |
+
+### `RefreshTokenRequestConfig`
+
+> Extends `TokenRequestConfig` meaning all properties of `TokenRequestConfig` can be used.
+
+Config used to request a token refresh, or code exchange.
+
+[Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+
+| Name         | Type     | Description                             |
+| ------------ | -------- | --------------------------------------- |
+| refreshToken | `string` | The refresh token issued to the client. |
+
+### `RevokeTokenRequestConfig`
+
+> Extends `Partial<TokenRequestConfig>` meaning all properties of `TokenRequestConfig` can optionally be used.
+
+Used for revoking a token.
+
+[Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+
+| Name          | Type             | Description                                                  | Spec               |
+| ------------- | ---------------- | ------------------------------------------------------------ | ------------------ |
+| token         | `string`         | The token that the client wants to get revoked.              | [Section 3.1][s31] |
+| tokenTypeHint | `?TokenTypeHint` | A hint about the type of the token submitted for revocation. | [Section 3.2][s32] |
 
 ### `Issuer`
 
@@ -937,6 +1009,12 @@ Options passed to `makeRedirectUriAsync`.
 | path            | `?string`  | Optional path to append to a URI                                                                    |
 | preferLocalhost | `?boolean` | Attempt to convert the Expo server IP address to localhost. Should only be used with iOS simulators |
 | useProxy        | `?boolean` | Should use the `auth.expo.io` proxy                                                                 |
+
+### `TokenType`
+
+Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
+
+`'bearer' | 'mac'`
 
 ## Redirect URI patterns
 
