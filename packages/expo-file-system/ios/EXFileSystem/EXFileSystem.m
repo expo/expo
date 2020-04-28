@@ -582,7 +582,7 @@ UM_EXPORT_METHOD_AS(uploadAsync,
 {
   NSURL *fileUri = [NSURL URLWithString:fileUriString];
   NSString *httpMethod = options[@"httpMethod"];
-  EXFileSystemUploadType type = [self _importUploadType:options[@"uploadType"]];
+  EXFileSystemUploadType type = [self _getUploadTypeFrom:options[@"uploadType"]];
   if (![fileUri.scheme isEqualToString:@"file"]) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
@@ -730,13 +730,12 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
-- (EXFileSystemUploadType)_importUploadType:(NSNumber * _Nullable)type
+- (EXFileSystemUploadType)_getUploadTypeFrom:(NSNumber * _Nullable)type
 {
   switch ([type intValue]) {
     case EXFileSystemBinaryContent:
-      return EXFileSystemBinaryContent;
     case EXFileSystemMultipart:
-      return EXFileSystemMultipart;
+      return [type intValue];
   }
   
   return EXFileSystemInvalidType;
