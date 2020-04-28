@@ -34,11 +34,12 @@
     - [6.1. Release iOS/Android clients](#61-release-iosandroid-clients)
     - [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production)
     - [6.3. Generate and deploy new docs](#63-generate-and-deploy-new-docs)
-    - [6.4. Promote versions to production](#64-promote-versions-to-production)
-    - [6.5. Promote packages to latest on NPM registry](#65-promote-packages-to-latest-on-npm-registry)
-    - [6.6. Publishing final project templates](#66-publishing-final-project-templates)
-    - [6.7. Press release](#67-press-release)
-    - [6.8. Follow-up](#68-follow-up)
+    - [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint)
+    - [6.5. Promote versions to production](#65-promote-versions-to-production)
+    - [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry)
+    - [6.7. Publishing final project templates](#67-publishing-final-project-templates)
+    - [6.8. Press release](#68-press-release)
+    - [6.9. Follow-up](#69-follow-up)
   - [Stage 7 - Snack](#stage-7---snack)
     - [7.1. Add SDK support to Snack](#71-add-sdk-support-to-snack)
 
@@ -451,13 +452,30 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 - Open this commit on our CI. Go to the `docs` workflow and approve `docs_approve_deploy` job that starts `docs_deploy` job - keep an eye on it and make sure it gets deployed successfully.
 - The Algolia config needs to be updated in order for the new docs to be searchable. TODO: add instructions for that here. For now ping @cruzach or @byCedric about this.
 
-## 6.4. Promote versions to production
+## 6.4. Add related packages to versions endpoint
+
+**Why:** These package versions are used by `expo-cli` in the `eject` command to ensure that the proper versions of packages are installed in developers' projects.
+
+**How:**
+
+- For each of the following packages, run `et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
+  - `typescript`
+  - `@types/react`
+  - `@types/react-native`
+  - `react-native-web`
+  - `babel-preset-expo`
+  - `@expo/webpack-config`
+  - `react-native-unimodules`
+- One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
+
+## 6.5. Promote versions to production
 
 | Prerequisites                                             |
 | --------------------------------------------------------- |
 | [6.1. Release iOS/Android clients](#61-release-iosandroid-clients) |
 | [6.2. Deploy Turtle/ExpoKit to production](#62-deploy-turtleexpokit-to-production) |
 | [6.3. Generate and deploy new docs](#63-generate-and-deploy-new-docs) |
+| [6.4. Add related packages to versions endpoint](#64-add-related-packages-to-versions-endpoint) |
 
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
 
@@ -466,7 +484,7 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
 
-## 6.5. Promote packages to `latest` on NPM registry
+## 6.6. Promote packages to `latest` on NPM registry
 
 **Why:** Previously we've published packages and now, if everything works like a charm, we can promote those packages to `latest` on NPM.
 
@@ -474,12 +492,12 @@ Once everything above is completed and Apple has approved the iOS client, the fi
 
 - Use the `et promote-packages` script (TODO: add more detailed instructions once this script lands)
 
-## 6.6. Publishing final project templates
+## 6.7. Publishing final project templates
 
 | Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
-| [6.4. Promote versions to production](#64-promote-versions-to-production) |
-| [6.5. Promote packages to latest on NPM registry](#65-promote-packages-to-latest-on-npm-registry) |
+| [6.5. Promote versions to production](#65-promote-versions-to-production) |
+| [6.6. Promote packages to latest on NPM registry](#66-promote-packages-to-latest-on-npm-registry) |
 
 **Why:** Once the final packages are out, we can now make a final version of project templates as well.
 
@@ -492,11 +510,11 @@ Make sure the release notes are ready to go at this point -- after this change, 
 - Test these project templates in Expo client or by building them (bare workflow) - use `expo init` at this point.
 - If everything works as expected, commit changes to master and make sure to cherry-pick that commit to the release branch as well.
 
-## 6.7. Press release
+## 6.8. Press release
 
 | Prerequisites                                             |
 | --------------------------------------------------------- |
-| [6.6. Publishing final project templates](#66-publishing-final-project-templates) |
+| [6.7. Publishing final project templates](#67-publishing-final-project-templates) |
 
 This should be ready to publish immediately after the previous step is finished!
 
@@ -507,11 +525,11 @@ This should be ready to publish immediately after the previous step is finished!
 - Publish release notes to Medium/dev.to. Coordinate with @esamelson on this.
 - Tweet a link on the @expo account.
 
-## 6.8. Follow-up
+## 6.9. Follow-up
 
 | Prerequisites                                             |
 | --------------------------------------------------------- |
-| [6.7. Press release](#67-press-release) |
+| [6.8. Press release](#68-press-release) |
 
 **Why:** A few places in our infrastructure need to know about the release notes once they're published.
 

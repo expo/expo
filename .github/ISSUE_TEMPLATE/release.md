@@ -79,11 +79,12 @@ assignees: ''
 - [ ] [6.1. Release iOS/Android clients](https://git.io/JeKCx#61-release-iosandroid-clients)
 - [ ] [6.2. Deploy Turtle/ExpoKit to production](https://git.io/JeKCx#62-deploy-turtleexpokit-to-production)
 - [ ] [6.3. Generate and deploy new docs](https://git.io/JeKCx#63-generate-and-deploy-new-docs)
-- [ ] [6.4. Promote versions to production](https://git.io/JeKCx#64-promote-versions-to-production)
-- [ ] [6.5. Promote packages to latest on NPM registry](https://git.io/JeKCx#65-promote-packages-to-latest-on-npm-registry)
-- [ ] [6.6. Publishing final project templates](https://git.io/JeKCx#66-publishing-final-project-templates)
-- [ ] [6.7. Press release](https://git.io/JeKCx#67-press-release)
-- [ ] [6.8. Follow-up](https://git.io/JeKCx#68-follow-up)
+- [ ] [6.4. Add related packages to versions endpoint](https://git.io/JeKCx#64-add-related-packages-to-versions-endpoint)
+- [ ] [6.5. Promote versions to production](https://git.io/JeKCx#65-promote-versions-to-production)
+- [ ] [6.6. Promote packages to latest on NPM registry](https://git.io/JeKCx#66-promote-packages-to-latest-on-npm-registry)
+- [ ] [6.7. Publishing final project templates](https://git.io/JeKCx#67-publishing-final-project-templates)
+- [ ] [6.8. Press release](https://git.io/JeKCx#68-press-release)
+- [ ] [6.9. Follow-up](https://git.io/JeKCx#69-follow-up)
 
 ### [Stage 7 - Snack](https://git.io/JeKCx#stage-7---snack)
 
