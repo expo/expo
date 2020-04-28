@@ -788,6 +788,80 @@ export async function test(t) {
       );
 
       t.it(
+        'triggers a notification which triggers the handler (with custom sound)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'notification.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
+          );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (with custom sound set, but not existent)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'no-such-file.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
+          );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
         'triggers a notification which triggers the handler (`Date` trigger)',
         async () => {
           let notificationFromEvent = undefined;
