@@ -6,9 +6,9 @@ export enum AuthenticationType {
 }
 
 export type LocalAuthenticationOptions = {
-  // iOS only
   promptMessage?: string;
   cancelLabel?: string;
-  fallbackLabel?: string;
   disableDeviceFallback?: boolean;
+  // iOS only
+  fallbackLabel?: string;
 };

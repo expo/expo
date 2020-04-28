@@ -47,24 +47,21 @@ export async function authenticateAsync(
     options = { promptMessage: options };
   }
 
-  if (Platform.OS === 'ios') {
-    if (options.hasOwnProperty('promptMessage')) {
-      invariant(
-        typeof options.promptMessage === 'string' && options.promptMessage.length,
-        'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.'
-      );
-    }
-
-    const promptMessage = options.promptMessage || 'Authenticate';
-    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
-
-    if (result.warning) {
-      console.warn(result.warning);
-    }
-    return result;
-  } else {
-    return await ExpoLocalAuthentication.authenticateAsync();
+  if (options.hasOwnProperty('promptMessage')) {
+    invariant(
+      typeof options.promptMessage === 'string' && options.promptMessage.length,
+      'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.'
+    );
   }
+
+
+  const promptMessage = options.promptMessage || 'Authenticate';
+  const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+
+  if (result.warning) {
+    console.warn(result.warning);
+  }
+  return result;
 }
 
 export async function cancelAuthenticate(): Promise<void> {

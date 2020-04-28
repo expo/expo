@@ -24,6 +24,7 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.core.arguments.ReadableArguments;
 
 public class LocalAuthenticationModule extends ExportedModule {
   private final BiometricManager mBiometricManager;
@@ -32,6 +33,9 @@ public class LocalAuthenticationModule extends ExportedModule {
   private boolean mIsAuthenticating = false;
   private ModuleRegistry mModuleRegistry;
   private UIManager mUIManager;
+  private String mPromptMessage = "";
+  private String mCancelLabel = "";
+  private boolean mDisableDeviceFallback = false;
 
   private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
 
@@ -96,7 +100,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void authenticateAsync(final Promise promise) {
+  public void authenticateAsync(final ReadableArguments options, final Promise promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.reject("E_NOT_SUPPORTED", "Cannot display biometric prompt on android versions below 6.0");
       return;
@@ -130,6 +134,18 @@ public class LocalAuthenticationModule extends ExportedModule {
           return;
         }
 
+        if (options.containsKey("promptMessage")) {
+          mPromptMessage = options.getString("promptMessage");
+        }
+
+        if (options.containsKey("cancelLabel")) {
+          mCancelLabel = options.getString("cancelLabel");
+        }
+
+        if (options.containsKey("disableDeviceFallback")) {
+          mDisableDeviceFallback = options.getBoolean("disableDeviceFallback");
+        }
+
         mIsAuthenticating = true;
         mPromise = promise;
         mCancellationSignal = new CancellationSignal();
@@ -138,10 +154,13 @@ public class LocalAuthenticationModule extends ExportedModule {
         Executor executor = Executors.newSingleThreadExecutor();
         BiometricPrompt biometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
-        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setDeviceCredentialAllowed(true)
-                .setTitle("Authenticate")
-                .build();
+        BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
+                .setDeviceCredentialAllowed(!mDisableDeviceFallback)
+                .setTitle(mPromptMessage);
+        if (mCancelLabel != null && mDisableDeviceFallback) {
+          promptInfoBuilder.setNegativeButtonText(mCancelLabel);
+        }
+        BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
         biometricPrompt.authenticate(promptInfo);
       }
     });
