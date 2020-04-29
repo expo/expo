@@ -1,5 +1,6 @@
 const { join } = require('path');
 const { copySync, removeSync } = require('fs-extra');
+const generateSitemap = require('./scripts/generate-sitemap');
 
 // copy versions/v(latest version) to versions/latest
 // (Next.js only half-handles symlinks)
@@ -27,7 +28,7 @@ module.exports = {
       return defaultPathMap;
     }
     copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
-    return Object.assign(
+    const pathMap = Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
           // ends in "/v<version>"
@@ -41,5 +42,11 @@ module.exports = {
         }
       })
     );
+    generateSitemap({
+      pathMap,
+      hostname: 'https://docs.expo.io',
+      output: join(outDir, 'sitemap.xml'),
+    });
+    return pathMap;
   },
 };
