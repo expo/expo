@@ -1,8 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
-
-const uuid = require('./uuid');
+const uuid = require('uuid/v4');
 
 const platform = process.argv[2];
 const packagerUrl = process.argv[3];
