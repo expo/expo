@@ -86,14 +86,7 @@ class AlgoliaSearch extends React.Component {
   componentDidMount() {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
-
-    // we need to explicitly ignore the non-selected versions in algolia to
-    // include the "guides" and "get started" pages next to the API docs.
-    // algolia doesn't allow us to filter on `version:v37.0.0 OR version:<null>`
     const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
-    const ignoredVersionList = VERSIONS.filter(version => currentVersion !== version).map(
-      version => `version:-${version}`
-    );
 
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
@@ -110,7 +103,8 @@ class AlgoliaSearch extends React.Component {
         return hits;
       },
       algoliaOptions: {
-        facetFilters: ignoredVersionList,
+        // include pages without version (guides/get-started) OR exact version (api-reference)
+        facetFilters: [['version:none', `version:${currentVersion}`]],
       },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
