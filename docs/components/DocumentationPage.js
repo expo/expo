@@ -8,6 +8,7 @@ import navigation from '~/common/navigation';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS } from '~/common/versions';
 import * as WindowUtils from '~/common/window';
+import AlgoliaDocsearchTags from '~/components/AlgoliaDocsearchTags';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
@@ -151,6 +152,7 @@ export default class DocumentationPage extends React.Component {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const version = this._getVersion();
     const routes = this._getRoutes();
+    const isReferencePath = this._isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
@@ -172,7 +174,7 @@ export default class DocumentationPage extends React.Component {
         routes={routes}
         version={this._version}
         onSetVersion={this._handleSetVersion}
-        isVersionSelectorHidden={!this._isReferencePath()}
+        isVersionSelectorHidden={!isReferencePath}
       />
     );
 
@@ -184,6 +186,8 @@ export default class DocumentationPage extends React.Component {
         isMenuActive={this.state.isMenuActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
+          <AlgoliaDocsearchTags apiVersion={this._version} isApiPage={isReferencePath} />
+
           {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
           {this._version !== 'unversioned' && (
             <link rel="canonical" href={this._getCanonicalUrl()} />
