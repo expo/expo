@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed some issues with `runtimeVersion` on Android for apps using `expo export`.
+
 ## 0.1.2
 
 ### 🐛 Bug fixes
