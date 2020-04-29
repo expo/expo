@@ -6,7 +6,7 @@ import some from 'lodash/some';
 import * as Constants from '~/common/constants';
 import navigation from '~/common/navigation';
 import * as Utilities from '~/common/utilities';
-import { VERSIONS } from '~/common/versions';
+import { LATEST_VERSION, VERSIONS } from '~/common/versions';
 import * as WindowUtils from '~/common/window';
 import AlgoliaDocsearchTags from '~/components/AlgoliaDocsearchTags';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -152,7 +152,6 @@ export default class DocumentationPage extends React.Component {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const version = this._getVersion();
     const routes = this._getRoutes();
-    const isReferencePath = this._isReferencePath();
 
     const headerElement = (
       <DocumentationHeader
@@ -174,7 +173,7 @@ export default class DocumentationPage extends React.Component {
         routes={routes}
         version={this._version}
         onSetVersion={this._handleSetVersion}
-        isVersionSelectorHidden={!isReferencePath}
+        isVersionSelectorHidden={!this._isReferencePath()}
       />
     );
 
@@ -186,7 +185,10 @@ export default class DocumentationPage extends React.Component {
         isMenuActive={this.state.isMenuActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <AlgoliaDocsearchTags apiVersion={this._version} isApiPage={isReferencePath} />
+          <AlgoliaDocsearchTags
+            referenceVersion={version === 'latest' ? LATEST_VERSION : version}
+            isReferencePage={this._isReferencePath()}
+          />
 
           {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
           {this._version !== 'unversioned' && (
