@@ -1,7 +1,8 @@
+import { Platform } from '@unimodules/core';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
 export async function requestAsync(requestUrl, fetchRequest) {
-    if (!canUseDOM) {
+    if (Platform.OS === 'web' && !canUseDOM) {
         // @ts-ignore
         return;
     }
