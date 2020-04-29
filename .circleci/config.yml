@@ -16,6 +16,7 @@ commands:
       - run:
           name: Skip job if no relevant changes since last successful build on branch
           command: |
+            export GIT_PAGER=cat # Prevents git commands hanging on mac executors
             if [ "$CIRCLE_BRANCH" = "" ]; then
               echo "Can't determine branch.  Continuing the job."
             else
@@ -29,7 +30,7 @@ commands:
                 echo "The job will be skipped unless this branch introduces relevant changes."
               else
                 echo "Previous successful build found for commit $LAST_SUCCESSFUL_COMMIT_ON_BRANCH"
-                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                if git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
                   GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
                 else
                   echo "Commit not found in repo, it might have been rebased out of the branch."
@@ -44,7 +45,7 @@ commands:
 
               echo "Checking for changes since $GIT_BASE_REVISION touching circle config or << parameters.paths >>:"
 
-              if TERM=xterm git log --name-status --exit-code --format=oneline "$GIT_BASE_REVISION..$CIRCLE_SHA1" -- .circleci/config.yml << parameters.paths >>; then
+              if git log --name-status --exit-code --format=oneline "$GIT_BASE_REVISION..$CIRCLE_SHA1" -- .circleci/config.yml << parameters.paths >>; then
                 echo "No changes found in watched paths.  Ending job."
                 circleci-agent step halt
               else
