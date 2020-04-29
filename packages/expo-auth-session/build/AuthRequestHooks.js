@@ -26,11 +26,10 @@ export function useAutoDiscovery(issuerOrDiscovery) {
 export function useAuthRequest(config, discovery) {
     const [request, setRequest] = useState(null);
     const [result, setResult] = useState(null);
-    const promptAsync = useCallback(async (options) => {
+    const promptAsync = useCallback(async (options = {}) => {
         if (!discovery || !request) {
             throw new Error('Cannot prompt to authenticate until the request has finished loading.');
         }
-        console.log(request);
         const result = await request?.promptAsync(discovery, options);
         setResult(result);
         return result;

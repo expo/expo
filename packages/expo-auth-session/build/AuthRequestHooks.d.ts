@@ -16,4 +16,4 @@ export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): 
  * @param config
  * @param discovery
  */
-export declare function useAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null): [AuthRequest | null, AuthSessionResult | null, (options: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
+export declare function useAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null): [AuthRequest | null, AuthSessionResult | null, (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>];
