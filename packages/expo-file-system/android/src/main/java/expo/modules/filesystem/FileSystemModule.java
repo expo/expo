@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.CookieHandler;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,6 +52,7 @@ import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -75,6 +76,31 @@ public class FileSystemModule extends ExportedModule {
   private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
+
+  private enum UploadType {
+    INVALID(-1),
+    BINARY_CONTENT(0),
+    MULTIPART(1);
+
+    private int value;
+
+    UploadType(int value) {
+      this.value = value;
+    }
+
+    public static UploadType fromInteger(@Nullable Integer value) {
+      if (value == null) {
+        return INVALID;
+      }
+
+      for (UploadType method : values()) {
+        if (value.equals(method.value)) {
+          return method;
+        }
+      }
+      return INVALID;
+    }
+  }
 
   public FileSystemModule(Context context) {
     super(context);
@@ -482,16 +508,53 @@ public class FileSystemModule extends ExportedModule {
       }
       String method = (String) options.get("httpMethod");
 
+      if (!options.containsKey("uploadType")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
+        return;
+      }
+      UploadType uploadType = UploadType.fromInteger((Integer) options.get("uploadType"));
+
       Request.Builder requestBuilder = new Request.Builder().url(url);
-      if (options != null && options.containsKey(HEADER_KEY)) {
+      if (options.containsKey(HEADER_KEY)) {
         final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
         for (String key : headers.keySet()) {
           requestBuilder.addHeader(key, headers.get(key).toString());
         }
       }
 
-      RequestBody body = RequestBody.create(null, uriToFile(fileUri));
-      requestBuilder.method(method, body);
+      File file = uriToFile(fileUri);
+      if (uploadType == UploadType.BINARY_CONTENT) {
+        RequestBody body = RequestBody.create(null, file);
+        requestBuilder.method(method, body);
+      } else if (uploadType == UploadType.MULTIPART) {
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+
+        if (options.containsKey("parameters")) {
+          Map<String, Object> parametersMap = (Map<String, Object>) options.get("parameters");
+          for (String key : parametersMap.keySet()) {
+            bodyBuilder.addFormDataPart(key, String.valueOf(parametersMap.get(key)));
+          }
+        }
+
+        String mimeType;
+        if (options.containsKey("mimeType")) {
+          mimeType = (String) options.get("mimeType");
+        } else {
+          mimeType = URLConnection.guessContentTypeFromName(file.getName());
+        }
+
+        String fieldName = file.getName();
+        if (options.containsKey("fieldName")) {
+          fieldName = (String) options.get("fieldName");
+        }
+
+        bodyBuilder.addFormDataPart(fieldName, file.getName(), RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file));
+        requestBuilder.method(method, bodyBuilder.build());
+      } else {
+        promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options.get("uploadType")), null);
+        return;
+      }
+
       getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
