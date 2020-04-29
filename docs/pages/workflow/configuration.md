@@ -706,7 +706,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     "versionCode": NUMBER,
 
     /*
-      The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
+      The background color for your Android app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present.
     */
     "backgroundColor": STRING,
 
