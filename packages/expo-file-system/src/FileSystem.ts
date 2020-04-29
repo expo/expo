@@ -11,11 +11,12 @@ import {
   DownloadResult,
   EncodingType,
   FileInfo,
-  FileSystemDownloadResult,
   FileSystemAcceptedUploadHttpMethod,
+  FileSystemDownloadResult,
   FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
+  FileSystemUploadType,
   ProgressEvent,
   ReadingOptions,
   WritingOptions,
@@ -42,6 +43,7 @@ export {
   FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
+  FileSystemUploadType,
   ProgressEvent,
   ReadingOptions,
   WritingOptions,
@@ -192,6 +194,7 @@ export async function uploadAsync(
 
   return await ExponentFileSystem.uploadAsync(url, fileUri, {
     sessionType: FileSystemSessionType.BACKGROUND,
+    uploadType: FileSystemUploadType.BINARY_CONTENT,
     ...options,
     httpMethod: (options.httpMethod || 'POST').toUpperCase(),
   });
