@@ -156,6 +156,8 @@ public class MapArguments implements ReadableArguments {
         bundle.putParcelableArrayList(key, (ArrayList) value);
       } else if (value instanceof Map) {
         bundle.putBundle(key, new MapArguments((Map) value).toBundle());
+      } else if (value instanceof Bundle) {
+        bundle.putBundle(key, (Bundle) value);
       } else {
         throw new UnsupportedOperationException("Could not put a value of " + value.getClass() + " to bundle.");
       }
