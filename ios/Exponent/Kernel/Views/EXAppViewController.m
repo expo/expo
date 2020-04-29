@@ -78,9 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  // TODO(brentvatne): probably this should not just be UIColor whiteColor?
   self.view.backgroundColor = [UIColor whiteColor];
-
   _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
   [self.view addSubview:_loadingView];
   _appRecord.appManager.delegate = self;
@@ -188,6 +186,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _enforceDesiredDeviceOrientation];
+
+    // Reset the root view background color and window color if we switch between Expo home and project
+    [self _setBackgroundColor:self.view];
   });
   [_appRecord.appManager appStateDidBecomeActive];
 }
@@ -286,14 +287,15 @@ NS_ASSUME_NONNULL_BEGIN
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  [self _setRootViewBackgroundColor:reactView];
   
   [_contentView removeFromSuperview];
   _contentView = reactView;
   [self.view addSubview:_contentView];
   [self.view sendSubviewToBack:_contentView];
-
   [reactView becomeFirstResponder];
+
+  // Set root view background color after adding as subview so we can access window
+  [self _setBackgroundColor:reactView];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -455,17 +457,25 @@ NS_ASSUME_NONNULL_BEGIN
   return UIUserInterfaceStyleLight;
 }
 
-#pragma mark - root view background color
+#pragma mark - root view and window background color
 
-- (void)_setRootViewBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor:(UIView *)view
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
 
     if (backgroundColor) {
       view.backgroundColor = backgroundColor;
+      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
+      // root view, we can do if use case is presented to us.
+      view.window.backgroundColor = backgroundColor;
     } else {
       view.backgroundColor = [UIColor whiteColor];
+
+      // NOTE(brentvatne): we used to use white as a default background color for window but this caused
+      // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
+      // users expect the background behind these to be black, which is the default if backgroundColor is nil.
+      view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android

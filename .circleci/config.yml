@@ -6,6 +6,51 @@ orbs:
   shallow-checkout: expo/shallow-checkout@1.0.2
 
 commands:
+  skip_unless_changed:
+    parameters:
+      workflow_name:
+        type: string
+      paths:
+        type: string
+    steps:
+      - run:
+          name: Skip job if no relevant changes since last successful build on branch
+          command: |
+            if [ "$CIRCLE_BRANCH" = "" ]; then
+              echo "Can't determine branch.  Continuing the job."
+            else
+              echo "Looking for previous successful ${CIRCLE_JOB} jobs for branch ${CIRCLE_BRANCH}"
+              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}")
+
+              GIT_BASE_REVISION=<< pipeline.git.base_revision >>
+
+              if [[ "${LAST_SUCCESSFUL_COMMIT_ON_BRANCH}" == "" ]]; then
+                echo "No previous successful job detected for branch $CIRCLE_BRANCH"
+                echo "The job will be skipped unless this branch introduces relevant changes."
+              else
+                echo "Previous successful build found for commit $LAST_SUCCESSFUL_COMMIT_ON_BRANCH"
+                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                  GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
+                else
+                  echo "Commit not found in repo, it might have been rebased out of the branch."
+                fi
+              fi
+
+              if [[ ${GIT_BASE_REVISION} == "" ]]; then
+                # If a job has never been run on master before, maybe this could happen
+                echo "No base revision found.  Continuing the job."
+                exit 0
+              fi
+
+              echo "Checking for changes since $GIT_BASE_REVISION touching circle config or << parameters.paths >>:"
+
+              if TERM=xterm git log --name-status --exit-code --format=oneline "$GIT_BASE_REVISION..$CIRCLE_SHA1" -- .circleci/config.yml << parameters.paths >>; then
+                echo "No changes found in watched paths.  Ending job."
+                circleci-agent step halt
+              else
+                echo "Changes found in watched paths.  Continuing the job."
+              fi
+            fi
   install_yarn:
     steps:
       - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
@@ -60,140 +105,6 @@ commands:
           key: gems-v1-{{ arch }}-{{ checksum "Gemfile.lock" }}
           paths:
             - .direnv/ruby
-  conditionally_halt:
-    description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
-    parameters:
-      exclude:
-        description: 'The job will halt if no files other than those matching the given regex have been modified'
-        type: string
-        # Exclude nothing
-        default: '$^'
-      requireOneOf:
-        description: 'The job will halt if no file matching the given regex has been modified'
-        type: string
-        # Require anything
-        default: '.*'
-      search_depth:
-        description: 'The maximum directory depth to search'
-        type: integer
-        # Just top-level directories and files
-        default: 0
-    steps:
-      - run:
-          name: Stop the job if only << parameters.exclude >> was changed
-          command: |
-
-            ROOT_BRANCH="master"
-            SEARCH_DEPTH=<< parameters.search_depth >>
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              # Required for circleci/node:latest-browsers
-              set +e
-              exit 0
-            fi
-
-            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
-
-            # merge-base can exit with code 1, so we ignore when it fails.
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            while [ -z $BASE_COMMIT ]; do
-              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            done
-
-            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Excluding << parameters.exclude >>"
-            echo " - Requiring << parameters.requireOneOf >>"
-            echo " - Depth $SEARCH_DEPTH"
-            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-
-            # Test all top-level files and directories
-            if ! find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
-              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
-              if ! [[ $file =~ << parameters.exclude >> ]]; then
-                if [[ $file =~ << parameters.requireOneOf >> ]]; then
-                  echo " ++ [required] ${file}"
-                  if [ ! $baseFileHash = $currentFileHash ]; then
-                    echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
-                    set +e
-                    exit 1
-                  fi
-                fi
-              else
-                echo " -- [excluded] ${file}"
-              fi
-            done; then
-              set +e
-              exit 0
-            fi
-
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
-            else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-            fi
-  halt_if_unchanged:
-    parameters:
-      requireOneOf:
-        description: 'The job will stop if there are no changes in this directory'
-        type: string
-    steps:
-      - run:
-          name: Require the << parameters.requireOneOf >> directory to have changes
-          command: |
-
-            ROOT_BRANCH="master"
-
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              # Required for circleci/node:latest-browsers
-              set +e
-              exit 0
-            fi
-
-            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
-
-            # merge-base can exit with code 1, so we ignore when it fails.
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            while [ -z $BASE_COMMIT ]; do
-              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            done
-
-            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Required << parameters.requireOneOf >>"
-            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-            # Test all top-level directories
-            for file in $PWD/*/
-            do
-              FILE_NAME=$(basename $file)
-              if [[ " << parameters.requireOneOf >> " =~ " ${FILE_NAME} " ]]; then
-                echo " -- Checking ${FILE_NAME}"
-                baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $baseFileHash = $currentFileHash ]; then
-                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  set +e
-                  exit 0
-                fi
-              fi
-            done
-
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
-            else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-            fi
-
   setup:
     steps:
       - checkout
@@ -213,12 +124,6 @@ commands:
               sudo apt-get install git-crypt
             fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
-  # Prevent native tests from running when docs is the only directory that was edited
-  guard_sdk_tests:
-    steps:
-      - conditionally_halt:
-          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
-          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
   update_submodules:
     steps:
       - run:
@@ -479,6 +384,9 @@ jobs:
     executor: js
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: yarn.lock packages
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -496,6 +404,9 @@ jobs:
     executor: web
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: apps/bare-expo apps/test-suite yarn.lock packages
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -513,6 +424,9 @@ jobs:
     executor: js
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: home yarn.lock
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -533,6 +447,9 @@ jobs:
     executor: js
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: tools/expotools
       # We can't use yarn_restore_and_install since it
       # triggers the postinstall script which we don't
       # want to do here.
@@ -552,6 +469,9 @@ jobs:
     #parallelism: 8
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: apps/bare-expo apps/test-suite yarn.lock packages Gemfile.lock
       - bundle_install
       - update_submodules
 
@@ -607,6 +527,9 @@ jobs:
     executor: mac
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: tools/expotools ios fastlane Gemfile.lock
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
@@ -771,6 +694,9 @@ jobs:
     executor: android
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: android fastlane tools-public Gemfile.lock yarn.lock
       - update_submodules
       - install_yarn
       - yarn_install:
@@ -802,6 +728,9 @@ jobs:
     executor: android
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: android fastlane tools/expotools Gemfile.lock yarn.lock
       - install_yarn
       - update_submodules
       - restore_yarn_cache
@@ -857,6 +786,9 @@ jobs:
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: docs
+          paths: docs
       - update_submodules
       - install_puppeteer_dependencies
       - yarn_install:

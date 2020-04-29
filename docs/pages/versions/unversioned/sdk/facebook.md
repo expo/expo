@@ -28,21 +28,22 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 - **The Expo client app**
 
-  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
-
-![](/static/images/facebook-app-settings.png)
+  - In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any app events in your Facebook developer page while running your project in the Expo Client.
+  - To use your app's own Facebook App ID (and thus send related app events to your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
 
 - **iOS standalone app**
 
-  - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured above. If you still have the `host.exp.Exponent` ID listed there, remove it.
-  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+  - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured below.
+  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
   - Also in your [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
 - **Android standalone app**
 
   - [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
   - Run `expo fetch:android:hashes`.
-  - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
+  - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
+
+![](/static/images/facebook-app-settings.png)
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in. This requires adding a privacy policy URL, which can be as simple as a GitHub Gist.
 

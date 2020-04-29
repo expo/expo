@@ -22,7 +22,7 @@ We call this "ejecting" because you still depend on the Expo SDK, but your proje
 
 ### You might want to eject if:
 
-- Your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](/versions/latest/sdk/overview/), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
+- Your Expo project needs a native module that Expo doesn't currently support. We're always expanding the [Expo SDK](/versions/latest/), so we hope this is never the case. But it happens, especially if your app has very specific and uncommon native demands.
 
 ### You should not eject if:
 

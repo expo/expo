@@ -15,12 +15,6 @@ Object.defineProperty(exports, "registerRootComponent", {
     return _registerRootComponent.default;
   }
 });
-Object.defineProperty(exports, "Linking", {
-  enumerable: true,
-  get: function () {
-    return _Linking.default;
-  }
-});
 Object.defineProperty(exports, "Notifications", {
   enumerable: true,
   get: function () {
@@ -465,9 +459,26 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.AR = void 0;
+exports.Logs = exports.SplashScreen = exports.AR = exports.Linking = void 0;
 
 require("./Expo.fx");
+
+function Linking() {
+  const data = _interopRequireWildcard(require("expo-linking"));
+
+  Linking = function () {
+    return data;
+  };
+
+  return data;
+}
+
+Object.defineProperty(exports, "Linking", {
+  enumerable: true,
+  get: function () {
+    return Linking();
+  }
+});
 
 var AR = _interopRequireWildcard(require("./AR"));
 
@@ -484,8 +495,6 @@ exports.Logs = Logs;
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
-
-var _Linking = _interopRequireDefault(require("./Linking/Linking"));
 
 var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 

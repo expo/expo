@@ -4,7 +4,7 @@ import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
-import { LATEST_VERSION } from '~/common/versions';
+import { LATEST_VERSION, VERSIONS } from '~/common/versions';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -87,6 +87,14 @@ class AlgoliaSearch extends React.Component {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
 
+    // we need to explicitly ignore the non-selected versions in algolia to
+    // include the "guides" and "get started" pages next to the API docs.
+    // algolia doesn't allow us to filter on `version:v37.0.0 OR version:<null>`
+    const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
+    const ignoredVersionList = VERSIONS.filter(version => currentVersion !== version).map(
+      version => `version:-${version}`
+    );
+
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
       indexName: 'expo',
@@ -102,29 +110,26 @@ class AlgoliaSearch extends React.Component {
         return hits;
       },
       algoliaOptions: {
-        facetFilters: [
-          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
-        ],
+        facetFilters: ignoredVersionList,
       },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
-        const url = suggestion.url;
 
-        let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        const url = new URL(suggestion.url);
+        const route = this.processUrl(url.pathname + url.hash);
 
-        let asPath = null;
-        if (this.props.version === 'latest') {
+        let asPath;
+        if (Utilities.isVersionedUrl(suggestion.url) && this.props.version === 'latest') {
           asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
 
-        route = this.processUrl(route);
         if (asPath) {
           Router.push(route, asPath);
         } else {
           Router.push(route);
         }
 
-        let docSearchEl = document.getElementById('docsearch');
+        const docSearchEl = document.getElementById('docsearch');
         if (docSearchEl) {
           docSearchEl.blur();
         }

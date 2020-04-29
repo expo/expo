@@ -171,7 +171,13 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         return ContextCompat.checkSelfPermission(it, permission)
       }
     }
-    return PackageManager.PERMISSION_DENIED
+
+    // We are in the headless mode. So, we ask current context.
+    return getManifestPermissionFromContext(permission)
+  }
+
+  protected open fun getManifestPermissionFromContext(permission: String): Int {
+    return ContextCompat.checkSelfPermission(context, permission)
   }
 
   private fun canAskAgain(permission: String): Boolean {
@@ -266,7 +272,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
 
   private fun hasWriteSettingsPermission(): Boolean {
     return if (isRuntimePermissionsAvailable()) {
-      Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext)
+      Settings.System.canWrite(context.applicationContext)
     } else {
       true
     }
