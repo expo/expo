@@ -53,9 +53,13 @@ public class LegacyManifest implements Manifest {
     UUID id = UUID.fromString(manifestJson.getString("releaseId"));
     String commitTimeString = manifestJson.getString("commitTime");
     String runtimeVersion = manifestJson.getString("sdkVersion");
-    JSONObject runtimeVersionObject = manifestJson.optJSONObject("runtimeVersion");
+    Object runtimeVersionObject = manifestJson.opt("runtimeVersion");
     if (runtimeVersionObject != null) {
-      runtimeVersion = runtimeVersionObject.optString("android", runtimeVersion);
+      if (runtimeVersionObject instanceof String) {
+        runtimeVersion = (String)runtimeVersionObject;
+      } else if (runtimeVersionObject instanceof JSONObject) {
+        runtimeVersion = ((JSONObject)runtimeVersionObject).optString("android", runtimeVersion);
+      }
     }
     Uri bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"));
 
