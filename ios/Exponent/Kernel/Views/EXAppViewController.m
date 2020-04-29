@@ -111,10 +111,22 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+/**
+ * Force presented view controllers to use the same user interface style.
+ */
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated: (BOOL)flag completion:(void (^ __nullable)(void))completion
 {
   [super presentViewController:viewControllerToPresent animated:flag completion:completion];
   [self _overrideUserInterfaceStyleOf:viewControllerToPresent];
+}
+
+/**
+ * Force child view controllers to use the same user interface style.
+ */
+- (void)addChildViewController:(UIViewController *)childController
+{
+  [super addChildViewController:childController];
+  [self _overrideUserInterfaceStyleOf:childController];
 }
 
 #pragma mark - Public
