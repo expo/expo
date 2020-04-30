@@ -41,11 +41,12 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     builder.setContentText(content.getText());
     builder.setSubText(content.getSubtitle());
 
-    if (shouldPlaySound() && shouldVibrate()) {
+    boolean shouldPlayDefaultSound = shouldPlaySound() && content.shouldPlayDefaultSound();
+    if (shouldPlayDefaultSound && shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_ALL); // set sound, vibration and lights
     } else if (shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-    } else if (shouldPlaySound()) {
+    } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     } else {
       // Remove any sound or vibration attached by notification options.
@@ -58,7 +59,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
     if (shouldPlaySound() && content.getSound() != null) {
       builder.setSound(content.getSound());
-    } else if (shouldPlaySound() && content.shouldPlayDefaultSound()) {
+    } else if (shouldPlayDefaultSound) {
       builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
     }
 

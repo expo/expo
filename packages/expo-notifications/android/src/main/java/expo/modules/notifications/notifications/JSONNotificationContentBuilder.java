@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -21,7 +22,10 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
 
-  public JSONNotificationContentBuilder() {
+  private SoundResolver mSoundResolver;
+
+  public JSONNotificationContentBuilder(Context context) {
+    mSoundResolver = new SoundResolver(context);
   }
 
   public NotificationContent.Builder setPayload(JSONObject payload) {
@@ -98,14 +102,8 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       // it's not a boolean, let's handle it as a string
     }
 
-    try {
-      if (payload.optString(SOUND_KEY) != null) {
-        return Uri.parse(payload.getString(SOUND_KEY));
-      }
-    } catch (JSONException | NullPointerException e) {
-      // do nothing
-    }
-    return null;
+    String soundValue = payload.optString(SOUND_KEY);
+    return mSoundResolver.resolve(soundValue);
   }
 
   @Nullable

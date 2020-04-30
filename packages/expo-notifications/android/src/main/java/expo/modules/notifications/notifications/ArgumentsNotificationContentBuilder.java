@@ -1,5 +1,6 @@
 package expo.modules.notifications.notifications;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -24,7 +25,10 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
 
-  public ArgumentsNotificationContentBuilder() {
+  private SoundResolver mSoundResolver;
+
+  public ArgumentsNotificationContentBuilder(Context context) {
+    mSoundResolver = new SoundResolver(context);
   }
 
   public NotificationContent.Builder setPayload(ReadableArguments payload) {
@@ -62,10 +66,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   }
 
   protected Uri getSound(ReadableArguments payload) {
-    if (payload.getString(SOUND_KEY) != null) {
-      return Uri.parse(payload.getString(SOUND_KEY));
-    }
-    return null;
+    String soundValue = payload.getString(SOUND_KEY);
+    return mSoundResolver.resolve(soundValue);
   }
 
   @Nullable

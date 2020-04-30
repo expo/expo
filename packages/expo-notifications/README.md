@@ -865,12 +865,12 @@ export type NotificationContent = {
   data: { [key: string]: unknown };
   // Application badge number associated with the notification
   badge: number | null;
+  sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (
   | {
       // iOS-specific additions
       // See https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc
       // for more information on specific fields.
-      sound: 'default' | 'defaultCritical' | 'custom' | null;
       launchImageName: string | null;
       attachments: {
         identifier: string | null;
@@ -887,7 +887,6 @@ export type NotificationContent = {
       // Android-specific additions
       // See https://developer.android.com/reference/android/app/Notification.html#fields
       // for more information on specific fields.
-      sound?: 'default' | string | null;
       priority?: AndroidNotificationPriority;
       vibrationPattern?: number[];
     }
@@ -1271,7 +1270,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   showBadge: boolean;
-  soundUri: string | null;
+  sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;
   vibrationPattern: number[] | null;
   enableLights: boolean;
@@ -1294,7 +1293,7 @@ export interface NotificationChannelInput {
   lightColor?: string;
   lockscreenVisibility?: AndroidNotificationVisibility;
   showBadge?: boolean;
-  soundUri?: string | null;
+  sound?: string | null;
   audioAttributes?: Partial<AudioAttributes>;
   vibrationPattern?: number[] | null;
   enableLights?: boolean;
