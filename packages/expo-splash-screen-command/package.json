@@ -1,6 +1,6 @@
 {
   "name": "expo-splash-screen-command",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Supplementary module for 'expo-splash-screen' providing installation command",
   "main": "build/SplashScreen.js",
   "types": "build/SplashScreen.d.ts",
@@ -56,5 +56,5 @@
     "@types/inquirer": "^6.5.0",
     "expo-module-scripts": "^1.1.1"
   },
-  "gitHead": "e2f3f266608e03e8bfe1ce63ce0e1de40524cef1"
+  "gitHead": "e46e4597b2569642203fd31796256bb7b8926883"
 }
