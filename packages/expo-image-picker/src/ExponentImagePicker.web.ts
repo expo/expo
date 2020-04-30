@@ -21,7 +21,7 @@ export default {
   },
 
   async launchImageLibraryAsync({
-    mediaTypes = MediaTypeOptions.All,
+    mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
@@ -31,7 +31,7 @@ export default {
   },
 
   async launchCameraAsync({
-    mediaTypes = MediaTypeOptions.All,
+    mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     return await openFileBrowserAsync({
