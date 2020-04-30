@@ -58,9 +58,7 @@ async function configureSplashScreenDrawables(androidMainPath, splashScreenImage
         }
     }));
     if (splashScreenImagePath) {
-        if (!(await fs_extra_1.default.pathExists(path_1.default.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY)))) {
-            await fs_extra_1.default.mkdir(path_1.default.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY));
-        }
+        fs_extra_1.default.ensureDirSync(path_1.default.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY));
         await fs_extra_1.default.copyFile(splashScreenImagePath, path_1.default.resolve(androidMainPath, FILES_PATHS.SPLASH_SCREEN_DRAWABLE));
     }
 }
