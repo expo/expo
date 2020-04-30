@@ -1,6 +1,13 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Image } from 'react-native';
 
+const statusToSubtitle: Record<string, string> = {
+  cancel: 'Cancelled',
+  dismiss: 'Cancelled',
+  error: 'Failed',
+  success: 'Success',
+};
+
 const providers: Record<string, any> = {
   facebook: {
     name: 'Facebook',
@@ -122,19 +129,6 @@ function Card({ style, ...props }: any) {
     />
   );
 }
-
-const statusToSubtitle: Record<string, string> = {
-  cancel: 'Cancelled',
-  dismiss: 'Cancelled',
-  error: 'Failed',
-  success: 'Success',
-};
-const statusToColor: Record<string, string> = {
-  cancel: '#999',
-  dismiss: '#999',
-  error: '#8E0B1B',
-  success: '#7ED321',
-};
 
 export default function AuthCard({
   name,

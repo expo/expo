@@ -1,41 +1,20 @@
-import { A, H2, B } from '@expo/html-elements';
+import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
-import { makeRedirectUri, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
-import { maybeCompleteAuthSession } from 'expo-web-browser';
+import { useAuthRequest } from 'expo-auth-session';
 import Constants from 'expo-constants';
+import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
-import { Dimensions, ScaledSize, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
-import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
-import AuthCard from './AuthCard';
+import useDimensions from '../../utilities/useDimensions';
+import { AuthSection } from './AuthResult';
+import LegacyAuthSession from './LegacyAuthSession';
 
-// Web: For testing directly without react navigation set up.
 maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
-
-type DimensionsType = { window: ScaledSize; screen: ScaledSize };
-
-export function useDimensions(): DimensionsType {
-  const [dimensions, setDimensions] = React.useState<DimensionsType>({
-    window: Dimensions.get('window'),
-    screen: Dimensions.get('screen'),
-  });
-
-  const onChange = ({ window, screen }: any) => {
-    setDimensions({ window, screen });
-  };
-
-  React.useEffect(() => {
-    Dimensions.addEventListener('change', onChange);
-
-    return () => Dimensions.removeEventListener('change', onChange);
-  }, []);
-
-  return dimensions;
-}
 
 export default function AuthSessionScreen() {
   const { window } = useDimensions();
@@ -44,7 +23,7 @@ export default function AuthSessionScreen() {
 
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
-  const [prompt, setSwitch] = React.useState<undefined | Prompt>(undefined);
+  const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
 
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
@@ -57,45 +36,24 @@ export default function AuthSessionScreen() {
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
-          {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
+          <TitledSwitch
+            disabled={!isInClient}
+            title="Use Proxy"
+            value={useProxy}
+            setValue={setProxy}
+          />
           <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
-            setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
+            setValue={value => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
           />
           <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
         </View>
         <H2>Services</H2>
         <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} useProxy={useProxy} />
+        <H2>Legacy</H2>
         <LegacyAuthSession />
       </ScrollView>
-    </View>
-  );
-}
-function AuthSessionProviders(props: { useProxy: boolean; usePKCE: boolean; prompt?: Prompt }) {
-  const { useProxy, usePKCE, prompt } = props;
-
-  const redirectUri = makeRedirectUri({
-    native: 'bareexpo://redirect',
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-  });
-
-  return (
-    <View style={{ flex: 1 }}>
-      <Facebook prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Google prompt={prompt} useProxy={useProxy} usePKCE={usePKCE} />
-      <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Github prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Coinbase prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Uber prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Slack prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <FitBit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Okta prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Identity prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Azure prompt={prompt} useProxy={useProxy} />
     </View>
   );
 }
@@ -104,30 +62,57 @@ AuthSessionScreen.navigationOptions = {
   title: 'AuthSession',
 };
 
-function Result({ result }: any) {
-  if (!result) {
-    return null;
-  }
-  return (
-    <View>
-      {Object.keys(result).map(key => {
-        const value = result[key];
-        if (['_', '#', ''].includes(key)) return null;
+function AuthSessionProviders(props: {
+  useProxy: boolean;
+  usePKCE: boolean;
+  prompt?: AuthSession.Prompt;
+}) {
+  const { useProxy, usePKCE, prompt } = props;
 
-        return <KVText key={key} k={key} v={value} />;
-      })}
+  const redirectUri = AuthSession.makeRedirectUri({
+    native: 'bareexpo://redirect',
+    path: 'redirect',
+    preferLocalhost: true,
+    useProxy,
+  });
+  const options = {
+    useProxy,
+    usePKCE,
+    prompt,
+    redirectUri,
+  };
+
+  const providers = [
+    Facebook,
+    Spotify,
+    Google,
+    Reddit,
+    Github,
+    Coinbase,
+    Uber,
+    Slack,
+    FitBit,
+    Okta,
+    Identity,
+    // Azure,
+  ];
+  return (
+    <View style={{ flex: 1 }}>
+      {providers.map((Provider, index) => (
+        <Provider key={`-${index}`} {...options} />
+      ))}
     </View>
   );
 }
 
 function Google({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = makeRedirectUri({
+  const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
     preferLocalhost: true,
     useProxy,
     native: `com.googleusercontent.apps.${getGUID()}:/oauthredirect`,
   });
-  const discovery = useAutoDiscovery('https://accounts.google.com');
+  const discovery = AuthSession.useAutoDiscovery('https://accounts.google.com');
 
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -154,10 +139,9 @@ function Google({ useProxy, prompt, usePKCE }: any) {
   );
 }
 
-// Only setup for bare apps right now
 // Couldn't get this working. API is really confusing.
 function Azure({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = makeRedirectUri({
+  const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
     preferLocalhost: true,
     useProxy,
@@ -168,7 +152,7 @@ function Azure({ useProxy, prompt, usePKCE }: any) {
   });
 
   // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
-  const discovery = useAutoDiscovery(
+  const discovery = AuthSession.useAutoDiscovery(
     'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
   );
   const [request, result, promptAsync] = useAuthRequest(
@@ -200,19 +184,15 @@ function Azure({ useProxy, prompt, usePKCE }: any) {
   );
 }
 
-// Only setup for bare apps right now
-function Okta({ redirectUri, prompt, usePKCE, useProxy }: any) {
-  const discovery = useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
+function Okta({ redirectUri, usePKCE, useProxy }: any) {
+  const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
   const [request, result, promptAsync] = useAuthRequest(
-    // config
     {
       clientId: '0oa4su9fhp4F2F4Eg4x6',
       redirectUri,
-      prompt,
       scopes: ['openid', 'profile'],
       usePKCE,
     },
-    // discovery
     discovery
   );
 
@@ -416,11 +396,11 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
 }
 
 function Facebook({ usePKCE, prompt, useProxy }: any) {
-  const redirectUri = makeRedirectUri({
+  const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
     preferLocalhost: true,
     useProxy,
-    native: `fb145668956753819:///redirect`,
+    native: `fb145668956753819://authorize`,
   });
 
   const [request, result, promptAsync] = useAuthRequest(
@@ -443,6 +423,7 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
     }
   );
 
+  console.log(request?.url);
   return (
     <AuthSection
       title="facebook"
@@ -522,7 +503,7 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
 // Works on all platforms
 function Identity({ redirectUri, prompt, useProxy }: any) {
-  const discovery = useAutoDiscovery('https://demo.identityserver.io');
+  const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
 
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -573,136 +554,3 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
     />
   );
 }
-
-function AuthSection({ title, request, result, promptAsync, useProxy, disabled }: any) {
-  return (
-    <View style={{ paddingBottom: 8 }}>
-      <AuthCard
-        name={title}
-        disabled={disabled}
-        status={result?.type}
-        url={request?.url}
-        onPress={() => promptAsync({ useProxy })}
-      />
-      <View style={{ padding: 8 }}>
-        <KVText
-          href={request?.redirectUri}
-          k="Redirect URL"
-          v={request?.redirectUri || 'Loading...'}
-        />
-        <Result result={result?.params} />
-      </View>
-    </View>
-  );
-}
-
-function KVText({ k, v, href, ...props }: any) {
-  if (href) {
-    return (
-      <A {...props} style={{ color: '#709CCF' }} numberOfLines={2}>
-        <B style={{ color: '#999' }}>{k}</B> {v}
-      </A>
-    );
-  }
-  return (
-    <Text {...props} style={{ color: '#999' }} numberOfLines={2}>
-      <B>{k}</B> {v}
-    </Text>
-  );
-}
-
-/**
- * Converts an object to a query string.
- */
-function toQueryString(params: object) {
-  return (
-    '?' +
-    Object.entries(params)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-      .join('&')
-  );
-}
-
-/**
- * Test the `AuthSession.startAsync` functionality.
- */
-function LegacyAuthSession() {
-  const [result, setResult] = React.useState<any | null>(null);
-  const id = (Constants.manifest || {}).id;
-  const isInvalid = id !== '@community/native-component-list';
-
-  if (isInvalid) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.oopsTitle}>Hello, developer person!</Text>
-        <Text style={styles.oopsText}>
-          The experience id {id} will not work with this due to the authorized callback URL
-          configuration on Auth0{' '}
-        </Text>
-        <Text style={styles.oopsText}>
-          Sign in as @community to use this example, or change the Auth0 client id and domain in
-          AuthSessionScreen.js
-        </Text>
-        {isInClient && (
-          <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
-        )}
-      </View>
-    );
-  }
-  const redirectUrl = AuthSession.getRedirectUrl();
-  const auth0Domain = 'https://expo-testing.auth0.com';
-  const authUrl =
-    `${auth0Domain}/authorize` +
-    toQueryString({
-      client_id: '8wmGum25h3KU2grnmZtFvMQeitmIdSDS',
-      response_type: 'token',
-      scope: 'openid name',
-      redirect_uri: redirectUrl,
-    });
-
-  const handlePressAsync = async () => {
-    const result = await AuthSession.startAsync({ authUrl });
-    setResult(result);
-  };
-
-  return (
-    <View>
-      <Button title="Authenticate using an external service" onPress={handlePressAsync} />
-      <Result title="Legacy" result={result} />
-      <Text style={styles.faintText}>Auth Url: {authUrl}</Text>
-      <Text style={styles.faintText}>Return Url: {AuthSession.getDefaultReturnUrl()}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxWidth: '100%',
-    flexWrap: 'wrap',
-  },
-  button: {
-    marginVertical: 16,
-  },
-  text: {
-    marginVertical: 15,
-    maxWidth: '80%',
-    marginHorizontal: 10,
-  },
-  faintText: {
-    color: '#888',
-    marginHorizontal: 30,
-  },
-  oopsTitle: {
-    fontSize: 25,
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-  oopsText: {
-    textAlign: 'center',
-    marginTop: 10,
-    marginHorizontal: 30,
-  },
-});
