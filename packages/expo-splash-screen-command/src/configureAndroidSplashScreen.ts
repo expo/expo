@@ -68,9 +68,8 @@ async function configureSplashScreenDrawables(
   );
 
   if (splashScreenImagePath) {
-    if (!(await fs.pathExists(path.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY)))) {
-      await fs.mkdir(path.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY));
-    }
+    fs.ensureDirSync(path.resolve(androidMainPath, FILES_PATHS.DRAWABLE_DIRECTORY));
+
     await fs.copyFile(
       splashScreenImagePath,
       path.resolve(androidMainPath, FILES_PATHS.SPLASH_SCREEN_DRAWABLE)
