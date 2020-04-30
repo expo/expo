@@ -9,22 +9,23 @@ const chalk_1 = __importDefault(require("chalk"));
 const color_string_1 = __importDefault(require("color-string"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-const configureAndroidSplashScreen_1 = __importDefault(require("./configureAndroidSplashScreen"));
-const configureIosSplashScreen_1 = __importDefault(require("./configureIosSplashScreen"));
+const android_1 = __importDefault(require("./android"));
 const constants_1 = require("./constants");
+const ios_1 = __importDefault(require("./ios"));
 async function action(configuration) {
     const { platform, ...restParams } = configuration;
+    const rootDir = path_1.default.resolve();
     switch (platform) {
         case constants_1.Platform.ANDROID:
-            await configureAndroidSplashScreen_1.default(restParams);
+            await android_1.default(rootDir, restParams);
             break;
         case constants_1.Platform.IOS:
-            await configureIosSplashScreen_1.default(restParams);
+            await ios_1.default(rootDir, restParams);
             break;
         case constants_1.Platform.ALL:
         default:
-            await configureAndroidSplashScreen_1.default(restParams);
-            await configureIosSplashScreen_1.default(restParams);
+            await android_1.default(rootDir, restParams);
+            await ios_1.default(rootDir, restParams);
             break;
     }
 }
@@ -66,7 +67,7 @@ async function validateConfiguration(configuration) {
     }
     return {
         ...configuration,
-        backgroundColor: color_string_1.default.to.hex(backgroundColor.value),
+        backgroundColor,
     };
 }
 async function runAsync() {

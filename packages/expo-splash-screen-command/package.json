@@ -37,27 +37,30 @@
     "node": ">=10"
   },
   "dependencies": {
+    "@expo/babel-preset-cli": "^0.2.8",
     "@expo/commander": "^2.21.1",
     "@react-native-community/cli-platform-android": "^3.0.3",
     "@react-native-community/cli-platform-ios": "^3.0.0",
     "chalk": "^3.0.0",
     "color-string": "^1.5.3",
     "core-js": "^3.6.4",
-    "expo-module-scripts": "^1.1.1",
+    "expo-module-scripts": "^1.2.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.1",
-    "xcode": "^2.1.0"
+    "xcode": "^2.1.0",
+    "xml-js": "^1.6.11"
   },
   "peerDependencies": {
     "expo-splash-screen": "1.0.0"
   },
-  "jest": {
-    "preset": "expo-module-scripts/ios"
-  },
   "devDependencies": {
     "@types/color-string": "^1.5.0",
     "@types/fs-extra": "^8.0.1",
-    "@types/inquirer": "^6.5.0"
+    "@types/inquirer": "^6.5.0",
+    "@types/jest": "^25.2.1",
+    "jest": "^25.4.0",
+    "memfs": "^3.1.2",
+    "ts-jest": "^25.4.0"
   },
   "gitHead": "58cc7088dae609832c85dba393372ed1a06b00db"
 }

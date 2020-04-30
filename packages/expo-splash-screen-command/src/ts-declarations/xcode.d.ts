@@ -213,10 +213,7 @@ declare module 'xcode' {
     pbxProjectSection(): { [key: UUID]: PBXProject };
     pbxBuildFileSection(): unknown;
     pbxXCBuildConfigurationSection(): unknown;
-    pbxFileReferenceSection(): {
-      [key: UUID]: PBXFile;
-      [key: UUIDComment]: string;
-    };
+    pbxFileReferenceSection(): Record<UUID, PBXFile> & Record<UUIDComment, string>;
     pbxNativeTargetSection(): unknown;
     xcVersionGroupSection(): unknown;
     pbxXCConfigurationList(): unknown;

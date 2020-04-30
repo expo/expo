@@ -2,19 +2,19 @@
 
 import program from '@expo/commander';
 import chalk from 'chalk';
-import colorString from 'color-string';
+import colorString, { ColorDescriptor } from 'color-string';
 import fs from 'fs-extra';
 import path from 'path';
 
-import configureAndroidSplashScreen from './configureAndroidSplashScreen';
-import configureIosSplashScreen from './configureIosSplashScreen';
+import configureAndroid from './android';
 import { ResizeMode, Platform } from './constants';
+import configureIos from './ios';
 
 /**
  * These parameters have to be provided by the user or omitted if possible.
  */
 interface Params {
-  backgroundColor: string;
+  backgroundColor: ColorDescriptor;
   imagePath: string | undefined;
 }
 
@@ -28,17 +28,18 @@ interface Options {
 
 async function action(configuration: Params & Options) {
   const { platform, ...restParams } = configuration;
+  const rootDir = path.resolve();
   switch (platform) {
     case Platform.ANDROID:
-      await configureAndroidSplashScreen(restParams);
+      await configureAndroid(rootDir, restParams);
       break;
     case Platform.IOS:
-      await configureIosSplashScreen(restParams);
+      await configureIos(rootDir, restParams);
       break;
     case Platform.ALL:
     default:
-      await configureAndroidSplashScreen(restParams);
-      await configureIosSplashScreen(restParams);
+      await configureAndroid(rootDir, restParams);
+      await configureIos(rootDir, restParams);
       break;
   }
 }
@@ -56,7 +57,7 @@ function getAvailableOptions(o: object) {
  * @param configuration.backgroundColor is valid hex #RGB/#RGBA color
  */
 async function validateConfiguration(
-  configuration: Options & Params
+  configuration: Options & Omit<Params, 'backgroundColor'> & { backgroundColor: string }
 ): never | Promise<Options & Params> {
   const { resizeMode, imagePath: imagePathString, platform } = configuration;
 
@@ -111,7 +112,7 @@ async function validateConfiguration(
 
   return {
     ...configuration,
-    backgroundColor: colorString.to.hex(backgroundColor.value),
+    backgroundColor,
   };
 }
 

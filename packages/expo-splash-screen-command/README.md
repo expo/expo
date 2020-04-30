@@ -29,26 +29,16 @@ You can use it to configure your native iOS and Android project according to you
 
 Command syntax:
 ```
-yarn run expo-splash-screen --mode "contain" (default) | "cover" | "native" (only on Android) --platform "all" (default) | "ios" | "android" <backgroundColor> (required) [imagePath] (optional)
+yarn run expo-splash-screen --mode <mode> --platform "all" <backgroundColor> [imagePath]
 ```
+- `mode` - see [resize modes](https://github.com/expo/expo/tree/master/packages/expo-splash-screen#built-in-splash-screen-image-resize-modes). Available values: `contain` (default), `cover`, `native` (only on Android)
+- `platform` - select which platform to configure. Available values: `all` (default), `ios`, `android`
+- `backgroundColor` (required) - Color that will be used a background in splash screen view. Accepts formats from [`color-string` library](https://github.com/Qix-/color-string) (`rgb`, `rgba`, `hex`, `css named colors`, `hsl`, `hsla`).
+- `imagePath` (optional) - Path to `.png` image that will be used in splash screen view. Not providing an image will make splash screen view display only a background color.
 
 To see all the available options:
 ```
 yarn run expo-splash-screen --help
-```
-### Alternatives to `yarn`
-
-Instead of 
-```
-yarn run expo-splash-screen
-```
-you can go with:
-```
-npm run expo-splash-screen
-```
-or
-```
-npx expo-splash-screen
 ```
 
 ## 🖥 Installation
