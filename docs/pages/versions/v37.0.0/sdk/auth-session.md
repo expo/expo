@@ -243,6 +243,9 @@ const [request, response, promptAsync] = useAuthRequest(
     - Run `npx uri-scheme add <YOUR FBID>`
     - Rebuild with `yarn ios` & `yarn android`
 - You can still test native auth in the client by using the Expo proxy `useProxy`
+- The `native` redirect URI **must** be formatted like `fbYOUR_NUMERIC_ID://authorize`
+  - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
+  - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
 ```ts
 // Endpoint
@@ -258,7 +261,8 @@ const [request, response, promptAsync] = useAuthRequest(
     // For usage in managed apps using the proxy
     redirectUri: makeRedirectUri({
       // For usage in bare and standalone
-      native: 'your.app://redirect',
+      // Use your FBID here. The path MUST be `authorize`.
+      native: 'fb111111111111://authorize',
     }),
     extraParams: {
       // Use `popup` on web for a better experience
