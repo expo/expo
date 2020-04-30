@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import { getRecoveryPropsToSave } from './ErroRecoveryStore';
 import ExpoErrorRecovery from './ExpoErrorRecovery';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 if (Platform.OS !== 'web') {
     const globalHandler = ErrorUtils.getGlobalHandler();
     // ErrorUtils came from react-native
@@ -13,8 +14,10 @@ if (Platform.OS !== 'web') {
     });
 }
 else {
-    window.addEventListener('error', () => {
-        ExpoErrorRecovery.saveRecoveryProps(getRecoveryPropsToSave());
-    });
+    if (canUseDOM) {
+        window.addEventListener('error', () => {
+            ExpoErrorRecovery.saveRecoveryProps(getRecoveryPropsToSave());
+        });
+    }
 }
 //# sourceMappingURL=ErrorRecovery.fx.js.map

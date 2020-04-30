@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 import { getRecoveryPropsToSave } from './ErroRecoveryStore';
 import ExpoErrorRecovery from './ExpoErrorRecovery';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
 if (Platform.OS !== 'web') {
   const globalHandler = ErrorUtils.getGlobalHandler();
@@ -14,7 +15,9 @@ if (Platform.OS !== 'web') {
     globalHandler(error, isFatal);
   });
 } else {
-  window.addEventListener('error', () => {
-    ExpoErrorRecovery.saveRecoveryProps(getRecoveryPropsToSave());
-  });
+  if (canUseDOM) {
+    window.addEventListener('error', () => {
+      ExpoErrorRecovery.saveRecoveryProps(getRecoveryPropsToSave());
+    });
+  }
 }
