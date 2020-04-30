@@ -1,23 +1,79 @@
+import { A, H2, B } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { makeRedirectUri, useAuthRequest, Prompt, useAutoDiscovery } from 'expo-auth-session';
+import { maybeCompleteAuthSession } from 'expo-web-browser';
 import Constants from 'expo-constants';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { maybeCompleteAuthSession } from 'expo-web-browser';
+import { Dimensions, ScaledSize, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { getGUID } from '../api/guid';
-import Button from '../components/Button';
-import TitledSwitch from '../components/TitledSwitch';
+import { getGUID } from '../../api/guid';
+import Button from '../../components/Button';
+import TitledSwitch from '../../components/TitledSwitch';
+import AuthCard from './AuthCard';
 
 // Web: For testing directly without react navigation set up.
 maybeCompleteAuthSession();
 
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
+type DimensionsType = { window: ScaledSize; screen: ScaledSize };
+
+export function useDimensions(): DimensionsType {
+  const [dimensions, setDimensions] = React.useState<DimensionsType>({
+    window: Dimensions.get('window'),
+    screen: Dimensions.get('screen'),
+  });
+
+  const onChange = ({ window, screen }: any) => {
+    setDimensions({ window, screen });
+  };
+
+  React.useEffect(() => {
+    Dimensions.addEventListener('change', onChange);
+
+    return () => Dimensions.removeEventListener('change', onChange);
+  }, []);
+
+  return dimensions;
+}
+
 export default function AuthSessionScreen() {
+  const { window } = useDimensions();
+
+  const usePadding = window.width <= 660;
+
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | Prompt>(undefined);
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center' }}>
+      <ScrollView
+        style={{ flex: 1, overflow: 'visible' }}
+        contentContainerStyle={{
+          maxWidth: 640,
+          paddingHorizontal: usePadding ? 12 : 0,
+          overflow: 'visible',
+        }}>
+        <View style={{ marginBottom: 8 }}>
+          <H2>Settings</H2>
+          {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
+          <TitledSwitch
+            title="Switch Accounts"
+            value={!!prompt}
+            setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
+          />
+          <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
+        </View>
+        <H2>Services</H2>
+        <AuthSessionProviders prompt={prompt} usePKCE={usePKCE} useProxy={useProxy} />
+        <LegacyAuthSession />
+      </ScrollView>
+    </View>
+  );
+}
+function AuthSessionProviders(props: { useProxy: boolean; usePKCE: boolean; prompt?: Prompt }) {
+  const { useProxy, usePKCE, prompt } = props;
 
   const redirectUri = makeRedirectUri({
     native: 'bareexpo://redirect',
@@ -27,28 +83,20 @@ export default function AuthSessionScreen() {
   });
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 36 }}>
-      {isInClient && <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />}
-      <TitledSwitch
-        title="Switch Accounts"
-        value={!!prompt}
-        setValue={value => setSwitch(value ? Prompt.SelectAccount : undefined)}
-      />
-      <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
-      <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Identity prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+    <View style={{ flex: 1 }}>
       <Facebook prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <FitBit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Spotify prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Google prompt={prompt} useProxy={useProxy} usePKCE={usePKCE} />
+      <Reddit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Github prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Coinbase prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
-      <Google prompt={prompt} useProxy={useProxy} usePKCE={usePKCE} />
-      <Slack prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Uber prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Slack prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <FitBit prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Okta prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
+      <Identity prompt={prompt} redirectUri={redirectUri} usePKCE={usePKCE} useProxy={useProxy} />
       <Azure prompt={prompt} useProxy={useProxy} />
-      <LegacyAuthSession />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -56,14 +104,20 @@ AuthSessionScreen.navigationOptions = {
   title: 'AuthSession',
 };
 
-function Result({ title, result }: any) {
-  if (result)
-    return (
-      <Text style={styles.text}>
-        {title}: {JSON.stringify(result, null, 2)}
-      </Text>
-    );
-  return null;
+function Result({ result }: any) {
+  if (!result) {
+    return null;
+  }
+  return (
+    <View>
+      {Object.keys(result).map(key => {
+        const value = result[key];
+        if (['_', '#', ''].includes(key)) return null;
+
+        return <KVText key={key} k={key} v={value} />;
+      })}
+    </View>
+  );
 }
 
 function Google({ useProxy, prompt, usePKCE }: any) {
@@ -92,7 +146,7 @@ function Google({ useProxy, prompt, usePKCE }: any) {
     <AuthSection
       disabled={!useProxy && isInClient}
       request={request}
-      title="Google"
+      title="google"
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
@@ -136,8 +190,8 @@ function Azure({ useProxy, prompt, usePKCE }: any) {
 
   return (
     <AuthSection
-      title="Azure"
-      disabled={isInClient || Platform.OS === 'web'}
+      title="azure"
+      disabled={isInClient}
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -164,8 +218,7 @@ function Okta({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Okta"
-      disabled={Platform.OS === 'web'}
+      title="okta"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -218,7 +271,7 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Reddit"
+      title="reddit"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -268,7 +321,7 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Github"
+      title="github"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -301,7 +354,7 @@ function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Uber"
+      title="uber"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -353,7 +406,7 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="FitBit"
+      title="fitbit"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -392,7 +445,7 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Facebook"
+      title="facebook"
       disabled={isInClient && !useProxy}
       request={request}
       result={result}
@@ -427,7 +480,7 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Slack"
+      title="slack"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -444,6 +497,9 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
       redirectUri,
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
       usePKCE,
+      extraParams: {
+        show_dialog: false,
+      },
       prompt,
     },
     // discovery
@@ -455,7 +511,7 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Spotify"
+      title="spotify"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -480,7 +536,7 @@ function Identity({ redirectUri, prompt, useProxy }: any) {
 
   return (
     <AuthSection
-      title="Identity"
+      title="identity4"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -509,7 +565,7 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
   return (
     <AuthSection
       disabled={useProxy}
-      title="Coinbase"
+      title="coinbase"
       request={request}
       result={result}
       promptAsync={promptAsync}
@@ -520,17 +576,38 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
 
 function AuthSection({ title, request, result, promptAsync, useProxy, disabled }: any) {
   return (
-    <View style={{ borderBottomWidth: StyleSheet.hairlineWidth, paddingBottom: 8 }}>
-      <Button
+    <View style={{ paddingBottom: 8 }}>
+      <AuthCard
+        name={title}
         disabled={disabled}
-        title={title}
-        buttonStyle={styles.button}
+        status={result?.type}
+        url={request?.url}
         onPress={() => promptAsync({ useProxy })}
       />
-      <Text style={{ marginBottom: 8 }}>Redirect "{request?.redirectUri}"</Text>
-      <Text>URL "{request?.url}"</Text>
-      <Result title={title} result={result} />
+      <View style={{ padding: 8 }}>
+        <KVText
+          href={request?.redirectUri}
+          k="Redirect URL"
+          v={request?.redirectUri || 'Loading...'}
+        />
+        <Result result={result?.params} />
+      </View>
     </View>
+  );
+}
+
+function KVText({ k, v, href, ...props }: any) {
+  if (href) {
+    return (
+      <A {...props} style={{ color: '#709CCF' }} numberOfLines={2}>
+        <B style={{ color: '#999' }}>{k}</B> {v}
+      </A>
+    );
+  }
+  return (
+    <Text {...props} style={{ color: '#999' }} numberOfLines={2}>
+      <B>{k}</B> {v}
+    </Text>
   );
 }
 
