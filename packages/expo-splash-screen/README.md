@@ -300,9 +300,6 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
 
-🚨The automatic configuration tool is brand new and you may run into issues when using it as we finish polishing it up. If you are unable to run it successfully, please undo the changes made by the command and refer to the "Manual Configuration" section below.
-
-
 ### Manual Configuration
 
 #### `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
