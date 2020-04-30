@@ -14,7 +14,7 @@ const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));
-const AuthSession = optionalRequire(() => require('../screens/AuthSessionScreen'));
+const AuthSession = optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const Branch = optionalRequire(() => require('../screens/BranchScreen'));
