@@ -165,6 +165,10 @@ public class FileSystemModule extends ExportedModule {
     if ("file".equals(uri.getScheme())) {
       return permissionsForPath(uri.getPath());
     }
+    if (uri.getScheme() == null) {
+      // this is probably an asset embedded by the packager in resources
+      return EnumSet.of(Permission.READ);
+    }
     return EnumSet.noneOf(Permission.class);
   }
 
@@ -193,6 +197,18 @@ public class FileSystemModule extends ExportedModule {
     return getContext().getAssets().open(asset);
   }
 
+  private InputStream openResourceInputStream(String resourceName) throws IOException {
+    int resourceId = getContext().getResources().getIdentifier(resourceName, "raw", getContext().getPackageName());
+    if (resourceId == 0) {
+      // this resource doesn't exist in the raw folder, so try drawable
+      resourceId = getContext().getResources().getIdentifier(resourceName, "drawable", getContext().getPackageName());
+      if (resourceId == 0) {
+        throw new FileNotFoundException("No resource found with the name " + resourceName);
+      }
+    }
+    return getContext().getResources().openRawResource(resourceId);
+  }
+
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
@@ -216,12 +232,17 @@ public class FileSystemModule extends ExportedModule {
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
-      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme())) {
+      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme()) || uri.getScheme() == null) {
         Bundle result = new Bundle();
         try {
-          InputStream is = "content".equals(uri.getScheme()) ?
-            getContext().getContentResolver().openInputStream(uri) :
-            openAssetInputStream(uri);
+          InputStream is;
+          if ("content".equals(uri.getScheme())) {
+            is = getContext().getContentResolver().openInputStream(uri);
+          } else if ("asset".equals(uri.getScheme())) {
+            is = openAssetInputStream(uri);
+          } else {
+            is = openResourceInputStream(uriStr);
+          }
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -288,6 +309,9 @@ public class FileSystemModule extends ExportedModule {
           contents = IOUtils.toString(new FileInputStream(uriToFile(uri)));
         } else if ("asset".equals(uri.getScheme())) {
           contents = IOUtils.toString(openAssetInputStream(uri));
+        } else if (uri.getScheme() == null) {
+          // this is probably an asset embedded by the packager in resources
+          contents = IOUtils.toString(openResourceInputStream(uriStr));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
         }
@@ -431,6 +455,12 @@ public class FileSystemModule extends ExportedModule {
         promise.resolve(null);
       } else if ("asset".equals(fromUri.getScheme())) {
         InputStream in = openAssetInputStream(fromUri);
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
+      } else if (fromUri.getScheme() == null) {
+        // this is probably an asset embedded by the packager in resources
+        InputStream in = openResourceInputStream((String) options.get("from"));
         OutputStream out = new FileOutputStream(uriToFile(toUri));
         IOUtils.copy(in, out);
         promise.resolve(null);
