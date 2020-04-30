@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [0.1.3] - 2020-04-30
 
 ### 🛠 Breaking changes
 
