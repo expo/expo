@@ -131,9 +131,9 @@ export declare type NotificationContent = {
     data: {
         [key: string]: unknown;
     };
+    sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & ({
     launchImageName: string | null;
-    sound: 'default' | 'defaultCritical' | 'unknown' | null;
     badge: number | null;
     attachments: {
         identifier: string | null;
@@ -147,7 +147,6 @@ export declare type NotificationContent = {
     targetContentIdentifier?: string;
 } | {
     badge?: number;
-    sound?: 'default' | string;
     priority?: AndroidNotificationPriority;
     vibrationPattern?: number[];
 });

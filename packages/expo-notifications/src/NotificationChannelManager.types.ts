@@ -66,7 +66,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   showBadge: boolean;
-  soundUri: string | null;
+  sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;
   vibrationPattern: number[] | null;
   enableLights: boolean;
@@ -80,6 +80,7 @@ export type NotificationChannelInput = RequiredBy<
     NotificationChannel,
     | 'id' // id is handled separately as a function argument
     | 'audioAttributes' // need to make it AudioAttributesInput
-  > & { audioAttributes?: AudioAttributesInput },
+    | 'sound'
+  > & { audioAttributes?: AudioAttributesInput; sound?: string | null },
   'name' | 'importance'
 >;
