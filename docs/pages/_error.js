@@ -252,7 +252,7 @@ const RENAMED_PAGES = {
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/expokit/overview/',
   '/guides/publishing/': '/workflow/publishing/',
-  '/guides/linking/': '/vworkflow/linking/',
+  '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
   '/guides/debugging/': '/workflow/debugging/',
   '/guides/logging/': '/workflow/logging/',
