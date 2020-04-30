@@ -11,13 +11,13 @@ export default {
     get name() {
         return 'ExponentImagePicker';
     },
-    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.All, allowsMultipleSelection = false, }) {
+    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
         });
     },
-    async launchCameraAsync({ mediaTypes = MediaTypeOptions.All, allowsMultipleSelection = false, }) {
+    async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
