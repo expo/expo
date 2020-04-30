@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- add polyfill for usage within managed workflow
+
 ## 0.2.0
 
 ### 🎉 New features
