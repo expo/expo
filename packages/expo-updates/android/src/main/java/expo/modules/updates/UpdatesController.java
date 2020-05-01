@@ -212,11 +212,11 @@ public class UpdatesController {
     return mLauncher.getLocalAssetFiles();
   }
 
-  public boolean isUsingLocalAssetFiles() {
+  public boolean isUsingEmbeddedAssets() {
     if (mLauncher == null) {
-      return false;
+      return true;
     }
-    return mLauncher.isUsingLocalAssetFiles();
+    return mLauncher.isUsingEmbeddedAssets();
   }
 
   // other getters

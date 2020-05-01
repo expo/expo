@@ -69,8 +69,8 @@ public class NoDatabaseLauncher implements Launcher {
     return mLocalAssetFiles;
   }
 
-  public boolean isUsingLocalAssetFiles() {
-    return mLocalAssetFiles != null;
+  public boolean isUsingEmbeddedAssets() {
+    return mLocalAssetFiles == null;
   }
 
   private void writeErrorToLog(Context context, Exception fatalException) {

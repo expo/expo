@@ -58,8 +58,8 @@ public class DatabaseLauncher implements Launcher {
     return mLocalAssetFiles;
   }
 
-  public boolean isUsingLocalAssetFiles() {
-    return mLocalAssetFiles != null;
+  public boolean isUsingEmbeddedAssets() {
+    return mLocalAssetFiles == null;
   }
 
   public synchronized void launch(UpdatesDatabase database, Context context, LauncherCallback callback) {
@@ -76,6 +76,9 @@ public class DatabaseLauncher implements Launcher {
 
     if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
+      if (mLocalAssetFiles != null) {
+        throw new AssertionError("mLocalAssetFiles should be null for embedded updates");
+      }
       mCallback.onSuccess();
       return;
     }

@@ -94,14 +94,15 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
-- (BOOL)isUsingLocalAssetFiles
+- (BOOL)isUsingEmbeddedAssets
 {
-  return _assetFilesMap != nil;
+  return _assetFilesMap == nil;
 }
 
 - (void)_ensureAllAssetsExist
 {
   if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+    NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
     _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
 
     dispatch_async(self->_completionQueue, ^{

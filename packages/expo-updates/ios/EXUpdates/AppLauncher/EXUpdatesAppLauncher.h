@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong, readonly) EXUpdatesUpdate *launchedUpdate;
 @property (nullable, nonatomic, strong, readonly) NSURL *launchAssetUrl;
 @property (nullable, nonatomic, strong, readonly) NSDictionary *assetFilesMap;
-@property (nonatomic, assign, readonly) BOOL isUsingLocalAssetFiles;
+@property (nonatomic, assign, readonly) BOOL isUsingEmbeddedAssets;
 
 @end
 

@@ -23,6 +23,7 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
   _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifest];
   if (_launchedUpdate) {
     if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+      NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
       _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
     } else {
       _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesEmbeddedBundleFilename withExtension:kEXUpdatesEmbeddedBundleFileType];
@@ -39,9 +40,9 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
   }
 }
 
-- (BOOL)isUsingLocalAssetFiles
+- (BOOL)isUsingEmbeddedAssets
 {
-  return _assetFilesMap != nil;
+  return _assetFilesMap == nil;
 }
 
 - (void)launchUpdateWithFatalError:(NSError *)error;

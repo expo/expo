@@ -69,12 +69,11 @@ public class UpdatesModule extends ExportedModule {
         }
 
         constants.put("isEnabled", controller.getUpdatesConfiguration().isEnabled());
-        constants.put("isUsingLocalAssets", controller.isUsingLocalAssetFiles());
+        constants.put("isUsingEmbeddedAssets", controller.isUsingEmbeddedAssets());
       }
     } catch (IllegalStateException e) {
       // do nothing; this is expected in a development client
       constants.put("isEnabled", false);
-      constants.put("isUsingLocalAssets", false);
     }
 
     return constants;

@@ -27,21 +27,19 @@ UM_EXPORT_MODULE(ExpoUpdates);
 {
   if (![EXUpdatesConfig sharedInstance].isEnabled) {
     return @{
-      @"isEnabled": @(NO),
-      @"isUsingLocalAssets": @(NO)
+      @"isEnabled": @(NO)
     };
   }
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
   EXUpdatesUpdate *launchedUpdate = controller.launchedUpdate;
   if (!launchedUpdate) {
     return @{
-      @"isEnabled": @(NO),
-      @"isUsingLocalAssets": @(NO)
+      @"isEnabled": @(NO)
     };
   } else {
     return @{
       @"isEnabled": @(YES),
-      @"isUsingLocalAssets": @(controller.isUsingLocalAssetFiles),
+      @"isUsingEmbeddedAssets": @(controller.isUsingEmbeddedAssets),
       @"manifest": launchedUpdate.rawManifest ?: @{},
       @"localAssets": controller.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(controller.isEmergencyLaunch)

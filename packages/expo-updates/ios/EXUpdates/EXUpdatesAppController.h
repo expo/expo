@@ -45,7 +45,7 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
  use the locally downloaded assets.
  */
 @property (nullable, nonatomic, readonly, strong) NSDictionary *assetFilesMap;
-@property (nonatomic, readonly, assign) BOOL isUsingLocalAssetFiles;
+@property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;
 
 /**
  for internal use in EXUpdates
