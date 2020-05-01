@@ -8,7 +8,6 @@ import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
 import TitledSwitch from '../../components/TitledSwitch';
-import useDimensions from '../../utilities/useDimensions';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
 
@@ -17,10 +16,6 @@ maybeCompleteAuthSession();
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
 export default function AuthSessionScreen() {
-  const { window } = useDimensions();
-
-  const usePadding = window.width <= 660;
-
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
@@ -28,11 +23,9 @@ export default function AuthSessionScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
       <ScrollView
-        style={{ flex: 1, overflow: 'visible' }}
         contentContainerStyle={{
           maxWidth: 640,
-          paddingHorizontal: usePadding ? 12 : 0,
-          overflow: 'visible',
+          paddingHorizontal: 12,
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
@@ -423,7 +416,6 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
     }
   );
 
-  console.log(request?.url);
   return (
     <AuthSection
       title="facebook"
