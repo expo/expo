@@ -45,7 +45,8 @@
     "expo-module-template",
     "expo-apple-authentication",
     "expo-updates",
-    "expo-splash-screen"
+    "expo-splash-screen",
+    "expo-exposure-notification"
   ],
   "detox": {
     "configurations": {
