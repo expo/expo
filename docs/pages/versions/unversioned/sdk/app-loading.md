@@ -13,7 +13,7 @@ This is incredibly useful to let you download and cache fonts, logos, icon image
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, please use [Splash Screen](./splash-screen) in bare.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps; use [Splash Screen](./splash-screen) in bare apps.
 
 ## Usage
 
