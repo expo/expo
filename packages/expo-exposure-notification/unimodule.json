@@ -1,0 +1,4 @@
+{
+  "name": "expo-exposure-notification",
+  "platforms": ["ios", "android"]
+}

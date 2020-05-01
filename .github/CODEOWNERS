@@ -27,6 +27,7 @@
 /packages/expo-device                           @ide
 /packages/expo-document-picker                  @bbarthec @tsapeta
 /packages/expo-error-recovery                   @lukmccall @bbarthec
+/packages/expo-exposure-notification            @ccheever @IjzerenHein
 /packages/expo-face-detector                    @sjchmiela @mczernek
 /packages/expo-facebook                         @sjchmiela @mczernek
 /packages/expo-file-system                      @sjchmiela @bbarthec
