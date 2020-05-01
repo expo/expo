@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { ColorPropType, Platform, View, ViewPropTypes, processColor } from 'react-native';
+import * as React from 'react';
+import { Platform, processColor, View } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
 
@@ -14,14 +13,6 @@ export type LinearGradientProps = {
 export type LinearGradienPoint = { x: number; y: number } | [number, number];
 
 export default class LinearGradient extends React.Component<LinearGradientProps> {
-  static propTypes = {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(ColorPropType).isRequired,
-    locations: PropTypes.arrayOf(PropTypes.number),
-    start: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-    end: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-  };
-
   render() {
     let { colors, locations, start, end, ...props } = this.props;
 
