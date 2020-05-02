@@ -29,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSString *bundlePackagerKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithPackagerKey:bundlePackagerKey type:kEXUpdatesBareEmbeddedBundleFileType];
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesBareEmbeddedBundleFileType];
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = kEXUpdatesBareEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
@@ -41,15 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
     id type = assetDict[@"type"];
     id mainBundleDir = assetDict[@"nsBundleDir"];
     id mainBundleFilename = assetDict[@"nsBundleFilename"];
-    NSAssert(packagerHash && [packagerHash isKindOfClass:[NSString class]], @"asset packagerKey should be a nonnull string");
+    NSAssert(packagerHash && [packagerHash isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
     NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
     NSAssert(mainBundleFilename && [mainBundleFilename isKindOfClass:[NSString class]], @"asset nsBundleFilename should be a nonnull string");
     if (mainBundleDir) {
       NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
     }
 
-    NSString *packagerKey = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithPackagerKey:packagerKey type:(NSString *)type];
+    NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
     asset.mainBundleDir = mainBundleDir;
     asset.mainBundleFilename = mainBundleFilename;
 

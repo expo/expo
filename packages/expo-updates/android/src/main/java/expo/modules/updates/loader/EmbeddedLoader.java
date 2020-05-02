@@ -88,7 +88,7 @@ public class EmbeddedLoader {
     } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
       return copyResourceAndGetHash(asset, destination, context);
     } else {
-      throw new AssertionError("Failed to copy asset " + asset.packagerKey + " from APK assets or resources because not enough information was provided.");
+      throw new AssertionError("Failed to copy asset " + asset.key + " from APK assets or resources because not enough information was provided.");
     }
   }
 
