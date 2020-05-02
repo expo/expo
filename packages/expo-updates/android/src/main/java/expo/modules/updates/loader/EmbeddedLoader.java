@@ -209,13 +209,19 @@ public class EmbeddedLoader {
   }
 
   // https://developer.android.com/guide/topics/resources/providing-resources.html#BestMatch
+  // If a perfect match is not available, the OS will pick the next largest scale.
+  // If only smaller scales are available, the OS will choose the largest available one.
   private float pickClosestScale(Float[] scales) {
-    float closestScale = 0;
+    float closestScale = Float.MAX_VALUE;
+    float largestScale = 0;
     for (float scale : scales) {
-      if (scale > closestScale && scale <= mPixelDensity) {
+      if (scale >= mPixelDensity && (scale < closestScale)) {
         closestScale = scale;
       }
+      if (scale > largestScale) {
+        largestScale = scale;
+      }
     }
-    return closestScale;
+    return closestScale < Float.MAX_VALUE ? closestScale : largestScale;
   }
 }
