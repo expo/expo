@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * properties determined by asset source
  */
-@property (nonatomic, strong) NSString *packagerKey;
+@property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *type;
 @property (nullable, nonatomic, strong) NSURL *url;
 @property (nullable, nonatomic, strong) NSDictionary *metadata;
@@ -22,9 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong) NSString *contentHash;
 @property (nullable, nonatomic, strong) NSDictionary *headers;
 
-@property (nullable, nonatomic, strong) NSString *localAssetsKey;
-
-- (instancetype)initWithPackagerKey:(NSString *)packagerKey type:(NSString *)type;
+- (instancetype)initWithKey:(NSString *)key type:(NSString *)type;
 
 @end
 

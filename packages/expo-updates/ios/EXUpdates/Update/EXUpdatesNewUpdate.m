@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSString *bundlePackagerKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithPackagerKey:bundlePackagerKey type:kEXUpdatesEmbeddedBundleFileType];
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
@@ -45,18 +45,18 @@ NS_ASSUME_NONNULL_BEGIN
 
   for (NSDictionary *assetDict in (NSArray *)assets) {
     NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
-    id packagerKey = assetDict[@"packagerKey"];
+    id key = assetDict[@"key"];
     id urlString = assetDict[@"url"];
     id type = assetDict[@"type"];
     id metadata = assetDict[@"metadata"];
     id mainBundleFilename = assetDict[@"mainBundleFilename"];
-    NSAssert(packagerKey && [packagerKey isKindOfClass:[NSString class]], @"asset packagerKey should be a nonnull string");
+    NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
     NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
     NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
     NSURL *url = [NSURL URLWithString:(NSString *)urlString];
     NSAssert(url, @"asset url should be a valid URL");
 
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithPackagerKey:packagerKey type:(NSString *)type];
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
     asset.url = url;
 
     if (metadata) {

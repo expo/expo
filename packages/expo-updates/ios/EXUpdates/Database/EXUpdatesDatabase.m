@@ -109,7 +109,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
    CREATE TABLE \"assets\" (\
    \"id\"  INTEGER PRIMARY KEY AUTOINCREMENT,\
    \"url\"  TEXT,\
-   \"packager_key\"  TEXT NOT NULL UNIQUE,\
+   \"key\"  TEXT NOT NULL UNIQUE,\
    \"headers\"  TEXT,\
    \"type\"  TEXT NOT NULL,\
    \"metadata\"  TEXT,\
@@ -168,11 +168,11 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
     NSAssert(asset.filename, @"asset filename should be nonnull");
     NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"packager_key\", \"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
+    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
-                          asset.packagerKey,
+                          asset.key,
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
                           asset.type,
@@ -212,8 +212,8 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
   
-  NSString * const assetSelectSql = @"SELECT id FROM assets WHERE packager_key = ?1 LIMIT 1;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:assetSelectSql withArgs:@[asset.packagerKey] error:error];
+  NSString * const assetSelectSql = @"SELECT id FROM assets WHERE \"key\" = ?1 LIMIT 1;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:assetSelectSql withArgs:@[asset.key] error:error];
   if (!rows || ![rows count]) {
     success = NO;
   } else {
@@ -244,10 +244,10 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"packager_key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
-                      asset.packagerKey,
+                      asset.key,
                       asset.headers ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
@@ -403,7 +403,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
 
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT assets.id, packager_key, url, type, relative_path, assets.metadata, launch_asset_id\
+  NSString * const sql = @"SELECT assets.id, \"key\", url, type, relative_path, assets.metadata, launch_asset_id\
   FROM assets\
   INNER JOIN updates_assets ON updates_assets.asset_id = assets.id\
   INNER JOIN updates ON updates_assets.update_id = updates.id\
@@ -423,11 +423,11 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
   return assets;
 }
 
-- (nullable EXUpdatesAsset *)assetWithPackagerKey:(NSString *)packagerKey error:(NSError ** _Nullable)error
+- (nullable EXUpdatesAsset *)assetWithKey:(NSString *)key error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM assets WHERE packager_key = ?1 LIMIT 1;";
+  NSString * const sql = @"SELECT * FROM assets WHERE \"key\" = ?1 LIMIT 1;";
 
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[packagerKey] error:error];
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key] error:error];
   if (!rows || ![rows count]) {
     return nil;
   } else {
@@ -610,7 +610,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo-v2.db";
     url = [NSURL URLWithString:rowUrl];
   }
 
-  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithPackagerKey:row[@"packager_key"] type:row[@"type"]];
+  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:row[@"key"] type:row[@"type"]];
   asset.url = url;
   asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
   asset.filename = row[@"relative_path"];

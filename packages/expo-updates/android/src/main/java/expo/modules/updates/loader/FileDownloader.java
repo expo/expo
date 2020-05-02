@@ -131,7 +131,7 @@ public class FileDownloader {
 
   public static void downloadAsset(final AssetEntity asset, File destinationDirectory, Context context, final AssetDownloadCallback callback) {
     if (asset.url == null) {
-      callback.onFailure(new Exception("Could not download asset " + asset.packagerKey + " with no URL"), asset);
+      callback.onFailure(new Exception("Could not download asset " + asset.key + " with no URL"), asset);
       return;
     }
 

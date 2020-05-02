@@ -115,7 +115,7 @@ public class EmbeddedLoader {
 
   private void copyAllAssets(ArrayList<AssetEntity> assetList) {
     for (AssetEntity asset : assetList) {
-      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithPackagerKey(asset.packagerKey);
+      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(asset.key);
       if (matchingDbEntry != null) {
         mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, asset);
         asset = matchingDbEntry;

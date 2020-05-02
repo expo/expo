@@ -52,8 +52,8 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
   NSDate *commitTime = [RCTConvert NSDate:commitTimeString];
-  NSString *bundlePackagerKey = [NSString stringWithFormat:@"bundle-%f", commitTime.timeIntervalSince1970];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithPackagerKey:bundlePackagerKey type:kEXUpdatesEmbeddedBundleFileType];
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%f", commitTime.timeIntervalSince1970];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
@@ -82,8 +82,8 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
 
     NSURL *url = [bundledAssetBaseUrl URLByAppendingPathComponent:hash];
 
-    NSString *packagerKey = [NSString stringWithFormat:@"%@.%@", hash, type];
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithPackagerKey:packagerKey type:(NSString *)type];
+    NSString *key = [NSString stringWithFormat:@"%@.%@", hash, type];
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
     asset.url = url;
     asset.mainBundleFilename = filename;
 

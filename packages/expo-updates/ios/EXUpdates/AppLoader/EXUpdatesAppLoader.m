@@ -115,7 +115,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
         // before downloading, check to see if we already have this asset in the database
         NSError *matchingAssetError;
-        EXUpdatesAsset *matchingDbEntry = [database assetWithPackagerKey:asset.packagerKey error:&matchingAssetError];
+        EXUpdatesAsset *matchingDbEntry = [database assetWithKey:asset.key error:&matchingAssetError];
 
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];
@@ -159,7 +159,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 - (void)handleAssetDownloadWithError:(NSError *)error asset:(EXUpdatesAsset *)asset
 {
   // TODO: retry. for now log an error
-  NSLog(@"error loading asset %@: %@", asset.packagerKey, error.localizedDescription);
+  NSLog(@"error loading asset %@: %@", asset.key, error.localizedDescription);
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_erroredAssets addObject:asset];

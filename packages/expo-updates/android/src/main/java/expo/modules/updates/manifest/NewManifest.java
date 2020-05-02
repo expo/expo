@@ -79,7 +79,7 @@ public class NewManifest implements Manifest {
         try {
           JSONObject assetObject = mAssets.getJSONObject(i);
           AssetEntity assetEntity = new AssetEntity(
-            assetObject.getString("packagerKey"),
+            assetObject.getString("key"),
             assetObject.getString("type")
           );
           assetEntity.url = Uri.parse(assetObject.getString("url"));

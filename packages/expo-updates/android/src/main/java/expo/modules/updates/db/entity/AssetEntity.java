@@ -16,7 +16,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "assets",
-        indices = {@Index(value = {"packager_key"}, unique = true)})
+        indices = {@Index(value = {"key"}, unique = true)})
 public class AssetEntity {
   @PrimaryKey(autoGenerate = true)
   // 0 is treated as unset while inserting the entity into the db
@@ -24,9 +24,9 @@ public class AssetEntity {
 
   public Uri url = null;
 
-  @ColumnInfo(name = "packager_key")
+  @ColumnInfo(name = "key")
   @NonNull
-  public String packagerKey;
+  public String key;
 
   public JSONObject headers = null;
 
@@ -57,8 +57,8 @@ public class AssetEntity {
   @Ignore
   public String embeddedAssetFilename = null;
 
-  public AssetEntity(String packagerKey, String type) {
-    this.packagerKey = packagerKey;
+  public AssetEntity(String key, String type) {
+    this.key = key;
     this.type = type;
   }
 }

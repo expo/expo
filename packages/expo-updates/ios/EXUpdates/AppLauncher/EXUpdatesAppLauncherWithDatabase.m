@@ -126,8 +126,8 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         if (asset.isLaunchAsset) {
           self->_launchAssetUrl = assetLocalUrl;
         } else {
-          if (asset.localAssetsKey) {
-            self->_assetFilesMap[asset.localAssetsKey] = assetLocalUrl.absoluteString;
+          if (asset.key) {
+            self->_assetFilesMap[asset.key] = assetLocalUrl.absoluteString;
           }
         }
 
@@ -157,7 +157,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       }
 
       if (error) {
-        NSLog(@"Error copying embedded asset %@: %@", asset.packagerKey, error.localizedDescription);
+        NSLog(@"Error copying embedded asset %@: %@", asset.key, error.localizedDescription);
       }
 
       [self _downloadAsset:asset withLocalUrl:assetLocalUrl completion:^(NSError * _Nullable error, EXUpdatesAsset *asset, NSURL *assetLocalUrl) {
@@ -167,7 +167,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             // so we want to propagate this error
             self->_launchAssetError = error;
           }
-          NSLog(@"Failed to load missing asset %@: %@", asset.packagerKey, error.localizedDescription);
+          NSLog(@"Failed to load missing asset %@: %@", asset.key, error.localizedDescription);
           completion(NO);
         } else {
           // attempt to update the database record to match the newly downloaded asset
@@ -206,7 +206,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   if (embeddedManifest) {
     EXUpdatesAsset *matchingAsset;
     for (EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
-      if ([embeddedAsset.packagerKey isEqualToString:asset.packagerKey]) {
+      if ([embeddedAsset.key isEqualToString:asset.key]) {
         matchingAsset = embeddedAsset;
         break;
       }

@@ -131,7 +131,7 @@ public class RemoteLoader {
   private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
-      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithPackagerKey(assetEntity.packagerKey);
+      AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);
       if (matchingDbEntry != null) {
         mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, assetEntity);
         assetEntity = matchingDbEntry;

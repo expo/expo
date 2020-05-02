@@ -47,14 +47,14 @@ public abstract class AssetDao {
   @Query("DELETE FROM assets WHERE marked_for_deletion = 1;")
   public abstract void _deleteAssetsMarkedForDeletion();
 
-  @Query("SELECT * FROM assets WHERE packager_key = :packagerKey LIMIT 1;")
-  public abstract List<AssetEntity> _loadAssetWithPackagerKey(String packagerKey);
+  @Query("SELECT * FROM assets WHERE `key` = :key LIMIT 1;")
+  public abstract List<AssetEntity> _loadAssetWithKey(String key);
 
 
   /**
    * for public use
    */
-  @Query("SELECT assets.id, url, packager_key, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
+  @Query("SELECT assets.id, url, `key`, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
           " FROM assets" +
           " INNER JOIN updates_assets ON updates_assets.asset_id = assets.id" +
           " INNER JOIN updates ON updates_assets.update_id = updates.id" +
@@ -75,8 +75,8 @@ public abstract class AssetDao {
     }
   }
 
-  public @Nullable AssetEntity loadAssetWithPackagerKey(String packagerKey) {
-    List<AssetEntity> assets = _loadAssetWithPackagerKey(packagerKey);
+  public @Nullable AssetEntity loadAssetWithKey(String key) {
+    List<AssetEntity> assets = _loadAssetWithKey(key);
     if (assets.size() > 0) {
       return assets.get(0);
     }
@@ -93,7 +93,7 @@ public abstract class AssetDao {
 
   @Transaction
   public boolean addExistingAssetToUpdate(UpdateEntity update, AssetEntity asset, boolean isLaunchAsset) {
-    AssetEntity existingAssetEntry = loadAssetWithPackagerKey(asset.packagerKey);
+    AssetEntity existingAssetEntry = loadAssetWithKey(asset.key);
     if (existingAssetEntry == null) {
       return false;
     }
