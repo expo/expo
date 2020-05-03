@@ -34,7 +34,7 @@ The following table shows you which permissions correspond to which packages.
 | `CALENDAR`                  | `expo-calendar`                           |
 | `REMINDERS`                 | `expo-calendar`                           |
 | `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
-| `SENSORS`                   | `expo-sensors`                            |
+| `MOTION`                    | `expo-sensors`                            |
 
 ## Usage
 
@@ -204,9 +204,9 @@ The permission type for reading or writing reminders.
 
 The permissions type for changing brightness of the screen
 
-### `Permissions.SENSORS`
+### `Permissions.MOTION`
 
-The permission for accessing sensors in the web browser.
+The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
 
 ## Android: permissions equivalents inside `app.json`
 

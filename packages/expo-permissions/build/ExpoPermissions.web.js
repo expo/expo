@@ -122,9 +122,13 @@ async function enumerateDevices() {
     return null;
 }
 async function askSensorPermissionAsync() {
-    const requestPermission = DeviceMotionEvent.requestPermission ?? DeviceOrientationEvent.requestPermission;
+    const requestPermission = getRequestMotionPermission();
+    // Technically this is incorrect because it doesn't account for iOS 12.2 Safari.
+    // But unfortunately we can only abstract so much.
     if (!requestPermission)
         return PermissionStatus.GRANTED;
+    // If this isn't invoked in a touch-event then it never resolves.
+    // Safari probably should throw an error but because it doesn't we have no way of informing the developer.
     const status = await requestPermission();
     switch (status) {
         case 'granted':
@@ -185,7 +189,7 @@ async function getPermissionAsync(permission, shouldAsk) {
                 }
             }
             break;
-        case 'sensors':
+        case 'motion': {
             if (shouldAsk) {
                 const status = await askSensorPermissionAsync();
                 return {
@@ -195,12 +199,15 @@ async function getPermissionAsync(permission, shouldAsk) {
                     canAskAgain: false,
                 };
             }
+            // We can infer from the requestor if this is an older browser.
+            const hasInsecureSensors = !isIOS() && !getRequestMotionPermission();
             return {
-                status: PermissionStatus.UNDETERMINED,
+                status: hasInsecureSensors ? PermissionStatus.GRANTED : PermissionStatus.UNDETERMINED,
                 expires: 'never',
                 canAskAgain: true,
                 granted: false,
             };
+        }
         case 'location':
             {
                 const maybeStatus = await getPermissionWithQueryAsync('geolocation');
@@ -312,4 +319,13 @@ export default {
         return results;
     },
 };
+export function getRequestMotionPermission() {
+    return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+}
+// https://stackoverflow.com/a/9039885/4047926
+function isIOS() {
+    const isIOSUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+    const isIE11 = !!window['MSStream'];
+    return isIOSUA && !isIE11;
+}
 //# sourceMappingURL=ExpoPermissions.web.js.map
