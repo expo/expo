@@ -7764,6 +7764,46 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (2.1.1)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 0602110faf064575b2e4aa90ac145f65
+    CHECKSUM: a6f8365569503dfd9e43b901784bcaf1a8b738e8
+    FILES:
+      - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (0.1.2)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
@@ -8218,16 +8258,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 234b9984682505865bf98188fdf8ee97
-      Release: 234b9984682505865bf98188fdf8ee97
+      Debug: e417df66dfb7506477b4c4bf28e726b3
+      Release: e417df66dfb7506477b4c4bf28e726b3
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: aa1925f4a8ace089dcb30231c5466167
+      Release: aa1925f4a8ace089dcb30231c5466167
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: aa1925f4a8ace089dcb30231c5466167
+      Release: aa1925f4a8ace089dcb30231c5466167
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
