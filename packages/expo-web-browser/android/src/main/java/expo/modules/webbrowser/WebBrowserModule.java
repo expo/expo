@@ -2,7 +2,6 @@ package expo.modules.webbrowser;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -64,7 +62,7 @@ public class WebBrowserModule extends ExportedModule {
   @ExpoMethod
   public void warmUpAsync(@Nullable String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       mConnectionHelper.warmUp(packageName);
       Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -77,7 +75,7 @@ public class WebBrowserModule extends ExportedModule {
   @ExpoMethod
   public void coolDownAsync(@Nullable String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       if (mConnectionHelper.coolDown(packageName)) {
         Bundle result = new Bundle();
         result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -93,7 +91,7 @@ public class WebBrowserModule extends ExportedModule {
   @ExpoMethod
   public void mayInitWithUrlAsync(@Nullable final String url, String packageName, final Promise promise) {
     try {
-      packageName = givenOfPreferredPackageName(packageName);
+      packageName = givenOrPreferredPackageName(packageName);
       mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
       Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
@@ -146,8 +144,7 @@ public class WebBrowserModule extends ExportedModule {
     intent.setData(Uri.parse(url));
 
     try {
-      List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
-      if (activities.size() > 0) {
+      if (mCustomTabsResolver.canResolveIntent(intent)) {
         mCustomTabsResolver.startCustomTabs(intent);
         Bundle result = new Bundle();
         result.putString("type", "opened");
@@ -201,7 +198,7 @@ public class WebBrowserModule extends ExportedModule {
     return intent;
   }
 
-  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
+  private String givenOrPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
     try {
       if (TextUtils.isEmpty(packageName)) {
         packageName = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(null);

@@ -37,7 +37,7 @@ class PromiseMock : Promise {
   var rejectThrowableSet: Boolean = false
   var rejectThrowable: Throwable? = null
     set(value) {
-      this.rejectCodeSet = true
+      this.rejectThrowableSet = true
       field = value
     }
 
