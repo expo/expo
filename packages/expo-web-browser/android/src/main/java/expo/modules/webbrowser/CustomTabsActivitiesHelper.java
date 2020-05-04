@@ -13,12 +13,17 @@ import androidx.annotation.Nullable;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 public interface CustomTabsActivitiesHelper {
+
+  @NonNull
   ArrayList<String> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
+  @NonNull
   ArrayList<String> getCustomTabsResolvingServices() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
+  @Nullable
   String getPreferredCustomTabsResolvingActivity(@Nullable List<String> packages) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
+  @Nullable
   String getDefaultCustomTabsResolvingActivity() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
   List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;

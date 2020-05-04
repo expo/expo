@@ -76,6 +76,12 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
+configurations.configureEach {
+  if(it.getName().startsWith("test")) {
+    resolutionStrategy.force project(":unimodules-test-core")
+  }
+}
+
 dependencies {
   unimodule 'unimodules-core'
 

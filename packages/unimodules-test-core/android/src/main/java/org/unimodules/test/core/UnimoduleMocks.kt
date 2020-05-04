@@ -17,7 +17,6 @@ fun moduleRegistryMock(
   return mockk<ModuleRegistry>().also {
     mockInternalModules(it, internalModules)
     mockExternalModules(it, exportedModules)
-    every { it.createBundle() } returns mockk(relaxed = true)
   }
 }
 

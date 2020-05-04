@@ -12,7 +12,6 @@ enum class PromiseState {
 class PromiseMock : Promise {
 
   var state = PromiseState.NONE
-  var resolvedValue: Any? = null
 
   var resolveValueSet: Boolean = false
   var resolveValue: Any? = null

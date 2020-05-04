@@ -1,7 +1,5 @@
 package org.unimodules.core;
 
-import android.os.Bundle;
-
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.SingletonModule;
@@ -133,10 +131,6 @@ public class ModuleRegistry {
       initialize();
       mIsInitialized = true;
     }
-  }
-
-  public Bundle createBundle() {
-    return new Bundle();
   }
 
   public void initialize() {
