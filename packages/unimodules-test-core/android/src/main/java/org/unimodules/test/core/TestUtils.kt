@@ -2,6 +2,7 @@ package org.unimodules.test.core
 
 import android.os.Bundle
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertTrue
 import junit.framework.ComparisonFailure
 import org.unimodules.core.arguments.MapArguments
 import org.unimodules.core.arguments.ReadableArguments
@@ -13,9 +14,9 @@ fun assertSetsEqual(first: Set<*>, second: Set<*>, message: String = "") {
 }
 
 fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
-  if(first == second) return
+  if (first == second) return
 
-  if(first == null || second == null) {
+  if (first == null || second == null) {
     throw throw ComparisonFailure(message, first.toString(), second.toString())
   }
 
@@ -24,12 +25,22 @@ fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
   }
 }
 
-fun promiseResolved(promise: PromiseMock): Bundle {
+fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
   assertEquals(PromiseState.RESOLVED, promise.state)
-  return promise.resolveValue as Bundle
+  with(promise.resolveValue as Bundle)
+}
+
+fun promiseRejected(promise: PromiseMock, with: (PromiseMock) -> Unit) {
+  assertEquals(PromiseState.REJECTED, promise.state)
+  with(promise)
 }
 
 fun readableArgumentsOf(values: Map<String, Any>): ReadableArguments {
   return MapArguments(values)
+}
+
+fun assertStringValueNull(bundle: Bundle, key: String) {
+  assertTrue(bundle.containsKey(key))
+  assertEquals(null, bundle.getString(key))
 }
 

@@ -26,7 +26,7 @@ public interface CustomTabsActivitiesHelper {
   @Nullable
   String getDefaultCustomTabsResolvingActivity() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 
-  List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
-
   void startCustomTabs(Intent intent) throws CurrentActivityNotFoundException;
+
+  boolean canResolveIntent(Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException;
 }

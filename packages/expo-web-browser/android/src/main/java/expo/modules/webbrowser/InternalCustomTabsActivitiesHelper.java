@@ -74,17 +74,16 @@ class InternalCustomTabsActivitiesHelper implements InternalModule, CustomTabsAc
   }
 
   @Override
-  public List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    PackageManager pm = getPackageManager();
-    if (pm == null) {
-      throw new PackageManagerNotFoundException();
-    }
-
-    return pm.queryIntentActivities(intent, 0);
+  public boolean canResolveIntent(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
+    return getResolvingActivities(intent).size() > 0;
   }
 
   public void startCustomTabs(Intent intent) throws CurrentActivityNotFoundException {
     getCurrentActivity().startActivity(intent);
+  }
+
+  private List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
+    return getPackageManager().queryIntentActivities(intent, 0);
   }
 
   private PackageManager getPackageManager() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
