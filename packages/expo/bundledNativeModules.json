@@ -95,7 +95,7 @@
   "expo-image-loader": "~1.0.1",
   "expo-screen-orientation": "~1.0.0",
   "unimodules-app-loader": "~1.0.0",
-  "expo-notifications": "~0.1.3",
+  "expo-notifications": "~0.1.4",
   "expo-splash-screen": "~0.2.0",
   "firebase": "7.9.0"
 }
