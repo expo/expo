@@ -15,6 +15,7 @@ export * from './Updates.types';
 
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
+export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
 
 let _manifest = ExpoUpdates.manifest;
 if (ExpoUpdates.manifestString) {

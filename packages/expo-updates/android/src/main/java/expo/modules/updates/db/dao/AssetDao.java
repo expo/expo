@@ -31,8 +31,8 @@ public abstract class AssetDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   public abstract void _insertUpdateAsset(UpdateAssetEntity updateAsset);
 
-  @Query("UPDATE updates SET launch_asset_id = :assetId, status = :status WHERE id = :updateId;")
-  public abstract void _setUpdateLaunchAsset(long assetId, UpdateStatus status, UUID updateId);
+  @Query("UPDATE updates SET launch_asset_id = :assetId WHERE id = :updateId;")
+  public abstract void _setUpdateLaunchAsset(long assetId, UUID updateId);
 
   @Query("UPDATE assets SET marked_for_deletion = 1;")
   public abstract void _markAllAssetsForDeletion();
@@ -73,7 +73,7 @@ public abstract class AssetDao {
       long assetId = _insertAsset(asset);
       _insertUpdateAsset(new UpdateAssetEntity(update.id, assetId));
       if (asset.isLaunchAsset) {
-        _setUpdateLaunchAsset(assetId, UpdateStatus.LAUNCHABLE, update.id);
+        _setUpdateLaunchAsset(assetId, update.id);
       }
     }
   }
@@ -87,7 +87,7 @@ public abstract class AssetDao {
     long assetId = assetIdList.get(0);
     _insertUpdateAsset(new UpdateAssetEntity(update.id, assetId));
     if (isLaunchAsset) {
-      _setUpdateLaunchAsset(assetId, UpdateStatus.LAUNCHABLE, update.id);
+      _setUpdateLaunchAsset(assetId, update.id);
     }
     return true;
   }

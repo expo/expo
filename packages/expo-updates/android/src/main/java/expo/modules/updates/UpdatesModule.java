@@ -53,7 +53,7 @@ public class UpdatesModule extends ExportedModule {
 
         UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
         if (launchedUpdate != null) {
-          constants.put("manifestString", launchedUpdate.metadata.toString());
+          constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
         }
 
         Map<AssetEntity, String> localAssetFiles = controller.getLocalAssetFiles();
@@ -69,6 +69,7 @@ public class UpdatesModule extends ExportedModule {
         }
 
         constants.put("isEnabled", controller.getUpdatesConfiguration().isEnabled());
+        constants.put("isUsingEmbeddedAssets", controller.isUsingEmbeddedAssets());
       }
     } catch (IllegalStateException e) {
       // do nothing; this is expected in a development client

@@ -12,7 +12,11 @@ export const IS_MANAGED_ENV = !!Constants.appOwnership;
 // that you are in a bare app with updates if you're not in a managed app and you have
 // local assets available.
 export const IS_BARE_ENV_WITH_UPDATES =
-  !IS_MANAGED_ENV && !!NativeModulesProxy.ExpoUpdates?.isEnabled;
+  !IS_MANAGED_ENV &&
+  !!NativeModulesProxy.ExpoUpdates?.isEnabled &&
+  // if expo-updates is installed but we're running directly from the embedded bundle, we don't want
+  // to override the AssetSourceResolver
+  !NativeModulesProxy.ExpoUpdates?.isUsingEmbeddedAssets;
 
 export const IS_ENV_WITH_UPDATES_ENABLED = IS_MANAGED_ENV || IS_BARE_ENV_WITH_UPDATES;
 
