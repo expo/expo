@@ -263,18 +263,13 @@ workflows:
   docs:
     jobs:
       - docs
-      - docs_approve_deploy:
-          type: approval
+      - docs_deploy:
           requires:
             - docs
           filters:
             branches:
               only:
                 - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
