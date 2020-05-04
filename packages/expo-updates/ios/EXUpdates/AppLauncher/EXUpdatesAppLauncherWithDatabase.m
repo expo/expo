@@ -52,7 +52,22 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       if (!launchableUpdates) {
         completion(error, nil);
       }
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:launchableUpdates]);
+
+      // We can only run an update marked as embedded if it's actually the update embedded in the
+      // current binary. We might have an older update from a previous binary still listed in the
+      // database with Embedded status so we need to filter that out here.
+      EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifest];
+      NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
+      for (EXUpdatesUpdate *update in launchableUpdates) {
+        if (update.status == EXUpdatesUpdateStatusEmbedded) {
+          if (![update.updateId isEqual:embeddedManifest.updateId]) {
+            continue;
+          }
+        }
+        [filteredLaunchableUpdates addObject:update];
+      }
+
+      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates]);
     });
   });
 }
@@ -79,8 +94,24 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
+- (BOOL)isUsingEmbeddedAssets
+{
+  return _assetFilesMap == nil;
+}
+
 - (void)_ensureAllAssetsExist
 {
+  if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+    NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
+    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
+
+    dispatch_async(self->_completionQueue, ^{
+      self->_completion(self->_launchAssetError, self->_launchAssetUrl != nil);
+      self->_completion = nil;
+    });
+    return;
+  }
+
   _assetFilesMap = [NSMutableDictionary new];
   NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
 

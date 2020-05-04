@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
@@ -27,6 +28,7 @@ public class DatabaseLauncher implements Launcher {
 
   private UpdateEntity mLaunchedUpdate = null;
   private String mLaunchAssetFile = null;
+  private String mBundleAssetName = null;
   private Map<AssetEntity, String> mLocalAssetFiles = null;
 
   private int mAssetsToDownload = 0;
@@ -49,11 +51,15 @@ public class DatabaseLauncher implements Launcher {
   }
 
   public @Nullable String getBundleAssetName() {
-    return null;
+    return mBundleAssetName;
   }
 
   public @Nullable Map<AssetEntity, String> getLocalAssetFiles() {
     return mLocalAssetFiles;
+  }
+
+  public boolean isUsingEmbeddedAssets() {
+    return mLocalAssetFiles == null;
   }
 
   public synchronized void launch(UpdatesDatabase database, Context context, LauncherCallback callback) {
@@ -61,10 +67,19 @@ public class DatabaseLauncher implements Launcher {
       throw new AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.");
     }
     mCallback = callback;
-    mLaunchedUpdate = getLaunchableUpdate(database);
+    mLaunchedUpdate = getLaunchableUpdate(database, context);
 
     if (mLaunchedUpdate == null) {
       mCallback.onFailure(new Exception("No launchable update was found"));
+      return;
+    }
+
+    if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
+      mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
+      if (mLocalAssetFiles != null) {
+        throw new AssertionError("mLocalAssetFiles should be null for embedded updates");
+      }
+      mCallback.onSuccess();
       return;
     }
 
@@ -105,9 +120,24 @@ public class DatabaseLauncher implements Launcher {
     }
   }
 
-  public UpdateEntity getLaunchableUpdate(UpdatesDatabase database) {
+  public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
     List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdates();
-    return mSelectionPolicy.selectUpdateToLaunch(launchableUpdates);
+
+    // We can only run an update marked as embedded if it's actually the update embedded in the
+    // current binary. We might have an older update from a previous binary still listed as
+    // "EMBEDDED" in the database so we need to do this check.
+    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
+    ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
+    for (UpdateEntity update : launchableUpdates) {
+      if (update.status == UpdateStatus.EMBEDDED) {
+        if (!embeddedManifest.getUpdateEntity().id.equals(update.id)) {
+          continue;
+        }
+      }
+      filteredLaunchableUpdates.add(update);
+    }
+
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates);
   }
 
   private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {

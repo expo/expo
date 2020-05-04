@@ -256,13 +256,16 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo.db";
               error:error];
 }
 
-- (void)markUpdateReadyWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error
+- (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
+  if (update.status != EXUpdatesUpdateStatusEmbedded) {
+    update.status = EXUpdatesUpdateStatusReady;
+  }
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";
   [self _executeSql:updateSql
            withArgs:@[
-                      @(EXUpdatesUpdateStatusReady),
-                      updateId
+                      @(update.status),
+                      update.updateId
                       ]
               error:error];
 }
@@ -354,7 +357,7 @@ static NSString * const kEXUpdatesDatabaseFilename = @"expo.db";
 {
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
-  WHERE status = %li;", (long)EXUpdatesUpdateStatusReady];
+  WHERE status IN (%li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
   if (!rows) {
