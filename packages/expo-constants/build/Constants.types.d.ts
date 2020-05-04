@@ -31,6 +31,7 @@ export interface AppManifest {
     version?: string;
     /** Published Apps Only */
     revisionId?: string;
+    releaseChannel?: string;
     orientation?: string;
     primaryColor?: string;
     icon?: string;

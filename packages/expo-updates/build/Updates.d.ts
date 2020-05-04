@@ -1,6 +1,7 @@
 import { EventSubscription } from 'fbemitter';
 import { Listener, LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult } from './Updates.types';
 export * from './Updates.types';
+export declare const releaseChannel: string;
 export declare const localAssets: LocalAssets;
 export declare const isEmergencyLaunch: boolean;
 export declare const isUsingEmbeddedAssets: boolean;
