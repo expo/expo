@@ -8,7 +8,6 @@
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppManager.h"
-#import "EXDevMenuManager.h"
 
 @implementation EXHomeModuleManager
 
