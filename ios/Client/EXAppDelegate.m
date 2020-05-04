@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   [[ExpoKit sharedInstance] registerRootViewControllerClass:[EXRootViewController class]];
-  [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+  [[ExpoKit sharedInstance] setUpApplication:application withLaunchOptions:launchOptions];
 
   _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _window.backgroundColor = [UIColor whiteColor];
