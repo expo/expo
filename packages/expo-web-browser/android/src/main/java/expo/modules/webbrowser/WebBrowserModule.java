@@ -43,7 +43,6 @@ public class WebBrowserModule extends ExportedModule {
 
   private final static String NO_PREFERRED_PACKAGE_MSG = "Cannot determine preferred package without satisfying it.";
 
-  private ModuleRegistry mModuleRegistry;
   private CustomTabsActivitiesHelper mCustomTabsResolver;
   private CustomTabsConnectionHelper mConnectionHelper;
 
@@ -58,7 +57,6 @@ public class WebBrowserModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
     mCustomTabsResolver = moduleRegistry.getModule(CustomTabsActivitiesHelper.class);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
   }
@@ -68,7 +66,7 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.warmUp(packageName);
-      Bundle result = mModuleRegistry.createBundle();
+      Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } catch (NoPreferredPackageFound ex) {
@@ -81,11 +79,11 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       if (mConnectionHelper.coolDown(packageName)) {
-        Bundle result = mModuleRegistry.createBundle();
+        Bundle result = new Bundle();
         result.putString(SERVICE_PACKAGE_KEY, packageName);
         promise.resolve(result);
       } else {
-        promise.resolve(mModuleRegistry.createBundle());
+        promise.resolve(new Bundle());
       }
     } catch (NoPreferredPackageFound ex) {
       promise.reject(ex);
@@ -97,7 +95,7 @@ public class WebBrowserModule extends ExportedModule {
     try {
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
-      Bundle result = mModuleRegistry.createBundle();
+      Bundle result = new Bundle();
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } catch (NoPreferredPackageFound ex) {
@@ -118,7 +116,7 @@ public class WebBrowserModule extends ExportedModule {
         defaultCustomTabsPackage = defaultPackage;
       }
 
-      Bundle result = mModuleRegistry.createBundle();
+      Bundle result = new Bundle();
       result.putStringArrayList(BROWSER_PACKAGES_KEY, activities);
       result.putStringArrayList(SERVICE_PACKAGES_KEY, services);
       result.putString(PREFERRED_BROWSER_PACKAGE, preferredPackage);
@@ -130,6 +128,17 @@ public class WebBrowserModule extends ExportedModule {
     }
   }
 
+  /**
+   * @param url Url to be opened by WebBrowser
+   * @param arguments Required arguments are:
+   *  toolbarColor: String;
+   *  browserPackage: String;
+   *  enableBarCollapsing: Boolean;
+   *  showTitle: Boolean;
+   *  enableDefaultShareMenuItem: Boolean;
+   *  showInRecents: Boolean;
+   * @param promise
+   */
   @ExpoMethod
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
@@ -140,7 +149,7 @@ public class WebBrowserModule extends ExportedModule {
       List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
         mCustomTabsResolver.startCustomTabs(intent);
-        Bundle result = mModuleRegistry.createBundle();
+        Bundle result = new Bundle();
         result.putString("type", "opened");
         promise.resolve(result);
       } else {

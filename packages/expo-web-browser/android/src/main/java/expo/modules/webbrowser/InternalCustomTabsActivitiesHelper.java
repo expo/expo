@@ -33,6 +33,7 @@ class InternalCustomTabsActivitiesHelper implements InternalModule, CustomTabsAc
 
   private ModuleRegistry mModuleRegistry;
 
+  @NonNull
   public static <T, R> ArrayList<R> mapCollectionToDistinctArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {
     LinkedHashSet<R> resultSet = new LinkedHashSet<>();
     for (T element : toMap) {
@@ -47,24 +48,29 @@ class InternalCustomTabsActivitiesHelper implements InternalModule, CustomTabsAc
   }
 
   @Override
+  @NonNull
   public ArrayList<String> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
     return mapCollectionToDistinctArrayList(getResolvingActivities(createDefaultCustomTabsIntent()), resolveInfo -> resolveInfo.activityInfo.packageName);
   }
 
   @Override
+  @NonNull
   public ArrayList<String> getCustomTabsResolvingServices() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
     return mapCollectionToDistinctArrayList(getPackageManager().queryIntentServices(createDefaultCustomTabsServiceIntent(), 0), resolveInfo -> resolveInfo.serviceInfo.packageName);
   }
 
   @Override
+  @Nullable
   public String getPreferredCustomTabsResolvingActivity(@Nullable List<String> packages) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
     if (packages == null) packages = getCustomTabsResolvingActivities();
     return CustomTabsClient.getPackageName(getCurrentActivity(), packages);
   }
 
   @Override
+  @Nullable
   public String getDefaultCustomTabsResolvingActivity() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    return getPackageManager().resolveActivity(createDefaultCustomTabsIntent(), 0).activityInfo.packageName;
+    ResolveInfo info = getPackageManager().resolveActivity(createDefaultCustomTabsIntent(), 0);
+    return info == null ? null : info.activityInfo.packageName;
   }
 
   @Override
