@@ -21,7 +21,7 @@ commands:
               echo "Can't determine branch.  Continuing the job."
             else
               echo "Looking for previous successful ${CIRCLE_JOB} jobs for branch ${CIRCLE_BRANCH}"
-              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}")
+              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}" || true)
 
               GIT_BASE_REVISION=<< pipeline.git.base_revision >>
 
