@@ -22,6 +22,7 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
 import expo.modules.errorrecovery.ErrorRecoveryPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.screenorientation.ScreenOrientationPackage;
 import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
@@ -105,6 +106,7 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationsPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),
