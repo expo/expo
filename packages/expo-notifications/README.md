@@ -95,6 +95,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
 - **dismissing notifications**
+  - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
   - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
   - [`dismissAllNotificationsAsync`](#dismissallnotificationsasync-promisevoid) -- removes all notifications from the notification tray
 - **managing notification channels (Android-specific)**
@@ -652,6 +653,16 @@ A `Promise` resolving once all the scheduled notifications are successfully canc
 
 ## Dismissing notifications
 
+### `getPresentedNotificationsAsync(): Promise<Notification[]>`
+
+Fetches information about all notifications present in the notification tray (Notification Center).
+
+> **Note:** This method is not supported on Android below 6.0 (API level 23) – on these devices it will resolve to an empty array.
+
+#### Returns
+
+A `Promise` resolving with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
+
 ### `dismissNotificationAsync(identifier: string): Promise<void>`
 
 Removes notification displayed in the notification tray (Notification Center).
@@ -1179,7 +1190,7 @@ export interface CalendarTriggerInput {
 
 An object representing user's interaction with the notification.
 
-> Note: If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
+> **Note:** If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
 
 ```ts
 export interface NotificationResponse {
