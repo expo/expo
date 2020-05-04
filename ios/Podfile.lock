@@ -1469,8 +1469,6 @@ PODS:
   - CocoaLumberjack (3.5.3):
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
-  - Crashlytics (3.14.0):
-    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (8.1.0):
     - Google-Mobile-Ads-SDK (= 7.55.1)
@@ -1660,7 +1658,6 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (8.2.0):
     - UMCore
-  - Fabric (1.10.2)
   - FBAudienceNetwork (5.7.1):
     - FBSDKCoreKit/Basics (>= 5.6.0)
   - FBLazyVector (0.61.4)
@@ -2492,7 +2489,6 @@ DEPENDENCIES:
   - ABI37_0_0Yoga (from `./versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/yoga`)
   - Amplitude-iOS
   - CocoaLumberjack (~> 3.5.3)
-  - Crashlytics (~> 3.14.0)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
@@ -2553,7 +2549,6 @@ DEPENDENCIES:
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
-  - Fabric (~> 1.10.2)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../react-native-lab/react-native/Libraries/FBReactNativeSpec`)
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
@@ -2635,8 +2630,6 @@ SPEC REPOS:
     - boost-for-react-native
     - Branch
     - CocoaLumberjack
-    - Crashlytics
-    - Fabric
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -3808,7 +3801,6 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 6e7421e1f3c0adebdf80008a40a74969b2603cf8
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAdsAdMob: 131803d2e78cc8e901c2afa72fb219dbc3e097bb
   EXAdsFacebook: 3615ce0bf49b7dcabd53718fea9201224b489c43
@@ -3869,7 +3861,6 @@ SPEC CHECKSUMS:
   EXTaskManager: 6cc65abbc1b226524d551ef2a08a7afe8be03044
   EXVideoThumbnails: be6984a3cda1e44c45b5c6278244e99855f99a0a
   EXWebBrowser: c8abe4e22f30322949da381d4f6faa8d94ba6b59
-  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBAudienceNetwork: 33fc8c8c07c1cdbf5279784b73729c6410809daa
   FBLazyVector: feb35a6b7f7b50f367be07f34012f34a79282fa3
   FBReactNativeSpec: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
@@ -3941,6 +3932,6 @@ SPEC CHECKSUMS:
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 1ad7d91152f91ddd2964649ed0788db94a2df639
+PODFILE CHECKSUM: 529190a386115c6ed272c0477f2ee8e0ce0b7490
 
 COCOAPODS: 1.8.4
