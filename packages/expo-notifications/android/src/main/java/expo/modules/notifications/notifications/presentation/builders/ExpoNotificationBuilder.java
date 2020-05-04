@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -230,7 +231,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
       if (ai.metaData.containsKey(META_DATA_DEFAULT_ICON_KEY)) {
         return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY);
       }
-    } catch (Exception e) {
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
       Log.e("expo-notifications", "Could not have fetched default notification icon.");
     }
     return getContext().getApplicationInfo().icon;
@@ -259,7 +260,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
           return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY));
         }
       }
-    } catch (Exception e) {
+    } catch (PackageManager.NameNotFoundException | Resources.NotFoundException | ClassCastException e) {
       Log.e("expo-notifications", "Could not have fetched default notification color.");
     }
 
