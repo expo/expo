@@ -40,6 +40,15 @@
       android:value="@string/facebook_app_id" />
     <!-- [Custom] End Expo Facebook -->
 
+    <!-- [Custom] Expo Notifications -->
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_icon"
+      android:resource="@drawable/ic_stat_notifications" />
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_color"
+      android:resource="@color/notification_icon_color" />
+    <!-- [Custom] End Expo Notifications -->
+
     <activity
       android:name=".MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

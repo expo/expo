@@ -900,6 +900,8 @@ export type NotificationContent = {
       // for more information on specific fields.
       priority?: AndroidNotificationPriority;
       vibrationPattern?: number[];
+      // Format: '#AARRGGBB'
+      color?: string;
     }
 );
 ```
@@ -922,6 +924,9 @@ export interface NotificationContentInput {
   // for more information on specific fields.
   vibrate?: boolean | number[];
   priority?: AndroidNotificationPriority;
+  // Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+  // see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+  color?: string;
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.
