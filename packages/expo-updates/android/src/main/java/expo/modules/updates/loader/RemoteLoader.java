@@ -176,7 +176,7 @@ public class RemoteLoader {
         }
         mDatabase.assetDao().insertAssets(mFinishedAssetList, mUpdateEntity);
         if (mErroredAssetList.size() == 0) {
-          mDatabase.updateDao().markUpdateReady(mUpdateEntity);
+          mDatabase.updateDao().markUpdateFinished(mUpdateEntity);
         }
       } catch (Exception e) {
         finishWithError("Error while adding new update to database", e);

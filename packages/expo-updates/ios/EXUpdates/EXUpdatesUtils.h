@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error;
 + (void)sendEventToBridge:(nullable RCTBridge *)bridge withType:(NSString *)eventType body:(NSDictionary *)body;
 + (BOOL)shouldCheckForUpdate;
++ (NSString *)getRuntimeVersion;
 
 @end
 
