@@ -123,11 +123,13 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         dispatch_assert_queue(self->_launcherQueue);
         self->_completedAssets++;
 
-        if (asset.isLaunchAsset) {
-          self->_launchAssetUrl = assetLocalUrl;
-        } else {
-          if (asset.key) {
-            self->_assetFilesMap[asset.key] = assetLocalUrl.absoluteString;
+        if (exists) {
+          if (asset.isLaunchAsset) {
+            self->_launchAssetUrl = assetLocalUrl;
+          } else {
+            if (asset.key) {
+              self->_assetFilesMap[asset.key] = assetLocalUrl.absoluteString;
+            }
           }
         }
 
