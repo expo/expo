@@ -6,7 +6,7 @@ import RootErrorBoundary from '../RootErrorBoundary';
 import withExpoRoot from '../withExpoRoot';
 import { withDEV } from './utils';
 
-it('does RootErrorBoundary in DEV=true or DEV=false', () => {
+it('does not render RootErrorBoundary in DEV=true or DEV=false', () => {
   withDEV(true, () => {
     const testInstance = renderer.create(<AppContainer exp={{}} />);
     const errorBoundaryInstance: ReactTestInstance = testInstance.root

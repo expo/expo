@@ -25,7 +25,7 @@ it('renders RootErrorBondary in DEV and it catches the error', () => {
   });
 });
 
-it('does not render RootErrorBoundary outside DEV', () => {
+it('does not render RootErrorBoundary if DEV is false', () => {
   withDEV(false, () => {
     const testInstance = renderer.create(<AppContainer exp={{}} />);
     const errorBoundaryInstance: ReactTestInstance = testInstance.root

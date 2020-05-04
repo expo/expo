@@ -1,5 +1,5 @@
 const consoleError = console.error;
-export function catchErrorSilently(fn: any) {
+export function catchErrorSilently(fn: Function) {
   try {
     console.error = () => {};
     fn();
@@ -10,7 +10,7 @@ export function catchErrorSilently(fn: any) {
   }
 }
 
-export function withDEV(dev: boolean, fn: any) {
+export function withDEV(dev: boolean, fn: Function) {
   // @ts-ignore
   const prev = global.__DEV__;
   // @ts-ignore
