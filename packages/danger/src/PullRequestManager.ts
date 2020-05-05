@@ -67,10 +67,9 @@ export class PullRequestManager {
     const changelogSection = this.pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
     if (changelogSection) {
       changelogSection
-        .replace(/^-/, '')
         .split('\n')
         .slice(1)
-        .map(line => line.trim())
+        .map(line => line.replace(/^\s*-/, '').trim())
         .filter(line => line.length > 0)
         .forEach(parseLine);
     }
