@@ -283,7 +283,12 @@ workflows:
     jobs:
       - home
       - expotools
-      - client_android
+      - client_android:
+          filters:  # run for ALL branches, and android tags
+            tags:
+              only:
+                - /^android-google-v*/
+                - /^android-apk-v*/
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
@@ -291,30 +296,22 @@ workflows:
       #     requires:
       #       - test_suite_publish
       - android_unit_tests
-      - client_android_approve_google_play:
-          type: approval
-          requires:
-            - client_android
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
-            - client_android_approve_google_play
-      - client_android_apk_release_approve:
-          type: approval
-          requires:
             - client_android
-          filters:
+          filters:  # run for NO branches, and android-google-v* tags
             branches:
-              only:
-                - /.*sdk-\d+/
-                - /.*all-ci.*/
+              ignore: /.*/
+            tags:
+              only: /^android-google-v*/
       - client_android_apk_release:
           requires:
-            - client_android_apk_release_approve
+            - client_android
+          filters:  # run for NO branches, and android-apk-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^android-apk-v*/
       - client_ios:
           filters:  # run for ALL branches, and ios-simulator-v* tags
             tags:
