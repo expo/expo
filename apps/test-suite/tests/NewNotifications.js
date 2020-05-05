@@ -1202,6 +1202,16 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       {
         to: expoPushToken,
         title: 'Hello from Expo server!',
+        data: {
+          firstLevelString: 'value',
+          firstLevelObject: {
+            secondLevelInteger: 2137,
+            secondLevelObject: {
+              thirdLevelList: [21, 3, 1995, null, 4, 15],
+              thirdLevelNull: null,
+            },
+          },
+        },
         ...notificationOverrides,
       },
     ]),

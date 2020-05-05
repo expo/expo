@@ -91,17 +91,15 @@ public class NotificationSerializer {
     Iterator<String> keyIterator = notification.keys();
     while (keyIterator.hasNext()) {
       String key = keyIterator.next();
-      try {
-        Object value = notification.get(key);
-        if (value instanceof JSONObject) {
-          notificationMap.put(key, toBundle((JSONObject) value));
-        } else if (value instanceof JSONArray) {
-          notificationMap.put(key, toList((JSONArray) value));
-        } else if (value != null) {
-          notificationMap.put(key, value);
-        }
-      } catch (JSONException e) {
-        Log.e("expo-notifications", "Could not serialize whole notification - dropped value for key " + key + ": " + notification.opt(key));
+      Object value = notification.opt(key);
+      if (value instanceof JSONObject) {
+        notificationMap.put(key, toBundle((JSONObject) value));
+      } else if (value instanceof JSONArray) {
+        notificationMap.put(key, toList((JSONArray) value));
+      } else if (JSONObject.NULL.equals(value)) {
+        notificationMap.put(key, null);
+      } else {
+        notificationMap.put(key, value);
       }
     }
     return new MapArguments(notificationMap).toBundle();
