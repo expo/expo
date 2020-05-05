@@ -6,7 +6,10 @@ scriptdir=$(dirname "${BASH_SOURCE[0]}")
 bucket="docs.expo.io"
 target="${1-$scriptdir/out}"
 
-[ -d "$target" ] || echo "target $target not found" && exit 1
+if [ ! -d "$target" ]; then
+  echo "target $target not found"
+  exit 1
+fi
 
 aws s3 sync "$target" "s3://${bucket}" --delete
 
