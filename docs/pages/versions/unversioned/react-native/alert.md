@@ -7,13 +7,24 @@ Launches an alert dialog with the specified title and message.
 
 Optionally provide a list of buttons. Tapping any button will fire the respective onPress callback and dismiss the alert. By default, the only button will be an 'OK' button.
 
-This is an API that works both on Android and iOS and can show static alerts. To show an alert that prompts the user to enter some information, see `AlertIOS`; entering text in an alert is common on iOS only.
+This is an API that works both on Android and iOS and can show static alerts. To show an alert that prompts the user to enter some information, see `AlertIOS`; entering text in an alert is common on **iOS-only**
 
 ## Example
 
-| iOS | Android |
-| --- | --- |
-| ![iOS Alert Example](https://reactnative.dev/docs/assets/Alert/exampleios.gif) | ![Android Alert Example](https://reactnative.dev/docs/assets/Alert/exampleandroid.gif) |
+<table>
+  <tr>
+    <th>iOS</th>
+    <th>Android</th>
+  </tr>
+  <tr>
+    <td>
+      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif" /></center>
+    </td>
+    <td>
+      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif" /></center>
+    </td>
+  </tr>
+</table>
 
 ## iOS
 
@@ -33,7 +44,7 @@ Alternatively, the dismissing behavior can be disabled altogether by providing a
 
 Example usage:
 
-```jsx
+```js
 // Works on both Android and iOS
 Alert.alert(
   'Alert Title',
@@ -59,7 +70,7 @@ Alert.alert(
 
 ### `alert()`
 
-```jsx
+```js
 
 static alert(title, message?, buttons?, options?)
 

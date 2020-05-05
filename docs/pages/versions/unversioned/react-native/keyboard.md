@@ -9,7 +9,7 @@ title: Keyboard
 
 The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.
 
-```jsx
+```js
 import React, { Component } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 
@@ -46,7 +46,7 @@ class Example extends Component {
 
 ### `addListener()`
 
-```jsx
+```js
 
 static addListener(eventName, callback)
 
@@ -80,7 +80,7 @@ Note that if you set `android:windowSoftInputMode` to `adjustResize`, only `keyb
 
 ### `removeListener()`
 
-```jsx
+```js
 
 static removeListener(eventName, callback)
 
@@ -99,7 +99,7 @@ Removes a specific listener.
 
 ### `removeAllListeners()`
 
-```jsx
+```js
 
 static removeAllListeners(eventName)
 
@@ -117,7 +117,7 @@ Removes all listeners for a specific event type.
 
 ### `dismiss()`
 
-```jsx
+```js
 
 static dismiss()
 

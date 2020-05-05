@@ -41,14 +41,11 @@ let formatWithPrettierAsync = async () => {
 }
 
 let mainAsync = async () => {
-  // Go through each file and fix them
-  let files = await fsExtra.readdir(to);
-
   let sidebarInfo = await fsExtra.readJson(sidebarsJson);
-  let guides = sidebarInfo.docs.Guides;
-  let components = sidebarInfo.api.Components;
+  // let guides = sidebarInfo.docs.Guides;
+  // let components = sidebarInfo.api.Components;
   let apis = sidebarInfo.api.APIs;
-  let basics = sidebarInfo.docs['The Basics'];
+  // let basics = sidebarInfo.docs['The Basics'];
 
   await fsExtra.ensureDir(reactNative);
 
@@ -67,6 +64,16 @@ let mainAsync = async () => {
       case 'troubleshooting.md':
       case 'upgrading.md':
       case 'improvingux.md':
+
+      // Empty pages
+      case 'statusbarios.md':
+
+      // This could be a separate group, just like the RN docs itself
+      case 'image-style-props.md':
+      case 'layout-props.md':
+      case 'shadow-props.md':
+      case 'text-style-props.md':
+      case 'view-style-props.md':
 
       // Things that maybe should just have a note telling people about the better Expo version?
       // TODO: Maybe do that?
@@ -91,8 +98,6 @@ let mainAsync = async () => {
     let contents = await fsExtra.readFile(src, 'utf8');
     let lines = contents.split('\n');
     let inCodeBlock = false;
-
-    let inAlertSpecialSection = false;
 
     for (let l of lines) {
       l = l.replace('```ReactNativeWebPlayer', '```javascript');
@@ -125,6 +130,12 @@ let mainAsync = async () => {
 
       // mdx prefers void image tags
       l = l.replace('></img>', ' />');
+      // mdx doesn't like inline styles
+      l = l.replace(/(<[a-z]+) style="[^"]+"/gi, (_match, element) => element);
+
+      // sanitize the android or ios only warnings to make them more visible
+      l = l.replace(/(\*\*|\[)?Android.only\.?(\]|\*\*)?/i, '**Android-only**');
+      l = l.replace(/(\*\*|\[)?iOS.only\.?(\]|\*\*)?/i, '**iOS-only**');
 
       // `](./foo` -> `](foo`
       l = l.replace(/\]\(\.\/([^\):]+)/g, (_match, path) => `](${path}`);
@@ -211,11 +222,12 @@ let mainAsync = async () => {
         }
       }
 
-      if (basename === 'layoutanimation.md') {
-        if (/UIManager.setLayoutAnimationEnabledExperimental/.test(l)) {
-          l = '\n```java\n' + l + '\n```\n';
-        }
-      }
+      // todo(cedric): this breaks the example in layoutanimation.md, check why it was added
+      // if (basename === 'layoutanimation.md') {
+      //   if (/UIManager.setLayoutAnimationEnabledExperimental/.test(l)) {
+      //     l = '\n```java\n' + l + '\n```\n';
+      //   }
+      // }
 
       if (basename === 'javascript-environment.md') {
         l = l.replace(
@@ -233,6 +245,10 @@ let mainAsync = async () => {
         default:
           break;
       }
+
+      // we prefer the `js` langauge block over `jsx`
+      l = l.replace('```jsx', '```js');
+      l = l.replace('```javascript', '```js');
 
       s += l + '\n';
     }
@@ -254,10 +270,10 @@ let mainAsync = async () => {
   };
 
   for (let [x, dest] of [
-    [guides, reactNative],
-    [components, reactNative],
-    [basics, reactNative],
     [apis, reactNative],
+    // [components, reactNative],
+    // [guides, reactNative],
+    // [basics, reactNative],
   ]) {
     await copyFilesAsync(x, dest);
   }
@@ -266,14 +282,14 @@ let mainAsync = async () => {
   await formatWithPrettierAsync();
 
   console.log(
-    '#guides',
-    guides.length,
-    '#components',
-    components.length,
     '#apis',
     apis.length,
-    '#basics',
-    basics.length
+    // '#components',
+    // components.length,
+    // '#guides',
+    // guides.length,
+    // '#basics',
+    // basics.length
   );
 };
 
