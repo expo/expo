@@ -8,7 +8,7 @@ export function preventAutoHide(): void {
   }
 }
 
-export function hide() {
+export function hide(): void {
   if (SplashScreen.hide) {
     SplashScreen.hide();
   }
