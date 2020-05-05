@@ -736,7 +736,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Android Unit tests
-          command: expotools android-unit-tests
+          command: expotools native-unit-tests --platform android
           working_directory: ~/project
       - save_gradle_cache
       - run:

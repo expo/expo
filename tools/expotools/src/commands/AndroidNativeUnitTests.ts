@@ -13,9 +13,10 @@ const excludedInTests = [
   'expo-in-app-purchases',
   'expo-splash-screen',
   'expo-updates',
+  'unimodules-test-core',
 ];
 
-async function action() {
+export async function androidNativeUnitTests() {
   const unimodules = await Packages.getListOfPackagesAsync();
 
   function consoleErrorOutput(
@@ -65,7 +66,7 @@ async function action() {
 
 export default (program: any) => {
   program
-    .command('android-unit-tests')
+    .command('android-native-unit-tests')
     .description('Runs Android native unit tests for each unimodules that provides them.')
-    .asyncAction(action);
+    .asyncAction(androidNativeUnitTests);
 };
