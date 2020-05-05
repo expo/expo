@@ -1,12 +1,8 @@
 package expo.modules.notifications.notifications;
 
-import android.content.ContentResolver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.arguments.MapArguments;
 
@@ -15,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
@@ -102,7 +99,22 @@ public class NotificationSerializer {
         notificationMap.put(key, value);
       }
     }
-    return new MapArguments(notificationMap).toBundle();
+    try {
+      return new MapArguments(notificationMap).toBundle();
+    } catch (NullPointerException e) {
+      // If a NullPointerException was thrown it most probably means
+      // that @unimodules/core is at < 5.1.1 where we introduced
+      // support for null values in MapArguments' map). Let's go through
+      // the map and remove the null values to be backwards compatible.
+
+      Set<String> keySet = notificationMap.keySet();
+      for (String key : keySet) {
+        if (notificationMap.get(key) == null) {
+          notificationMap.remove(key);
+        }
+      }
+      return new MapArguments(notificationMap).toBundle();
+    }
   }
 
   private static List toList(JSONArray array) {
