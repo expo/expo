@@ -3,7 +3,9 @@ title: Updates
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
 
@@ -11,81 +13,119 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+<InstallSection packageName="expo-updates" />
+
+Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
 ## API
 
 ```js
-import { Updates } from 'expo';
+import * as Updates from 'expo-updates';
 ```
 
-### `Updates.reload()`
+<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest']} />
 
-Immediately reloads the current experience. This will use your app.json `updates` configuration to fetch and load the newest available JS supported by the device's Expo environment. This is useful for triggering an update of your experience if you have published a new version.
+<TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
-### `Updates.reloadFromCache()`
+<TableOfContentSection title='Related Types' contents={['EventSubscription', 'UpdateEvent', 'UpdateEventType']} />
 
-Immediately reloads the current experience using the most recent cached version. This is useful for triggering an update of your experience if you have published and already downloaded a new version.
+<TableOfContentSection title='Error Codes' contents={[]} />
+
+## Constants
+
+### `Updates.isEmergencyLaunch`
+
+(_boolean_) `expo-updates` does its very best to always launch monotonically newer versions of your app so you don't need to worry about backwards compatibility when you put out an update. In very rare cases, it's possible that `expo-updates` may need to fall back to the update that's embedded in the app binary, even after newer updates have been downloaded and run (an "emergency launch"). This boolean will be `true` if the app is launching under this fallback mechanism and `false` otherwise. If you are concerned about backwards compatibility of future updates to your app, you can use this constant to provide special behavior for this rare case.
+
+### `Updates.manifest`
+
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+
+In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
+
+## Methods
+
+### `Updates.reloadAsync()`
+
+Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
+
+#### Returns
+
+A `Promise` that resolves right before the reload instruction is sent to the JS runtime, or rejects if it cannot find a reference to the JS runtime.
+
+If the `Promise` is rejected in production mode, it most likely means you have installed the module incorrectly. Double check you've followed the instructions above. In particular, on iOS ensure that you set the `bridge` property on `EXUpdatesAppController` with a pointer to the `RCTBridge` you want to reload, and on Android ensure you either call `UpdatesController.initialize` with the instance of `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the proper instance of `ReactNativeHost`.
 
 ### `Updates.checkForUpdateAsync()`
 
-Check if a new published version of your project is available. Does not actually download the update. Rejects if `updates.enabled` is `false` in app.json.
+Checks the server to see if a newly deployed update to your project is available. Does not actually download the update.
+
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
 #### Returns
 
-An object with the following keys:
+A `Promise` that resolves to an object with the following keys:
 
-- **isAvailable (_boolean_)** -- True if an update is available, false if you're already running the most up-to-date JS bundle.
+- **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
-### `Updates.fetchUpdateAsync(params?)`
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
 
-Downloads the most recent published version of your experience to the device's local cache. Rejects if `updates.enabled` is `false` in app.json.
+### `Updates.fetchUpdateAsync()`
 
-#### Arguments
+Downloads the most recently deployed update to your project from server to the device's local storage.
 
-An optional `params` object with the following keys:
-
-- **eventListener (_function_)** -- A callback to receive updates events. Will be called with the same events as a function passed into [`Updates.addListener`](#expoupdatesaddlistenereventlistener) but will be subscribed and unsubscribed from events automatically.
+This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
 #### Returns
 
-An object with the following keys:
+A `Promise` that resolves to an object with the following keys:
 
-- **isNew (_boolean_)** -- True if the fetched bundle is new (i.e. a different version that the what's currently running).
-- **manifest (_object_)** -- Manifest of the fetched update.
+- **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
+- **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
+
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 
-Invokes a callback when updates-related events occur, either on the initial app load or as a result of a call to `Updates.fetchUpdateAsync`.
+Adds a callback to be invoked when updates-related events occur (such as upon the initial app load) due to auto-update settings chosen at build-time.
 
 #### Arguments
 
-- **eventListener (_function_)** -- A callback that is invoked with an updates event.
+- **eventListener (_(event: [UpdateEvent](#updateevent)) => void_)** -- A function that will be invoked with an instance of [`UpdateEvent`](#updateevent) and should not return any value.
 
 #### Returns
 
-An [EventSubscription](#eventsubscription) object that you can call `remove()` on when you would like to unsubscribe from the listener.
+An [`EventSubscription`](#eventsubscription) object on which you can call `remove()` if you would like to unsubscribe from the listener.
 
-### Related types
+## Related Types
 
 ### `EventSubscription`
 
-Returned from `addListener`.
+An object returned from `addListener`.
 
 - **remove() (_function_)** -- Unsubscribe the listener from future updates.
 
-### `Event`
+### `UpdateEvent`
 
-An object that is passed into each event listener when a new version is available.
+An object that is passed into each event listener when an auto-update check has occurred.
 
-- **type (_string_)** -- Type of the event (see [EventType](#eventtype)).
-- **manifest (_object_)** -- If `type === Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downloaded update. Undefined otherwise.
-- **message (_string_)** -- If `type === Updates.EventType.ERROR`, the error message. Undefined otherwise.
+- **type (_string_)** -- Type of the event (see [`UpdateEventType`](#updateeventtype)).
+- **manifest (_object_)** -- If `type === Updates.UpdateEventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded update. Undefined otherwise.
+- **message (_string_)** -- If `type === Updates.UpdateEventType.ERROR`, the error message. Undefined otherwise.
 
-### `EventType`
+### `UpdateEventType`
 
-- **`Updates.EventType.DOWNLOAD_STARTED`** -- A new update is available and has started downloading.
-- **`Updates.EventType.DOWNLOAD_FINISHED`** -- A new update has finished downloading and is now stored in the device's cache.
-- **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
-- **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.
+- **`Updates.UpdateEventType.UPDATE_AVAILABLE`** -- A new update has finished downloading to local storage. If you would like to start using this update at any point before the user closes and restarts the app on their own, you can call `Updates.reloadAsync()` to launch this new update.
+- **`Updates.UpdateEventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
+- **`Updates.UpdateEventType.ERROR`** -- An error occurred trying to fetch the latest update.
+
+## Error Codes
+
+| Code | Description |
+| --- | --- |
+| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode |
+| `ERR_UPDATES_RELOAD` | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
+| `ERR_UPDATES_CHECK` | An unexpected error occurred when trying to check for new updates. Check the error message for more information. |
+| `ERR_UPDATES_FETCH` | An unexpected error occurred when trying to fetch a new update. Check the error message for more information. |

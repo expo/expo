@@ -20,7 +20,7 @@ async function _installTestSuiteDependenciesAsync(): Promise<void> {
   });
 }
 
-async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean): Promise<void> {
+async function _publishTestSuiteNoCacheAsync(id: string): Promise<void> {
   await _installTestSuiteDependenciesAsync();
 
   Log.collapsed('Modifying slug...');
@@ -29,9 +29,7 @@ async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean
   appJson.expo.slug = id;
   await appJsonFile.writeAsync(appJson as any);
 
-  await XDL.publishProjectWithExpoCliAsync(TEST_SUITE_DIR, {
-    useUnversioned,
-  });
+  await XDL.publishProjectWithExpoCliAsync(TEST_SUITE_DIR);
 }
 
 export async function publishVersionedTestSuiteAsync(sdkVersion: string): Promise<void> {
@@ -42,7 +40,7 @@ export async function publishVersionedTestSuiteAsync(sdkVersion: string): Promis
 
   const id = `test-suite-sdk-${sdkVersion}`.replace(/\./g, '-');
   const url = `exp://exp.host/@${CI_USERNAME}/${id}`;
-  await _publishTestSuiteNoCacheAsync(id, false);
+  await _publishTestSuiteNoCacheAsync(id);
 
   console.log(`Published test-suite to ${url}`);
 }

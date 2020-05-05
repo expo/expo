@@ -1,11 +1,11 @@
 {
   "paths": {
-    "AndroidManifest.xml": "android/app/src/main/",
-    "google-services.json": "android/app/",
-    "ExponentKeys.java": "android/expoview/src/main/java/host/exp/exponent/generated/",
-    "fabric.properties": "android/app/"
+    "AndroidManifest.xml": "android/app/src/main/AndroidManifest.xml",
+    "google-services.json": "android/app/google-services.json",
+    "ExponentKeys.java": "android/expoview/src/main/java/host/exp/exponent/generated/ExponentKeys.java",
+    "fabric.properties": "android/app/fabric.properties"
   },
   "generateOnly": {
-    "bare-expo/android/app/google-services.json": "apps/"
+    "bare-expo/android/app/google-services.json": "apps/bare-expo/android/app/google-services.json"
   }
 }

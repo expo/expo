@@ -9,6 +9,7 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi37_0_0",
     "abi36_0_0",
     "abi35_0_0",
     "abi34_0_0",
@@ -32,9 +33,9 @@ includeUnimodulesProjects(
 // FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
         'expo-bluetooth',
-        'expo-notifications',
         'expo-in-app-purchases',
         'expo-updates',
+        'expo-splash-screen',
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]
 ]

@@ -3,8 +3,7 @@ import { css } from 'react-emotion';
 import * as Constants from '~/common/constants';
 
 const STYLES_INTERNAL_LINK = css`
-  text-decoration: none;
-  color: ${Constants.colors.expoLighter};
+  color: ${Constants.expoColors.primary[500]};
   font-size: inherit;
 
   :hover {
@@ -13,8 +12,7 @@ const STYLES_INTERNAL_LINK = css`
 `;
 
 const STYLES_EXTERNAL_LINK = css`
-  text-decoration: none;
-  color: ${Constants.colors.expoLighter};
+  color: ${Constants.expoColors.primary[500]};
   font-size: inherit;
 
   :hover {

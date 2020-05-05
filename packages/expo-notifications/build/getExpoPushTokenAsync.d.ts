@@ -1,16 +1,12 @@
-import { DevicePushToken } from './getDevicePushTokenAsync';
-export interface ExpoPushToken {
-    type: 'expo';
-    data: string;
-}
+import { DevicePushToken, ExpoPushToken } from './Tokens.types';
 interface Options {
     baseUrl?: string;
     url?: string;
     type?: string;
-    appId?: string;
     deviceId?: string;
     development?: boolean;
     experienceId?: string;
+    applicationId?: string;
     devicePushToken?: DevicePushToken;
 }
 export default function getExpoPushTokenAsync(options?: Options): Promise<ExpoPushToken>;

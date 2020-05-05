@@ -5,10 +5,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const kEXUpdatesEmbeddedManifestName = @"shell-app-manifest";
-NSString * const kEXUpdatesEmbeddedManifestType = @"json";
-NSString * const kEXUpdatesEmbeddedBundleFilename = @"shell-app";
+NSString * const kEXUpdatesEmbeddedManifestName = @"app";
+NSString * const kEXUpdatesEmbeddedManifestType = @"manifest";
+NSString * const kEXUpdatesEmbeddedBundleFilename = @"app";
 NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
+NSString * const kEXUpdatesBareEmbeddedBundleFilename = @"main";
+NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
 
 @implementation EXUpdatesEmbeddedAppLoader
 
@@ -24,10 +26,17 @@ NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
       NSError *err;
       id manifest = [NSJSONSerialization JSONObjectWithData:manifestData options:kNilOptions error:&err];
       if (!manifest) {
-        NSLog(@"Could not read embedded manifest: %@", [err localizedDescription]);
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"The embedded manifest is invalid or could not be read. Make sure you have created app.manifest and app.bundle files and added them to your Xcode project. If you are using Expo CLI, make sure you have run `expo publish` or `expo export` at least once. More information at https://expo.fyi/embedded-assets"
+                                     userInfo:@{}];
       } else {
         NSAssert([manifest isKindOfClass:[NSDictionary class]], @"embedded manifest should be a valid JSON file");
-        embeddedManifest = [EXUpdatesUpdate updateWithManifest:(NSDictionary *)manifest];
+        embeddedManifest = [EXUpdatesUpdate updateWithEmbeddedManifest:(NSDictionary *)manifest];
+        if (!embeddedManifest.updateId) {
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                         reason:@"The embedded manifest is invalid. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
+                                       userInfo:@{}];
+        }
       }
     }
   });
@@ -54,7 +63,9 @@ NSString * const kEXUpdatesEmbeddedBundleFileType = @"bundle";
       });
     } else {
       NSAssert(asset.mainBundleFilename, @"embedded asset mainBundleFilename must be nonnull");
-      NSString *bundlePath = [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+      NSString *bundlePath = asset.mainBundleDir
+        ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
+        : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
       NSAssert(bundlePath, @"NSBundle must contain the expected assets");
 
       NSError *err;

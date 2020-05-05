@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-facebook'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import InstallSection from '~/components/plugins/InstallSection';
 
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
@@ -11,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-facebook`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-facebook).
+<InstallSection packageName="expo-facebook" />
 
 For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
 
@@ -19,27 +20,32 @@ For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the
 
 ### Registering your app with Facebook
 
-Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
+> 💡 When following these steps you will find on the Facebook Developer site that there are many fields and steps that you don't actually care about. Just look for the information that we ask you for and you will be OK!
+
+Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call.
+
+Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/). You don't need to set up the iOS and Android standalone apps right away, you can do that at any time in the future if you just want to get the Expo client version running first.
 
 - **The Expo client app**
 
-  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
-
-![](/static/images/facebook-app-settings.png)
+  - In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any app events in your Facebook developer page while running your project in the Expo Client.
+  - To use your app's own Facebook App ID (and thus send related app events to your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
 
 - **iOS standalone app**
 
-  - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured above. If you still have the `host.exp.Exponent` ID listed there, remove it.
-  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
+  - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured below.
+  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
   - Also in your [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
 - **Android standalone app**
 
   - [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
   - Run `expo fetch:android:hashes`.
-  - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
+  - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 
-You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
+![](/static/images/facebook-app-settings.png)
+
+You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in. This requires adding a privacy policy URL, which can be as simple as a GitHub Gist.
 
 ## API
 

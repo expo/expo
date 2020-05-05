@@ -183,7 +183,15 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  Note that you may have other legal obligations under the Children's Online Privacy Protection Act (COPPA).
  Please review the FTC's guidance and consult with your own legal counsel.
  */
-+ (void)setIsChildDirected:(BOOL)isChildDirected;
++ (void)setIsChildDirected:(BOOL)isChildDirected
+    FB_DEPRECATED_WITH_MESSAGE(
+        "isChildDirected method is no longer supported in Audience Network. Use +mixedAudience instead");
+
+/**
+ Configures the ad control for treatment as mixed audience directed.
+ Information for Mixed Audience Apps and Services: https://developers.facebook.com/docs/audience-network/coppa
+ */
+@property (class, nonatomic, assign, getter=isMixedAudience) BOOL mixedAudience;
 
 /**
   If an ad provided service is mediating Audience Network in their sdk, it is required to set the name of the mediation service
@@ -221,7 +229,8 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 /**
   Gets the FBMediaView rendering method
  */
-+ (FBMediaViewRenderingMethod)mediaViewRenderingMethod;
++ (FBMediaViewRenderingMethod)
+    mediaViewRenderingMethod FB_DEPRECATED_WITH_MESSAGE("Rendering method is no longer used in Audience Network");
 
 /**
   Sets the FBMediaView rendering method

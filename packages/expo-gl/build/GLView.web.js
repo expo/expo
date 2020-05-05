@@ -22,7 +22,7 @@ function asExpoContext(gl) {
     if (!gl['_expo_texImage2D']) {
         gl['_expo_texImage2D'] = gl.texImage2D;
         gl.texImage2D = (...props) => {
-            let nextProps = [...props];
+            const nextProps = [...props];
             nextProps.push(getImageForAsset(nextProps.pop()));
             return gl['_expo_texImage2D'](...nextProps);
         };
@@ -30,7 +30,7 @@ function asExpoContext(gl) {
     if (!gl['_expo_texSubImage2D']) {
         gl['_expo_texSubImage2D'] = gl.texSubImage2D;
         gl.texSubImage2D = (...props) => {
-            let nextProps = [...props];
+            const nextProps = [...props];
             nextProps.push(getImageForAsset(nextProps.pop()));
             return gl['_expo_texSubImage2D'](...nextProps);
         };
@@ -51,7 +51,7 @@ function ensureContext(canvas, contextAttributes) {
     return asExpoContext(context);
 }
 function stripNonDOMProps(props) {
-    for (let k in propTypes) {
+    for (const k in propTypes) {
         if (k in props) {
             delete props[k];
         }

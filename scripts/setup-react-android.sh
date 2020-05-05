@@ -1,43 +1,11 @@
 #!/usr/bin/env bash
 
-# Downloading the rncache can fail easily so we just copy it.
-# > This comes from `node_modules/react-native/src/rncache.json`
-mkdir -p ~/.rncache
-cp -f rncache/* ~/.rncache/
-
-# React Native environment variables
-
-# Ensure file
-touch ~/.bash_profile
-
-# Prevent duplication by searching for an existing value
-ANDROID_PATH_EXIST=`cat ~/.bash_profile | grep ANDROID_HOME=`
-
-if [ -z "$ANDROID_PATH_EXIST" ]; then
-  echo '
-    export ANDROID_HOME=$HOME/Library/Android/sdk
-    export PATH=$PATH:$ANDROID_HOME/tools
-    export PATH=$PATH:$ANDROID_HOME/tools/bin
-    export PATH=$PATH:$ANDROID_HOME/platform-tools
-  ' >> ~/.bash_profile
-fi
-
-# Reload the profile
-source $HOME/.bash_profile
+sdk_manager="sdkmanager"
 
 # Ensure the `sdkmanager` is installed for React Android
-sdk_manager="${ANDROID_HOME}/tools/bin/sdkmanager"
-if [ ! -f "${sdk_manager}" ]; then
-  echo "\nDownloading android sdk tools...\n"
-
-  sdk_tools_url=`curl https://developer.android.google.cn/studio/ | egrep -o "https://dl.google.com/android/repository/sdk-tools-darwin-.+?\.zip"`
-  sdk_tools_name=`basename ${sdk_tools_url}`
-  # Remove possible existing copy
-  rm -f ${sdk_tools_name}
-  # Download and install `sdkmanager`
-  curl -O ${sdk_tools_url}
-  mkdir -p  ${ANDROID_HOME}
-  tar -zxvf ${sdk_tools_name} -C ${ANDROID_HOME}
+if ! [ -x "$(command -v ${sdk_manager})" ]; then
+  echo "Error: You need to install Android SDK tools before proceeding. You can install these through Android Studio. Make sure that you also install the CLI tools and that sdkmanager can be found in your PATH."
+  exit 1
 fi
 
 mkdir -p $HOME/.android

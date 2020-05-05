@@ -1,6 +1,6 @@
 {
   "name": "expo-mail-composer",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "Provides an API to compose mails using OS specific UI",
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",
@@ -41,7 +41,7 @@
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "ec7878b9ce54f2537721218ae0fe4017e4004806",
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f",
   "dependencies": {
     "query-string": "^6.2.0"
   }

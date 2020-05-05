@@ -165,7 +165,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
               />,
               'onError'
             );
-            t.expect(error.toLowerCase()).toContain('format');
+            t.expect(error.toLowerCase()).toContain('none');
           }
         );
         t.it(

@@ -52,7 +52,6 @@ import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.exponent.kernel.KernelConfig;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.notifications.ExponentNotification;
@@ -269,6 +268,17 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     registerForNotifications();
   }
 
+  @Override 
+  public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    // Check for manifest to avoid calling this when first loading an experience
+    if (hasFocus && mManifest != null) {
+      runOnUiThread(() -> {
+        ExperienceActivityUtils.setNavigationBar(mManifest, ExperienceActivity.this);
+      });
+    }
+  }
+
   public void soloaderInit() {
     if (mDetachSdkVersion != null) {
       SoLoader.init(this, false);
@@ -342,7 +352,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onDoneLoading() {
     Analytics.markEvent(Analytics.TimedEvent.FINISHED_LOADING_REACT_NATIVE);
     Analytics.sendTimedEvents(mManifestUrl);
-    maybeShowOnboarding();
   }
 
   /*
@@ -442,7 +451,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
+    // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
@@ -616,19 +626,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     PushNotificationHelper pushNotificationHelper = PushNotificationHelper.getInstance();
     if (pushNotificationHelper != null) {
       pushNotificationHelper.removeNotifications(this, unreadNotifications);
-    }
-  }
-
-  /**
-   * Shows the dev menu with onboarding view if this is the first time the user opens an experience,
-   * or he hasn't finished onboarding yet.
-   */
-  public void maybeShowOnboarding() {
-    boolean isOnboardingFinished = mDevMenuManager.isOnboardingFinished();
-    boolean shouldShowOnboarding = !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished;
-
-    if (shouldShowOnboarding) {
-      mDevMenuManager.showInActivity(this);
     }
   }
 

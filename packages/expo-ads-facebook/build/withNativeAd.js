@@ -3,7 +3,7 @@ import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 import AdsManager from './NativeAdsManager';
-let NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
+const NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
@@ -23,7 +23,7 @@ export default function withNativeAd(Component) {
             this._handleAdLoaded = ({ nativeEvent: ad }) => {
                 this.setState({ ad }, () => {
                     if (this.props.onAdLoaded) {
-                        let ad = nullthrows(this.state.ad);
+                        const ad = nullthrows(this.state.ad);
                         this.props.onAdLoaded(ad);
                     }
                 });
@@ -53,19 +53,19 @@ export default function withNativeAd(Component) {
             };
             this._adTriggerViewContextValue = {
                 registerComponent: (component) => {
-                    let nodeHandle = nullthrows(findNodeHandle(component));
-                    let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                    const nodeHandle = nullthrows(findNodeHandle(component));
+                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
                     interactiveTriggerNodeHandles.set(component, nodeHandle);
                     this._setAdNodeHandles({ interactiveTriggerNodeHandles });
                 },
                 unregisterComponent: (component) => {
-                    let interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
                     interactiveTriggerNodeHandles.delete(component);
                     this._setAdNodeHandles({ interactiveTriggerNodeHandles });
                 },
                 onTriggerAd: () => {
                     if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
-                        let nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
+                        const nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
                         AdsManager.triggerEvent(nodeHandle);
                     }
                 },
@@ -93,9 +93,9 @@ export default function withNativeAd(Component) {
             if (!this.state.canRequestAds) {
                 return null;
             }
-            let { adsManager } = this.props;
-            let props = this._getForwardedProps();
-            let viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
+            const { adsManager } = this.props;
+            const props = this._getForwardedProps();
+            const viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
@@ -112,7 +112,7 @@ export default function withNativeAd(Component) {
             return viewHierarchy;
         }
         _getForwardedProps() {
-            let { adsManager, onAdLoaded, ...props } = this.props;
+            const { adsManager, onAdLoaded, ...props } = this.props;
             return props;
         }
         /**
@@ -121,9 +121,9 @@ export default function withNativeAd(Component) {
          * re-rendering.
          */
         _setAdNodeHandles({ adMediaViewNodeHandle = this._adMediaViewNodeHandle, adIconViewNodeHandle = this._adIconViewNodeHandle, interactiveTriggerNodeHandles = this._interactiveTriggerNodeHandles, }) {
-            let adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
-            let adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
-            let interactiveTriggersChanged = !_areEqualSets(new Set(interactiveTriggerNodeHandles.values()), new Set(this._interactiveTriggerNodeHandles.values()));
+            const adMediaViewChanged = adMediaViewNodeHandle !== this._adMediaViewNodeHandle;
+            const adIconViewChanged = adIconViewNodeHandle !== this._adIconViewNodeHandle;
+            const interactiveTriggersChanged = !_areEqualSets(new Set(interactiveTriggerNodeHandles.values()), new Set(this._interactiveTriggerNodeHandles.values()));
             if (adMediaViewChanged || adIconViewChanged || interactiveTriggersChanged) {
                 this._adMediaViewNodeHandle = adMediaViewNodeHandle;
                 this._adIconViewNodeHandle = adIconViewNodeHandle;
@@ -145,7 +145,7 @@ function _areEqualSets(set1, set2) {
     if (set1.size !== set2.size) {
         return false;
     }
-    for (let item of set1.values()) {
+    for (const item of set1.values()) {
         if (!set2.has(item)) {
             return false;
         }

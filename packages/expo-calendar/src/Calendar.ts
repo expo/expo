@@ -20,7 +20,7 @@ export interface Calendar {
   allowsModifications: boolean;
   allowedAvailabilities: string[];
   isPrimary?: boolean; // Android
-  name?: string; // Android
+  name?: string | null; // Android
   ownerAccount?: string; // Android
   timeZone?: string; // Android
   allowedReminders?: string[]; // Android
@@ -171,7 +171,7 @@ export async function createCalendarAsync(details: OptionalKeys<Calendar> = {}):
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'createCalendarAsync');
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color };
   return ExpoCalendar.saveCalendarAsync(newDetails);
 }
@@ -188,7 +188,7 @@ export async function updateCalendarAsync(
       'updateCalendarAsync must be called with an id (string) of the target calendar'
     );
   }
-  let color = details.color ? processColor(details.color) : undefined;
+  const color = details.color ? processColor(details.color) : undefined;
 
   if (Platform.OS === 'android') {
     if (

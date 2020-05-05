@@ -274,11 +274,7 @@ public class ContactsModule extends ExportedModule {
 
   private void presentForm(Contact contact) {
     Intent intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
-    if (contact.displayName != null) {
-      intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.displayName);
-    } else {
-      intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFirstName());
-    }
+    intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getDisplayName());
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.getContentValues());
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -366,6 +362,15 @@ public class ContactsModule extends ExportedModule {
 
     if (data.containsKey("note"))
       contact.note = (String) data.get("note");
+
+    if (data.containsKey("image")) {
+      Map<String, Object> photo = (Map<String, Object>) data.get("image");
+
+      if (photo.containsKey("uri")) {
+        contact.photoUri = (String) photo.get("uri");
+        contact.hasPhoto = true;
+      }
+    }
 
     ArrayList results;
 

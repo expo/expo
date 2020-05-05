@@ -52,14 +52,14 @@
 ///
 /// Example:
 ///
-///   <pre>
+///   \code
 ///   NSArray *validSizes = @[
 ///     NSValueFromGADAdSize(kGADAdSizeBanner),
 ///     NSValueFromGADAdSize(kGADAdSizeLargeBanner)
 ///   ];
 ///
 ///   bannerView.validAdSizes = validSizes;
-///   </pre>
+///   \endcode
 @property(nonatomic, copy, nullable) NSArray<NSValue *> *validAdSizes;
 
 /// Indicates that the publisher will record impressions manually when the ad becomes visible to the
@@ -90,14 +90,6 @@
 /// Deprecated. Use the validAdSizes property.
 /// Sets the receiver's valid ad sizes to the values pointed to by the provided NULL terminated list
 /// of GADAdSize pointers.
-///
-/// Example:
-///
-///   <pre>
-///   GADAdSize size1 = kGADAdSizeBanner;
-///   GADAdSize size2 = kGADAdSizeLargeBanner;
-///   [bannerView setValidAdSizesWithSizes:&size1, &size2, nil];
-///   </pre>
 - (void)setValidAdSizesWithSizes:(nullable GADAdSize *)firstSize, ... NS_REQUIRES_NIL_TERMINATION
                                  GAD_DEPRECATED_MSG_ATTRIBUTE("Use validAdSizes property.");
 

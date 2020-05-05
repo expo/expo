@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -285,13 +284,6 @@ public class Kernel extends KernelInterface {
 
             // Reset this flag if we crashed
             mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, false);
-
-            // If we're opening an experience on the emulator from the cli then it's possible we can't show onboarding yet
-            // because home is still not initialized. For this case we can trigger it from here.
-            ExperienceActivity currentExperienceActivity = ExperienceActivity.getCurrentActivity();
-            if (currentExperienceActivity != null) {
-              currentExperienceActivity.maybeShowOnboarding();
-            }
           }
         });
       }

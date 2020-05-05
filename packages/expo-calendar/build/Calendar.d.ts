@@ -14,7 +14,7 @@ export interface Calendar {
     allowsModifications: boolean;
     allowedAvailabilities: string[];
     isPrimary?: boolean;
-    name?: string;
+    name?: string | null;
     ownerAccount?: string;
     timeZone?: string;
     allowedReminders?: string[];

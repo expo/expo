@@ -81,7 +81,7 @@ const getWorkspacesInfoAsync = (() => {
 
   return async (): Promise<{ [key: string]: WorkspaceProject }> => {
     if (!cache) {
-      const child = await spawnAsync('yarn', ['workspaces', 'info', '--json'], {
+      const child = await spawnAsync('yarn', ['--json', 'workspaces', 'info'], {
         cwd: EXPO_DIR,
       });
       const output = JSON.parse(child.stdout);
@@ -144,7 +144,7 @@ async function _runPipelineAsync(
           );
 
           if (e.stderr) {
-            e.stderr.split(/\r?\n/g).forEach(line => {
+            e.stderr.split(/\r?\n/g).forEach((line) => {
               console.error(chalk.red('stderr >'), line);
             });
           }
@@ -166,9 +166,16 @@ async function _runPipelineAsync(
   }
 }
 
-async function _getPackageViewFromRegistryAsync(packageName: string, version?: string): Promise<PackageView | null> {
+async function _getPackageViewFromRegistryAsync(
+  packageName: string,
+  version?: string
+): Promise<PackageView | null> {
   try {
-    const json = await _spawnJSONCommandAsync('npm', ['view', version ? `${packageName}@${version}` : packageName, '--json']);
+    const json = await _spawnJSONCommandAsync('npm', [
+      'view',
+      version ? `${packageName}@${version}` : packageName,
+      '--json',
+    ]);
 
     if (json && !json.error) {
       const currentVersion = json.versions[json.versions.length - 1];
@@ -213,7 +220,7 @@ async function _gitLogWithFormatAsync(
     lines: child.stdout
       .trim()
       .split(/\r?\n/g)
-      .filter(a => a),
+      .filter((a) => a),
   };
 }
 
@@ -281,9 +288,13 @@ function _findDefaultVersion(
     }
     if (_isPrereleaseVersion(defaultVersion)) {
       // options.release doesn't matter if the current version is also prerelease
-      return semver.inc(defaultVersion, 'prerelease', options.prerelease);
+      return semver.inc(defaultVersion, 'prerelease', options.prerelease)!;
     }
-    return semver.inc(defaultVersion, `pre${options.release}`, options.prerelease);
+    return semver.inc(
+      defaultVersion,
+      `pre${options.release}` as semver.ReleaseType,
+      options.prerelease
+    )!;
   }
   return packageView ? semver.inc(defaultVersion, options.release) : packageJson.version;
 }
@@ -342,7 +353,7 @@ async function _askForVersionAsync(
   packageView: PackageView | null,
   options: any
 ): Promise<string> {
-  if (options && options.version) {
+  if (options?.version) {
     if (
       semver.valid(options.version) &&
       (!currentVersion || semver.gt(options.version, currentVersion))
@@ -354,8 +365,7 @@ async function _askForVersionAsync(
     );
   }
   if (
-    packageView &&
-    packageView.publishedDate &&
+    packageView?.publishedDate &&
     (await _checkNativeChangesSinceAsync(pkg, packageView.publishedDate))
   ) {
     console.log(
@@ -446,7 +456,7 @@ async function _publishPromptAsync(sinceCommit: string, pkgPath: string): Promis
 async function _getMaintainersAsync(packageName: string): Promise<string[]> {
   const child = await _spawnAsync('npm', ['owner', 'ls', packageName]);
   const maintainers = child.stdout.split(/\r?\n/g);
-  return maintainers.map(maintainer => maintainer.replace(/\s<.*>$/g, ''));
+  return maintainers.map((maintainer) => maintainer.replace(/\s<.*>$/g, ''));
 }
 
 async function _preparePublishAsync(
@@ -465,7 +475,7 @@ async function _preparePublishAsync(
 
   const packageJson = require(path.join(pkg.path, 'package.json'));
   const packageView = await _getPackageViewFromRegistryAsync(pkg.packageName);
-  const currentVersion = packageView && packageView.currentVersion;
+  const currentVersion = packageView?.currentVersion ?? null;
   const defaultVersion = _findDefaultVersion(packageJson, packageView, options);
   const maintainers = packageView ? await _getMaintainersAsync(pkg.packageName) : [];
   const isMaintainer = !packageView || maintainers.includes(options.npmProfile.name);
@@ -573,7 +583,7 @@ async function _bumpVersionsAsync({
 
   console.log(chalk.yellow('>'), `Updated package version in ${chalk.magenta('package.json')}`);
 
-  if (fs.existsSync(path.join(pkg.path, 'android/build.gradle'))) {
+  if (fs.pathExistsSync(path.join(pkg.path, 'android/build.gradle'))) {
     // update version and versionName in android/build.gradle
 
     const buildGradlePath = path.relative(EXPO_DIR, path.join(pkg.path, 'android/build.gradle'));
@@ -647,7 +657,10 @@ async function _updateWorkspaceDependenciesAsync({
 
   for (const projectName in workspaceProjects) {
     const project = workspaceProjects[projectName];
-    const workspaceDependencies = [...project.workspaceDependencies, ...project.mismatchedWorkspaceDependencies];
+    const workspaceDependencies = [
+      ...project.workspaceDependencies,
+      ...project.mismatchedWorkspaceDependencies,
+    ];
 
     if (!workspaceDependencies.includes(pkg.packageName)) {
       continue;
@@ -659,7 +672,7 @@ async function _updateWorkspaceDependenciesAsync({
     for (const dependenciesKey of dependenciesKeys) {
       const dependencies = packageJson[dependenciesKey];
 
-      if (dependencies && dependencies[pkg.packageName]) {
+      if (dependencies?.[pkg.packageName]) {
         // Set app's dependency to the new version.
         await jsonFile.setAsync(`${dependenciesKey}.${pkg.packageName}`, `~${newVersion}`);
         console.log(
@@ -750,7 +763,9 @@ async function _publishAsync(
 
       if (
         await _promptAsync(
-          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(`https://www.npmjs.com/package/${pkg.packageName}`)}.`
+          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(
+            `https://www.npmjs.com/package/${pkg.packageName}?activeTab=versions`
+          )}.`
         )
       ) {
         return { published: true };
@@ -811,7 +826,7 @@ async function _checkoutGitSubmoduleAsync(pkg: Package): Promise<void> {
       name: 'branchName',
       message: `Type in ${chalk.bold.green(pkg.packageName)} submodule branch to checkout:`,
       default: 'master',
-    }
+    },
   ]);
 
   await _spawnAsync('git', ['fetch'], { cwd: pkg.path });
@@ -849,7 +864,7 @@ async function _gitAddAndCommitAsync(allConfigs: Map<string, PipelineConfig>): P
         // Add to git index.
         for (const file of files) {
           const fullPath = path.join(pkg.path, file);
-          if (await fs.exists(fullPath)) {
+          if (await fs.pathExists(fullPath)) {
             await _gitAddAsync(file, pkg.path);
           }
         }
@@ -874,7 +889,7 @@ async function _gitAddAndCommitAsync(allConfigs: Map<string, PipelineConfig>): P
       'expo',
       'Publish packages',
       publishedPackages.join('\n'),
-      EXPO_DIR,
+      EXPO_DIR
     );
     console.log();
   }
@@ -884,7 +899,7 @@ async function _gitCommitWithPromptAsync(
   repositoryName: string,
   defaultCommitMessage: string,
   commitDescription: string,
-  cwd: string,
+  cwd: string
 ): Promise<void> {
   const { commitMessage } = await inquirer.prompt<{ commitMessage: string }>([
     {
@@ -900,12 +915,12 @@ async function _gitCommitWithPromptAsync(
 async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
   const podspecNames = [...allConfigs.values()]
     .filter(
-      config =>
+      (config) =>
         config.pkg.podspecName &&
         config.shouldPublish &&
         config.pkg.isIncludedInExpoClientOnPlatform('ios')
     )
-    .map(config => config.pkg.podspecName) as string[];
+    .map((config) => config.pkg.podspecName) as string[];
 
   if (podspecNames.length === 0) {
     // no native iOS pods to update
@@ -947,9 +962,9 @@ async function publishPackagesAsync(argv: any): Promise<void> {
   options.npmProfile = npmProfile;
 
   const publishConfigs = new Map<string, PipelineConfig>();
-  const packages = (await getListOfPackagesAsync()).filter(pkg => !pkg.packageJson.private);
+  const packages = (await getListOfPackagesAsync()).filter((pkg) => !pkg.packageJson.private);
 
-  packages.forEach(pkg => {
+  packages.forEach((pkg) => {
     publishConfigs.set(pkg.packageName, { pkg });
   });
 
@@ -957,7 +972,7 @@ async function publishPackagesAsync(argv: any): Promise<void> {
   if (options.listPackages) {
     console.log(chalk.yellow('\nList of packages used by this script... 📝\n'));
 
-    packages.forEach(pkg => {
+    packages.forEach((pkg) => {
       const packageJson = require(path.join(pkg.path, 'package.json'));
       const podspecName = pkg.podspecName;
 
@@ -985,7 +1000,7 @@ async function publishPackagesAsync(argv: any): Promise<void> {
 
   await _runPipelineAsync(beforePublishPipeline, publishConfigs, options);
 
-  if (![...publishConfigs.values()].some(config => !!config.shouldPublish)) {
+  if (![...publishConfigs.values()].some((config) => !!config.shouldPublish)) {
     console.log('\nNo packages to publish 🤷‍♂️');
     process.exit(0);
     return;

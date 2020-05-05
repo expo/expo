@@ -28,5 +28,9 @@ declare const _default: {
      * No implementation on web
      */
     setUnavailabilityLogging(isEnabled: boolean): void;
+    /**
+     * Not supported on web
+     */
+    setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 };
 export default _default;

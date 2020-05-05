@@ -1,6 +1,17 @@
 import React from 'react';
-import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  View,
+  StyleSheet,
+  Text,
+  Switch,
+  TextInput,
+  Picker,
+  Platform,
+} from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 
 import Colors from '../constants/Colors';
 import Button from '../components/Button';
@@ -14,12 +25,16 @@ interface Package {
 interface State {
   showTitle: boolean;
   toolbarColor?: string;
+  authResult?: Record<string, string> | null;
   controlsColorText?: string;
+  shouldPrompt: boolean;
   packages?: Package[];
   selectedPackage?: string;
   lastWarmedPackage?: string;
   barCollapsing: boolean;
   showInRecents: boolean;
+  readerMode: boolean;
+  enableDefaultShare: boolean;
 }
 
 export default class WebBrowserScreen extends React.Component<{}, State> {
@@ -30,6 +45,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   readonly state: State = {
     showTitle: false,
     barCollapsing: false,
+    authResult: null,
+    shouldPrompt: false,
     showInRecents: false,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
@@ -49,13 +66,37 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     }
   }
 
+  promptSwitchChanged = (shouldPrompt: boolean) => {
+    this.setState({ shouldPrompt });
+  };
+
   barCollapsingSwitchChanged = (barCollapsing: boolean) => {
     this.setState({ barCollapsing });
+  };
+
+  readerModeSwitchChanged = (readerMode: boolean) => {
+    this.setState({ readerMode });
+  };
+
+  enableDefaultShareChanged = (enableDefaultShare: boolean) => {
+    this.setState({ enableDefaultShare });
   };
 
   showPackagesAlert = async () => {
     const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
     Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
+    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
+    const redirectUrl = `${url}/redirect`;
+    const result = await WebBrowser.openAuthSessionAsync(
+      `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
+        redirectUrl
+      )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
+      redirectUrl
+    );
+    return result;
   };
 
   handleWarmUpClicked = async () => {
@@ -67,7 +108,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  handleMayInitWithUrlClicke = async () => {
+  handleMayInitWithUrlClicked = async () => {
     const { selectedPackage: lastWarmedPackage } = this.state;
     this.setState({
       lastWarmedPackage,
@@ -89,8 +130,10 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
       showInRecents: this.state.showInRecents,
+      readerMode: this.state.readerMode,
+      enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
-    const result = await WebBrowser.openBrowserAsync(url, args);
+    const result = await WebBrowser.openBrowserAsync('https://expo.io', args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
@@ -109,15 +152,25 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
-      <View style={styles.label}>
-        <Text>Controls color (#rrggbb):</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="RRGGBB"
-          onChangeText={this.handleControlsColorInputChanged}
-          value={this.state.controlsColorText}
-        />
-      </View>
+      <>
+        <View style={styles.label}>
+          <Text>Controls color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="RRGGBB"
+            onChangeText={this.handleControlsColorInputChanged}
+            value={this.state.controlsColorText}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Reader mode</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.readerModeSwitchChanged}
+            value={this.state.readerMode}
+          />
+        </View>
+      </>
     );
 
   renderAndroidChoices = () =>
@@ -137,6 +190,14 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
             style={styles.switch}
             onValueChange={this.handleRecents}
             value={this.state.showInRecents}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Default share</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.enableDefaultShareChanged}
+            value={this.state.enableDefaultShare}
           />
         </View>
         <View style={styles.label}>
@@ -160,7 +221,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
         <Button style={styles.button} onPress={this.handleWarmUpClicked} title="Warm up." />
         <Button
           style={styles.button}
-          onPress={this.handleMayInitWithUrlClicke}
+          onPress={this.handleMayInitWithUrlClicked}
           title="May init with url."
         />
         <Button style={styles.button} onPress={this.handleCoolDownClicked} title="Cool down." />
@@ -174,7 +235,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.label}>
           <Text>Toolbar color (#rrggbb):</Text>
           <TextInput
@@ -196,7 +257,27 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
         </View>
         <Button style={styles.button} onPress={this.handleOpenWebUrlClicked} title="Open web url" />
         {this.renderAndroidButtons()}
-      </View>
+        <>
+          <Button
+            style={styles.button}
+            onPress={async () => {
+              this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+            }}
+            title="Open web auth session"
+          />
+          <View style={styles.label}>
+            <Text>Should prompt</Text>
+            <Switch
+              style={styles.switch}
+              onValueChange={this.promptSwitchChanged}
+              value={this.state.shouldPrompt}
+            />
+          </View>
+          {this.state.authResult && (
+            <Text>Auth Result: {JSON.stringify(this.state.authResult, null, 2)}</Text>
+          )}
+        </>
+      </ScrollView>
     );
   }
 }

@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

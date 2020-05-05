@@ -85,7 +85,6 @@ const viewElements = {
   TBody,
   TFoot,
   TR,
-  Caption,
   UL,
   LI,
   BlockQuote,

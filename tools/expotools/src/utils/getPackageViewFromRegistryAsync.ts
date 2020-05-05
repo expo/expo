@@ -5,7 +5,7 @@ import { getExpoRepositoryRootDir } from '../Directories';
 type PackageViewType = {
   name: string;
   'dist-tags': { [tag: string]: string };
-  versions: string[],
+  versions: string[];
   time: {
     created: string;
     modified: string;
@@ -16,12 +16,16 @@ type PackageViewType = {
   author: string;
   // and more but these are the basic ones, we shouldn't need more.
   [key: string]: any;
-}
+};
 
-async function spawnJSONCommandAsync(command: string, args: ReadonlyArray<string>, options: object = {}) {
+async function spawnJSONCommandAsync(
+  command: string,
+  args: ReadonlyArray<string>,
+  options: object = {}
+) {
   const child = await spawnAsync(command, args, {
     cwd: getExpoRepositoryRootDir(),
-    ...options
+    ...options,
   });
   return JSON.parse(child.stdout);
 }
@@ -31,5 +35,5 @@ async function getPackageViewFromRegistryAsync(packageName: string): Promise<Pac
   return json;
 }
 
-export { PackageViewType }
+export { PackageViewType };
 export default getPackageViewFromRegistryAsync;

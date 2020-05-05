@@ -26,6 +26,7 @@ import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
+import expo.modules.device.DevicePackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
@@ -142,7 +143,8 @@ public class HomeActivity extends BaseExperienceActivity {
         new CameraPackage(),
         new FaceDetectorPackage(),
         new MediaLibraryPackage(),
-        new TaskManagerPackage() // load expo-task-manager to restore tasks once the client is opened
+        new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
+        new DevicePackage()
     );
   }
 }

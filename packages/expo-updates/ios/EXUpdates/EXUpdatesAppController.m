@@ -3,7 +3,7 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesEmergencyAppLauncher.h>
+#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
@@ -28,7 +28,6 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
-@property (nonatomic, readwrite, assign) BOOL isEnabled;
 
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, strong) NSTimer *timer;
@@ -62,7 +61,6 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] init];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
-    _isEnabled = NO;
     _isReadyToLaunch = NO;
     _isTimerFinished = NO;
     _hasLaunched = NO;
@@ -70,10 +68,33 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return self;
 }
 
+- (void)setConfiguration:(NSDictionary *)configuration
+{
+  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:setConfiguration should not be called after start");
+  [EXUpdatesConfig.sharedInstance loadConfigFromDictionary:configuration];
+}
+
 - (void)start
 {
   NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
-  _isEnabled = YES;
+
+  if (!EXUpdatesConfig.sharedInstance.isEnabled) {
+    EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
+    _launcher = launcher;
+    [launcher launchUpdate];
+
+    if (_delegate) {
+      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+    }
+
+    return;
+  }
+
+  if (!EXUpdatesConfig.sharedInstance.updateUrl) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
+                                 userInfo:@{}];
+  }
 
   NSError *fsError;
   _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
@@ -192,6 +213,14 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return _launcher.assetFilesMap ?: nil;
 }
 
+- (BOOL)isUsingEmbeddedAssets
+{
+  if (!_launcher) {
+    return YES;
+  }
+  return _launcher.isUsingEmbeddedAssets;
+}
+
 # pragma mark - internal
 
 - (void)_maybeFinish
@@ -205,11 +234,14 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  // TODO: remove this assertion and replace it with
-  // [self _emergencyLaunchWithError:];
-  NSAssert(self.launchAssetUrl != nil, @"_maybeFinish should only be called when we have a valid launchAssetUrl");
-
   _hasLaunched = YES;
+  if (!self.launchAssetUrl) {
+    [self _emergencyLaunchWithFatalError:[NSError errorWithDomain:kEXUpdatesAppControllerErrorDomain
+                                                             code:1020
+                                                         userInfo:@{NSLocalizedDescriptionKey: @"Unexpectedly tried to launch without a valid launchAssetUrl"}]];
+    return;
+  }
+
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:YES];
@@ -326,7 +358,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   _isEmergencyLaunch = YES;
   _hasLaunched = YES;
 
-  EXUpdatesEmergencyAppLauncher *launcher = [[EXUpdatesEmergencyAppLauncher alloc] init];
+  EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
   [launcher launchUpdateWithFatalError:error];
 

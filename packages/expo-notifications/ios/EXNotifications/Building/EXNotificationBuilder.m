@@ -1,12 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXNotificationBuilder.h>
-
-@interface NSDictionary (EXNotificationBuilderVerifyingClass)
-
-- (id)objectForKey:(id)aKey verifyingClass:(__unsafe_unretained Class)klass;
-
-@end
+#import <EXNotifications/NSDictionary+EXNotificationsVerifyingClass.h>
 
 @implementation EXNotificationBuilder
 
@@ -22,12 +17,25 @@ UM_REGISTER_MODULE();
   UNMutableNotificationContent *content = [UNMutableNotificationContent new];
   [content setTitle:[request objectForKey:@"title" verifyingClass:[NSString class]]];
   [content setSubtitle:[request objectForKey:@"subtitle" verifyingClass:[NSString class]]];
-  [content setBody:[request objectForKey:@"message" verifyingClass:[NSString class]]];
+  [content setBody:[request objectForKey:@"body" verifyingClass:[NSString class]]];
   [content setLaunchImageName:[request objectForKey:@"launchImageName" verifyingClass:[NSString class]]];
   [content setBadge:[request objectForKey:@"badge" verifyingClass:[NSNumber class]]];
-  [content setUserInfo:[request objectForKey:@"body" verifyingClass:[NSDictionary class]]];
-  if ([request objectForKey:@"sound" verifyingClass:[NSNumber class]]) {
+  [content setUserInfo:[request objectForKey:@"data" verifyingClass:[NSDictionary class]]];
+  if ([request[@"sound"] isKindOfClass:[NSNumber class]]) {
     [content setSound:[request[@"sound"] boolValue] ? [UNNotificationSound defaultSound] : nil];
+  } else if ([request[@"sound"] isKindOfClass:[NSString class]]) {
+    NSString *soundName = request[@"sound"];
+    if ([@"default" isEqualToString:soundName]) {
+      [content setSound:[UNNotificationSound defaultSound]];
+    } else if ([@"defaultCritical" isEqualToString:soundName]) {
+      if (@available(iOS 12.0, *)) {
+        [content setSound:[UNNotificationSound defaultCriticalSound]];
+      } else {
+        [content setSound:[UNNotificationSound defaultSound]];
+      }
+    } else {
+      [content setSound:[UNNotificationSound soundNamed:soundName]];
+    }
   }
   NSMutableArray<UNNotificationAttachment *> *attachments = [NSMutableArray new];
   [[request objectForKey:@"attachments" verifyingClass:[NSArray class]] enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -79,20 +87,3 @@ UM_REGISTER_MODULE();
 
 @end
 
-static NSString * const invalidValueExceptionName = @"Value of invalid class encountered";
-static NSString * const invalidValueClassReasonFormat = @"Value under key `%@` is of class %@, while %@ was expected.";
-
-@implementation NSDictionary (EXNotificationBuilderVerifyingClass)
-
-- (id)objectForKey:(id)aKey verifyingClass:(__unsafe_unretained Class)klass
-{
-  id obj = [self objectForKey:aKey];
-  if (!obj || [obj isKindOfClass:klass]) {
-    return obj;
-  }
-
-  NSString *reason = [NSString stringWithFormat:invalidValueClassReasonFormat, aKey, NSStringFromClass([obj class]), NSStringFromClass(klass)];
-  @throw [NSException exceptionWithName:invalidValueExceptionName reason:reason userInfo:nil];
-}
-
-@end

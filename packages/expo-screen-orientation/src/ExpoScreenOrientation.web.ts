@@ -12,14 +12,14 @@ import {
 const OrientationLockAPIToWeb: {
   [lock: string]: WebOrientationLock;
 } = {
-  DEFAULT: WebOrientationLock.NATURAL,
-  ALL: WebOrientationLock.ANY,
-  PORTRAIT: WebOrientationLock.PORTRAIT,
-  PORTRAIT_UP: WebOrientationLock.PORTRAIT_PRIMARY,
-  PORTRAIT_DOWN: WebOrientationLock.PORTRAIT_SECONDARY,
-  LANDSCAPE: WebOrientationLock.LANDSCAPE,
-  LANDSCAPE_LEFT: WebOrientationLock.LANDSCAPE_PRIMARY,
-  LANDSCAPE_RIGHT: WebOrientationLock.LANDSCAPE_SECONDARY,
+  [OrientationLock.DEFAULT]: WebOrientationLock.NATURAL,
+  [OrientationLock.ALL]: WebOrientationLock.ANY,
+  [OrientationLock.PORTRAIT]: WebOrientationLock.PORTRAIT,
+  [OrientationLock.PORTRAIT_UP]: WebOrientationLock.PORTRAIT_PRIMARY,
+  [OrientationLock.PORTRAIT_DOWN]: WebOrientationLock.PORTRAIT_SECONDARY,
+  [OrientationLock.LANDSCAPE]: WebOrientationLock.LANDSCAPE,
+  [OrientationLock.LANDSCAPE_LEFT]: WebOrientationLock.LANDSCAPE_PRIMARY,
+  [OrientationLock.LANDSCAPE_RIGHT]: WebOrientationLock.LANDSCAPE_SECONDARY,
 };
 
 const OrientationWebToAPI: {
@@ -44,7 +44,7 @@ async function emitOrientationEvent() {
   ]);
   SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
     orientationLock,
-    orientation,
+    orientationInfo: { orientation },
   });
 }
 

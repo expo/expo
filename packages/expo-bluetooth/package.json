@@ -30,10 +30,6 @@
     "expo-module-scripts": "~1.2.0"
   },
   "unimodulePeerDependencies": {
-    "expo": "~32.0.0",
-    "expo-constants-interface": "~2.0.0",
-    "expo-core": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0",
     "@unimodules/core": "*"
   }
 }

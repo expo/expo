@@ -1,4 +1,4 @@
-import { readConfigJson } from '@expo/config';
+import { getWebOutputPath, getConfig } from '@expo/config';
 import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -37,13 +37,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   } = config;
   const projectPath = path.resolve(projectRoot || process.cwd());
 
-  const {
-    exp: { web = {} },
-  } = readConfigJson(projectPath);
-
-  const hasServerSideRendering = web.use === 'nextjs';
-  const defaultPort = hasServerSideRendering ? 8000 : 5000;
-  const { port: serverPort = defaultPort } = server;
+  const { port: serverPort = 5000 } = server;
   let defaultURL;
   let command;
 
@@ -53,7 +47,8 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   if (mode === 'production') {
     defaultURL = `http://localhost:${serverPort}`;
 
-    const outputBuildPath = (web.build || {}).output || 'web-build';
+    const { exp } = getConfig(projectPath, { skipSDKVersionRequirement: true });
+    const outputBuildPath = getWebOutputPath(exp);
 
     const buildFolder = path.resolve(projectPath, outputBuildPath);
     const serveCommand = `serve ${buildFolder}`;
@@ -66,7 +61,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     }
     command = ofCommands(commands);
   } else {
-    command = `expo start ${projectPath} --web-only --non-interactive --https`;
+    command = `expo start:web ${projectPath} --non-interactive --https`;
     defaultURL = `https://localhost:${serverPort}`;
   }
 
@@ -80,7 +75,6 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   const url = isUndefined(config.url) ? defaultURL : config.url;
 
   return {
-    hasServerSideRendering,
     ...partConfig,
     url,
     launch: {

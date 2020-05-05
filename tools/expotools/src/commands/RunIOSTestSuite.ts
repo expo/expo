@@ -11,7 +11,7 @@ async function action(options) {
   process.exit(results.failed === 0 ? 0 : 1);
 }
 
-export default program => {
+export default (program) => {
   program
     .command('run-ios-test-suite')
     .option(

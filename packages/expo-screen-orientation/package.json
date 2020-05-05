@@ -40,5 +40,8 @@
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "dependencies": {
+    "fbjs": "1.0.0"
+  },
+  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

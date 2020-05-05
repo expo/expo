@@ -41,17 +41,15 @@ function ofCommands(commands) {
 function withExpoPuppeteer(config = {}) {
     const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot } = config, partConfig = __rest(config, ["mode", "preventRebuild", "server", "launch", "projectRoot"]);
     const projectPath = path_1.default.resolve(projectRoot || process.cwd());
-    const { exp: { web = {} }, } = config_1.readConfigJson(projectPath);
-    const hasServerSideRendering = web.use === 'nextjs';
-    const defaultPort = hasServerSideRendering ? 8000 : 5000;
-    const { port: serverPort = defaultPort } = server;
+    const { port: serverPort = 5000 } = server;
     let defaultURL;
     let command;
     // Tell Expo CLI to use the same port on which the test runner expects there to be a server
     process.env.WEB_PORT = serverPort;
     if (mode === 'production') {
         defaultURL = `http://localhost:${serverPort}`;
-        const outputBuildPath = (web.build || {}).output || 'web-build';
+        const { exp } = config_1.getConfig(projectPath, { skipSDKVersionRequirement: true });
+        const outputBuildPath = config_1.getWebOutputPath(exp);
         const buildFolder = path_1.default.resolve(projectPath, outputBuildPath);
         const serveCommand = `serve ${buildFolder}`;
         const commands = [serveCommand];
@@ -63,7 +61,7 @@ function withExpoPuppeteer(config = {}) {
         command = ofCommands(commands);
     }
     else {
-        command = `expo start ${projectPath} --web-only --non-interactive --https`;
+        command = `expo start:web ${projectPath} --non-interactive --https`;
         defaultURL = `https://localhost:${serverPort}`;
     }
     const hasModules = fs_1.default.existsSync(path_1.default.resolve(projectPath, 'node_modules'));
@@ -73,7 +71,7 @@ function withExpoPuppeteer(config = {}) {
         command = ofCommands([`cd ${projectPath} && yarn && cd ${process.cwd()}`, command]);
     }
     const url = isUndefined(config.url) ? defaultURL : config.url;
-    return Object.assign(Object.assign({ hasServerSideRendering }, partConfig), { url, launch: Object.assign(Object.assign({}, getPuppeteerOptions()), launch), server: Object.assign(Object.assign({ launchTimeout, debug: true }, server), { command, port: serverPort }) });
+    return Object.assign(Object.assign({}, partConfig), { url, launch: Object.assign(Object.assign({}, getPuppeteerOptions()), launch), server: Object.assign(Object.assign({ launchTimeout, debug: true }, server), { command, port: serverPort }) });
 }
 exports.withExpoPuppeteer = withExpoPuppeteer;
 //# sourceMappingURL=index.js.map

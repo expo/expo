@@ -1,4 +1,6 @@
-export default interface AppConfig {
+import { JSONObject } from '@expo/json-file';
+
+export default interface AppConfig extends JSONObject {
   expo: {
     name: string;
     description: string;
@@ -14,11 +16,11 @@ export default interface AppConfig {
     ios: {
       bundleIdentifier: string;
       supportsTablet: boolean;
-      publishBundlePath: string;
+      publishBundlePath?: string;
     };
     android: {
       package: string;
-      publishBundlePath: string;
+      publishBundlePath?: string;
     };
 
     kernel?: {

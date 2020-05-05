@@ -15,6 +15,7 @@
     "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
     "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
     "web": "expo start:web --https",
+    "build:web": "expo build:web --no-pwa",
     "start": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
@@ -42,9 +43,9 @@
     "expo-ads-admob",
     "expo-video-thumbnails",
     "expo-module-template",
-    "expo-in-app-purchases",
     "expo-apple-authentication",
-    "expo-updates"
+    "expo-updates",
+    "expo-splash-screen"
   ],
   "detox": {
     "configurations": {
@@ -79,8 +80,9 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~36.0.0",
-    "expo-notifications": "~1.0.0",
+    "expo": "~37.0.6",
+    "expo-image": "~1.0.0-alpha.0",
+    "expo-notifications": "~0.1.4",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.9.0",
@@ -91,7 +93,7 @@
     "react-native-reanimated": "~1.7.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
-    "react-native-unimodules": "~0.7.0-rc.3",
+    "react-native-unimodules": "~0.9.0",
     "react-native-web": "^0.11.4",
     "react-navigation": "4.1.0-alpha.0",
     "react-navigation-tabs": "^2.7.0",
@@ -102,11 +104,12 @@
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
     "babel-plugin-module-resolver": "^4.0.0",
-    "babel-preset-expo": "~8.0.0",
+    "babel-preset-expo": "~8.1.0",
     "detox": "^14.8.4",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",
-    "jest-expo": "~36.0.1",
-    "jest-expo-puppeteer": "^0.0.0"
+    "jest-expo": "~37.0.0",
+    "jest-expo-puppeteer": "^1.0.0",
+    "puppeteer": "^2.1.1"
   }
 }

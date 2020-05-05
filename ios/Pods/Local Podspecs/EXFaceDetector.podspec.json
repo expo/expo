@@ -1,6 +1,6 @@
 {
   "name": "EXFaceDetector",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "summary": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "license": "MIT",

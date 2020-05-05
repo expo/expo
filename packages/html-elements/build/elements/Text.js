@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { em } from '../css/units';
 import Text from '../primitives/Text';
 import View from '../primitives/View';
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
     },
     code: {
-        fontFamily: 'Courier',
+        fontFamily: Platform.select({ default: 'Courier', android: 'monospace' }),
         fontWeight: '500',
     },
     pre: {

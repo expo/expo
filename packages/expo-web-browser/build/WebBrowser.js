@@ -90,10 +90,24 @@ export function dismissAuthSession() {
         ExponentWebBrowser.dismissBrowser();
     }
 }
+/**
+ * Attempts to complete an auth session in the browser.
+ *
+ * @param options
+ */
+export function maybeCompleteAuthSession(options = {}) {
+    if (ExponentWebBrowser.maybeCompleteAuthSession) {
+        return ExponentWebBrowser.maybeCompleteAuthSession(options);
+    }
+    return { type: 'failed', message: 'Not supported on this platform' };
+}
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
     if (Platform.OS === 'android') {
         return false;
+    }
+    else if (Platform.OS === 'web') {
+        return true;
     }
     const versionNumber = parseInt(String(Platform.Version), 10);
     return versionNumber >= 11;
@@ -106,18 +120,27 @@ let _redirectHandler = null;
 // Store the `resolve` function from a Promise to fire when the AppState
 // returns to active
 let _onWebBrowserCloseAndroid = null;
+// If the initial AppState.currentState is null, we assume that the first call to
+// AppState#change event is not actually triggered by a real change,
+// is triggered instead by the bridge capturing the current state
+// (https://facebook.github.io/react-native/docs/appstate#basic-usage)
+let _isAppStateAvailable = AppState.currentState !== null;
 function _onAppStateChangeAndroid(state) {
+    if (!_isAppStateAvailable) {
+        _isAppStateAvailable = true;
+        return;
+    }
     if (state === 'active' && _onWebBrowserCloseAndroid) {
         _onWebBrowserCloseAndroid();
     }
 }
 async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
-    let appStateChangedToActive = new Promise(resolve => {
+    const appStateChangedToActive = new Promise(resolve => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
     let result = { type: 'cancel' };
-    let { type } = await openBrowserAsync(startUrl, browserParams);
+    const { type } = await openBrowserAsync(startUrl, browserParams);
     if (type === 'opened') {
         await appStateChangedToActive;
         result = { type: 'dismiss' };

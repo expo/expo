@@ -36,6 +36,7 @@ public class BasePackageList {
         new expo.modules.imageloader.ImageLoaderPackage(),
         new expo.modules.imagemanipulator.ImageManipulatorPackage(),
         new expo.modules.imagepicker.ImagePickerPackage(),
+        new expo.modules.inapppurchases.InAppPurchasesPackage(),
         new expo.modules.intentlauncher.IntentLauncherPackage(),
         new expo.modules.keepawake.KeepAwakePackage(),
         new expo.modules.lineargradient.LinearGradientPackage(),
@@ -57,7 +58,6 @@ public class BasePackageList {
         new expo.modules.speech.SpeechPackage(),
         new expo.modules.sqlite.SQLitePackage(),
         new expo.modules.taskManager.TaskManagerPackage(),
-        new expo.modules.updates.UpdatesPackage(),
         new expo.modules.webbrowser.WebBrowserPackage()
     );
   }

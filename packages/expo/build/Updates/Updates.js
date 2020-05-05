@@ -72,7 +72,7 @@ function _emitEvent(params) {
     _emitter.emit('Exponent.updatesEvent', newParams);
 }
 export function addListener(listener) {
-    let emitter = _getEmitter();
+    const emitter = _getEmitter();
     return emitter.addListener('Exponent.updatesEvent', listener);
 }
 export const EventType = {

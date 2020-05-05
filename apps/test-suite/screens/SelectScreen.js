@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
-import { getTestModules } from '../TestUtils';
 
 const prefix = Platform.select({ default: 'md', ios: 'ios' });
 
@@ -42,6 +42,7 @@ function ListItem({ title, onPressItem, selected, id }) {
 export default class SelectScreen extends React.PureComponent {
   state = {
     selected: new Set(),
+    modules: [],
   };
 
   constructor(props) {
@@ -65,7 +66,6 @@ export default class SelectScreen extends React.PureComponent {
         }
       });
     }
-    this.modules = getTestModules();
   }
 
   componentWillUnmount() {
@@ -73,22 +73,37 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   checkLinking = incomingTests => {
-    if (incomingTests) {
-      const testNames = incomingTests.split(',').map(v => v.trim());
-      const selected = this.modules.filter(m => testNames.includes(m.name));
-      if (!selected.length) {
-        console.log('[TEST_SUITE]', 'No selected modules', testNames);
-      }
-      this.props.navigation.navigate('RunTests', { selected });
-    }
+    const testNames = incomingTests.split(',').map(v => v.trim());
+    this.props.navigation.navigate('RunTests', { selected: new Set(testNames) });
   };
 
   _handleOpenURL = ({ url }) => {
-    setTimeout(() => {
-      if (url && url.includes('select/')) {
-        this.checkLinking(url.split('/').pop());
+    url = url || '';
+    // TODO: Use Expo Linking library once parseURL is implemented for web
+    if (url.includes('/select/')) {
+      const selectedTests = url.split('/').pop();
+      if (selectedTests) {
+        this.checkLinking(selectedTests);
+        return;
       }
-    }, 100);
+    }
+
+    if (url.includes('/all')) {
+      // Test all available modules
+      this.props.navigation.navigate('RunTests', {
+        selected: new Set(getTestModules().map(m => m.name)),
+      });
+      return;
+    }
+
+    // Application wasn't started from a deep link which we handle. So, we can load test modules.
+    this._loadTestModules();
+  };
+
+  _loadTestModules = () => {
+    this.setState({
+      modules: getTestModules(),
+    });
   };
 
   componentDidMount() {
@@ -97,13 +112,6 @@ export default class SelectScreen extends React.PureComponent {
     Linking.getInitialURL()
       .then(url => {
         this._handleOpenURL({ url });
-        // TODO: Use Expo Linking library once parseURL is implemented for web
-        if (url && url.indexOf('/all') > -1) {
-          // Test all available modules
-          this.props.navigation.navigate('RunTests', {
-            selected: this.modules,
-          });
-        }
       })
       .catch(err => console.error('Failed to load initial URL', err));
   }
@@ -134,21 +142,15 @@ export default class SelectScreen extends React.PureComponent {
 
   _selectAll = () => {
     this.setState(state => {
-      if (state.selected.size === this.modules.length) {
+      if (state.selected.size === this.state.modules.length) {
         return { selected: new Set() };
       }
-      return { selected: new Set(this.modules.map(item => item.name)) };
+      return { selected: new Set(this.state.modules.map(item => item.name)) };
     });
   };
 
-  _getSelected = () => {
-    const { selected } = this.state;
-    const selectedModules = this.modules.filter(m => selected.has(m.name));
-    return selectedModules;
-  };
-
   _navigateToTests = () => {
-    const selected = this._getSelected();
+    const { selected } = this.state;
     if (selected.length === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
@@ -159,12 +161,12 @@ export default class SelectScreen extends React.PureComponent {
 
   render() {
     const { selected } = this.state;
-    const allSelected = selected.size === this.modules.length;
+    const allSelected = selected.size === this.state.modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
     return (
       <React.Fragment>
         <FlatList
-          data={this.modules}
+          data={this.state.modules}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}

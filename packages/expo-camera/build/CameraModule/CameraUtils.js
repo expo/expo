@@ -68,7 +68,7 @@ function getSupportedConstraints() {
     return null;
 }
 export function getIdealConstraints(preferredCameraType, width, height) {
-    let preferredConstraints = {
+    const preferredConstraints = {
         audio: false,
         video: {},
     };

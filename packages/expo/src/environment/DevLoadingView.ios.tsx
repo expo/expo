@@ -13,9 +13,9 @@ const NativeDevLoadingView = NativeModules.DevLoadingView;
 const nativeDevLoadingViewEventEmitter = new NativeEventEmitter(NativeDevLoadingView);
 
 export default function DevLoadingView() {
-  let [isDevLoading, setIsDevLoading] = useState(false);
-  let [isAnimating, setIsAnimating] = useState(false);
-  let translateY = useRef(new Animated.Value(0)).current;
+  const [isDevLoading, setIsDevLoading] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     function handleShowMessage({ message }) {

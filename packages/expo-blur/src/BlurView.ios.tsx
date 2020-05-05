@@ -30,7 +30,7 @@ export default class BlurView extends React.Component<BlurProps> {
   };
 
   render() {
-    let { style, ...props } = this.props;
+    const { style, ...props } = this.props;
     return (
       <NativeBlurView
         {...props}

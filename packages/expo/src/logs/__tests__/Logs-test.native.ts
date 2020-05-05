@@ -1,6 +1,6 @@
 jest.mock('../RemoteConsole', () => ({
   createRemoteConsole: jest.fn(originalConsole => {
-    let remoteConsole = Object.create(originalConsole);
+    const remoteConsole = Object.create(originalConsole);
     remoteConsole.__isRemote = true;
     return remoteConsole;
   }),
@@ -41,7 +41,7 @@ it(`doesn't fail if enabled multiple times`, () => {
   expect(global.console.__isRemote).not.toBeDefined();
 
   enableExpoCliLogging();
-  let firstEnhancedConsole = global.console;
+  const firstEnhancedConsole = global.console;
   expect(global.console.__isRemote).toBe(true);
 
   expect(enableExpoCliLogging).not.toThrow();

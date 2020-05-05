@@ -64,8 +64,6 @@ public class NotificationPermissionsModule extends ExportedModule {
     NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && manager != null) {
       platformPermissions.putInt(INTERRUPTION_FILTER_KEY, manager.getCurrentInterruptionFilter());
-    } else {
-      platformPermissions.putBundle(INTERRUPTION_FILTER_KEY, null);
     }
 
     permissions.putBundle(ANDROID_RESPONSE_KEY, platformPermissions);

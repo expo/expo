@@ -1,4 +1,4 @@
-import { EventEmitter, CodedError, Platform } from '@unimodules/core';
+import { EventEmitter, CodedError } from '@unimodules/core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 export class NotificationTimeoutError extends CodedError {
     constructor(notificationId, notification) {
@@ -24,13 +24,8 @@ export function setNotificationHandler(handler) {
     if (handler) {
         handleSubscription = notificationEmitter.addListener(handleNotificationEventName, async ({ id, notification }) => {
             try {
-                const { ios, android, ...baseBehavior } = await handler.handleNotification(notification);
-                const platformSpecificBehaviors = { ios, android };
-                const nativeBehavior = {
-                    ...baseBehavior,
-                    ...platformSpecificBehaviors[Platform.OS],
-                };
-                await NotificationsHandlerModule.handleNotificationAsync(id, nativeBehavior);
+                const behavior = await handler.handleNotification(notification);
+                await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
                 // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
                 // eslint-disable-next-line
                 handler.handleSuccess?.(id);
@@ -38,10 +33,10 @@ export function setNotificationHandler(handler) {
             catch (error) {
                 // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
                 // eslint-disable-next-line
-                handler.handleError?.(error);
+                handler.handleError?.(id, error);
             }
         });
-        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(new NotificationTimeoutError(id, notification)));
+        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, notification)));
     }
 }
 //# sourceMappingURL=NotificationsHandler.js.map

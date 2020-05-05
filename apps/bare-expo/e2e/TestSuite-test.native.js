@@ -41,11 +41,15 @@ describe('test-suite', () => {
           url: `bareexpo://test-suite/select/${testName}`,
         });
         await sleepAsync(100);
-        await detoxExpect(element(by.id('test_suite_container'))).toBeVisible();
-        await waitFor(element(by.id('test_suite_text_results')))
-          .toBeVisible()
-          .withTimeout(MIN_TIME);
-
+        await detoxExpect(element(by.id('test_suite_container'))).toExist();
+        try {
+          await waitFor(element(by.id('test_suite_text_results')))
+            .toExist()
+            .withTimeout(MIN_TIME);
+        } catch (err) {
+          // test hasn't completed within the timeout
+          // continue and log the intermediate results
+        }
         const input = await getTextAsync('test_suite_final_results');
 
         expectResults({

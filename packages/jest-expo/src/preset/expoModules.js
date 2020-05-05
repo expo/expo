@@ -829,7 +829,7 @@ module.exports = {
           systemFonts: { type: 'array' },
         },
         ExponentDeviceMotion: {
-          Gravity: { type: 'number', mock: 9.8100004196167 },
+          Gravity: { type: 'number', mock: 9.80665 },
           addListener: { type: 'function' },
           isAvailableAsync: { type: 'function' },
           removeListeners: { type: 'function' },

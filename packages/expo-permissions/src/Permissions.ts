@@ -65,8 +65,8 @@ async function _handleMultiPermissionsRequestIOSAsync(
     throw new Error('At least one permission type must be specified');
   }
 
-  let permissions = {};
-  for (let type of types) {
+  const permissions = {};
+  for (const type of types) {
     permissions[type] = await _handleSinglePermissionRequestIOSAsync(type, handlePermission);
   }
 

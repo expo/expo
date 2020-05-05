@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
+import { Code } from '@expo/html-elements';
 
 const MonoText: React.FunctionComponent<{
   containerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<ViewStyle>;
 }> = ({ children, containerStyle, textStyle }) => (
   <View style={[styles.container, containerStyle]}>
-    <Text style={[styles.monoText, textStyle]}>{children}</Text>
+    <Code style={[styles.monoText, textStyle]}>{children}</Code>
   </View>
 );
 
@@ -21,7 +22,6 @@ const styles = StyleSheet.create({
     borderColor: '#666666',
   },
   monoText: {
-    fontFamily: 'space-mono',
     fontSize: 10,
   },
 });

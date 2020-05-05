@@ -98,6 +98,11 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 }
 
++ (NSString *)getRuntimeVersion
+{
+  return EXUpdatesConfig.sharedInstance.runtimeVersion ?: EXUpdatesConfig.sharedInstance.sdkVersion;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

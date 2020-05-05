@@ -61,6 +61,8 @@ target 'BareExpo' do
     }
   )
 
+  pod 'expo-image', path: '../../../packages/expo-image'
+
   # react-native-cli auto-linking
   use_native_modules!
 

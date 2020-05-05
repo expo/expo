@@ -7,7 +7,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [Google](../google) or [AppAuth](../app-auth).
+**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
 
@@ -16,8 +16,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
 
 ## Configuration
-
-For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)
 
 1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
 2. In `app.json`, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.

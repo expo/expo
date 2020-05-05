@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesConfig ()
 
+@property (nonatomic, readwrite, assign) BOOL isEnabled;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
@@ -16,8 +17,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesConfigPlistName = @"expo-config";
+static NSString * const kEXUpdatesConfigPlistName = @"Expo";
 static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
+
+static NSString * const kEXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
+static NSString * const kEXUpdatesConfigUpdateUrlKey = @"EXUpdatesURL";
+static NSString * const kEXUpdatesConfigReleaseChannelKey = @"EXUpdatesReleaseChannel";
+static NSString * const kEXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs";
+static NSString * const kEXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
+static NSString * const kEXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
+static NSString * const kEXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
+static NSString * const kEXUpdatesConfigUsesLegacyManifestKey = @"EXUpdatesUsesLegacyManifest";
+
+static NSString * const kEXUpdatesConfigAlwaysString = @"ALWAYS";
+static NSString * const kEXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
+static NSString * const kEXUpdatesConfigNeverString = @"NEVER";
 
 @implementation EXUpdatesConfig
 
@@ -36,30 +50,44 @@ static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
 - (instancetype)init
 {
   if (self = [super init]) {
-    [self _loadConfig];
+    _isEnabled = YES;
+    _releaseChannel = kEXUpdatesDefaultReleaseChannelName;
+    _launchWaitMs = @(0);
+    _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
+    _usesLegacyManifest = YES;
+    [self _loadConfigFromExpoPlist];
   }
   return self;
 }
 
-- (void)_loadConfig
+- (void)_loadConfigFromExpoPlist
 {
   NSString *configPath = [[NSBundle mainBundle] pathForResource:kEXUpdatesConfigPlistName ofType:@"plist"];
-  NSDictionary *config = (configPath) ? [NSDictionary dictionaryWithContentsOfFile:configPath] : @{};
+  if (configPath) {
+    [self loadConfigFromDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+  }
+}
 
-  id updateUrl = config[@"updateUrl"];
-  NSAssert(updateUrl && [updateUrl isKindOfClass:[NSString class]], @"updateUrl must be a nonnull string");
-  NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
-  NSAssert(url, @"updateUrl must be a valid URL");
-  _updateUrl = url;
-
-  id releaseChannel = config[@"releaseChannel"];
-  if (releaseChannel && [releaseChannel isKindOfClass:[NSString class]]) {
-    _releaseChannel = (NSString *)releaseChannel;
-  } else {
-    _releaseChannel = kEXUpdatesDefaultReleaseChannelName;
+- (void)loadConfigFromDictionary:(NSDictionary *)config
+{
+  id isEnabled = config[kEXUpdatesConfigEnabledKey];
+  if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
+    _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
 
-  id launchWaitMs = config[@"launchWaitMs"];
+  id updateUrl = config[kEXUpdatesConfigUpdateUrlKey];
+  if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
+    NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
+    NSAssert(url, @"EXUpdatesURL must be a valid URL");
+    _updateUrl = url;
+  }
+
+  id releaseChannel = config[kEXUpdatesConfigReleaseChannelKey];
+  if (releaseChannel && [releaseChannel isKindOfClass:[NSString class]]) {
+    _releaseChannel = (NSString *)releaseChannel;
+  }
+
+  id launchWaitMs = config[kEXUpdatesConfigLaunchWaitMsKey];
   if (launchWaitMs && [launchWaitMs isKindOfClass:[NSNumber class]]) {
     _launchWaitMs = (NSNumber *)launchWaitMs;
   } else if (launchWaitMs && [launchWaitMs isKindOfClass:[NSString class]]) {
@@ -67,40 +95,33 @@ static NSString * const kEXUpdatesDefaultReleaseChannelName = @"default";
     formatter.numberStyle = NSNumberFormatterNoStyle;
     _launchWaitMs = [formatter numberFromString:(NSString *)launchWaitMs];
   }
-  if (!_launchWaitMs) {
-    _launchWaitMs = @(0);
-  }
 
-  id checkOnLaunch = config[@"checkOnLaunch"];
+  id checkOnLaunch = config[kEXUpdatesConfigCheckOnLaunchKey];
   if (checkOnLaunch && [checkOnLaunch isKindOfClass:[NSString class]]) {
-    if ([@"NEVER" isEqualToString:(NSString *)checkOnLaunch]) {
+    if ([kEXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigNever;
-    } else if ([@"WIFI_ONLY" isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([kEXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigWifiOnly;
-    } else {
+    } else if ([kEXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
     }
-  } else {
-    _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
   }
 
-  id sdkVersion = config[@"sdkVersion"];
+  id sdkVersion = config[kEXUpdatesConfigSDKVersionKey];
   if (sdkVersion && [sdkVersion isKindOfClass:[NSString class]]) {
     _sdkVersion = (NSString *)sdkVersion;
   }
 
-  id runtimeVersion = config[@"runtimeVersion"];
+  id runtimeVersion = config[kEXUpdatesConfigRuntimeVersionKey];
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     _runtimeVersion = (NSString *)runtimeVersion;
   }
 
-  NSAssert(_sdkVersion || _runtimeVersion, @"One of sdkVersion or runtimeVersion must be defined in expo-config.plist");
+  NSAssert(_sdkVersion || _runtimeVersion, @"One of EXUpdatesSDKVersion or EXUpdatesRuntimeVersion must be configured in expo-updates");
   
-  id usesLegacyManifest = config[@"usesLegacyManifest"];
+  id usesLegacyManifest = config[kEXUpdatesConfigUsesLegacyManifestKey];
   if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
     _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
-  } else {
-    _usesLegacyManifest = YES;
   }
 }
 

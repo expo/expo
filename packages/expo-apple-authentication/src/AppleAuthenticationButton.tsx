@@ -12,6 +12,9 @@ import {
   ExpoAppleAuthenticationButtonContinueWhite,
   ExpoAppleAuthenticationButtonContinueWhiteOutline,
   ExpoAppleAuthenticationButtonContinueBlack,
+  ExpoAppleAuthenticationButtonSignUpWhite,
+  ExpoAppleAuthenticationButtonSignUpWhiteOutline,
+  ExpoAppleAuthenticationButtonSignUpBlack,
 } from './ExpoAppleAuthenticationButton';
 
 /**
@@ -59,6 +62,11 @@ const ButtonComponents: { [type: number]: { [style: number]: React.ElementType }
     [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonContinueWhite,
     [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonContinueWhiteOutline,
     [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonContinueBlack,
+  },
+  [AppleAuthenticationButtonType.SIGN_UP]: {
+    [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonSignUpWhite,
+    [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonSignUpWhiteOutline,
+    [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonSignUpBlack,
   },
 };
 

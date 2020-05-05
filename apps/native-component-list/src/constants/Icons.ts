@@ -14,6 +14,7 @@ const Icons: { [key: string]: any } = {
   GoogleSignIn: require('../../assets/icons/api/GoogleLogin.png'),
   Haptic: require('../../assets/icons/api/Haptic.png'),
   ImagePicker: require('../../assets/icons/api/ImagePicker.png'),
+  Image: require('../../assets/icons/api/ImagePicker.png'),
   KeepAwake: require('../../assets/icons/api/KeepAwake.png'),
   LinearGradient: require('../../assets/icons/api/LinearGradient.png'),
   LocalAuthentication: require('../../assets/icons/api/LocalAuthentication.png'),

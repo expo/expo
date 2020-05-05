@@ -6,6 +6,9 @@ let ExpoAppleAuthenticationButtonSignInBlack;
 let ExpoAppleAuthenticationButtonContinueWhite;
 let ExpoAppleAuthenticationButtonContinueWhiteOutline;
 let ExpoAppleAuthenticationButtonContinueBlack;
+let ExpoAppleAuthenticationButtonSignUpWhite;
+let ExpoAppleAuthenticationButtonSignUpWhiteOutline;
+let ExpoAppleAuthenticationButtonSignUpBlack;
 if (Platform.OS === 'ios') {
     ExpoAppleAuthenticationButtonSignInWhite = requireNativeViewManager('ExpoAppleAuthenticationButtonSignInWhite');
     ExpoAppleAuthenticationButtonSignInWhiteOutline = requireNativeViewManager('ExpoAppleAuthenticationButtonSignInWhiteOutline');
@@ -13,6 +16,9 @@ if (Platform.OS === 'ios') {
     ExpoAppleAuthenticationButtonContinueWhite = requireNativeViewManager('ExpoAppleAuthenticationButtonContinueWhite');
     ExpoAppleAuthenticationButtonContinueWhiteOutline = requireNativeViewManager('ExpoAppleAuthenticationButtonContinueWhiteOutline');
     ExpoAppleAuthenticationButtonContinueBlack = requireNativeViewManager('ExpoAppleAuthenticationButtonContinueBlack');
+    ExpoAppleAuthenticationButtonSignUpWhite = requireNativeViewManager('ExpoAppleAuthenticationButtonSignUpWhite');
+    ExpoAppleAuthenticationButtonSignUpWhiteOutline = requireNativeViewManager('ExpoAppleAuthenticationButtonSignUpWhiteOutline');
+    ExpoAppleAuthenticationButtonSignUpBlack = requireNativeViewManager('ExpoAppleAuthenticationButtonSignUpBlack');
 }
-export { ExpoAppleAuthenticationButtonSignInWhite, ExpoAppleAuthenticationButtonSignInWhiteOutline, ExpoAppleAuthenticationButtonSignInBlack, ExpoAppleAuthenticationButtonContinueWhite, ExpoAppleAuthenticationButtonContinueWhiteOutline, ExpoAppleAuthenticationButtonContinueBlack, };
+export { ExpoAppleAuthenticationButtonSignInWhite, ExpoAppleAuthenticationButtonSignInWhiteOutline, ExpoAppleAuthenticationButtonSignInBlack, ExpoAppleAuthenticationButtonContinueWhite, ExpoAppleAuthenticationButtonContinueWhiteOutline, ExpoAppleAuthenticationButtonContinueBlack, ExpoAppleAuthenticationButtonSignUpWhite, ExpoAppleAuthenticationButtonSignUpWhiteOutline, ExpoAppleAuthenticationButtonSignUpBlack, };
 //# sourceMappingURL=ExpoAppleAuthenticationButton.js.map

@@ -15,7 +15,8 @@
 #import <UIKit/UIKit.h>
 
 /// An interstitial ad. This is a full-screen advertisement shown at natural transition points in
-/// your application such as between game levels or news stories.
+/// your application such as between game levels or news stories. See
+/// https://developers.google.com/admob/ios/interstitial to get started.
 @interface GADInterstitial : NSObject
 
 /// Initializes an interstitial with an ad unit created on the AdMob website. Create a new ad unit
@@ -53,8 +54,8 @@
 /// once even with different requests.
 @property(nonatomic, readonly) BOOL hasBeenUsed;
 
-/// Information about the ad response that returned the current ad. Nil while an ad
-/// request is in progress or if the latest ad request failed.
+/// Information about the ad response that returned the current ad. Nil while an ad request is in
+/// progress or if the latest ad request failed.
 @property(nonatomic, readonly, nullable) GADResponseInfo *responseInfo;
 
 /// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.

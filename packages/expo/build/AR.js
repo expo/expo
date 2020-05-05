@@ -309,14 +309,14 @@ export async function stopAsync() {
     }
 }
 export async function startAsync(node, configuration) {
-    let handle = typeof node === 'number' ? node : _getNodeHandle(node);
+    const handle = typeof node === 'number' ? node : _getNodeHandle(node);
     if (ExponentAR.startAsync) {
         return await ExponentAR.startAsync(handle, configuration);
     }
     throw new Error(`AR is not supported on this device`);
 }
 function _getNodeHandle(component) {
-    let handle = findNodeHandle(component);
+    const handle = findNodeHandle(component);
     if (handle === null) {
         throw new Error(`Could not find the React node handle for the AR component: ${component}`);
     }

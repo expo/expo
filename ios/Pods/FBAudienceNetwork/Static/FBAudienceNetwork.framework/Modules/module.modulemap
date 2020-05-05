@@ -46,4 +46,12 @@ framework module FBAudienceNetwork {
     header "FBNativeAdView.h"
     header "FBNativeAdsManager.h"
     header "FBRewardedVideoAd.h"
+    
+    header "FBAdBridgeCommon.h"
+    header "FBAdBridgeContainer.h"
+    header "FBAdSettingsBridge.h"
+    header "FBAdUtilityBridge.h"
+    header "FBAdViewBridge.h"
+    header "FBInterstitialAdBridge.h"
+    header "FBRewardedVideoAdBridge.h"
 }

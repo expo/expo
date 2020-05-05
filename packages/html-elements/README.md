@@ -447,7 +447,7 @@ Alternate italic text.
 
 ### `<Code/>`
 
-Inline code block with `fontFamily: 'Courier'`.
+Inline code block with `fontFamily: 'Courier'` on iOS and Web, `fontFamily: 'monospace'` on Android.
 
 | Platform  | Output                      |
 | --------- | --------------------------- |
@@ -455,7 +455,7 @@ Inline code block with `fontFamily: 'Courier'`.
 
 ### `<Pre/>`
 
-Render a preformatted code block with `fontFamily: 'Courier'`.
+Render a preformatted code block with `fontFamily: 'Courier'` on iOS and Web, `fontFamily: 'monospace'` on Android.
 
 ```jsx
 <Pre>{`

@@ -38,7 +38,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
   if (!gl['_expo_texImage2D']) {
     gl['_expo_texImage2D'] = gl.texImage2D;
     gl.texImage2D = (...props: any[]): any => {
-      let nextProps = [...props];
+      const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texImage2D'](...nextProps);
     };
@@ -47,7 +47,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
   if (!gl['_expo_texSubImage2D']) {
     gl['_expo_texSubImage2D'] = gl.texSubImage2D;
     gl.texSubImage2D = (...props: any[]): any => {
-      let nextProps = [...props];
+      const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texSubImage2D'](...nextProps);
     };
@@ -80,7 +80,7 @@ function ensureContext(
 }
 
 function stripNonDOMProps(props: { [key: string]: any }): { [key: string]: any } {
-  for (let k in propTypes) {
+  for (const k in propTypes) {
     if (k in props) {
       delete props[k];
     }

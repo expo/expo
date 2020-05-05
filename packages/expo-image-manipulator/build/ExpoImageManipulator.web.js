@@ -18,14 +18,14 @@ function resampleSingle(canvas, width, height, resizeCanvas = false) {
     const hRatio = heightSource / height;
     const wRatioHalf = Math.ceil(wRatio / 2);
     const hRatioHalf = Math.ceil(hRatio / 2);
-    let ctx = getContext(canvas);
-    let img = ctx.getImageData(0, 0, widthSource, heightSource);
-    let img2 = ctx.createImageData(width, height);
-    let data = img.data;
-    let data2 = img2.data;
+    const ctx = getContext(canvas);
+    const img = ctx.getImageData(0, 0, widthSource, heightSource);
+    const img2 = ctx.createImageData(width, height);
+    const data = img.data;
+    const data2 = img2.data;
     for (let j = 0; j < height; j++) {
         for (let i = 0; i < width; i++) {
-            let x2 = (i + j * width) * 4;
+            const x2 = (i + j * width) * 4;
             let weight = 0;
             let weights = 0;
             let weightsAlpha = 0;
@@ -33,25 +33,25 @@ function resampleSingle(canvas, width, height, resizeCanvas = false) {
             let gx_g = 0;
             let gx_b = 0;
             let gx_a = 0;
-            let yCenter = (j + 0.5) * hRatio;
-            let yy_start = Math.floor(j * hRatio);
-            let yy_stop = Math.ceil((j + 1) * hRatio);
+            const yCenter = (j + 0.5) * hRatio;
+            const yy_start = Math.floor(j * hRatio);
+            const yy_stop = Math.ceil((j + 1) * hRatio);
             for (let yy = yy_start; yy < yy_stop; yy++) {
-                let dy = Math.abs(yCenter - (yy + 0.5)) / hRatioHalf;
-                let center_x = (i + 0.5) * wRatio;
-                let w0 = dy * dy; //pre-calc part of w
-                let xx_start = Math.floor(i * wRatio);
-                let xx_stop = Math.ceil((i + 1) * wRatio);
+                const dy = Math.abs(yCenter - (yy + 0.5)) / hRatioHalf;
+                const center_x = (i + 0.5) * wRatio;
+                const w0 = dy * dy; //pre-calc part of w
+                const xx_start = Math.floor(i * wRatio);
+                const xx_stop = Math.ceil((i + 1) * wRatio);
                 for (let xx = xx_start; xx < xx_stop; xx++) {
-                    let dx = Math.abs(center_x - (xx + 0.5)) / wRatioHalf;
-                    let w = Math.sqrt(w0 + dx * dx);
+                    const dx = Math.abs(center_x - (xx + 0.5)) / wRatioHalf;
+                    const w = Math.sqrt(w0 + dx * dx);
                     if (w >= 1) {
                         //pixel too far
                         continue;
                     }
                     //hermite filter
                     weight = 2 * w * w * w - 3 * w * w + 1;
-                    let xPosition = 4 * (xx + yy * widthSource);
+                    const xPosition = 4 * (xx + yy * widthSource);
                     //alpha
                     gx_a += weight * data[xPosition + 3];
                     weightsAlpha += weight;
@@ -159,7 +159,7 @@ function loadImageAsync(uri) {
     });
 }
 async function manipulateWithActionAsync(uri, action, options) {
-    let canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     const imageSource = await loadImageAsync(uri);
     canvas.width = imageSource.naturalWidth;
     canvas.height = imageSource.naturalHeight;
@@ -231,7 +231,7 @@ export default {
     },
     async manipulateAsync(uri, actions = [], options) {
         if (!actions.length) {
-            let canvas = document.createElement('canvas');
+            const canvas = document.createElement('canvas');
             const imageSource = await loadImageAsync(uri);
             canvas.width = imageSource.naturalWidth;
             canvas.height = imageSource.naturalHeight;

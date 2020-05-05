@@ -18,7 +18,6 @@
 
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
-#import <StoreKit/StoreKit.h>
 
 #import <FBAudienceNetwork/FBAdDefines.h>
 #import <FBAudienceNetwork/FBAdExtraHint.h>

@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, FBAdFormatType) {
     FBAdFormatTypeUnknown = 0,
     FBAdFormatTypeImage,
     FBAdFormatTypeVideo,
-    FBAdFormatTypeCarousel,
+    FBAdFormatTypeCarousel
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -58,7 +58,8 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
  */
 @property (nonatomic, copy, readonly) NSString *placementID;
 /**
- Typed access to the headline that the advertiser entered when they created their ad. This is usually the ad's main title.
+ Typed access to the headline that the advertiser entered when they created their ad. This is usually the ad's main
+ title.
  */
 @property (nonatomic, copy, readonly, nullable) NSString *headline;
 /**
@@ -78,11 +79,13 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
  */
 @property (nonatomic, copy, readonly, nullable) NSString *callToAction;
 /**
- Typed access to the body raw untruncated text, Contains the text that the advertiser entered when they created their ad. This often tells people what the ad is promoting.
+ Typed access to the body raw untruncated text, Contains the text that the advertiser entered when they created their
+ ad. This often tells people what the ad is promoting.
  */
 @property (nonatomic, copy, readonly, nullable) NSString *rawBodyText;
 /**
- Typed access to the body text, truncated at length 90, which contains the text that the advertiser entered when they created their ad. This often tells people what the ad is promoting.
+ Typed access to the body text, truncated at length 90, which contains the text that the advertiser entered when they
+ created their ad. This often tells people what the ad is promoting.
  */
 @property (nonatomic, copy, readonly, nullable) NSString *bodyText;
 /**
@@ -102,15 +105,21 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
  */
 @property (nonatomic, strong, readonly, nullable) FBAdImage *adChoicesIcon;
 /**
+ Typed access to the icon image. Only available after ad is successfully loaded.
+ */
+@property (nonatomic, strong, readonly, nullable) UIImage *iconImage;
+/**
  Aspect ratio of the ad creative.
  */
 @property (nonatomic, assign, readonly) CGFloat aspectRatio;
 /**
- Typed access to the AdChoices URL. Navigate to this link when the icon is tapped. See `FBAdChoicesView` for an included implementation.
+ Typed access to the AdChoices URL. Navigate to this link when the icon is tapped. See `FBAdChoicesView` for an included
+ implementation.
  */
 @property (nonatomic, copy, readonly, nullable) NSURL *adChoicesLinkURL;
 /**
- Typed access to the AdChoices text, usually a localized version of "AdChoices". See `FBAdChoicesView` for an included implementation.
+ Typed access to the AdChoices text, usually a localized version of "AdChoices". See `FBAdChoicesView` for an included
+ implementation.
  */
 @property (nonatomic, copy, readonly, nullable) NSString *adChoicesText;
 /**
@@ -152,9 +161,10 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
  You can implement `nativeAdDidLoad:` and `nativeAd:didFailWithError:` methods
  of `FBNativeAdDelegate` if you would like to be notified as loading succeeds or fails.
 
- @param mediaCachePolicy controls which media (images, video, etc) from the native ad are cached before the native ad calls nativeAdLoaded on its delegate. The default is to cache everything.
- Note that impression is not logged until the media for the ad is visible on screen (Video or Image for FBNativeAd / Icon for FBNativeBannerAd) and setting this to anything else than FBNativeAdsCachePolicyAll
- will delay the impression call.
+ @param mediaCachePolicy controls which media (images, video, etc) from the native ad are cached before the native ad
+ calls nativeAdLoaded on its delegate. The default is to cache everything. Note that impression is not logged until the
+ media for the ad is visible on screen (Video or Image for FBNativeAd / Icon for FBNativeBannerAd) and setting this to
+ anything else than FBNativeAdsCachePolicyAll will delay the impression call.
  */
 - (void)loadAdWithMediaCachePolicy:(FBNativeAdsCachePolicy)mediaCachePolicy;
 
@@ -170,15 +180,16 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
 
  @param bidPayload The payload of the ad bid. You can get your bid payload from Facebook bidder endpoint.
 
- @param mediaCachePolicy controls which media (images, video, etc) from the native ad are cached before the native ad calls nativeAdLoaded on its delegate. The default is to cache everything.
- Note that impression is not logged until the media for the ad is visible on screen (Video or Image for FBNativeAd / Icon for FBNativeBannerAd) and setting this to anything else than FBNativeAdsCachePolicyAll
- will delay the impression call.
+ @param mediaCachePolicy controls which media (images, video, etc) from the native ad are cached before the native ad
+ calls nativeAdLoaded on its delegate. The default is to cache everything. Note that impression is not logged until the
+ media for the ad is visible on screen (Video or Image for FBNativeAd / Icon for FBNativeBannerAd) and setting this to
+ anything else than FBNativeAdsCachePolicyAll will delay the impression call.
  */
-- (void)loadAdWithBidPayload:(NSString *)bidPayload
-            mediaCachePolicy:(FBNativeAdsCachePolicy)mediaCachePolicy;
+- (void)loadAdWithBidPayload:(NSString *)bidPayload mediaCachePolicy:(FBNativeAdsCachePolicy)mediaCachePolicy;
 
 /**
- Creates a new instance of a FBNativeAdBase from a bid payload. The actual subclass returned will depend on the contents of the payload.
+ Creates a new instance of a FBNativeAdBase from a bid payload. The actual subclass returned will depend on the contents
+ of the payload.
 
  @param placementId The placement ID of the ad.
 
@@ -188,7 +199,7 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
  */
 + (nullable instancetype)nativeAdWithPlacementId:(NSString *)placementId
                                       bidPayload:(NSString *)bidPayload
-                                           error:(NSError * __autoreleasing *)error;
+                                           error:(NSError *__autoreleasing *)error;
 
 @end
 

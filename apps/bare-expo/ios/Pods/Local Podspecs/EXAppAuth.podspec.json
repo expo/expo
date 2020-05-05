@@ -1,6 +1,6 @@
 {
   "name": "EXAppAuth",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "summary": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "license": "MIT",

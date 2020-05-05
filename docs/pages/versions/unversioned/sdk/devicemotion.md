@@ -47,13 +47,19 @@ Subscribe for updates to DeviceMotion.
   DeviceMotion update is available. When invoked, the listener is
   provided a single argument that is an object containing following fields:
 
+  - **interval (_number_)** -- Interval at which data is obtained from the native platform. Expressed in **milliseconds**.
+
   - **acceleration (_object_)** -- Device acceleration on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
 
   - **accelerationIncludingGravity (_object_)** -- Device acceleration with the effect of gravity on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
 
   - **rotation (_object_)** -- Device's orientation in space as an object with alpha, beta, gamma keys where alpha is for rotation around Z axis, beta for X axis rotation and gamma for Y axis rotation.
 
-  - **rotationRate (_object_)** -- Rotation rates of the device around each of its axes as an object with alpha, beta, gamma keys where alpha is around Z axis, beta for X axis and gamma for Y axis.
+  - **rotationRate (_object_)** -- Device's rate of rotation in space expressed in degrees per second (deg/s).
+
+    - **alpha (_number_)**: X axis rotation.
+    - **beta (_number_)**: Y axis rotation.
+    - **gamma (_number_)**: Z axis rotation.
 
   - **orientation (_number_)** -- Device orientation based on screen rotation. Value is on of `0` (portrait), `90` (right landscape), `180` (upside down), `-90` (left landscape).
 

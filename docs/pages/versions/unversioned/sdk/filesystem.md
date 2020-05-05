@@ -304,7 +304,7 @@ Create a `DownloadResumable` object which can start, pause, and resume a downloa
   This function is called on each data write to update the download progress. An object with the following fields are passed:
 
   - **totalBytesWritten (_number_)** -- The total bytes written by the download operation.
-  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation.
+  - **totalBytesExpectedToWrite (_number_)** -- The total bytes expected to be written by the download operation. A value of `-1` means that the server did not return the `Content-Length` header and the total size is unknown. Without this header, you won't be able to track the download progress.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download. This is set on the `DownloadResumable` object automatically when a download is paused. When initializing a new `DownloadResumable` this should be `null`.
 
@@ -386,7 +386,7 @@ Take a `file://` URI and convert it into content URI (`content://`) so that it c
 FileSystem.getContentUriAsync(uri).then(cUri => {
   console.log(cUri);
   IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-    data: cUri.uri,
+    data: cUri,
     flags: 1,
   });
 });
@@ -398,9 +398,7 @@ FileSystem.getContentUriAsync(uri).then(cUri => {
 
 #### Returns
 
-Returns a Promise that resolves to an object with the following fields:
-
-- **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+Returns a Promise that resolves to a _string_ containing a `content://` URI pointing to the file. The URI is the same as the `fileUri` input parameter but in a different format.
 
 ### `FileSystem.getFreeDiskStorageAsync()`
 

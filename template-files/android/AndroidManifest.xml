@@ -57,7 +57,7 @@
       android:name=".LauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
-      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
+      android:theme="@android:style/Theme.Translucent.NoTitleBar">
       <!-- START LAUNCHER INTENT FILTERS -->
       <intent-filter>
         <data android:scheme="exp"/>
@@ -119,7 +119,7 @@
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light">
+      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
       <!-- START HOME INTENT FILTERS -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -145,6 +145,9 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_37 -->
+    <activity android:name="abi37_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_37 -->
     <!-- BEGIN_SDK_36 -->
     <activity android:name="abi36_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_36 -->
@@ -181,6 +184,20 @@
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
+    <!-- BEGIN_SDK_37 -->
+    <activity
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:name="abi37_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="abi37_0_0.expo.modules.payments.stripe" />
+      </intent-filter>
+    </activity>
+    <!-- END_SDK_37 -->
     <!-- BEGIN_SDK_36 -->
     <activity
       android:exported="true"

@@ -8,3 +8,14 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 export declare function dismissBrowser(): void;
 export declare function openAuthSessionAsync(url: string, redirectUrl: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserAuthSessionResult>;
 export declare function dismissAuthSession(): void;
+/**
+ * Attempts to complete an auth session in the browser.
+ *
+ * @param options
+ */
+export declare function maybeCompleteAuthSession(options?: {
+    skipRedirectCheck?: boolean;
+}): {
+    type: 'success' | 'failed';
+    message: string;
+};

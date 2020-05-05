@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,15 +18,69 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
-import expo.modules.notifications.notifications.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
+import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.triggers.DateTrigger;
+import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
 public class NotificationSerializer {
-  public static Bundle toBundle(String identifier, JSONObject notification, @Nullable NotificationTrigger trigger) {
+  public static Bundle toBundle(NotificationResponse response) {
+    Bundle serializedResponse = new Bundle();
+    serializedResponse.putString("actionIdentifier", response.getActionIdentifier());
+    serializedResponse.putBundle("notification", toBundle(response.getNotification()));
+    return serializedResponse;
+  }
+
+  public static Bundle toBundle(Notification notification) {
     Bundle serializedNotification = new Bundle();
-    serializedNotification.putString("identifier", identifier);
-    serializedNotification.putBundle("notification", toBundle(notification));
-    serializedNotification.putBundle("trigger", toBundle(trigger));
+    serializedNotification.putBundle("request", toBundle(notification.getNotificationRequest()));
+    serializedNotification.putLong("date", notification.getDate().getTime());
     return serializedNotification;
+  }
+
+  public static Bundle toBundle(NotificationRequest request) {
+    Bundle serializedRequest = new Bundle();
+    serializedRequest.putString("identifier", request.getIdentifier());
+    serializedRequest.putBundle("content", toBundle(request.getContent()));
+    serializedRequest.putBundle("trigger", toBundle(request.getTrigger()));
+    return serializedRequest;
+  }
+
+  public static Bundle toBundle(NotificationContent content) {
+    Bundle serializedContent = new Bundle();
+    serializedContent.putString("title", content.getTitle());
+    serializedContent.putString("subtitle", content.getSubtitle());
+    serializedContent.putString("body", content.getText());
+    if (content.getColor() != null) {
+      serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
+    }
+    serializedContent.putBundle("data", toBundle(content.getBody()));
+    if (content.getBadgeCount() != null) {
+      serializedContent.putInt("badge", content.getBadgeCount().intValue());
+    } else {
+      serializedContent.putString("badge", null);
+    }
+    if (content.shouldPlayDefaultSound()) {
+      serializedContent.putString("sound", "default");
+    } else if (content.getSound() != null) {
+      serializedContent.putString("sound", "custom");
+    } else {
+      serializedContent.putString("sound", null);
+    }
+    if (content.getPriority() != null) {
+      serializedContent.putString("priority", content.getPriority().getEnumValue());
+    }
+    if (content.getVibrationPattern() != null) {
+      double[] serializedVibrationPattern = new double[content.getVibrationPattern().length];
+      for (int i = 0; i < serializedVibrationPattern.length; i++) {
+        serializedVibrationPattern[i] = content.getVibrationPattern()[i];
+      }
+      serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
+    }
+    return serializedContent;
   }
 
   private static Bundle toBundle(@Nullable JSONObject notification) {
@@ -75,6 +131,14 @@ public class NotificationSerializer {
     if (trigger instanceof FirebaseNotificationTrigger) {
       bundle.putString("type", "push");
       bundle.putBundle("remoteMessage", RemoteMessageSerializer.toBundle(((FirebaseNotificationTrigger) trigger).getRemoteMessage()));
+    } else if (trigger instanceof TimeIntervalTrigger) {
+      bundle.putString("type", "timeInterval");
+      bundle.putBoolean("repeats", ((TimeIntervalTrigger) trigger).isRepeating());
+      bundle.putLong("seconds", ((TimeIntervalTrigger) trigger).getTimeInterval());
+    } else if (trigger instanceof DateTrigger) {
+      bundle.putString("type", "date");
+      bundle.putBoolean("repeats", false);
+      bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
     } else {
       bundle.putString("type", "unknown");
     }

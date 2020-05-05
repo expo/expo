@@ -11,13 +11,13 @@ export default {
     get name() {
         return 'ExponentImagePicker';
     },
-    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.All, allowsMultipleSelection = false, }) {
+    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
         });
     },
-    async launchCameraAsync({ mediaTypes = MediaTypeOptions.All, allowsMultipleSelection = false, }) {
+    async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
@@ -27,7 +27,7 @@ export default {
     /*
      * Delegate to expo-permissions to request camera permissions
      */
-    async getCameraPermissionAsync() {
+    async getCameraPermissionsAsync() {
         return Permissions.getAsync(Permissions.CAMERA);
     },
     async requestCameraPermissionsAsync() {
@@ -76,12 +76,32 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 };
                 reader.onload = ({ target }) => {
                     const uri = target.result;
-                    resolve({
-                        cancelled: false,
-                        uri,
-                        width: 0,
-                        height: 0,
-                    });
+                    const returnRaw = () => {
+                        resolve({
+                            cancelled: false,
+                            uri,
+                            width: 0,
+                            height: 0,
+                        });
+                    };
+                    if (typeof target?.result === 'string') {
+                        const image = new Image();
+                        image.src = target.result;
+                        image.onload = function () {
+                            resolve({
+                                cancelled: false,
+                                uri,
+                                width: image.naturalWidth ?? image.width,
+                                height: image.naturalHeight ?? image.height,
+                            });
+                        };
+                        image.onerror = () => {
+                            returnRaw();
+                        };
+                    }
+                    else {
+                        returnRaw();
+                    }
                 };
                 // Read in the image file as a binary string.
                 reader.readAsDataURL(targetFile);

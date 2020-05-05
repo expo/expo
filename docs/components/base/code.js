@@ -1,8 +1,11 @@
-import { css } from 'react-emotion';
-import Prism from 'prismjs';
-
+import Prism from 'prism-react-renderer/prism';
 import * as React from 'react';
+import { css } from 'react-emotion';
 import * as Constants from '~/common/constants';
+
+import { installLanguages } from './languages';
+
+installLanguages(Prism);
 
 const attributes = {
   'data-text': true,
@@ -32,18 +35,21 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.colors.black80};
+  color: ${Constants.expoColors.gray[900]};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.9rem;
   white-space: pre-wrap;
   display: inline;
-  padding: 4px;
+  padding: 1px 4px;
   margin: 2px;
+  position: relative;
+  top: -1px;
   line-height: 20px;
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.colors.blackRussian};
+  background-color: ${Constants.expoColors.gray[200]};
+  border-radius: 2px;
   vertical-align: middle;
   overflow-x: scroll;
 
@@ -78,7 +84,7 @@ export class Code extends React.Component {
 
   _runTippy() {
     if (process.browser) {
-      tippy('.code-annotation', {
+      global.tippy('.code-annotation', {
         theme: 'expo',
         placement: 'top',
         arrow: true,
@@ -106,13 +112,14 @@ export class Code extends React.Component {
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
     let lang = this.props.className && this.props.className.slice(9).toLowerCase();
-    if (lang && !Prism.languages[lang]) {
-      try {
-        require('prismjs/components/prism-' + lang + '.js');
-      } catch (e) {}
-    }
-    if (lang && Prism.languages[lang]) {
-      html = Prism.highlight(html, Prism.languages[lang]);
+
+    // Allow for code blocks without a language.
+    if (lang) {
+      // sh isn't supported, use Use sh to match js, and ts
+      if (lang in remapLanguages) lang = remapLanguages[lang];
+      const grammar = Prism.languages[lang];
+      if (!grammar) throw new Error(`docs currently do not support language: ${lang}`);
+      html = Prism.highlight(html, grammar);
       html = this._replaceCommentsWithAnnotations(html);
     }
 
@@ -129,6 +136,12 @@ export class Code extends React.Component {
     );
   }
 }
+
+const remapLanguages = {
+  'objective-c': 'objc',
+  sh: 'bash',
+  rb: 'ruby',
+};
 
 export const InlineCode = ({ children }) => (
   <code className={`${STYLES_INLINE_CODE} inline`}>{children}</code>

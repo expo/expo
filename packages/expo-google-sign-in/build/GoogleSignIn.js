@@ -42,7 +42,7 @@ async function invokeAuthMethod(method) {
     }
     await ensureGoogleIsInitializedAsync();
     const payload = await ExpoGoogleSignIn[method]();
-    let account = payload != null ? new GoogleUser(payload) : null;
+    const account = payload != null ? new GoogleUser(payload) : null;
     return setCurrentUser(account);
 }
 export function allowInClient() {

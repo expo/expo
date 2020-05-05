@@ -22,9 +22,9 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest];
 
   id updateId = manifest[@"releaseId"];
-  id commitTime = manifest[@"commitTime"];
+  id commitTimeString = manifest[@"commitTime"];
   id bundleUrlString = manifest[@"bundleUrl"];
-  id assets = manifest[@"bundledAssets"];
+  id assets = manifest[@"bundledAssets"] ?: @[];
 
   id sdkVersion = manifest[@"sdkVersion"];
   id runtimeVersion = manifest[@"runtimeVersion"];
@@ -40,9 +40,9 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   }
 
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSString class]], @"commitTime should be a string");
+  NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
   NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
-  NSAssert(assets && [assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  NSAssert([assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
@@ -50,12 +50,13 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithUrl:bundleUrl type:kEXUpdatesEmbeddedBundleFileType];
+
+  NSDate *commitTime = [RCTConvert NSDate:commitTimeString];
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%f", commitTime.timeIntervalSince1970];
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
+  jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
-  jsBundleAsset.filename = [NSString stringWithFormat:@"%@.%@",
-                              [EXUpdatesUtils sha256WithData:[[bundleUrl absoluteString] dataUsingEncoding:NSUTF8StringEncoding]],
-                              kEXUpdatesEmbeddedBundleFileType];
   [processedAssets addObject:jsBundleAsset];
   
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest];
@@ -81,18 +82,16 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
 
     NSURL *url = [bundledAssetBaseUrl URLByAppendingPathComponent:hash];
 
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithUrl:url type:(NSString *)type];
+    NSString *key = [NSString stringWithFormat:@"%@.%@", hash, type];
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+    asset.url = url;
     asset.mainBundleFilename = filename;
-
-    asset.filename = [NSString stringWithFormat:@"%@.%@",
-                        [EXUpdatesUtils sha256WithData:[[url absoluteString] dataUsingEncoding:NSUTF8StringEncoding]],
-                        type];
 
     [processedAssets addObject:asset];
   }
 
   update.updateId = uuid;
-  update.commitTime = [RCTConvert NSDate:commitTime];
+  update.commitTime = commitTime;
   update.metadata = manifest;
   update.status = EXUpdatesUpdateStatusPending;
   update.keep = YES;

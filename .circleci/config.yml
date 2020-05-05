@@ -6,178 +6,111 @@ orbs:
   shallow-checkout: expo/shallow-checkout@1.0.2
 
 commands:
-  conditionally_halt:
-    description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
+  skip_unless_changed:
     parameters:
-      exclude:
-        description: 'The job will halt if no files other than those matching the given regex have been modified'
+      workflow_name:
         type: string
-        # Exclude nothing
-        default: '$^'
-      requireOneOf:
-        description: 'The job will halt if no file matching the given regex has been modified'
+      paths:
         type: string
-        # Require anything
-        default: '.*'
-      search_depth:
-        description: 'The maximum directory depth to search'
-        type: integer
-        # Just top-level directories and files
-        default: 0
     steps:
       - run:
-          name: Stop the job if only << parameters.exclude >> was changed
+          name: Skip job if no relevant changes since last successful build on branch
           command: |
+            export GIT_PAGER=cat # Prevents git commands hanging on mac executors
+            if [ "$CIRCLE_BRANCH" = "" ]; then
+              echo "Can't determine branch.  Continuing the job."
+            else
+              echo "Looking for previous successful ${CIRCLE_JOB} jobs for branch ${CIRCLE_BRANCH}"
+              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}" || true)
 
-            ROOT_BRANCH="master"
-            SEARCH_DEPTH=<< parameters.search_depth >>
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              # Required for circleci/node:latest-browsers
-              set +e
-              exit 0
-            fi
+              GIT_BASE_REVISION=<< pipeline.git.base_revision >>
 
-            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
-
-            # merge-base can exit with code 1, so we ignore when it fails.
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            while [ -z $BASE_COMMIT ]; do
-              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            done
-
-            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Excluding << parameters.exclude >>"
-            echo " - Requiring << parameters.requireOneOf >>"
-            echo " - Depth $SEARCH_DEPTH"
-            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-
-            # Test all top-level files and directories
-            if ! find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
-              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
-              if ! [[ $file =~ << parameters.exclude >> ]]; then
-                if [[ $file =~ << parameters.requireOneOf >> ]]; then
-                  echo " ++ [required] ${file}"
-                  if [ ! $baseFileHash = $currentFileHash ]; then
-                    echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
-                    set +e
-                    exit 1
-                  fi
-                fi
+              if [[ "${LAST_SUCCESSFUL_COMMIT_ON_BRANCH}" == "" ]]; then
+                echo "No previous successful job detected for branch $CIRCLE_BRANCH"
+                echo "The job will be skipped unless this branch introduces relevant changes."
               else
-                echo " -- [excluded] ${file}"
-              fi
-            done; then
-              set +e
-              exit 0
-            fi
-
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
-            else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-            fi
-  halt_if_unchanged:
-    parameters:
-      requireOneOf:
-        description: 'The job will stop if there are no changes in this directory'
-        type: string
-    steps:
-      - run:
-          name: Require the << parameters.requireOneOf >> directory to have changes
-          command: |
-
-            ROOT_BRANCH="master"
-
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              # Required for circleci/node:latest-browsers
-              set +e
-              exit 0
-            fi
-
-            echo " ▶️  Searching for the base commit of ${CIRCLE_BRANCH} and ${ROOT_BRANCH} ..."
-
-            # merge-base can exit with code 1, so we ignore when it fails.
-            BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            while [ -z $BASE_COMMIT ]; do
-              git fetch --deepen=2 origin $CIRCLE_BRANCH $ROOT_BRANCH
-              BASE_COMMIT=$(git merge-base $CIRCLE_BRANCH $ROOT_BRANCH || :)
-            done
-
-            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Required << parameters.requireOneOf >>"
-            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-            # Test all top-level directories
-            for file in $PWD/*/
-            do
-              FILE_NAME=$(basename $file)
-              if [[ " << parameters.requireOneOf >> " =~ " ${FILE_NAME} " ]]; then
-                echo " -- Checking ${FILE_NAME}"
-                baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $baseFileHash = $currentFileHash ]; then
-                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  set +e
-                  exit 0
+                echo "Previous successful build found for commit $LAST_SUCCESSFUL_COMMIT_ON_BRANCH"
+                if git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                  GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
+                else
+                  echo "Commit not found in repo, it might have been rebased out of the branch."
                 fi
               fi
-            done
 
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
+              if [[ ${GIT_BASE_REVISION} == "" ]]; then
+                # If a job has never been run on master before, maybe this could happen
+                echo "No base revision found.  Continuing the job."
+                exit 0
+              fi
 
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
-            else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              echo "Checking for changes since $GIT_BASE_REVISION touching circle config or << parameters.paths >>:"
+
+              if git log --name-status --exit-code --format=oneline "$GIT_BASE_REVISION..$CIRCLE_SHA1" -- .circleci/config.yml << parameters.paths >>; then
+                echo "No changes found in watched paths.  Ending job."
+                circleci-agent step halt
+              else
+                echo "Changes found in watched paths.  Continuing the job."
+              fi
             fi
-
-  install_nix:
+  install_yarn:
     steps:
-      - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
-      - run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
+      - run: curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+      - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      - run: sudo apt update && sudo apt install yarn
+  setup_ruby:
+    steps:
+      - run:
+          name: install chruby if necessary
+          command: |
+            if ! which chruby > /dev/null; then
+              VERSION=0.3.9
+              curl --silent --location "https://github.com/postmodern/chruby/archive/v$VERSION.tar.gz" --output chruby.tar.gz
+              tar -xzvf chruby.tar.gz
+              rm chruby.tar.gz
+              cd "chruby-$VERSION"
+              sudo make install
+              echo "source /usr/local/share/chruby/chruby.sh" >> $BASH_ENV
+            fi
+      - restore_cache:
+          key: ruby-v1-{{ arch }}-{{ checksum ".ruby-version" }}
+      - run:
+          name: install ruby if necessary
+          command: |
+            if ! chruby $(cat .ruby-version); then
+              VERSION=0.7.0
+              curl --silent --location "https://github.com/postmodern/ruby-install/archive/v$VERSION.tar.gz" --output ruby-install.tar.gz
+              tar -xzvf ruby-install.tar.gz
+              rm ruby-install.tar.gz
+              "ruby-install-$VERSION/bin/ruby-install" --no-reinstall ruby $(cat .ruby-version)
+              rm -r "ruby-install-$VERSION"
+            fi
+      - save_cache:
+          key: ruby-v1-{{ arch }}-{{ checksum ".ruby-version" }}
+          paths:
+            - ~/.rubies
+      - run: echo "chruby $(cat .ruby-version)" >> $BASH_ENV
+  bundle_install:
+    steps:
+      - setup_ruby
+      # replicate direnv "layout ruby"
+      - run: echo 'export BUNDLE_BIN=$CIRCLE_WORKING_DIRECTORY/.direnv/bin' >> $BASH_ENV
+      - run: echo 'export GEM_HOME=$CIRCLE_WORKING_DIRECTORY/.direnv/ruby' >> $BASH_ENV
+      - run: mkdir -p $BUNDLE_BIN; mkdir -p $GEM_HOME
+      - run: echo 'export PATH=$PATH:$BUNDLE_BIN:$GEM_HOME/bin' >> $BASH_ENV
+      - restore_cache:
+          key: gems-v1-{{ arch }}-{{ checksum "Gemfile.lock" }}
+      - run: gem install bundler -v=2.1.4
+      - run: bundle install
+      - save_cache:
+          key: gems-v1-{{ arch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - .direnv/ruby
   setup:
     steps:
-      - run:
-          name: Install common packages
-          # curl: slack sends notifications
-          # direnv: configures environment with .envrc files
-          # findutils: where, find, etc. for expo-module test
-          # git: circleci checkout steps
-          # gnugrep: used in .envrc
-          # gnutar: used by nix commands which download channels
-          # gzip: used by nix commands which download channels
-          # jq: used to format and parse json
-          # openssh: circleci checkout steps
-          # rsync: expo-module-scripts uses to copy template files
-          # xz: circleci checkout steps
-          command: |
-            nix-env -iA \
-              nixpkgs.curl \
-              nixpkgs.direnv \
-              nixpkgs.findutils \
-              nixpkgs.git \
-              nixpkgs.gnugrep \
-              nixpkgs.gnutar \
-              nixpkgs.gzip \
-              nixpkgs.jq \
-              nixpkgs.openssh \
-              nixpkgs.rsync \
-              nixpkgs.xz
-      - run: mkdir -p ~/.config/direnv
-      - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
-      - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
+      - checkout
+      - run: echo 'export PATH=$PATH:$CIRCLE_WORKING_DIRECTORY/bin' >> $BASH_ENV
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - shallow-checkout/checkout
-      - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
       - run:
@@ -186,18 +119,28 @@ commands:
             if [[ ${EXPO_GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
               echo 'git-crypt key not present in environment' && exit 0
             fi
+            if brew --version; then
+              brew install git-crypt
+            else
+              sudo apt-get install git-crypt
+            fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
-  # Prevent native tests from running when docs is the only directory that was edited
-  guard_sdk_tests:
-    steps:
-      - conditionally_halt:
-          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
-          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
   update_submodules:
     steps:
       - run:
           name: Update submodules
           command: git submodule update --init
+  install_puppeteer_dependencies:
+    steps:
+      - run:
+          name: Install Puppeteer dependencies
+          command: |
+            sudo apt-get install -yq \
+            gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+            libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
+            libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 \
+            libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
+            fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget libgbm-dev
   fetch_cocoapods_specs:
     steps:
       - run:
@@ -234,15 +177,16 @@ commands:
       - save_cache:
           key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
-            - ~/.cache/yarn # `yarn cache dir`
+            - /usr/local/share/.cache/yarn
+            - ~/Library/Caches/Yarn
   restore_gradle_cache:
     steps:
       - restore_cache:
-          key: jars-v1-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+          key: jars-v2-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
   save_gradle_cache:
     steps:
       - save_cache:
-          key: jars-v1-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+          key: jars-v2-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
           paths:
             - ~/.gradle
   yarn:
@@ -282,39 +226,27 @@ commands:
           working_directory: << parameters.working_directory >>
 
 executors:
-  # We add -l to all the shell commands to make it easier to use direnv
-  nix: &nix
-    docker:
-      - image: lnl7/nix:2.1.2
-    # Symlink to the readline-enabled bash which is the default command of the container
-    shell: /run/current-system/sw/bin/bash -leo pipefail
-    working_directory: /root/expo
-    environment:
-      # fastlane complains if these are not set
-      LANG: en_US.UTF-8
-      FASTLANE_SKIP_UPDATE_CHECK: 1
-      FASTLANE_DISABLE_COLORS: 1
-      CI: 1
   android:
-    <<: *nix
+    docker:
+      - image: circleci/android:api-28-ndk-r17b
     resource_class: xlarge
   js:
-    <<: *nix
+    docker:
+      - image: circleci/node:lts-buster
     resource_class: small
   web:
     docker:
-      - image: circleci/node:latest-browsers
-    shell: /bin/bash -leo pipefail
+      - image: circleci/node:13.8.0-buster-browsers
     working_directory: /home/circleci/expo
     resource_class: small
     environment:
       USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: '11.0.0'
+      xcode: '11.4.0'
     working_directory: /Users/distiller/project
-    shell: /bin/bash -leo pipefail
     environment:
+      BASH_ENV: /Users/distiller/.bash_profile
       # Homebrew settings
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
@@ -331,18 +263,13 @@ workflows:
   docs:
     jobs:
       - docs
-      - docs_approve_deploy:
-          type: approval
+      - docs_deploy:
           requires:
             - docs
           filters:
             branches:
               only:
                 - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -357,13 +284,13 @@ workflows:
       - home
       - expotools
       - client_android
-      - client_ios
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
       # - android_test_suite:
       #     requires:
       #       - test_suite_publish
+      - android_unit_tests
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -388,18 +315,18 @@ workflows:
       - client_android_apk_release:
           requires:
             - client_android_apk_release_approve
-      - client_ios_simulator_release_approve:
-          type: approval
-          requires:
-            - client_ios
-          filters:
-            branches:
-              only:
-                - /.*sdk-\d+/
-                - /.*all-ci.*/
+      - client_ios:
+          filters:  # run for ALL branches, and ios-simulator-v* tags
+            tags:
+              only: /^ios-simulator-v*/
       - client_ios_simulator_release:
           requires:
-            - client_ios_simulator_release_approve
+            - client_ios
+          filters:  # run for NO branches, and ios-simulator-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^ios-simulator-v*/
 
   shell_app:
     jobs:
@@ -436,11 +363,10 @@ workflows:
       - expo_client_build:
           requires:
             - expo_client_approve_build
-
   shell_app_nightly:
     triggers:
       - schedule:
-          cron: "20 5 * * 2,4,6"
+          cron: '20 5 * * 2,4,6'
           filters:
             branches:
               only:
@@ -454,13 +380,13 @@ jobs:
     executor: js
     steps:
       - setup
-      - conditionally_halt:
-          # Exclude (include anything except) .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
-          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|apps|guides|scripts|template-files|templates).*|\.md$)'
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: package.json yarn.lock packages tools/expotools
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
-          working_directory: ~/expo
+          working_directory: ~/project
       - save_yarn_cache
       - run:
           name: Check packages
@@ -473,9 +399,10 @@ jobs:
   web_test_suite:
     executor: web
     steps:
-      - install_nix
       - setup
-      - guard_sdk_tests
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -493,18 +420,20 @@ jobs:
     executor: js
     steps:
       - setup
-      - guard_sdk_tests
+      - skip_unless_changed:
+          workflow_name: client
+          paths: home package.json yarn.lock
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
-          working_directory: ~/expo
+          working_directory: ~/project
       - save_yarn_cache
       - yarn:
           command: jest --maxWorkers 1
-          working_directory: ~/expo/home
+          working_directory: ~/project/home
       - yarn:
           command: lint
-          working_directory: ~/expo/home
+          working_directory: ~/project/home
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
@@ -514,20 +443,32 @@ jobs:
     executor: js
     steps:
       - setup
-      - guard_sdk_tests
-      - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+      - skip_unless_changed:
+          workflow_name: client
+          paths: tools/expotools
+      # We can't use yarn_restore_and_install since it
+      # triggers the postinstall script which we don't
+      # want to do here.
+      - restore_yarn_cache:
+          working_directory: ~/project/tools/expotools
+      - yarn:
+          command: install --ignore-scripts
+          working_directory: ~/project/tools/expotools
+      - save_yarn_cache:
+          working_directory: ~/project/tools/expotools
       - yarn:
           command: tsc
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/project/tools/expotools
 
   ios_test_suite:
     executor: mac
     #parallelism: 8
     steps:
-      - install_nix
       - setup
-      - guard_sdk_tests
+      - skip_unless_changed:
+          workflow_name: sdk
+          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages Gemfile .ruby-version
+      - bundle_install
       - update_submodules
 
       # Simulators are more likely to fail. Try them first
@@ -558,6 +499,7 @@ jobs:
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
+          no_output_timeout: 30m
           command: yarn ios:detox:build:release
       - run:
           name: Run tests
@@ -580,22 +522,24 @@ jobs:
   client_ios:
     executor: mac
     steps:
-      - install_nix
       - setup
-      - guard_sdk_tests
+      - skip_unless_changed:
+          workflow_name: client
+          paths: tools/expotools secrets ios fastlane Gemfile .ruby-version
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
+      - bundle_install
       - run:
           name: Build
-          command: nix run expo.procps --command fastlane ios create_simulator_build
-      - save_cache:
-          key: client-ios-simulator-{{ .Revision }}
+          command: fastlane ios create_simulator_build
+      - persist_to_workspace:
+          root: ios
           paths:
-            - ~/project/ios/simulator-build
+            - simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
       - job-status-change/status
@@ -606,31 +550,30 @@ jobs:
   client_ios_simulator_release:
     executor: mac
     steps:
-      - install_nix
       - setup
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/project/tools/expotools
-      - restore_cache:
-          key: client-ios-simulator-{{ .Revision }}
+      - attach_workspace:
+          at: ios/simulator-build
       - run: expotools client-build --platform ios --release
 
   expo_client_build:
     executor: mac
     steps:
-      - install_nix
       - setup
-      - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
+      - bundle_install
       - run:
           name: Generate dynamic macros
           # Remove GoogleServices-Info because it has been stripped of all our secret keys
           # Will be generated later in the build process if the user provides their own ios.googleServicesFile
           command: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
+      - run: brew install awscli
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -653,9 +596,7 @@ jobs:
         type: boolean
         default: true
     steps:
-      - install_nix
       - setup
-      - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
       - fetch_cocoapods_specs
@@ -665,19 +606,21 @@ jobs:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
+      - run: npm install gulp-cli -g
       - run:
           name: Build iOS shell app for real devices
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run expo.procps --command gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run:
           name: Build iOS shell app for simulators
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - when:
           condition: << parameters.upload >>
           steps:
+            - run: brew install awscli
             - run:
                 name: Package and upload release tarball
                 working_directory: ~/project
@@ -701,16 +644,13 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - decrypt_secrets_if_possible
-      - yarn_install:
-          working_directory: ~/expo/tools-public
-      - yarn_install:
-          working_directory: ~/expo/tools
+      - install_yarn
       - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/project/tools/expotools
       - run:
           name: Check that Android packages are up-to-date
           command: expotools check-android-packages
+      - run: sudo apt-get install awscli
       - run: |
           aws s3 ls $S3_URI || {
             ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
@@ -720,71 +660,95 @@ jobs:
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
 
-# Disabled until further notice
-# See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-#   android_test_suite:
-#     executor: android
-#     steps:
-#       - setup
-#       - guard_sdk_tests
-#       - update_submodules
-#       - yarn_install:
-#           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
-#       - yarn_install:
-#           working_directory: ~/expo/tools-public
-#       - restore_gradle_cache
-#       - run:
-#           name: Build APK, upload to Device Farm, follow device logs
-#           command: |
-#             nix-shell android/shell.nix --pure \
-#               --keep AWS_ACCESS_KEY_ID \
-#               --keep AWS_SECRET_ACCESS_KEY \
-#               --keep SSL_CERT_FILE \
-#               --keep FASTLANE_SKIP_UPDATE_CHECK \
-#               --keep FASTLANE_DISABLE_COLORS \
-#               --keep CI \
-#               --run "fastlane android devicefarm"
-#       - save_gradle_cache
+  # Disabled until further notice
+  # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+  #   android_test_suite:
+  #     executor: android
+  #     steps:
+  #       - setup
+  #       - guard_sdk_tests
+  #       - update_submodules
+  #       - yarn_install:
+  #           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+  #       - yarn_install:
+  #           working_directory: ~/expo/tools-public
+  #       - restore_gradle_cache
+  #       - run:
+  #           name: Build APK, upload to Device Farm, follow device logs
+  #           command: |
+  #             nix-shell android/shell.nix --pure \
+  #               --keep AWS_ACCESS_KEY_ID \
+  #               --keep AWS_SECRET_ACCESS_KEY \
+  #               --keep SSL_CERT_FILE \
+  #               --keep FASTLANE_SKIP_UPDATE_CHECK \
+  #               --keep FASTLANE_DISABLE_COLORS \
+  #               --keep CI \
+  #               --run "fastlane android devicefarm"
+  #       - save_gradle_cache
 
   client_android:
     executor: android
     steps:
       - setup
-      - guard_sdk_tests
+      - skip_unless_changed:
+          workflow_name: client
+          paths: secrets android fastlane tools-public Gemfile .ruby-version package.json yarn.lock
       - update_submodules
+      - install_yarn
       - yarn_install:
-          working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
+          working_directory: ~/project # need jsc-android dependency in expokit-npm-package
       - yarn_install:
-          working_directory: ~/expo/tools-public
+          working_directory: ~/project/tools-public
       - restore_gradle_cache
       - decrypt_secrets_if_possible
+      - bundle_install
       - run:
           name: Decode release keystore
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-      - run:
-          name: Build APK
-          command: |
-            nix-shell android/shell.nix --pure \
-              --keep ANDROID_KEYSTORE_PASSWORD \
-              --keep ANDROID_KEY_ALIAS \
-              --keep ANDROID_KEY_PASSWORD \
-              --keep FASTLANE_SKIP_UPDATE_CHECK \
-              --keep FASTLANE_DISABLE_COLORS \
-              --keep CI \
-              --run "fastlane android build build_type:Release"
+      - run: fastlane android build build_type:Release
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
           paths:
-            - ~/expo/android/app/build/outputs/apk
+            - ~/project/android/app/build/outputs/apk
       - store_artifacts:
-          path: ~/expo/android/app/build/outputs/apk
+          path: ~/project/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
           path: ~/.gradle/daemon
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_ANDROID_WEBHOOK
+
+  android_unit_tests:
+    executor: android
+    steps:
+      - setup
+      - skip_unless_changed:
+          workflow_name: client
+          paths: android fastlane tools/expotools Gemfile .ruby-version package.json yarn.lock
+      - install_yarn
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
+      - restore_gradle_cache
+      - run:
+          name: Android Unit tests
+          command: expotools android-unit-tests
+          working_directory: ~/project
+      - save_gradle_cache
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/packages/.*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
 
   client_android_apk_release:
     executor: js
@@ -799,27 +763,30 @@ jobs:
       - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
-    executor: js
+    executor: android
     steps:
       - setup
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
+      - bundle_install
       - run:
           name: Decode release keystore
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run:
           name: Upload APK to Google Play and release to production
-          working_directory: ~/expo
+          working_directory: ~/project
           command: fastlane android prod_release
 
   docs:
-    executor: nix
+    executor: js
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
       - setup
-      - halt_if_unchanged:
-          requireOneOf: 'docs'
+      - skip_unless_changed:
+          workflow_name: docs
+          paths: docs
       - update_submodules
+      - install_puppeteer_dependencies
       - yarn_install:
           working_directory: docs
       - run:
@@ -837,26 +804,29 @@ jobs:
       - run:
           name: Test links
           working_directory: docs
-          command: nix run expo.curl --command yarn run test-links http://localhost:8000
-      - save_cache:
-          key: docs-site-{{ .Revision }}
+          command: yarn run test-links http://127.0.0.1:8000
+      - run: mkdir -p /tmp/workspace/
+      - run:
+          working_directory: docs
+          command: mv out /tmp/workspace/site
+      - persist_to_workspace:
+          root: /tmp/workspace
           paths:
-            - docs/out
+            - site
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master
           slack_webhook: $SLACK_DOCS_WEBHOOK
 
   docs_deploy:
-    executor: nix
+    executor: js
     steps:
       - setup
-      - restore_cache:
-          keys:
-            - docs-site-{{ .Revision }}
+      - run: sudo apt-get install awscli
+      - attach_workspace:
+          at: /tmp/workspace
       - deploy:
-          command: ./deploy.sh
-          working_directory: docs
+          command: docs/deploy.sh /tmp/workspace/site
 
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
