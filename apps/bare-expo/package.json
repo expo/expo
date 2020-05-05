@@ -82,7 +82,7 @@
     "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "~37.0.6",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~0.1.5",
+    "expo-notifications": "~0.1.6",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
     "react": "16.9.0",

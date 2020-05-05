@@ -7767,7 +7767,7 @@ CACHE_KEYS:
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
       EXNotifications: 0602110faf064575b2e4aa90ac145f65
-    CHECKSUM: 544803f01675b2bca45ee091d5332140b7fdcd05
+    CHECKSUM: 8c40a79484d2d84e1a4cd5dcc9ab097174f7b5c8
     FILES:
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -7803,7 +7803,7 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.1.5)
+      - EXNotifications (0.1.6)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
@@ -10164,7 +10164,7 @@ CACHE_KEYS:
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
       UMCore: d06038a607b8f885fd20913ef0db10a6
-    CHECKSUM: 1d25d919611f6b635456c473bcd70411948be5d3
+    CHECKSUM: eb200e882eadafcd31ead290770835fd648c0945
     FILES:
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -10199,7 +10199,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.1.1)
+      - UMCore (5.1.2)
   UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFaceDetectorInterface: ae79dff18617c1e328408eab6d603e28

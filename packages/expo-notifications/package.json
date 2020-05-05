@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,9 +36,9 @@
     "expo-constants": "<10.0.0",
     "unimodules-permissions-interface": "*"
   },
-  "gitHead": "92582ebd872c34b9446d08128f7fe6b11657ec86",
+  "gitHead": "5a58a408ddb1c0019dce4a1612bc766916ee010a",
   "dependencies": {
-    "@unimodules/core": ">=5.1.1",
+    "@unimodules/core": "~5.1.2",
     "badgin": "^1.1.5",
     "expo-application": "~2.1.1",
     "expo-constants": "<10.0.0",
