@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects uses the older `SplashScreen` module within the `expo` package (`import { SplashScreen } from 'expo'`).
+[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects use the older `SplashScreen` module within the `expo` package (`import { SplashScreen } from 'expo'`).
 
 ## 🖥 Installation in bare React Native projects
 
