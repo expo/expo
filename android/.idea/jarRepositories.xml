@@ -96,5 +96,10 @@
       <option name="name" value="maven12" />
       <option name="url" value="https://maven.fabric.io/public" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/versioned-abis/expoview-abi37_0_0/maven/" />
+    </remote-repository>
   </component>
 </project>
