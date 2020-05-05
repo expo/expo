@@ -11,8 +11,7 @@ As explained on the [workflows overview page](../managed-vs-bare/), the managed 
 
 There are plenty of cases where its current constraints may not be appropriate for your project. The following is a list of limitations that we are aware of that may influence your decision on whether the managed workflow is a good fit for your project.
 
-<details><summary><h4>Not all iOS and Android APIs are available yet</h4></summary>
-<p>
+<details><summary><h4>Not all iOS and Android APIs are available</h4></summary> <p>
 
  Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](../managed-vs-bare/#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
@@ -31,7 +30,7 @@ Background execution is the ability to run code when the app is not foregrounded
 <details><summary><h4>If you need to keep your app size extremely lean, the managed workflow may not be the best choice</h4></summary>
 <p>
 
-The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you push over-the-air updates to use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries.
+The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you push over-the-air updates to use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
 
 </p>
 </details>
@@ -77,16 +76,6 @@ You can easily build your app for submission to stores without even installing X
 In the bare workflow we have full access to the underlying native projects and any native code. It's a "bare" native project with React Native and one or more packages from the Expo SDK installed. Anything that you can do in a native project is possible here.
 
 The following list is therefore specifically oriented towards to the limitations that exist around using Expo tools and services in the bare workflow.
-
-
-<details><summary><h4>Notification service only works in the managed workflow</h4></summary>
-<p>
-
-You can use any notification service that you like in the bare workflow, but not the Expo notification service. We're working on making this possible in the near future.
-
-</p>
-</details>
-
 
 <details><summary><h4>Build service only works in the managed workflow</h4></summary>
 <p>
