@@ -85,12 +85,6 @@ configurations.configureEach {
 dependencies {
   unimodule 'unimodules-core'
 
-  // Core library
-  // Required -- JUnit 4 framework
-  testImplementation 'junit:junit:4.12'
-  // Optional -- Robolectric environment
-//  testImplementation 'androidx.test:core:1.2.0'
-  // Optional -- Mockito framework
   testImplementation project(':unimodules-test-core')
   testImplementation 'org.robolectric:robolectric:4.3.1'
 
