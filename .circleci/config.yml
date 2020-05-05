@@ -711,10 +711,10 @@ jobs:
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: fastlane android build build_type:Release
       - save_gradle_cache
-      - save_cache:
-          key: client-android-apk-{{ .Revision }}
+      - persist_to_workspace:
+          root: android/app/build/outputs
           paths:
-            - ~/project/android/app/build/outputs/apk
+            - apk
       - store_artifacts:
           path: ~/project/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
@@ -762,16 +762,16 @@ jobs:
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/expo/tools/expotools
-      - restore_cache:
-          key: client-android-apk-{{ .Revision }}
+      - attach_workspace:
+          at: android/app/build/outputs/apk
       - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
     executor: android
     steps:
       - setup
-      - restore_cache:
-          key: client-android-apk-{{ .Revision }}
+      - attach_workspace:
+          at: android/app/build/outputs/apk
       - bundle_install
       - run:
           name: Decode release keystore
