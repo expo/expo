@@ -3,6 +3,7 @@ import { Listener, LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, Update
 export * from './Updates.types';
 export declare const localAssets: LocalAssets;
 export declare const manifest: Manifest | object;
+export declare const updateId: string;
 export declare const releaseChannel: string;
 export declare const isEmergencyLaunch: boolean;
 export declare const isUsingEmbeddedAssets: boolean;

@@ -13,6 +13,7 @@ import {
 
 export * from './Updates.types';
 
+export const updateId: string = (ExpoUpdates.updateId ?? '').toLowerCase();
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;

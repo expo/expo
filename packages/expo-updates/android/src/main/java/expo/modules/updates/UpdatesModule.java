@@ -53,6 +53,7 @@ public class UpdatesModule extends ExportedModule {
 
         UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
         if (launchedUpdate != null) {
+          constants.put("updateId", launchedUpdate.id.toString());
           constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
         }
 
