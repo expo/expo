@@ -204,7 +204,7 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
 
 #### `app/build.gradle`
 
-Add the following gradle buildscript. This provides expo-updates with some important metadata about the update and assets that are embedded in your APK.
+Add the following Gradle build script. This provides expo-updates with some important metadata about the update and assets that are embedded in your APK.
 
 ```diff
  apply from: "../../node_modules/react-native/react.gradle"
