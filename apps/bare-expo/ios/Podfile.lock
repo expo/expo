@@ -127,7 +127,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.1):
     - UMCore
-  - EXNotifications (0.1.4):
+  - EXNotifications (0.1.5):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (8.1.0):
@@ -878,7 +878,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 02a13521d05ca381b08f7d745a9602569eade072
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
-  EXNotifications: 7fc19461c771baad512b01cf6b4de9d612f23b85
+  EXNotifications: 544803f01675b2bca45ee091d5332140b7fdcd05
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
