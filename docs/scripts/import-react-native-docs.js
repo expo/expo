@@ -56,7 +56,6 @@ let mainAsync = async () => {
     let basename = path.basename(src);
     switch (basename) {
       case 'getting-started.md':
-      case 'getting-started.md':
       case 'more-resources.md':
       case 'appregistry.md':
       case 'geolocation.md':
