@@ -127,7 +127,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.1):
     - UMCore
-  - EXNotifications (0.1.5):
+  - EXNotifications (0.1.6):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (8.1.0):
@@ -491,7 +491,7 @@ PODS:
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
   - UMConstantsInterface (5.1.0)
-  - UMCore (5.1.1)
+  - UMCore (5.1.2)
   - UMFileSystemInterface (5.1.0)
   - UMFontInterface (5.1.0)
   - UMImageLoaderInterface (5.1.0)
@@ -878,7 +878,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 02a13521d05ca381b08f7d745a9602569eade072
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
-  EXNotifications: 544803f01675b2bca45ee091d5332140b7fdcd05
+  EXNotifications: 8c40a79484d2d84e1a4cd5dcc9ab097174f7b5c8
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   expo-image: 36f53fe2845e4bb74021f69192a752db29766897
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
@@ -943,7 +943,7 @@ SPEC CHECKSUMS:
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d
   UMConstantsInterface: 64060cf86587bcd90b1dbd804cceb6d377a308c1
-  UMCore: 1d25d919611f6b635456c473bcd70411948be5d3
+  UMCore: eb200e882eadafcd31ead290770835fd648c0945
   UMFileSystemInterface: c70ea7147198b9807080f3597f26236be49b0165
   UMFontInterface: d9d3b27af698c5389ae9e20b99ef56a083f491fb
   UMImageLoaderInterface: 14dd2c46c67167491effc9e91250e9510f12709e

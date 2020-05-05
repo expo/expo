@@ -1,7 +1,7 @@
 {
   "@expo/vector-icons": "^10.0.0",
   "@react-native-community/netinfo": "5.5.1",
-  "@unimodules/core": "~5.1.1",
+  "@unimodules/core": "~5.1.2",
   "@unimodules/react-native-adapter": "~5.2.0",
   "expo-ads-admob": "~8.1.0",
   "expo-ads-facebook": "~8.1.0",
@@ -95,7 +95,7 @@
   "expo-image-loader": "~1.0.1",
   "expo-screen-orientation": "~1.0.0",
   "unimodules-app-loader": "~1.0.2",
-  "expo-notifications": "~0.1.5",
+  "expo-notifications": "~0.1.6",
   "expo-splash-screen": "~0.2.0",
   "firebase": "7.9.0"
 }
