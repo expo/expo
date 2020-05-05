@@ -487,7 +487,7 @@ PODS:
   - SDWebImage (5.6.0):
     - SDWebImage/Core (= 5.6.0)
   - SDWebImage/Core (5.6.0)
-  - UMAppLoader (1.0.0)
+  - UMAppLoader (1.0.2)
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
   - UMConstantsInterface (5.1.0)
@@ -939,7 +939,7 @@ SPEC CHECKSUMS:
   RNReanimated: 4e102df74a9674fa943e05f97f3362b6e44d0b48
   RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
   SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
-  UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
+  UMAppLoader: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d
   UMConstantsInterface: 64060cf86587bcd90b1dbd804cceb6d377a308c1

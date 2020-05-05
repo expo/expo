@@ -81,7 +81,7 @@
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
     "serialize-error": "^2.1.0",
-    "unimodules-app-loader": "~1.0.0",
+    "unimodules-app-loader": "~1.0.2",
     "unimodules-barcode-scanner-interface": "~5.1.0",
     "unimodules-camera-interface": "~5.1.0",
     "unimodules-constants-interface": "~5.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "unimodules-app-loader",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "App loader for background applications",
   "keywords": [
     "react-native",
@@ -21,5 +21,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.2.0"
   },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "gitHead": "ff1a0d367a46126309e0facf64e32c87c754389c"
 }

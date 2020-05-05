@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/task-manager/",
   "dependencies": {
-    "unimodules-app-loader": "~1.0.0"
+    "unimodules-app-loader": "~1.0.2"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
