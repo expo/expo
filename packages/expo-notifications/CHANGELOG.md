@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+## [0.1.7] - 2020-05-05
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed obsolete and invalid dependency on `>= @unimodules/core@5.1.1`, bringing backwards compatibility with older versions of `@unimodules/core` ([#8162](https://github.com/expo/expo/pull/8162) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## [0.1.6] - 2020-05-05
 
 ### 🛠 Breaking changes
