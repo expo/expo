@@ -764,7 +764,7 @@ export async function test(t) {
         10000
       );
 
-      t.fit(
+      t.it(
         'triggers a notification which contains the custom color',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
