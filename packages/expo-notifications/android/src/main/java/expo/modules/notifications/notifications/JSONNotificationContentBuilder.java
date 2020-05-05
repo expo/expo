@@ -105,8 +105,13 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       // it's not a boolean, let's handle it as a string
     }
 
-    String soundValue = payload.optString(SOUND_KEY);
-    return mSoundResolver.resolve(soundValue);
+    try {
+      String soundValue = payload.getString(SOUND_KEY);
+      return mSoundResolver.resolve(soundValue);
+    } catch (JSONException e) {
+      // if it's neither a boolean nor a string we can't handle it
+    }
+    return null;
   }
 
   @Nullable
