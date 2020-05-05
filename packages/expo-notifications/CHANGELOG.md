@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crash when serializing a notification containing a `null` value ([#8153](https://github.com/expo/expo/pull/8153) by [@sjchmiela](https://github.com/sjchmiela))
+
 ## [0.1.5] - 2020-05-05
 
 ### 🛠 Breaking changes
