@@ -8,7 +8,7 @@ export const localAssets = {};
 export const manifest = Constants.manifest ?? {};
 export const releaseChannel = manifest.hasOwnProperty('releaseChannel')
     ? manifest.releaseChannel
-    : '';
+    : 'default';
 export const isEmergencyLaunch = false;
 export const isUsingEmbeddedAssets = false;
 export async function reloadAsync() {
