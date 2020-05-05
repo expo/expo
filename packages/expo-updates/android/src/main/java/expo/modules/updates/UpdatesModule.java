@@ -66,6 +66,7 @@ public class UpdatesModule extends ExportedModule {
         }
 
         constants.put("isEnabled", controller.getUpdatesConfiguration().isEnabled());
+        constants.put("releaseChannel", controller.getUpdatesConfiguration().getReleaseChannel());
         constants.put("isUsingEmbeddedAssets", controller.isUsingEmbeddedAssets());
       }
     } catch (IllegalStateException e) {
