@@ -1244,7 +1244,7 @@ export enum AndroidImportance {
   NONE,
   MIN,
   LOW,
-  DEEFAULT,
+  DEFAULT,
   HIGH,
   MAX,
 }
