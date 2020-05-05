@@ -67,7 +67,9 @@ public interface ReadableArguments {
     Bundle bundle = new Bundle();
     for (String key : keys()) {
       Object value = get(key);
-      if (value instanceof String) {
+      if (value == null) {
+        bundle.putString(key, null);
+      } else if (value instanceof String) {
         bundle.putString(key, (String) value);
       } else if (value instanceof Integer) {
         bundle.putInt(key, (Integer) value);
