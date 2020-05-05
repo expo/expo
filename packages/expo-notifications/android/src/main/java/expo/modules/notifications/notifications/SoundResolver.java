@@ -27,7 +27,7 @@ public class SoundResolver {
    */
   @Nullable
   public Uri resolve(@Nullable String filename) {
-    if (filename == null) {
+    if (filename == null || filename.length() == 0) {
       return null;
     }
 
