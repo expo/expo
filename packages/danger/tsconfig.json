@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["es2018", "esnext.asynciterable"],
+    "module": "commonjs",
+    "sourceMap": true,
+    "inlineSources": true,
+    "outDir": "./build",
+    "rootDir": "./src",
+    "types": ["node"],
+    "strict": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "declaration": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "dangerfile.ts"],
+  "exclude": ["dangerfile.ts", "node_modules", "build"]
+}
