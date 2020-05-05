@@ -491,7 +491,7 @@ PODS:
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
   - UMConstantsInterface (5.1.0)
-  - UMCore (5.1.0)
+  - UMCore (5.1.1)
   - UMFileSystemInterface (5.1.0)
   - UMFontInterface (5.1.0)
   - UMImageLoaderInterface (5.1.0)
@@ -943,7 +943,7 @@ SPEC CHECKSUMS:
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d
   UMConstantsInterface: 64060cf86587bcd90b1dbd804cceb6d377a308c1
-  UMCore: d6117852f32c74cde466b863cfdeaa0960186249
+  UMCore: 1d25d919611f6b635456c473bcd70411948be5d3
   UMFileSystemInterface: c70ea7147198b9807080f3597f26236be49b0165
   UMFontInterface: d9d3b27af698c5389ae9e20b99ef56a083f491fb
   UMImageLoaderInterface: 14dd2c46c67167491effc9e91250e9510f12709e

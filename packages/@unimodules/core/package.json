@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/core",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Universal modules core",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,5 +36,5 @@
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  "gitHead": "e17e06c2fe626e963b647a66081d32b2a80c2e25"
 }
