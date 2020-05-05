@@ -391,6 +391,10 @@ jobs:
       - run:
           name: Check packages
           command: expotools check-packages
+      - run:
+          name: Run Danger
+          working_directory: ~/project
+          command: yarn danger ci
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*

@@ -15,7 +15,6 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
-      "danger",
       "expokit-npm-package",
       "home",
       "packages/*",
