@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-public interface CustomTabsActivitiesHelper {
+public interface CustomTabsActivitiesHelper extends InternalModule {
 
   @NonNull
   ArrayList<String> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException;

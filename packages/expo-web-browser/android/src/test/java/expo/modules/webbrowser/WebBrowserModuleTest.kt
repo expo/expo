@@ -3,10 +3,7 @@ package expo.modules.webbrowser
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.webbrowser.error.PackageManagerNotFoundException
-import io.mockk.CapturingSlot
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -17,17 +14,15 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.core.arguments.ReadableArguments
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
 import org.unimodules.test.core.assertSetsEqual
 import org.unimodules.test.core.assertStringValueNull
-import org.unimodules.test.core.internalModuleMock
 import org.unimodules.test.core.mockInternalModule
+import org.unimodules.test.core.mockkInternalModule
 import org.unimodules.test.core.moduleRegistryMock
 import org.unimodules.test.core.promiseRejected
 import org.unimodules.test.core.promiseResolved
-import org.unimodules.test.core.readableArgumentsOf
 
 @RunWith(RobolectricTestRunner::class)
 internal class WebBrowserModuleTest {
@@ -47,7 +42,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun testOpenBrowserAsync() {
     // given
-    val mock = mockCustomTabsActivitiesHelper()
+    val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } returns true
     initialize(mock)
 
@@ -64,7 +59,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun `test browser not opened when no resolving activity found`() {
     // given
-    val mock = mockCustomTabsActivitiesHelper()
+    val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } returns false
     initialize(mock)
 
@@ -83,7 +78,7 @@ internal class WebBrowserModuleTest {
   @Test
   fun `test no exception thrown when no package manager found`() {
     // given
-    val mock = mockCustomTabsActivitiesHelper()
+    val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } throws PackageManagerNotFoundException()
     initialize(mock)
 
@@ -103,7 +98,7 @@ internal class WebBrowserModuleTest {
   fun testArgumentsCorrectlyPassedToIntent() {
     // given
     val intentSlot = slot<Intent>()
-    val mock = mockCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(mock)
 
     // when
@@ -125,7 +120,7 @@ internal class WebBrowserModuleTest {
   fun testTrueFlagsCorrectlyPassedToIntent() {
     // given
     val intentSlot = slot<Intent>()
-    val mock = mockCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(mock)
 
     // when
@@ -151,7 +146,7 @@ internal class WebBrowserModuleTest {
   fun testFalseFlagsCorrectlyPassedToIntent() {
     // given
     val intentSlot = slot<Intent>()
-    val mock = mockCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
     initialize(mock)
 
     // when
@@ -173,28 +168,11 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testWarmUpWithGivenPackage() {
-  }
-
-  @Test
-  fun testWarmUpWithoutPackage() {
-
-  }
-
-  @Test
-  fun testCoolDownWithGivenPackage() {
-  }
-
-  @Test
-  fun testCoolDownWithoutPackage() {
-  }
-
-  @Test
   fun testActivitiesAndServicesReturnedForValidKeys() {
     // given
     val services = arrayListOf("service1", "service2")
     val activities = arrayListOf("activity1", "activity2")
-    initialize(mockCustomTabsActivitiesHelper(services, activities))
+    initialize(mockkCustomTabsActivitiesHelper(services, activities))
 
     // when
     module.getCustomTabsSupportingBrowsersAsync(promise)
@@ -227,51 +205,90 @@ internal class WebBrowserModuleTest {
     }
   }
 
-  private fun browserArguments(
-    toolbarColor: String = "#000000",
-    browserPackage: String = "com.browser",
-    enableBarCollapsing: Boolean = true,
-    showTitle: Boolean = true,
-    enableDefaultShareMenuItem: Boolean = true,
-    showInRecents: Boolean = true
-  ): ReadableArguments {
-    // Move creation of readable arguments to TestUtils
-    return readableArgumentsOf(mapOf(
-      "toolbarColor" to toolbarColor,
-      "browserPackage" to browserPackage,
-      "enableBarCollapsing" to enableBarCollapsing,
-      "showTitle" to showTitle,
-      "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
-      "showInRecents" to showInRecents
-    ))
+  @Test
+  fun testWarmUpWithGivenPackage() {
+    // given
+    val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
+    initialize(customTabsConnectionHelper = connectionHelper)
+
+    // when
+    module.warmUpAsync("com.browser.package", promise)
+
+    // then
+    verify(exactly = 1) {
+      connectionHelper.warmUp(any())
+    }
+    verify {
+      connectionHelper.warmUp(eq("com.browser.package"))
+    }
   }
 
-  private fun initialize(customTabsActivitiesHelper: InternalCustomTabsActivitiesHelper = mockCustomTabsActivitiesHelper()) {
+  @Test
+  fun testWarmUpWithoutPackage() {
+    // given
+    val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
+    val customTabsHelper = mockkCustomTabsActivitiesHelper(preferredActivity = "com.browser.package")
+    initialize(customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
+
+    // when
+    module.warmUpAsync(null, promise)
+
+    // then
+    verify(exactly = 1) {
+      connectionHelper.warmUp(any())
+    }
+    verify {
+      connectionHelper.warmUp(eq("com.browser.package"))
+    }
+  }
+
+  @Test
+  fun testCoolDownWithGivenPackage() {
+    // given
+    val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
+    initialize(customTabsConnectionHelper = connectionHelper)
+
+    // when
+    module.coolDownAsync("com.browser.package", promise)
+
+    // then
+    verify(exactly = 1) {
+      connectionHelper.coolDown(any())
+    }
+    verify {
+      connectionHelper.coolDown(eq("com.browser.package"))
+    }
+  }
+
+  @Test
+  fun testCoolDownWithoutPackage() {
+    // given
+    val connectionHelper: CustomTabsConnectionHelper = mockkInternalModule(relaxed = true)
+    val customTabsHelper = mockkCustomTabsActivitiesHelper(preferredActivity = "com.browser.package")
+    initialize(customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
+
+    // when
+    module.coolDownAsync(null, promise)
+
+    // then
+    verify(exactly = 1) {
+      connectionHelper.coolDown(any())
+    }
+    verify {
+      connectionHelper.coolDown(eq("com.browser.package"))
+    }
+  }
+
+
+
+  private fun initialize(
+    customTabsActivitiesHelper: CustomTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(),
+    customTabsConnectionHelper: CustomTabsConnectionHelper? = null
+  ) {
+    if(customTabsConnectionHelper != null) {
+      moduleRegistry.mockInternalModule(customTabsConnectionHelper)
+    }
     moduleRegistry.mockInternalModule(customTabsActivitiesHelper)
     module.onCreate(moduleRegistry)
-  }
-
-  private fun mockCustomTabsActivitiesHelper(
-    services: ArrayList<String> = ArrayList(),
-    activities: ArrayList<String> = ArrayList(),
-    preferredActivity: String? = null,
-    defaultActivity: String? = null,
-    startIntentSlot: CapturingSlot<Intent>? = null,
-    defaultCanResolveIntent: Boolean = false):
-    InternalCustomTabsActivitiesHelper {
-
-    val customTabsActivitiesHelper: InternalCustomTabsActivitiesHelper = internalModuleMock(relaxed = true)
-    every { customTabsActivitiesHelper.canResolveIntent(any()) } returns defaultCanResolveIntent
-    every { customTabsActivitiesHelper.customTabsResolvingActivities } returns activities
-    every { customTabsActivitiesHelper.customTabsResolvingServices } returns services
-    every { customTabsActivitiesHelper.getPreferredCustomTabsResolvingActivity(any()) } returns preferredActivity
-    every { customTabsActivitiesHelper.defaultCustomTabsResolvingActivity } returns defaultActivity
-    every { customTabsActivitiesHelper.exportedInterfaces } returns listOf(CustomTabsActivitiesHelper::class.java)
-
-    if (startIntentSlot != null) {
-      every { customTabsActivitiesHelper.startCustomTabs(capture(startIntentSlot)) } just Runs
-    }
-
-    return customTabsActivitiesHelper
   }
 }

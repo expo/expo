@@ -26,7 +26,7 @@ import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 import static androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;
 
-class InternalCustomTabsActivitiesHelper implements InternalModule, CustomTabsActivitiesHelper {
+class InternalCustomTabsActivitiesHelper implements CustomTabsActivitiesHelper {
 
 
   private final static String DUMMY_URL = "https://expo.io";
