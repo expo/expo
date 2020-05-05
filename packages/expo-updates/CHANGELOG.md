@@ -42,6 +42,7 @@
 ### 🐛 Bug fixes
 
 - Fixed an issue with recovering from an unexpectedly deleted asset on iOS.
+- Fixed handling of invalid EXPO_UDPATE_URL values on Android.
 
 ## 0.1.3
 
