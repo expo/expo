@@ -934,6 +934,14 @@ async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promis
       cwd: path.join(EXPO_DIR, 'ios'),
     });
   }
+  if (await _promptAsync(`Do you want to update pods in ${chalk.magenta('expo/apps/bare-expo/ios')}?`)) {
+    // Update all pods that have been published
+    console.log(`\nUpdating pods: ${chalk.green(podspecNames.join(' '))}`);
+
+    await _spawnAsync('pod', ['update', ...podspecNames, '--no-repo-update'], {
+      cwd: path.join(EXPO_DIR, 'apps', 'bare-expo', 'ios'),
+    });
+  }
 }
 
 async function publishPackagesAsync(argv: any): Promise<void> {
