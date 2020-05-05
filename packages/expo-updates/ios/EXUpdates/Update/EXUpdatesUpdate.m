@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesBareUpdate.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
@@ -35,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                         keep:(BOOL)keep
 {
   // for now, we store the entire managed manifest in the metadata field
-  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:metadata];
+  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:metadata ?: @{}];
   update.updateId = updateId;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
@@ -51,6 +52,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest];
   } else {
     return [EXUpdatesNewUpdate updateWithNewManifest:manifest];
+  }
+}
+
++ (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
+{
+  if ([EXUpdatesConfig sharedInstance].usesLegacyManifest) {
+    if (manifest[@"releaseId"]) {
+      return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest];
+    } else {
+      return [EXUpdatesBareUpdate updateWithBareManifest:manifest];
+    }
+  } else {
+    if (manifest[@"runtimeVersion"]) {
+      return [EXUpdatesNewUpdate updateWithNewManifest:manifest];
+    } else {
+      return [EXUpdatesBareUpdate updateWithBareManifest:manifest];
+    }
   }
 }
 

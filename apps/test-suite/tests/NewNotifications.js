@@ -738,6 +738,7 @@ export async function test(t) {
         data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
+        color: '#FF0000',
       };
 
       t.afterEach(async () => {
@@ -764,7 +765,38 @@ export async function test(t) {
       );
 
       t.it(
-        'triggers a notification which triggers the handler',
+        'triggers a notification which contains the custom color',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          if (Platform.OS === 'android') {
+            t.expect(notificationReceivedSpy).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({
+                request: t.jasmine.objectContaining({
+                  content: t.jasmine.objectContaining({
+                    // #AARRGGBB
+                    color: '#FFFF0000',
+                  }),
+                }),
+              })
+            );
+          }
+          subscription.remove();
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (`seconds` trigger)',
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
@@ -779,6 +811,105 @@ export async function test(t) {
             identifier,
             content: notification,
             trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (with custom sound)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'notification.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
+          );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (with custom sound set, but not existent)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'no-such-file.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
+          );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (`Date` trigger)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+              };
+            },
+          });
+          const trigger = new Date(Date.now() + 5 * 1000);
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
           });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
@@ -1071,6 +1202,16 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       {
         to: expoPushToken,
         title: 'Hello from Expo server!',
+        data: {
+          firstLevelString: 'value',
+          firstLevelObject: {
+            secondLevelInteger: 2137,
+            secondLevelObject: {
+              thirdLevelList: [21, 3, 1995, null, 4, 15],
+              thirdLevelNull: null,
+            },
+          },
+        },
         ...notificationOverrides,
       },
     ]),

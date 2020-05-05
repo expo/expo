@@ -33,7 +33,11 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
   console.log(`Cleaning ${chalk.magenta(path.relative(EXPO_DIR, REACT_COMMON_PATH))}...`);
   await fs.remove(REACT_COMMON_PATH);
 
-  console.log(`Running ${chalk.blue('ReactAndroidCodeTransformer')} with ${chalk.yellow(`./gradlew :tools:execute --args ${sdkVersion}`)} command...`);
+  console.log(
+    `Running ${chalk.blue('ReactAndroidCodeTransformer')} with ${chalk.yellow(
+      `./gradlew :tools:execute --args ${sdkVersion}`
+    )} command...`
+  );
   await spawnAsync('./gradlew', [':tools:execute', '--args', sdkVersion], {
     cwd: ANDROID_DIR,
     stdio: 'inherit',
@@ -42,18 +46,26 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
 
 async function action(options: ActionOptions) {
   if (options.checkout) {
-    console.log(`Checking out ${chalk.magenta(path.relative(EXPO_DIR, REACT_NATIVE_SUBMODULE_PATH))} submodule at ${chalk.blue(options.checkout)} ref...`);
+    console.log(
+      `Checking out ${chalk.magenta(
+        path.relative(EXPO_DIR, REACT_NATIVE_SUBMODULE_PATH)
+      )} submodule at ${chalk.blue(options.checkout)} ref...`
+    );
     await checkoutReactNativeSubmoduleAsync(options.checkout);
   }
 
   // When we're updating React Native, we mostly want it to be for the next SDK that isn't versioned yet.
-  const androidSdkVersion = options.sdkVersion || await getNextSDKVersionAsync('android');
+  const androidSdkVersion = options.sdkVersion || (await getNextSDKVersionAsync('android'));
 
   if (!androidSdkVersion) {
-    throw new Error('Cannot obtain next SDK version. Try to run with --sdkVersion <sdkVersion> flag.')
+    throw new Error(
+      'Cannot obtain next SDK version. Try to run with --sdkVersion <sdkVersion> flag.'
+    );
   }
 
-  console.log(`Updating ${chalk.green('ReactAndroid')} for SDK ${chalk.cyan(androidSdkVersion)} ...`);
+  console.log(
+    `Updating ${chalk.green('ReactAndroid')} for SDK ${chalk.cyan(androidSdkVersion)} ...`
+  );
   await updateReactAndroidAsync(androidSdkVersion);
 }
 
@@ -61,8 +73,16 @@ export default (program: Command) => {
   program
     .command('update-react-native')
     .alias('update-rn', 'urn')
-    .description('Updates React Native submodule and applies Expo-specific code transformations on ReactAndroid and ReactCommon folders.')
-    .option('-c, --checkout [string]', 'Git\'s ref to the commit, tag or branch on which the React Native submodule should be checkouted.')
-    .option('-s, --sdkVersion [string]', 'SDK version for which the forked React Native will be used. Defaults to the newest SDK version increased by a major update.')
+    .description(
+      'Updates React Native submodule and applies Expo-specific code transformations on ReactAndroid and ReactCommon folders.'
+    )
+    .option(
+      '-c, --checkout [string]',
+      "Git's ref to the commit, tag or branch on which the React Native submodule should be checkouted."
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version for which the forked React Native will be used. Defaults to the newest SDK version increased by a major update.'
+    )
     .asyncAction(action);
 };

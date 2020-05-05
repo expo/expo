@@ -34,7 +34,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
   // Remove once presentNotificationAsync is removed
   @ExpoMethod
   public void presentNotificationAsync(final String identifier, ReadableArguments payload, final Promise promise) {
-    NotificationContent content = new ArgumentsNotificationContentBuilder().setPayload(payload).build();
+    NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(payload).build();
     NotificationRequest request = new NotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
     BaseNotificationsService.enqueuePresent(getContext(), notification, null, new ResultReceiver(null) {

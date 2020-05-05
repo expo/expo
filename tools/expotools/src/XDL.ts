@@ -19,10 +19,8 @@ export async function publishProjectWithExpoCliAsync(
 ): Promise<void> {
   process.env.EXPO_NO_DOCTOR = '1';
 
-  const username =
-    (options.userpass?.username) || process.env.EXPO_CI_ACCOUNT_USERNAME;
-  const password =
-    (options.userpass?.password) || process.env.EXPO_CI_ACCOUNT_PASSWORD;
+  const username = options.userpass?.username || process.env.EXPO_CI_ACCOUNT_USERNAME;
+  const password = options.userpass?.password || process.env.EXPO_CI_ACCOUNT_PASSWORD;
 
   if (username && password) {
     Log.collapsed('Logging in...');

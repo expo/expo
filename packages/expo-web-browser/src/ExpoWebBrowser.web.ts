@@ -192,9 +192,15 @@ export default {
 };
 
 // Crypto
-const isCryptoAvailable = !!(window?.crypto as any);
+function isCryptoAvailable(): boolean {
+  if (!canUseDOM) return false;
+  return !!(window?.crypto as any);
+}
 
-const isSubtleCryptoAvailable = isCryptoAvailable && !!(window.crypto.subtle as any);
+function isSubtleCryptoAvailable(): boolean {
+  if (!isCryptoAvailable()) return false;
+  return !!(window.crypto.subtle as any);
+}
 
 async function getStateFromUrlOrGenerateAsync(inputUrl: string): Promise<string> {
   const url = new URL(inputUrl);
@@ -221,7 +227,7 @@ function getRedirectUrlFromUrlOrGenerate(inputUrl: string): string {
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 async function generateStateAsync(): Promise<string> {
-  if (!isSubtleCryptoAvailable) {
+  if (!isSubtleCryptoAvailable()) {
     throw new CodedError(
       'ERR_WEB_BROWSER_CRYPTO',
       `The current environment doesn't support crypto. Ensure you are running from a secure origin (https).`
@@ -242,7 +248,7 @@ function generateRandom(size: number): string {
     arr = new Uint8Array(arr.buffer);
   }
   const array = new Uint8Array(arr.length);
-  if (isCryptoAvailable) {
+  if (isCryptoAvailable()) {
     window.crypto.getRandomValues(array);
   } else {
     for (let i = 0; i < size; i += 1) {

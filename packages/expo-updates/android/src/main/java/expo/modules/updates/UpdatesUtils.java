@@ -93,6 +93,11 @@ public class UpdatesUtils {
   }
 
   public static String createFilenameForAsset(AssetEntity asset) {
+    // for legacy purposes, we try to use the asset URL as the basis for the filename on disk
+    // and fall back to the key if it doesn't exist
+    if (asset.url == null) {
+      return asset.key;
+    }
     String base;
     try {
       base = sha256(asset.url.toString());
@@ -101,15 +106,6 @@ public class UpdatesUtils {
       base = Uri.encode(asset.url.toString());
     }
     return base + "." + asset.type;
-  }
-
-  public static @Nullable String getLocalAssetsKey(AssetEntity asset) {
-    String remoteFilename = asset.url.getLastPathSegment();
-    if (remoteFilename == null) {
-      return null;
-    } else {
-      return remoteFilename + "." + asset.type;
-    }
   }
 
   public static void sendEventToReactNative(@Nullable final WeakReference<ReactNativeHost> reactNativeHost, final String eventName, final WritableMap params) {

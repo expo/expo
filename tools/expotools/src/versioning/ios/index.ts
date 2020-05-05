@@ -48,13 +48,13 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
   const taskQueue = new TaskQueue(Promise, 4); // Transform up to 4 files simultaneously.
   const transformRulesCache = {};
 
-  const transformSingleFile = taskQueue.wrap(async filename => {
+  const transformSingleFile = taskQueue.wrap(async (filename) => {
     if (_isDirectory(filename)) {
       return;
     }
     // protect contents of EX_UNVERSIONED macro
     let unversionedCaptures: string[] = [];
-    await _transformFileContentsAsync(filename, fileString => {
+    await _transformFileContentsAsync(filename, (fileString) => {
       let pattern = /EX_UNVERSIONED\((.*)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
@@ -86,7 +86,7 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     await fs.move(filename, targetPath);
 
     // perform transforms that sed can't express
-    await _transformFileContentsAsync(targetPath, async fileString => {
+    await _transformFileContentsAsync(targetPath, async (fileString) => {
       // rename misc imports, e.g. Layout.h
       fileString = fileString.replace(
         /#(include|import)\s+"((?:[^"\/]+\/)?)([^"]+\.h)"/g,
@@ -131,7 +131,7 @@ async function transformReactNativeAsync(rnPath, versionName, versionedPodNames)
   let filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
   let filenames: string[] = [];
   await Promise.all(
-    filenameQueries.map(async query => {
+    filenameQueries.map(async (query) => {
       let queryFilenames = (await glob(query)) as string[];
       if (queryFilenames) {
         filenames = filenames.concat(queryFilenames);
@@ -411,12 +411,12 @@ async function generateExpoKitPodspecAsync(
   await spawnAsync('sed', ['-i', '--', sedPattern, specFilename]);
 
   // further processing that sed can't do very well
-  await _transformFileContentsAsync(specFilename, async fileString => {
+  await _transformFileContentsAsync(specFilename, async (fileString) => {
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
     const universalModulesDependencies = (await getListOfPackagesAsync())
       .filter(
-        pkg =>
+        (pkg) =>
           pkg.isUnimodule() &&
           pkg.isIncludedInExpoClientOnPlatform('ios') &&
           pkg.podspecName &&
@@ -428,7 +428,7 @@ async function generateExpoKitPodspecAsync(
       ).join(`
     `);
     const externalDependencies = EXTERNAL_REACT_ABI_DEPENDENCIES.map(
-      podName => `ss.dependency         "${podName}"`
+      (podName) => `ss.dependency         "${podName}"`
     ).join(`
     `);
     let subspec = `s.subspec "Expo" do |ss|
@@ -496,7 +496,7 @@ async function generateReactPodspecAsync(versionedReactNativePath, versionName) 
   ]);
 
   // further processing that sed can't do very well
-  await _transformFileContentsAsync(specFilename, fileString => {
+  await _transformFileContentsAsync(specFilename, (fileString) => {
     // replace React/* dependency with ${versionedReactPodName}/*
     fileString = fileString.replace(
       /(ss\.dependency\s+)"React\/(\S+)"/g,
@@ -533,7 +533,7 @@ async function generateReactPodspecAsync(versionedReactNativePath, versionName) 
 }
 
 function getCFlagsToPrefixGlobals(prefix, globals) {
-  return globals.map(val => `-D${val}=${prefix}${val}`);
+  return globals.map((val) => `-D${val}=${prefix}${val}`);
 }
 
 /**
@@ -643,7 +643,7 @@ end
  */
 async function modifyVersionConfigAsync(configPath, transformConfig) {
   let jsConfigFilename = `${configPath}/sdkVersions.json`;
-  await _transformFileContentsAsync(jsConfigFilename, jsConfigContents => {
+  await _transformFileContentsAsync(jsConfigFilename, (jsConfigContents) => {
     let jsConfig;
 
     // read the existing json config and add the new version to the sdkVersions array
@@ -682,7 +682,7 @@ function validateAddVersionDirectories(rootPath, newVersionPath) {
     'ios/Exponent/Versioned',
   ];
   let isValid = true;
-  relativePathsToCheck.forEach(path => {
+  relativePathsToCheck.forEach((path) => {
     try {
       fs.accessSync(`${rootPath}/${path}`, fs.constants.F_OK);
     } catch (e) {
@@ -708,7 +708,7 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
     newVersionPath,
   ];
   let isValid = true;
-  pathsToCheck.forEach(path => {
+  pathsToCheck.forEach((path) => {
     try {
       fs.accessSync(path, fs.constants.F_OK);
     } catch (e) {
@@ -721,7 +721,7 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
 
 async function getConfigsFromArguments(versionNumber) {
   let versionComponents = versionNumber.split('.');
-  versionComponents = versionComponents.map(number => parseInt(number, 10));
+  versionComponents = versionComponents.map((number) => parseInt(number, 10));
   let versionName = 'ABI' + versionNumber.replace(/\./g, '_');
   let rootPathComponents = EXPO_DIR.split('/');
   let versionPathComponents = path.join('ios', 'versioned-react-native', versionName).split('/');
@@ -749,7 +749,7 @@ async function getVersionedUnimodulePodsAsync(
   const packages = await getListOfPackagesAsync();
   const excludedPodNames = getExcludedPodNames();
 
-  packages.forEach(pkg => {
+  packages.forEach((pkg) => {
     const podName = pkg.podspecName;
     if (podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName)) {
       versionedUnimodulePods[podName] = `${versionName}${podName}`;
@@ -877,12 +877,12 @@ export async function addVersionAsync(versionNumber: string) {
     config.sdkVersions.push(versionNumber);
     return config;
   };
-  await modifyVersionConfigAsync(path.join(IOS_DIR, 'Exponent', 'Supporting'), config =>
+  await modifyVersionConfigAsync(path.join(IOS_DIR, 'Exponent', 'Supporting'), (config) =>
     addVersionToConfig(config, versionNumber)
   );
   await modifyVersionConfigAsync(
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
-    config => addVersionToConfig(config, versionNumber)
+    (config) => addVersionToConfig(config, versionNumber)
   );
 
   console.log('Removing any `filename--` files from the new pod ...');
@@ -965,12 +965,12 @@ export async function removeVersionAsync(versionNumber: string) {
     }
     return config;
   };
-  await modifyVersionConfigAsync(path.join(IOS_DIR, 'Exponent', 'Supporting'), config =>
+  await modifyVersionConfigAsync(path.join(IOS_DIR, 'Exponent', 'Supporting'), (config) =>
     removeVersionFromConfig(config, versionNumber)
   );
   await modifyVersionConfigAsync(
     path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting'),
-    config => removeVersionFromConfig(config, versionNumber)
+    (config) => removeVersionFromConfig(config, versionNumber)
   );
 
   await reinstallPodsAsync();
@@ -986,7 +986,7 @@ export async function removeVersionAsync(versionNumber: string) {
  *  the rules are applied in order!
  */
 function _getReactNativeTransformRules(versionPrefix, reactPodName) {
-  const cppLibraries = getCppLibrariesToVersion().map(lib => lib.customHeaderDir || lib.libName);
+  const cppLibraries = getCppLibrariesToVersion().map((lib) => lib.customHeaderDir || lib.libName);
   const versionedLibs = [...cppLibraries, 'React', 'FBLazyVector', 'FBReactNativeSpec'];
 
   return [
@@ -1131,7 +1131,7 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
 }
 
 function _getTransformRulesForDirname(transformRules, dirname) {
-  return transformRules.filter(rule => {
+  return transformRules.filter((rule) => {
     return (
       // no paths specified, so apply rule to everything
       !rule.paths ||

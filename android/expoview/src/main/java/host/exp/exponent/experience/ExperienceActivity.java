@@ -451,7 +451,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
+    // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered

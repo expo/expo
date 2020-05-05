@@ -2,8 +2,8 @@ import { Platform } from 'react-native';
 
 export function getGUID(): string {
   const map = {
-    ios: '629683148649-rqd64l050fr7nvaottj8rhlp08q4t7da',
-    android: '629683148649-8ls3mbtakmkqe2qqt9tsjugbemgrjhth',
+    ios: '29635966244-td9jmh1m5trn8uuqa0je1mansia76cln',
+    android: '29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2',
   };
   const GUID = Platform.select<string>(map);
   if (!GUID)

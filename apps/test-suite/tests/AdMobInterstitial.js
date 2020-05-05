@@ -6,8 +6,8 @@ export const name = 'AdMobInterstitial';
 export function test(t) {
   t.describe('AdMobInterstitial', () => {
     t.describe('setTestDeviceIDAsync', () => {
-      t.it('successfully sets Test Device ID for interstitial ads', () => {
-        t.expect(setTestDeviceIDAsync('EMULATOR')).not.toBeNull();
+      t.it('successfully sets Test Device ID for interstitial ads', async () => {
+        await setTestDeviceIDAsync('EMULATOR');
       });
     });
 

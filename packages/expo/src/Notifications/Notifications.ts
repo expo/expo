@@ -2,7 +2,7 @@ import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodu
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import { AsyncStorage, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import ExponentNotifications from './ExponentNotifications';
 import {
@@ -12,6 +12,8 @@ import {
   ActionType,
   LocalNotificationId,
 } from './Notifications.types';
+import Storage from './Storage';
+
 let _emitter;
 let _initialNotification;
 
@@ -100,7 +102,7 @@ const IS_USING_NEW_BINARY =
 
 async function _legacyReadChannel(id: string): Promise<Channel | null> {
   try {
-    const channelString = await AsyncStorage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
+    const channelString = await Storage.getItem(`${ASYNC_STORAGE_PREFIX}${id}`);
     if (channelString) {
       return JSON.parse(channelString);
     }
@@ -109,16 +111,16 @@ async function _legacyReadChannel(id: string): Promise<Channel | null> {
 }
 
 function _legacyDeleteChannel(id: string): Promise<void> {
-  return AsyncStorage.removeItem(`${ASYNC_STORAGE_PREFIX}${id}`);
+  return Storage.removeItem(`${ASYNC_STORAGE_PREFIX}${id}`);
 }
 
 if (Platform.OS === 'android') {
-  AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
+  Storage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
-      const keys = await AsyncStorage.getAllKeys();
+      const keys = await Storage.getAllKeys();
       if (keys && keys.length) {
         const filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
-        await AsyncStorage.multiRemove(filteredKeys);
+        await Storage.multiRemove(filteredKeys);
       }
       callback && callback();
     } catch (e) {
@@ -131,7 +133,7 @@ if (Platform.OS === 'android') {
 // This codepath will never be triggered in SDK 28 and above
 // TODO: remove before releasing
 function _legacySaveChannel(id: string, channel: Channel): Promise<void> {
-  return AsyncStorage.setItem(`${ASYNC_STORAGE_PREFIX}${id}`, JSON.stringify(channel));
+  return Storage.setItem(`${ASYNC_STORAGE_PREFIX}${id}`, JSON.stringify(channel));
 }
 
 export default {

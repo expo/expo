@@ -28,8 +28,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     outputRange: [0.5, 0],
   });
 
-  closeStarted = false;
-
   closeSubscription: EventSubscription | null = null;
 
   componentDidMount() {
@@ -53,7 +51,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   componentDidUpdate(prevProps) {
     // Make sure it gets expanded once we receive new identifier.
     if (prevProps.uuid !== this.props.uuid) {
-      this.closeStarted = false;
       this.expand();
     }
   }
@@ -89,15 +86,8 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     }
   };
 
-  onCloseStart = () => {
-    this.closeStarted = true;
-  };
-
   onCloseEnd = () => {
-    if (this.closeStarted) {
-      this.closeStarted = false;
-      this.collapseAndClose();
-    }
+    this.collapseAndClose();
   };
 
   providedContext = {
@@ -135,7 +125,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
             callbackNode={this.callbackNode}
             renderHeader={this.renderHeader}
             renderContent={this.renderContent}
-            onCloseStart={this.onCloseStart}
             onCloseEnd={this.onCloseEnd}
           />
         </View>

@@ -33,7 +33,8 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'input',
       name: 'pullRequest',
       message: 'What is the pull request number?',
-      filter: pullRequests => pullRequests.split(',').map(pullrequest => parseInt(pullrequest, 10)),
+      filter: (pullRequests) =>
+        pullRequests.split(',').map((pullrequest) => parseInt(pullrequest, 10)),
     });
   }
 
@@ -42,10 +43,10 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'input',
       name: 'author',
       message: 'Who is the author?',
-      filter: authors =>
+      filter: (authors) =>
         authors
           .split(',')
-          .map(author => author.trim())
+          .map((author) => author.trim())
           .filter(Boolean),
     });
   }

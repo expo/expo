@@ -1,4 +1,5 @@
 import marked from 'marked';
+import { unescape } from 'lodash';
 
 export enum TokenType {
   BLOCKQUOTE_END = 'blockquote_end',
@@ -70,7 +71,7 @@ export function parse(tokens: Tokens): string {
   if (!tokens.links) {
     tokens.links = {};
   }
-  return marked.parser(tokens, { renderer }).trim() + EOL;
+  return unescape(marked.parser(tokens, { renderer }).trim() + EOL);
 }
 
 const EOL = '\n';
@@ -99,7 +100,7 @@ class ExpoChangelogRenderer {
   blockquote(quote: string): string {
     const text = quote
       .split(EOL)
-      .map(line => '> ' + line)
+      .map((line) => '> ' + line)
       .join(EOL);
 
     return text + EOL;

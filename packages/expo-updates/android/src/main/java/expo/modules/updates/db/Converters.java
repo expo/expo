@@ -32,12 +32,12 @@ public class Converters {
 
   @TypeConverter
   public static Uri stringToUri(String string) {
-    return Uri.parse(string);
+    return string == null ? null : Uri.parse(string);
   }
 
   @TypeConverter
   public static String uriToString(Uri uri) {
-    return uri.toString();
+    return uri == null ? null : uri.toString();
   }
 
 
@@ -93,6 +93,8 @@ public class Converters {
         return UpdateStatus.LAUNCHABLE;
       case 3:
         return UpdateStatus.PENDING;
+      case 5:
+        return UpdateStatus.EMBEDDED;
       case 4:
       default:
         return UpdateStatus.UNUSED;
@@ -110,6 +112,8 @@ public class Converters {
         return 2;
       case PENDING:
         return 3;
+      case EMBEDDED:
+        return 5;
       case UNUSED:
       default:
         return 4;

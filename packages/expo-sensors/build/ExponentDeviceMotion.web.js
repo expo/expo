@@ -5,8 +5,11 @@ export default {
     get name() {
         return 'ExponentDeviceMotion';
     },
+    /**
+     * Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
+     */
     get Gravity() {
-        return 9.81;
+        return 9.80665;
     },
     async isAvailableAsync() {
         if (typeof DeviceMotionEvent === 'undefined') {

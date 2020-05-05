@@ -14,7 +14,7 @@ type ActionOptions = {
 };
 
 async function downloadAndInstallOnIOSAsync(clientUrl: string): Promise<void> {
-  if (!await Simulator._isSimulatorInstalledAsync()) {
+  if (!(await Simulator._isSimulatorInstalledAsync())) {
     console.error(chalk.red('iOS simulator is not installed!'));
     return;
   }
@@ -27,9 +27,7 @@ async function downloadAndInstallOnIOSAsync(clientUrl: string): Promise<void> {
 
   await Simulator._uninstallExpoAppFromSimulatorAsync();
 
-  console.log(
-    `Installing Expo client from ${chalk.blue(clientUrl)} on iOS simulator...`,
-  );
+  console.log(`Installing Expo client from ${chalk.blue(clientUrl)} on iOS simulator...`);
 
   const installResult = await Simulator._installExpoOnSimulatorAsync();
 
@@ -64,16 +62,23 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
 
     console.log('Launching application...');
 
-    await Android.getAdbOutputAsync(['shell', 'am', 'start', '-n', `host.exp.exponent/.LauncherActivity`]);
-
+    await Android.getAdbOutputAsync([
+      'shell',
+      'am',
+      'start',
+      '-n',
+      `host.exp.exponent/.LauncherActivity`,
+    ]);
   } catch (error) {
     console.error(chalk.red(`Unable to install Expo client: ${error.message}`));
   }
 }
 
 async function action(options: ActionOptions) {
-  const platform = options.platform || await askForPlatformAsync();
-  const sdkVersion = options.sdkVersion || await askForSDKVersionAsync(platform, await getNewestSDKVersionAsync(platform));
+  const platform = options.platform || (await askForPlatformAsync());
+  const sdkVersion =
+    options.sdkVersion ||
+    (await askForSDKVersionAsync(platform, await getNewestSDKVersionAsync(platform)));
 
   if (!sdkVersion) {
     throw new Error(`Unable to find SDK version. Try to use ${chalk.yellow('--sdkVersion')} flag.`);
@@ -116,7 +121,9 @@ export default (program: Command) => {
   program
     .command('client-install')
     .alias('ci')
-    .description('Installs staging version of the client on iOS simulator, Android emulator or connected Android device.')
+    .description(
+      'Installs staging version of the client on iOS simulator, Android emulator or connected Android device.'
+    )
     .option('-p, --platform [string]', 'Platform for which the client will be installed.')
     .option('-s, --sdkVersion [string]', 'SDK version of the client to install.')
     .asyncAction(action);

@@ -31,6 +31,7 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 		<dict>
@@ -70,10 +71,14 @@
 	</dict>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
+	<key>FacebookAppID</key>
+	<string>1696089354000816</string>
 	<key>FacebookAutoInitEnabled</key>
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<false/>
+	<key>FacebookDisplayName</key>
+	<string>Expo Client</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>GADDelayAppMeasurementInit</key>

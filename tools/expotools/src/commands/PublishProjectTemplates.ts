@@ -156,7 +156,7 @@ async function action(options) {
   }
 }
 
-export default program => {
+export default (program) => {
   program
     .command('publish-project-templates')
     .alias('publish-templates', 'ppt')

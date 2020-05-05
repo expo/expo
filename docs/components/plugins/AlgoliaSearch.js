@@ -1,15 +1,14 @@
-import styled, { keyframes, css } from 'react-emotion';
-
 import Router from 'next/router';
-
 import * as React from 'react';
+import { css } from 'react-emotion';
+
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
-
-import { LATEST_VERSION } from '~/common/versions';
+import { LATEST_VERSION, VERSIONS } from '~/common/versions';
 
 const STYLES_INPUT = css`
   display: flex;
+  position: relative;
   align-items: flex-end;
 
   .searchbox {
@@ -27,12 +26,17 @@ const STYLES_INPUT = css`
     box-sizing: border-box;
     width: 380px;
     font-size: 14px;
-    padding: 2px 36px 0 8px;
+    padding: 2px 36px 0 14px;
     border-radius: 5px;
-    height: 32px;
+    height: 36px;
     outline: 0;
     border: 1px solid ${Constants.colors.border};
-    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.04);
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.08);
+
+    :hover {
+      border-color: rgba(0, 0, 0, 0.4);
+      box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4);
+    }
 
     :focus {
       border: 1px solid ${Constants.colors.expo};
@@ -47,10 +51,31 @@ const STYLES_INPUT = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
   }
+
+  .shortcut-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 2px;
+    pointer-events: none;
+  }
 `;
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
+  state = {
+    isFocused: false,
+  };
+
   processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
@@ -61,6 +86,14 @@ class AlgoliaSearch extends React.Component {
   componentDidMount() {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
+
+    // we need to explicitly ignore the non-selected versions in algolia to
+    // include the "guides" and "get started" pages next to the API docs.
+    // algolia doesn't allow us to filter on `version:v37.0.0 OR version:<null>`
+    const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
+    const ignoredVersionList = VERSIONS.filter(version => currentVersion !== version).map(
+      version => `version:-${version}`
+    );
 
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
@@ -77,29 +110,26 @@ class AlgoliaSearch extends React.Component {
         return hits;
       },
       algoliaOptions: {
-        facetFilters: [
-          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
-        ],
+        facetFilters: ignoredVersionList,
       },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
-        const url = suggestion.url;
 
-        let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
+        const url = new URL(suggestion.url);
+        const route = this.processUrl(url.pathname + url.hash);
 
-        let asPath = null;
-        if (this.props.version === 'latest') {
+        let asPath;
+        if (Utilities.isVersionedUrl(suggestion.url) && this.props.version === 'latest') {
           asPath = this.processUrl(Utilities.replaceVersionInUrl(route, 'latest'));
         }
 
-        route = this.processUrl(route);
         if (asPath) {
           Router.push(route, asPath);
         } else {
           Router.push(route);
         }
 
-        let docSearchEl = document.getElementById('docsearch');
+        const docSearchEl = document.getElementById('docsearch');
         if (docSearchEl) {
           docSearchEl.blur();
         }
@@ -122,8 +152,9 @@ class AlgoliaSearch extends React.Component {
     this.hotshot = new Hotshot({
       combos: [
         {
-          keyCodes: [16, 191], // shift + / (otherwise known as '?')
-          callback: () => setTimeout(() => document.getElementById('docsearch').focus(), 16),
+          keyCodes: [191], // open search by pressing / key
+          callback: () =>
+            setTimeout(() => document.getElementById('algolia-search-box').focus(), 16),
         },
       ],
     });
@@ -133,13 +164,19 @@ class AlgoliaSearch extends React.Component {
     return (
       <div className={STYLES_INPUT} style={this.props.style}>
         <input
+          onFocus={() => this.setState({ isFocused: true })}
+          onBlur={() => this.setState({ isFocused: false })}
           id="algolia-search-box"
           type="text"
-          placeholder={`Search ${Utilities.getUserFacingVersionString(this.props.version)} docs`}
+          placeholder="Search Expo Documentation"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
         />
+
+        <div className="shortcut-hint" style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
+          /
+        </div>
       </div>
     );
   }

@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -52,6 +54,9 @@ public class NotificationSerializer {
     serializedContent.putString("title", content.getTitle());
     serializedContent.putString("subtitle", content.getSubtitle());
     serializedContent.putString("body", content.getText());
+    if (content.getColor() != null) {
+      serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
+    }
     serializedContent.putBundle("data", toBundle(content.getBody()));
     if (content.getBadgeCount() != null) {
       serializedContent.putInt("badge", content.getBadgeCount().intValue());
@@ -61,7 +66,7 @@ public class NotificationSerializer {
     if (content.shouldPlayDefaultSound()) {
       serializedContent.putString("sound", "default");
     } else if (content.getSound() != null) {
-      serializedContent.putString("sound", content.getSound().toString());
+      serializedContent.putString("sound", "custom");
     } else {
       serializedContent.putString("sound", null);
     }
@@ -86,17 +91,15 @@ public class NotificationSerializer {
     Iterator<String> keyIterator = notification.keys();
     while (keyIterator.hasNext()) {
       String key = keyIterator.next();
-      try {
-        Object value = notification.get(key);
-        if (value instanceof JSONObject) {
-          notificationMap.put(key, toBundle((JSONObject) value));
-        } else if (value instanceof JSONArray) {
-          notificationMap.put(key, toList((JSONArray) value));
-        } else if (value != null) {
-          notificationMap.put(key, value);
-        }
-      } catch (JSONException e) {
-        Log.e("expo-notifications", "Could not serialize whole notification - dropped value for key " + key + ": " + notification.opt(key));
+      Object value = notification.opt(key);
+      if (value instanceof JSONObject) {
+        notificationMap.put(key, toBundle((JSONObject) value));
+      } else if (value instanceof JSONArray) {
+        notificationMap.put(key, toList((JSONArray) value));
+      } else if (JSONObject.NULL.equals(value)) {
+        notificationMap.put(key, null);
+      } else {
+        notificationMap.put(key, value);
       }
     }
     return new MapArguments(notificationMap).toBundle();

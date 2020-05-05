@@ -253,14 +253,21 @@ This is the actual splash screen definition and will be used by the system to re
 
 <img src="./assets/configuration-ios-addStoryboardID.png" height="350" />
 
-5. Configure `Image View` source:
+5. Tick `Is Initial View Controller` in `SplashScreenViewController`:
+    - select `View Controller` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - and tick `Is Initial View Controller` in View Controller section.
+
+<img src="./assets/configuration-ios-tickIsInitialViewController.png" height="350" />
+
+6. Configure `Image View` source:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - select `SplashScreen` in `Image` parameter).
 
 <img src="./assets/configuration-ios-configureImageView.png" height="350" />
 
-6. Configure `Background` of the `Image View`:
+7. Configure `Background` of the `Image View`:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - configure `Background` parameter:
@@ -299,9 +306,6 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 ### Automatic configuration
 
 The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
-
-🚨The automatic configuration tool is brand new and you may run into issues when using it as we finish polishing it up. If you are unable to run it successfully, please undo the changes made by the command and refer to the "Manual Configuration" section below.
-
 
 ### Manual Configuration
 

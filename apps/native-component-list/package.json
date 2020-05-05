@@ -7,6 +7,7 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
+    "build:web": "expo build:web --no-pwa",
     "web": "expo start:web --https",
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
@@ -50,6 +51,7 @@
     "expo-intent-launcher": "~8.1.0",
     "expo-keep-awake": "~8.1.0",
     "expo-linear-gradient": "~8.1.0",
+    "expo-linking": "~1.0.0",
     "expo-local-authentication": "~9.0.0",
     "expo-localization": "~8.1.0",
     "expo-location": "~8.1.0",
@@ -66,7 +68,7 @@
     "expo-store-review": "~2.1.0",
     "expo-task-manager": "~8.1.0",
     "expo-three": "5.2.0",
-    "expo-web-browser": "~8.1.0",
+    "expo-web-browser": "~8.2.0",
     "fbemitter": "^2.1.1",
     "gl-mat4": "^1.1.4",
     "hsv2rgb": "^1.1.0",
@@ -92,6 +94,7 @@
     "react-native-screens": "~2.2.0",
     "react-native-shared-element": "~0.5.6",
     "react-native-svg": "11.0.1",
+    "react-native-view-shot": "^3.1.2",
     "react-native-web": "^0.11.0",
     "react-native-webview": "8.1.1",
     "react-navigation": "4.1.0-alpha.1",
