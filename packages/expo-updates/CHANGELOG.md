@@ -38,7 +38,6 @@
     ```
 - Added `Updates.releaseChannel` constant export
 
-
 ### 🐛 Bug fixes
 
 - Fixed an issue with recovering from an unexpectedly deleted asset on iOS.
