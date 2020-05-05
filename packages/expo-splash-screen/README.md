@@ -253,14 +253,21 @@ This is the actual splash screen definition and will be used by the system to re
 
 <img src="./assets/configuration-ios-addStoryboardID.png" height="350" />
 
-5. Configure `Image View` source:
+5. Tick `Is Initial View Controller` in `SplashScreenViewController`:
+    - select `View Controller` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - and tick `Is Initial View Controller` in View Controller section.
+
+<img src="./assets/configuration-ios-tickIsInitialViewController.png" height="350" />
+
+6. Configure `Image View` source:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - select `SplashScreen` in `Image` parameter).
 
 <img src="./assets/configuration-ios-configureImageView.png" height="350" />
 
-6. Configure `Background` of the `Image View`:
+7. Configure `Background` of the `Image View`:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - configure `Background` parameter:
