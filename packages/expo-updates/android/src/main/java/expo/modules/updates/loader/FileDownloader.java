@@ -76,57 +76,61 @@ public class FileDownloader {
   }
 
   public static void downloadManifest(final Uri url, final Context context, final ManifestDownloadCallback callback) {
-    downloadData(addHeadersToManifestUrl(url, context), new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        callback.onFailure("Failed to download manifest from URL: " + url, e);
-      }
-
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
-        if (!response.isSuccessful()) {
-          callback.onFailure("Failed to download manifest from URL: " + url, new Exception(response.body().string()));
-          return;
+    try {
+      downloadData(addHeadersToManifestUrl(url, context), new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          callback.onFailure("Failed to download manifest from URL: " + url, e);
         }
 
-        try {
-          String manifestString = response.body().string();
-          JSONObject manifestJson = new JSONObject(manifestString);
-          if (manifestJson.has("manifestString") && manifestJson.has("signature")) {
-            final String innerManifestString = manifestJson.getString("manifestString");
-            Crypto.verifyPublicRSASignature(
-                innerManifestString,
-                manifestJson.getString("signature"),
-                new Crypto.RSASignatureListener() {
-                  @Override
-                  public void onError(Exception e, boolean isNetworkError) {
-                    callback.onFailure("Could not validate signed manifest", e);
-                  }
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+          if (!response.isSuccessful()) {
+            callback.onFailure("Failed to download manifest from URL: " + url, new Exception(response.body().string()));
+            return;
+          }
 
-                  @Override
-                  public void onCompleted(boolean isValid) {
-                    if (isValid) {
-                      try {
-                        Manifest manifest = ManifestFactory.getManifest(context, new JSONObject(innerManifestString));
-                        callback.onSuccess(manifest);
-                      } catch (JSONException e) {
-                        callback.onFailure("Failed to parse manifest data", e);
+          try {
+            String manifestString = response.body().string();
+            JSONObject manifestJson = new JSONObject(manifestString);
+            if (manifestJson.has("manifestString") && manifestJson.has("signature")) {
+              final String innerManifestString = manifestJson.getString("manifestString");
+              Crypto.verifyPublicRSASignature(
+                  innerManifestString,
+                  manifestJson.getString("signature"),
+                  new Crypto.RSASignatureListener() {
+                    @Override
+                    public void onError(Exception e, boolean isNetworkError) {
+                      callback.onFailure("Could not validate signed manifest", e);
+                    }
+
+                    @Override
+                    public void onCompleted(boolean isValid) {
+                      if (isValid) {
+                        try {
+                          Manifest manifest = ManifestFactory.getManifest(context, new JSONObject(innerManifestString));
+                          callback.onSuccess(manifest);
+                        } catch (JSONException e) {
+                          callback.onFailure("Failed to parse manifest data", e);
+                        }
+                      } else {
+                        callback.onFailure("Manifest signature is invalid; aborting", new Exception("Manifest signature is invalid"));
                       }
-                    } else {
-                      callback.onFailure("Manifest signature is invalid; aborting", new Exception("Manifest signature is invalid"));
                     }
                   }
-                }
-            );
-          } else {
-            Manifest manifest = ManifestFactory.getManifest(context, manifestJson);
-            callback.onSuccess(manifest);
+              );
+            } else {
+              Manifest manifest = ManifestFactory.getManifest(context, manifestJson);
+              callback.onSuccess(manifest);
+            }
+          } catch (Exception e) {
+            callback.onFailure("Failed to parse manifest data", e);
           }
-        } catch (Exception e) {
-          callback.onFailure("Failed to parse manifest data", e);
         }
-      }
-    });
+      });
+    } catch (Exception e) {
+      callback.onFailure("Failed to download manifest from URL " + url.toString(), e);
+    }
   }
 
   public static void downloadAsset(final AssetEntity asset, File destinationDirectory, Context context, final AssetDownloadCallback callback) {
@@ -142,20 +146,24 @@ public class FileDownloader {
       asset.relativePath = filename;
       callback.onSuccess(asset, false);
     } else {
-      downloadFileToPath(addHeadersToUrl(asset.url, context), path, new FileDownloadCallback() {
-        @Override
-        public void onFailure(Exception e) {
-          callback.onFailure(e, asset);
-        }
+      try {
+        downloadFileToPath(addHeadersToUrl(asset.url, context), path, new FileDownloadCallback() {
+          @Override
+          public void onFailure(Exception e) {
+            callback.onFailure(e, asset);
+          }
 
-        @Override
-        public void onSuccess(File file, @Nullable byte[] hash) {
-          asset.downloadTime = new Date();
-          asset.relativePath = filename;
-          asset.hash = hash;
-          callback.onSuccess(asset, true);
-        }
-      });
+          @Override
+          public void onSuccess(File file, @Nullable byte[] hash) {
+            asset.downloadTime = new Date();
+            asset.relativePath = filename;
+            asset.hash = hash;
+            callback.onSuccess(asset, true);
+          }
+        });
+      } catch (Exception e) {
+        callback.onFailure(e, asset);
+      }
     }
   }
 
