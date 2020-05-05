@@ -1,21 +1,11 @@
 {
   "name": "unimodules-test-core",
-  "version": "1.0.0",
-  "description": "UnimodulesTestCore standalone module",
-  "main": "build/Unimodule.js",
-  "types": "build/Unimodule.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
+  "version": "0.1.0",
+  "description": "Module providing native testing utilities for testing unimodules",
   "keywords": [
     "react-native",
     "expo",
+    "unimodules",
     "unimodules-test-core"
   ],
   "repository": {
@@ -28,11 +18,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
-  "dependencies": {
-    "expo-module-scripts": "^1.2.0"
-  },
-  "jest": {
-    "preset": "expo-module-scripts/ios"
-  }
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-test-core"
 }
