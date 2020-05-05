@@ -56,7 +56,7 @@ public class WebBrowserModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mCustomTabsResolver = moduleRegistry.getModule(CustomTabsActivitiesHelper.class);
-    mConnectionHelper = new CustomTabsConnectionHelper(getContext());
+    mConnectionHelper = moduleRegistry.getModule(CustomTabsConnectionHelper.class);
   }
 
   @ExpoMethod

@@ -20,7 +20,7 @@ fun moduleRegistryMock(
   }
 }
 
-inline fun <reified T : InternalModule> internalModuleMock(relaxed: Boolean = false): T {
+inline fun <reified T : InternalModule> mockkInternalModule(relaxed: Boolean = false): T {
   val mock: T = mockk(relaxed = relaxed)
   every { mock.exportedInterfaces } returns listOf(T::class.java)
   return mock
