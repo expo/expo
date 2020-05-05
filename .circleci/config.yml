@@ -826,6 +826,9 @@ jobs:
     executor: js
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: docs
+          paths: docs
       - run: sudo apt-get install awscli
       - attach_workspace:
           at: /tmp/workspace
