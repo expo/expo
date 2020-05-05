@@ -23,7 +23,7 @@ Since extra setup is required to use this module in bare React Native apps, for 
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest']} />
+<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel']} />
 
 <TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
@@ -42,6 +42,10 @@ import * as Updates from 'expo-updates';
 (_object_) If `expo-updates` is enabled, this is the [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
+
+### `Updates.releaseChannel`
+
+(_string_) The name of the release channel currently configured in this standalone or bare app.
 
 ## Methods
 

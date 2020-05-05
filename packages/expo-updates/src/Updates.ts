@@ -13,6 +13,7 @@ import {
 
 export * from './Updates.types';
 
+export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;

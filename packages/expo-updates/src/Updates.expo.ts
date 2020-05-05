@@ -17,6 +17,9 @@ export * from './Updates.types';
 
 export const localAssets: LocalAssets = {};
 export const manifest: Manifest | object = Constants.manifest ?? {};
+export const releaseChannel: string = manifest.hasOwnProperty('releaseChannel')
+  ? (manifest as Manifest & { releaseChannel: string }).releaseChannel
+  : 'default';
 export const isEmergencyLaunch: boolean = false;
 export const isUsingEmbeddedAssets: boolean = false;
 

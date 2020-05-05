@@ -2,6 +2,7 @@ import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';
+export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
