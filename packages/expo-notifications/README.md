@@ -48,7 +48,7 @@ In order to be able to receive push notifications on the device ensure that your
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
 
-- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/versions/latest/guides/using-fcm/#uploading-server-credentials)_,
+- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/guides/using-fcm/#uploading-server-credentials)_,
 - for APNS:
   - run `expo credentials:manager` in the root of your application,
   - if you've already uploaded a Push Notifications Key in another project and would like to reuse it in the current project, select _Use existing Push Notifications Key in current project_ (you may need to set `slug` and `ios.bundleIdentifier` fields in `app.json` so that the server knows to which `experienceId` and `bundleIdentifier` the key should be attributed),
@@ -128,7 +128,7 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/versions/latest/guides/push-notifications/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/guides/push-notifications/).
 
 > **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
 
