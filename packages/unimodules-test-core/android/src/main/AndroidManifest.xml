@@ -3,9 +3,6 @@
   package="org.unimodules.test.core">
 
   <application>
-    <activity
-      android:name=".ui.login.LoginActivity"
-      android:label="@string/title_activity_login"></activity>
   </application>
 
 </manifest>
