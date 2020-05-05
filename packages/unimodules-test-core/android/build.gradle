@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
@@ -47,11 +46,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName '1.0.0'
   }
@@ -76,5 +75,6 @@ dependencies {
   unimodule 'unimodules-core'
 
   api 'androidx.test:core:1.2.0'
+  api 'junit:junit:4.12'
   api 'io.mockk:mockk:1.9.3'
 }
