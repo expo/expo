@@ -159,7 +159,7 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-notifications'
+        'expo-notifications',
         'expo-splash-screen'
       ]
   ])
@@ -179,8 +179,7 @@ dependencies {
           'expo-bluetooth',
           'expo-in-app-purchases',
           'expo-updates',
-          'expo-splash-screen',
-          'unimodules-test-core'
+          'expo-splash-screen'
       ]
   ])
 

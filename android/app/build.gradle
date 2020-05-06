@@ -241,8 +241,7 @@ dependencies {
         'expo-notifications',
         'expo-payments-stripe',
         'expo-updates',
-        'expo-splash-screen',
-        'unimodules-test-core'
+        'expo-splash-screen'
       ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
