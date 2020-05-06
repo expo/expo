@@ -4,9 +4,7 @@ title: API Reference
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. It is provided by the npm package [expo](https://www.npmjs.com/package/expo) &mdash; this is installed by default in every managed Expo project.
-
-You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
+The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
 <TerminalBlock cmd={['expo install expo-camera expo-contacts expo-sensors']} />
 
