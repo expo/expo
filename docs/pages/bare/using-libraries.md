@@ -82,7 +82,7 @@ After React Native Directory, the [npm registry](https://www.npmjs.com/) is the 
 
 Usually libraries built specifically for other platforms will not work with React Native. Examples include `react-select` which is built for the web and specifically targets `react-dom`, and `rimraf` which is built for Node.js and interacts with your computer file system. Other libraries like `lodash` use only JavaScript langauge features and work in any environment.
 
-### Determining Third-Library Compatibility
+### Determining Third-Party Library Compatibility
 
 Is it built specifically for Node.js, the web, electron, or another platform? If so, it may not work here. You can go ahead and try it in a new project to be sure! Run `expo init --template bare-minimum` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 

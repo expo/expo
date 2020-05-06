@@ -78,7 +78,7 @@ export default function App() {
 
 After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the Expo managed workflow. How do you figure this out?
 
-### Determining Third-Library Compatibility
+### Determining Third-Party Library Compatibility
 
 **Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo client" tag. You can also enable the [filter by Expo client](https://reactnative.directory/?expo=true) option to only show libraries that are compatible with the Expo managed workflow.
 
