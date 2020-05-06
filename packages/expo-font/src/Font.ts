@@ -209,3 +209,4 @@ async function unloadFontInNamespaceAsync(
 }
 
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export { useFonts } from './FontHooks';
