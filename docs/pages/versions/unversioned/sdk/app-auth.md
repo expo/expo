@@ -8,6 +8,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](../auth-session) API
+
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 Many services that let you authenticate with them or login with them, like GitHub, Google, GitLab, etc., use the OAuth 2.0 protocol. It's the industry standard.
