@@ -5,6 +5,7 @@ import { useFonts } from '../FontHooks';
 
 describe('useFonts', () => {
   const DATA = 0;
+  const ERROR = 1;
   const FONTS = {
     'OpenSans-Regular': 'path/to/font.ttf',
     'ComicSans-Regular': 'path/to/jailed/font.ttf',
@@ -42,5 +43,16 @@ describe('useFonts', () => {
     expect(hook.result.current[DATA]).toBe(true);
     hook.unmount();
     expect(hook.result.current[DATA]).toBe(true);
+  });
+
+  it('returns error when encountered', async () => {
+    const error = new Error('test');
+    loadAsyncSpy.mockRejectedValue(error);
+
+    const hook = renderHook(useFonts, { initialProps: FONTS });
+
+    expect(hook.result.current[ERROR]).toBeNull();
+    await hook.waitForNextUpdate();
+    expect(hook.result.current[ERROR]).toBe(error);
   });
 });
