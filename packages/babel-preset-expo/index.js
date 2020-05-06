@@ -2,10 +2,19 @@ const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
 module.exports = function(api, options = {}) {
   const { web = {}, native = {} } = options;
-  const isWeb = api.caller(isTargetWeb);
-  const platformOptions = isWeb
-    ? { disableImportExportTransform: true, ...web }
-    : { disableImportExportTransform: false, ...native };
+  const isWebpack = api.caller(isTargetWebpack);
+  let platform = api.caller(getPlatform);
+
+  // If the `platform` prop is not defined then this must be a custom config that isn't
+  // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
+  if (!platform && isWebpack) {
+    platform = 'web';
+  }
+
+  const platformOptions =
+    platform === 'web'
+      ? { disableImportExportTransform: true, ...web }
+      : { disableImportExportTransform: false, ...native };
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
@@ -40,7 +49,8 @@ module.exports = function(api, options = {}) {
     plugins: [
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      isWeb && [require.resolve('babel-plugin-react-native-web')],
+      platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
+      isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-implicit-requires')],
     ].filter(Boolean),
   };
 };
@@ -74,6 +84,9 @@ function hasModule(name) {
   }
 }
 
-function isTargetWeb(caller) {
+function isTargetWebpack(caller) {
   return caller && caller.name === 'babel-loader';
+}
+function getPlatform(caller) {
+  return caller && caller.platform;
 }
