@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '8.2.1'
