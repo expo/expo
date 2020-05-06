@@ -50,7 +50,8 @@ module.exports = function(api, options = {}) {
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
-      isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-implicit-requires')],
+      isWebpack &&
+        platform !== 'web' && [require.resolve('./plugins/disable-unambiguous-requires')],
     ].filter(Boolean),
   };
 };
