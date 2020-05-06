@@ -11,7 +11,7 @@ at https://github.com/expo/expo. Thanks!
 
 ## Expo Bundler Spec Compliance
 
-A bundler must follow these requirements if they are to be considered spec compliant for use with a universal React (Expo) project.
+A bundler must follow these requirements if they are to be considered spec compliant for use with a **universal React** (Expo) project.
 
 ### Babel Loader
 
