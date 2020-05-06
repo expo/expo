@@ -12,8 +12,6 @@ target 'Exponent' do
   # Expo Client dependencies
   pod 'Amplitude-iOS'
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'Crashlytics', '~> 3.14.0'
-  pod 'Fabric', '~> 1.10.2'
   pod 'GoogleMaps', '~> 3.6'
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
   pod 'lottie-ios', '~> 2.5.0'
