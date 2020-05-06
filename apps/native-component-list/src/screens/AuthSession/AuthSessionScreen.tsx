@@ -574,7 +574,7 @@ function Twitch({ redirectUri, usePKCE, useProxy }: any) {
   return (
     <AuthSection
       disabled={useProxy}
-      title="Twitch"
+      title="twitch"
       request={request}
       result={result}
       promptAsync={promptAsync}
