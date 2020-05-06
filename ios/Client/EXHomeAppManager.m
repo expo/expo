@@ -124,12 +124,6 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   return kEXHomeBundleResourceName;
 }
 
-- (BOOL)appFetcherShouldInvalidateBundleCache:(__unused EXAppFetcher *)appFetcher
-{
-  // @tsapeta: Maybe we should invalidate kernel's bundle after crash? We did this before when we still had Crashlytics.
-  return NO;
-}
-
 #pragma mark - util
 
 - (void)_dispatchHomeJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody onSuccess:(void (^_Nullable)(NSDictionary * _Nullable))success onFailure:(void (^_Nullable)(NSString * _Nullable))failure
