@@ -360,6 +360,9 @@ workflows:
       - expo_client_build:
           requires:
             - expo_client_approve_build
+      - expo_client_upload:
+          requires:
+            - expo_client_build
   shell_app_nightly:
     triggers:
       - schedule:
@@ -574,21 +577,31 @@ jobs:
           # Remove GoogleServices-Info because it has been stripped of all our secret keys
           # Will be generated later in the build process if the user provides their own ios.googleServicesFile
           command: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
-      - run: brew install awscli
       - run:
-          name: Build Expo Client and upload tarball
+          name: Build Expo Client
+          command: fastlane ios create_expo_client_build
+      - run:
+          name: create tarball
           command: |
             export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz
-            fastlane ios create_expo_client_build
             tar \
               -C ~/project \
               -zcf "/tmp/$TARBALL" \
               expo-client-build/Exponent.xcarchive \
               ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-      - run:
-          name: Expo Client shell app url
-          command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ios-expo-client-*.tar.gz
+  expo_client_upload:
+    executor: js
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run: apt-get install awscli
+      - run: echo 'export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
+      - run: aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+      - run: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/$TARBALL"
 
   shell_app_ios_build:
     executor: mac
