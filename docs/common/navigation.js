@@ -115,7 +115,7 @@ const sections = [
       'Using Libraries',
       'Viewing Logs',
       'Debugging',
-      'Development Mode',
+      'Development Mode and Production Mode',
       'Common Development Errors',
       'iOS Simulator',
       'Android Studio Emulator',
