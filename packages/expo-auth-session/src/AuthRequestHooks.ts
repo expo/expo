@@ -56,12 +56,13 @@ export function useAuthRequest(
   useEffect(() => {
     if (config && discovery) {
       const request = new AuthRequest(config);
-      request.buildUrlAsync(discovery).then(() => setRequest(request));
+      request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
     }
   }, [
     discovery?.authorizationEndpoint,
     config.clientId,
     config.redirectUri,
+    config.prompt,
     config.scopes.join(','),
     config.clientSecret,
     config.codeChallenge,

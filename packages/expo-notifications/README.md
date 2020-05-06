@@ -42,13 +42,13 @@ In order to be able to receive push notifications on the device:
 
 ### Configure for Android
 
-In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/versions/latest/guides/native-firebase/#bare-workflow-setup).
+In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
 
 ### Add your project's credentials to Expo server (optional)
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
 
-- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/versions/latest/guides/using-fcm/#uploading-server-credentials)_,
+- for Firebase Cloud Messaging, check out this guide: _[Uploading Server Credentials](https://docs.expo.io/guides/using-fcm/#uploading-server-credentials)_,
 - for APNS:
   - run `expo credentials:manager` in the root of your application,
   - if you've already uploaded a Push Notifications Key in another project and would like to reuse it in the current project, select _Use existing Push Notifications Key in current project_ (you may need to set `slug` and `ios.bundleIdentifier` fields in `app.json` so that the server knows to which `experienceId` and `bundleIdentifier` the key should be attributed),
@@ -95,6 +95,7 @@ The following methods are exported by the `expo-notifications` module:
   - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
   - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
 - **dismissing notifications**
+  - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
   - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
   - [`dismissAllNotificationsAsync`](#dismissallnotificationsasync-promisevoid) -- removes all notifications from the notification tray
 - **managing notification channels (Android-specific)**
@@ -127,7 +128,7 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/versions/latest/guides/push-notifications/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](https://docs.expo.io/guides/push-notifications/).
 
 > **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
 
@@ -652,6 +653,16 @@ A `Promise` resolving once all the scheduled notifications are successfully canc
 
 ## Dismissing notifications
 
+### `getPresentedNotificationsAsync(): Promise<Notification[]>`
+
+Fetches information about all notifications present in the notification tray (Notification Center).
+
+> **Note:** This method is not supported on Android below 6.0 (API level 23) – on these devices it will resolve to an empty array.
+
+#### Returns
+
+A `Promise` resolving with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
+
 ### `dismissNotificationAsync(identifier: string): Promise<void>`
 
 Removes notification displayed in the notification tray (Notification Center).
@@ -865,12 +876,12 @@ export type NotificationContent = {
   data: { [key: string]: unknown };
   // Application badge number associated with the notification
   badge: number | null;
+  sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (
   | {
       // iOS-specific additions
       // See https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc
       // for more information on specific fields.
-      sound: 'default' | 'defaultCritical' | 'custom' | null;
       launchImageName: string | null;
       attachments: {
         identifier: string | null;
@@ -887,9 +898,10 @@ export type NotificationContent = {
       // Android-specific additions
       // See https://developer.android.com/reference/android/app/Notification.html#fields
       // for more information on specific fields.
-      sound?: 'default' | string | null;
       priority?: AndroidNotificationPriority;
       vibrationPattern?: number[];
+      // Format: '#AARRGGBB'
+      color?: string;
     }
 );
 ```
@@ -912,6 +924,9 @@ export interface NotificationContentInput {
   // for more information on specific fields.
   vibrate?: boolean | number[];
   priority?: AndroidNotificationPriority;
+  // Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+  // see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+  color?: string;
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.
@@ -1180,7 +1195,7 @@ export interface CalendarTriggerInput {
 
 An object representing user's interaction with the notification.
 
-> Note: If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
+> **Note:** If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
 
 ```ts
 export interface NotificationResponse {
@@ -1229,7 +1244,7 @@ export enum AndroidImportance {
   NONE,
   MIN,
   LOW,
-  DEEFAULT,
+  DEFAULT,
   HIGH,
   MAX,
 }
@@ -1271,7 +1286,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   showBadge: boolean;
-  soundUri: string | null;
+  sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;
   vibrationPattern: number[] | null;
   enableLights: boolean;
@@ -1294,7 +1309,7 @@ export interface NotificationChannelInput {
   lightColor?: string;
   lockscreenVisibility?: AndroidNotificationVisibility;
   showBadge?: boolean;
-  soundUri?: string | null;
+  sound?: string | null;
   audioAttributes?: Partial<AudioAttributes>;
   vibrationPattern?: number[] | null;
   enableLights?: boolean;

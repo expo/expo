@@ -1557,7 +1557,7 @@ PODS:
   - EXFileSystem (8.1.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFirebaseAnalytics (2.2.0):
+  - EXFirebaseAnalytics (2.3.0):
     - EXFirebaseCore
     - Firebase/Core (= 6.14.0)
     - UMCore
@@ -1614,6 +1614,9 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (2.1.1):
     - UMCore
+  - EXNotifications (0.1.7):
+    - UMCore
+    - UMPermissionsInterface
   - EXPermissions (8.1.0):
     - UMCore
     - UMPermissionsInterface
@@ -2140,11 +2143,11 @@ PODS:
     - React-cxxreact (= 0.61.4)
     - React-jsi (= 0.61.4)
     - ReactCommon/jscallinvoker (= 0.61.4)
-  - UMAppLoader (1.0.0)
+  - UMAppLoader (1.0.2)
   - UMBarCodeScannerInterface (5.1.0)
   - UMCameraInterface (5.1.0)
   - UMConstantsInterface (5.1.0)
-  - UMCore (5.1.0)
+  - UMCore (5.1.2)
   - UMFaceDetectorInterface (5.1.0)
   - UMFileSystemInterface (5.1.0)
   - UMFontInterface (5.1.0)
@@ -2534,6 +2537,7 @@ DEPENDENCIES:
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNetwork (from `../packages/expo-network/ios`)
+  - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
@@ -3372,6 +3376,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-media-library/ios"
   EXNetwork:
     :path: "../packages/expo-network/ios"
+  EXNotifications:
+    :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
   EXPrint:
@@ -3829,7 +3835,7 @@ SPEC CHECKSUMS:
   EXFacebook: 74d53d9da75d1a953f1821dd417594ed18d7a72f
   EXFaceDetector: 347204431405fed65226f43921d43c8c5a003d37
   EXFileSystem: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
-  EXFirebaseAnalytics: 004095b49bd4f29dc3281a6eafb6dfb1a151cb44
+  EXFirebaseAnalytics: 535e764dcb3facfa1668d81e422b685eb93c1c9f
   EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
   EXFont: b60f7a8900e3a12e7be3b2a40e19b22c7b5f89ba
   EXGL: 7df5a1c0cd23dc7496d95889d4274448de8e21a2
@@ -3847,6 +3853,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
   EXMediaLibrary: 02a13521d05ca381b08f7d745a9602569eade072
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
+  EXNotifications: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
   EXRandom: cafbaebd177d38a4c4ee514e75824245e6fc2046
@@ -3916,11 +3923,11 @@ SPEC CHECKSUMS:
   ReactABI34_0_0: 8d48457d8b4a48990a7ec571ba66f257864877b9
   ReactABI35_0_0: a708ff5c90369b3be411033d07afc0ee072eb7dc
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
-  UMAppLoader: 70387114be35df5f90cd1f172edfb7a2f150e65a
+  UMAppLoader: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c
   UMCameraInterface: 625878bbf2ba188a8548675e1d1d2e438a653e6d
   UMConstantsInterface: 64060cf86587bcd90b1dbd804cceb6d377a308c1
-  UMCore: d6117852f32c74cde466b863cfdeaa0960186249
+  UMCore: eb200e882eadafcd31ead290770835fd648c0945
   UMFaceDetectorInterface: d6677d6ddc9ab95a0ca857aa7f8ba76656cc770f
   UMFileSystemInterface: c70ea7147198b9807080f3597f26236be49b0165
   UMFontInterface: d9d3b27af698c5389ae9e20b99ef56a083f491fb
@@ -3934,6 +3941,6 @@ SPEC CHECKSUMS:
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: cc978d0964c38603a1d90f03145d58a04672909b
+PODFILE CHECKSUM: 1ad7d91152f91ddd2964649ed0788db94a2df639
 
 COCOAPODS: 1.8.4

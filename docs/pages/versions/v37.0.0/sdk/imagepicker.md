@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-image-pic
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '../../../../components/plugins/Video';
+import Video from '~/components/plugins/Video';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.

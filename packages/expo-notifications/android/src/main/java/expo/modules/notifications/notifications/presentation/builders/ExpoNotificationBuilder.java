@@ -2,6 +2,11 @@ package expo.modules.notifications.notifications.presentation.builders;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.provider.Settings;
@@ -21,6 +26,8 @@ import static expo.modules.notifications.notifications.service.NotificationRespo
  * {@link NotificationBuilder} interpreting a JSON request object.
  */
 public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
+  public static final String META_DATA_DEFAULT_ICON_KEY = "expo.modules.notifications.default_notification_icon";
+  public static final String META_DATA_DEFAULT_COLOR_KEY = "expo.modules.notifications.default_notification_color";
   public static final String EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY = "expo.notification_request";
   private static final String EXTRAS_BODY_KEY = "body";
 
@@ -32,7 +39,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
   protected NotificationCompat.Builder createBuilder() {
     NotificationCompat.Builder builder = super.createBuilder();
-    builder.setSmallIcon(getContext().getApplicationInfo().icon);
+    builder.setSmallIcon(getIcon());
     builder.setPriority(getPriority());
 
     NotificationContent content = getNotificationContent();
@@ -41,11 +48,17 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     builder.setContentText(content.getText());
     builder.setSubText(content.getSubtitle());
 
-    if (shouldPlaySound() && shouldVibrate()) {
+    Number notificationColor = getColor();
+    if (notificationColor != null) {
+      builder.setColor(notificationColor.intValue());
+    }
+
+    boolean shouldPlayDefaultSound = shouldPlaySound() && content.shouldPlayDefaultSound();
+    if (shouldPlayDefaultSound && shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_ALL); // set sound, vibration and lights
     } else if (shouldVibrate()) {
       builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-    } else if (shouldPlaySound()) {
+    } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     } else {
       // Remove any sound or vibration attached by notification options.
@@ -58,7 +71,7 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
     if (shouldPlaySound() && content.getSound() != null) {
       builder.setSound(content.getSound());
-    } else if (shouldPlaySound() && content.shouldPlayDefaultSound()) {
+    } else if (shouldPlayDefaultSound) {
       builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
     }
 
@@ -204,5 +217,54 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
     // By default let's show the notification
     return NotificationCompat.PRIORITY_HIGH;
+  }
+
+  /**
+   * The method first tries to get the icon from the manifest's meta-data {@link #META_DATA_DEFAULT_ICON_KEY}.
+   * If a custom setting is not found, the method falls back to using app icon.
+   *
+   * @return Resource ID for icon that should be used as a notification icon.
+   */
+  protected int getIcon() {
+    try {
+      ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_DEFAULT_ICON_KEY)) {
+        return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY);
+      }
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched default notification icon.");
+    }
+    return getContext().getApplicationInfo().icon;
+  }
+
+  /**
+   * The method responsible for finding and returning a custom color used to color the notification icon.
+   * It first tries to use a custom color defined in notification content, then it tries to fetch color
+   * from resources (based on manifest's meta-data). If not found, returns null.
+   *
+   * @return A {@link Number}, if a custom color should be used for notification icon
+   * or null if the default should be used.
+   */
+  @Nullable
+  protected Number getColor() {
+    if (getNotificationContent().getColor() != null) {
+      return getNotificationContent().getColor();
+    }
+
+    try {
+      ApplicationInfo ai = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_DEFAULT_COLOR_KEY)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY), null);
+        } else {
+          return getContext().getResources().getColor(ai.metaData.getInt(META_DATA_DEFAULT_COLOR_KEY));
+        }
+      }
+    } catch (PackageManager.NameNotFoundException | Resources.NotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched default notification color.");
+    }
+
+    // No custom color
+    return null;
   }
 }

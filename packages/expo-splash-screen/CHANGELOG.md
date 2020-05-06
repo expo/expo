@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- `expo-splash-screen-command` is now replaced by `@expo/configure-splash-screen`. Functionality is not affected.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- add polyfill for usage within managed workflow
 
 ## 0.2.0
 

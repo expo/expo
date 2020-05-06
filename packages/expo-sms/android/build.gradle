@@ -59,4 +59,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-permissions-interface"
+  implementation 'androidx.annotation:annotation:1.1.0'
 }

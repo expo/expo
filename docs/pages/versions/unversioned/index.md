@@ -1,20 +1,37 @@
 ---
-title: Introduction
+title: API Reference
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-[Expo](http://expo.io) is a framework and a platform for universal React applications. It is a set of tools and services built around React Native and native platforms that help you develop, build, deploy, and quickly iterate on iOS, Android, and web apps from the same JavaScript/TypeScript codebase.
+The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
-## Quick start
+<TerminalBlock cmd={['expo install expo-camera expo-contacts expo-sensors']} />
 
-If you are already experienced with React and JavaScript tooling and want to dive right in and figure things out as you go, this is the quickest way to get started:
+<br />
 
-<TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli','', '# Create a new project', 'expo init my-project']} />
+You can import modules from it in your JavaScript code as follows:
 
-## Slow start
+```javascript
+import { Camera } from 'expo-camera';
+import * as Contacts from 'expo-contacts';
+import { Gyroscope } from 'expo-sensors';
+```
 
-Follow us through a choose-your-own-adventure learning journey and we'll teach you how to get oriented in the Expo and React Native ecosystems and write your first app.
+This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts/#getcontactsasync), for example.
 
-- ️🛠 **If you are a hands-on, learn-by-doing, practical learner** then you can [continue to the "Installation" guide](get-started/installation/).
-- 📚 **If you prefer to have a theoretical understanding before installing tools and writing code** then the sections in this introduction will help you by explaining in more detail what Expo is. It will help you build a mental model for how to think about app development the Expo way and equip you with the knowledge to know which pieces of Expo are a good fit for your specific needs. [Continue to the "Workflows" page](introduction/managed-vs-bare/).
+## These packages work in bare React Native apps too
+
+The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps/).
+
+## Each Expo SDK version depends on a React Native version
+
+Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bugfixes, features and improvements to the Expo SDK. It's often useful to know what version of React Native your Expo project is running on, so the following table maps Expo SDK versions to their included React Native version.
+
+| Expo SDK Version | React Native Version |
+| ---------------- | :------------------: |
+| 37.0.0           |        0.61.4        |
+| 36.0.0           |        0.61.4        |
+| 35.0.0           |        0.59.8        |
+| 34.0.0           |        0.59.8        |
+| 33.0.0           |        0.59.8        |

@@ -7,6 +7,7 @@ import {
   AuthRequestPromptOptions,
   CodeChallengeMethod,
   ResponseType,
+  Prompt,
 } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument } from './Discovery';
@@ -43,6 +44,7 @@ export class AuthRequest {
   private readonly scopes: string[];
   private readonly clientSecret?: string;
   private codeChallenge?: string;
+  private prompt?: Prompt;
 
   constructor(request: AuthRequestConfig) {
     this.responseType = request.responseType ?? ResponseType.Code;
@@ -50,11 +52,29 @@ export class AuthRequest {
     this.redirectUri = request.redirectUri;
     this.scopes = request.scopes;
     this.clientSecret = request.clientSecret;
+    this.prompt = request.prompt;
     this.state = request.state ?? PKCE.generateRandomAsync(10);
     this.extraParams = request.extraParams ?? {};
     this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
     // PKCE defaults to true
     this.usePKCE = request.usePKCE ?? true;
+
+    // Some warnings in development about potential confusing application code
+    if (__DEV__) {
+      if (this.prompt && this.extraParams.prompt) {
+        console.warn(`\`AuthRequest\` \`extraParams.prompt\` will be overwritten by \`prompt\`.`);
+      }
+      if (this.clientSecret && this.extraParams.client_secret) {
+        console.warn(
+          `\`AuthRequest\` \`extraParams.client_secret\` will be overwritten by \`clientSecret\`.`
+        );
+      }
+      if (this.codeChallengeMethod && this.extraParams.code_challenge_method) {
+        console.warn(
+          `\`AuthRequest\` \`extraParams.code_challenge_method\` will be overwritten by \`codeChallengeMethod\`.`
+        );
+      }
+    }
 
     invariant(
       this.codeChallengeMethod !== CodeChallengeMethod.Plain,
@@ -85,6 +105,7 @@ export class AuthRequest {
       clientSecret: this.clientSecret,
       codeChallenge: this.codeChallenge,
       codeChallengeMethod: this.codeChallengeMethod,
+      prompt: this.prompt,
       state: await this.getStateAsync(),
       extraParams: this.extraParams,
       usePKCE: this.usePKCE,
@@ -106,7 +127,7 @@ export class AuthRequest {
         // Generate a new url
         return this.promptAsync(discovery, {
           ...options,
-          url: await this.buildUrlAsync(discovery),
+          url: await this.makeAuthUrlAsync(discovery),
         });
       }
       // Reuse the preloaded url
@@ -191,9 +212,9 @@ export class AuthRequest {
    *
    * @param discovery
    */
-  async buildUrlAsync(discovery: AuthDiscoveryDocument): Promise<string> {
+  async makeAuthUrlAsync(discovery: AuthDiscoveryDocument): Promise<string> {
     const request = await this.getAuthRequestConfigAsync();
-    if (!request.state) throw new Error('Cannot build request without a valid `state` loaded');
+    if (!request.state) throw new Error('Cannot make request URL without a valid `state` loaded');
 
     // Create a query string
     const params: Record<string, string> = {};
@@ -215,6 +236,10 @@ export class AuthRequest {
 
     if (request.clientSecret) {
       params.client_secret = request.clientSecret;
+    }
+
+    if (request.prompt) {
+      params.prompt = request.prompt;
     }
 
     // These overwrite any extra params

@@ -1,30 +1,22 @@
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as Linking from 'expo-linking';
 import React from 'react';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { Linking } from 'expo';
+import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
-class TextInputButton extends React.Component<
-  { text: string },
-  { text: string; parsed: string; canOpen: boolean }
-> {
-  constructor(props: { text: string }) {
-    super(props);
+function TextInputButton({ text }: { text: string }) {
+  const [link, setLink] = React.useState<string>(text);
+  const [parsed, setParsed] = React.useState<string>('');
+  const [canOpen, setCanOpen] = React.useState<boolean>(false);
 
-    this.state = {
-      text: props.text,
-      parsed: '',
-      canOpen: false,
-    };
-  }
+  React.useEffect(() => {
+    onChangeText(text);
+  }, [text]);
 
-  componentDidMount() {
-    this.onChangeText(this.props.text);
-  }
-
-  onChangeText = async (text: string) => {
+  const onChangeText = async (text: string) => {
     let parsedTextResult = '';
     const canOpenURL = await Linking.canOpenURL(text);
     if (canOpenURL) {
@@ -32,96 +24,78 @@ class TextInputButton extends React.Component<
       parsedTextResult = JSON.stringify(parsedText, null, 2);
     }
 
-    this.setState({ text, parsed: parsedTextResult, canOpen: canOpenURL });
-  }
+    setLink(text);
+    setParsed(parsedTextResult);
+    setCanOpen(canOpenURL);
+  };
 
-  handleClick = async () => {
-    const { text } = this.state;
+  const handleClick = async () => {
     try {
-      const supported = await Linking.canOpenURL(text);
+      const supported = await Linking.canOpenURL(link);
 
       if (supported) {
-        Linking.openURL(text);
+        Linking.openURL(link);
       } else {
-        const message = `Don't know how to open URI: ${text}`;
+        const message = `Don't know how to open URI: ${link}`;
         console.log(message);
         alert(message);
       }
     } catch ({ message }) {
       console.error(message);
     }
-  }
-
-  render() {
-    const { text, parsed, canOpen } = this.state;
-
-    const buttonTitle = canOpen ? 'Open 😁' : 'Cannot Open 😕';
-    return (
-      <View>
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={this.onChangeText}
-            value={text}
-          />
-          <Button
-            title={buttonTitle}
-            onPress={this.handleClick}
-            disabled={!canOpen}
-          />
-        </View>
-        <MonoText containerStyle={styles.itemText}>{parsed}</MonoText>
-      </View>
-    );
-  }
-}
-
-interface State {
-  initialUrl?: string;
-}
-
-export default class LinkingScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'Linking',
   };
 
-  readonly state: State = {};
-
-  componentDidMount() {
-    this.setupAsync();
-    Linking.addEventListener('url', this.onEvent);
-  }
-
-  componentWillUnmount() {
-    Linking.removeEventListener('url', this.onEvent);
-  }
-
-  onEvent = ({ url }: any) => {
-    alert(`Linking url event: ${url}`);
-  }
-
-  setupAsync = async () => {
-    const initialUrl = await Linking.getInitialURL();
-    this.setState({ initialUrl });
-  }
-
-  render() {
-    return (
-      <ScrollView style={styles.container}>
-        {this.state.initialUrl && (
-          <TextInputButton text={this.state.initialUrl} />
-        )}
-        <TextInputButton text="https://github.com/search?q=Expo" />
-        <TextInputButton text="https://www.expo.io" />
-        <TextInputButton text="http://www.expo.io" />
-        <TextInputButton text="http://expo.io" />
-        <TextInputButton text="fb://notifications" />
-        <TextInputButton text="geo:37.484847,-122.148386" />
-        <TextInputButton text="tel:9876543210" />
-      </ScrollView>
-    );
-  }
+  const buttonTitle = canOpen ? 'Open 😁' : 'Cannot Open 😕';
+  return (
+    <View>
+      <View style={styles.textInputContainer}>
+        <TextInput style={styles.textInput} onChangeText={onChangeText} value={link} />
+        <Button title={buttonTitle} onPress={handleClick} disabled={!canOpen} />
+      </View>
+      <MonoText containerStyle={styles.itemText}>{parsed}</MonoText>
+    </View>
+  );
 }
+
+export default function LinkingScreen() {
+  const url = Linking.useUrl();
+
+  React.useEffect(() => {
+    if (url) {
+      alert(`Linking url event: ${url}`);
+    }
+  }, [url]);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Button
+        title="Open Settings"
+        onPress={() => {
+          Linking.openSettings();
+        }}
+      />
+      <Button
+        disabled={Platform.OS !== 'android'}
+        title="Send Intent"
+        onPress={() => {
+          Linking.sendIntent(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
+        }}
+      />
+      {url && <TextInputButton text={url} />}
+      <TextInputButton text="https://github.com/search?q=Expo" />
+      <TextInputButton text="https://www.expo.io" />
+      <TextInputButton text="http://www.expo.io" />
+      <TextInputButton text="http://expo.io" />
+      <TextInputButton text="fb://notifications" />
+      <TextInputButton text="geo:37.484847,-122.148386" />
+      <TextInputButton text="tel:9876543210" />
+    </ScrollView>
+  );
+}
+
+LinkingScreen.navigationOptions = {
+  title: 'Linking',
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -35,6 +35,7 @@ export const CONTACTS = 'contacts';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
+export const MOTION = 'motion';
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   if (Platform.OS === 'ios') {
@@ -54,6 +55,14 @@ async function _handleSinglePermissionRequestIOSAsync(
   type: PermissionType,
   handlePermission: (type: PermissionType) => Promise<PermissionInfo>
 ): Promise<PermissionInfo> {
+  if (Platform.OS !== 'web' && type === 'motion') {
+    return {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      granted: true,
+      canAskAgain: true,
+    };
+  }
   return await handlePermission(type);
 }
 
@@ -85,6 +94,20 @@ async function _handlePermissionsRequestAsync(
 ): Promise<PermissionResponse> {
   if (!types.length) {
     throw new Error('At least one permission type must be specified');
+  }
+
+  if (Platform.OS !== 'web' && types.length === 1 && types[0] === 'motion') {
+    const approvedPermission = {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      granted: true,
+      canAskAgain: true,
+    };
+    return {
+      ...approvedPermission,
+      // @ts-ignore
+      permissions: { motion: approvedPermission },
+    };
   }
 
   const permissions = await handlePermissions(types);

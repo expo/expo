@@ -47,3 +47,4 @@ export declare function unloadAsync(fontFamilyOrFontMap: string | {
     [fontFamily: string]: UnloadFontOptions;
 }, options?: UnloadFontOptions): Promise<void>;
 export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export { useFonts } from './FontHooks';

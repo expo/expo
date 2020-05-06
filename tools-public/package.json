@@ -17,7 +17,10 @@
     "minimist": "^1.2.2",
     "request": "^2.72.0",
     "request-promise-native": "^1.0.5",
-    "sharp": "^0.21.0",
+    "sharp": "^0.25.0",
     "uuid": "^3.1.0"
+  },
+  "resolutions": {
+    "fsevents": "^2.1.3"
   }
 }
