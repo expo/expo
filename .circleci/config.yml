@@ -350,16 +350,12 @@ workflows:
             - shell_app_android_approve_build
   client_shell_app:
     jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
       - expo_client_build:
-          requires:
-            - expo_client_approve_build
+          filters:  # run for NO branches, and ios-client-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^ios-client-v*/
       - expo_client_upload:
           requires:
             - expo_client_build
