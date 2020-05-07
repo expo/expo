@@ -67,7 +67,7 @@ Finally, if you're migrating from an ExpoKit project to the bare workflow with `
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 #### Build Phases
 

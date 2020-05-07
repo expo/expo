@@ -36,7 +36,7 @@ To use `expo-gl` with React Native 0.58.0 or newer you will need to use `5.x.x` 
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
