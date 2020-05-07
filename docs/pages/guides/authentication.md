@@ -27,6 +27,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
+  <SocialGridItem title="Dropbox" protocol={['OAuth 2']} href="#dropbox" image="/static/images/sdk/auth-session/dropbox.png" />
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
   <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
@@ -171,6 +172,49 @@ const [request, response, promptAsync] = useAuthRequest(
 ```
 
 <!-- End Coinbase -->
+
+### Dropbox
+
+<CreateAppButton name="Dropbox" href="https://www.dropbox.com/developers/apps/create" />
+
+| Website                      | Provider  | PKCE          | Auto Discovery |
+| ---------------------------- | --------- | ------------- | -------------- |
+| [Get Your Config][c-dropbox] | OAuth 2.0 | Not Supported | Not Available  |
+
+[c-dropbox]: https://www.dropbox.com/developers/apps/create
+
+- Scopes must be an empty array.
+- PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
+- Implicit auth is supported.
+- When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
+
+```ts
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
+  tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // There are no scopes so just pass an empty array
+    scopes: [],
+    // Dropbox doesn't support PKCE
+    usePKCE: false,
+    // Implicit auth is universal, `.Code` will only work in native with `useProxy: true`.
+    responseType: ResponseType.Token,
+    // For usage in managed apps using the proxy
+    redirectUri: makeRedirectUri({
+      // For usage in bare and standalone
+      native: 'your.app://redirect',
+    }),
+  },
+  discovery
+);
+```
+
+<!-- End Dropbox -->
 
 ### Facebook
 
