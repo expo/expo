@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { LATEST_VERSION } from '~/common/versions';
-
 export default class AlgoliaDocsearchMeta extends React.PureComponent {
   defaultProps = {
     referenceVersion: 'latest',
@@ -13,7 +11,7 @@ export default class AlgoliaDocsearchMeta extends React.PureComponent {
       return 'none';
     }
 
-    return this.props.referenceVersion === 'latest' ? LATEST_VERSION : this.props.referenceVersion;
+    return this.props.referenceVersion;
   }
 
   render() {
