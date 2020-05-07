@@ -49,7 +49,7 @@ In development mode, or any other environment in which `expo-updates` is disable
 
 ### `Updates.updateId`
 
-(_string_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this string is empty.
+(_string | null_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
 
 ## Methods
 
