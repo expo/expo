@@ -196,13 +196,6 @@ export class AuthRequest {
         params.response_type = request.responseType;
         params.state = request.state;
         params.scope = request.scopes.join(' ');
-        // If "Implicit Grant Flow" then delete the code challenge.
-        // This is required for Google auth, if there are problems in the future then
-        // we should add a check for google in `discovery.authorizationEndpoint`.
-        if (params.response_type === ResponseType.Token) {
-            delete params.code_challenge;
-            delete params.code_challenge_method;
-        }
         const query = QueryParams.buildQueryString(params);
         // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;
