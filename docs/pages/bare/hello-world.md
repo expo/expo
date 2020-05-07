@@ -59,9 +59,9 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects.
+Bare projects are initialized using [CocoaPods](https://cocoapods.org/), a dependency manager for iOS projects.
 
-- Run `npx pod-install` to link the native iOS packages using Cocoapods.
+- Run `npx pod-install` to link the native iOS packages using CocoaPods.
 - Run `npx react-native run-ios` to rebuild your project with the native code linked.
 
 ### Android configuration
