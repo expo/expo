@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added a macro check for `UNLocationNotificationTrigger` to make this module compatible with Mac Catalyst ([#8171](https://github.com/expo/expo/pull/8171) by [@robertying](https://github.com/robertying))
+
 ## [0.1.7] - 2020-05-05
 
 ### 🛠 Breaking changes
