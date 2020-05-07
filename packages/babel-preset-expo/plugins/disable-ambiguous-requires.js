@@ -1,5 +1,5 @@
 /**
- * Disable unambiguous module ID requires from React Native:
+ * Disable ambiguous module ID requires from React Native:
  * https://github.com/facebook/react-native/commit/06b5bda34923b68ba5141e78c36ccbdc5f4bcff1
  *
  * Without this operation, the following error will be thrown when bundling with Webpack:
