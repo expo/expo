@@ -16,11 +16,12 @@ commands:
       - run:
           name: Skip job if no relevant changes since last successful build on branch
           command: |
+            export GIT_PAGER=cat # Prevents git commands hanging on mac executors
             if [ "$CIRCLE_BRANCH" = "" ]; then
               echo "Can't determine branch.  Continuing the job."
             else
               echo "Looking for previous successful ${CIRCLE_JOB} jobs for branch ${CIRCLE_BRANCH}"
-              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}")
+              LAST_SUCCESSFUL_COMMIT_ON_BRANCH=$(bin/circle-last-successful-commit "github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "<< parameters.workflow_name >>/${CIRCLE_JOB}" "${CIRCLE_BRANCH}" || true)
 
               GIT_BASE_REVISION=<< pipeline.git.base_revision >>
 
@@ -29,7 +30,7 @@ commands:
                 echo "The job will be skipped unless this branch introduces relevant changes."
               else
                 echo "Previous successful build found for commit $LAST_SUCCESSFUL_COMMIT_ON_BRANCH"
-                if TERM=xterm git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
+                if git show --pretty=%H -q $LAST_SUCCESSFUL_COMMIT_ON_BRANCH; then
                   GIT_BASE_REVISION=$LAST_SUCCESSFUL_COMMIT_ON_BRANCH
                 else
                   echo "Commit not found in repo, it might have been rebased out of the branch."
@@ -44,7 +45,7 @@ commands:
 
               echo "Checking for changes since $GIT_BASE_REVISION touching circle config or << parameters.paths >>:"
 
-              if TERM=xterm git log --name-status --exit-code --format=oneline "$CIRCLE_SHA1..$GIT_BASE_REVISION" -- .circleci/config.yml << parameters.paths >>; then
+              if git log --name-status --exit-code --format=oneline "$GIT_BASE_REVISION..$CIRCLE_SHA1" -- .circleci/config.yml << parameters.paths >>; then
                 echo "No changes found in watched paths.  Ending job."
                 circleci-agent step halt
               else
@@ -262,18 +263,13 @@ workflows:
   docs:
     jobs:
       - docs
-      - docs_approve_deploy:
-          type: approval
+      - docs_deploy:
           requires:
             - docs
           filters:
             branches:
               only:
                 - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -287,7 +283,12 @@ workflows:
     jobs:
       - home
       - expotools
-      - client_android
+      - client_android:
+          filters:  # run for ALL branches, and android tags
+            tags:
+              only:
+                - /^android-google-v*/
+                - /^android-apk-v*/
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
@@ -295,30 +296,22 @@ workflows:
       #     requires:
       #       - test_suite_publish
       - android_unit_tests
-      - client_android_approve_google_play:
-          type: approval
-          requires:
-            - client_android
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
-            - client_android_approve_google_play
-      - client_android_apk_release_approve:
-          type: approval
-          requires:
             - client_android
-          filters:
+          filters:  # run for NO branches, and android-google-v* tags
             branches:
-              only:
-                - /.*sdk-\d+/
-                - /.*all-ci.*/
+              ignore: /.*/
+            tags:
+              only: /^android-google-v*/
       - client_android_apk_release:
           requires:
-            - client_android_apk_release_approve
+            - client_android
+          filters:  # run for NO branches, and android-apk-v* tags
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^android-apk-v*/
       - client_ios:
           filters:  # run for ALL branches, and ios-simulator-v* tags
             tags:
@@ -386,7 +379,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: sdk
-          paths: yarn.lock packages
+          paths: package.json yarn.lock packages tools/expotools
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -395,6 +388,10 @@ jobs:
       - run:
           name: Check packages
           command: expotools check-packages
+      - run:
+          name: Run Danger
+          working_directory: ~/project
+          command: yarn danger ci
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
@@ -406,7 +403,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: sdk
-          paths: apps/bare-expo apps/test-suite yarn.lock packages
+          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -426,7 +423,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: home yarn.lock
+          paths: home package.json yarn.lock
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -471,7 +468,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: sdk
-          paths: apps/bare-expo apps/test-suite yarn.lock packages Gemfile.lock
+          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages Gemfile .ruby-version
       - bundle_install
       - update_submodules
 
@@ -529,7 +526,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: tools/expotools ios fastlane Gemfile.lock
+          paths: tools/expotools secrets ios fastlane Gemfile .ruby-version
       - update_submodules
       - git_lfs_pull
       - decrypt_secrets_if_possible
@@ -696,7 +693,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: android fastlane tools-public Gemfile.lock yarn.lock
+          paths: secrets android fastlane tools-public Gemfile .ruby-version package.json yarn.lock
       - update_submodules
       - install_yarn
       - yarn_install:
@@ -711,10 +708,10 @@ jobs:
           command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run: fastlane android build build_type:Release
       - save_gradle_cache
-      - save_cache:
-          key: client-android-apk-{{ .Revision }}
+      - persist_to_workspace:
+          root: android/app/build/outputs
           paths:
-            - ~/project/android/app/build/outputs/apk
+            - apk
       - store_artifacts:
           path: ~/project/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
@@ -730,7 +727,7 @@ jobs:
       - setup
       - skip_unless_changed:
           workflow_name: client
-          paths: android fastlane tools/expotools Gemfile.lock yarn.lock
+          paths: android fastlane tools/expotools Gemfile .ruby-version package.json yarn.lock
       - install_yarn
       - update_submodules
       - restore_yarn_cache
@@ -762,16 +759,16 @@ jobs:
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
           working_directory: ~/expo/tools/expotools
-      - restore_cache:
-          key: client-android-apk-{{ .Revision }}
+      - attach_workspace:
+          at: android/app/build/outputs/apk
       - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
     executor: android
     steps:
       - setup
-      - restore_cache:
-          key: client-android-apk-{{ .Revision }}
+      - attach_workspace:
+          at: android/app/build/outputs/apk
       - bundle_install
       - run:
           name: Decode release keystore
@@ -826,6 +823,9 @@ jobs:
     executor: js
     steps:
       - setup
+      - skip_unless_changed:
+          workflow_name: docs
+          paths: docs
       - run: sudo apt-get install awscli
       - attach_workspace:
           at: /tmp/workspace

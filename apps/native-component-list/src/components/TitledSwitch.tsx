@@ -8,17 +8,20 @@ export default function TitleSwitch({
   title,
   value,
   setValue,
+  disabled,
 }: {
   style?: ViewStyle;
   titleStyle?: TextStyle;
   title?: string;
   value: boolean;
+  disabled?: boolean;
   setValue: (value: boolean) => void;
 }) {
+  const outputTitle = disabled ? `${title} (Disabled)` : title;
   return (
     <View style={[styles.container, style]}>
-      <B style={[styles.title, titleStyle]}>{title}</B>
-      <Switch value={value} onValueChange={value => setValue(value)} />
+      <B style={[styles.title, titleStyle]}>{outputTitle}</B>
+      <Switch disabled={disabled} value={value} onValueChange={value => setValue(value)} />
     </View>
   );
 }

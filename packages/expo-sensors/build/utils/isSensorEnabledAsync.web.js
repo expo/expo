@@ -1,13 +1,36 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+export function getRequestPermission() {
+    return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
+}
+class PermissionError extends Error {
+    constructor(eventName) {
+        let errorMessage = `Cannot observe event: ${eventName}. How to fix:`;
+        errorMessage += `\n- Ensure you've requested the \`MOTION\` permission via expo-permissions (this must be done in a touch event).`;
+        if (location.protocol !== 'https:') {
+            errorMessage +=
+                '\n- Ensure that you are hosting with `https` as DeviceMotion and DeviceOrientation are now secure APIs.';
+        }
+        // is iOS and doesn't support requesting permissions, must be 12.2
+        if (isIOS() && !getRequestPermission()) {
+            errorMessage +=
+                '\n- On iOS 12.2, you must manually enable device orientation in `Settings > Safari > Motion & Orientation Access`.';
+        }
+        super(errorMessage);
+    }
+}
 // iOS 12.2 disables DeviceMotion by default now
 // https://github.com/w3c/deviceorientation/issues/57
 export async function assertSensorEventEnabledAsync(eventName, timeout) {
-    const isEnabled = await isSensorEnabledAsync(eventName, timeout);
-    if (isEnabled) {
-        return true;
+    if (!canUseDOM) {
+        return false;
     }
-    throw new Error(`Cannot observe event: ${eventName}.` +
-        '\nEnable device orientation in Settings > Safari > Motion & Orientation Access' +
-        '\nalso ensure that you are hosting with https as DeviceMotion is now a secure API on iOS Safari.');
+    if (getRequestPermission()) {
+        if (await isSensorEnabledAsync(eventName, timeout)) {
+            return true;
+        }
+        throw new PermissionError(eventName);
+    }
+    return true;
 }
 // throw error if the sensor is disabled.
 export async function isSensorEnabledAsync(eventName, 
@@ -25,7 +48,12 @@ export async function isSensorEnabledAsync(eventName,
 // - ~45ms
 //
 timeout = 250) {
-    if (!isIOS()) {
+    if (!canUseDOM) {
+        return false;
+    }
+    // If there is no method to request permission then the device has access to device motion.
+    // Older versions of iOS have no method but still disable motion so we should always check on iOS.
+    if (!isIOS && !getRequestPermission()) {
         return true;
     }
     return new Promise(resolve => {

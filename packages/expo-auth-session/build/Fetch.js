@@ -1,7 +1,8 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
+import { Platform } from 'react-native';
 export async function requestAsync(requestUrl, fetchRequest) {
-    if (!canUseDOM) {
+    if (Platform.OS === 'web' && !canUseDOM) {
         // @ts-ignore
         return;
     }

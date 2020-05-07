@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.CookieHandler;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -44,14 +45,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -72,6 +76,31 @@ public class FileSystemModule extends ExportedModule {
   private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
+
+  private enum UploadType {
+    INVALID(-1),
+    BINARY_CONTENT(0),
+    MULTIPART(1);
+
+    private int value;
+
+    UploadType(int value) {
+      this.value = value;
+    }
+
+    public static UploadType fromInteger(@Nullable Integer value) {
+      if (value == null) {
+        return INVALID;
+      }
+
+      for (UploadType method : values()) {
+        if (value.equals(method.value)) {
+          return method;
+        }
+      }
+      return INVALID;
+    }
+  }
 
   public FileSystemModule(Context context) {
     super(context);
@@ -107,6 +136,13 @@ public class FileSystemModule extends ExportedModule {
     return new File(uri.getPath());
   }
 
+  private void checkIfFileExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    if (!file.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
+  }
+
   private void checkIfFileDirExists(Uri uri) throws IOException {
     File file = uriToFile(uri);
     File dir = file.getParentFile();
@@ -128,6 +164,10 @@ public class FileSystemModule extends ExportedModule {
     }
     if ("file".equals(uri.getScheme())) {
       return permissionsForPath(uri.getPath());
+    }
+    if (uri.getScheme() == null) {
+      // this is probably an asset embedded by the packager in resources
+      return EnumSet.of(Permission.READ);
     }
     return EnumSet.noneOf(Permission.class);
   }
@@ -157,6 +197,18 @@ public class FileSystemModule extends ExportedModule {
     return getContext().getAssets().open(asset);
   }
 
+  private InputStream openResourceInputStream(String resourceName) throws IOException {
+    int resourceId = getContext().getResources().getIdentifier(resourceName, "raw", getContext().getPackageName());
+    if (resourceId == 0) {
+      // this resource doesn't exist in the raw folder, so try drawable
+      resourceId = getContext().getResources().getIdentifier(resourceName, "drawable", getContext().getPackageName());
+      if (resourceId == 0) {
+        throw new FileNotFoundException("No resource found with the name " + resourceName);
+      }
+    }
+    return getContext().getResources().openRawResource(resourceId);
+  }
+
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
@@ -180,12 +232,17 @@ public class FileSystemModule extends ExportedModule {
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
-      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme())) {
+      } else if ("content".equals(uri.getScheme()) || "asset".equals(uri.getScheme()) || uri.getScheme() == null) {
         Bundle result = new Bundle();
         try {
-          InputStream is = "content".equals(uri.getScheme()) ?
-            getContext().getContentResolver().openInputStream(uri) :
-            openAssetInputStream(uri);
+          InputStream is;
+          if ("content".equals(uri.getScheme())) {
+            is = getContext().getContentResolver().openInputStream(uri);
+          } else if ("asset".equals(uri.getScheme())) {
+            is = openAssetInputStream(uri);
+          } else {
+            is = openResourceInputStream(uriStr);
+          }
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -252,6 +309,9 @@ public class FileSystemModule extends ExportedModule {
           contents = IOUtils.toString(new FileInputStream(uriToFile(uri)));
         } else if ("asset".equals(uri.getScheme())) {
           contents = IOUtils.toString(openAssetInputStream(uri));
+        } else if (uri.getScheme() == null) {
+          // this is probably an asset embedded by the packager in resources
+          contents = IOUtils.toString(openResourceInputStream(uriStr));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
         }
@@ -398,6 +458,12 @@ public class FileSystemModule extends ExportedModule {
         OutputStream out = new FileOutputStream(uriToFile(toUri));
         IOUtils.copy(in, out);
         promise.resolve(null);
+      } else if (fromUri.getScheme() == null) {
+        // this is probably an asset embedded by the packager in resources
+        InputStream in = openResourceInputStream((String) options.get("from"));
+        OutputStream out = new FileOutputStream(uriToFile(toUri));
+        IOUtils.copy(in, out);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
@@ -453,6 +519,98 @@ public class FileSystemModule extends ExportedModule {
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void uploadAsync(final String fileUriString, final String url, final Map<String, Object> options, final Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(fileUriString);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileExists(fileUri);
+
+      if (!options.containsKey("httpMethod")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
+        return;
+      }
+      String method = (String) options.get("httpMethod");
+
+      if (!options.containsKey("uploadType")) {
+        promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
+        return;
+      }
+      UploadType uploadType = UploadType.fromInteger((Integer) options.get("uploadType"));
+
+      Request.Builder requestBuilder = new Request.Builder().url(url);
+      if (options.containsKey(HEADER_KEY)) {
+        final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+        for (String key : headers.keySet()) {
+          requestBuilder.addHeader(key, headers.get(key).toString());
+        }
+      }
+
+      File file = uriToFile(fileUri);
+      if (uploadType == UploadType.BINARY_CONTENT) {
+        RequestBody body = RequestBody.create(null, file);
+        requestBuilder.method(method, body);
+      } else if (uploadType == UploadType.MULTIPART) {
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+
+        if (options.containsKey("parameters")) {
+          Map<String, Object> parametersMap = (Map<String, Object>) options.get("parameters");
+          for (String key : parametersMap.keySet()) {
+            bodyBuilder.addFormDataPart(key, String.valueOf(parametersMap.get(key)));
+          }
+        }
+
+        String mimeType;
+        if (options.containsKey("mimeType")) {
+          mimeType = (String) options.get("mimeType");
+        } else {
+          mimeType = URLConnection.guessContentTypeFromName(file.getName());
+        }
+
+        String fieldName = file.getName();
+        if (options.containsKey("fieldName")) {
+          fieldName = (String) options.get("fieldName");
+        }
+
+        bodyBuilder.addFormDataPart(fieldName, file.getName(), RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file));
+        requestBuilder.method(method, bodyBuilder.build());
+      } else {
+        promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options.get("uploadType")), null);
+        return;
+      }
+
+      getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          Log.e(TAG, String.valueOf(e.getMessage()));
+          promise.reject(e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          Bundle result = new Bundle();
+          try {
+            if (response.body() != null) {
+              result.putString("body", response.body().string());
+            } else {
+              result.putString("body", null);
+            }
+          } catch (IOException exception) {
+            promise.reject(exception);
+            return;
+          }
+          result.putInt("status", response.code());
+          result.putBundle("headers", translateHeaders(response.headers()));
+          response.close();
+          promise.resolve(result);
+        }
+      });
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);

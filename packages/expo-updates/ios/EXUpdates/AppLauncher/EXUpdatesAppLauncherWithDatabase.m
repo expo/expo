@@ -52,7 +52,22 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       if (!launchableUpdates) {
         completion(error, nil);
       }
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:launchableUpdates]);
+
+      // We can only run an update marked as embedded if it's actually the update embedded in the
+      // current binary. We might have an older update from a previous binary still listed in the
+      // database with Embedded status so we need to filter that out here.
+      EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifest];
+      NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
+      for (EXUpdatesUpdate *update in launchableUpdates) {
+        if (update.status == EXUpdatesUpdateStatusEmbedded) {
+          if (![update.updateId isEqual:embeddedManifest.updateId]) {
+            continue;
+          }
+        }
+        [filteredLaunchableUpdates addObject:update];
+      }
+
+      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates]);
     });
   });
 }
@@ -79,8 +94,24 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
+- (BOOL)isUsingEmbeddedAssets
+{
+  return _assetFilesMap == nil;
+}
+
 - (void)_ensureAllAssetsExist
 {
+  if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+    NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
+    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
+
+    dispatch_async(self->_completionQueue, ^{
+      self->_completion(self->_launchAssetError, self->_launchAssetUrl != nil);
+      self->_completion = nil;
+    });
+    return;
+  }
+
   _assetFilesMap = [NSMutableDictionary new];
   NSURL *updatesDirectory = EXUpdatesAppController.sharedInstance.updatesDirectory;
 
@@ -92,11 +123,13 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         dispatch_assert_queue(self->_launcherQueue);
         self->_completedAssets++;
 
-        if (asset.isLaunchAsset) {
-          self->_launchAssetUrl = assetLocalUrl;
-        } else {
-          if (asset.localAssetsKey) {
-            self->_assetFilesMap[asset.localAssetsKey] = assetLocalUrl.absoluteString;
+        if (exists) {
+          if (asset.isLaunchAsset) {
+            self->_launchAssetUrl = assetLocalUrl;
+          } else {
+            if (asset.key) {
+              self->_assetFilesMap[asset.key] = assetLocalUrl.absoluteString;
+            }
           }
         }
 
@@ -126,7 +159,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       }
 
       if (error) {
-        NSLog(@"Error copying embedded asset with URL %@: %@", asset.url.absoluteString, error.localizedDescription);
+        NSLog(@"Error copying embedded asset %@: %@", asset.key, error.localizedDescription);
       }
 
       [self _downloadAsset:asset withLocalUrl:assetLocalUrl completion:^(NSError * _Nullable error, EXUpdatesAsset *asset, NSURL *assetLocalUrl) {
@@ -136,7 +169,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             // so we want to propagate this error
             self->_launchAssetError = error;
           }
-          NSLog(@"Failed to load missing asset with URL %@: %@", asset.url.absoluteString, error.localizedDescription);
+          NSLog(@"Failed to load missing asset %@: %@", asset.key, error.localizedDescription);
           completion(NO);
         } else {
           // attempt to update the database record to match the newly downloaded asset
@@ -175,7 +208,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   if (embeddedManifest) {
     EXUpdatesAsset *matchingAsset;
     for (EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
-      if ([[embeddedAsset.url absoluteString] isEqualToString:[asset.url absoluteString]]) {
+      if ([embeddedAsset.key isEqualToString:asset.key]) {
         matchingAsset = embeddedAsset;
         break;
       }
@@ -201,6 +234,9 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
           withLocalUrl:(NSURL *)assetLocalUrl
             completion:(void (^)(NSError * _Nullable error, EXUpdatesAsset *asset, NSURL *assetLocalUrl))completion
 {
+  if (!asset.url) {
+    completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
+  }
   dispatch_async(EXUpdatesAppController.sharedInstance.assetFilesQueue, ^{
     [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{

@@ -1,0 +1,65 @@
+// Gradle script for downloading assets that make up an OTA update and bundling them into the APK
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def config = project.hasProperty("react") ? project.react : [];
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
+
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
+
+    GradleVersion gradleVersion = GradleVersion.current()
+    if (gradleVersion < GradleVersion.version('5.0')) {
+      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
+    }
+
+    // Bundle task name for variant
+    def bundleExpoAssetsTaskName = "create${targetName}ExpoManifest"
+
+    def currentBundleTask = tasks.create(
+        name: bundleExpoAssetsTaskName,
+        type: Exec) {
+      description = "expo-updates: Create manifest for ${targetName}."
+
+      // Create dirs if they are not there (e.g. the "clean" task just ran)
+      doFirst {
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Set up the call to exp
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android", assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android", assetsDir)
+      }
+
+      enabled targetName.toLowerCase().contains("release")
+    }
+
+    currentBundleTask.dependsOn("merge${targetName}Resources")
+    currentBundleTask.dependsOn("merge${targetName}Assets")
+
+    runBefore("process${targetName}Resources", currentBundleTask)
+  }
+}

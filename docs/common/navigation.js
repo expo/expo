@@ -1,5 +1,5 @@
-const prevaledNavigationData = require('./navigation-data');
 const packageVersion = require('../package.json').version;
+const prevaledNavigationData = require('./navigation-data');
 
 // Groups of sections
 // - Each section is a top-level folder within the version directory
@@ -62,10 +62,11 @@ const sections = [
       'Create a Splash Screen',
       'Offline Support',
       'Configuring OTA Updates',
-      'Account Permissions',
+      'Progressive Web Apps',
       'Push Notifications',
       'Using FCM for Push Notifications',
       'Notification Channels',
+      'Account Permissions',
       'Testing with Jest',
       'Using TypeScript',
       'Using Modern JavaScript',
@@ -111,9 +112,10 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
+      'Using Libraries',
       'Viewing Logs',
       'Debugging',
-      'Development Mode',
+      'Development Mode and Production Mode',
       'Common Development Errors',
       'iOS Simulator',
       'Android Studio Emulator',
@@ -122,6 +124,7 @@ const sections = [
       'Release Channels',
       'Building Standalone Apps',
       'Upgrading Expo SDK Walkthrough',
+      'Developing for Web',
       'Linking',
       'How Expo Works',
       'Ejecting to Bare Workflow',
@@ -134,6 +137,7 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Using Libraries',
       'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
@@ -265,21 +269,24 @@ const ROOT = [
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
 
-  let subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
+  const subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
 
   arr.forEach(category => {
     category.weight = reference.indexOf(category.name) * -1;
   });
 
-  let arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
+  const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
+  return subSort(
+    arrSortedByWeight,
+    arrSortedByWeight.findIndex(o => o.weight === 1)
+  );
 };
 
 const sortNav = nav => {
   nav = sortAccordingToReference(nav, ROOT);
 
   sections.forEach(({ name, reference }) => {
-    let section = nav.find(o => {
+    const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
     if (section) {
@@ -297,14 +304,14 @@ function getGroupForSectionName(sectionName) {
 
 // Yikes, this groups together multiple sections under one heading
 const groupNav = nav => {
-  let sections = [];
-  let groupNameToSectionIndex = {};
+  const sections = [];
+  const groupNameToSectionIndex = {};
   nav.forEach(section => {
     // If it's grouped then we add it
-    let groupName = getGroupForSectionName(section.name);
+    const groupName = getGroupForSectionName(section.name);
     if (groupName) {
       if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
-        let existingSectionIndex = groupNameToSectionIndex[groupName];
+        const existingSectionIndex = groupNameToSectionIndex[groupName];
         sections[existingSectionIndex].children.push(section);
       } else {
         groupNameToSectionIndex[groupName] = sections.length;

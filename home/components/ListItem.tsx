@@ -42,32 +42,29 @@ export default class ListItem extends React.PureComponent<Props> {
   render() {
     const { onPress, onLongPress, style, last, margins, title, subtitle } = this.props;
     return (
-      <StyledButton
-        onPress={onPress}
-        onLongPress={onLongPress}
-        fallback={TouchableHighlight}
-        underlayColor="#b7b7b7"
-        style={[
-          styles.container,
-          last && styles.containerLast,
-          last && margins !== false ? styles.marginBottomLast : undefined,
-          style,
-        ]}>
-        {this.renderImage()}
-        <StyledView style={[styles.contentContainer, !last && styles.contentContainerNotLast]}>
-          <View
-            style={[
-              styles.textContainer,
-              title && subtitle ? styles.textContainerBoth : undefined,
-            ]}>
-            {this.renderTitle()}
-            {this.renderSubtitle()}
-          </View>
-          {this.renderRightContent()}
-          {this.renderCheck()}
-          {this.renderArrowForward()}
-        </StyledView>
-      </StyledButton>
+      <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
+        <StyledButton
+          onPress={onPress}
+          onLongPress={onLongPress}
+          fallback={TouchableHighlight}
+          underlayColor="#b7b7b7"
+          style={[styles.container, last && styles.containerLast, style]}>
+          {this.renderImage()}
+          <StyledView style={[styles.contentContainer, !last && styles.contentContainerNotLast]}>
+            <View
+              style={[
+                styles.textContainer,
+                title && subtitle ? styles.textContainerBoth : undefined,
+              ]}>
+              {this.renderTitle()}
+              {this.renderSubtitle()}
+            </View>
+            {this.renderRightContent()}
+            {this.renderCheck()}
+            {this.renderArrowForward()}
+          </StyledView>
+        </StyledButton>
+      </View>
     );
   }
 

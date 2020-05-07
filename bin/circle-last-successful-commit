@@ -19,7 +19,7 @@ if [[ "${CIRCLE_TOKEN:-absent}" == "absent" ]]; then
 fi
 
 circleCurl() {
-  curl -Ss -X GET \
+  curl --fail -Ss -X GET \
     -H 'Accept: application/json' \
     -H "Circle-Token: $CIRCLE_TOKEN" \
     "$@"

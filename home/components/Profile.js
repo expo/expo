@@ -1,14 +1,6 @@
 /* @flow */
 import React from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import { take, takeRight } from 'lodash';
@@ -23,6 +15,7 @@ import SharedStyles from '../constants/SharedStyles';
 import SnackListItem from './SnackListItem';
 import ScrollView from '../components/NavigationScrollView';
 import ListItem from '../components/ListItem';
+import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import ProjectListItem from '../components/ProjectListItem';
 import { StyledText } from '../components/Text';

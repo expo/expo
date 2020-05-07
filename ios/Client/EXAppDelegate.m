@@ -5,8 +5,6 @@
 #import "EXBuildConstants.h"
 #import "EXAppDelegate.h"
 
-#import <Crashlytics/Crashlytics.h>
-#import <Fabric/Fabric.h>
 #import <EXTaskManager/EXTaskService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
@@ -16,20 +14,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ExpoKit (Crashlytics) <CrashlyticsDelegate>
-
-@end
-
 @implementation EXAppDelegate
 
 @synthesize window = _window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
-  CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
-  [Fabric with:@[CrashlyticsKit]];
-  [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
-
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];

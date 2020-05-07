@@ -131,9 +131,9 @@ export declare type NotificationContent = {
     data: {
         [key: string]: unknown;
     };
+    sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & ({
     launchImageName: string | null;
-    sound: 'default' | 'defaultCritical' | 'unknown' | null;
     badge: number | null;
     attachments: {
         identifier: string | null;
@@ -147,7 +147,10 @@ export declare type NotificationContent = {
     targetContentIdentifier?: string;
 } | {
     badge?: number;
-    sound?: 'default' | string;
+    /**
+     * Format: '#AARRGGBB'
+     */
+    color?: string;
     priority?: AndroidNotificationPriority;
     vibrationPattern?: number[];
 });
@@ -168,6 +171,11 @@ export interface NotificationContentInput {
     launchImageName?: string;
     vibrate?: number[];
     priority?: string;
+    /**
+     * Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
+     * see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
+     */
+    color?: string;
     attachments?: {
         url: string;
         identifier?: string;
