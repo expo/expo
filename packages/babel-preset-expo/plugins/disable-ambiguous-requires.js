@@ -11,7 +11,7 @@
 module.exports = () => ({
   visitor: {
     AssignmentExpression(path) {
-      if (!isValidRequire(path) && (isCastedRequire(path) || isChainedRequire(path))) {
+      if (isValidRequire(path) && (isCastedRequire(path) || isChainedRequire(path))) {
         path.remove();
       }
     },
@@ -19,12 +19,13 @@ module.exports = () => ({
 });
 
 /**
- * Is a require statement formatted properly like: `= require('...')`
+ * Is a require statement being assigned to something.
+ * Prevents further checks when `path.node.left` is undefined.
  *
  * @param {*} path
  */
 function isValidRequire(path) {
-  return path.node.operator !== '=' || path.node.left.type !== 'MemberExpression';
+  return path.node.operator === '=' && path.node.left.type === 'MemberExpression';
 }
 
 /**
