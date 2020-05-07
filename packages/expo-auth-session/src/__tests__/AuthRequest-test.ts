@@ -137,7 +137,7 @@ it(`can override the code_challenge with extraParams`, async () => {
 it(`loads an auth request`, async () => {
   const request = new AuthRequest({
     clientId: '',
-    scopes: [],
+    scopes: ['openid'],
     redirectUri: 'foo://bar',
     usePKCE: true,
     prompt: Prompt.SelectAccount,
@@ -147,6 +147,30 @@ it(`loads an auth request`, async () => {
 
   expect(request.url).toMatch(/https:\/\/demo.io/);
   expect(request.url).toContain('prompt=select_account');
+  expect(request.url).toContain('scope=openid');
+  // Test that usePKCE adds the code_challenge
+  expect(request.url).toContain('code_challenge=');
   expect(request.codeVerifier).toBeDefined();
+  expect(typeof request.state).toBe('string');
+});
+
+it(`loads an auth request without pkce`, async () => {
+  const request = new AuthRequest({
+    clientId: '',
+    scopes: [],
+    redirectUri: 'foo://bar',
+    usePKCE: false,
+  });
+  await request.makeAuthUrlAsync(mockDiscovery);
+
+  expect(request.url).toMatch(/https:\/\/demo.io/);
+  // Test that empty scopes omits the scope param.
+  expect(request.url).not.toContain('scope=');
+  // Test that usePKCE adds the code_challenge.
+  // This is required for dropbox auth.
+  expect(request.url).not.toContain('code_challenge=');
+  expect(request.url).not.toContain('code_challenge_method=');
+  expect(request.codeVerifier).not.toBeDefined();
+
   expect(typeof request.state).toBe('string');
 });
