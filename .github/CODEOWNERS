@@ -1,3 +1,5 @@
+# Ignore CHANGELOG.md files
+/packages/**/CHANGELOG.md @ghost
 /packages/@unimodules/core                      @sjchmiela @tsapeta
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
