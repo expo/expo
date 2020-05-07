@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions, ResponseType } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
-import { TokenResponse } from './TokenRequest';
 
 /**
  * Fetch the discovery document from an OpenID Connect issuer.

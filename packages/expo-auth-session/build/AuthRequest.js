@@ -2,11 +2,11 @@ import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
-import { TokenResponse } from './TokenRequest';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
 import { getSessionUrlProvider } from './SessionUrlProvider';
+import { TokenResponse } from './TokenRequest';
 const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
