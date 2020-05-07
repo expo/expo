@@ -150,8 +150,16 @@ export default {
     },
 };
 // Crypto
-const isCryptoAvailable = !!window?.crypto;
-const isSubtleCryptoAvailable = isCryptoAvailable && !!window.crypto.subtle;
+function isCryptoAvailable() {
+    if (!canUseDOM)
+        return false;
+    return !!window?.crypto;
+}
+function isSubtleCryptoAvailable() {
+    if (!isCryptoAvailable())
+        return false;
+    return !!window.crypto.subtle;
+}
 async function getStateFromUrlOrGenerateAsync(inputUrl) {
     const url = new URL(inputUrl);
     if (url.searchParams.has('state') && typeof url.searchParams.get('state') === 'string') {
@@ -173,7 +181,7 @@ function getRedirectUrlFromUrlOrGenerate(inputUrl) {
 }
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 async function generateStateAsync() {
-    if (!isSubtleCryptoAvailable) {
+    if (!isSubtleCryptoAvailable()) {
         throw new CodedError('ERR_WEB_BROWSER_CRYPTO', `The current environment doesn't support crypto. Ensure you are running from a secure origin (https).`);
     }
     const encoder = new TextEncoder();
@@ -189,7 +197,7 @@ function generateRandom(size) {
         arr = new Uint8Array(arr.buffer);
     }
     const array = new Uint8Array(arr.length);
-    if (isCryptoAvailable) {
+    if (isCryptoAvailable()) {
         window.crypto.getRandomValues(array);
     }
     else {

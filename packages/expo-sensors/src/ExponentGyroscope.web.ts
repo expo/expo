@@ -1,6 +1,9 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 
-import { isSensorEnabledAsync } from './utils/isSensorEnabledAsync.web';
+import {
+  isSensorEnabledAsync,
+  assertSensorEventEnabledAsync,
+} from './utils/isSensorEnabledAsync.web';
 
 const eventName = 'devicemotion';
 
@@ -22,6 +25,8 @@ export default {
     });
   },
   startObserving() {
+    assertSensorEventEnabledAsync(eventName);
+
     window.addEventListener(eventName, this._handleMotion);
   },
   stopObserving() {

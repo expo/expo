@@ -82,9 +82,9 @@
   static NSDictionary *defaultPermissions;
   if (!defaultPermissions) {
     defaultPermissions = @{
-                           @"allowsAlert": @(YES),
-                           @"allowsBadge": @(YES),
-                           @"allowsSound": @(YES)
+                           @"allowAlert": @(YES),
+                           @"allowBadge": @(YES),
+                           @"allowSound": @(YES)
                            };
   }
   [self requestPermissions:defaultPermissions withResolver:resolve rejecter:reject];

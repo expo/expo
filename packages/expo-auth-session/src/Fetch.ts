@@ -1,6 +1,6 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
-
-const { URL } = window;
+import { Platform } from 'react-native';
 
 export type Headers = Record<string, string> & {
   'Content-Type': string;
@@ -16,7 +16,11 @@ export type FetchRequest = {
 };
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
-  const url = new URL(requestUrl);
+  if (Platform.OS === 'web' && !canUseDOM) {
+    // @ts-ignore
+    return;
+  }
+  const url = new window.URL(requestUrl);
 
   const request: Omit<RequestInit, 'headers'> & { headers: HeadersInit } = {
     method: fetchRequest.method,

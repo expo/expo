@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 
@@ -23,8 +25,12 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String VIBRATE_KEY = "vibrate";
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
+  private static final String COLOR_KEY = "color";
 
-  public ArgumentsNotificationContentBuilder() {
+  private SoundResolver mSoundResolver;
+
+  public ArgumentsNotificationContentBuilder(Context context) {
+    mSoundResolver = new SoundResolver(context);
   }
 
   public NotificationContent.Builder setPayload(ReadableArguments payload) {
@@ -33,7 +39,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
         .setText(payload.getString(TEXT_KEY))
         .setBody(getBody(payload))
         .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload));
+        .setBadgeCount(getBadgeCount(payload))
+        .setColor(getColor(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -52,6 +59,15 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
     return payload.containsKey(BADGE_KEY) ? payload.getInt(BADGE_KEY) : null;
   }
 
+  protected Number getColor(ReadableArguments payload) {
+    try {
+      return payload.containsKey(COLOR_KEY) ? Color.parseColor(payload.getString(COLOR_KEY)) : null;
+    } catch (IllegalArgumentException e) {
+      Log.e("expo-notifications", "Could not have parsed color passed in notification.");
+      return null;
+    }
+  }
+
   protected boolean shouldPlayDefaultSound(ReadableArguments payload) {
     if (payload.get(SOUND_KEY) instanceof Boolean) {
       return payload.getBoolean(SOUND_KEY);
@@ -62,10 +78,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   }
 
   protected Uri getSound(ReadableArguments payload) {
-    if (payload.getString(SOUND_KEY) != null) {
-      return Uri.parse(payload.getString(SOUND_KEY));
-    }
-    return null;
+    String soundValue = payload.getString(SOUND_KEY);
+    return mSoundResolver.resolve(soundValue);
   }
 
   @Nullable

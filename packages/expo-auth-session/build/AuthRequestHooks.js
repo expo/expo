@@ -37,7 +37,7 @@ export function useAuthRequest(config, discovery) {
     useEffect(() => {
         if (config && discovery) {
             const request = new AuthRequest(config);
-            request.buildUrlAsync(discovery).then(() => setRequest(request));
+            request.makeAuthUrlAsync(discovery).then(() => setRequest(request));
         }
     }, [
         discovery?.authorizationEndpoint,

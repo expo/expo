@@ -33,7 +33,7 @@ If you close the `expo-cli` or turn off your computer, you won't be able to acce
 
 ## Use the Expo SDK and community standard native libraries to build out native features
 
-Let's scroll through the [API Reference](/versions/latest/sdk/overview/) to find packages that provide the capabilities that we need. If we know right away that the Expo SDK doesn’t have the necessary native APIs built-in, then we should probably eject or re-initialize with the bare workflow template.
+Let's scroll through the [API Reference](/versions/latest/) to find packages that provide the capabilities that we need. If we know right away that the Expo SDK doesn’t have the necessary native APIs built-in, then we should probably eject or re-initialize with the bare workflow template.
 
 Let's say we had mockups for our app that look like the following:
 
@@ -41,7 +41,7 @@ Let's say we had mockups for our app that look like the following:
 <img src="/static/images/exploring-managed/mockups.png" alt="Mockups of app screens" />
 </div>
 
-> _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear/), but let's pretend they are mockups for the sake of demonstration._
+> _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
 
 We can tell from looking at the mockups that we’ll need a camera, access to permissions, some way to apply effects to an image, and a way to access the device media library to select images and to save images to an album. We can find equivalents for this by scrolling through the API reference.
 
@@ -129,7 +129,7 @@ When we built our Android app bundle above, we told it to point to a specific An
 
 To determine the rules for when apps will download and apply these updates, [read about configuring OTA updates](../../guides/configuring-ota-updates/).
 
-We frequently release updates to the [Expo SDK](/versions/latest/sdk/overview/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
+We frequently release updates to the [Expo SDK](/versions/latest/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Sending notifications
 

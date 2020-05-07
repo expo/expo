@@ -71,23 +71,13 @@ Run `pod install` in the ios directory after installing the npm package.
 
 #### Build Phases
 
-In Xcode, under the `Build Phases` tab of your main project, expand the phase entitled "Bundle React Native code and images." Optionally rename the phase to "Bundle Expo Assets," and replace the entire body of the script with the following:
+In Xcode, under the `Build Phases` tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following line to the bottom of the script:
 
 ```
-../node_modules/expo-updates/bundle-expo-assets.sh
+../node_modules/expo-updates/scripts/create-manifest-ios.sh
 ```
 
 This will configure your project to bundle assets from your published update when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
-
-**Optional: Do not start packager in release builds**
-
-This step is completely optional! Since the React Native packager is not used in release builds, you can prevent it from starting and opening an unnecessary terminal window every time you make a release build. To do so, just add the following lines to the beginning of the script in the "Start Packager" build phase:
-
-```sh
-if [ "$CONFIGURATION" == "Release" ]; then
-  exit 0;
-fi
-```
 
 #### `Expo.plist`
 
@@ -213,14 +203,8 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
 Make the following change in order to bundle assets from expo-updates instead of your local metro server when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
 
 ```diff
- project.ext.react = [
-     entryFile: "index.js",
-+    bundleInRelease: false,
-     enableHermes: false
- ]
-
  apply from: "../../node_modules/react-native/react.gradle"
-+apply from: "../../node_modules/expo-updates/expo-updates.gradle"
++apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
 ```
 
 #### `AndroidManifest.xml`
@@ -366,6 +350,7 @@ import * as Updates from 'expo-updates';
 ### Constants
 
 - **`Updates.manifest` (_object_)** - If `expo-updates` is enabled, this is the [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running. In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
+- **`Updates.releaseChannel` (_string_)** - The name of the release channel currently configured in this standalone or bare app. In development clients, this is the name of the release channel of the currently running update.
 - **`Updates.isEmergencyLaunch` (_boolean_)** - `expo-updates` does its very best to always launch monotonically newer versions of your app so you don't need to worry about backwards compatibility when you put out an update. In very rare cases, it's possible that `expo-updates` may need to fall back to the update that's embedded in the app binary, even after newer updates have been downloaded and run (an "emergency launch"). This boolean will be `true` if the app is launching under this fallback mechanism and `false` otherwise. If you are concerned about backwards compatibility of future updates to your app, you can use this constant to provide special behavior for this rare case.
 
 ### `Updates.reloadAsync()`

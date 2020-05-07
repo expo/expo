@@ -58,6 +58,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Removed `Orientation.PORTRAIT` and `Orientation.LANDSCAPE` from `ScreenOrientation` in favor of their more specific versions. ([#6760](https://github.com/expo/expo/pull/6760) by [@lukmccall](https://github.com/lukmccall))
 - `LocalAuthentication.authenticateAsync` will now display Android's UI component to prompt the user to authenticate. ([#6846](https://github.com/expo/expo/pull/6846) by [@LinusU](https://github.com/LinusU))
 - `StatusBar` on Android has `dark-content` by default to match iOS. ([#7317](https://github.com/expo/expo/pull/7317) [@bbarthec](https://github.com/bbarthec))
+- All native Facebook API calls made in the Expo Client app on iOS are made with the Expo Client's own Facebook App ID. ([#7931](https://github.com/expo/expo/pull/7931) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
@@ -113,6 +114,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed some TypeScript types not being exported. ([#7120](https://github.com/expo/expo/pull/7120) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `TaskManager.defineTask` logging too many warnings and not working well with Fast Refresh. ([#7202](https://github.com/expo/expo/pull/7202) by [@tsapeta](https://github.com/tsapeta))
 - Added doc comments to `TaskManager` and exported more types. ([#7202](https://github.com/expo/expo/pull/7202) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `Facebook.logInWithReadPermissionsAsync` redirecting to a blank white screen in the Expo Client app on iOS. ([#7931](https://github.com/expo/expo/pull/7931) by [@cruzach](https://github.com/cruzach))
+- Fixed `Facebook.logInWithReadPermissionsAsync` resulting in the WebBrowser login modal remaining open after redirecting back to the app if selected "Sign in with Facebook app." ([#7931](https://github.com/expo/expo/pull/7931) by [@cruzach](https://github.com/cruzach))
 
 ## 36.0.0
 

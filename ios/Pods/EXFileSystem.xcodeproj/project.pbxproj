@@ -7,28 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0188B05A0FB138B59A660960F201868E /* EXFileSystem-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ACD4938FD2FB7FF7F4D96C5CCB14C8F5 /* EXFileSystem-dummy.m */; };
-		0193144631974077DFFF1AAD0BB5514E /* EXFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B9351D788AE558E4E542E53E3373205 /* EXFileSystem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1EFC3D581406C918877C7433BA8060DF /* EXFileSystemAssetLibraryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A2BC5C55BBEEFD58A8F4A0EA4B6AC1FF /* EXFileSystemAssetLibraryHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		64A4FE050B36416C1A6109023EB3E6AF /* EXFilePermissionModule.h in Headers */ = {isa = PBXBuildFile; fileRef = BEE77DBA08B50711CE658173EA92FB48 /* EXFilePermissionModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6C30E39ED7BEF8B2ED8C463F6F34E945 /* EXFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8423E9B7C8A8CB9C0F116AF010D97A48 /* EXFilePermissionModule.m */; };
-		714DE0FABD6CE9C3988659D225726074 /* EXDownloadDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = D5D7D9358207BC62C34475526FC8092A /* EXDownloadDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7CD528FA8B8280D96FCF95C604D5F890 /* EXDownloadDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFF3B398463C3E2FCE7A504141458D8 /* EXDownloadDelegate.m */; };
-		90FBF9D286470DD6D54A439874D61E5B /* EXFileSystemLocalFileHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 844B123502CAFF955DD8CACEAF51A3FA /* EXFileSystemLocalFileHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A48BAEC1D5C60C2288046F626B678CAD /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 5141E1FBF99F0E7B3D2B67D9184F571F /* EXFileSystemLocalFileHandler.m */; };
-		B15EA10FD68536BFBEE1EB97374C9471 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 319696BCC4428AE4A0A6A7B34ED6C6F1 /* EXFileSystem.m */; };
-		C6DBC061F84B131E7B5104B7FD878583 /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = E644D26D4B855249F2D3759650E3127F /* EXFileSystemAssetLibraryHandler.m */; };
+		0281C9CE1BD7C3BC8EDF1F2E22FB0EBD /* EXSessionTaskDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F406F378219B6058FF5FE20EC2282A4 /* EXSessionTaskDispatcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		093680AC222AEC8EB511BCB5D03F1B09 /* EXFileSystemAssetLibraryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = AD67155779C5B489D59BF9671D7A7A20 /* EXFileSystemAssetLibraryHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1193044BE0FF5A1BB48F4947FE66077B /* EXSessionDownloadTaskDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6834367363FE4A3C0463B2833614BAA6 /* EXSessionDownloadTaskDelegate.m */; };
+		1472216FB12FE0264AD50591C84A0B17 /* EXSessionUploadTaskDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BDBAE67C4A8F6496335A376FBDDF68 /* EXSessionUploadTaskDelegate.m */; };
+		169A0A17E575416707AC69BCDBD1862D /* EXSessionTaskDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 280B2190FAC84A134C7527F68C79F72A /* EXSessionTaskDispatcher.m */; };
+		21EE24FC9C2CBD7C860FAFEBA06A2ACF /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E1B2F25EEA8F385329A7EA21F25A8A7 /* EXFileSystemLocalFileHandler.m */; };
+		2D8DEFA5310B375C9F8056683BA316C9 /* EXFileSystem-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CB3DC7D3AF452019FDB3F31EF84472BA /* EXFileSystem-dummy.m */; };
+		32D8ABFFFC80286B58BD63D805C5FE41 /* EXFileSystemLocalFileHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 93DCD8AA51BEFAB1AA1EAD9C20AB81FF /* EXFileSystemLocalFileHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3E74F9573C4D374245CC3741DC849519 /* EXSessionDownloadTaskDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = BC14DA86C59BD9BAFCE3BCB1FA0C3975 /* EXSessionDownloadTaskDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		572BE4E20AA48B68D9705DDCAD950CDE /* EXResumablesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E525ACFAC3143E753091AD968586E1 /* EXResumablesManager.m */; };
+		638BC24A267620F1A401142E598CC927 /* EXSessionResumableDownloadTaskDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 7712FB6DAE14179849B476EF1B8D71B8 /* EXSessionResumableDownloadTaskDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8AEC4B0ABA25A090237470B2425B9D19 /* EXSessionTaskDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ADD98470D4208FF8EBF93A1C908D3793 /* EXSessionTaskDelegate.m */; };
+		9B3B196ED7BCFE8C4F62980144D9BE02 /* NSData+EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = D02B42F8032D255615E0F515A20B5D9C /* NSData+EXFileSystem.m */; };
+		9D5138C78A5B6EFC03C6B4249D3C6135 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = D079357A7831CED3DA90DF7F6EC267ED /* EXFileSystem.m */; };
+		A4CEFABD62A85DFC9E22EDF273F6DAF4 /* EXFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C50F915D905B6D59FF513B545B249C /* EXFilePermissionModule.m */; };
+		A69D77B5BA64FE4C580DB149A442EDC5 /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9261F8D5915BE663823B43417209488A /* EXFileSystemAssetLibraryHandler.m */; };
+		A9ECBE2B66A0523221AF0F7E56276825 /* EXSessionUploadTaskDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 928B15E4BF2C75567D76610D74917FAD /* EXSessionUploadTaskDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		ACDDF6424847C2F724AD012ECECDFA6D /* NSData+EXFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 95506174292E5CE15AE170C31D64D37A /* NSData+EXFileSystem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BCEA1B1EA108CE9768043B4604321F4B /* EXResumablesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 06DE0CE2C65CAFC5B7F83BE9F3AD1166 /* EXResumablesManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C082197B331892F48677AEF3B4ACBB01 /* EXSessionResumableDownloadTaskDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D19F35B42AEE0CDFE6C3B6C808F631FD /* EXSessionResumableDownloadTaskDelegate.m */; };
+		C8F9CA1CD08D69089B2396CA63338C80 /* EXSessionTaskDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = EABCD5792328355D1CA46ADC8746B9BE /* EXSessionTaskDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D3ED9D363752063A95AFAEF73D006244 /* EXFilePermissionModule.h in Headers */ = {isa = PBXBuildFile; fileRef = B82C22F2D5B80E331EDD76E045F94E14 /* EXFilePermissionModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DB237898CCB6D83D53AD28D4FCF27DA9 /* EXFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F6F95A92F6CC6F7C24BEB9821CD138C /* EXFileSystem.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		ABB74E5F50C21C99CB586EA2D9CA7935 /* PBXContainerItemProxy */ = {
+		0A1C36F581CC744BCBF9B28A1DD6B393 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DB7A5E0774C81BF237989A168F72473D /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
-		ACB39DE1377270E674D273C5BD8D80AA /* PBXContainerItemProxy */ = {
+		D8652C07F470C05AB29E112561A90B46 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B7D868FD99FE988CFE1D77E6BA3CAF6A /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
@@ -38,27 +50,39 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1AFF3B398463C3E2FCE7A504141458D8 /* EXDownloadDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXDownloadDelegate.m; path = EXFileSystem/EXDownloadDelegate.m; sourceTree = "<group>"; };
+		06DE0CE2C65CAFC5B7F83BE9F3AD1166 /* EXResumablesManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXResumablesManager.h; sourceTree = "<group>"; };
+		0F6F95A92F6CC6F7C24BEB9821CD138C /* EXFileSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystem.h; path = EXFileSystem/EXFileSystem.h; sourceTree = "<group>"; };
 		1D00425005619BB2281394A9C7D73013 /* libEXFileSystem.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFileSystem.a; path = libEXFileSystem.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B9351D788AE558E4E542E53E3373205 /* EXFileSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystem.h; path = EXFileSystem/EXFileSystem.h; sourceTree = "<group>"; };
-		319696BCC4428AE4A0A6A7B34ED6C6F1 /* EXFileSystem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystem.m; path = EXFileSystem/EXFileSystem.m; sourceTree = "<group>"; };
-		446D0AB8E5F4F0E222FB2B714B5061AC /* EXFileSystem.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFileSystem.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		5141E1FBF99F0E7B3D2B67D9184F571F /* EXFileSystemLocalFileHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystemLocalFileHandler.m; path = EXFileSystem/EXFileSystemLocalFileHandler.m; sourceTree = "<group>"; };
-		78753675F993821932D3C13C8620D45D /* EXFileSystem-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFileSystem-prefix.pch"; sourceTree = "<group>"; };
-		8423E9B7C8A8CB9C0F116AF010D97A48 /* EXFilePermissionModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFilePermissionModule.m; path = EXFileSystem/EXFilePermissionModule.m; sourceTree = "<group>"; };
-		844B123502CAFF955DD8CACEAF51A3FA /* EXFileSystemLocalFileHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystemLocalFileHandler.h; path = EXFileSystem/EXFileSystemLocalFileHandler.h; sourceTree = "<group>"; };
-		85F3C30D2A4798DA595702DFA30FE344 /* EXFileSystem.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFileSystem.xcconfig; sourceTree = "<group>"; };
-		A2BC5C55BBEEFD58A8F4A0EA4B6AC1FF /* EXFileSystemAssetLibraryHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystemAssetLibraryHandler.h; path = EXFileSystem/EXFileSystemAssetLibraryHandler.h; sourceTree = "<group>"; };
-		ACD4938FD2FB7FF7F4D96C5CCB14C8F5 /* EXFileSystem-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFileSystem-dummy.m"; sourceTree = "<group>"; };
+		280B2190FAC84A134C7527F68C79F72A /* EXSessionTaskDispatcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXSessionTaskDispatcher.m; sourceTree = "<group>"; };
+		49E525ACFAC3143E753091AD968586E1 /* EXResumablesManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXResumablesManager.m; sourceTree = "<group>"; };
+		4F406F378219B6058FF5FE20EC2282A4 /* EXSessionTaskDispatcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXSessionTaskDispatcher.h; sourceTree = "<group>"; };
+		50D1C2512F62C02972E67EFB35FFB2DF /* EXFileSystem-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFileSystem-prefix.pch"; sourceTree = "<group>"; };
+		66C50F915D905B6D59FF513B545B249C /* EXFilePermissionModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFilePermissionModule.m; path = EXFileSystem/EXFilePermissionModule.m; sourceTree = "<group>"; };
+		6834367363FE4A3C0463B2833614BAA6 /* EXSessionDownloadTaskDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXSessionDownloadTaskDelegate.m; sourceTree = "<group>"; };
+		7712FB6DAE14179849B476EF1B8D71B8 /* EXSessionResumableDownloadTaskDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXSessionResumableDownloadTaskDelegate.h; sourceTree = "<group>"; };
+		8E1B2F25EEA8F385329A7EA21F25A8A7 /* EXFileSystemLocalFileHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystemLocalFileHandler.m; path = EXFileSystem/EXFileSystemLocalFileHandler.m; sourceTree = "<group>"; };
+		9261F8D5915BE663823B43417209488A /* EXFileSystemAssetLibraryHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystemAssetLibraryHandler.m; path = EXFileSystem/EXFileSystemAssetLibraryHandler.m; sourceTree = "<group>"; };
+		928B15E4BF2C75567D76610D74917FAD /* EXSessionUploadTaskDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXSessionUploadTaskDelegate.h; sourceTree = "<group>"; };
+		93DCD8AA51BEFAB1AA1EAD9C20AB81FF /* EXFileSystemLocalFileHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystemLocalFileHandler.h; path = EXFileSystem/EXFileSystemLocalFileHandler.h; sourceTree = "<group>"; };
+		95506174292E5CE15AE170C31D64D37A /* NSData+EXFileSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+EXFileSystem.h"; path = "EXFileSystem/NSData+EXFileSystem.h"; sourceTree = "<group>"; };
+		96C1CC95CAFE26B28CA766FDA9754489 /* EXFileSystem.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFileSystem.xcconfig; sourceTree = "<group>"; };
+		A5D6C62452B520240AEA96FDE132FE2A /* EXFileSystem.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFileSystem.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		AD67155779C5B489D59BF9671D7A7A20 /* EXFileSystemAssetLibraryHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFileSystemAssetLibraryHandler.h; path = EXFileSystem/EXFileSystemAssetLibraryHandler.h; sourceTree = "<group>"; };
+		ADD98470D4208FF8EBF93A1C908D3793 /* EXSessionTaskDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXSessionTaskDelegate.m; sourceTree = "<group>"; };
 		B7D868FD99FE988CFE1D77E6BA3CAF6A /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		BEE77DBA08B50711CE658173EA92FB48 /* EXFilePermissionModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFilePermissionModule.h; path = EXFileSystem/EXFilePermissionModule.h; sourceTree = "<group>"; };
-		D5D7D9358207BC62C34475526FC8092A /* EXDownloadDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXDownloadDelegate.h; path = EXFileSystem/EXDownloadDelegate.h; sourceTree = "<group>"; };
+		B82C22F2D5B80E331EDD76E045F94E14 /* EXFilePermissionModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFilePermissionModule.h; path = EXFileSystem/EXFilePermissionModule.h; sourceTree = "<group>"; };
+		BC14DA86C59BD9BAFCE3BCB1FA0C3975 /* EXSessionDownloadTaskDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXSessionDownloadTaskDelegate.h; sourceTree = "<group>"; };
+		CB3DC7D3AF452019FDB3F31EF84472BA /* EXFileSystem-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFileSystem-dummy.m"; sourceTree = "<group>"; };
+		D02B42F8032D255615E0F515A20B5D9C /* NSData+EXFileSystem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+EXFileSystem.m"; path = "EXFileSystem/NSData+EXFileSystem.m"; sourceTree = "<group>"; };
+		D079357A7831CED3DA90DF7F6EC267ED /* EXFileSystem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystem.m; path = EXFileSystem/EXFileSystem.m; sourceTree = "<group>"; };
+		D19F35B42AEE0CDFE6C3B6C808F631FD /* EXSessionResumableDownloadTaskDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXSessionResumableDownloadTaskDelegate.m; sourceTree = "<group>"; };
 		DB7A5E0774C81BF237989A168F72473D /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		E644D26D4B855249F2D3759650E3127F /* EXFileSystemAssetLibraryHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFileSystemAssetLibraryHandler.m; path = EXFileSystem/EXFileSystemAssetLibraryHandler.m; sourceTree = "<group>"; };
+		EABCD5792328355D1CA46ADC8746B9BE /* EXSessionTaskDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXSessionTaskDelegate.h; sourceTree = "<group>"; };
+		F0BDBAE67C4A8F6496335A376FBDDF68 /* EXSessionUploadTaskDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXSessionUploadTaskDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B2089F56EB14848D474AC752512E4374 /* Frameworks */ = {
+		170574363DADB91B078D3F235E101084 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -72,7 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				18F6743EDC9CC6633A65FB5F93D28C5E /* Dependencies */,
-				413ED40835FBB0F0C2E6240B36AB69CB /* EXFileSystem */,
+				6A3465ED78E62D519D2EC09F490D8FF8 /* EXFileSystem */,
 				5A3996061D17FD8988FCB87053CAE851 /* Frameworks */,
 				670112C81C380947080C6C5BA333E790 /* Products */,
 			);
@@ -87,35 +111,24 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		413ED40835FBB0F0C2E6240B36AB69CB /* EXFileSystem */ = {
+		4E60196CF30543F5022F116394E17452 /* EXSessionTasks */ = {
 			isa = PBXGroup;
 			children = (
-				D5D7D9358207BC62C34475526FC8092A /* EXDownloadDelegate.h */,
-				1AFF3B398463C3E2FCE7A504141458D8 /* EXDownloadDelegate.m */,
-				BEE77DBA08B50711CE658173EA92FB48 /* EXFilePermissionModule.h */,
-				8423E9B7C8A8CB9C0F116AF010D97A48 /* EXFilePermissionModule.m */,
-				2B9351D788AE558E4E542E53E3373205 /* EXFileSystem.h */,
-				319696BCC4428AE4A0A6A7B34ED6C6F1 /* EXFileSystem.m */,
-				A2BC5C55BBEEFD58A8F4A0EA4B6AC1FF /* EXFileSystemAssetLibraryHandler.h */,
-				E644D26D4B855249F2D3759650E3127F /* EXFileSystemAssetLibraryHandler.m */,
-				844B123502CAFF955DD8CACEAF51A3FA /* EXFileSystemLocalFileHandler.h */,
-				5141E1FBF99F0E7B3D2B67D9184F571F /* EXFileSystemLocalFileHandler.m */,
-				A58C1DAA2D4656498C3621E03677003A /* Pod */,
-				4EC6DACDD08DB4B35DDD5875F7F75620 /* Support Files */,
+				06DE0CE2C65CAFC5B7F83BE9F3AD1166 /* EXResumablesManager.h */,
+				49E525ACFAC3143E753091AD968586E1 /* EXResumablesManager.m */,
+				BC14DA86C59BD9BAFCE3BCB1FA0C3975 /* EXSessionDownloadTaskDelegate.h */,
+				6834367363FE4A3C0463B2833614BAA6 /* EXSessionDownloadTaskDelegate.m */,
+				7712FB6DAE14179849B476EF1B8D71B8 /* EXSessionResumableDownloadTaskDelegate.h */,
+				D19F35B42AEE0CDFE6C3B6C808F631FD /* EXSessionResumableDownloadTaskDelegate.m */,
+				EABCD5792328355D1CA46ADC8746B9BE /* EXSessionTaskDelegate.h */,
+				ADD98470D4208FF8EBF93A1C908D3793 /* EXSessionTaskDelegate.m */,
+				4F406F378219B6058FF5FE20EC2282A4 /* EXSessionTaskDispatcher.h */,
+				280B2190FAC84A134C7527F68C79F72A /* EXSessionTaskDispatcher.m */,
+				928B15E4BF2C75567D76610D74917FAD /* EXSessionUploadTaskDelegate.h */,
+				F0BDBAE67C4A8F6496335A376FBDDF68 /* EXSessionUploadTaskDelegate.m */,
 			);
-			name = EXFileSystem;
-			path = "../../packages/expo-file-system/ios";
-			sourceTree = "<group>";
-		};
-		4EC6DACDD08DB4B35DDD5875F7F75620 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				85F3C30D2A4798DA595702DFA30FE344 /* EXFileSystem.xcconfig */,
-				ACD4938FD2FB7FF7F4D96C5CCB14C8F5 /* EXFileSystem-dummy.m */,
-				78753675F993821932D3C13C8620D45D /* EXFileSystem-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXFileSystem";
+			name = EXSessionTasks;
+			path = EXFileSystem/EXSessionTasks;
 			sourceTree = "<group>";
 		};
 		5A3996061D17FD8988FCB87053CAE851 /* Frameworks */ = {
@@ -133,10 +146,42 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		A58C1DAA2D4656498C3621E03677003A /* Pod */ = {
+		6A3465ED78E62D519D2EC09F490D8FF8 /* EXFileSystem */ = {
 			isa = PBXGroup;
 			children = (
-				446D0AB8E5F4F0E222FB2B714B5061AC /* EXFileSystem.podspec */,
+				B82C22F2D5B80E331EDD76E045F94E14 /* EXFilePermissionModule.h */,
+				66C50F915D905B6D59FF513B545B249C /* EXFilePermissionModule.m */,
+				0F6F95A92F6CC6F7C24BEB9821CD138C /* EXFileSystem.h */,
+				D079357A7831CED3DA90DF7F6EC267ED /* EXFileSystem.m */,
+				AD67155779C5B489D59BF9671D7A7A20 /* EXFileSystemAssetLibraryHandler.h */,
+				9261F8D5915BE663823B43417209488A /* EXFileSystemAssetLibraryHandler.m */,
+				93DCD8AA51BEFAB1AA1EAD9C20AB81FF /* EXFileSystemLocalFileHandler.h */,
+				8E1B2F25EEA8F385329A7EA21F25A8A7 /* EXFileSystemLocalFileHandler.m */,
+				95506174292E5CE15AE170C31D64D37A /* NSData+EXFileSystem.h */,
+				D02B42F8032D255615E0F515A20B5D9C /* NSData+EXFileSystem.m */,
+				4E60196CF30543F5022F116394E17452 /* EXSessionTasks */,
+				FEAB342D8BE1365D122D7B879FDF628D /* Pod */,
+				70E8796DC469BBB6A7F6521FEA549878 /* Support Files */,
+			);
+			name = EXFileSystem;
+			path = "../../packages/expo-file-system/ios";
+			sourceTree = "<group>";
+		};
+		70E8796DC469BBB6A7F6521FEA549878 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				96C1CC95CAFE26B28CA766FDA9754489 /* EXFileSystem.xcconfig */,
+				CB3DC7D3AF452019FDB3F31EF84472BA /* EXFileSystem-dummy.m */,
+				50D1C2512F62C02972E67EFB35FFB2DF /* EXFileSystem-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXFileSystem";
+			sourceTree = "<group>";
+		};
+		FEAB342D8BE1365D122D7B879FDF628D /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A5D6C62452B520240AEA96FDE132FE2A /* EXFileSystem.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -144,15 +189,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		7E89BA0216880AFF8FC7A1FF45FC50F9 /* Headers */ = {
+		5B5E68E8B07E565F85FF097C5121158E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				714DE0FABD6CE9C3988659D225726074 /* EXDownloadDelegate.h in Headers */,
-				64A4FE050B36416C1A6109023EB3E6AF /* EXFilePermissionModule.h in Headers */,
-				0193144631974077DFFF1AAD0BB5514E /* EXFileSystem.h in Headers */,
-				1EFC3D581406C918877C7433BA8060DF /* EXFileSystemAssetLibraryHandler.h in Headers */,
-				90FBF9D286470DD6D54A439874D61E5B /* EXFileSystemLocalFileHandler.h in Headers */,
+				D3ED9D363752063A95AFAEF73D006244 /* EXFilePermissionModule.h in Headers */,
+				DB237898CCB6D83D53AD28D4FCF27DA9 /* EXFileSystem.h in Headers */,
+				093680AC222AEC8EB511BCB5D03F1B09 /* EXFileSystemAssetLibraryHandler.h in Headers */,
+				32D8ABFFFC80286B58BD63D805C5FE41 /* EXFileSystemLocalFileHandler.h in Headers */,
+				BCEA1B1EA108CE9768043B4604321F4B /* EXResumablesManager.h in Headers */,
+				3E74F9573C4D374245CC3741DC849519 /* EXSessionDownloadTaskDelegate.h in Headers */,
+				638BC24A267620F1A401142E598CC927 /* EXSessionResumableDownloadTaskDelegate.h in Headers */,
+				C8F9CA1CD08D69089B2396CA63338C80 /* EXSessionTaskDelegate.h in Headers */,
+				0281C9CE1BD7C3BC8EDF1F2E22FB0EBD /* EXSessionTaskDispatcher.h in Headers */,
+				A9ECBE2B66A0523221AF0F7E56276825 /* EXSessionUploadTaskDelegate.h in Headers */,
+				ACDDF6424847C2F724AD012ECECDFA6D /* NSData+EXFileSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,17 +212,17 @@
 /* Begin PBXNativeTarget section */
 		5232535845650ADAE59870B722468D8A /* EXFileSystem */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0C477AB07271F9F19604AB45D7274E13 /* Build configuration list for PBXNativeTarget "EXFileSystem" */;
+			buildConfigurationList = EBFCD1AF69C2FD18A1900786F81793E5 /* Build configuration list for PBXNativeTarget "EXFileSystem" */;
 			buildPhases = (
-				7E89BA0216880AFF8FC7A1FF45FC50F9 /* Headers */,
-				A06EDA1DD816EAFC519CE1E000DC0914 /* Sources */,
-				B2089F56EB14848D474AC752512E4374 /* Frameworks */,
+				5B5E68E8B07E565F85FF097C5121158E /* Headers */,
+				78E8042FBD0973E92CF7903A90753C5B /* Sources */,
+				170574363DADB91B078D3F235E101084 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				FBF3F7D56C869E6C20EA1E6FF5AA0E9A /* PBXTargetDependency */,
-				A63DA84510FFC74A444E3797CA469E64 /* PBXTargetDependency */,
+				1E2205B8C549BEC775DAEB051A5AEBA6 /* PBXTargetDependency */,
+				CCC0B2D613C64A18D9B70FFC51B39656 /* PBXTargetDependency */,
 			);
 			name = EXFileSystem;
 			productName = EXFileSystem;
@@ -214,31 +265,37 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A06EDA1DD816EAFC519CE1E000DC0914 /* Sources */ = {
+		78E8042FBD0973E92CF7903A90753C5B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CD528FA8B8280D96FCF95C604D5F890 /* EXDownloadDelegate.m in Sources */,
-				6C30E39ED7BEF8B2ED8C463F6F34E945 /* EXFilePermissionModule.m in Sources */,
-				0188B05A0FB138B59A660960F201868E /* EXFileSystem-dummy.m in Sources */,
-				B15EA10FD68536BFBEE1EB97374C9471 /* EXFileSystem.m in Sources */,
-				C6DBC061F84B131E7B5104B7FD878583 /* EXFileSystemAssetLibraryHandler.m in Sources */,
-				A48BAEC1D5C60C2288046F626B678CAD /* EXFileSystemLocalFileHandler.m in Sources */,
+				A4CEFABD62A85DFC9E22EDF273F6DAF4 /* EXFilePermissionModule.m in Sources */,
+				2D8DEFA5310B375C9F8056683BA316C9 /* EXFileSystem-dummy.m in Sources */,
+				9D5138C78A5B6EFC03C6B4249D3C6135 /* EXFileSystem.m in Sources */,
+				A69D77B5BA64FE4C580DB149A442EDC5 /* EXFileSystemAssetLibraryHandler.m in Sources */,
+				21EE24FC9C2CBD7C860FAFEBA06A2ACF /* EXFileSystemLocalFileHandler.m in Sources */,
+				572BE4E20AA48B68D9705DDCAD950CDE /* EXResumablesManager.m in Sources */,
+				1193044BE0FF5A1BB48F4947FE66077B /* EXSessionDownloadTaskDelegate.m in Sources */,
+				C082197B331892F48677AEF3B4ACBB01 /* EXSessionResumableDownloadTaskDelegate.m in Sources */,
+				8AEC4B0ABA25A090237470B2425B9D19 /* EXSessionTaskDelegate.m in Sources */,
+				169A0A17E575416707AC69BCDBD1862D /* EXSessionTaskDispatcher.m in Sources */,
+				1472216FB12FE0264AD50591C84A0B17 /* EXSessionUploadTaskDelegate.m in Sources */,
+				9B3B196ED7BCFE8C4F62980144D9BE02 /* NSData+EXFileSystem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A63DA84510FFC74A444E3797CA469E64 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMFileSystemInterface;
-			targetProxy = ACB39DE1377270E674D273C5BD8D80AA /* PBXContainerItemProxy */;
-		};
-		FBF3F7D56C869E6C20EA1E6FF5AA0E9A /* PBXTargetDependency */ = {
+		1E2205B8C549BEC775DAEB051A5AEBA6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = ABB74E5F50C21C99CB586EA2D9CA7935 /* PBXContainerItemProxy */;
+			targetProxy = 0A1C36F581CC744BCBF9B28A1DD6B393 /* PBXContainerItemProxy */;
+		};
+		CCC0B2D613C64A18D9B70FFC51B39656 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = D8652C07F470C05AB29E112561A90B46 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -307,6 +364,55 @@
 			};
 			name = Debug;
 		};
+		5B8088958419DBBD7C9DC7826B97894B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 96C1CC95CAFE26B28CA766FDA9754489 /* EXFileSystem.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFileSystem;
+				PRODUCT_NAME = EXFileSystem;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8FED7EBC1C7FD2EBC7A5F79555811065 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 96C1CC95CAFE26B28CA766FDA9754489 /* EXFileSystem.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFileSystem;
+				PRODUCT_NAME = EXFileSystem;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		BF06F1449A58C7C8C948C86484C15411 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -367,72 +473,23 @@
 			};
 			name = Release;
 		};
-		E4B831358471BF60B209BB6BCE0AD312 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 85F3C30D2A4798DA595702DFA30FE344 /* EXFileSystem.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFileSystem;
-				PRODUCT_NAME = EXFileSystem;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		FDF5E6AED6E23D6DF91A74772161072C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 85F3C30D2A4798DA595702DFA30FE344 /* EXFileSystem.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXFileSystem/EXFileSystem-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXFileSystem;
-				PRODUCT_NAME = EXFileSystem;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0C477AB07271F9F19604AB45D7274E13 /* Build configuration list for PBXNativeTarget "EXFileSystem" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FDF5E6AED6E23D6DF91A74772161072C /* Debug */,
-				E4B831358471BF60B209BB6BCE0AD312 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		3445E264FC328593D1FA11E65799C2C8 /* Build configuration list for PBXProject "EXFileSystem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1E28A951E573F89861B94EB29589BC9A /* Debug */,
 				BF06F1449A58C7C8C948C86484C15411 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EBFCD1AF69C2FD18A1900786F81793E5 /* Build configuration list for PBXNativeTarget "EXFileSystem" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FED7EBC1C7FD2EBC7A5F79555811065 /* Debug */,
+				5B8088958419DBBD7C9DC7826B97894B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

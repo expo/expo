@@ -67,7 +67,7 @@ public class NotificationScheduler extends ExportedModule {
   @ExpoMethod
   public void scheduleNotificationAsync(final String identifier, ReadableArguments notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
     try {
-      NotificationContent content = new ArgumentsNotificationContentBuilder().setPayload(notificationContentMap).build();
+      NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(notificationContentMap).build();
       NotificationRequest request = new NotificationRequest(identifier, content, triggerFromParams(triggerParams));
       ExpoNotificationSchedulerService.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
         @Override

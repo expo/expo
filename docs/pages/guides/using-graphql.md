@@ -62,7 +62,7 @@ When a server receives the above query, it will [resolve](https://blog.graph.coo
 }
 ```
 
-The root of the returned JSON object is a field called `data` as defined in the official [GraphQL specification](http://facebook.github.io/graphql/#sec-Data). The rest of the JSON object then contains exactly the information that the client asked for in the query. If the client for example hadn’t included the `imageUrl` in the query’s selection set, the server wouldn’t have included it in its response either.
+The root of the returned JSON object is a field called `data` as defined in the official [GraphQL specification](http://spec.graphql.org/draft/#sec-Data). The rest of the JSON object then contains exactly the information that the client asked for in the query. If the client for example hadn’t included the `imageUrl` in the query’s selection set, the server wouldn’t have included it in its response either.
 
 In case the GraphQL request fails for some reason, e.g. because the query was malformed, the server will not return the `data` field but instead return an array called `errors` with information about the failure. Notice that it can happen that the server returns both, `data` *and* `errors` . This can occur when the server can only partially resolve a query, e.g. because the user requesting the data only had the access rights for specific parts of the query's payload.
 
@@ -138,7 +138,7 @@ You can read more about the core GraphQL constructs [here](https://www.howtograp
 
 ## Getting started with GraphQL
 
-The first thing you need when getting started with GraphQL is of course a GraphQL server. As GraphQL itself is only a [specification](https://facebook.github.io/graphql/), you can either implement your own server using one of the available [reference implementations](http://graphql.org/code/#server-libraries) or take a shortcut by using a tool like [Apollo Launchpad](https://launchpad.graphql.com/).
+The first thing you need when getting started with GraphQL is of course a GraphQL server. As GraphQL itself is only a [specification](http://spec.graphql.org/draft/), you can either implement your own server using one of the available [reference implementations](http://graphql.org/code/#server-libraries) or take a shortcut by using a tool like [Apollo Launchpad](https://launchpad.graphql.com/).
 
 The best way to get started with GraphQL in production is to use [`graphql-yoga`](https://github.com/graphcool/graphql-yoga), a flexible GraphQL server based on Express.js. `graphql-yoga` has a number of compelling features, such as support for [GraphQL Playground](https://github.com/graphcool/graphql-playground) and built-in GraphQL subscriptions for realtime functionality.
 
@@ -156,8 +156,6 @@ There are four major GraphQL clients available at the moment:
 * [graphql-request](https://github.com/graphcool/graphql-request): Simple and lightweight GraphQL client that works in all JavaScript environments and can be used for simple use cases like scripting.
 
 Apollo, Relay and Urql implement further features like caching, realtime support with GraphQL subscriptions or optimistic UI updates.
-
-Learn how to integrate with Auth0 social providers in the [expo-auth0-example](https://github.com/graphcool-examples/react-native-graphql/tree/master/authentication-with-expo-and-auth0) repository.
 
 ### Creating your own GraphQL server
 

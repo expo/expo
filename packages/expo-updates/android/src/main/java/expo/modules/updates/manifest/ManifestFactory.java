@@ -12,18 +12,41 @@ public class ManifestFactory {
 
   private static final String TAG = ManifestFactory.class.getSimpleName();
 
-  public static Manifest getManifest(Context context, JSONObject manifestJson) throws JSONException {
-    boolean isLegacy = true;
-    try {
-      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      isLegacy = ai.metaData.getBoolean("expo.modules.updates.EXPO_LEGACY_MANIFEST", true);
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to read expo.modules.updates.EXPO_LEGACY_MANIFEST meta-data from AndroidManifest", e);
+  private static Boolean sIsLegacy = null;
+
+  private static boolean isLegacy(Context context) {
+    if (sIsLegacy == null) {
+      try {
+        ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+        sIsLegacy = ai.metaData.getBoolean("expo.modules.updates.EXPO_LEGACY_MANIFEST", true);
+      } catch (Exception e) {
+        Log.e(TAG, "Failed to read expo.modules.updates.EXPO_LEGACY_MANIFEST meta-data from AndroidManifest", e);
+      }
     }
-    if (isLegacy) {
+    return sIsLegacy;
+  }
+
+  public static Manifest getManifest(Context context, JSONObject manifestJson) throws JSONException {
+    if (isLegacy(context)) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson);
     } else {
       return NewManifest.fromManifestJson(manifestJson);
+    }
+  }
+
+  public static Manifest getEmbeddedManifest(Context context, JSONObject manifestJson) throws JSONException {
+    if (isLegacy(context)) {
+      if (manifestJson.has("releaseId")) {
+        return LegacyManifest.fromLegacyManifestJson(manifestJson);
+      } else {
+        return BareManifest.fromManifestJson(manifestJson);
+      }
+    } else {
+      if (manifestJson.has("runtimeVersion")) {
+        return NewManifest.fromManifestJson(manifestJson);
+      } else {
+        return BareManifest.fromManifestJson(manifestJson);
+      }
     }
   }
 }

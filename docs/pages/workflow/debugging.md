@@ -88,8 +88,6 @@ It's easy to use the React Native Debugger to debug your network requests. Simpl
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
 
-On Android, the [Proxy Settings](https://play.google.com/store/apps/details?id=com.lechucksoftware.proxy.proxysettings) app is helpful for switch between debug and non-debug mode. Unfortunately it doesn't work with Android M yet.
-
 ## Debugging Redux
 
 [Redux](https://redux.js.org/) is a popular library for managing the state of your app that doesn't belong to any single component, and instead it shared throughout the app. You can use the React Native Debugger (told you this tool does it all), the set up is as follows:

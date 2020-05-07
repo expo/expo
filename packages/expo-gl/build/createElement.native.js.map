@@ -1,0 +1,1 @@
+{"version":3,"file":"createElement.native.js","sourceRoot":"","sources":["../src/createElement.native.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC","sourcesContent":["export { createElement } from 'react-native';\n"]}

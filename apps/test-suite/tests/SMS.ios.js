@@ -3,6 +3,11 @@ import * as SMS from 'expo-sms';
 
 import { expectMethodToThrowAsync } from '../TestUtils';
 import { isInteractive } from '../utils/Environment';
+import {
+  testSMSComposeWithSingleImageAttachment,
+  testSMSComposeWithTwoImageAttachments,
+  testSMSComposeWithAudioAttachment,
+} from './SMSCommon';
 
 export const name = 'SMS';
 
@@ -13,6 +18,18 @@ export function test({ describe, it, expect }) {
         it(`opens an SMS composer`, async () => {
           // TODO: Bacon: Build an API to close the UI Controller
           await SMS.sendSMSAsync(['0123456789', '9876543210'], 'test');
+        });
+
+        it(`opens an SMS composer with single image attachment`, async () => {
+          await testSMSComposeWithSingleImageAttachment(expect);
+        });
+
+        it(`opens an SMS composer with two image attachments`, async () => {
+          await testSMSComposeWithTwoImageAttachments(expect);
+        });
+
+        it(`opens an SMS composer with audio attachment`, async () => {
+          await testSMSComposeWithAudioAttachment(expect);
         });
       }
     } else {

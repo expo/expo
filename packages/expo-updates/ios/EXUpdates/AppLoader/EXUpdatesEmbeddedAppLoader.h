@@ -8,6 +8,8 @@ extern NSString * const kEXUpdatesEmbeddedManifestName;
 extern NSString * const kEXUpdatesEmbeddedManifestType;
 extern NSString * const kEXUpdatesEmbeddedBundleFilename;
 extern NSString * const kEXUpdatesEmbeddedBundleFileType;
+extern NSString * const kEXUpdatesBareEmbeddedBundleFilename;
+extern NSString * const kEXUpdatesBareEmbeddedBundleFileType;
 
 @interface EXUpdatesEmbeddedAppLoader : EXUpdatesAppLoader
 

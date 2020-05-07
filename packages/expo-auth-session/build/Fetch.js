@@ -1,7 +1,12 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import qs from 'qs';
-const { URL } = window;
+import { Platform } from 'react-native';
 export async function requestAsync(requestUrl, fetchRequest) {
-    const url = new URL(requestUrl);
+    if (Platform.OS === 'web' && !canUseDOM) {
+        // @ts-ignore
+        return;
+    }
+    const url = new window.URL(requestUrl);
     const request = {
         method: fetchRequest.method,
         mode: 'cors',

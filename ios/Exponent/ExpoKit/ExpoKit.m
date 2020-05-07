@@ -11,13 +11,12 @@
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
 
-#import <Crashlytics/Crashlytics.h>
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
 NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXAppDidRegisterUserNotificationSettingsNotification";
 
-@interface ExpoKit () <CrashlyticsDelegate>
+@interface ExpoKit ()
 {
   Class _rootViewControllerClass;
 }
@@ -108,17 +107,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
   _launchOptions = launchOptions;
-}
-
-#pragma mark - Crash handling
-
-- (void)crashlyticsDidDetectReportForLastExecution:(CLSReport *)report
-{
-  // set a persistent flag because we may not get a chance to take any action until a future execution of the app.
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kEXKernelClearJSCacheUserDefaultsKey];
-
-  // block to ensure we save this key (in case the app crashes again)
-  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark - APNS hooks

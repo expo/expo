@@ -6,7 +6,11 @@ import { UpdateEventType, } from './Updates.types';
 export * from './Updates.types';
 export const localAssets = {};
 export const manifest = Constants.manifest ?? {};
+export const releaseChannel = manifest.hasOwnProperty('releaseChannel')
+    ? manifest.releaseChannel
+    : 'default';
 export const isEmergencyLaunch = false;
+export const isUsingEmbeddedAssets = false;
 export async function reloadAsync() {
     if (!ExponentUpdates.reloadFromCache) {
         throw new UnavailabilityError('Updates', 'reloadAsync');

@@ -127,7 +127,7 @@ export class AuthRequest {
         // Generate a new url
         return this.promptAsync(discovery, {
           ...options,
-          url: await this.buildUrlAsync(discovery),
+          url: await this.makeAuthUrlAsync(discovery),
         });
       }
       // Reuse the preloaded url
@@ -212,9 +212,9 @@ export class AuthRequest {
    *
    * @param discovery
    */
-  async buildUrlAsync(discovery: AuthDiscoveryDocument): Promise<string> {
+  async makeAuthUrlAsync(discovery: AuthDiscoveryDocument): Promise<string> {
     const request = await this.getAuthRequestConfigAsync();
-    if (!request.state) throw new Error('Cannot build request without a valid `state` loaded');
+    if (!request.state) throw new Error('Cannot make request URL without a valid `state` loaded');
 
     // Create a query string
     const params: Record<string, string> = {};
@@ -230,7 +230,7 @@ export class AuthRequest {
       }
     }
 
-    if (request.codeChallengeMethod) {
+    if (request.usePKCE && request.codeChallengeMethod) {
       params.code_challenge_method = request.codeChallengeMethod;
     }
 
@@ -247,7 +247,10 @@ export class AuthRequest {
     params.client_id = request.clientId;
     params.response_type = request.responseType!;
     params.state = request.state;
-    params.scope = request.scopes.join(' ');
+
+    if (request.scopes.length) {
+      params.scope = request.scopes.join(' ');
+    }
 
     const query = QueryParams.buildQueryString(params);
     // Store the URL for later
