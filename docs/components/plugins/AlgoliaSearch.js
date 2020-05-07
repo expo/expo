@@ -4,7 +4,7 @@ import { css } from 'react-emotion';
 
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
-import { LATEST_VERSION, VERSIONS } from '~/common/versions';
+import { LATEST_VERSION } from '~/common/versions';
 
 const STYLES_INPUT = css`
   display: flex;
@@ -87,13 +87,9 @@ class AlgoliaSearch extends React.Component {
     const docsearch = require('docsearch.js');
     const Hotshot = require('hotshot');
 
-    // we need to explicitly ignore the non-selected versions in algolia to
-    // include the "guides" and "get started" pages next to the API docs.
-    // algolia doesn't allow us to filter on `version:v37.0.0 OR version:<null>`
+    // latest is indexed in algolia, but we try to match the exact version instead
+    // latest is also filtered using the facetFilters, and should not be returned in the search results
     const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
-    const ignoredVersionList = VERSIONS.filter(version => currentVersion !== version).map(
-      version => `version:-${version}`
-    );
 
     this.docsearch = docsearch({
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
@@ -110,7 +106,8 @@ class AlgoliaSearch extends React.Component {
         return hits;
       },
       algoliaOptions: {
-        facetFilters: ignoredVersionList,
+        // include pages without version (guides/get-started) OR exact version (api-reference)
+        facetFilters: [['version:none', `version:${currentVersion}`]],
       },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
