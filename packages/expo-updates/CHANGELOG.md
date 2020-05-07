@@ -36,7 +36,7 @@
     -apply from: "../../node_modules/expo-updates/expo-updates.gradle"
     +apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
     ```
-- Added `Updates.releaseChannel` constant export
+- Added `Updates.updateId` and `Updates.releaseChannel` constant exports
 
 ### 🐛 Bug fixes
 

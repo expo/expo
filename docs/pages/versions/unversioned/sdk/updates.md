@@ -23,7 +23,7 @@ Since extra setup is required to use this module in bare React Native apps, for 
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel']} />
+<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
 
 <TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
@@ -46,6 +46,10 @@ In development mode, or any other environment in which `expo-updates` is disable
 ### `Updates.releaseChannel`
 
 (_string_) The name of the release channel currently configured in this standalone or bare app.
+
+### `Updates.updateId`
+
+(_string | null_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
 
 ## Methods
 
