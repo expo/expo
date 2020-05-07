@@ -23,7 +23,7 @@ expo install expo-background-fetch
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.io/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
 

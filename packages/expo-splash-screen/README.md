@@ -204,7 +204,7 @@ expo install expo-splash-screen
 
 ## 📱 Configure iOS
 
-Run `pod install` in the `ios` directory after installing the package.
+Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 

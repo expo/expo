@@ -20,7 +20,7 @@ If you're using Cocoapods, add the following dependency to your `Podfile`:
 
 `pod 'UMCore', path: '../node_modules/@unimodules/core/ios'`
 
-and run `pod install`.
+and run `npx pod-install`.
 
 ### Android
 

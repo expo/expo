@@ -30,7 +30,7 @@ Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
 <string>Give $(PRODUCT_NAME) permission to save photos</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

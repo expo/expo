@@ -41,7 +41,7 @@ target 'your-project-name' do
   ...
 ```
 
-Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod install` in `your-project-name/ios`. This will add the Payments module files to your project and the corresponding dependencies.
+Finally run `npx pod-install`, this will add the Payments module files to your project and the corresponding dependencies.
 
 ### Register hook in order to let Stripe process source authorization
 
