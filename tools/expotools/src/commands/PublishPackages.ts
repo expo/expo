@@ -938,9 +938,23 @@ async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promis
     // Update all pods that have been published
     console.log(`\nUpdating pods: ${chalk.green(podspecNames.join(' '))}`);
 
-    await _spawnAsync('pod', ['update', ...podspecNames, '--no-repo-update'], {
-      cwd: path.join(EXPO_DIR, 'apps', 'bare-expo', 'ios'),
-    });
+    const bareExpoIosDirectory = path.join(EXPO_DIR, 'apps', 'bare-expo', 'ios');
+
+    try {
+      await _spawnAsync('pod', ['update', ...podspecNames, '--no-repo-update'], {
+        cwd: bareExpoIosDirectory,
+      });
+    } catch (e) {
+      if (await _promptAsync(`Are you sure you wanted to update this pod in ${chalk.magenta('expo/apps/bare-expo/ios')}? \`pod update ${podspecNames.join(' ')} --no-repo-update\` failed. Would you like to try running plain \`pod install --no-repo-update\` (answer yes) or discard any changes in ${chalk.magenta('expo/apps/bare-expo/ios')} (answer no)?`)) {
+        await _spawnAsync('pod', ['install', '--no-repo-update'], {
+          cwd: bareExpoIosDirectory,
+        });
+      } else if (await _promptAsync(`Are you sure you want to discard all the changes you may have in ${chalk.magenta('expo/apps/bare-expo/ios')}?`)) {
+        await _spawnAsync('git', ['checkout', '--', '.'], {
+          cwd: bareExpoIosDirectory,
+        });
+      }
+    }
   }
 }
 
