@@ -557,6 +557,7 @@ function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
       prompt,
       usePKCE,
       scopes: [],
+      responseType: AuthSession.ResponseType.Token,
     },
     // discovery
     {

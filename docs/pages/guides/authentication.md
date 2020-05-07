@@ -188,6 +188,7 @@ const [request, response, promptAsync] = useAuthRequest(
 - Scopes must be an empty array.
 - PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
 - Implicit auth is supported.
+- When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
 
 ```ts
 // Endpoint
@@ -203,6 +204,8 @@ const [request, response, promptAsync] = useAuthRequest(
     scopes: [],
     // Dropbox doesn't support PKCE
     usePKCE: false,
+    // Implicit auth is universal, `.Code` will only work in native with `useProxy: true`.
+    responseType: ResponseType.Token,
     // For usage in managed apps using the proxy
     redirectUri: makeRedirectUri({
       // For usage in bare and standalone
