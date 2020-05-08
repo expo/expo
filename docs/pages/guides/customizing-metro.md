@@ -35,7 +35,7 @@ One use case for custom `metro.config.js` is adding more file extensions that ar
 ```js
 const { getDefaultConfig } = require('@expo/metro-config');
 
-const defaultConfig = getDefaultConfig(__dirname__);
+const defaultConfig = getDefaultConfig(__dirname);
 
 module.exports = {
   resolver: {
