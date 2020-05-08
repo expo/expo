@@ -1,20 +1,10 @@
 buildscript {
   repositories {
     google()
-    maven { url 'https://maven.fabric.io/public' }
-  }
-
-  dependencies {
-    classpath 'io.fabric.tools:gradle:1.31.0'
   }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 apply plugin: 'devicefarm'
-
-repositories {
-  maven { url 'https://maven.fabric.io/public' }
-}
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -63,7 +53,6 @@ android {
   buildTypes {
     debug {
       debuggable true
-      ext.enableCrashlytics = false
     }
     release {
       minifyEnabled true

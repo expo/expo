@@ -79,7 +79,6 @@ jarjar-rules.txt
 /android/app/src/main/AndroidManifest.xml
 /android/app/google-services.json
 /android/expoview/src/main/java/host/exp/exponent/generated/ExponentKeys.java
-/android/app/fabric.properties
 /apps/bare-expo/android/app/google-services.json
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
 /ios/Exponent/Generated/EXKeys.h
