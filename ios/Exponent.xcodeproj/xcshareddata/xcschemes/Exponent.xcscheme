@@ -67,6 +67,16 @@
                ReferencedContainer = "container:Pods/EXWebBrowser.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3D064461D8446764C803FB3C72F07FC1"
+               BuildableName = "EXWebBrowser-Unit-EXWebBrowserTests.xctest"
+               BlueprintName = "EXWebBrowser-Unit-EXWebBrowserTests"
+               ReferencedContainer = "container:Pods/EXWebBrowser.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

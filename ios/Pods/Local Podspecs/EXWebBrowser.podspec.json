@@ -22,7 +22,7 @@
   },
   "testspecs": [
     {
-      "name": "Tests",
+      "name": "EXWebBrowserTests",
       "test_type": "unit",
       "source_files": "EXWebBrowserTests/**/*.{h,m}"
     }

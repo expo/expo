@@ -12,7 +12,7 @@
 - (void)testEmpty
 {
   EXWebBrowser *webBrowser = [EXWebBrowser new];
-  XCTAssert(webBrowser != nil);
+  XCTAssert(YES);
 }
 
 @end
