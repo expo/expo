@@ -87,8 +87,10 @@ async function _downloadAsyncUnmanagedEnv(uri, hash, type): Promise<string> {
   const cacheFileId = hash || computeMd5(uri);
   const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${type}`;
 
-  // We don't check the FileSystem for an existing version of the asset and we
-  // also don't perform an integrity check!
-  await FileSystem.downloadAsync(uri, localUri);
+  const { exists } = await FileSystem.getInfoAsync(localUri);
+  if (!exists) {
+    // We don't perform an integrity check!
+    await FileSystem.downloadAsync(uri, localUri);
+  }
   return localUri;
 }
