@@ -263,6 +263,8 @@ const [request, response, promptAsync] = useAuthRequest(
       display: Platform.select({ web: 'popup' }),
       // Optionally you can use this to rerequest declined permissions
       auth_type: 'rerequest',
+      // Optionally set the user language
+      locale: 'en',
     },
   },
   discovery
@@ -391,11 +393,10 @@ const [request, response, promptAsync] = useAuthRequest(
     // Optional
     extraParams: {
       // Change language
-      hl: 'fr',
+      hl: 'en',
       // Select the user
       login_hint: 'user@gmail.com',
     },
-    scopes: ['openid', 'profile'],
   },
   discovery
 );
