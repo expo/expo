@@ -53,6 +53,7 @@
 ### 🐛 Bug fixes
 
 - Fixed initial notification not being emitted to `NotificationResponse` listener on iOS ([#7958](https://github.com/expo/expo/pull/7958) by [@sjchmiela](https://github.com/sjchmiela))
+- Adds bigTextStyle for Android notification rendering to allow notification to be expanded and text fully viewed ([#8140](https://github.com/expo/expo/pull/8140) by [@thorbenprimke](https://github.com/thorbenprimke))
 
 ## [0.1.3] - 2020-04-30
 
