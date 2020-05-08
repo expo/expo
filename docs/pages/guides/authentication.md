@@ -362,6 +362,62 @@ const [request, response, promptAsync] = useAuthRequest(
 );
 ```
 
+#### Github Firebase
+
+> ⚠️ Currently, this doesn't use the Firebase middleware server (`/__/auth/handler`).
+
+[Manually sign-in][d-firebase-gh-manual] to Github using an implicit auth flow, then link the credential with Firebase to create a user and sign-in.
+
+[d-firebase-gh-manual]: https://firebase.google.com/docs/auth/web/github-auth#handle_the_sign-in_flow_with_the_firebase_sdk
+
+<details>
+  <summary>Show code example</summary>
+
+```tsx
+import React, { useEffect } from 'react';
+import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+
+function App() {
+  const [, response, promptAsync] = useAuthRequest({
+    /* @info Use the implicit flow to get an access token without the secret. Alternatively you can exchange the auth code with a custom server to get the access token. */
+    responseType: ResponseType.Implicit,
+    /* @end */
+    // Your request...
+  });
+
+  /* @info This effect will only be called once when the component mounts. */
+  useEffect(() => {
+    /* @end */
+    /* @info This will be called with the user instance. */
+    firebase.auth().onAuthStateChanged(user => {
+      /* @end */
+    });
+  }, []);
+
+  /* @info This effect will only be called once when the component mounts. */
+  useEffect(() => {
+    /* @end */
+    if (response && response.type === 'success') {
+      /* @info You will only get an access token from <code>response</code> if <code>.Implicit</code> was used. */
+      const { access_token } = response.params;
+      /* @end */
+      /* @info Create a credential using the access token. */
+      const credential = firebase.auth.GithubAuthProvider.credential(access_token);
+      /* @end */
+      /* @info The result will appear in <code>onAuthStateChanged</code>. */
+      firebase.auth().signInWithCredential(credential);
+      /* @end */
+    }
+  }, [response]);
+
+  return; /* Your Component */
+}
+```
+
+</details>
+
 <!-- End Github -->
 
 ### Google
