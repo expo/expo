@@ -270,14 +270,16 @@ function getPopupFeaturesString(options) {
         height,
     });
 }
-function featureObjectToString(features) {
+export function featureObjectToString(features) {
     return Object.keys(features).reduce((prev, current) => {
         let value = features[current];
         if (typeof value === 'boolean') {
             value = value ? 'yes' : 'no';
         }
         if (current && value) {
-            return `${prev},${current}=${value}`;
+            if (prev)
+                prev += ',';
+            return `${prev}${current}=${value}`;
         }
         return prev;
     }, '');

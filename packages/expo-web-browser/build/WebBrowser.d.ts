@@ -1,5 +1,5 @@
-import { WebBrowserOpenOptions, WebBrowserAuthSessionResult, WebBrowserCustomTabsResults, WebBrowserResult, WebBrowserRedirectResult, WebBrowserMayInitWithUrlResult, WebBrowserWarmUpResult, WebBrowserCoolDownResult, WebBrowserResultType } from './WebBrowser.types';
-export { WebBrowserOpenOptions, WebBrowserAuthSessionResult, WebBrowserCustomTabsResults, WebBrowserResult, WebBrowserRedirectResult, WebBrowserMayInitWithUrlResult, WebBrowserWarmUpResult, WebBrowserCoolDownResult, WebBrowserResultType, };
+import { WebBrowserAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures } from './WebBrowser.types';
+export { WebBrowserAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, };
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<WebBrowserCustomTabsResults>;
 export declare function warmUpAsync(browserPackage?: string): Promise<WebBrowserWarmUpResult>;
 export declare function mayInitWithUrlAsync(url: string, browserPackage?: string): Promise<WebBrowserMayInitWithUrlResult>;

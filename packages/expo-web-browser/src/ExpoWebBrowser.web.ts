@@ -331,14 +331,15 @@ function getPopupFeaturesString(options?: WebBrowserWindowFeatures | string): st
   });
 }
 
-function featureObjectToString(features: Record<string, any>): string {
+export function featureObjectToString(features: Record<string, any>): string {
   return Object.keys(features).reduce<string>((prev, current) => {
     let value = features[current];
     if (typeof value === 'boolean') {
       value = value ? 'yes' : 'no';
     }
     if (current && value) {
-      return `${prev},${current}=${value}`;
+      if (prev) prev += ',';
+      return `${prev}${current}=${value}`;
     }
     return prev;
   }, '');

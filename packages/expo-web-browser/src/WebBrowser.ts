@@ -1,30 +1,32 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
   RedirectEvent,
-  WebBrowserOpenOptions,
   WebBrowserAuthSessionResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserResult,
-  WebBrowserRedirectResult,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserOpenOptions,
+  WebBrowserRedirectResult,
+  WebBrowserResult,
   WebBrowserResultType,
+  WebBrowserWarmUpResult,
+  WebBrowserWindowFeatures,
 } from './WebBrowser.types';
 
 export {
-  WebBrowserOpenOptions,
   WebBrowserAuthSessionResult,
-  WebBrowserCustomTabsResults,
-  WebBrowserResult,
-  WebBrowserRedirectResult,
-  WebBrowserMayInitWithUrlResult,
-  WebBrowserWarmUpResult,
   WebBrowserCoolDownResult,
+  WebBrowserCustomTabsResults,
+  WebBrowserMayInitWithUrlResult,
+  WebBrowserOpenOptions,
+  WebBrowserRedirectResult,
+  WebBrowserResult,
   WebBrowserResultType,
+  WebBrowserWarmUpResult,
+  WebBrowserWindowFeatures,
 };
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
