@@ -2,14 +2,30 @@ export type RedirectEvent = {
   url: string;
 };
 
+export type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
+
 export type WebBrowserOpenOptions = {
+  /**
+   * Color of the toolbar in either #AARRGGBB or #RRGGBB format.
+   */
   toolbarColor?: string;
   browserPackage?: string;
+  /**
+   * Whether the toolbar should be hiding when a user scrolls the website.
+   */
   enableBarCollapsing?: boolean;
-  showTitle?: boolean;
 
   /** Android only */
+
+  /**
+   * Whether the browser should show the title of website on the toolbar.
+   */
+  showTitle?: boolean;
   enableDefaultShareMenuItem?: boolean;
+  /**
+   * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
+   * Default: `false`
+   */
   showInRecents?: boolean;
 
   /** iOS only */
@@ -17,9 +33,14 @@ export type WebBrowserOpenOptions = {
   dismissButtonStyle?: 'done' | 'close' | 'cancel';
   readerMode?: boolean;
 
-  // Web
+  /**
+   * **Web:** name to assign to the popup window.
+   */
   windowName?: string;
-  windowFeatures?: string;
+  /**
+   * **Web:** features to use with `window.open()`
+   */
+  windowFeatures?: string | WebBrowserWindowFeatures;
 };
 
 export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;

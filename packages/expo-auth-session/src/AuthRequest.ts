@@ -163,9 +163,8 @@ export class AuthRequest {
 
     let result: WebBrowser.WebBrowserAuthSessionResult;
     try {
-      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, {
-        showInRecents: options.showInRecents,
-      });
+      const { useProxy, ...openOptions } = options;
+      result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, openOptions);
     } finally {
       _authLock = false;
     }
