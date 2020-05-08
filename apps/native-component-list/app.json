@@ -19,9 +19,6 @@
     "splash": {
       "image": "./assets/icons/loadingIcon.png"
     },
-    "packagerOpts": {
-      "config": "metro.config.js"
-    },
     "platforms": ["android", "ios", "web"],
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
