@@ -187,6 +187,8 @@ const [request, response, promptAsync] = useAuthRequest(
 - PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
 - Implicit auth is supported.
 - When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
+- `prompt` won't work, if you want to switch accounts you can use `extraParams.force_reapprove: 'true'`
+- For a list of all query params, please refer to the [Dropbox Auth API](https://www.dropbox.com/developers/documentation/http/documentation).
 
 ```ts
 // Endpoint
@@ -209,6 +211,11 @@ const [request, response, promptAsync] = useAuthRequest(
       // For usage in bare and standalone
       native: 'your.app://redirect',
     }),
+    // Optional
+    extraParams: {
+      // Optionally you can force the provider to allow account switching.
+      force_reapprove: 'true',
+    },
   },
   discovery
 );
