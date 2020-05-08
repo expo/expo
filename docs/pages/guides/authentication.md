@@ -338,6 +338,7 @@ const [request, response, promptAsync] = useAuthRequest(
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
+- For all available query params, visit the [Github API](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 ```ts
 // Endpoint
