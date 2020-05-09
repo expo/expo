@@ -28,7 +28,7 @@ Note that FCM is not currently available for Expo iOS apps.
 
 Finally, make a new build of your app by running `expo build:android`.
 
-### ExpoKit projects
+### Ejected ExpoKit projects
 
 If you do the above setup before ejecting to ExpoKit, your FCM notifications will continue to work properly without any extra steps after ejecting. However, if your project is already ejected to ExpoKit and you want to set up FCM retroactively, you'll need to do the following:
 
