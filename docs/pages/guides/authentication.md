@@ -226,7 +226,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 [c-facebook]: https://developers.facebook.com/
 
-> You can use the [`expo-facebook`](/versions/latest/sdk/expo-facebook) to authenticate via the Facebook app, however this functionality is limited.
+> You can use the [`expo-facebook`](/versions/latest/sdk/facebook) to authenticate via the Facebook app, however this functionality is limited.
 
 - Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 - Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
