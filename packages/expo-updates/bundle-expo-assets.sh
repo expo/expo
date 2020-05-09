@@ -2,11 +2,13 @@
 
 set -eo pipefail
 
+NODE_MODULES=${1:-'../node_modules'}
+
 if [ "$CONFIGURATION" == "Debug" ]; then
   if [ -z "$NODE_BINARY" ]; then
     export NODE_BINARY=node
   fi
-  ../node_modules/react-native/scripts/react-native-xcode.sh
+  $NODE_MODULES/react-native/scripts/react-native-xcode.sh
   exit 0
 fi
 
