@@ -1,3 +1,6 @@
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
 import * as Linking from '../Linking';
 import { QueryParams } from '../Linking.types';
 
@@ -49,3 +52,26 @@ describe('makeUrl queries', () => {
     expect(Linking.makeUrl(path)).toMatchSnapshot();
   });
 });
+
+if (Platform.OS !== 'web') {
+  describe('makeUrl in bare workflow', () => {
+    const consoleWarn = console.warn;
+    const constantsManifest = Constants.manifest;
+
+    beforeEach(() => {
+      console.warn = jest.fn();
+      // @ts-ignore:  Constants.manifest type is not currently nullable
+      Constants.manifest = null;
+    });
+
+    afterEach(() => {
+      console.warn = consoleWarn;
+      Constants.manifest = constantsManifest;
+    });
+
+    it('should return empty string and warn', () => {
+      expect(Linking.makeUrl('/')).toEqual('');
+      expect(console.warn).toHaveBeenCalledWith(expect.stringMatching('not supported in bare'));
+    });
+  });
+}
