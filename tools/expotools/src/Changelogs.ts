@@ -55,6 +55,9 @@ export enum ChangeType {
  */
 export const UNPUBLISHED_VERSION_NAME = 'master';
 
+export const VERSION_EMPTY_PARAGRAPH_TEXT =
+  '*This version does not introduce any user-facing changes.*';
+
 /**
  * Depth of headings that mean the version containing following changes.
  */
@@ -262,9 +265,7 @@ export class Changelog {
    */
   async cutOffAsync(version: string): Promise<void> {
     const tokens = [...(await this.getTokensAsync())];
-    const firstVersionHeadingIndex = tokens.findIndex(
-      (token) => token.type === Markdown.TokenType.HEADING && token.depth === VERSION_HEADING_DEPTH
-    );
+    const firstVersionHeadingIndex = tokens.findIndex(isVersionToken);
     const newSectionTokens: Markdown.Tokens = [
       {
         type: Markdown.TokenType.HEADING,
@@ -289,10 +290,37 @@ export class Changelog {
     ];
 
     if (firstVersionHeadingIndex !== -1) {
+      // Set version of the first found version header.
       (tokens[firstVersionHeadingIndex] as Markdown.HeadingToken).text = version;
+
+      // Clean up empty sections.
+      let i = firstVersionHeadingIndex + 1;
+      while (i < tokens.length && !isVersionToken(tokens[i])) {
+        // Remove change type token if its section is empty - when it is followed by another heading token.
+        if (isChangeTypeToken(tokens[i])) {
+          const nextToken = tokens[i + 1];
+          if (!nextToken || isChangeTypeToken(nextToken) || isVersionToken(nextToken)) {
+            tokens.splice(i, 1);
+            continue;
+          }
+        }
+        i++;
+      }
+
+      // `i` stayed the same after removing empty change type sections, so the entire version is empty.
+      // Let's put an information that this version doesn't contain any user-facing changes.
+      if (i === firstVersionHeadingIndex + 1) {
+        tokens.splice(i, 0, {
+          type: Markdown.TokenType.PARAGRAPH,
+          text: VERSION_EMPTY_PARAGRAPH_TEXT,
+        });
+      }
     }
 
+    // Insert new tokens before first version header.
     tokens.splice(firstVersionHeadingIndex, 0, ...newSectionTokens);
+
+    // Parse tokens and write result to the file.
     await fs.outputFile(this.filePath, Markdown.parse(tokens));
 
     // Reset cached tokens as we just modified the file.
@@ -306,4 +334,22 @@ export class Changelog {
  */
 export function loadFrom(path: string): Changelog {
   return new Changelog(path);
+}
+
+/**
+ * Checks whether given token is interpreted as a token with a version.
+ */
+function isVersionToken(token: Markdown.Token): boolean {
+  return (
+    token && token.type === Markdown.TokenType.HEADING && token.depth === VERSION_HEADING_DEPTH
+  );
+}
+
+/**
+ * Checks whether given token is interpreted as a token with a change type.
+ */
+function isChangeTypeToken(token: Markdown.Token): boolean {
+  return (
+    token && token.type === Markdown.TokenType.HEADING && token.depth === CHANGE_TYPE_HEADING_DEPTH
+  );
 }
