@@ -67,7 +67,7 @@
     "expo-font": "~8.1.1",
     "expo-keep-awake": "~8.1.0",
     "expo-linear-gradient": "~8.1.0",
-    "expo-linking": "~1.0.0",
+    "expo-linking": "~1.0.1",
     "expo-location": "~8.1.0",
     "expo-permissions": "~8.1.0",
     "expo-sqlite": "~8.1.0",
