@@ -203,7 +203,7 @@ export class GitDirectory {
   /**
    * Returns a list of files that have been modified, deleted or added between specified commits.
    */
-  async logFilesAsync(options: GitLogOptions): Promise<GitFileLog[]> {
+  async logFilesAsync(options: GitLogOptions = {}): Promise<GitFileLog[]> {
     const fromCommit = options.fromCommit ?? '';
     const toCommit = options.toCommit ?? 'head';
 
