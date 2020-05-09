@@ -83,10 +83,16 @@ export type Query = { sql: string; args: unknown[] };
 export interface ResultSetError {
   error: Error;
 }
+
 export interface ResultSet {
   insertId?: number;
   rowsAffected: number;
   rows: { [column: string]: any }[];
+}
+
+export interface SQLiteFileInfo {
+  name: string;
+  key?: string;
 }
 
 export type SQLiteCallback = (

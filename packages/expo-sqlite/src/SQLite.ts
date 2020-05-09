@@ -5,16 +5,18 @@ import { NativeModulesProxy } from '@unimodules/core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 
-import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase } from './SQLite.types';
+import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase, SQLiteFileInfo } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
 
 class SQLiteDatabase {
   _name: string;
+  _key?: string;
   _closed: boolean = false;
 
-  constructor(name: string) {
+  constructor({ name, key }: SQLiteFileInfo) {
     this._name = name;
+    this._key = key;
   }
 
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
@@ -22,7 +24,7 @@ class SQLiteDatabase {
       throw new Error(`The SQLite database is closed`);
     }
 
-    ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(
+    ExponentSQLite.exec(this._name, this._key, queries.map(_serializeQuery), readOnly).then(
       nativeResultSets => {
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
@@ -81,16 +83,28 @@ function addExecMethod(db: any): WebSQLDatabase {
 }
 
 export function openDatabase(
-  name: string,
+  fileInfo: SQLiteFileInfo | string,
   version: string = '1.0',
-  description: string = name,
+  description: string,
   size: number = 1,
   callback?: (db: WebSQLDatabase) => void
 ): WebSQLDatabase {
+  let name: string;
+  let key: string | undefined;
+
+  if (typeof fileInfo === 'string') {
+    name = fileInfo;
+    key = undefined;
+  } else {
+    ({ name, key } = fileInfo);
+  }
+
   if (name === undefined) {
     throw new TypeError(`The database name must not be undefined`);
   }
-  const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
+  description = description || name;
+
+  const db = _openExpoSQLiteDatabase({ name, key }, version, description, size, callback);
   const dbWithExec = addExecMethod(db);
   return dbWithExec;
 }

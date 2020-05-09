@@ -5,15 +5,16 @@ import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 const { ExponentSQLite } = NativeModulesProxy;
 class SQLiteDatabase {
-    constructor(name) {
+    constructor({ name, key }) {
         this._closed = false;
         this._name = name;
+        this._key = key;
     }
     exec(queries, readOnly, callback) {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
         }
-        ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(nativeResultSets => {
+        ExponentSQLite.exec(this._name, this._key, queries.map(_serializeQuery), readOnly).then(nativeResultSets => {
             callback(null, nativeResultSets.map(_deserializeResultSet));
         }, error => {
             // TODO: make the native API consistently reject with an error, not a string or other type
@@ -61,11 +62,21 @@ function addExecMethod(db) {
     };
     return db;
 }
-export function openDatabase(name, version = '1.0', description = name, size = 1, callback) {
+export function openDatabase(fileInfo, version = '1.0', description, size = 1, callback) {
+    let name;
+    let key;
+    if (typeof fileInfo === 'string') {
+        name = fileInfo;
+        key = undefined;
+    }
+    else {
+        ({ name, key } = fileInfo);
+    }
     if (name === undefined) {
         throw new TypeError(`The database name must not be undefined`);
     }
-    const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
+    description = description || name;
+    const db = _openExpoSQLiteDatabase({ name, key }, version, description, size, callback);
     const dbWithExec = addExecMethod(db);
     return dbWithExec;
 }

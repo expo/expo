@@ -62,4 +62,8 @@ export interface ResultSet {
         [column: string]: any;
     }[];
 }
+export interface SQLiteFileInfo {
+    name: string;
+    key?: string;
+}
 export declare type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
