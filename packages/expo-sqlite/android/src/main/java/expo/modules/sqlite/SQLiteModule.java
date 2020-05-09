@@ -2,9 +2,6 @@
 package expo.modules.sqlite;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteStatement;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
@@ -32,6 +33,7 @@ public class SQLiteModule extends ExportedModule {
 
   public SQLiteModule(Context scopedContext) {
     super(scopedContext);
+    SQLiteDatabase.loadLibs(scopedContext);
     mContext = scopedContext;
   }
 
@@ -41,11 +43,11 @@ public class SQLiteModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void exec(String dbName, ArrayList<ArrayList<Object>> queries, Boolean readOnly, final Promise promise) {
+  public void exec(String dbName, String dbKey, ArrayList<ArrayList<Object>> queries, Boolean readOnly, final Promise promise) {
     try {
       int numQueries = queries.size();
       SQLitePluginResult[] results = new SQLitePluginResult[numQueries];
-      SQLiteDatabase db = getDatabase(dbName);
+      SQLiteDatabase db = getDatabase(dbName, dbKey);
 
       for (int i = 0; i < numQueries; i++) {
         ArrayList<Object> sqlQuery = queries.get(i);
@@ -186,7 +188,7 @@ public class SQLiteModule extends ExportedModule {
     return directory + File.separator + name;
   }
 
-  private SQLiteDatabase getDatabase(String name) throws IOException {
+  private SQLiteDatabase getDatabase(String name, String key) throws IOException {
     SQLiteDatabase database = null;
     String path = pathForDatabaseName(name);
     if ((new File(path)).exists()) {
@@ -194,7 +196,7 @@ public class SQLiteModule extends ExportedModule {
     }
     if (database == null) {
       DATABASES.remove(name);
-      database = SQLiteDatabase.openOrCreateDatabase(path, null);
+      database = SQLiteDatabase.openOrCreateDatabase(path, key, null);
       DATABASES.put(name, database);
     }
     return database;
