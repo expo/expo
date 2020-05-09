@@ -4,7 +4,7 @@
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 
-#import <sqlite3.h>
+#import <SQLCipher/sqlite3.h>
 
 @interface EXSQLite ()
 
@@ -42,7 +42,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
   return [directory stringByAppendingPathComponent:name];
 }
 
-- (NSValue *)openDatabase:(NSString *)dbName
+- (NSValue *)openDatabase:(NSString *)dbName :(NSString *)dbKey
 {
   NSValue *cachedDB = nil;
   NSString *path = [self pathForDatabaseName:dbName];
@@ -58,6 +58,14 @@ UM_EXPORT_MODULE(ExponentSQLite);
     if (sqlite3_open([path UTF8String], &db) != SQLITE_OK) {
       return nil;
     };
+
+    if (dbKey != NULL) {
+      const char *key = [dbKey UTF8String];
+      if (key != NULL) {
+        sqlite3_key(db, key, (int)strlen(key));
+      }
+    }
+
     cachedDB = [NSValue valueWithPointer:db];
     [cachedDatabases setObject:cachedDB forKey:dbName];
   }
@@ -66,13 +74,14 @@ UM_EXPORT_MODULE(ExponentSQLite);
 
 UM_EXPORT_METHOD_AS(exec,
                     exec:(NSString *)dbName
+                    key:(NSString *)dbKey
                  queries:(NSArray *)sqlQueries
                 readOnly:(BOOL)readOnly
                 resolver:(UMPromiseResolveBlock)resolve
                 rejecter:(UMPromiseRejectBlock)reject)
 {
   @synchronized(self) {
-    NSValue *databasePointer = [self openDatabase:dbName];
+    NSValue *databasePointer = [self openDatabase:dbName :dbKey];
     if (!databasePointer) {
       reject(@"E_SQLITE_OPEN_DATABASE", @"Could not open database.", nil);
       return;
