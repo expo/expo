@@ -51,7 +51,7 @@
     "expo-intent-launcher": "~8.1.0",
     "expo-keep-awake": "~8.1.0",
     "expo-linear-gradient": "~8.1.0",
-    "expo-linking": "~1.0.0",
+    "expo-linking": "~1.0.1",
     "expo-local-authentication": "~9.0.0",
     "expo-localization": "~8.1.0",
     "expo-location": "~8.1.0",
