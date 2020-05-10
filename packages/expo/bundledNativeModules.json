@@ -97,5 +97,6 @@
   "expo-notifications": "~0.1.1",
   "expo-splash-screen": "^0.2.3",
   "expo-linking": "~1.0.1",
+  "expo-auth-session": "~1.2.1",
   "firebase": "7.9.0"
 }
