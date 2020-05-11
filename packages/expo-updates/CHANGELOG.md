@@ -42,6 +42,7 @@
 
 - Fixed an issue with recovering from an unexpectedly deleted asset on iOS.
 - Fixed handling of invalid EXPO_UDPATE_URL values on Android.
+- Updates Configuration Conditional From Equal To Prefix Check. ([#8225](https://github.com/expo/expo/pull/8225) by [@thorbenprimke](https://github.com/thorbenprimke))
 
 ## 0.1.3
 
