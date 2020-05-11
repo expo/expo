@@ -61,7 +61,7 @@ First, if your app.json file does not yet include an `expo` key, add it with the
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `37.0.0`).
 
-If you installed `expo-asset` and have other assets (such as images or other media) that are `require`d in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
+If you installed `expo-asset` and have other assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
 
 ```json
   "assetBundlePatterns": ["**/*"],
@@ -285,7 +285,7 @@ Debug builds of Android apps do not, by default, have any assets bundled into th
 
 Debug builds of iOS apps built for the iOS simulator also do not have assets bundled into the app. They are loaded at runtime from Metro. Debug builds of iOS apps built for a real device **do** have assets bundled into the app binary, so they can be loaded from disk if they cannot be loaded from the packager at runtime.
 
-Release builds of both iOS and Android apps include a full embedded update, including manifest, JavaScript bundle, and all `require`d assets. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
+Release builds of both iOS and Android apps include a full embedded update, including manifest, JavaScript bundle, and all imported assets. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
 
 ## Configuration
 
