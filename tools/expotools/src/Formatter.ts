@@ -67,3 +67,10 @@ export function formatFileLog(fileLog: GitFileLog): string {
   const uri = `vscode://file/${fileLog.path}`;
   return `${link(fileLog.relativePath, uri)} ${gray(`(${fileLog.status})`)}`;
 }
+
+/**
+ * Removes non-ascii characters (emojis) from the string.
+ */
+export function stripNonAsciiChars(str: string): string {
+  return str.replace(/[^\x00-\x7F]/gu, '');
+}
