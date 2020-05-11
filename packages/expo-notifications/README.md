@@ -44,6 +44,23 @@ In order to be able to receive push notifications on the device:
 
 In order to be able to receive push notifications on the device ensure that your project is set up for Firebase. For more information on how to do it, see [this guide](https://docs.expo.io/guides/setup-native-firebase/#bare-workflow-setup).
 
+The notification icon and color can be customized. You will have to provide values for the following keys, `expo.modules.notifications.default_notification_icon` and `expo.modules.notifications.default_notification_color`, in your Android Manifest as `meta-data` entries in the `application` section. See the example below:
+
+```java
+  <application>
+    ...
+
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_icon"
+      android:resource="@drawable/ic_stat_notifications" />
+
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_color"
+      android:resource="@color/notification_icon_color" />
+
+  </application>
+```
+
 ### Add your project's credentials to Expo server (optional)
 
 If you would like to send notifications with Expo servers, the servers will need to have a way to authenticate with APNS/FCM that they are authorized to send notifications on your behalf. To do this:
