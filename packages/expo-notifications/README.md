@@ -927,6 +927,8 @@ export interface NotificationContentInput {
   // Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
   // see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
   color?: string;
+  // If set to true, the notification is automatically dismissed when clicked. If you have `FirebaseRemoteMessage`'s sticky parameter to `true`, it will not automatically be dismissed or canceled.
+  autoDismiss?: boolean;
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc
   // for more information on specific fields.

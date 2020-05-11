@@ -77,6 +77,7 @@ public class NotificationSerializer {
       }
       serializedContent.putDoubleArray("vibrationPattern", serializedVibrationPattern);
     }
+    serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     return serializedContent;
   }
 
