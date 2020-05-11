@@ -5,7 +5,14 @@ import { NativeModulesProxy } from '@unimodules/core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 
-import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase, SQLiteFileInfo } from './SQLite.types';
+import {
+  Query,
+  SQLiteCallback,
+  ResultSet,
+  ResultSetError,
+  WebSQLDatabase,
+  SQLiteFileInfo,
+} from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
 
