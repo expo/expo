@@ -23,7 +23,7 @@ export type FixedChangelogEntry = PackageChangelogEntry & { content: string; dif
 
 // Setup
 const pr = danger.github.pr;
-const prAuthor = pr.base.user.login;
+const prAuthor = pr.user.login;
 const pullRequestManager = createPullRequestManager(danger.github.api, pr);
 
 async function getFileDiffAsync(path): Promise<string> {
