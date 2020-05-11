@@ -81,7 +81,7 @@ export class TaskError<TaskType extends { name: string }> extends Error {
   readonly stack?: string;
 
   constructor(task: TaskType, error: Error) {
-    super(`An error occurred while running ${task.name} task.`);
+    super(error.message);
     this.task = task;
     this.stderr = (error as any).stderr;
     this.stack = error.stack;
@@ -276,10 +276,16 @@ export class TaskRunner<Args extends any[], BackupDataType extends JSONObject | 
       logger.error();
 
       if (error instanceof TaskError) {
-        logger.error(`💥 Command failed at phase ${chalk.cyan(error.task.name)}.`);
+        logger.error(`💥 Execution failed for task ${chalk.cyan(error.task.name)}.`);
       }
 
-      logger.error('💥 Error message:', chalk.reset(error.stack.replace(/^Error:\s*/, '')));
+      logger.error('💥 Error:', error.message);
+
+      if (error.stack) {
+        const stack = error.stack.split(`${error.message}\n`);
+        logger.debug(stack[1]);
+      }
+
       error.stderr && logger.error('💥 stderr output:\n', chalk.reset(error.stderr));
       process.exit(1);
     }

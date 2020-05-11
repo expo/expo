@@ -194,21 +194,17 @@ export class Package {
   }
 
   /**
-   * Iterates through dist tags returned by npm to determine the tag to which given version is bound.
+   * Iterates through dist tags returned by npm to determine an array of tags to which given version is bound.
    */
-  async getDistTagAsync(version: string = this.packageVersion): Promise<string | null> {
+  async getDistTagsAsync(version: string = this.packageVersion): Promise<string[]> {
     const pkgView = await this.getPackageViewAsync();
-
-    if (pkgView) {
-      for (const tag in pkgView.distTags) {
-        if (pkgView.distTags[tag] === version) {
-          return tag;
-        }
-      }
-    }
-    return null;
+    const distTags = pkgView?.['dist-tags'] ?? {};
+    return Object.keys(distTags).filter((tag) => distTags[tag] === version);
   }
 
+  /**
+   * Checks whether the package depends on a local pod with given name.
+   */
   async hasLocalPodDependencyAsync(podName?: string | null): Promise<boolean> {
     if (!podName) {
       return false;
