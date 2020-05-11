@@ -79,7 +79,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~37.0.9",
+    "expo": "~37.0.10",
     "expo-notifications": "~1.0.0",
     "expo-yarn-workspaces": "^1.2.1",
     "native-component-list": "*",
