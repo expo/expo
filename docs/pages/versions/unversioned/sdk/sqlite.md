@@ -28,7 +28,9 @@ Open a database, creating it if it doesn't exist, and return a `Database` object
 
 #### Arguments
 
-- **name (_string_)** -- Name of the database file to open.
+- **fileInfo (_object_ or _string_)** -- Either name of the database file or an object with the following:
+  - **name (_string_)** -- Name of the database file to open.
+  - **key (_string_)** -- Key used to encrypt database file
 
 The `version`, `description` and `size` arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
 
