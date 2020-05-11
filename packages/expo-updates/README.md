@@ -10,13 +10,17 @@ This package is pre-installed in [managed](https://docs.expo.io/versions/latest/
 
 For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
+## Upgrading
+
+If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/master/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
+
 ## Compatibility
 
 This module requires `expo-cli@3.17.6` or later; make sure your global installation is at least this version before proceeding.
 
 Additionally, this module is only compatible with Expo SDK 37 or later. For bare workflow projects, if the `expo` package is installed, it must be version `37.0.2` or later.
 
-Finally, this module is not compatible with ExpoKit. Make sure you do not have `expokit` listed as a dependency in package.json before this module.
+Finally, this module is not compatible with ExpoKit. Make sure you do not have `expokit` listed as a dependency in package.json before adding this module.
 
 ### Add the package to your npm dependencies
 
@@ -57,7 +61,7 @@ First, if your app.json file does not yet include an `expo` key, add it with the
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `37.0.0`).
 
-If you installed `expo-asset` and have other assets (such as images or other media) that are `require`d in your application code, and you would like these to also be bundled into your application binary, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
+If you installed `expo-asset` and have other assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example:
 
 ```json
   "assetBundlePatterns": ["**/*"],
@@ -77,7 +81,7 @@ In Xcode, under the `Build Phases` tab of your main project, expand the phase en
 ../node_modules/expo-updates/scripts/create-manifest-ios.sh
 ```
 
-This will configure your project to bundle assets from your published update when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
+This provides expo-updates with some important metadata about the update and assets that are embedded in your IPA.
 
 #### `Expo.plist`
 
@@ -200,7 +204,7 @@ Providing `EXUpdatesAppController` with a reference to the `RCTBridge` is option
 
 #### `app/build.gradle`
 
-Make the following change in order to bundle assets from expo-updates instead of your local metro server when making release mode builds. For more information, see the section below on [Embedded Assets](#embedded-assets).
+Add the following Gradle build script. This provides expo-updates with some important metadata about the update and assets that are embedded in your APK.
 
 ```diff
  apply from: "../../node_modules/react-native/react.gradle"
@@ -281,17 +285,7 @@ Debug builds of Android apps do not, by default, have any assets bundled into th
 
 Debug builds of iOS apps built for the iOS simulator also do not have assets bundled into the app. They are loaded at runtime from Metro. Debug builds of iOS apps built for a real device **do** have assets bundled into the app binary, so they can be loaded from disk if they cannot be loaded from the packager at runtime.
 
-Release builds of both iOS and Android apps include a full embedded update, including manifest, JavaScript bundle, and all `require`d assets. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
-
-Note that when you make a release build, the update that will run on first launch is the update whose manifest and bundle are embedded in the binary at build time -- i.e. your most recently exported/published update. **This is different behavior from plain React Native projects**, which create a new bundle on-demand each time you make a release build. This means that if you make a change to your JavaScript app, you need to export/publish a new update in order to see that change in a release build. In future versions of `expo-updates` we hope to support on-demand updates created at build-time.
-
-### Embed an initial update
-
-Before building an `expo-update`-enabled release build of your app, you need to create an initial update to embed into the app binary.
-
-If you're not using Expo CLI, you need to create a manifest and bundle for this initial update. The files should be named `app.manifest` and `app.bundle`. (See the documentation on [Updating your App](https://docs/expo.io/versions/latest/bare/updating-your-app/) for the format of the manifest.) To embed them into your Android project, place a copy in the `android/app/src/main/assets` folder. To embed them into your iOS app, place them in the `ios/<your-project-name>` folder (or any subfolder) and add them to your Xcode project in the Xcode GUI.
-
-If you're using Expo CLI, you just need to run `expo export` or `expo publish` once before making a release build. After doing so, be sure to **add `ios/<your-project-name>/Supporting/app.manifest` and `ios/<your-project-name>/Supporting/app.bundle` to your Xcode project**.
+Release builds of both iOS and Android apps include a full embedded update, including manifest, JavaScript bundle, and all imported assets. This is critical to ensure that your app can load for all users immediately upon installation, without needing to talk to a server first.
 
 ## Configuration
 
