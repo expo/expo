@@ -8,7 +8,7 @@ Because they are defined globally, these variables are useful to change the beha
 
 ### The app manifest `.env`
 
-If you have installed the [`expo-constants`](../../versions/latest/sdk/constants/) module in your Managed Workflow, you can access the app manifest properties. One of these manifest properties is the `.env` property, a property that is added when running `expo start`. As the name suggests, it contains some of your system-defined environment variables. For security reasons, only the variables that [starts with `REACT_NATIVE_` or `EXPO_` are available](https://github.com/expo/expo-cli/blob/62b296498100ad28a655a119a85b4d78fe9acd58/packages/xdl/src/Project.ts#L1929).
+If you have installed the [`expo-constants`](../../versions/latest/sdk/constants/) module in your managed workflow project, you can access the app manifest's properties. One of these properties is the `.env` property, a property that is **only** available when running `expo start`. As the name suggests, it contains some of your system-defined environment variables. For security reasons, only the variables that [starts with `REACT_NATIVE_` or `EXPO_` are available](https://github.com/expo/expo-cli/blob/62b296498100ad28a655a119a85b4d78fe9acd58/packages/xdl/src/Project.ts#L1929).
 
 > While the `.env` property can be useful during development, this property is not available when running `expo publish` or `expo build`. It should not be used for feature flagging or other app-specific configuration because of this.
 
