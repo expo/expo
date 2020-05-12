@@ -1,4 +1,5 @@
 const babel = require('@babel/core');
+
 const plugin = require('../plugins/disable-ambiguous-requires');
 
 const options = {
