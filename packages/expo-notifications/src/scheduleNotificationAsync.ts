@@ -63,6 +63,19 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
       hour,
       minute,
     };
+  } else if (
+    // eg. { seconds: ..., repeats: ..., hour: ... }
+    ('seconds' in userFacingTrigger &&
+      'repeats' in userFacingTrigger &&
+      Object.keys(userFacingTrigger).length > 2) ||
+    // eg. { seconds: ..., hour: ... }
+    ('seconds' in userFacingTrigger &&
+      !('repeats' in userFacingTrigger) &&
+      Object.keys(userFacingTrigger).length > 1)
+  ) {
+    throw new TypeError(
+      'Could not have inferred the notification trigger type: if you want to use a time interval trigger, pass in only `seconds` with or without `repeats` property; if you want to use calendar-based trigger, pass in `second`.'
+    );
   } else if ('seconds' in userFacingTrigger) {
     return {
       type: 'timeInterval',
