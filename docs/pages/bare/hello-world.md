@@ -59,11 +59,14 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
+Bare projects are initialized using [CocoaPods](https://cocoapods.org/), a dependency manager for iOS projects.
+
+- Run `npx pod-install` to link the native iOS packages using CocoaPods.
+- Run `npx react-native run-ios` to rebuild your project with the native code linked.
 
 ### Android configuration
 
-You don't have to do anything, just run the project with `react-native run-android`. Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
+You don't have to do anything, just run the project with `npx react-native run-android`. Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
 
 ## What now?
 

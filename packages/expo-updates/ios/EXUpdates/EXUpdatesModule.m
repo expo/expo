@@ -40,6 +40,7 @@ UM_EXPORT_MODULE(ExpoUpdates);
     return @{
       @"isEnabled": @(YES),
       @"isUsingEmbeddedAssets": @(controller.isUsingEmbeddedAssets),
+      @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
       @"manifest": launchedUpdate.rawManifest ?: @{},
       @"releaseChannel": [EXUpdatesConfig sharedInstance].releaseChannel,
       @"localAssets": controller.assetFilesMap ?: @{},

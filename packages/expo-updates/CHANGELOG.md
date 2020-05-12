@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 0.2.0
+
+### 🎉 New features
+
 - Added support for the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. 
   - This means you no longer need to run `expo publish` before creating a release build.
   - The publish workflow is still supported, but it is no longer used by default in new projects, nor is it included in the setup instructions.
@@ -36,12 +42,13 @@
     -apply from: "../../node_modules/expo-updates/expo-updates.gradle"
     +apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
     ```
-- Added `Updates.releaseChannel` constant export
+- Added `Updates.updateId` and `Updates.releaseChannel` constant exports
 
 ### 🐛 Bug fixes
 
 - Fixed an issue with recovering from an unexpectedly deleted asset on iOS.
 - Fixed handling of invalid EXPO_UDPATE_URL values on Android.
+- Updates Configuration Conditional From Equal To Prefix Check. ([#8225](https://github.com/expo/expo/pull/8225) by [@thorbenprimke](https://github.com/thorbenprimke))
 
 ## 0.1.3
 

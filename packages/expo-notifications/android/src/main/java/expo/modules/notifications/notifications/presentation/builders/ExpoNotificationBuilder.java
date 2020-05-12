@@ -47,6 +47,9 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     builder.setContentTitle(content.getTitle());
     builder.setContentText(content.getText());
     builder.setSubText(content.getSubtitle());
+    // Sets the text/contentText as the bigText to allow the notification to be expanded and the
+    // entire text to be viewed.
+    builder.setStyle(new NotificationCompat.BigTextStyle().bigText(content.getText()));
 
     Number notificationColor = getColor();
     if (notificationColor != null) {

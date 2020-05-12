@@ -1005,9 +1005,6 @@ public class Kernel extends KernelInterface {
   public static void handleReactNativeError(Throwable throwable, String errorMessage, Object detailsUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     handleReactNativeError(ExponentErrorMessage.developerErrorMessage(errorMessage), detailsUnversioned, exceptionId, isFatal);
-    if (throwable != null) {
-      Exponent.logException(throwable);
-    }
   }
 
   private static void handleReactNativeError(ExponentErrorMessage errorMessage, Object detailsUnversioned,
@@ -1058,7 +1055,6 @@ public class Kernel extends KernelInterface {
 
   public void handleError(Exception exception) {
     handleReactNativeError(ExceptionUtils.exceptionToErrorMessage(exception), null, -1, true);
-    Exponent.logException(exception);
   }
 
   private static int getExceptionId(Integer originalId) {

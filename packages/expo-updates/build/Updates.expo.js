@@ -6,6 +6,9 @@ import { UpdateEventType, } from './Updates.types';
 export * from './Updates.types';
 export const localAssets = {};
 export const manifest = Constants.manifest ?? {};
+export const updateId = manifest.hasOwnProperty('releaseId')
+    ? manifest.releaseId.toLowerCase()
+    : null;
 export const releaseChannel = manifest.hasOwnProperty('releaseChannel')
     ? manifest.releaseChannel
     : 'default';

@@ -31,7 +31,7 @@ expo install expo-notifications
 
 ### Configure for iOS
 
-Run `pod install` in the `ios` directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 In order to be able to receive push notifications on the device:
 

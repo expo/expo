@@ -77,9 +77,13 @@ Since headers sent in requests by `expo-updates` do not affect statically hosted
 
 In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
-Updates embedded into your app binary look slightly different from how vanilla React Native apps embed JavaScript and assets. In particular, updates from `expo-updates` include the manifest metadata along with all of the assets required to run the update. The manifest should be in a file called `app.manifest` and the JavaScript bundle in a file called `app.bundle`. For iOS, these should be added to your Xcode project so they are bundled into the IPA. For Android, placing them in the `android/app/src/main/assets` folder is sufficient for gradle to bundle them into the APK.
+When you make a release build of your app, the build process will bundle your JavaScript source code into a minifed bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in `app.json`). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
 
-Assets that you `require` in your JavaScript source can be embedded into your app binary. If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which `require`d assets will be bundled into your binary using the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
+## Including Assets in Updates
+
+Assets that you import in your JavaScript source can also be atomically downloaded as part of a published update. `expo-updates` will not consider an update "ready" and will not launch the update unless it has downloaded all required assets.
+
+If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -87,7 +91,7 @@ Assets that you `require` in your JavaScript source can be embedded into your ap
 ],
 ```
 
-Assets with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`. If you have an asset that should be lazily downloaded at runtime rather than when the app is installed, you can use `assetBundlePatterns` to exclude it while still `require`ing it in your JavaScript code.
+Assets with paths matching the given patterns will be pre-downloaded by clients before the update that uses them will launch. If you have an asset that should be lazily downloaded at runtime rather than before your JavaScript is evaluated, you can use `assetBundlePatterns` to exclude it while still importing it in your JavaScript source.
 
 Note that in order to use `expo-asset` successfully, you must use the `--assetPlugins` option to provide the Metro bundler with the `node_modules/expo-asset/tools/hashAssetFiles` plugin when you create your JavaScript bundle. If you use `expo export` or `expo publish` to create your update, this will be done automatically for you.
 

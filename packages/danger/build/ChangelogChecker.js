@@ -18,7 +18,7 @@ const PullRequestManager_1 = require("./PullRequestManager");
 const Utils_1 = require("./Utils");
 // Setup
 const pr = danger.github.pr;
-const prAuthor = pr.base.user.login;
+const prAuthor = pr.user.login;
 const pullRequestManager = PullRequestManager_1.createPullRequestManager(danger.github.api, pr);
 async function getFileDiffAsync(path) {
     const { stdout } = await spawn_async_1.default('git', ['diff', '--', path], {

@@ -30,6 +30,7 @@ export interface AppManifest {
     sdkVersion?: string;
     version?: string;
     /** Published Apps Only */
+    releaseId?: string;
     revisionId?: string;
     releaseChannel?: string;
     orientation?: string;
