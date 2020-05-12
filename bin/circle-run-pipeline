@@ -22,6 +22,12 @@ OptionParser.new do |parser|
   parser.on('-t', '--tag TAG', 'Run pipeline on the specified tag') do |t|
     options[:body]['tag'] = t
   end
+  parser.on('-g', '--google-play', 'Run google play release build job') do
+    options[:body]['parameters']['release_google'] = true
+  end
+  parser.on('-k', '--apk', 'Run android apk release build job') do
+    options[:body]['parameters']['release_apk'] = true
+  end
 end.parse!
 
 unless options[:body]['tag']
