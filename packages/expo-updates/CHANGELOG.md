@@ -42,6 +42,7 @@
     -apply from: "../../node_modules/expo-updates/expo-updates.gradle"
     +apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
     ```
+    6. Add `metro.config.js` with [these contents](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/metro.config.js) to your project.
 - Added `Updates.updateId` and `Updates.releaseChannel` constant exports
 
 ### 🐛 Bug fixes
