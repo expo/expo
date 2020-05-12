@@ -765,6 +765,42 @@ export async function test(t) {
       );
 
       t.it(
+        'throws an error if a user defines an invalid trigger (no repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
+        },
+        10000
+      );
+
+      t.it(
+        'throws an error if a user defines an invalid trigger (with repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, repeats: true, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
+        },
+        10000
+      );
+
+      t.it(
         'triggers a notification which contains the custom color',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
