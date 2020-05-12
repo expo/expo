@@ -3,6 +3,7 @@ title: Linking
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Linking'
 ---
 
+import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import TableOfContentSection from '~/components/plugins/TableOfContentSection';
@@ -15,7 +16,15 @@ For information and examples on how to use this API and the `react-native` Linki
 
 <PlatformsSection android emulator ios simulator web />
 
+## Installation
+
+<InstallSection packageName="expo-linking" />
+
 ## API
+
+```js
+import * as Linking from 'expo-linking';
+```
 
 <TableOfContentSection title='Methods' contents={['Linking.makeUrl(path, queryParams)', 'Linking.parse(url)', 'Linking.parseInitialURLAsync()']} />
 
@@ -59,3 +68,9 @@ A promise that resolves to an object with the following keys:
 
 - **path (_string_)** -- The path specified by the url used to open the app.
 - **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.
+
+## Hooks
+
+### `Linking.useUrl()`
+
+Returns the initial URL followed by any subsequent changes to the URL.
