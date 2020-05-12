@@ -7,6 +7,9 @@ parameters:
   release_apk:
     type: boolean
     default: false
+  release_simulator:
+    type: boolean
+    default: false
 
 orbs:
   job-status-change: expo/job-status-change@1.0.11
@@ -299,18 +302,15 @@ workflows:
       #     requires:
       #       - test_suite_publish
       - android_unit_tests
-      - client_ios:
-          filters:  # run for ALL branches, and ios-simulator-v* tags
-            tags:
-              only: /^ios-simulator-v*/
+      - client_ios
+
+  release_simulator:
+    when: << pipeline.parameters.release_simulator >>
+    jobs:
+      - client_ios
       - client_ios_simulator_release:
           requires:
             - client_ios
-          filters:  # run for NO branches, and ios-simulator-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^ios-simulator-v*/
 
   release_google:
     when: << pipeline.parameters.release_google >>
