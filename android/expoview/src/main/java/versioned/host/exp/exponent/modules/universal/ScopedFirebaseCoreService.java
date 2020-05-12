@@ -19,10 +19,12 @@ import expo.modules.firebase.core.FirebaseCoreOptions;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 public class ScopedFirebaseCoreService extends FirebaseCoreService implements RegistryLifecycleListener {
 
@@ -66,10 +68,14 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
 
     // Cleanup any deleted apps from the protected-names map
     synchronized (mProtectedAppNames) {
+      Set<String> forRemoval = new HashSet<>();
       for (Map.Entry<String, Boolean> entry : mProtectedAppNames.entrySet()) {
         if (entry.getValue()) { // isDeleted
-          mProtectedAppNames.remove(entry.getKey());
+          forRemoval.add(entry.getKey());
         }
+      }
+      for (String app : forRemoval) {
+        mProtectedAppNames.remove(app);
       }
     }
 
