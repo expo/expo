@@ -17,7 +17,7 @@ export type PackageViewType = null | {
   author: string;
   gitHead: string;
   // and more but these are the basic ones, we shouldn't need more.
-  [key: string]: any;
+  [key: string]: unknown; 
 };
 
 /**

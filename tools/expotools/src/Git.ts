@@ -56,18 +56,15 @@ export type GitCommitOptions = {
  * it's just like current working directory for all other commands.
  */
 export class GitDirectory {
-  readonly path: string;
   readonly Directory = GitDirectory;
 
-  constructor(path) {
-    this.path = path;
-  }
+  constructor(readonly path) {}
 
   /**
    * Generic command used by other methods. Spawns `git` process at instance's repository path.
    */
   async runAsync(args: string[], options: SpawnOptions = {}): Promise<SpawnResult> {
-    return await spawnAsync('git', args, {
+    return spawnAsync('git', args, {
       cwd: this.path,
       ...options,
     });

@@ -34,10 +34,7 @@ export type ChangelogEntry = {
  */
 export type ChangelogChanges = {
   totalCount: number;
-  versions: {
-    [key: string]: {
-      [key in ChangeType]?: string[];
-    };
+  versions: Record<string, Partial<Record<key in ChangeType, string[]>>>;
   };
 };
 
@@ -92,7 +89,6 @@ export class Changelog {
   async getTokensAsync(): Promise<Markdown.Tokens> {
     if (!this.tokens) {
       try {
-        await fs.access(this.filePath, fs.constants.R_OK);
         this.tokens = Markdown.lexify(await fs.readFile(this.filePath, 'utf8'));
       } catch (error) {
         this.tokens = [];

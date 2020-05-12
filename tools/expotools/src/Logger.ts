@@ -11,11 +11,7 @@ const CONSOLE_RESOLVER = (level: string, color, args) => {
  * Basic logger just for simple console logging with colored output.
  */
 export class Logger {
-  readonly resolver: LoggerResolver;
-
-  constructor(resolver: LoggerResolver = CONSOLE_RESOLVER) {
-    this.resolver = resolver;
-  }
+  constructor(readonly resolver: LoggerResolver = CONSOLE_RESOLVER) {}
 
   verbose(...args: any[]): void {
     this.resolver('debug', chalk.dim, args);
@@ -61,14 +57,12 @@ export class Logger {
  */
 export class LoggerBatch extends Logger {
   readonly batchedLogs: [string, Chalk | null, any[]][] = [];
-  readonly parentResolver: LoggerResolver;
 
-  constructor(parentResolver: LoggerResolver = CONSOLE_RESOLVER) {
+  constructor(readonly parentResolver: LoggerResolver = CONSOLE_RESOLVER) {
     super((level, color, args) => {
       this.batchedLogs.push([level, color, args]);
     });
     this.batchedLogs = [];
-    this.parentResolver = parentResolver;
   }
 
   flush() {

@@ -22,9 +22,9 @@ let cachedPackages: Package[] | null = null;
 export type PackageJson = {
   name: string;
   version: string;
-  scripts: { [key: string]: string };
+  scripts: Record<string, string>;
   gitHead?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 /**

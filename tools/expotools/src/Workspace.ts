@@ -18,9 +18,7 @@ export type WorkspaceProjectInfo = {
 /**
  * An object with workspace's projects info.
  */
-export type WorkspacesInfo = {
-  [key: string]: WorkspaceProjectInfo;
-};
+export type WorkspacesInfo = Record<string, WorkspaceProjectInfo>;
 
 /**
  * Returns an object containing info for all projects in the workspace.
