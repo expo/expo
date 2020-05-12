@@ -14,7 +14,7 @@ If you have installed the [`expo-constants`](../../versions/latest/sdk/constants
 
 ### Using app manifest `.extra`
 
-In the app manifest, there is also a `.extra` property. Other than `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property is filled from your manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../../workflow/configuration/#app-config).
+In the app manifest, there is also a `.extra` property. Unlike `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../../workflow/configuration/#app-config).
 
 Below you can see an example of the dynamic `app.config.js` manifest. It's similar to the `app.json`, but written in JavaScript instead of JSON. The manifest is loaded when starting or publishing your app and has access to the environment variables using [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env). With this we can configure the `.extra.enableComments` property without having to change the code itself, like `COOLAPP_COMMENTS=true; expo start`.
 
