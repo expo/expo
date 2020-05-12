@@ -67,7 +67,7 @@ public class NotificationScheduler extends ExportedModule {
   @ExpoMethod
   public void scheduleNotificationAsync(final String identifier, ReadableArguments notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
     try {
-      NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(notificationContentMap).build();
+      NotificationContent content = createNotificationContent(notificationContentMap);
       NotificationRequest request = new NotificationRequest(identifier, content, triggerFromParams(triggerParams));
       ExpoNotificationSchedulerService.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
         @Override
@@ -144,5 +144,9 @@ public class NotificationScheduler extends ExportedModule {
       default:
         throw new InvalidArgumentException("Trigger of type: " + params.getString("type") + " is not supported on Android.");
     }
+  }
+
+  protected NotificationContent createNotificationContent(ReadableArguments notificationContentMap) {
+    return new ArgumentsNotificationContentBuilder(getContext()).setPayload(notificationContentMap).build();
   }
 }

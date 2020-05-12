@@ -16,6 +16,8 @@ import java.util.Map;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedAccelerometerService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGravitySensorService;
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedGyroscopeService;
@@ -65,6 +67,10 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     // Overriding expo-firebase-core
     moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
+
+    // Overriding expo-notifications classes
+    moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
