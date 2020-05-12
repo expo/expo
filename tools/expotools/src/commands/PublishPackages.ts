@@ -846,6 +846,10 @@ async function _gitAddAndCommitAsync(allConfigs: Map<string, PipelineConfig>): P
     await _gitAddAsync('ios/Podfile.lock');
     await _gitAddAsync('ios/Pods');
 
+    // Add some files from iOS bare-expo project that are being touched by `pod update` command
+    await _gitAddAsync('apps/bare-expo/ios/Podfile.lock');
+    await _gitAddAsync('apps/bare-expo/ios/Pods');
+
     // Add expoview's build.gradle in which the dependencies were updated
     await _gitAddAsync('android/expoview/build.gradle');
 
@@ -933,6 +937,23 @@ async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promis
     await _spawnAsync('pod', ['update', ...podspecNames, '--no-repo-update'], {
       cwd: path.join(EXPO_DIR, 'ios'),
     });
+  }
+  if (await _promptAsync(`Do you want to update pods in ${chalk.magenta('expo/apps/bare-expo/ios')}?`)) {
+    // Update all pods that have been published
+    console.log(`\nUpdating pods: ${chalk.green(podspecNames.join(' '))}`);
+
+    const bareExpoIosDirectory = path.join(EXPO_DIR, 'apps', 'bare-expo', 'ios');
+
+    try {
+      await _spawnAsync('pod', ['install', '--no-repo-update'], {
+        cwd: bareExpoIosDirectory,
+      });
+    } catch (e) {
+      await _promptAsync(`\`pod install\` in \`bare-expo\` failed. Please go there now and fix the directory state (either remove any changes or reinstall Pods successfully) so that next steps that may commit the changes do not commit a bad directory.`);
+      if (!await _promptAsync(`Did you do it? (answering \`no\` will remove any changes made in the \`bare-expo/ios\` directory)`)) {
+        await _spawnAsync('git', ['checkout', '--', '.'], { cwd: bareExpoIosDirectory });
+      }
+    }
   }
 }
 
