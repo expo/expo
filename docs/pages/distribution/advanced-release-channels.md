@@ -19,14 +19,14 @@ You can see everything that you’ve published with `expo publish:history`.
 #### Example command and output
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | channelId  | publicationId  |
+| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
 |---|---|---|---|---|---|---|
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 9133d577  | d9bd6b80  |
+| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 80b1ffd7-4e05-4851-95f9-697e122033c3 |
 
 To see more details about this particular release, you can run `expo publish:details`
 
 #### Example command and output
-`expo publish:details --publish-id d9bd6b80`
+`expo publish:details --publish-id 80b1ffd7-4e05-4851-95f9-697e122033c3  `
 
 ![Publish Details](/static/images/release-channels-pub-details-1.png)
 
@@ -48,32 +48,39 @@ The following flowchart shows how we determine which release to return to a user
 Example use case: you previously published a release to `staging` and everything went well in your testing. Now you want this release to be active in another channel (ie) production
 
 We run `expo publish:set` to push our release to the `production` channel.
-`expo publish:set --publish-id d9bd6b80 --release-channel production`
+`expo publish:set --publish-id 80b1ffd7-4e05-4851-95f9-697e122033c3 --release-channel production`
 
 Continuing from the previous section, we can see that our release is available in both the `staging` and the `production` channels.
 
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | channelId  | publicationId  |
+| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
 |---|---|---|---|---|---|---|
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 9133d577  | d9bd6b80  |
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | production  | 6e406223  | d9bd6b80  |
+| 2018-01-05T23:55:04.603Z  |  1.0.0 | 36.0.0 |  ios | staging | 80b1ffd7-4e05-4851-95f9-697e122033c3  |
+| 2018-01-05T23:55:04.603Z  |  1.0.0 | 36.0.0 |  ios | production | 80b1ffd7-4e05-4851-95f9-697e122033c3  |
+| 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
 
 ## Rollback a channel entry
 
 Example use case: you published a release to your `production` channel, only to realize that it includes a major regression for some of your users, so you want to revert back to the previous version.
 
-Continuing from the previous section, we rollback our `production` channel entry with `expo publish:rollback`.
+Continuing from the previous section, we rollback our `production` channel entry for all platforms with `expo publish:set`
 
-`expo publish:rollback --channel-id 6e406223`
+`expo publish:set --channel production --publish-id d6b61741-a8dc-11e9-852a-3b0715b88238`
+`expo publish:set --channel production --publish-id 43d89652-a8dc-11e9-b565-4586c71668b9`
 
-Now we can see that our release is no longer available in the production channel.
+We could accomplish the same thing more succinctly with publish:rollback
+`expo publish:rollback --channel production --sdk-version 36.0.0`
+
+Now we can see that our releases are available on the production channel.
 
 `expo publish:history --platform ios`
 
-| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | channelId  | publicationId  |
+| publishedTime  | appVersion  | sdkVersion  | platform  | channel  | publicationId  |
 |---|---|---|---|---|---|---|
-| 2018-01-05T23:55:04.603Z  |  1.0.0 | 24.0.0 |  ios | staging  | 9133d577  | d9bd6b80  |
+| 2018-01-04T22:43:19.302Z  |  1.0.0 | 36.0.0 |  ios | production | d6b61741-a8dc-11e9-852a-3b0715b88238 |
+| 2018-01-04T22:43:46.714Z  |  1.0.0 | 36.0.0 |  android | production | 43d89652-a8dc-11e9-b565-4586c71668b9 |
+
 
 ## Release channels CLI tools
 ### Publish history
@@ -102,12 +109,14 @@ Now we can see that our release is no longer available in the production channel
 
 ### Publish rollback
 ```
-Usage: expo publish:rollback --channel-id <channel-id>
+Usage: expo publish:rollback
 
-  Rollback an update to a channel.
+  Rollback an update to a channel. Equivalent to running `expo publish:set` with publish-id set to the most recent release to the specified sdk version
 
   Options:
-    --channel-id <channel-id>  The channel id to rollback in the channel. (Required)
+    -c, --release-channel <channel-name>  The name of the release channel to roll back (Required)
+    -s, --sdk-version <version>           The SDK version to roll back (e.g. 37.0.0) (Required)
+    -p, --platform <ios|android>          The platform to roll back (roll back both unless specified)
 ```
 
 ### Publish set
