@@ -285,4 +285,85 @@ export function test(t) {
       30000
     );
   });
+
+  t.describe('when using an encrypted sqlite file', () => {
+    async function failWhenIncorrectKey(db) {
+      await new Promise((resolve, reject) => {
+        db.transaction(
+          tx => {
+            const onSuccess = (tx, error) => reject(error);
+            const onError = (tx, error) => resolve();
+            tx.executeSql(
+              'SELECT * FROM Users',
+              [],
+              onSuccess,
+              onError
+            );
+          },
+          reject,
+          resolve
+        );
+      });
+    }
+
+    t.it(
+      'should not work with no key',
+      async () => {
+        await FS.downloadAsync(
+          Asset.fromModule(require('../assets/asset-db-encrypted.db')).uri,
+          `${FS.documentDirectory}SQLite/downloaded-encrypted.db`
+        );
+
+        const db = SQLite.openDatabase({ name:'downloaded-encrypted.db' });
+        await failWhenIncorrectKey(db);
+      },
+      30000
+    );
+
+    t.it(
+      'should not work with incorrect key',
+      async () => {
+        await FS.downloadAsync(
+          Asset.fromModule(require('../assets/asset-db-encrypted.db')).uri,
+          `${FS.documentDirectory}SQLite/downloaded-encrypted.db`
+        );
+
+        const db = SQLite.openDatabase({ name:'downloaded-encrypted.db', key: '1234567890' });
+        await failWhenIncorrectKey(db);
+      },
+      30000
+    );
+
+    t.it(
+      'should work with correct key',
+      async () => {
+        await FS.downloadAsync(
+          Asset.fromModule(require('../assets/asset-db-encrypted.db')).uri,
+          `${FS.documentDirectory}SQLite/downloaded-encrypted.db`
+        );
+
+        const db = SQLite.openDatabase({ name:'downloaded-encrypted.db', key: 'qwertyuiop' });
+
+        await new Promise((resolve, reject) => {
+          db.transaction(
+            tx => {
+              const onError = (tx, error) => reject(error);
+              tx.executeSql(
+                'SELECT * FROM Users',
+                [],
+                (tx, results) => {
+                  t.expect(results.rows.length).toEqual(3);
+                  t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                },
+                onError
+              );
+            },
+            reject,
+            resolve
+          );
+        });
+      },
+      30000
+    );
+  });
 }
