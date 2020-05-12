@@ -3,7 +3,7 @@ import readline from 'readline';
 
 type LoggerResolver = (level: string, color: Chalk | null, args: any[]) => void;
 
-const CONSOLE_RESOLVER = (level: string, color, args) => {
+const CONSOLE_RESOLVER: LoggerResolver = (level, color, args) => {
   return console[level](...(color ? args.map((arg) => color(arg)) : args));
 };
 

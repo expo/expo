@@ -76,13 +76,11 @@ export type TaskFunction<Args extends any[]> = (...args: Args) => Promise<void |
  * Class of error that might be thrown when running tasks.
  */
 export class TaskError<TaskType extends { name: string }> extends Error {
-  readonly task: TaskType;
-  readonly stderr: string | undefined;
+  readonly stderr?: string;
   readonly stack?: string;
 
-  constructor(task: TaskType, error: Error) {
+  constructor(readonly task: TaskType, error: Error) {
     super(error.message);
-    this.task = task;
     this.stderr = (error as any).stderr;
     this.stack = error.stack;
   }
