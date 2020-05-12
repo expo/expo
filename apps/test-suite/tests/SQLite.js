@@ -10,26 +10,14 @@ export const name = 'SQLite';
 export function test(t) {
   t.describe('SQLite', () => {
     const parameters = [
-      {
-        describe: 'when fileInfo is name as string',
-        fileInfo: 'test.db',
-      },
-      {
-        describe: 'when fileInfo is object with just the name ',
-        fileInfo: { name: 'test.db' },
-      },
-      {
-        describe: 'when fileInfo is object with name and empty key',
-        fileInfo: { name: 'test.db', key: '' },
-      },
-      {
-        describe: 'when fileInfo is object with name and actual key',
-        fileInfo: { name: 'test.db', key: 'qwertyuiop' },
-      },
+      'test.db',
+      { name: 'test.db' },
+      { name: 'test.db', key: '' },
+      { name: 'test.db', key: 'qwertyuiop' },
     ];
 
-    parameters.forEach(({ describe, fileInfo }) => {
-      t.describe(describe + JSON.stringify(fileInfo), () => {
+    parameters.forEach((fileInfo) => {
+      t.describe(`when fileInfo is: ${JSON.stringify(fileInfo)}`, () => {
         t.it('should be able to drop + create a table, insert, query', async () => {
           const db = SQLite.openDatabase(fileInfo);
           await new Promise((resolve, reject) => {
