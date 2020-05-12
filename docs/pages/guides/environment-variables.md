@@ -28,7 +28,7 @@ export default {
 };
 ```
 
-To use these `.extra` properties in your Expo app, you have to use the `expo-constants` module. Here you can see a simple component rendering the comments component, only when these are enabled.
+To use these `.extra` properties in your Expo app, you have to use the [`expo-constants`](../../versions/latest/sdk/constants/) module. Here you can see a simple component rendering the comments component, only when these are enabled.
 
 ```js
 import Constants from 'expo-constants';
@@ -49,7 +49,7 @@ Post.defaultProps = {
 
 ### Using Babel to "replace" variables
 
-In the bare workflow, you don't have access to the manifest via the `expo-constants` module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
+In the bare workflow, you don't have access to the manifest via the [`expo-constants`](../../versions/latest/sdk/constants/) module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
 
 To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modifed `babel.config.js` with this plugin enabled.
 
