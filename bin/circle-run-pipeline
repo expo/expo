@@ -28,6 +28,9 @@ OptionParser.new do |parser|
   parser.on('-k', '--apk', 'Run android apk release build job') do
     options[:body]['parameters']['release_apk'] = true
   end
+  parser.on('-s', '--simulator', 'Run simulator release build job') do
+    options[:body]['parameters']['release_simulator'] = true
+  end
 end.parse!
 
 unless options[:body]['tag']
