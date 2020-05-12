@@ -44,6 +44,11 @@ const destinationDir = process.argv[4];
   };
 
   assets.forEach(function(asset) {
+    if (!asset.fileHashes) {
+      throw new Error(
+        'It looks like the hashAssetFiles Metro plugin is not configured in your project. You need to add a metro.config.js that configures Metro to use this plugin.'
+      );
+    }
     asset.scales.forEach(function(scale, index) {
       const assetInfoForManifest = {
         name: asset.name,

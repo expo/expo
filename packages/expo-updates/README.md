@@ -44,6 +44,18 @@ Additionally, add the following line in your root `index.js` or `App.js` file:
 import 'expo-asset';
 ```
 
+### metro.config.js
+
+You need to add a metro.config.js to your project with the following contents:
+
+```js
+module.exports = {
+  transformer: {
+    assetPlugins: ['expo-asset/tools/hashAssetFiles'],
+  },
+};
+```
+
 ### Set up app.json
 
 If you're going to be using Expo CLI to package your updates (either with `expo export` or `expo publish`), you will need to add some fields to your app.json. If not, you can skip this section.
