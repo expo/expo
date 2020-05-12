@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+## 0.2.1
+
+### 🐛 Bug fixes
+
+- Added a better error message to the `createManifest` script when project does not have the `hashAssetFiles` plugin configured.
+
 ### 🐛 Bug fixes
 
 ## 0.2.0
