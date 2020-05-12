@@ -4,7 +4,7 @@ title: Environment variables in Expo
 
 Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable.
 
-Because they are defined globally, these variables are useful to change the behavior of code _without changing the code itself_. Just like your system behaving "differently" when adding directories to the `PATH` variable, you can implement these in your Expo app as well. For example, you can enable or disable certain features when building a testing version of your app. Or you can switch to a different API endpoint when building for production.
+Because they are defined globally, these variables are useful to change the behavior of code _without changing the code itself_. Just like your system behaving "differently" when adding directories to the `PATH` variable, you can implement these in your Expo app as well. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
 
 ### The app manifest `.env`
 
