@@ -1,13 +1,17 @@
 import { CodedError } from '@unimodules/core';
 import compareUrls from 'compare-urls';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, Dimensions, AppStateStatus } from 'react-native';
 
 import {
   WebBrowserAuthSessionResult,
   WebBrowserOpenOptions,
   WebBrowserResult,
+  WebBrowserWindowFeatures,
 } from './WebBrowser.types';
+
+const POPUP_WIDTH = 500;
+const POPUP_HEIGHT = 650;
 
 let popupWindow: Window | null = null;
 
@@ -50,7 +54,8 @@ export default {
   ): Promise<WebBrowserResult> {
     if (!canUseDOM) return { type: 'cancel' };
     const { windowName = '_blank', windowFeatures } = browserParams;
-    window.open(url, windowName, windowFeatures);
+    const features = getPopupFeaturesString(windowFeatures);
+    window.open(url, windowName, features);
     return { type: 'opened' };
   },
   dismissAuthSession() {
@@ -62,11 +67,12 @@ export default {
   }: {
     skipRedirectCheck?: boolean;
   }): { type: 'success' | 'failed'; message: string } {
-    if (!canUseDOM)
+    if (!canUseDOM) {
       return {
         type: 'failed',
         message: 'Cannot use expo-web-browser in a non-browser environment',
       };
+    }
     const handle = window.localStorage.getItem(getHandle());
 
     if (!handle) {
@@ -107,7 +113,8 @@ export default {
   // This method should be invoked from user input.
   async openAuthSessionAsync(
     url: string,
-    redirectUrl?: string
+    redirectUrl?: string,
+    openOptions?: WebBrowserOpenOptions
   ): Promise<WebBrowserAuthSessionResult> {
     if (!canUseDOM) return { type: 'cancel' };
 
@@ -121,12 +128,14 @@ export default {
     window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
 
     if (popupWindow == null || popupWindow?.closed) {
-      // Create a reasonable popup
-      // https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features
-      const features = 'width=600,height=700,top=100,left=100,toolbar=no,menubar=no';
-      popupWindow = window.open(url, undefined, features);
+      const features = getPopupFeaturesString(openOptions?.windowFeatures);
+      popupWindow = window.open(url, openOptions?.windowName, features);
 
-      if (!popupWindow) {
+      if (popupWindow) {
+        try {
+          popupWindow.focus();
+        } catch (e) {}
+      } else {
         throw new CodedError(
           'ERR_WEB_BROWSER_BLOCKED',
           'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.'
@@ -211,6 +220,7 @@ async function getStateFromUrlOrGenerateAsync(inputUrl: string): Promise<string>
   // Generate a crypto state for verifying the return popup.
   return await generateStateAsync();
 }
+
 function getRedirectUrlFromUrlOrGenerate(inputUrl: string): string {
   const url = new URL(inputUrl);
   if (
@@ -265,4 +275,72 @@ function bufferToString(buffer): string {
     state.push(CHARSET[index]);
   }
   return state.join('');
+}
+
+// Window Features
+
+// Ensure feature string is an object
+function normalizePopupFeaturesString(
+  options?: WebBrowserWindowFeatures | string
+): Record<string, any> {
+  let windowFeatures: Record<string, any> = {};
+  // This should be avoided because it adds extra time to the popup command.
+  if (typeof options === 'string') {
+    // Convert string of `key=value,foo=bar` into an object
+    const windowFeaturePairs = options.split(',');
+    for (const pair of windowFeaturePairs) {
+      const [key, value] = pair.trim().split('=');
+      if (key && value) {
+        windowFeaturePairs[key] = value;
+      }
+    }
+  } else if (options) {
+    windowFeatures = options;
+  }
+  return windowFeatures;
+}
+
+// Apply default values to the input feature set
+function getPopupFeaturesString(options?: WebBrowserWindowFeatures | string): string {
+  const windowFeatures = normalizePopupFeaturesString(options);
+
+  const width = windowFeatures.width ?? POPUP_WIDTH;
+  const height = windowFeatures.height ?? POPUP_HEIGHT;
+
+  const dimensions = Dimensions.get('screen');
+  const top = windowFeatures.top ?? Math.max(0, (dimensions.height - height) * 0.5);
+  const left = windowFeatures.left ?? Math.max(0, (dimensions.width - width) * 0.5);
+
+  // Create a reasonable popup
+  // https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features
+  return featureObjectToString({
+    ...windowFeatures,
+    // Toolbar buttons (Back, Forward, Reload, Stop buttons).
+    toolbar: windowFeatures.toolbar ?? 'no',
+    menubar: windowFeatures.menubar ?? 'no',
+    // Shows the location bar or the address bar.
+    location: windowFeatures.location ?? 'yes',
+    resizable: windowFeatures.resizable ?? 'yes',
+    // If this feature is on, then the new secondary window has a status bar.
+    status: windowFeatures.status ?? 'no',
+    scrollbars: windowFeatures.scrollbars ?? 'yes',
+    top,
+    left,
+    width,
+    height,
+  });
+}
+
+export function featureObjectToString(features: Record<string, any>): string {
+  return Object.keys(features).reduce<string>((prev, current) => {
+    let value = features[current];
+    if (typeof value === 'boolean') {
+      value = value ? 'yes' : 'no';
+    }
+    if (current && value) {
+      if (prev) prev += ',';
+      return `${prev}${current}=${value}`;
+    }
+    return prev;
+  }, '');
 }
