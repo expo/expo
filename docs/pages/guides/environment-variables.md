@@ -63,7 +63,7 @@ module.exports = function(api) {
 };
 ```
 
-After adding the new Babel plugin to your config, you can access the environment variable. Here you can see the same component for `expo-constants`, but without that module.
+After adding the new Babel plugin to your config, you can access the environment variable. Here you can see the same component as above, but without `expo-constants`.
 
 ```js
 export const Post = (props) => (
