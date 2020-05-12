@@ -1,5 +1,6 @@
 import { IosPlist, IosPodsTools } from '@expo/xdl';
 import chalk from 'chalk';
+import plist from 'plist';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -12,39 +13,9 @@ interface PlistObject {
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
-async function modifyInfoPlistAsync(
-  infoPlistPath: string,
-  templateSubstitutions: any
-): Promise<PlistObject> {
-  const filename = path.basename(infoPlistPath);
-  const dir = path.dirname(infoPlistPath);
-
-  console.log('Modifying Info.plist at %s ...', chalk.cyan(path.relative(EXPO_DIR, infoPlistPath)));
-
-  const result = await IosPlist.modifyAsync(dir, filename, (config) => {
-    if (templateSubstitutions.FABRIC_API_KEY) {
-      config.Fabric = {
-        APIKey: templateSubstitutions.FABRIC_API_KEY,
-        Kits: [
-          {
-            KitInfo: {},
-            KitName: 'Crashlytics',
-          },
-        ],
-      };
-    }
-    return config;
-  });
-  return result;
-}
-
-async function cleanInfoPlistBackupAsync(infoPlistPath: string): Promise<void> {
-  try {
-    await IosPlist.cleanBackupAsync(path.dirname(infoPlistPath), 'Info', true);
-  } catch (error) {
-    console.error(`There was an error cleaning up Expo template files:\n${error.stack}`);
-    process.exit(1);
-  }
+async function readPlistAsync(plistPath: string): Promise<PlistObject> {
+  const plistFileContent = await fs.readFile(plistPath, 'utf8');
+  return plist.parse(plistFileContent);
 }
 
 async function generateBuildConstantsFromMacrosAsync(
@@ -179,8 +150,8 @@ export default class IosMacrosGenerator {
   async generateAsync(options): Promise<void> {
     const { infoPlistPath, buildConstantsPath, macros, templateSubstitutions } = options;
 
-    // Update Info.plist
-    const infoPlist = await modifyInfoPlistAsync(infoPlistPath, templateSubstitutions);
+    // Read Info.plist
+    const infoPlist = await readPlistAsync(infoPlistPath);
 
     // Generate EXBuildConstants.plist
     await generateBuildConstantsFromMacrosAsync(
@@ -193,9 +164,5 @@ export default class IosMacrosGenerator {
 
     // // Generate Podfile and ExpoKit podspec using template files.
     await writeTemplatesAsync(options.expoKitPath, options.templateFilesPath);
-  }
-
-  async cleanupAsync(options): Promise<void> {
-    await cleanInfoPlistBackupAsync(options.infoPlistPath);
   }
 }

@@ -1,3 +1,6 @@
+# Ignore CHANGELOG.md files to prevent Danger.js from triggering code owner reviews
+/packages/**/CHANGELOG.md                       @ghost
+
 /packages/@unimodules/core                      @sjchmiela @tsapeta
 /packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne

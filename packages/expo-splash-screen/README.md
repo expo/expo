@@ -81,7 +81,7 @@ A `Promise` that resolves to `true` once the splash screen becomes hidden and to
 
 ## 🗒 Examples
 
-### `SplashScreen.preventAutoHideAsync()` in global scope  
+### `SplashScreen.preventAutoHideAsync()` in global scope
 
 `App.tsx`
 ```tsx
@@ -92,7 +92,7 @@ import * as SplashScreen from 'expo-splash-screen';
 // Prevent native splash screen from autohiding before App component declaration
 SplashScreen.preventAutoHideAsync()
   .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
-  .catch(console.warn); // it's good to explicitly catch and inspect any error 
+  .catch(console.warn); // it's good to explicitly catch and inspect any error
 
 export default class App extends React.Component {
   componentDidMount() {
@@ -108,7 +108,7 @@ export default class App extends React.Component {
         <Text style={styles.text}>SplashScreen Demo! 👋</Text>
       </View>
     )
-  } 
+  }
 }
 
 const styles = StyleSheet.create({
@@ -150,7 +150,7 @@ export default class App extends React.Component {
 
   /**
    * Method that serves to load resources and make API calls
-   */ 
+   */
   prepareResources = async () => {
     await performAPICalls(...);
     await downloadAssets(...);
@@ -170,7 +170,7 @@ export default class App extends React.Component {
         <Text style={styles.text}>SplashScreen Demo! 👋</Text>
       </View>
     )
-  } 
+  }
 }
 
 const styles = StyleSheet.create({
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects are not supported by this unimodule at this moment. Instead, you should use the `SplashScreen` module that is within the `expo` package (`import { SplashScreen } from 'expo'`).
+[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects use the older `SplashScreen` module within the `expo` package (`import { SplashScreen } from 'expo'`).
 
 ## 🖥 Installation in bare React Native projects
 
@@ -204,7 +204,7 @@ expo install expo-splash-screen
 
 ## 📱 Configure iOS
 
-Run `pod install` in the `ios` directory after installing the package.
+Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 
@@ -245,7 +245,7 @@ This is the actual splash screen definition and will be used by the system to re
     - drag-and-drop it as a `View Controller` child in view hierarchy inspector.
 
 <img src="./assets/configuration-ios-addImageViewToStoryboard.png" height="350" />
-  
+
 4. Set `Storyboard ID` to `SplashScreenViewController`:
     - select `View Controller` in view hierarchy inspector,
     - navigate to `Identity Inspector` in the right panel,
@@ -253,14 +253,21 @@ This is the actual splash screen definition and will be used by the system to re
 
 <img src="./assets/configuration-ios-addStoryboardID.png" height="350" />
 
-5. Configure `Image View` source:
+5. Tick `Is Initial View Controller` in `SplashScreenViewController`:
+    - select `View Controller` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - and tick `Is Initial View Controller` in View Controller section.
+
+<img src="./assets/configuration-ios-tickIsInitialViewController.png" height="350" />
+
+6. Configure `Image View` source:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - select `SplashScreen` in `Image` parameter).
 
 <img src="./assets/configuration-ios-configureImageView.png" height="350" />
 
-6. Configure `Background` of the `Image View`:
+7. Configure `Background` of the `Image View`:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - configure `Background` parameter:

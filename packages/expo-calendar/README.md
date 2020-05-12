@@ -30,7 +30,7 @@ Add `NSCalendarsUsageDescription` key to your `Info.plist`:
 <string>Allow $(PRODUCT_NAME) to access your calendar</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

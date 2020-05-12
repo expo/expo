@@ -7105,13 +7105,6 @@ CACHE_KEYS:
     SPECS:
       - CocoaLumberjack (3.5.3)
       - CocoaLumberjack/Core (3.5.3)
-  Crashlytics:
-    BUILD_SETTINGS_CHECKSUM:
-      Crashlytics: 18eb32750400c4a09c302ff62fb03449
-    CHECKSUM: 540b7e5f5da5a042647227a5e3ac51d85eed06df
-    PROJECT_NAME: Crashlytics
-    SPECS:
-      - Crashlytics (3.14.0)
   DoubleConversion:
     BUILD_SETTINGS_CHECKSUM:
       DoubleConversion: 00ad3596e935bcd21487033fc301bf91
@@ -7764,6 +7757,46 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (2.1.1)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 0602110faf064575b2e4aa90ac145f65
+    CHECKSUM: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
+    FILES:
+      - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXBadgeModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXInstallationIdProvider.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Emitter/EXNotificationsEmitter.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationCenterDelegate.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationsDelegate.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/EXNotificationSerializer.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXNotificationsHandlerModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Handler/EXSingleNotificationHandlerTask.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/NSDictionary+EXNotificationsVerifyingClass.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Presenting/EXNotificationPresentationModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (0.1.7)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
@@ -7956,13 +7989,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXWebBrowser
     SPECS:
       - EXWebBrowser (8.2.0)
-  Fabric:
-    BUILD_SETTINGS_CHECKSUM:
-      Fabric: d7956d5bc4c7fcf740fb04a63ead4d55
-    CHECKSUM: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
-    PROJECT_NAME: Fabric
-    SPECS:
-      - Fabric (1.10.2)
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: a4ace8e29238a5d6827948993cc85524
@@ -8218,16 +8244,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 234b9984682505865bf98188fdf8ee97
-      Release: 234b9984682505865bf98188fdf8ee97
+      Debug: 7e342f37177cd052ca54099671043c67
+      Release: 7e342f37177cd052ca54099671043c67
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: 85b12121877a2eea100a39574bacf435
+      Release: 85b12121877a2eea100a39574bacf435
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8c94d5ea6c10a3e4056bfdf6596c84fa
-      Release: 8c94d5ea6c10a3e4056bfdf6596c84fa
+      Debug: 85b12121877a2eea100a39574bacf435
+      Release: 85b12121877a2eea100a39574bacf435
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -10084,7 +10110,7 @@ CACHE_KEYS:
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 98f4825f425141e39e25ec9bb92098e1
-    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    CHECKSUM: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
     FILES:
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
@@ -10092,7 +10118,7 @@ CACHE_KEYS:
       - "../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
     PROJECT_NAME: UMAppLoader
     SPECS:
-      - UMAppLoader (1.0.0)
+      - UMAppLoader (1.0.2)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 0b7affbc39246c1e4ce2f9f58ebdc8c5
@@ -10124,7 +10150,7 @@ CACHE_KEYS:
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
       UMCore: d06038a607b8f885fd20913ef0db10a6
-    CHECKSUM: d6117852f32c74cde466b863cfdeaa0960186249
+    CHECKSUM: eb200e882eadafcd31ead290770835fd648c0945
     FILES:
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -10159,7 +10185,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.1.0)
+      - UMCore (5.1.2)
   UMFaceDetectorInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFaceDetectorInterface: ae79dff18617c1e328408eab6d603e28

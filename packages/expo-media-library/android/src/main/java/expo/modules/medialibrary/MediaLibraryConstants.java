@@ -56,8 +56,8 @@ final class MediaLibraryConstants {
       put(SORT_BY_CREATION_TIME, MediaStore.Images.Media.DATE_TAKEN);
       put(SORT_BY_MODIFICATION_TIME, MediaStore.Images.Media.DATE_MODIFIED);
       put(SORT_BY_MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE);
-      put(SORT_BY_WIDTH, MediaStore.Images.Media.WIDTH);
-      put(SORT_BY_HEIGHT, MediaStore.Images.Media.HEIGHT);
+      put(SORT_BY_WIDTH, MediaStore.MediaColumns.WIDTH);
+      put(SORT_BY_HEIGHT, MediaStore.MediaColumns.HEIGHT);
       put(SORT_BY_DURATION, MediaStore.Video.VideoColumns.DURATION);
     }
   };
@@ -70,8 +70,8 @@ final class MediaLibraryConstants {
       MediaStore.Files.FileColumns.DISPLAY_NAME,
       MediaStore.Images.Media.DATA,
       MediaStore.Files.FileColumns.MEDIA_TYPE,
-      MediaStore.Images.Media.WIDTH,
-      MediaStore.Images.Media.HEIGHT,
+      MediaStore.MediaColumns.WIDTH,
+      MediaStore.MediaColumns.HEIGHT,
       MediaStore.Images.Media.DATE_TAKEN,
       MediaStore.Images.Media.DATE_MODIFIED,
       MediaStore.Images.Media.LATITUDE,

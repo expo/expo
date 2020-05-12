@@ -1,12 +1,8 @@
 package expo.modules.notifications.notifications;
 
-import android.content.ContentResolver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.arguments.MapArguments;
 
@@ -15,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
@@ -54,6 +51,9 @@ public class NotificationSerializer {
     serializedContent.putString("title", content.getTitle());
     serializedContent.putString("subtitle", content.getSubtitle());
     serializedContent.putString("body", content.getText());
+    if (content.getColor() != null) {
+      serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
+    }
     serializedContent.putBundle("data", toBundle(content.getBody()));
     if (content.getBadgeCount() != null) {
       serializedContent.putInt("badge", content.getBadgeCount().intValue());
@@ -88,20 +88,33 @@ public class NotificationSerializer {
     Iterator<String> keyIterator = notification.keys();
     while (keyIterator.hasNext()) {
       String key = keyIterator.next();
-      try {
-        Object value = notification.get(key);
-        if (value instanceof JSONObject) {
-          notificationMap.put(key, toBundle((JSONObject) value));
-        } else if (value instanceof JSONArray) {
-          notificationMap.put(key, toList((JSONArray) value));
-        } else if (value != null) {
-          notificationMap.put(key, value);
-        }
-      } catch (JSONException e) {
-        Log.e("expo-notifications", "Could not serialize whole notification - dropped value for key " + key + ": " + notification.opt(key));
+      Object value = notification.opt(key);
+      if (value instanceof JSONObject) {
+        notificationMap.put(key, toBundle((JSONObject) value));
+      } else if (value instanceof JSONArray) {
+        notificationMap.put(key, toList((JSONArray) value));
+      } else if (JSONObject.NULL.equals(value)) {
+        notificationMap.put(key, null);
+      } else {
+        notificationMap.put(key, value);
       }
     }
-    return new MapArguments(notificationMap).toBundle();
+    try {
+      return new MapArguments(notificationMap).toBundle();
+    } catch (NullPointerException e) {
+      // If a NullPointerException was thrown it most probably means
+      // that @unimodules/core is at < 5.1.1 where we introduced
+      // support for null values in MapArguments' map). Let's go through
+      // the map and remove the null values to be backwards compatible.
+
+      Set<String> keySet = notificationMap.keySet();
+      for (String key : keySet) {
+        if (notificationMap.get(key) == null) {
+          notificationMap.remove(key);
+        }
+      }
+      return new MapArguments(notificationMap).toBundle();
+    }
   }
 
   private static List toList(JSONArray array) {

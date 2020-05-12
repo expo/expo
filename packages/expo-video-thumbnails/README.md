@@ -23,7 +23,7 @@ expo install expo-video-thumbnails
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

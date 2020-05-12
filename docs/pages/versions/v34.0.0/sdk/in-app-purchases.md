@@ -1,15 +1,15 @@
 ---
 title: InAppPurchases
-sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-in-app-purchases"
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-34/packages/expo-in-app-purchases'
 ---
 
 An API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 
 #### Platform Compatibility
 
-| Android Device | Android Emulator | iOS Device | iOS Simulator |  Web  |
-| ------ | ---------- | ------ | ------ | ------ |
-| ✅     |  ❌     | ✅     | ❌     | ❌    |
+| Android Device | Android Emulator | iOS Device | iOS Simulator | Web |
+| -------------- | ---------------- | ---------- | ------------- | --- |
+| ✅             | ❌               | ✅         | ❌            | ❌  |
 
 ## Installation
 
@@ -25,7 +25,7 @@ npm install expo-in-app-purchases
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
@@ -61,20 +61,20 @@ import * as InAppPurchases from 'expo-in-app-purchases';
 
 Connects to the app store and performs all of the necessary initialization to prepare the module to accept payments.
 
-This method *must* be called before anything else, otherwise an error will be thrown.
+This method _must_ be called before anything else, otherwise an error will be thrown.
 
 #### Returns
 
 A `Promise` that resolves with an `IAPQueryResponse` that contains an array of `InAppPurchase` objects. This represents the user's previous purchase history and returns the same result as `getPurchaseHistoryAsync()`.
 
-
 #### Example
+
 ```javascript
 const history = await connectAsync();
 if (history.responseCode === IAPResponseCode.OK) {
-    history.results.forEach(result => {
-        // Restore history if needed
-    });
+  history.results.forEach(result => {
+    // Restore history if needed
+  });
 }
 ```
 
@@ -82,7 +82,7 @@ if (history.responseCode === IAPResponseCode.OK) {
 
 Retrieves the product details (price, description, title, etc) for each item that you inputted in the Google Play Console and App Store Connect. These products are associated with your app's specific Application/Bundle ID and cannot be retrieved from other apps. This queries both in-app products and subscriptions so there's no need to pass those in separately.
 
-You must retrieve an item's details *before* you attempt to purchase it via `purchaseItemAsync`. This is a prerequisite to buying a product even if you have the item details bundled in your app or on your own servers.
+You must retrieve an item's details _before_ you attempt to purchase it via `purchaseItemAsync`. This is a prerequisite to buying a product even if you have the item details bundled in your app or on your own servers.
 
 If any of the product IDs passed in are invalid and don't exist, you will not receive an `IAPItemDetails` object corresponding to that ID. For example, if you pass in four product IDs in but one of them has a typo, you will only get three response objects back.
 
@@ -95,22 +95,27 @@ If any of the product IDs passed in are invalid and don't exist, you will not re
 A `Promise` that resolves with an `IAPQueryResponse` containing `IAPItemDetails` objects in the results array.
 
 #### Example
+
 ```javascript
 /*
 These product IDs must match the item entries you created in the App Store Connect and Google Play Console.
 If you want to add more or edit their attributes you can do so there.
 */
 const items = Platform.select({
-    ios: ['dev.products.gas', 'dev.products.premium', 'dev.products.gold_monthly', 'dev.products.gold_yearly'],
-    android: ['gas', 'premium', 'gold_monthly', 'gold_yearly'],
+  ios: [
+    'dev.products.gas',
+    'dev.products.premium',
+    'dev.products.gold_monthly',
+    'dev.products.gold_yearly',
+  ],
+  android: ['gas', 'premium', 'gold_monthly', 'gold_yearly'],
 });
 
 // Retrieve product details
 const { responseCode, results } = await getProductsAsync(items);
 if (responseCode === IAPResponseCode.OK) {
-    this.setState({ items: results });
+  this.setState({ items: results });
 }
-
 ```
 
 ### `InAppPurchases.setPurchaseListener(callback: (result: IAPQueryResponse) => void)`
@@ -126,30 +131,31 @@ Purchases can either be instantiated by the user (via `purchaseItemAsync`) or th
 - **callback (_(result: IAPQueryResponse) => void_)** -- The callback function you want to run when there is an update to the purchases.
 
 #### Example
+
 ```javascript
 // Set purchase listener
 setPurchaseListener(({ responseCode, results, errorCode }) => {
-    // Purchase was successful
-    if (responseCode === IAPResponseCode.OK) {
-        results.forEach(purchase => {
-            if (!purchase.acknowledged) {
-                console.log(`Successfully purchased ${purchase.productId}`);
-                // Process transaction here and unlock content...
+  // Purchase was successful
+  if (responseCode === IAPResponseCode.OK) {
+    results.forEach(purchase => {
+      if (!purchase.acknowledged) {
+        console.log(`Successfully purchased ${purchase.productId}`);
+        // Process transaction here and unlock content...
 
-                // Then when you're done
-                finishTransactionAsync(purchase, true);
-            }
-        });
-    }
+        // Then when you're done
+        finishTransactionAsync(purchase, true);
+      }
+    });
+  }
 
-    // Else find out what went wrong
-    if (responseCode === IAPResponseCode.USER_CANCELED) {
-        console.log('User canceled the transaction');
-    } else if (responseCode === IAPResponseCode.DEFERRED) {
-        console.log('User does not have permissions to buy but requested parental approval (iOS only)');
-    } else {
-        console.warn(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
-    }
+  // Else find out what went wrong
+  if (responseCode === IAPResponseCode.USER_CANCELED) {
+    console.log('User canceled the transaction');
+  } else if (responseCode === IAPResponseCode.DEFERRED) {
+    console.log('User does not have permissions to buy but requested parental approval (iOS only)');
+  } else {
+    console.warn(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
+  }
 });
 ```
 
@@ -172,6 +178,7 @@ Remember, you have to query an item's details via `getProductsAsync` and set the
 A `Promise` that resolves when the purchase is done processing. To get the actual result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
 
 #### Example
+
 ```javascript
 renderItem(item) {
     // Render product details with a "Buy" button
@@ -192,7 +199,7 @@ await purchaseItemAsync('gold_yearly', 'gold_monthly');
 
 ### `InAppPurchases.finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean)`
 
-Marks a transaction as completed. This *must* be called on successful purchases only after you have verified the transaction and unlocked the functionality purchased by the user.
+Marks a transaction as completed. This _must_ be called on successful purchases only after you have verified the transaction and unlocked the functionality purchased by the user.
 
 On Android, this will either "acknowledge" or "consume" the purchase depending on the value of `consumeItem`. Acknowledging indicates that this is a one time purchase (e.g. premium upgrade), whereas consuming a purchase allows it to be bought more than once. You cannot buy an item again until it's consumed. Both consuming and acknowledging let Google know that you are done processing the transaction. If you do not acknowledge or consume a purchase within three days, the user automatically receives a refund, and Google Play revokes the purchase.
 
@@ -200,7 +207,7 @@ On iOS, this will mark the transaction as finished and prevent it from reappeari
 
 `consumeItem` is ignored on iOS because you must specify whether an item is a consumable or non-consumable in its product entry in App Store Connect, whereas on Android you indicate an item is consumable at runtime.
 
-> Make sure that you verify each purchase to prevent faulty transactions and protect against fraud *before* you call `finishTransactionAsync`. On iOS, you can validate the purchase's `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html). On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
+> Make sure that you verify each purchase to prevent faulty transactions and protect against fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html). On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
 
 #### Arguments
 
@@ -209,9 +216,10 @@ On iOS, this will mark the transaction as finished and prevent it from reappeari
 - **consumeItem (_boolean_)** -- A boolean indicating whether or not the item is a consumable (Android only)
 
 #### Example
+
 ```javascript
 if (!purchase.acknowledged) {
-    await finishTransactionAsync(purchase, false); // or true for consumables
+  await finishTransactionAsync(purchase, false); // or true for consumables
 }
 ```
 
@@ -232,12 +240,13 @@ On iOS, the refresh boolean is ignored and it returns the purchase history in th
 A `Promise` that resolves with an `IAPQueryResponse` that contains an array of `InAppPurchase` objects.
 
 #### Example
+
 ```javascript
 const { responseCode, results } = await getPurchaseHistoryAsync();
 if (responseCode === IAPResponseCode.OK) {
-    results.forEach(result => {
-        // Handle purchase history
-    });
+  results.forEach(result => {
+    // Handle purchase history
+  });
 }
 ```
 
@@ -254,10 +263,11 @@ On iOS, this will return `IAPResponseCode.OK` if you are connected or `IAPRespon
 A `Promise` that resolves with an integer representing the `IAPResponseCode`.
 
 #### Example
+
 ```javascript
 const responseCode = await getBillingResponseCodeAsync();
 if (responseCode !== IAPResponseCode.OK) {
-    // Either we're not connected or the last response returned an error (Android)
+  // Either we're not connected or the last response returned an error (Android)
 }
 ```
 
@@ -272,6 +282,7 @@ No other methods can be used until the next time you call `connectAsync`.
 A `Promise` that resolves when finished disconnecting.
 
 #### Example
+
 ```javascript
 await disconnectAsync();
 ```
@@ -282,42 +293,43 @@ await disconnectAsync();
 
 The response type for queries and purchases.
 
-| Field name            | Type      | Platforms | Description                                                                   | Possible values                                                                                                                                                                                                                                                                                                                                                    |
-| --------------------- | --------- | --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| responseCode                 | _IAPResponseCode_  | both      | The response code from a query or purchase.                                  | `IAPResponseCode.OK`, `IAPResponseCode.USER_CANCELED`, `IAPResponseCode.ERROR`, `IAPResponseCode.DEFERRED` (iOS only)                                                                                                                                                                                                                                                                                                                                                                   |
-| results   | _InAppPurchase[] or IAPItemDetails[]_ | both      | The array containing the `InAppPurchase` or `IAPItemDetails` objects requested depending on the method.           |                                                                                                                                                                                                                                                                                                                                                                    |
-| errorCode                    | _IAPErrorCode_  | both      | `IAPErrorCode` that provides more detail on why an error occurred. Null unless responseCode is `IAPResponseCode.ERROR`.                       |  `IAPErrorCode.PAYMENT_INVALID`, `IAPErrorCode.ITEM_ALREADY_OWNED`, `IAPErrorCode.UNKNOWN`                                                                                                                                                                                                                                                                                                                                                                 |
+| Field name   | Type                                  | Platforms | Description                                                                                                             | Possible values                                                                                                       |
+| ------------ | ------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| responseCode | _IAPResponseCode_                     | both      | The response code from a query or purchase.                                                                             | `IAPResponseCode.OK`, `IAPResponseCode.USER_CANCELED`, `IAPResponseCode.ERROR`, `IAPResponseCode.DEFERRED` (iOS only) |
+| results      | _InAppPurchase[] or IAPItemDetails[]_ | both      | The array containing the `InAppPurchase` or `IAPItemDetails` objects requested depending on the method.                 |                                                                                                                       |
+| errorCode    | _IAPErrorCode_                        | both      | `IAPErrorCode` that provides more detail on why an error occurred. Null unless responseCode is `IAPResponseCode.ERROR`. | `IAPErrorCode.PAYMENT_INVALID`, `IAPErrorCode.ITEM_ALREADY_OWNED`, `IAPErrorCode.UNKNOWN`                             |
 
 ### InAppPurchase
 
 A record of a purchase made by the user.
 
-| Field name            | Type      | Platforms | Description                                                                   | Possible values                                                                                                                                                                                                                                                                                                                                                    |
-| --------------------- | --------- | --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| productId                 | _string_  | both      | The product ID representing an item inputted in Google Play Console and App Store Connect.                                                  | `gold`                                                                                                                                                                                                                                                                                                                                                                   |
-| acknowledged                    | _boolean_  | both      | Boolean indicating whether this item has been "acknowledged" via `finishTransactionAsync`.                       |                                                                                                                                                                                                                                                                                                                                                                    |
-| purchaseState            | _InAppPurchaseState_  | both       | The state of the purchase.              | `InAppPurchaseState.PURCHASED`, `InAppPurchaseState.RESTORED`                                                                                                                                                                                                                                                                                                      |
-| purchaseTime                | _number_  | both      | The time the product was purchased, in milliseconds since the epoch (Jan 1, 1970).                  |                                                                                                                                                                                                                                                                                                                                                                    |
-| orderId                 | _string_  | both      | A string that uniquely identifies a successful payment transaction.                                  |                                                                                                                                                                                                                                                                                                                                                                    |
-| packageName   | _string_ | Android      | The application package from which the purchase originated.           | `com.example.myapp`                                                                                                                                                                                                                                                                                                                                                                   |
-| purchaseToken                  | _string_  | Android       | A token that uniquely identifies a purchase for a given item and user pair.                                        |                                                                                                                                                                                            |
-| originalOrderId             | _string_ | iOS   | Represents the original order ID for restored purchases.       |                                                                                                                                                                                                                                                                                                                                                                    |
-| originalPurchaseTime                  | _string_  | iOS   | Represents the original purchase time for restored purchases.                                          |                                                                                                                                                                                                                                                                                                                                                                    |
-| transactionReceipt          | _string_  | iOS   | The App Store receipt found in the main bundle encoded as a Base 64 String.                                  |                                                                                                                                                        
+| Field name           | Type                 | Platforms | Description                                                                                | Possible values                                               |
+| -------------------- | -------------------- | --------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| productId            | _string_             | both      | The product ID representing an item inputted in Google Play Console and App Store Connect. | `gold`                                                        |
+| acknowledged         | _boolean_            | both      | Boolean indicating whether this item has been "acknowledged" via `finishTransactionAsync`. |                                                               |
+| purchaseState        | _InAppPurchaseState_ | both      | The state of the purchase.                                                                 | `InAppPurchaseState.PURCHASED`, `InAppPurchaseState.RESTORED` |
+| purchaseTime         | _number_             | both      | The time the product was purchased, in milliseconds since the epoch (Jan 1, 1970).         |                                                               |
+| orderId              | _string_             | both      | A string that uniquely identifies a successful payment transaction.                        |                                                               |
+| packageName          | _string_             | Android   | The application package from which the purchase originated.                                | `com.example.myapp`                                           |
+| purchaseToken        | _string_             | Android   | A token that uniquely identifies a purchase for a given item and user pair.                |                                                               |
+| originalOrderId      | _string_             | iOS       | Represents the original order ID for restored purchases.                                   |                                                               |
+| originalPurchaseTime | _string_             | iOS       | Represents the original purchase time for restored purchases.                              |                                                               |
+| transactionReceipt   | _string_             | iOS       | The App Store receipt found in the main bundle encoded as a Base 64 String.                |
+
 ### IAPItemDetails
 
 Details about the purchasable item that you inputted in App Store Connect and Google Play Console.
 
-| Field name            | Type      | Platforms | Description                                                                   | Possible values                                                                                                                                                                                                                                                                                                                                                    |
-| --------------------- | --------- | --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| productId                 | _string_  | both      | The product ID representing an item inputted in App Store Connect and Google Play Console.                                  | `gold`                                                                                                                                                                                                                                                                                                                                                                   |
-| title   | _string_ | both      | The title of the purchasable item. This should be displayed to the user and may be different from the productId.           | `Gold Coin`                                                                                                                                                                                                                                                                                                                                                                   |
-| description                    | _string_  | both      | User facing description about the item.                       | `Currency used to trade for items in the game`                                                                                                                                                                                                                                                                                                                                                            |
-| price                 | _string_  | both      | The price formatted with the local currency symbol. Use this to display the price, not to make calculations.                                                  | `$1.99`                                                                                                                                                                                                                                                                                                                                                                  |
-| priceAmountMicros            | _number_  | both       | The price in micro-units, where 1,000,000 micro-units equal one unit of the currency. Use this for calculations.              | `1990000`                                                                                                                                                                                                                                                                                                      |
-| priceCurrencyCode                | _string_  | both      | The local currency code from the ISO 4217 code list.               | `USD`, `CAN`, `RUB`                                                                                                                                                                                                                                                                                                                                                                   |
-| type                  | _IAPItemType_  | both       | The type of the purchase. Note that this is not very accurate on iOS as this data is only available on iOS 11.2 and higher and non-renewable subscriptions always return `IAPItemType.PURCHASE`.                                      |  `IAPItemType.PURCHASE`, `IAPItemType.SUBSCRIPTION`                                                                                                                                                                                          |
-| subscriptionPeriod             | _string_ | both   | The length of a subscription period specified in ISO 8601 format. In-app purchases return `P0D`. On iOS, non-renewable subscriptions also return `P0D`.      | `P0D`, `P6W`, `P3M`, `P6M`, `P1Y` |
+| Field name         | Type          | Platforms | Description                                                                                                                                                                                      | Possible values                                    |
+| ------------------ | ------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| productId          | _string_      | both      | The product ID representing an item inputted in App Store Connect and Google Play Console.                                                                                                       | `gold`                                             |
+| title              | _string_      | both      | The title of the purchasable item. This should be displayed to the user and may be different from the productId.                                                                                 | `Gold Coin`                                        |
+| description        | _string_      | both      | User facing description about the item.                                                                                                                                                          | `Currency used to trade for items in the game`     |
+| price              | _string_      | both      | The price formatted with the local currency symbol. Use this to display the price, not to make calculations.                                                                                     | `$1.99`                                            |
+| priceAmountMicros  | _number_      | both      | The price in micro-units, where 1,000,000 micro-units equal one unit of the currency. Use this for calculations.                                                                                 | `1990000`                                          |
+| priceCurrencyCode  | _string_      | both      | The local currency code from the ISO 4217 code list.                                                                                                                                             | `USD`, `CAN`, `RUB`                                |
+| type               | _IAPItemType_ | both      | The type of the purchase. Note that this is not very accurate on iOS as this data is only available on iOS 11.2 and higher and non-renewable subscriptions always return `IAPItemType.PURCHASE`. | `IAPItemType.PURCHASE`, `IAPItemType.SUBSCRIPTION` |
+| subscriptionPeriod | _string_      | both      | The length of a subscription period specified in ISO 8601 format. In-app purchases return `P0D`. On iOS, non-renewable subscriptions also return `P0D`.                                          | `P0D`, `P6W`, `P3M`, `P6M`, `P1Y`                  |
 
 ## Enum Types
 
@@ -345,7 +357,7 @@ Details about the purchasable item that you inputted in App Store Connect and Go
 
 Abstracts over the Android [Billing Response Codes](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponseCode) and iOS [SKErrorCodes](https://developer.apple.com/documentation/storekit/skerrorcode?language=objc).
 
-- **`IAPErrorCode.UNKNOWN`** -  An unknown or unexpected error occurred. See`SKErrorUnknown` on iOS, `ERROR` on Android.
+- **`IAPErrorCode.UNKNOWN`** - An unknown or unexpected error occurred. See`SKErrorUnknown` on iOS, `ERROR` on Android.
 - **`IAPErrorCode.PAYMENT_INVALID`** - The feature is not allowed on the current device, or the user is not authorized to make payments. See `SKErrorClientInvalid`, `SKErrorPaymentInvalid`, and `SKErrorPaymentNotAllowed` on iOS, `FEATURE_NOT_SUPPORTED` on Android.
 - **`IAPErrorCode.SERVICE_DISCONNECTED`** - Play Store service is not connected now. See `SERVICE_DISCONNECTED` on Android.
 - **`IAPErrorCode.SERVICE_UNAVAILABLE`** - Network connection is down. See `SERVICE_UNAVAILABLE` on Android.

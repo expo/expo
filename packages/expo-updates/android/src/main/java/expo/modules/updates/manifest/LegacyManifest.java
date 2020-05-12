@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -66,6 +67,7 @@ public class LegacyManifest implements Manifest {
     Date commitTime;
     try {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
       commitTime = formatter.parse(commitTimeString);
     } catch (ParseException e) {
       Log.e(TAG, "Could not parse commitTime", e);
@@ -94,7 +96,8 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity(mBundleUrl, "js");
+    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
+    bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
     assetList.add(bundleAssetEntity);
@@ -110,7 +113,8 @@ public class LegacyManifest implements Manifest {
             : bundledAsset.substring(prefixLength);
           String type = extensionIndex > 0 ? bundledAsset.substring(extensionIndex + 1) : "";
 
-          AssetEntity assetEntity = new AssetEntity(Uri.withAppendedPath(getAssetsUrlBase(), hash), type);
+          AssetEntity assetEntity = new AssetEntity(hash + "." + type, type);
+          assetEntity.url = Uri.withAppendedPath(getAssetsUrlBase(), hash);
           assetEntity.embeddedAssetFilename = bundledAsset;
           assetList.add(assetEntity);
         } catch (JSONException e) {

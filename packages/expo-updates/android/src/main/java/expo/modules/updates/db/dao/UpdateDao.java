@@ -1,8 +1,6 @@
 package expo.modules.updates.db.dao;
 
 import androidx.room.Delete;
-import androidx.room.RoomWarnings;
-import androidx.room.Update;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -46,7 +44,7 @@ public abstract class UpdateDao {
   public abstract List<UpdateEntity> loadAllUpdates();
 
   public List<UpdateEntity> loadLaunchableUpdates() {
-    return _loadUpdatesWithStatuses(Arrays.asList(UpdateStatus.LAUNCHABLE, UpdateStatus.READY));
+    return _loadUpdatesWithStatuses(Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
   }
 
   public UpdateEntity loadUpdateWithId(UUID id) {
@@ -64,9 +62,13 @@ public abstract class UpdateDao {
   public abstract void insertUpdate(UpdateEntity update);
 
   @Transaction
-  public void markUpdateReady(UpdateEntity update) {
-    _markUpdateWithStatus(UpdateStatus.READY, update.id);
+  public void markUpdateFinished(UpdateEntity update, boolean hasSkippedEmbeddedAssets) {
+    _markUpdateWithStatus(hasSkippedEmbeddedAssets ? UpdateStatus.EMBEDDED : UpdateStatus.READY, update.id);
     _keepUpdate(update.id);
+  }
+
+  public void markUpdateFinished(UpdateEntity update) {
+    markUpdateFinished(update, false);
   }
 
   @Delete

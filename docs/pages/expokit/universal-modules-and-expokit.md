@@ -23,7 +23,7 @@ Omitting Universal Modules is currently supported on iOS but not Android.
 
 ## iOS
 
-To omit a Universal Module from your iOS ExpoKit project, remove the respective dependency from `ios/Podfile`. Then re-run `pod install` and rebuild your native code.
+To omit a Universal Module from your iOS ExpoKit project, remove the respective dependency from `ios/Podfile`. Then re-run `npx pod-install` and rebuild your native code.
 
 ### These modules are included by default, but can be omitted
 
@@ -58,6 +58,6 @@ To add FaceDetector:
 
 1.  Add `expo-face-detector` to `package.json` and install JS dependencies.
 2.  Add `pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'` to your `Podfile`.
-3.  Re-run `pod install`.
+3.  Re-run `npx pod-install`.
 
-To add `Payments` or `AR`, add the [respective subspec](https://github.com/expo/expo/blob/master/ExpoKit.podspec) to your `ExpoKit` dependency in your `Podfile`, and re-run `pod install`.
+To add `Payments` or `AR`, add the [respective subspec](https://github.com/expo/expo/blob/master/ExpoKit.podspec) to your `ExpoKit` dependency in your `Podfile`, and re-run `npx pod-install`.

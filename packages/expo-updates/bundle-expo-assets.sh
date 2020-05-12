@@ -2,8 +2,10 @@
 
 set -eo pipefail
 
-if [ "$CONFIGURATION" == "Debug" ]; then
-  export NODE_BINARY=node
+if [[ "$CONFIGURATION" == Debug* ]]; then
+  if [ -z "$NODE_BINARY" ]; then
+    export NODE_BINARY=node
+  fi
   ../node_modules/react-native/scripts/react-native-xcode.sh
   exit 0
 fi

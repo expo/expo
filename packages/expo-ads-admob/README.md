@@ -23,7 +23,7 @@ expo install expo-ads-admob
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 In your app's `Info.plist` file, add a `GADApplicationIdentifier` key with a string value of your AdMob app ID, as shown in Google's [Mobile Ads SDK iOS docs](https://developers.google.com/admob/ios/quick-start#update_your_infoplist).
 

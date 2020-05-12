@@ -543,6 +543,11 @@ This should be ready to publish immediately after the previous step is finished!
 
 ## 7.1. Add SDK support to Snack
 
+| Prerequisites                                             |
+| --------------------------------------------------------- |
+| [4.1. Releasing beta version](#41-releasing-beta-version) |
+| [4.2. Making a simulator build](#42-making-a-simulator-build) |
+
 **Why:** Once the new SDK is available publicly, we need to update Snack to support that SDK.
 
 **How:** For now the only responsible person for this task is @tc - coordinate this with him.

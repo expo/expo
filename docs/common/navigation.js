@@ -1,5 +1,5 @@
-const prevaledNavigationData = require('./navigation-data');
 const packageVersion = require('../package.json').version;
+const prevaledNavigationData = require('./navigation-data');
 
 // Groups of sections
 // - Each section is a top-level folder within the version directory
@@ -50,24 +50,26 @@ const sections = [
   {
     name: 'Assorted Guides',
     reference: [
-      'App Icons',
       'Assets',
-      'Error Handling',
-      'Preloading & Caching Assets',
       'Icons',
-      'Custom Fonts',
       'Using Custom Fonts',
       'Routing & Navigation',
-      'Configuring StatusBar',
+      'Authentication',
+      'App Icons',
       'Create a Splash Screen',
-      'Offline Support',
+      'Configuring StatusBar',
       'Configuring OTA Updates',
+      'Preloading & Caching Assets',
+      'Offline Support',
       'Progressive Web Apps',
+      'Customizing Metro',
+      'Customizing Webpack',
       'Push Notifications',
       'Using FCM for Push Notifications',
       'Notification Channels',
-      'Account Permissions',
+      'Error Handling',
       'Testing with Jest',
+      'Account Permissions',
       'Using TypeScript',
       'Using Modern JavaScript',
       'Using ClojureScript',
@@ -77,6 +79,7 @@ const sections = [
       'Using Bugsnag',
       'User Interface Component Libraries',
       'Crafting Educational Materials',
+      'Custom Fonts',
     ],
   },
   {
@@ -112,18 +115,19 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
+      'Using Libraries',
       'Viewing Logs',
-      'Debugging',
-      'Development Mode',
-      'Common Development Errors',
+      'Development and Production Mode',
       'iOS Simulator',
       'Android Studio Emulator',
+      'Debugging',
+      'Common Development Errors',
       'Configuration with app.json',
       'Publishing',
       'Release Channels',
       'Building Standalone Apps',
-      'Upgrading Expo SDK Walkthrough',
       'Developing for Web',
+      'Upgrading Expo SDK Walkthrough',
       'Linking',
       'How Expo Works',
       'Ejecting to Bare Workflow',
@@ -136,6 +140,7 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Using Libraries',
       'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
@@ -267,21 +272,24 @@ const ROOT = [
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
 
-  let subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
+  const subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
 
   arr.forEach(category => {
     category.weight = reference.indexOf(category.name) * -1;
   });
 
-  let arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
+  const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
+  return subSort(
+    arrSortedByWeight,
+    arrSortedByWeight.findIndex(o => o.weight === 1)
+  );
 };
 
 const sortNav = nav => {
   nav = sortAccordingToReference(nav, ROOT);
 
   sections.forEach(({ name, reference }) => {
-    let section = nav.find(o => {
+    const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
     if (section) {
@@ -299,14 +307,14 @@ function getGroupForSectionName(sectionName) {
 
 // Yikes, this groups together multiple sections under one heading
 const groupNav = nav => {
-  let sections = [];
-  let groupNameToSectionIndex = {};
+  const sections = [];
+  const groupNameToSectionIndex = {};
   nav.forEach(section => {
     // If it's grouped then we add it
-    let groupName = getGroupForSectionName(section.name);
+    const groupName = getGroupForSectionName(section.name);
     if (groupName) {
       if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
-        let existingSectionIndex = groupNameToSectionIndex[groupName];
+        const existingSectionIndex = groupNameToSectionIndex[groupName];
         sections[existingSectionIndex].children.push(section);
       } else {
         groupNameToSectionIndex[groupName] = sections.length;

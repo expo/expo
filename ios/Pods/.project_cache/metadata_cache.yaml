@@ -1262,10 +1262,6 @@ CocoaLumberjack:
   LABEL: CocoaLumberjack
   PROJECT_PATH: CocoaLumberjack.xcodeproj
   UUID: 85392ABCB5967FC7F189FA544F4E883D
-Crashlytics:
-  LABEL: Crashlytics
-  PROJECT_PATH: Crashlytics.xcodeproj
-  UUID: D2F01BBEFE801C94DF4ECE1438E00388
 DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
@@ -1442,6 +1438,10 @@ EXNetwork:
   LABEL: EXNetwork
   PROJECT_PATH: EXNetwork.xcodeproj
   UUID: 71F2A4AC24C8FBC0E24B6A613BB4F7BC
+EXNotifications:
+  LABEL: EXNotifications
+  PROJECT_PATH: EXNotifications.xcodeproj
+  UUID: 6C660F81CE4F0EC96D208B20C3E8B154
 EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj
@@ -1502,10 +1502,6 @@ EXWebBrowser:
   LABEL: EXWebBrowser
   PROJECT_PATH: EXWebBrowser.xcodeproj
   UUID: 026359A12CA511AF12897ED05A83462C
-Fabric:
-  LABEL: Fabric
-  PROJECT_PATH: Fabric.xcodeproj
-  UUID: 033C78D4EF039D72394D82A45D46E8D1
 FBAudienceNetwork:
   LABEL: FBAudienceNetwork
   PROJECT_PATH: FBAudienceNetwork.xcodeproj

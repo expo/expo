@@ -27,12 +27,12 @@ public class SoundResolver {
    */
   @Nullable
   public Uri resolve(@Nullable String filename) {
-    if (filename == null) {
+    if (filename == null || filename.length() == 0) {
       return null;
     }
 
     String packageName = mContext.getPackageName();
-    String resourceName = filename.substring(0, filename.lastIndexOf('.'));
+    String resourceName = filenameToBasename(filename);
     int resourceId = mContext.getResources().getIdentifier(resourceName, "raw", packageName);
     // If resourceId is 0, then the resource does not exist.
     // Returning null falls back to using a default sound.
@@ -46,5 +46,13 @@ public class SoundResolver {
     }
 
     return Settings.System.DEFAULT_NOTIFICATION_URI;
+  }
+
+  private String filenameToBasename(String filename) {
+    if (!filename.contains(".")) {
+      return filename;
+    }
+
+    return filename.substring(0, filename.lastIndexOf('.'));
   }
 }

@@ -103,9 +103,8 @@ export class AuthRequest {
         _authLock = true;
         let result;
         try {
-            result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, {
-                showInRecents: options.showInRecents,
-            });
+            const { useProxy, ...openOptions } = options;
+            result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl, openOptions);
         }
         finally {
             _authLock = false;
@@ -162,7 +161,7 @@ export class AuthRequest {
                 params[extra] = request.extraParams[extra];
             }
         }
-        if (request.codeChallengeMethod) {
+        if (request.usePKCE && request.codeChallengeMethod) {
             params.code_challenge_method = request.codeChallengeMethod;
         }
         if (request.clientSecret) {
@@ -176,7 +175,9 @@ export class AuthRequest {
         params.client_id = request.clientId;
         params.response_type = request.responseType;
         params.state = request.state;
-        params.scope = request.scopes.join(' ');
+        if (request.scopes.length) {
+            params.scope = request.scopes.join(' ');
+        }
         const query = QueryParams.buildQueryString(params);
         // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;

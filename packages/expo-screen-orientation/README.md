@@ -23,7 +23,7 @@ npm install expo-screen-orientation
 
 ### Configure for iOS
 
-1. Run `pod install` in the ios directory after installing the npm package.
+1. Run `npx pod-install` after installing the npm package.
 2. Open the `AppDelegate.m` of your application.
 3. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
 4. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:

@@ -13,8 +13,14 @@ import {
 
 export * from './Updates.types';
 
+export const updateId: string | null =
+  ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
+    ? ExpoUpdates.updateId.toLowerCase()
+    : null;
+export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
+export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
 
 let _manifest = ExpoUpdates.manifest;
 if (ExpoUpdates.manifestString) {

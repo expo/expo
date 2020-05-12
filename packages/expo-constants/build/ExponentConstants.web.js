@@ -1,5 +1,5 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
 function getBrowserName() {

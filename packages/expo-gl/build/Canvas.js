@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import { createElement, PixelRatio, StyleSheet, View, } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
+// @ts-ignore
+import { createElement } from './createElement';
 function getElement(component) {
     try {
         return findDOMNode(component);

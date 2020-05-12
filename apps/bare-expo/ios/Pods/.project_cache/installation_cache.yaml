@@ -572,7 +572,7 @@ CACHE_KEYS:
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
       EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: d4949f1ea25fec26de3f25bbd1c687df5416b48a
+    CHECKSUM: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -608,7 +608,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (0.1.3)
+      - EXNotifications (0.1.7)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -1869,7 +1869,7 @@ CACHE_KEYS:
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
-    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    CHECKSUM: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
     FILES:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
@@ -1877,7 +1877,7 @@ CACHE_KEYS:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
     PROJECT_NAME: UMAppLoader
     SPECS:
-      - UMAppLoader (1.0.0)
+      - UMAppLoader (1.0.2)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492
@@ -1909,7 +1909,7 @@ CACHE_KEYS:
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
       UMCore: 725599ebffd932f0853dea43e0c4795a
-    CHECKSUM: d6117852f32c74cde466b863cfdeaa0960186249
+    CHECKSUM: eb200e882eadafcd31ead290770835fd648c0945
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -1944,7 +1944,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.1.0)
+      - UMCore (5.1.2)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface: 40e923e384350cb686bb78a72ff6f87a

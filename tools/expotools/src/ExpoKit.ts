@@ -126,11 +126,6 @@ export async function updateExpoKitAndroidAsync(
       source: path.join(androidDir, 'app', 'google-services.json'),
       destination: path.join('app', 'google-services.json'),
     },
-    {
-      isFile: true,
-      source: path.join(androidDir, 'app', 'fabric.properties'),
-      destination: path.join('app', 'fabric.properties'),
-    },
   ]);
 
   process.env.EXPO_STAGING = '1';

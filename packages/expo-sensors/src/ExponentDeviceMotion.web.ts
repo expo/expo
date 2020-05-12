@@ -1,6 +1,9 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 
-import { isSensorEnabledAsync } from './utils/isSensorEnabledAsync.web';
+import {
+  isSensorEnabledAsync,
+  assertSensorEventEnabledAsync,
+} from './utils/isSensorEnabledAsync.web';
 
 const eventName = 'devicemotion';
 
@@ -8,8 +11,11 @@ export default {
   get name(): string {
     return 'ExponentDeviceMotion';
   },
+  /**
+   * Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
+   */
   get Gravity(): number {
-    return 9.81;
+    return 9.80665;
   },
   async isAvailableAsync(): Promise<boolean> {
     if (typeof DeviceMotionEvent === 'undefined') {
@@ -28,6 +34,8 @@ export default {
     });
   },
   startObserving() {
+    assertSensorEventEnabledAsync(eventName);
+
     window.addEventListener(eventName, this._handleMotion);
   },
   stopObserving() {

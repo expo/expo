@@ -1,37 +1,24 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
-import {
-  Alert,
-  FlatList,
-  Linking,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
 import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
 
-const prefix = Platform.select({ default: 'md', ios: 'ios' });
-
 function ListItem({ title, onPressItem, selected, id }) {
   function onPress() {
     onPressItem(id);
   }
 
-  const checkBox = selected ? 'checkbox' : 'checkbox-outline';
-
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={styles.listItem}>
         <Text style={styles.label}>{title}</Text>
-        <Ionicons
+        <MaterialCommunityIcons
           color={selected ? Colors.tintColor : 'black'}
-          name={`${prefix}-${checkBox}`}
+          name={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
           size={24}
         />
       </View>
