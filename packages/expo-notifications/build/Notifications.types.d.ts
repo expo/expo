@@ -176,6 +176,7 @@ export interface NotificationContentInput {
      * see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
      */
     color?: string;
+    autoDismiss?: boolean;
     attachments?: {
         url: string;
         identifier?: string;

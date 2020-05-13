@@ -23,6 +23,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
+  private static final String AUTO_DISMISS_KEY = "autoDismiss";
 
   private SoundResolver mSoundResolver;
 
@@ -37,7 +38,8 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
         .setBody(getBody(payload))
         .setPriority(getPriority(payload))
         .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload));
+        .setColor(getColor(payload))
+        .setAutoDismiss(getAutoDismiss(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -158,5 +160,17 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       Log.e("expo-notifications", "Could not have parsed a non-string color value passed in notification.");
     }
     return null;
+  }
+
+  protected boolean getAutoDismiss(JSONObject payload) {
+    if (payload.has(AUTO_DISMISS_KEY)) {
+      try {
+        return payload.getBoolean(AUTO_DISMISS_KEY);
+      } catch (JSONException e) {
+        Log.e("expo-notifications", "Could not have parsed a boolean autoDismiss value passed in notification, falling back to a default value.");
+      }
+    }
+    // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
+    return true;
   }
 }
