@@ -3,6 +3,7 @@ import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 
 export function getRequestPermission(): () => Promise<PermissionState> | null {
+  // @ts-ignore: requestPermission does not exist
   return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
 }
 
