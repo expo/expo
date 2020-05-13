@@ -89,7 +89,7 @@ The notification icon and the default color can be customized.
   </manifest>
   ```
 - An `AndroidManifest.xml` with both color (of name `notification_icon_color`) and an icon (of name `ic_stat_notifications`) name would look like this:
-  ```java
+  ```xml
   <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
     <application ...>
       ...
