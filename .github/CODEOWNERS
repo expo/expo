@@ -69,6 +69,8 @@
 /packages/expo-sharing                          @sjchmiela @bbarthec
 /packages/expo-sms                              @bbarthec
 /packages/expo-speech                           @sjchmiela @mczernek
+/packages/expo-splash-screen                    @bbarthec
+/packages/expo-splash-screen-command            @bbarthec
 /packages/expo-sqlite                           @sjchmiela @mczernek
 /packages/expo-store-review                     @EvanBacon @tsapeta
 /packages/expo-task-manager                     @tsapeta @mczernek
