@@ -34,7 +34,21 @@ In your app's `Info.plist` file, add a `GADApplicationIdentifier` key with a str
 
 ### Configure for Android
 
-No additional set up necessary.
+Ensure that there is a `meta-data` element inside the `application` node inside `AndroidManifest.xml` file (located typically under `/android/app/src/main/AndroidManifest.xml`) with `android:name` of `"com.google.android.gms.ads.APPLICATION_ID"` and a value of your AdMob App ID. Google's Mobile Ads SDK documentation shows precisely how to do this [here](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml). In the end your `AndroidManifest.xml` should look more or less like this:
+
+```xml
+<manifest>
+  <application>
+    ...
+    <!-- Ensure that tag with this name and proper value is inside application -->
+    <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"/> <!-- App ID -->
+    <!-- You can find your App ID in the AdMob UI -->
+    ...
+  </application>
+</manifest>
+```
 
 # Contributing
 
