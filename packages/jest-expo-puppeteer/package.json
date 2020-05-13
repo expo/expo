@@ -24,15 +24,11 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "dependencies": {
-    "@babel/core": "^7.9.0",
-    "@expo/babel-preset-cli": "^0.2.8",
     "@expo/config": "^3.2.3",
-    "@expo/xdl": "^57.8.17",
-    "babel-jest": "^25.2.0",
+    "@expo/xdl": "^57.9.5",
     "getenv": "^1.0.0",
     "jest": "^25.2.0",
-    "jest-puppeteer": "^4.4.0",
-    "serve": "^11.3.0"
+    "jest-puppeteer": "^4.4.0"
   },
   "peerDependencies": {
     "puppeteer": "^2.1.1"
