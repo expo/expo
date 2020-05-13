@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -43,6 +42,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     builder.setPriority(getPriority());
 
     NotificationContent content = getNotificationContent();
+
+    builder.setAutoCancel(content.isAutoDismiss());
 
     builder.setContentTitle(content.getTitle());
     builder.setContentText(content.getText());

@@ -26,6 +26,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
   private static final String COLOR_KEY = "color";
+  private static final String AUTO_DISMISS_KEY = "autoDismiss";
 
   private SoundResolver mSoundResolver;
 
@@ -40,7 +41,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
         .setBody(getBody(payload))
         .setPriority(getPriority(payload))
         .setBadgeCount(getBadgeCount(payload))
-        .setColor(getColor(payload));
+        .setColor(getColor(payload))
+        .setAutoDismiss(getAutoDismiss(payload));
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -123,5 +125,10 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   protected NotificationPriority getPriority(ReadableArguments payload) {
     String priorityString = payload.getString(PRIORITY_KEY);
     return NotificationPriority.fromEnumValue(priorityString);
+  }
+
+  protected boolean getAutoDismiss(ReadableArguments payload) {
+    // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
+    return payload.getBoolean(AUTO_DISMISS_KEY, true);
   }
 }
