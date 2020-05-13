@@ -345,6 +345,7 @@ export default {
 };
 
 export function getRequestMotionPermission(): () => Promise<PermissionState> | null {
+  // @ts-ignore: requestPermission does not exist
   return DeviceMotionEvent?.requestPermission ?? DeviceOrientationEvent?.requestPermission ?? null;
 }
 
