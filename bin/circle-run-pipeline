@@ -23,21 +23,27 @@ OptionParser.new do |parser|
     options[:body]['tag'] = t
   end
   parser.on('-g', '--google-play', 'Run google play release build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['release_google'] = true
   end
   parser.on('-k', '--apk', 'Run android apk release build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['release_apk'] = true
   end
   parser.on('-s', '--simulator', 'Run simulator release build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['release_simulator'] = true
   end
   parser.on('-i', '--ios-shell-app', 'Run ios shell app build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['shell_ios'] = true
   end
   parser.on('-a', '--android-shell-app', 'Run android shell app build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['shell_android'] = true
   end
   parser.on('-e', '--expo-client', 'Run expo client build job') do
+    options[:body]['parameters']['release'] = true
     options[:body]['parameters']['expo_client'] = true
   end
 end.parse!
