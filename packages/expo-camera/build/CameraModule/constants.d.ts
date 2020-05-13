@@ -8,13 +8,13 @@ export declare const VIDEO_ASPECT_RATIOS: {
 };
 export declare const PictureSizes: string[];
 export declare const ImageTypeFormat: {
-    jpg: string;
-    png: string;
+    [ImageType.jpg]: string;
+    [ImageType.png]: string;
 };
 export declare const MinimumConstraints: MediaStreamConstraints;
 export declare const CameraTypeToFacingMode: {
-    front: string;
-    back: string;
+    [CameraType.front]: string;
+    [CameraType.back]: string;
 };
 export declare const FacingModeToCameraType: {
     user: CameraType;
