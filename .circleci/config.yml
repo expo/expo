@@ -10,6 +10,15 @@ parameters:
   release_simulator:
     type: boolean
     default: false
+  shell_ios:
+    type: boolean
+    default: false
+  shell_android:
+    type: boolean
+    default: false
+  expo_client:
+    type: boolean
+    default: false
 
 orbs:
   job-status-change: expo/job-status-change@1.0.11
@@ -327,41 +336,20 @@ workflows:
           requires:
             - client_android
 
-  shell_app:
+  shell_app_ios:
+    when: << pipeline.parameters.shell_ios >>
     jobs:
-      - shell_app_ios_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
       - shell_app_ios_build:
           upload: true
-          requires:
-            - shell_app_ios_approve_build
-      - shell_app_android_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_android_build:
-          requires:
-            - shell_app_android_approve_build
-  client_shell_app:
+  shell_app_android:
+    when: << pipeline.parameters.shell_android >>
     jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
+      - shell_app_android_build
+  expo_client_build:
+    when: << pipeline.parameters.expo_client >>
+    jobs:
+      - expo_client_build
+
   shell_app_nightly:
     triggers:
       - schedule:
