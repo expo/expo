@@ -1,6 +1,9 @@
 version: 2.1
 
 parameters:
+  release:
+    type: boolean
+    default: false
   release_google:
     type: boolean
     default: false
@@ -281,6 +284,7 @@ executors:
 
 workflows:
   docs:
+    unless: << pipeline.parameters.release >>
     jobs:
       - docs
       - docs_deploy:
@@ -292,6 +296,7 @@ workflows:
                 - master
   # JavaScript packages that make up the SDK
   sdk:
+    unless: << pipeline.parameters.release >>
     jobs:
       - expo_sdk
       # E2E SDK testing
@@ -300,6 +305,7 @@ workflows:
 
   # Android and iOS clients
   client:
+    unless: << pipeline.parameters.release >>
     jobs:
       - home
       - expotools
