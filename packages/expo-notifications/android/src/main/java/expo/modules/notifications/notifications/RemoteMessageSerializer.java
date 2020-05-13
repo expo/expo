@@ -87,7 +87,7 @@ public class RemoteMessageSerializer {
       serializedNotification.putString("notificationPriority", null);
     }
     serializedNotification.putString("sound", notification.getSound());
-    serializedNotification.putBoolean("autoDismiss", !notification.getSticky());
+    serializedNotification.putBoolean("sticky", notification.getSticky());
     serializedNotification.putString("tag", notification.getTag());
     serializedNotification.putString("ticker", notification.getTicker());
     serializedNotification.putString("title", notification.getTitle());

@@ -927,7 +927,13 @@ export interface NotificationContentInput {
   // Format: '#AARRGGBB', '#RRGGBB' or one of the named colors,
   // see https://developer.android.com/reference/kotlin/android/graphics/Color?hl=en
   color?: string;
-  // If set to true, the notification is automatically dismissed when clicked. If you have `FirebaseRemoteMessage`'s sticky parameter to `true`, it will not automatically be dismissed or canceled.
+  // If set to false, the notification will not be automatically dismissed when clicked.
+  // The setting used when the value is not provided or is invalid is true (the notification
+  // will be dismissed automatically). Corresponds directly to Android's `setAutoCancel`
+  // behavior. In Firebase terms this property of a notification is called `sticky`.
+  // See:
+  // - https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean),
+  // - https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky
   autoDismiss?: boolean;
   // iOS-specific fields
   // See https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent?language=objc

@@ -128,6 +128,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   }
 
   protected boolean getAutoDismiss(ReadableArguments payload) {
-    return payload.containsKey(AUTO_DISMISS_KEY) && payload.getBoolean(AUTO_DISMISS_KEY);
+    // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
+    return payload.getBoolean(AUTO_DISMISS_KEY, true);
   }
 }

@@ -162,12 +162,15 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
     return null;
   }
 
-  protected  boolean getAutoDismiss(JSONObject payload) {
-    try {
-      return payload.has(AUTO_DISMISS_KEY) && payload.getBoolean(AUTO_DISMISS_KEY);
-    } catch (JSONException e) {
-      Log.e("expo-notifications", "Could not have parsed a boolean autoDismiss value passed in notification.");
-      return false;
+  protected boolean getAutoDismiss(JSONObject payload) {
+    if (payload.has(AUTO_DISMISS_KEY)) {
+      try {
+        return payload.getBoolean(AUTO_DISMISS_KEY);
+      } catch (JSONException e) {
+        Log.e("expo-notifications", "Could not have parsed a boolean autoDismiss value passed in notification, falling back to a default value.");
+      }
     }
+    // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
+    return true;
   }
 }
