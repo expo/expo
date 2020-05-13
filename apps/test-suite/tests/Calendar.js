@@ -337,6 +337,19 @@ export async function test(t) {
         t.expect(typeof eventId).toBe('string');
       });
 
+      t.it('creates an event with the recurrence rule', async () => {
+        const eventId = await createTestEventAsync(calendarId, {
+          recurrenceRule: {
+            endDate: new Date(2019, 3, 5),
+            frequency: 'daily',
+            interval: 1,
+          },
+        });
+
+        t.expect(eventId).toBeDefined();
+        t.expect(typeof eventId).toBe('string');
+      });
+
       if (Platform.OS === 'ios') {
         t.it('rejects when time zone is invalid', async () => {
           let error;
