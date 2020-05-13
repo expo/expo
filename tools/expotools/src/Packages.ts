@@ -37,12 +37,32 @@ export type PackageDependency = {
 };
 
 /**
+ * Union with possible platform names.
+ */
+export type Platform = 'ios' | 'android' | 'web';
+
+/**
+ * Type representing `unimodule.json` structure.
+ */
+export type UnimoduleJson = {
+  name: string;
+  platforms: Platform[];
+  ios?: {
+    subdirectory?: string;
+    podName?: string;
+  };
+  android?: {
+    subdirectory?: string;
+  };
+};
+
+/**
  * Represents a package in the monorepo.
  */
 export class Package {
   path: string;
   packageJson: PackageJson;
-  unimoduleJson: any;
+  unimoduleJson: UnimoduleJson;
   packageView?: Npm.PackageViewType | null;
 
   constructor(rootPath: string, packageJson?: PackageJson) {
@@ -174,7 +194,7 @@ export class Package {
       : ['dependencies'];
 
     const dependencies = depsGroups.map((group) => {
-      const deps = this.packageJson[group];
+      const deps = this.packageJson[group] as Record<string, string>;
 
       return !deps
         ? []

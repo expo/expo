@@ -1,9 +1,11 @@
 import chalk, { Chalk } from 'chalk';
 import readline from 'readline';
 
-type LoggerResolver = (level: string, color: Chalk | null, args: any[]) => void;
+type LogLevel = 'log' | 'debug' | 'info' | 'warn' | 'error';
 
-const CONSOLE_RESOLVER: LoggerResolver = (level, color, args) => {
+type LoggerResolver = (level: LogLevel, color: Chalk | null, args: string[]) => void;
+
+const CONSOLE_RESOLVER: LoggerResolver = (level: LogLevel, color: Chalk | null, args: string[]) => {
   return console[level](...(color ? args.map((arg) => color(arg)) : args));
 };
 
@@ -56,7 +58,7 @@ export class Logger {
  * Useful for asynchronous simultaneous operations to preserve logs order.
  */
 export class LoggerBatch extends Logger {
-  readonly batchedLogs: [string, Chalk | null, any[]][] = [];
+  readonly batchedLogs: [LogLevel, Chalk | null, any[]][] = [];
 
   constructor(readonly parentResolver: LoggerResolver = CONSOLE_RESOLVER) {
     super((level, color, args) => {

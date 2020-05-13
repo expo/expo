@@ -34,8 +34,7 @@ export type ChangelogEntry = {
  */
 export type ChangelogChanges = {
   totalCount: number;
-  versions: Record<string, Partial<Record<key in ChangeType, string[]>>>;
-  };
+  versions: Record<string, Partial<Record<ChangeType, string[]>>>;
 };
 
 /**
@@ -126,7 +125,7 @@ export class Changelog {
     toVersion: string = UNPUBLISHED_VERSION_NAME
   ): Promise<ChangelogChanges> {
     const tokens = await this.getTokensAsync();
-    const versions = {};
+    const versions: ChangelogChanges['versions'] = {};
     const changes: ChangelogChanges = { totalCount: 0, versions };
 
     let currentVersion: string | null = null;
