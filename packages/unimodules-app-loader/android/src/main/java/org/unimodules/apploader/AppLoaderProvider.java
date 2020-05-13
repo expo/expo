@@ -18,7 +18,7 @@ public class AppLoaderProvider {
 
   public static void registerLoader(Context context, String name, Class loaderClass, boolean overload) {
     if (!overload) {
-      if (appLoaderRegisteredForName(context, name)) return;
+      if (appLoaderRegisteredForName(context, name, loaderClass)) return;
     }
     getSharedPreferences(context).edit()
       .putString(appLoaderKey(name), loaderClass.getName())
@@ -39,8 +39,9 @@ public class AppLoaderProvider {
     return loaders.get(name);
   }
 
-  private static boolean appLoaderRegisteredForName(Context context, String name) {
-    return loaderClasses.containsKey(name) || getSharedPreferences(context).getString(appLoaderKey(name), null) != null;
+  private static boolean appLoaderRegisteredForName(Context context, String name, Class loaderClass) {
+    String cachedClassName = getSharedPreferences(context).getString(appLoaderKey(name), null);
+    return loaderClasses.containsKey(name) || loaderClass.getName().equals(cachedClassName);
   }
 
   private static void createLoader(String name, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException, NoSuchMethodException {
