@@ -20,40 +20,40 @@
   ],
   "cocoapods_version": ">= 1.2.0",
   "dependencies": {
-    "React-Core": [
+    "ABI37_0_0React-Core": [
       "0.61.4"
     ],
-    "React-Core/DevSupport": [
+    "ABI37_0_0React-Core/DevSupport": [
       "0.61.4"
     ],
-    "React-Core/RCTWebSocket": [
+    "ABI37_0_0React-Core/RCTWebSocket": [
       "0.61.4"
     ],
-    "React-RCTActionSheet": [
+    "ABI37_0_0React-RCTActionSheet": [
       "0.61.4"
     ],
-    "React-RCTAnimation": [
+    "ABI37_0_0React-RCTAnimation": [
       "0.61.4"
     ],
-    "React-RCTBlob": [
+    "ABI37_0_0React-RCTBlob": [
       "0.61.4"
     ],
-    "React-RCTImage": [
+    "ABI37_0_0React-RCTImage": [
       "0.61.4"
     ],
-    "React-RCTLinking": [
+    "ABI37_0_0React-RCTLinking": [
       "0.61.4"
     ],
-    "React-RCTNetwork": [
+    "ABI37_0_0React-RCTNetwork": [
       "0.61.4"
     ],
-    "React-RCTSettings": [
+    "ABI37_0_0React-RCTSettings": [
       "0.61.4"
     ],
-    "React-RCTText": [
+    "ABI37_0_0React-RCTText": [
       "0.61.4"
     ],
-    "React-RCTVibration": [
+    "ABI37_0_0React-RCTVibration": [
       "0.61.4"
     ]
   }
