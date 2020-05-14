@@ -101,7 +101,7 @@ let mainAsync = async () => {
       l = l.replace(/```SnackPlayer.*$/, '```javascript');
       l = l.replace(
         '(more-resources.md)',
-        '(https://facebook.github.io/react-native/docs/more-resources.html)'
+        '(https://reactnative.dev/docs/more-resources.html)'
       );
 
       l.replace(
@@ -115,7 +115,7 @@ let mainAsync = async () => {
 
       l.replace(
         /\[CameraRoll\]\([^)]+\)/g,
-        '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
+        '[CameraRoll](https://reactnative.dev/docs/cameraroll.html)'
       );
 
       // A lot of table cells have things like "<string>" and "<any>" that mdx dislikes
@@ -139,19 +139,19 @@ let mainAsync = async () => {
       // TODO: Make these global replaces instead of just first instance
       l = l.replace(
         '<img src="/react-native/docs/assets/',
-        '<img src="https://facebook.github.io/react-native/docs/assets/'
+        '<img src="https://reactnative.dev/docs/assets/'
       );
-      l = l.replace('![](/react-native/docs/', '![](https://facebook.github.io/react-native/docs/');
+      l = l.replace('![](/react-native/docs/', '![](https://reactnative.dev/docs/');
 
       l = l.replace(
         /!\[([^]]*)\]\(\/react-native\/docs\//g,
-        (match, $1) => '![' + $1 + '](https://facebook.github.io/react-native/docs/'
+        (match, $1) => '![' + $1 + '](https://reactnative.dev/docs/'
       );
 
       let r = new RegExp('!\\[(.*)\\]\\(\\/react\\-native\\/docs\\/', 'g');
       l = l.replace(
         r,
-        (match, $1) => '![' + $1 + '](https://facebook.github.io/react-native/docs/'
+        (match, $1) => '![' + $1 + '](https://reactnative.dev/docs/'
       );
 
       switch (basename) {

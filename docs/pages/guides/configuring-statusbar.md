@@ -68,7 +68,7 @@ Example:
 }
 ```
 
-### Use the [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html)
+### Use the [`StatusBar` API from React Native](https://reactnative.dev/docs/statusbar.html)
 
 The `StatusBar` API allows you to dynamically control the appearance of the status bar. You can use it as component, or as an API. Check the documentation on the React Native website for examples.
 
@@ -103,7 +103,7 @@ If you don't need to set the background color, you can just set a top padding on
 
 ## Recommended configuration
 
-It is recommended to use the configuration in `app.json` to obtain the appearance you want to have during the `SplashScreen` phase, and later on use the [`StatusBar` API from React Native](https://facebook.github.io/react-native/docs/statusbar.html) to dynamically adjust status bar appearance.
+It is recommended to use the configuration in `app.json` to obtain the appearance you want to have during the `SplashScreen` phase, and later on use the [`StatusBar` API from React Native](https://reactnative.dev/docs/statusbar.html) to dynamically adjust status bar appearance.
 
 Example:
 ```ts
