@@ -56,7 +56,7 @@ function getSuggestedChangelogEntries(packageNames) {
 }
 async function runAddChangelogCommandAsync(suggestedEntries) {
     for (const entry of suggestedEntries) {
-        await spawn_async_1.default('et', [
+        await spawn_async_1.default(path.join(Utils_1.getExpoRepositoryRootDir(), 'bin', 'expotools'), [
             `add-changelog`,
             `--package`,
             entry.packageName,

@@ -381,9 +381,9 @@ jobs:
       - yarn_install:
           working_directory: ~/project
       - save_yarn_cache
-      - run:
-          name: Check packages
-          command: expotools check-packages
+      # - run:
+      #     name: Check packages
+      #     command: expotools check-packages
       - run:
           name: Run Danger
           working_directory: ~/project
@@ -827,7 +827,6 @@ jobs:
           at: /tmp/workspace
       - deploy:
           command: docs/deploy.sh /tmp/workspace/site
-
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:
