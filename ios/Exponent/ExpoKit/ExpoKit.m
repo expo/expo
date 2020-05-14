@@ -15,7 +15,6 @@
 
 #import <UMCore/UMModuleRegistryProvider.h>
 
-#import <Crashlytics/Crashlytics.h>
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
@@ -120,16 +119,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   return YES;
 }
 
-#pragma mark - Crash handling
-
-- (void)crashlyticsDidDetectReportForLastExecution:(CLSReport *)report
-{
-  // set a persistent flag because we may not get a chance to take any action until a future execution of the app.
-  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kEXKernelClearJSCacheUserDefaultsKey];
-
-  // block to ensure we save this key (in case the app crashes again)
-  [[NSUserDefaults standardUserDefaults] synchronize];
-}
 
 #pragma mark - APNS hooks
 
