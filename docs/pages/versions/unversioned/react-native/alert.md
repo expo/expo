@@ -11,20 +11,9 @@ This is an API that works both on Android and iOS and can show static alerts. To
 
 ## Example
 
-<table>
-  <tr>
-    <th>iOS</th>
-    <th>Android</th>
-  </tr>
-  <tr>
-    <td>
-      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif" /></center>
-    </td>
-    <td>
-      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif" /></center>
-    </td>
-  </tr>
-</table>
+| iOS | Android |
+| --- | --- |
+| ![iOS Alert Example](https://reactnative.dev/docs/assets/Alert/exampleios.gif) | ![Android Alert Example](https://reactnative.dev/docs/assets/Alert/exampleandroid.gif) |
 
 ## iOS
 
