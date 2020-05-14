@@ -12,6 +12,11 @@ const STYLES_LOGO = css`
   display: flex;
 `;
 
+const STYLES_UNSTYLED_ANCHOR = css`
+  color: inherit;
+  text-decoration: none;
+`;
+
 const STYLES_LEFT = css`
   flex-shrink: 0;
   padding-right: 24px;
@@ -76,6 +81,7 @@ const STYLES_TITLE_TEXT = css`
   display: flex;
   padding-bottom: 2px;
   font-family: ${Constants.fonts.demi};
+  cursor: pointer;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     display: none;
@@ -165,7 +171,11 @@ export default class DocumentationHeader extends React.PureComponent {
               </a>
             </Link>
 
-            <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
+            <Link href="/">
+              <a className={STYLES_UNSTYLED_ANCHOR}>
+                <h1 className={STYLES_TITLE_TEXT}>Expo</h1>
+              </a>
+            </Link>
 
             {this._renderSectionLinks()}
           </div>
