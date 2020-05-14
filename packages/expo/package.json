@@ -98,13 +98,13 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/react": "^16.9.0",
-    "@types/react-native": "^0.60.15",
+    "@types/react-native": "^0.62.8",
     "@types/react-test-renderer": "16.9.0",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.9.0",
-    "react-dom": "16.9.0",
-    "react-native": "0.61.4"
+    "react": "16.11.0",
+    "react-dom": "16.11.0",
+    "react-native": "0.62.2"
   },
   "gitHead": "5b538cb49cc65ec911fa4df63bccd4004ef92c49"
 }
