@@ -122,6 +122,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXMediaLibrary (8.1.0):
+    - React
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -876,7 +877,7 @@ SPEC CHECKSUMS:
   EXLocalization: 1997068470bdfb7601fd58dbbf85ba1cde36fb82
   EXLocation: bbd487fd96a18a3ad9725389bbb94c4a5f78edf3
   EXMailComposer: 8efe254989ceace18681b98c049c6c0209d4ae56
-  EXMediaLibrary: 02a13521d05ca381b08f7d745a9602569eade072
+  EXMediaLibrary: aa151e6f6f977543c24222d57a1caad4b7facfbc
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
   EXNotifications: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
