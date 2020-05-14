@@ -26,7 +26,6 @@
     "react-native-unimodules": "~0.8.0"
   },
   "devDependencies": {
-    "babel-core": "^7.0.0-bridge.0",
     "eslint": "^6.8.0",
     "expo-cli": "^3.20.5",
     "expo-yarn-workspaces": "*",
