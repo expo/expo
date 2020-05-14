@@ -1548,8 +1548,6 @@ PODS:
     - Firebase/Core (= 6.14.0)
     - Firebase/MLVision (= 6.14.0)
     - Firebase/MLVisionFaceModel (= 6.14.0)
-    - FirebaseMLCommon (= 0.19.0)
-    - FirebaseMLVision (= 0.19.0)
     - UMCore
     - UMFaceDetectorInterface
   - EXFileSystem (8.1.0):
@@ -3825,7 +3823,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 3bacb53995a03147696a93e1727288b1a7d39cf7
   EXErrorRecovery: 8f4c21ab2f51bf75defe4536f841a37de59b0661
   EXFacebook: 74d53d9da75d1a953f1821dd417594ed18d7a72f
-  EXFaceDetector: 347204431405fed65226f43921d43c8c5a003d37
+  EXFaceDetector: 29bb21bb1c689a44d095b130f4bddde1b20c8761
   EXFileSystem: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
   EXFirebaseAnalytics: 535e764dcb3facfa1668d81e422b685eb93c1c9f
   EXFirebaseCore: 4e0976590135563e26af5050916879d5ee218f1b
