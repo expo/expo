@@ -11,6 +11,11 @@
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
 
+#import <EXNotifications/EXNotificationCenterDelegate.h>
+
+#import <UMCore/UMModuleRegistryProvider.h>
+
+#import <Crashlytics/Crashlytics.h>
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
@@ -106,11 +111,12 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
-    [[UNUserNotificationCenter currentNotificationCenter] setDelegate:(id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager];
-    // This is safe to call; if the app doesn't have permission to display user-facing notifications
-    // then registering for a push token is a no-op
-    [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
+    UMLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
   }
+
+  // Register EXUserNotificationManager as a delegate of EXNotificationCenterDelegate
+  id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>) [UMModuleRegistryProvider getSingletonModuleForClass:[EXNotificationCenterDelegate class]];
+  [notificationCenterDelegate addDelegate:(id<EXNotificationsDelegate>)[EXKernel sharedInstance].serviceRegistry.notificationsManager];
   return YES;
 }
 

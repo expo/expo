@@ -7,7 +7,7 @@
         <service
             android:name=".FirebaseListenerService"
             android:exported="false">
-            <intent-filter>
+            <intent-filter android:priority="-1">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
