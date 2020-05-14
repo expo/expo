@@ -25,7 +25,7 @@ export default async function loadAssetsAsync() {
   if (Platform.OS !== 'web') {
     assetPromises.push(
       Font.loadAsync({
-        Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
+        Roboto: 'https://github.com/google/fonts/raw/d1a2e0f/ofl/roboto/static/Roboto-Regular.ttf',
       })
     );
   }
