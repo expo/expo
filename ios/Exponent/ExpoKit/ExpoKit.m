@@ -112,7 +112,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 {
   if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
     UMLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
-    return YES;
   }
 
   // Register EXUserNotificationManager as a delegate of EXNotificationCenterDelegate
