@@ -30,9 +30,9 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 - (UIViewController *)currentViewController;
 
 /**
- *  Set up dependencies that need to be initialized before  app delegates.
+ *  Set up dependencies that need to be initialized before app delegates.
  */
-- (void)setUpApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions;
+- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions;
 
 /**
  *  Keys to third-party integrations used inside ExpoKit.
