@@ -20,11 +20,11 @@ import expo.modules.firebase.core.FirebaseCoreOptions;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 
 public class ScopedFirebaseCoreService extends FirebaseCoreService implements RegistryLifecycleListener {
 
