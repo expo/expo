@@ -749,18 +749,18 @@ PODS:
     - ABI36_0_0React-Core (= 0.61.4)
     - Folly (= 2018.10.22.00)
   - ABI36_0_0React (0.61.4):
-    - React-Core (= 0.61.4)
-    - React-Core/DevSupport (= 0.61.4)
-    - React-Core/RCTWebSocket (= 0.61.4)
-    - React-RCTActionSheet (= 0.61.4)
-    - React-RCTAnimation (= 0.61.4)
-    - React-RCTBlob (= 0.61.4)
-    - React-RCTImage (= 0.61.4)
-    - React-RCTLinking (= 0.61.4)
-    - React-RCTNetwork (= 0.61.4)
-    - React-RCTSettings (= 0.61.4)
-    - React-RCTText (= 0.61.4)
-    - React-RCTVibration (= 0.61.4)
+    - ABI36_0_0React-Core (= 0.61.4)
+    - ABI36_0_0React-Core/DevSupport (= 0.61.4)
+    - ABI36_0_0React-Core/RCTWebSocket (= 0.61.4)
+    - ABI36_0_0React-RCTActionSheet (= 0.61.4)
+    - ABI36_0_0React-RCTAnimation (= 0.61.4)
+    - ABI36_0_0React-RCTBlob (= 0.61.4)
+    - ABI36_0_0React-RCTImage (= 0.61.4)
+    - ABI36_0_0React-RCTLinking (= 0.61.4)
+    - ABI36_0_0React-RCTNetwork (= 0.61.4)
+    - ABI36_0_0React-RCTSettings (= 0.61.4)
+    - ABI36_0_0React-RCTText (= 0.61.4)
+    - ABI36_0_0React-RCTVibration (= 0.61.4)
   - ABI36_0_0React-Core (0.61.4):
     - ABI36_0_0React-Core/Default (= 0.61.4)
     - ABI36_0_0React-cxxreact (= 0.61.4)
@@ -1246,18 +1246,18 @@ PODS:
     - ABI37_0_0React-Core (= 0.61.4)
     - Folly (= 2018.10.22.00)
   - ABI37_0_0React (0.61.4):
-    - React-Core (= 0.61.4)
-    - React-Core/DevSupport (= 0.61.4)
-    - React-Core/RCTWebSocket (= 0.61.4)
-    - React-RCTActionSheet (= 0.61.4)
-    - React-RCTAnimation (= 0.61.4)
-    - React-RCTBlob (= 0.61.4)
-    - React-RCTImage (= 0.61.4)
-    - React-RCTLinking (= 0.61.4)
-    - React-RCTNetwork (= 0.61.4)
-    - React-RCTSettings (= 0.61.4)
-    - React-RCTText (= 0.61.4)
-    - React-RCTVibration (= 0.61.4)
+    - ABI37_0_0React-Core (= 0.61.4)
+    - ABI37_0_0React-Core/DevSupport (= 0.61.4)
+    - ABI37_0_0React-Core/RCTWebSocket (= 0.61.4)
+    - ABI37_0_0React-RCTActionSheet (= 0.61.4)
+    - ABI37_0_0React-RCTAnimation (= 0.61.4)
+    - ABI37_0_0React-RCTBlob (= 0.61.4)
+    - ABI37_0_0React-RCTImage (= 0.61.4)
+    - ABI37_0_0React-RCTLinking (= 0.61.4)
+    - ABI37_0_0React-RCTNetwork (= 0.61.4)
+    - ABI37_0_0React-RCTSettings (= 0.61.4)
+    - ABI37_0_0React-RCTText (= 0.61.4)
+    - ABI37_0_0React-RCTVibration (= 0.61.4)
   - ABI37_0_0React-Core (0.61.4):
     - ABI37_0_0React-Core/Default (= 0.61.4)
     - ABI37_0_0React-cxxreact (= 0.61.4)
@@ -3669,7 +3669,7 @@ SPEC CHECKSUMS:
   ABI36_0_0FBReactNativeSpec: c60de773a32796de9ba6bc84a82e6d1a54502734
   ABI36_0_0RCTRequired: 184344a8c9cf207c9fc1a4c6d5f20ad5e3aefc1b
   ABI36_0_0RCTTypeSafety: 1b202f42d4e8db64f3b602dc8d567953a2546bef
-  ABI36_0_0React: cc00cb29550a3999875650e817088721e963180e
+  ABI36_0_0React: 2dd653fbb2f96fad48d46a27bbe1e35d506d8435
   ABI36_0_0React-Core: 15b44f26e6378ca7240f2725807d2a59f89d2c66
   ABI36_0_0React-CoreModules: ab9e8f87019a59c797e98777c12601c6f6204726
   ABI36_0_0React-cxxreact: 868ca803f8801ec5391a3d2fafd2f9dbb241fc84
@@ -3764,7 +3764,7 @@ SPEC CHECKSUMS:
   ABI37_0_0FBReactNativeSpec: 262951ee42519a21595b99aabfbec7c13121bff1
   ABI37_0_0RCTRequired: fa2aa01e02762102279b66e0bb4c2409d51b87ec
   ABI37_0_0RCTTypeSafety: 6d637f344a611ce06db3e42ee5b2723b468287e1
-  ABI37_0_0React: c4543a605da9a3dc55bf0440b76f479e7be12fd3
+  ABI37_0_0React: ffb85cb8e9eaa87af224cc9ab0473c87639f73aa
   ABI37_0_0React-Core: e20cf1da7f7b30046dc8b8d29f7d40c13e63f61f
   ABI37_0_0React-CoreModules: bcf5f520b6f2fe4487c3fc0b7ec1c1926b0eaee9
   ABI37_0_0React-cxxreact: 3dfab52b64e73e6941b763cacb6acf9bc6646866

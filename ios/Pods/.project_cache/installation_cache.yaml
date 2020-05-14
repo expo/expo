@@ -3863,8 +3863,8 @@ CACHE_KEYS:
       - ABI36_0_0RCTTypeSafety (0.61.4)
   ABI36_0_0React:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0React: 5d26ee82ac10e3b397088130f6a2468f
-    CHECKSUM: cc00cb29550a3999875650e817088721e963180e
+      ABI36_0_0React: e1ada532972a2738e4122f068092459c
+    CHECKSUM: 2dd653fbb2f96fad48d46a27bbe1e35d506d8435
     FILES:
       - "../versioned-react-native/ABI36_0_0/ReactNative/package.json"
     PROJECT_NAME: ABI36_0_0
@@ -6131,8 +6131,8 @@ CACHE_KEYS:
       - ABI37_0_0RCTTypeSafety (0.61.4)
   ABI37_0_0React:
     BUILD_SETTINGS_CHECKSUM:
-      ABI37_0_0React: 33f1b17d83e89939f49d6d39fbaf91db
-    CHECKSUM: c4543a605da9a3dc55bf0440b76f479e7be12fd3
+      ABI37_0_0React: 1ac9e663936e5cd9dd055b6800c2877c
+    CHECKSUM: ffb85cb8e9eaa87af224cc9ab0473c87639f73aa
     FILES:
       - "../versioned-react-native/ABI37_0_0/ReactNative/package.json"
     PROJECT_NAME: ABI37_0_0
@@ -8244,8 +8244,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7e342f37177cd052ca54099671043c67
-      Release: 7e342f37177cd052ca54099671043c67
+      Debug: d554db4ab910f3c25cbd9c86485ab0d9
+      Release: d554db4ab910f3c25cbd9c86485ab0d9
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 85b12121877a2eea100a39574bacf435
