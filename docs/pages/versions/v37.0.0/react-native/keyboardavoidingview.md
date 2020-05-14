@@ -17,7 +17,7 @@ import { KeyboardAvoidingView } from 'react-native';
 
 ### Example
 
-![](https://facebook.github.io/react-native/docs/assets/KeyboardAvoidingView/example.gif)
+![](https://reactnative.dev/docs/assets/KeyboardAvoidingView/example.gif)
 
 ---
 
