@@ -1,5 +1,28 @@
 version: 2.1
 
+parameters:
+  release:
+    type: boolean
+    default: false
+  release_google:
+    type: boolean
+    default: false
+  release_apk:
+    type: boolean
+    default: false
+  release_simulator:
+    type: boolean
+    default: false
+  shell_ios:
+    type: boolean
+    default: false
+  shell_android:
+    type: boolean
+    default: false
+  expo_client:
+    type: boolean
+    default: false
+
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
@@ -260,21 +283,92 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  danger_workflow:
+  docs:
+    unless: << pipeline.parameters.release >>
     jobs:
-      - danger
+      - docs
+      - docs_deploy:
+          requires:
+            - docs
+          filters:
+            branches:
+              only:
+                - master
+  # JavaScript packages that make up the SDK
+  sdk:
+    unless: << pipeline.parameters.release >>
+    jobs:
+      - expo_sdk
+      # E2E SDK testing
+      - web_test_suite
+      - ios_test_suite
+
+  # Android and iOS clients
+  client:
+    unless: << pipeline.parameters.release >>
+    jobs:
+      - home
+      - expotools
+      - client_android
+      # Disabled until further notice
+      # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
+      # - test_suite_publish
+      # - android_test_suite:
+      #     requires:
+      #       - test_suite_publish
+      - android_unit_tests
+      - client_ios
+
+  release_simulator:
+    when: << pipeline.parameters.release_simulator >>
+    jobs:
+      - client_ios
+      - client_ios_simulator_release:
+          requires:
+            - client_ios
+
+  release_google:
+    when: << pipeline.parameters.release_google >>
+    jobs:
+      - client_android
+      - client_android_release_google_play:
+          requires:
+            - client_android
+  release_apk:
+    when: << pipeline.parameters.release_apk >>
+    jobs:
+      - client_android
+      - client_android_apk_release:
+          requires:
+            - client_android
+
+  shell_app_ios:
+    when: << pipeline.parameters.shell_ios >>
+    jobs:
+      - shell_app_ios_build:
+          upload: true
+  shell_app_android:
+    when: << pipeline.parameters.shell_android >>
+    jobs:
+      - shell_app_android_build
+  expo_client_build:
+    when: << pipeline.parameters.expo_client >>
+    jobs:
+      - expo_client_build
+
+  shell_app_nightly:
+    triggers:
+      - schedule:
+          cron: '20 5 * * 2,4,6'
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - shell_app_ios_build:
+          upload: false
+
 jobs:
-  danger:
-    executor: js
-    steps:
-      - setup
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/project
-      - run:
-          name: Run Danger
-          working_directory: ~/project
-          command: yarn danger ci
   expo_sdk:
     executor: js
     steps:
@@ -733,6 +827,7 @@ jobs:
           at: /tmp/workspace
       - deploy:
           command: docs/deploy.sh /tmp/workspace/site
+
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:
