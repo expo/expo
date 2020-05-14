@@ -9,7 +9,7 @@ By default, `PanResponder` holds an `InteractionManager` handle to block long-ru
 
 It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](../gesture-responder-system/). For each handler, it provides a new `gestureState` object alongside the native event object:
 
-```javascript
+```js
 onPanResponderMove: (event, gestureState) => {};
 ```
 
@@ -41,7 +41,7 @@ A `gestureState` object has the following:
 
 ### Basic Usage
 
-```jsx
+```js
 class ExampleComponent extends Component {
   constructor(props) {
     super(props);
@@ -97,7 +97,7 @@ To see it in action, try the [PanResponder example in RNTester](https://github.c
 
 ### `create()`
 
-```jsx
+```js
 
 static create(config)
 
