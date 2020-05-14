@@ -31,8 +31,15 @@ async function getFileDiffAsync(path) {
  */
 function isChangelogModified(packageName, modifiedFiles) {
     const changelogPath = Utils_1.getPackageChangelogRelativePath(packageName);
+    console.log({
+        packageName,
+        modifiedFiles,
+        changelogPath,
+        p: path.resolve(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)),
+        e: fs.existsSync(path.resolve(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath))),
+    });
     return (modifiedFiles.includes(changelogPath) ||
-        !fs.existsSync(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath)));
+        !fs.existsSync(path.resolve(path.join(Utils_1.getExpoRepositoryRootDir(), changelogPath))));
 }
 function getSuggestedChangelogEntries(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
@@ -105,6 +112,13 @@ ${pr}
  */
 async function checkChangelog() {
     const modifiedPackages = lodash_1.groupBy(danger.git.modified_files.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
+    console.log({
+        modi: danger.git.modified_files.length,
+        create: danger.git.created_files.length,
+        deleted: danger.git.deleted_files,
+        modifiedPackages,
+        root: Utils_1.getExpoRepositoryRootDir(),
+    });
     const packagesWithoutChangelog = Object.entries(modifiedPackages)
         .filter(([packageName, files]) => !isChangelogModified(packageName, files))
         .map(([packageName]) => packageName);

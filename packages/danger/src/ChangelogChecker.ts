@@ -38,10 +38,16 @@ async function getFileDiffAsync(path): Promise<string> {
  */
 function isChangelogModified(packageName: string, modifiedFiles: string[]): boolean {
   const changelogPath = getPackageChangelogRelativePath(packageName);
-
+  console.log({
+    packageName,
+    modifiedFiles,
+    changelogPath,
+    p: path.resolve(path.join(getExpoRepositoryRootDir(), changelogPath)),
+    e: fs.existsSync(path.resolve(path.join(getExpoRepositoryRootDir(), changelogPath))),
+  });
   return (
     modifiedFiles.includes(changelogPath) ||
-    !fs.existsSync(path.join(getExpoRepositoryRootDir(), changelogPath))
+    !fs.existsSync(path.resolve(path.join(getExpoRepositoryRootDir(), changelogPath)))
   );
 }
 
@@ -145,7 +151,13 @@ export async function checkChangelog(): Promise<void> {
     danger.git.modified_files.filter(file => file.startsWith('packages')),
     file => file.split(path.sep)[1]
   );
-
+  console.log({
+    modi: danger.git.modified_files.length,
+    create: danger.git.created_files.length,
+    deleted: danger.git.deleted_files,
+    modifiedPackages,
+    root: getExpoRepositoryRootDir(),
+  });
   const packagesWithoutChangelog = Object.entries(modifiedPackages)
     .filter(([packageName, files]) => !isChangelogModified(packageName, files))
     .map(([packageName]) => packageName);
