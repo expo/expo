@@ -109,7 +109,6 @@ async function checkChangelog() {
         .filter(([packageName, files]) => !isChangelogModified(packageName, files))
         .map(([packageName]) => packageName);
     if (packagesWithoutChangelog.length === 0) {
-        message(`✅ **Changelog**`);
         return;
     }
     // gets suggested entries based on pull request
