@@ -6,13 +6,21 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		8BC3699960624B1BECE25C34568E9AC5 /* React-RCTActionSheet-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C5C9260193F50D8F1F67F2BE9A3808A4 /* React-RCTActionSheet-dummy.m */; };
-		9FBFC2BD040619CB8204353161D0C25E /* RCTActionSheetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 070DE5B3F6BD5F2E55349DC64632A158 /* RCTActionSheetManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-/* End PBXBuildFile section */
+/* Begin PBXAggregateTarget section */
+		2B622CBAFD85AC413ED6306FD8B71B00 /* React-RCTActionSheet */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */;
+			buildPhases = (
+			);
+			dependencies = (
+				3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */,
+			);
+			name = "React-RCTActionSheet";
+		};
+/* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		2024C64FFED8F39559FBAB1DB87C6643 /* PBXContainerItemProxy */ = {
+		0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FCF084C4B4379E37652B4620EE24359B /* React-Core.xcodeproj */;
 			proxyType = 1;
@@ -22,62 +30,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		070DE5B3F6BD5F2E55349DC64632A158 /* RCTActionSheetManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTActionSheetManager.m; sourceTree = "<group>"; };
-		2C5AA902C9FD3961122707082A56ED83 /* React-RCTActionSheet.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTActionSheet.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		31F96D8328BED09CE89799277564C589 /* React-RCTActionSheet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTActionSheet.xcconfig"; sourceTree = "<group>"; };
-		B7E4BC15357B558CAB3230199B538AC4 /* libReact-RCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTActionSheet.a"; path = "libReact-RCTActionSheet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C5C9260193F50D8F1F67F2BE9A3808A4 /* React-RCTActionSheet-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTActionSheet-dummy.m"; sourceTree = "<group>"; };
-		EDE22718CF3D657EFA03122C7007FD68 /* React-RCTActionSheet-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTActionSheet-prefix.pch"; sourceTree = "<group>"; };
+		189C1BDA4BB208E860DB1D95E2908EB1 /* React-RCTActionSheet.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTActionSheet.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTActionSheet.xcconfig"; sourceTree = "<group>"; };
 		FCF084C4B4379E37652B4620EE24359B /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		13790CB54E86E6E86BE929038236DC74 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
-		42593BBFB4B82E7BED36DAFE8BA3ED32 /* Support Files */ = {
+		0D295A07562E134BFAD08BB2C160FC60 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				31F96D8328BED09CE89799277564C589 /* React-RCTActionSheet.xcconfig */,
-				C5C9260193F50D8F1F67F2BE9A3808A4 /* React-RCTActionSheet-dummy.m */,
-				EDE22718CF3D657EFA03122C7007FD68 /* React-RCTActionSheet-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../../ios/Pods/Target Support Files/React-RCTActionSheet";
-			sourceTree = "<group>";
-		};
-		4A03E44A2BE15D0203BED034FA9DE150 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				B7E4BC15357B558CAB3230199B538AC4 /* libReact-RCTActionSheet.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8A37E30DF1ABBB807A14CE1FE8D7B2F1 /* React-RCTActionSheet */ = {
-			isa = PBXGroup;
-			children = (
-				070DE5B3F6BD5F2E55349DC64632A158 /* RCTActionSheetManager.m */,
-				B3951B7E2B83711C98EEA16C6FDD4108 /* Pod */,
-				42593BBFB4B82E7BED36DAFE8BA3ED32 /* Support Files */,
-			);
-			name = "React-RCTActionSheet";
-			path = "../../react-native-lab/react-native/Libraries/ActionSheetIOS";
-			sourceTree = "<group>";
-		};
-		B3951B7E2B83711C98EEA16C6FDD4108 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				2C5AA902C9FD3961122707082A56ED83 /* React-RCTActionSheet.podspec */,
+				189C1BDA4BB208E860DB1D95E2908EB1 /* React-RCTActionSheet.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		886AA2469B6A446D93E62505B6FC4DD6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		C5468622F9AC514D0B41B1C3F3F1C2FD /* Frameworks */ = {
@@ -95,48 +66,36 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
+		EE1A479DE175AB335E1DAF78D722E6FC /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-RCTActionSheet";
+			sourceTree = "<group>";
+		};
+		F0BAABD8D36C47BB9D116EE72E65440E /* React-RCTActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				0D295A07562E134BFAD08BB2C160FC60 /* Pod */,
+				EE1A479DE175AB335E1DAF78D722E6FC /* Support Files */,
+			);
+			name = "React-RCTActionSheet";
+			path = "../../react-native-lab/react-native/Libraries/ActionSheetIOS";
+			sourceTree = "<group>";
+		};
 		F8C5283DBDCF123C1AE268392EB71752 = {
 			isa = PBXGroup;
 			children = (
 				C7F8C9D2A33CF4A7087D3A85D579B9DD /* Dependencies */,
 				C5468622F9AC514D0B41B1C3F3F1C2FD /* Frameworks */,
-				4A03E44A2BE15D0203BED034FA9DE150 /* Products */,
-				8A37E30DF1ABBB807A14CE1FE8D7B2F1 /* React-RCTActionSheet */,
+				886AA2469B6A446D93E62505B6FC4DD6 /* Products */,
+				F0BAABD8D36C47BB9D116EE72E65440E /* React-RCTActionSheet */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
-
-/* Begin PBXHeadersBuildPhase section */
-		F47A223173E776A02D6B230761426D33 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
-/* Begin PBXNativeTarget section */
-		2B622CBAFD85AC413ED6306FD8B71B00 /* React-RCTActionSheet */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 23377DE81AA0D2135B01B256C13C3D43 /* Build configuration list for PBXNativeTarget "React-RCTActionSheet" */;
-			buildPhases = (
-				F47A223173E776A02D6B230761426D33 /* Headers */,
-				C29983A321AFE79A8374F2502599FCBB /* Sources */,
-				13790CB54E86E6E86BE929038236DC74 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B48BB58317C3D5B63C584A724379E8DA /* PBXTargetDependency */,
-			);
-			name = "React-RCTActionSheet";
-			productName = "React-RCTActionSheet";
-			productReference = B7E4BC15357B558CAB3230199B538AC4 /* libReact-RCTActionSheet.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-/* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		F74DBCE71E45AB91457F8CA8B336F106 /* Project object */ = {
@@ -154,7 +113,7 @@
 				Base,
 			);
 			mainGroup = F8C5283DBDCF123C1AE268392EB71752;
-			productRefGroup = 4A03E44A2BE15D0203BED034FA9DE150 /* Products */;
+			productRefGroup = 886AA2469B6A446D93E62505B6FC4DD6 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -168,56 +127,15 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXSourcesBuildPhase section */
-		C29983A321AFE79A8374F2502599FCBB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9FBFC2BD040619CB8204353161D0C25E /* RCTActionSheetManager.m in Sources */,
-				8BC3699960624B1BECE25C34568E9AC5 /* React-RCTActionSheet-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
-
 /* Begin PBXTargetDependency section */
-		B48BB58317C3D5B63C584A724379E8DA /* PBXTargetDependency */ = {
+		3122F01328F02FF6DF0BA9AC97E1E74D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "React-Core";
-			targetProxy = 2024C64FFED8F39559FBAB1DB87C6643 /* PBXContainerItemProxy */;
+			targetProxy = 0A81D7D11951C925EB696B0475FE64CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		28B985E26A2D443FE271168CA7CB59C1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31F96D8328BED09CE89799277564C589 /* React-RCTActionSheet.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTActionSheet/React-RCTActionSheet-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"RCT_DEV=1",
-					"RCT_ENABLE_INSPECTOR=0",
-					"ENABLE_PACKAGER_CONNECTION=0",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTActionSheet;
-				PRODUCT_NAME = "React-RCTActionSheet";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		3FD13E3651D1BB7217C6E212BFDF80D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -282,15 +200,12 @@
 			};
 			name = Debug;
 		};
-		F32CF1DFC913E787231F2F6B434593DC /* Release */ = {
+		65EBC40DC1578558BC7B067D6780677A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31F96D8328BED09CE89799277564C589 /* React-RCTActionSheet.xcconfig */;
+			baseConfigurationReference = B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/React-RCTActionSheet/React-RCTActionSheet-prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"RCT_DEV=1",
@@ -298,15 +213,27 @@
 					"ENABLE_PACKAGER_CONNECTION=0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = RCTActionSheet;
-				PRODUCT_NAME = "React-RCTActionSheet";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C23DBDB67F732ECC1D1CB9B16C281DDD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B77C1E5D16287E183DC1A1FFA28BE5AA /* React-RCTActionSheet.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RCT_DEV=1",
+					"RCT_ENABLE_INSPECTOR=0",
+					"ENABLE_PACKAGER_CONNECTION=0",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -375,11 +302,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		23377DE81AA0D2135B01B256C13C3D43 /* Build configuration list for PBXNativeTarget "React-RCTActionSheet" */ = {
+		CD85073308E5CBA83E15F675A9CCD54C /* Build configuration list for PBXAggregateTarget "React-RCTActionSheet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				28B985E26A2D443FE271168CA7CB59C1 /* Debug */,
-				F32CF1DFC913E787231F2F6B434593DC /* Release */,
+				65EBC40DC1578558BC7B067D6780677A /* Debug */,
+				C23DBDB67F732ECC1D1CB9B16C281DDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
