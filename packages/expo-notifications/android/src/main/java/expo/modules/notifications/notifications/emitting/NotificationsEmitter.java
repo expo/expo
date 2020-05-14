@@ -56,7 +56,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   @Override
   public void onNotificationReceived(Notification notification) {
     if (mEventEmitter != null) {
-      emitEvent(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification));
+      mEventEmitter.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification));
     }
   }
 
@@ -69,7 +69,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   @Override
   public void onNotificationResponseReceived(NotificationResponse response) {
     if (mEventEmitter != null) {
-      emitEvent(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response));
+      mEventEmitter.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response));
     }
   }
 
@@ -80,11 +80,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   @Override
   public void onNotificationsDropped() {
     if (mEventEmitter != null) {
-      emitEvent(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY);
+      mEventEmitter.emit(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY);
     }
-  }
-
-  protected void emitEvent(String event, Bundle data) {
-    mEventEmitter.emit(event, data);
   }
 }
