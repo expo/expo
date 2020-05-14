@@ -260,119 +260,21 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  docs:
+  danger_workflow:
     jobs:
-      - docs
-      - docs_deploy:
-          requires:
-            - docs
-          filters:
-            branches:
-              only:
-                - master
-  # JavaScript packages that make up the SDK
-  sdk:
-    jobs:
-      - expo_sdk
-      # E2E SDK testing
-      - web_test_suite
-      - ios_test_suite
-
-  # Android and iOS clients
-  client:
-    jobs:
-      - home
-      - expotools
-      - client_android:
-          filters:  # run for ALL branches, and android tags
-            tags:
-              only:
-                - /^android-google-v*/
-                - /^android-apk-v*/
-      # Disabled until further notice
-      # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
-      # - test_suite_publish
-      # - android_test_suite:
-      #     requires:
-      #       - test_suite_publish
-      - android_unit_tests
-      - client_android_release_google_play:
-          requires:
-            - client_android
-          filters:  # run for NO branches, and android-google-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^android-google-v*/
-      - client_android_apk_release:
-          requires:
-            - client_android
-          filters:  # run for NO branches, and android-apk-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^android-apk-v*/
-      - client_ios:
-          filters:  # run for ALL branches, and ios-simulator-v* tags
-            tags:
-              only: /^ios-simulator-v*/
-      - client_ios_simulator_release:
-          requires:
-            - client_ios
-          filters:  # run for NO branches, and ios-simulator-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^ios-simulator-v*/
-
-  shell_app:
-    jobs:
-      - shell_app_ios_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_ios_build:
-          upload: true
-          requires:
-            - shell_app_ios_approve_build
-      - shell_app_android_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_android_build:
-          requires:
-            - shell_app_android_approve_build
-  client_shell_app:
-    jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
-  shell_app_nightly:
-    triggers:
-      - schedule:
-          cron: '20 5 * * 2,4,6'
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - shell_app_ios_build:
-          upload: false
-
+      - danger
 jobs:
+  danger:
+    executor: js
+    steps:
+      - setup
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - run:
+          name: Run Danger
+          working_directory: ~/project
+          command: yarn danger ci
   expo_sdk:
     executor: js
     steps:
@@ -831,7 +733,6 @@ jobs:
           at: /tmp/workspace
       - deploy:
           command: docs/deploy.sh /tmp/workspace/site
-
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
 #   test_suite_publish:
