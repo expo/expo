@@ -208,16 +208,16 @@ The `exif` field is included if the `exif` option is truthy, and is an object co
 
 ### `ImagePicker.VideoExportPreset`
 
-| Preset                             | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
-| ---------------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
-| `VideoExportPreset.Passthrough`    | 0     | Unchanged             | None                        | None                        |
-| `VideoExportPreset.LowQuality`     | 1     | Depends on the device | H.264                       | AAC                         |
-| `VideoExportPreset.MediumQuality`  | 2     | Depends on the device | H.264                       | AAC                         |
-| `VideoExportPreset.HighestQuality` | 3     | Depends on the device | H.264                       | AAC                         |
-| `VideoExportPreset.H264_640x480`   | 4     | 640 x 480             | H.264                       | AAC                         |
-| `VideoExportPreset.H264_960x540`   | 5     | 960 x 540             | H.264                       | AAC                         |
-| `VideoExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
-| `VideoExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
-| `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
-| `VideoExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
-| `VideoExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+| Preset                              | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
+| ----------------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
+| `VideoExportPreset.Passthrough`     | 0     | Unchanged             | None                        | None                        |
+| `VideoExportPreset.LowQuality`      | 1     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.MediumQuality`   | 2     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.HighestQuality`  | 3     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.H264_640x480`    | 4     | 640 x 480             | H.264                       | AAC                         |
+| `VideoExportPreset.H264_960x540`    | 5     | 960 x 540             | H.264                       | AAC                         |
+| `VideoExportPreset.H264_1280x720`   | 6     | 1280 x 720            | H.264                       | AAC                         |
+| `VideoExportPreset.H264_1920x1080`  | 7     | 1920 x 1080           | H.264                       | AAC                         |
+| `VideoExportPreset.H264_3840x2160`  | 8     | 3840 x 2160           | H.264                       | AAC                         |
+| `VideoExportPreset.HEVC_1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC_3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |
