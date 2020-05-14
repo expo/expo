@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
+    "cowsay": "^1.4.0",
     "danger": "^9.2.10",
     "http-server": "^0.11.1",
     "minimist": "^1.2.2",

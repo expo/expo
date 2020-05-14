@@ -49,7 +49,7 @@ The following helpers are used to modify other easing functions.
 
 ### `step0()`
 
-```jsx
+```js
 
 static step0(n)
 
@@ -61,7 +61,7 @@ A stepping function, returns 1 for any positive value of `n`.
 
 ### `step1()`
 
-```jsx
+```js
 
 static step1(n)
 
@@ -73,7 +73,7 @@ A stepping function, returns 1 if `n` is greater than or equal to 1.
 
 ### `linear()`
 
-```jsx
+```js
 
 static linear(t)
 
@@ -87,7 +87,7 @@ http://cubic-bezier.com/#0,0,1,1
 
 ### `ease()`
 
-```jsx
+```js
 
 static ease(t)
 
@@ -101,7 +101,7 @@ http://cubic-bezier.com/#.42,0,1,1
 
 ### `quad()`
 
-```jsx
+```js
 
 static quad(t)
 
@@ -115,7 +115,7 @@ http://easings.net/#easeInQuad
 
 ### `cubic()`
 
-```jsx
+```js
 
 static cubic(t)
 
@@ -129,7 +129,7 @@ http://easings.net/#easeInCubic
 
 ### `poly()`
 
-```jsx
+```js
 
 static poly(n)
 
@@ -143,7 +143,7 @@ n = 4: http://easings.net/#easeInQuart n = 5: http://easings.net/#easeInQuint
 
 ### `sin()`
 
-```jsx
+```js
 
 static sin(t)
 
@@ -157,7 +157,7 @@ http://easings.net/#easeInSine
 
 ### `circle()`
 
-```jsx
+```js
 
 static circle(t)
 
@@ -171,7 +171,7 @@ http://easings.net/#easeInCirc
 
 ### `exp()`
 
-```jsx
+```js
 
 static exp(t)
 
@@ -185,7 +185,7 @@ http://easings.net/#easeInExpo
 
 ### `elastic()`
 
-```jsx
+```js
 
 static elastic(bounciness)
 
@@ -201,7 +201,7 @@ http://easings.net/#easeInElastic
 
 ### `back()`
 
-```jsx
+```js
 
 static back(s)
 
@@ -213,7 +213,7 @@ Use with `Animated.parallel()` to create a basic effect where the object animate
 
 ### `bounce()`
 
-```jsx
+```js
 
 static bounce(t)
 
@@ -227,7 +227,7 @@ http://easings.net/#easeInBounce
 
 ### `bezier()`
 
-```jsx
+```js
 
 static bezier(x1, y1, x2, y2)
 
@@ -241,7 +241,7 @@ A useful tool to visualize cubic bezier curves can be found at http://cubic-bezi
 
 ### `in()`
 
-```jsx
+```js
 static in easing;
 ```
 
@@ -251,7 +251,7 @@ Runs an easing function forwards.
 
 ### `out()`
 
-```jsx
+```js
 
 static out(easing)
 
@@ -263,7 +263,7 @@ Runs an easing function backwards.
 
 ### `inOut()`
 
-```jsx
+```js
 
 static inOut(easing)
 
