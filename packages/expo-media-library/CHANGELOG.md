@@ -8,5 +8,6 @@
 
 ### 🐛 Bug fixes
 
+- Test. ([#8307](https://github.com/expo/expo/pull/8307) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `MediaLibrary` not compiling with the `use_frameworks!` option in the bare React Native application. ([#7861](https://github.com/expo/expo/pull/7861) by [@Ashoat](https://github.com/Ashoat))
 - Flip dimensions based on media rotation data on Android to match `<Image>` and `<Video>` as well as iOS behavior. ([#7980](https://github.com/expo/expo/pull/7980) by [@Ashoat](https://github.com/Ashoat))
