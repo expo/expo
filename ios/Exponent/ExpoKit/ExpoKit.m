@@ -79,13 +79,9 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   return controller;
 }
 
-#pragma mark - misc AppDelegate hooks
-
-- (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions
 {
   [DDLog addLogger:[DDOSLogger sharedInstance]];
-  
-
   RCTSetFatalHandler(handleFatalReactError);
 
   // init analytics
@@ -102,11 +98,31 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager;
-  // This is safe to call; if the app doesn't have permission to display user-facing notifications
-  // then registering for a push token is a no-op
-  [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
   _launchOptions = launchOptions;
+}
+
+#pragma mark - misc AppDelegate hooks
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
+    [[UNUserNotificationCenter currentNotificationCenter] setDelegate:(id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager];
+    // This is safe to call; if the app doesn't have permission to display user-facing notifications
+    // then registering for a push token is a no-op
+    [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
+  }
+  return YES;
+}
+
+#pragma mark - Crash handling
+
+- (void)crashlyticsDidDetectReportForLastExecution:(CLSReport *)report
+{
+  // set a persistent flag because we may not get a chance to take any action until a future execution of the app.
+  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kEXKernelClearJSCacheUserDefaultsKey];
+
+  // block to ensure we save this key (in case the app crashes again)
+  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark - APNS hooks
