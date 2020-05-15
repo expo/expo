@@ -17,11 +17,18 @@ UM_EXPORT_MODULE(ExpoPreventScreenCapture);
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(someGreatMethodAsync,
-                    options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(activatePreventScreenCapture,
+                    activatePreventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
+    resolve(NULL);
+}
+
+UM_EXPORT_METHOD_AS(deactivatePreventScreenCapture,
+                    deactivatePreventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+    resolve(NULL);
 }
 
 @end
