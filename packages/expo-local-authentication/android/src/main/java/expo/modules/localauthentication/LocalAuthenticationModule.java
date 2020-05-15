@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -24,7 +25,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.core.arguments.ReadableArguments;
 
 public class LocalAuthenticationModule extends ExportedModule {
   private final BiometricManager mBiometricManager;
@@ -100,7 +100,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void authenticateAsync(final ReadableArguments options, final Promise promise) {
+  public void authenticateAsync(final Map<String, Object> options, final Promise promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.reject("E_NOT_SUPPORTED", "Cannot display biometric prompt on android versions below 6.0");
       return;
@@ -135,15 +135,15 @@ public class LocalAuthenticationModule extends ExportedModule {
         }
 
         if (options.containsKey("promptMessage")) {
-          mPromptMessage = options.getString("promptMessage");
+          mPromptMessage = (String) options.get("promptMessage");
         }
 
         if (options.containsKey("cancelLabel")) {
-          mCancelLabel = options.getString("cancelLabel");
+          mCancelLabel = (String) options.get("cancelLabel");
         }
 
         if (options.containsKey("disableDeviceFallback")) {
-          mDisableDeviceFallback = options.getBoolean("disableDeviceFallback");
+          mDisableDeviceFallback = (Boolean) options.get("disableDeviceFallback");
         }
 
         mIsAuthenticating = true;
