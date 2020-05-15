@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoPreventScreenCapture.web.js","sourceRoot":"","sources":["../src/ExpoPreventScreenCapture.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,0BAA0B,CAAC;IACpC,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): String {\n    return 'ExpoPreventScreenCapture';\n  },\n};\n"]}
