@@ -1,6 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#if __has_include(<React/RCTBridge.h>)
+// Prior to React Native 0.61, it contained `RCTAssetsLibraryRequestHandler` that handles loading data from URLs
+// with `assets-library://` or `ph://` schemes. Due to lean core project, it's been moved to `@react-native-community/cameraroll`
+// and that made it impossible to render assets using URLs returned by MediaLibrary without installing CameraRoll.
+// Because it's still a unimodule and we need to export bare React Native module, we should make sure React Native is installed.
+#if __has_include(<React/RCTImageURLLoader.h>)
 
 #import <Photos/Photos.h>
 #import <React/RCTUtils.h>
