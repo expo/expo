@@ -65,8 +65,7 @@ async function runAddChangelogCommandAsync(
   suggestedEntries: PackageChangelogEntry[]
 ): Promise<FixedChangelogEntry[]> {
   for (const entry of suggestedEntries) {
-    await (path.join(getExpoRepositoryRootDir(), 'bin', 'expotools'),
-    [
+    await spawnAsync(path.join(getExpoRepositoryRootDir(), 'bin', 'expotools'), [
       `add-changelog`,
       `--package`,
       entry.packageName,

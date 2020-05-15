@@ -49,20 +49,19 @@ function getSuggestedChangelogEntries(packageNames) {
 }
 async function runAddChangelogCommandAsync(suggestedEntries) {
     for (const entry of suggestedEntries) {
-        await (path.join(Utils_1.getExpoRepositoryRootDir(), 'bin', 'expotools'),
-            [
-                `add-changelog`,
-                `--package`,
-                entry.packageName,
-                `--entry`,
-                entry.message,
-                `--author`,
-                prAuthor,
-                `--type`,
-                entryTypeToString(entry.type),
-                `--pull-request`,
-                `${pr.number}`,
-            ]);
+        await spawn_async_1.default(path.join(Utils_1.getExpoRepositoryRootDir(), 'bin', 'expotools'), [
+            `add-changelog`,
+            `--package`,
+            entry.packageName,
+            `--entry`,
+            entry.message,
+            `--author`,
+            prAuthor,
+            `--type`,
+            entryTypeToString(entry.type),
+            `--pull-request`,
+            `${pr.number}`,
+        ]);
     }
     return Promise.all(suggestedEntries.map(async (entry) => {
         const changelogPath = path.join(Utils_1.getExpoRepositoryRootDir(), Utils_1.getPackageChangelogRelativePath(entry.packageName));
