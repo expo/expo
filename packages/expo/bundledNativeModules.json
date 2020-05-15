@@ -98,5 +98,6 @@
   "unimodules-app-loader": "~1.0.2",
   "expo-notifications": "~0.1.7",
   "expo-splash-screen": "~0.2.3",
-  "firebase": "7.9.0"
+  "firebase": "7.9.0",
+  "@react-native-community/async-storage": "1.10.1"
 }

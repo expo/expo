@@ -344,6 +344,7 @@
 		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CFF9313BF12A44B7A7D192CB /* RNCAsyncStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 93168C2467C5479A86B2E629 /* RNCAsyncStorage.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1052,6 +1053,9 @@
 		C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */ = {isa = PBXFileReference; name = "RNCSegmentedControl.m"; path = "RNCSegmentedControl.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; name = "RNCSegmentedControlManager.h"; path = "RNCSegmentedControlManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; name = "RNCSegmentedControlManager.m"; path = "RNCSegmentedControlManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		6D83AAA6410240F9B89A53AF /* RNCAsyncStorage.h */ = {isa = PBXFileReference; name = "RNCAsyncStorage.h"; path = "RNCAsyncStorage.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		93168C2467C5479A86B2E629 /* RNCAsyncStorage.m */ = {isa = PBXFileReference; name = "RNCAsyncStorage.m"; path = "RNCAsyncStorage.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		5BD90482C75044089F6C6749 /* RNCAsyncStorageDelegate.h */ = {isa = PBXFileReference; name = "RNCAsyncStorageDelegate.h"; path = "RNCAsyncStorageDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1628,6 +1632,7 @@
 				78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */,
 				78D82528204F826700CBD9D9 /* EXApiV2Result.h */,
 				78D82529204F826700CBD9D9 /* EXApiV2Result.m */,
+				D6485690975F4B1AAB2C1BA5 /* AsyncStorage */,
 			);
 			name = Api;
 			path = Exponent/Kernel/Api;
@@ -2374,6 +2379,17 @@
 			path = SegmentedControl;
 			sourceTree = "<group>";
 		};
+		D6485690975F4B1AAB2C1BA5 /* AsyncStorage */ = {
+			isa = PBXGroup;
+			children = (
+				6D83AAA6410240F9B89A53AF /* RNCAsyncStorage.h */,
+				93168C2467C5479A86B2E629 /* RNCAsyncStorage.m */,
+				5BD90482C75044089F6C6749 /* RNCAsyncStorageDelegate.h */,
+			);
+			name = AsyncStorage;
+			path = AsyncStorage;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2987,6 +3003,7 @@
 				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
 				97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */,
 				E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */,
+				CFF9313BF12A44B7A7D192CB /* RNCAsyncStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

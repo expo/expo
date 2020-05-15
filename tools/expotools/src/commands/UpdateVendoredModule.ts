@@ -333,6 +333,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+<<<<<<< HEAD
   '@react-native-community/segmented-control': {
     repoUrl: 'https://github.com/react-native-community/segmented-control',
     installableInManagedApps: true,
@@ -343,6 +344,23 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+||||||| constructed merge base
+=======
+  '@react-native-community/async-storage': {
+    repoUrl: 'https://github.com/react-native-community/async-storage',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/AsyncStorage',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/asyncstorage',
+        targetAndroidPath: 'modules/api/asyncstorage',
+        sourceAndroidPackage: 'com.reactnativecommunity.asyncstorage',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.asyncstorage',
+      },
+    ],
+  },
+>>>>>>> Import @react-native-community/async-storage
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
