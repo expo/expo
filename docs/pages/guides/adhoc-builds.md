@@ -16,6 +16,28 @@ Build and install a custom version of the [Expo client](../../get-started/instal
 **Windows users** must have WSL enabled. You can follow the installation guide [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We recommend picking Ubuntu from the Windows Store. Be sure to launch Ubuntu at least once. After that, use an Admin powershell to run:
 `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
 
+### Optional additional configuration steps
+
+#### Push Notifications
+
+Push Notifications are currently unavailable with ad hoc clients until we complete our work to add an extra authentication layer to the Expo Push Notification service.
+
+#### Google Maps
+
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../../versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
+
+#### Facebook
+
+Add the following fields to your `app.json` file:
+
+- `facebookScheme` set to your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under "_4. Configure Your info.plist_." It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
+
+- `facebookAppId` and `facebookDisplayName`, using your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios), respectively.
+
+- [_Optional_] `facebookAutoInitEnabled`, defaults to `false`
+
+Then, after following steps 1 & 2 below, your bundle ID (it should look something like: `dev.expo.client.xxxxx`) will be included in the terminal output. Add that bundle ID to your app settings page in the [Facebook developer console](https://developers.facebook.com/apps/).
+
 ## 1. Start the build
 
 Run `expo client:ios`
@@ -60,9 +82,9 @@ If a Distribution Certificate cannot be found on the Expo servers, `expo-cli` wi
 
 #### Push Notification Credentials
 
-We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well. If a Push Key cannot be found on the Expo servers, `expo-cli` will give you options to produce one. We describe these choices in more detail [here](#push-key-cli-options).
+> Push Notifications are currently unavailable with ad hoc clients
 
-**Note:** Push Notifications will be disabled on the Expo client if you choose not to upload your credentials. See [here](#push-notifications-arent-working) for more details.
+We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well. If a Push Key cannot be found on the Expo servers, `expo-cli` will give you options to produce one. We describe these choices in more detail [here](#push-key-cli-options).
 
 ### 1b. Determine UDID of your iOS Device
 
@@ -135,24 +157,6 @@ Once your build is complete, open the status page on your iOS device and tap the
 You're all set to use the custom version of the Expo client, containing features that were previously only available on the Android versions 🎉
 
 # Troubleshooting
-
-## Optional additional configuration steps
-
-### Push Notifications
-
-**Note:** Push Notifications are currently unavailable with ad hoc clients until we complete our work to add an extra authentication layer to the Expo Push Notification service.
-
-<!--
-If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
-
-We also require you to be logged in order to store your Push Notification credentials.
-
-If you are experiencing a different problem with Push Notifications, refer to the [main article](../../versions/latest/guides/push-notifications/) for more information.
--->
-
-### Google Maps
-
-You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../../versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
 
 ## Cannot generate/revoke credentials
 
