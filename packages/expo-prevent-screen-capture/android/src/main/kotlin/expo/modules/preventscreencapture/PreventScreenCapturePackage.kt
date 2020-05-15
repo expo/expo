@@ -6,9 +6,9 @@ import org.unimodules.core.BasePackage
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ViewManager
 
-class PreventScreenCapurePackage : BasePackage() {
+class PreventScreenCapturePackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(PreventScreenCapureModule(context) as ExportedModule)
+    return listOf(PreventScreenCaptureModule(context) as ExportedModule)
   }
 
 }
