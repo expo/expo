@@ -6,7 +6,7 @@ declare const _default: {
     maybeCompleteAuthSession({ skipRedirectCheck, }: {
         skipRedirectCheck?: boolean | undefined;
     }): {
-        type: "success" | "failed";
+        type: 'success' | 'failed';
         message: string;
     };
     openAuthSessionAsync(url: string, redirectUrl?: string | undefined, openOptions?: WebBrowserOpenOptions | undefined): Promise<WebBrowserAuthSessionResult>;

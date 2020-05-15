@@ -1,6 +1,7 @@
 import { CodedError, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoAppAuth from './ExpoAppAuth';
+export * from './AppAuth.types';
 function isValidServiceConfiguration(config) {
     return !!(config &&
         typeof config.authorizationEndpoint === 'string' &&

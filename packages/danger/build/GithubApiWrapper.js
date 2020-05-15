@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GithubApiWrapper = void 0;
 class GithubApiWrapper {
     constructor(api, owner, repo) {
         this.api = api;
