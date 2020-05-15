@@ -1,4 +1,4 @@
-package expo.modules.preventscreenshot
+package expo.modules.preventscreencapture
 
 import android.app.Activity;
 import android.content.Context
@@ -11,7 +11,7 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.ActivityProvider
 
-class PreventScreenshotModule(context: Context) : ExportedModule(context) {
+class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
 
   private lateinit var activityProvider: ActivityProvider
 
@@ -24,7 +24,7 @@ class PreventScreenshotModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun activatePreventScreenshot(promise: Promise) {
+  fun activatePreventScreenCapture(promise: Promise) {
     val activity = getCurrentActivity();
 
     activity.runOnUiThread{
@@ -38,7 +38,7 @@ class PreventScreenshotModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun deactivatePreventScreenshot(promise: Promise) {
+  fun deactivatePreventScreenCapture(promise: Promise) {
     val activity = getCurrentActivity();
     
     activity.runOnUiThread{
@@ -62,7 +62,7 @@ class PreventScreenshotModule(context: Context) : ExportedModule(context) {
   }
 
   companion object {
-    private val NAME = "ExpoPreventScreenshot"
-    private val TAG = PreventScreenshotModule::class.qualifiedName
+    private val NAME = "ExpoPreventScreenCapture"
+    private val TAG = PreventScreenCaptureModule::class.qualifiedName
   }
 }

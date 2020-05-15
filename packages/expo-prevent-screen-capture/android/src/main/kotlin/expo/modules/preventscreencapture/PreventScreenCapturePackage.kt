@@ -1,4 +1,4 @@
-package expo.modules.preventscreenshot
+package expo.modules.preventscreencapture
 
 import android.content.Context
 
@@ -6,9 +6,9 @@ import org.unimodules.core.BasePackage
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ViewManager
 
-class PreventScreenshotPackage : BasePackage() {
+class PreventScreenCapurePackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(PreventScreenshotModule(context) as ExportedModule)
+    return listOf(PreventScreenCapureModule(context) as ExportedModule)
   }
 
 }

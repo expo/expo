@@ -1,16 +1,16 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXPreventScreenshot/EXPreventScreenshotModule.h>
+#import <EXPreventScreenCapture/EXPreventScreenCaptureModule.h>
 
-@interface EXPreventScreenshotModule ()
+@interface EXPreventScreenCaptureModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
-@implementation EXPreventScreenshotModule
+@implementation EXPreventScreenCaptureModule
 
-UM_EXPORT_MODULE(ExpoPreventScreenshot);
+UM_EXPORT_MODULE(ExpoPreventScreenCapture);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {

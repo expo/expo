@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoPreventScreenshot.web.js","sourceRoot":"","sources":["../src/ExpoPreventScreenshot.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,uBAAuB,CAAC;IACjC,CAAC;CACF,CAAA","sourcesContent":["export default {\n  get name(): String {\n    return 'ExpoPreventScreenshot';\n  }\n}\n"]}

@@ -1,9 +1,9 @@
 {
-  "name": "expo-prevent-screenshot",
+  "name": "expo-prevent-screen-capture",
   "version": "1.0.0",
-  "description": "ExpoPreventScreenshot standalone module",
-  "main": "build/PreventScreenshot.js",
-  "types": "build/PreventScreenshot.d.ts",
+  "description": "ExpoPreventScreenCapture standalone module",
+  "main": "build/PreventScreenCapture.js",
+  "types": "build/PreventScreenCapture.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -16,19 +16,19 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-prevent-screenshot"
+    "expo-prevent-screen-capture"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-prevent-screenshot"
+    "directory": "packages/expo-prevent-screen-capture"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/prevent-screenshot",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/prevent-screen-capture",
   "dependencies": {
     "expo-module-scripts": "^1.2.0"
   },
