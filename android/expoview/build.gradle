@@ -195,6 +195,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
+  api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
   api 'com.facebook.fresco:fresco:2.0.0'
   api 'com.facebook.fresco:animated-gif:2.0.0'
   api 'com.facebook.fresco:animated-webp:2.0.0'
