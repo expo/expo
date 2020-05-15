@@ -154,6 +154,7 @@ We call your webhook using an HTTP POST request and we pass data in the request 
 - `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
 - `id` - the unique ID of your build
 - `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
+- `platform` - 'ios' | 'android'
 
 Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
