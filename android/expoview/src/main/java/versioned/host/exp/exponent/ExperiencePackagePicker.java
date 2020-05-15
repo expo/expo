@@ -52,6 +52,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.preventscreencapture.PreventScreenCapturePackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.random.RandomPackage;
 import expo.modules.securestore.SecureStorePackage;
@@ -108,6 +109,7 @@ public class ExperiencePackagePicker {
       new NetworkPackage(),
       new NotificationsPackage(),
       new PermissionsPackage(),
+      new PreventScreenCapturePackage(),
       new PrintPackage(),
       new RandomPackage(),
       new SMSPackage(),
