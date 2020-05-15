@@ -10,7 +10,7 @@ import path from 'path';
 import { STAGING_API_HOST, EXPO_DIR, IOS_DIR, ANDROID_DIR } from '../Constants';
 import { Platform, iosAppVersionAsync, androidAppVersionAsync } from '../ProjectVersions';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
-import getSDKVersionFromBranchNameAsync from '../utils/getSDKVersionFromBranchNameAsync';
+import Git from '../Git';
 
 type ActionOptions = {
   platform?: 'ios';
@@ -118,7 +118,7 @@ async function action(options: ActionOptions) {
   Config.api.host = STAGING_API_HOST;
 
   const platform = options.platform || (await askForPlatformAsync());
-  const sdkVersion = (await getSDKVersionFromBranchNameAsync()) || '20.0.0';
+  const sdkVersion = (await Git.getSDKVersionFromBranchNameAsync()) || '20.0.0';
 
   if (options.release && !sdkVersion) {
     throw new Error(`Client builds can be released only from the release branch!`);

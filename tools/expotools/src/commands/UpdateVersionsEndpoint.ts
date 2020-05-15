@@ -9,7 +9,7 @@ import * as jsondiffpatch from 'jsondiffpatch';
 import { Command } from '@expo/commander';
 
 import { STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
-import sleepAsync from '../utils/sleepAsync';
+import { sleepAsync } from '../Utils';
 
 type ActionOptions = {
   sdkVersion: string;
