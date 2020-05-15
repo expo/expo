@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed an issue on iOS where expo-updates expected more assets to be embedded than actually are by the React Native CLI.
+- Added a better error message on iOS when embedded assets are missing.
 
 ## 0.2.1
 
