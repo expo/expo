@@ -405,6 +405,7 @@ jobs:
       - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
+      - run: yarn global add expo-cli
       - yarn:
           command: test:web
           working_directory: ~/expo/apps/bare-expo
