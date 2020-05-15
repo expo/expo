@@ -547,13 +547,15 @@ CACHE_KEYS:
       - EXMailComposer (8.1.0)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary: 99f4bb60549d317396910bc178e6b1c9
-    CHECKSUM: 02a13521d05ca381b08f7d745a9602569eade072
+      EXMediaLibrary: b1b7c63f8f6289e292b6025ab6f3346c
+    CHECKSUM: aa151e6f6f977543c24222d57a1caad4b7facfbc
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
