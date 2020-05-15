@@ -3,20 +3,20 @@
  *
  * @example
  * ```typescript
- * await activatePreventScreenCapture();
+ * activatePreventScreenCapture();
  * ```
  */
-export declare function activatePreventScreenCapture(): Promise<any>;
+export declare function activatePreventScreenCapture(): any;
 /**
  * Reallow screen capture and recording. If you haven't called
  * `prevent()` yet, this method does nothing.
  *
  * @example
  * ```typescript
- * await deactivatePreventScreenCapture();
+ * deactivatePreventScreenCapture();
  * ```
  */
-export declare function deactivatePreventScreenCapture(): Promise<any>;
+export declare function deactivatePreventScreenCapture(): any;
 /**
  * React hook for preventing screen capturing while the
  * component is mounted.

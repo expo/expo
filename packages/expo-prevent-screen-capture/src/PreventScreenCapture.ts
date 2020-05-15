@@ -6,11 +6,11 @@ import { useEffect } from 'react';
  *
  * @example
  * ```typescript
- * await activatePreventScreenCapture();
+ * activatePreventScreenCapture();
  * ```
  */
-export async function activatePreventScreenCapture() {
-  return await ExpoPreventScreenCapture.activatePreventScreenCapture();
+export function activatePreventScreenCapture() {
+  return ExpoPreventScreenCapture.activatePreventScreenCapture();
 }
 
 /**
@@ -19,11 +19,11 @@ export async function activatePreventScreenCapture() {
  *
  * @example
  * ```typescript
- * await deactivatePreventScreenCapture();
+ * deactivatePreventScreenCapture();
  * ```
  */
-export async function deactivatePreventScreenCapture() {
-  return await ExpoPreventScreenCapture.deactivatePreventScreenCapture();
+export function deactivatePreventScreenCapture() {
+  return ExpoPreventScreenCapture.deactivatePreventScreenCapture();
 }
 
 /**
