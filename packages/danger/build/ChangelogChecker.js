@@ -1,28 +1,15 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkChangelog = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs = __importStar(require("fs"));
 const lodash_1 = require("lodash");
@@ -62,19 +49,20 @@ function getSuggestedChangelogEntries(packageNames) {
 }
 async function runAddChangelogCommandAsync(suggestedEntries) {
     for (const entry of suggestedEntries) {
-        await spawn_async_1.default('et', [
-            `add-changelog`,
-            `--package`,
-            entry.packageName,
-            `--entry`,
-            entry.message,
-            `--author`,
-            prAuthor,
-            `--type`,
-            entryTypeToString(entry.type),
-            `--pull-request`,
-            `${pr.number}`,
-        ]);
+        await (path.join(Utils_1.getExpoRepositoryRootDir(), 'bin', 'expotools'),
+            [
+                `add-changelog`,
+                `--package`,
+                entry.packageName,
+                `--entry`,
+                entry.message,
+                `--author`,
+                prAuthor,
+                `--type`,
+                entryTypeToString(entry.type),
+                `--pull-request`,
+                `${pr.number}`,
+            ]);
     }
     return Promise.all(suggestedEntries.map(async (entry) => {
         const changelogPath = path.join(Utils_1.getExpoRepositoryRootDir(), Utils_1.getPackageChangelogRelativePath(entry.packageName));
@@ -129,9 +117,16 @@ async function checkChangelog() {
     // applies suggested fixes using `et add-changelog` command
     const fixedEntries = await runAddChangelogCommandAsync(suggestedEntries);
     // creates/updates PR form result of `et` command - it will be merged to the current PR
-    const { html_url } = (await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {};
+    let prUrl;
+    try {
+        prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
+    }
+    catch (e) {
+        console.log("Couldn't create a pull request.");
+        console.log(e);
+    }
     // generates danger report. It will contain result of `et` command as a git diff and link to created PR
-    await generateReport(fixedEntries, html_url);
+    await generateReport(fixedEntries, prUrl);
 }
 exports.checkChangelog = checkChangelog;
 function entryTypeToString(type) {
