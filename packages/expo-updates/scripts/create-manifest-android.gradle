@@ -49,9 +49,9 @@ afterEvaluate {
       workingDir projectRoot
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android", assetsDir)
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
       } else {
-        commandLine(*nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android", assetsDir)
+        commandLine(*nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
       }
 
       enabled targetName.toLowerCase().contains("release")

@@ -1,3 +1,5 @@
+const filterPlatformAssetScales = require('@react-native-community/cli/build/commands/bundle/filterPlatformAssetScales')
+  .default;
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
@@ -49,7 +51,7 @@ const destinationDir = process.argv[4];
         'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#metroconfigjs for an example.'
       );
     }
-    asset.scales.forEach(function(scale, index) {
+    filterPlatformAssetScales(platform, asset.scales).forEach(function(scale, index) {
       const assetInfoForManifest = {
         name: asset.name,
         type: asset.type,
