@@ -343,6 +343,20 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  '@react-native-community/picker': {
+    repoUrl: 'https://github.com/react-native-community/react-native-picker',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/Picker',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
+        targetAndroidPath: 'modules/api/components/picker',
+        sourceAndroidPackage: 'com.reactnativecommunity.picker',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
