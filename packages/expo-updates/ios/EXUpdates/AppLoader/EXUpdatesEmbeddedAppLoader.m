@@ -68,6 +68,12 @@ NSString * const kEXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
         : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
       NSAssert(bundlePath, @"NSBundle must contain the expected assets");
 
+      if (!bundlePath) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"Could not find the expected embedded asset %@.%@. Check that expo-updates is installed correctly.", asset.mainBundleFilename, asset.type]
+                                     userInfo:nil];
+      }
+
       NSError *err;
       if ([[NSFileManager defaultManager] copyItemAtPath:bundlePath toPath:[destinationUrl path] error:&err]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
