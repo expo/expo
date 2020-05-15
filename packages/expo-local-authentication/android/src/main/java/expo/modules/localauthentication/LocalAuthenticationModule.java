@@ -33,10 +33,6 @@ public class LocalAuthenticationModule extends ExportedModule {
   private boolean mIsAuthenticating = false;
   private ModuleRegistry mModuleRegistry;
   private UIManager mUIManager;
-  private String mPromptMessage = "";
-  private String mCancelLabel = "";
-  private boolean mDisableDeviceFallback = false;
-
   private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
 
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
@@ -134,16 +130,20 @@ public class LocalAuthenticationModule extends ExportedModule {
           return;
         }
 
+        String promptMessage = "";
+        String cancelLabel = "";
+        boolean disableDeviceFallback = false;
+
         if (options.containsKey("promptMessage")) {
-          mPromptMessage = (String) options.get("promptMessage");
+          promptMessage = (String) options.get("promptMessage");
         }
 
         if (options.containsKey("cancelLabel")) {
-          mCancelLabel = (String) options.get("cancelLabel");
+          cancelLabel = (String) options.get("cancelLabel");
         }
 
         if (options.containsKey("disableDeviceFallback")) {
-          mDisableDeviceFallback = (Boolean) options.get("disableDeviceFallback");
+          disableDeviceFallback = (Boolean) options.get("disableDeviceFallback");
         }
 
         mIsAuthenticating = true;
@@ -155,10 +155,10 @@ public class LocalAuthenticationModule extends ExportedModule {
         BiometricPrompt biometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
         BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-                .setDeviceCredentialAllowed(!mDisableDeviceFallback)
-                .setTitle(mPromptMessage);
-        if (mCancelLabel != null && mDisableDeviceFallback) {
-          promptInfoBuilder.setNegativeButtonText(mCancelLabel);
+                .setDeviceCredentialAllowed(!disableDeviceFallback)
+                .setTitle(promptMessage);
+        if (cancelLabel != null && disableDeviceFallback) {
+          promptInfoBuilder.setNegativeButtonText(cancelLabel);
         }
         BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
         biometricPrompt.authenticate(promptInfo);
