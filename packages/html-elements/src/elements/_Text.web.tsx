@@ -61,7 +61,7 @@ export const Time = forwardRef(({ style, ...props }: TimeProps, ref) => {
 }) as ComponentType<TimeProps>;
 
 export const Pre = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return createElement('pre', { ...props, style: [styles.resetStyle, style], ref });
+  return createElement('pre', { ...props, style: [styles.reset, style], ref });
 }) as ComponentType<TextProps>;
 
 const styles = StyleSheet.create({

@@ -290,4 +290,5 @@ export function useUrl() {
     }, []);
     return url;
 }
+export * from './Linking.types';
 //# sourceMappingURL=Linking.js.map
