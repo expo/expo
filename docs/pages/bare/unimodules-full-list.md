@@ -3,10 +3,9 @@ title: Supported Expo SDK APIs
 sidebar_title: Supported APIs
 ---
 
-You can use any native code you like in the bare workflow; the following lists specifically address whether the Expo SDK APIs  (the APIs you will find in the "API Reference" section of this documentation) are supported by the bare workflow. Some are only available in the managed workflow currently, you can [jump to those](#only-available-in-managed-workflow-currently) if you like.
+You can use any native code you like in the bare workflow; the following lists specifically address whether the Expo SDK APIs (the APIs you will find in the "API Reference" section of this documentation) are supported by the bare workflow. Some are only available in the managed workflow currently, you can [jump to those](#only-available-in-managed-workflow-currently) if you like.
 
 Refer to the bare workflow ["Up and Running"](../hello-world/) page to learn about [installing one of these packages](../hello-world/#install-an-expo-sdk-package) and [using react-native-unimodules](../hello-world/#using-react-native-unimodules).
-
 
 ## Available in bare and managed workflows
 
@@ -50,6 +49,7 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [IntentLauncher](/versions/latest/sdk/intent-launcher/)
 - [KeepAwake](/versions/latest/sdk/keep-awake/)
 - [LinearGradient](/versions/latest/sdk/linear-gradient/)
+- [Linking](/versions/latest/sdk/linking/)
 - [LocalAuthentication](/versions/latest/sdk/local-authentication/)
 - [Localization](/versions/latest/sdk/localization/)
 - [Location](/versions/latest/sdk/location/)
@@ -83,6 +83,5 @@ The bare workflow is our way of describing the workflow where you use some of th
 
 ## Only available in managed workflow currently
 
-- [AR](/versions/latest/sdk/AR/)
-- [AppLoading](/versions/latest/sdk/app-loading/)
-- [Linking](/versions/latest/sdk/linking/)
+- [AR](/versions/latest/sdk/AR/) (\* _deprecated, soon to be available only in bare_)
+- [AppLoading](/versions/latest/sdk/app-loading/) (\* _use [SplashScreen](/versions/latest/sdk/splash-screen/)instead for same capabilities_)
