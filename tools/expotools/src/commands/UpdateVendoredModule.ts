@@ -357,6 +357,20 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  '@react-native-community/slider': {
+    repoUrl: 'https://github.com/react-native-community/react-native-slider',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'src/ios',
+        targetIosPath: 'Api/Components/Slider',
+        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
+        targetAndroidPath: 'modules/api/components/slider',
+        sourceAndroidPackage: 'com.reactnativecommunity.slider',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
