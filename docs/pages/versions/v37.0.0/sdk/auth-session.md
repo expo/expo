@@ -124,6 +124,8 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identity-4) for more info.
+
 #### Arguments
 
 - **config (_AuthRequestConfig_)** -- A valid [`AuthRequestConfig`](#AuthRequestConfig) that specifies what provider to use.
