@@ -30,7 +30,7 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more.
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk.md).
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.io/versions/latest/) or through the documentation Search bar.
 
@@ -64,7 +64,9 @@ import * as Device from 'expo-device';
 export default function App() {
   return (
     <View style={{ flex: 1, paddingTop: 100 }}>
-      <Text>{Device.manufacturer}: {Device.modelName}</Text>
+      <Text>
+        {Device.manufacturer}: {Device.modelName}
+      </Text>
     </View>
   );
 }
