@@ -13,6 +13,7 @@
 ### 🎉 New features
 
 - Improved logging and added some more logging options. ([#7550](https://github.com/expo/expo/pull/7550) by [@tsapeta](https://github.com/tsapeta))
+- Add WebP format as an option when taking GL snapshots (Android only). ([#7490](https://github.com/expo/expo/pull/7490) by [@pacoelayudante](https://github.com/pacoelayudante))
 
 ### 🐛 Bug fixes
 
