@@ -7,7 +7,7 @@
 #import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
 
-static const NSString *kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 
 @interface EXConstantsService ()
 

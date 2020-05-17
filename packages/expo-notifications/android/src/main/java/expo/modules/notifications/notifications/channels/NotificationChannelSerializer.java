@@ -6,6 +6,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -25,7 +26,7 @@ public class NotificationChannelSerializer {
   public final static String LIGHT_COLOR_KEY = "lightColor";
   public final static String LOCKSCREEN_VISIBILITY_KEY = "lockscreenVisibility";
   public final static String SHOW_BADGE_KEY = "showBadge";
-  public final static String SOUND_URI_KEY = "soundUri";
+  public final static String SOUND_KEY = "sound";
   public final static String SOUND_AUDIO_ATTRIBUTES_KEY = "audioAttributes";
   public final static String VIBRATION_PATTERN_KEY = "vibrationPattern";
   public final static String ENABLE_LIGHTS_KEY = "enableLights";
@@ -54,7 +55,7 @@ public class NotificationChannelSerializer {
     result.putString(LIGHT_COLOR_KEY, String.format("#%08x", Color.valueOf(channel.getLightColor()).toArgb()).toUpperCase());
     result.putInt(LOCKSCREEN_VISIBILITY_KEY, NotificationVisibility.fromNativeValue(channel.getLockscreenVisibility()).getEnumValue());
     result.putBoolean(SHOW_BADGE_KEY, channel.canShowBadge());
-    result.putString(SOUND_URI_KEY, toString(channel.getSound()));
+    result.putString(SOUND_KEY, toString(channel.getSound()));
     result.putBundle(SOUND_AUDIO_ATTRIBUTES_KEY, toBundle(channel.getAudioAttributes()));
     result.putDoubleArray(VIBRATION_PATTERN_KEY, toArray(channel.getVibrationPattern()));
     result.putBoolean(ENABLE_LIGHTS_KEY, channel.shouldShowLights());
@@ -67,7 +68,12 @@ public class NotificationChannelSerializer {
     if (uri == null) {
       return null;
     }
-    return uri.toString();
+
+    if (Settings.System.DEFAULT_NOTIFICATION_URI.equals(uri)) {
+      return "default";
+    }
+
+    return "custom";
   }
 
   public static Bundle toBundle(AudioAttributes attributes) {

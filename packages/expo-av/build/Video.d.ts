@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
+import { NativeMethods } from 'react-native';
 import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource } from './AV';
 import { ExponentVideoComponent, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
 export { ExponentVideoComponent, VideoFullscreenUpdateEvent, VideoNativeProps, VideoNaturalSize, VideoProps, VideoReadyForDisplayEvent, ResizeMode, VideoState, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackNativeSource, };
@@ -66,16 +67,17 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
         accessibilityRole?: PropTypes.Validator<"none" | "button" | "header" | "link" | "menu" | "menuitem" | "summary" | "image" | "switch" | "text" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | "alert" | "checkbox" | "combobox" | "menubar" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
-        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityValue?: PropTypes.Validator<import("react-native").AccessibilityValue | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"key" | "none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"key" | "none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "adjustable" | "selected" | "plays" | "disabled" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        onAccessibilityEscape?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -121,7 +123,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         translateY: PropTypes.Requireable<number>;
         rotation: PropTypes.Requireable<number>;
     };
-    _nativeRef: React.RefObject<React.Component<VideoNativeProps, any, any> & import("react-native").NativeMethodsMixinStatic>;
+    _nativeRef: React.RefObject<React.Component<VideoNativeProps, any, any> & NativeMethods>;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
     constructor(props: VideoProps);
     setNativeProps(nativeProps: VideoNativeProps): void;

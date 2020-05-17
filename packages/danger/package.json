@@ -1,0 +1,26 @@
+{
+  "name": "@expo/danger",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Expo",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "danger-plugin"
+  ],
+  "dependencies": {
+    "danger": "^9.2.10",
+    "lodash": "^4.6.0",
+    "@expo/spawn-async": "^1.5.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.2.0"
+  }
+}

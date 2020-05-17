@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="org.unimodules" module="unimodules-react-native-adapter" revision="5.1.0" status="integration" publication="20200311155302"/>
+  <info organisation="org.unimodules" module="unimodules-react-native-adapter" revision="5.1.0" status="integration" publication="20200320110330"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>

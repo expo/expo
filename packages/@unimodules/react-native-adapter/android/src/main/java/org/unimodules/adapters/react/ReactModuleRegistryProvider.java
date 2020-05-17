@@ -32,6 +32,10 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
   private Collection<SingletonModule> mSingletonModules;
 
+  public ReactModuleRegistryProvider(List<Package> initialPackages) {
+    this(initialPackages, null);
+  }
+
   public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
     super(initialPackages);
     mSingletonModules = singletonModules;

@@ -2,7 +2,7 @@
 name: "\U0001F41B Bug Report in Expo SDK"
 about: You want to report a reproducible bug or regression in Expo SDK.
 title: ''
-labels: 'bug'
+labels: 'Needs triage'
 assignees: ''
 
 ---

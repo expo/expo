@@ -10,4 +10,8 @@
 - (void)onAppBackgrounded;
 - (void)onAppForegrounded;
 
+@optional
+- (void)onAppContentDidAppear;
+- (void)onAppContentWillReload;
+
 @end

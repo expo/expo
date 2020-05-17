@@ -9,7 +9,7 @@ Allows you to manage the orientation of your app's interface.
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/screen-orientation/). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
 
 # Installation in bare React Native projects
 
@@ -23,7 +23,7 @@ npm install expo-screen-orientation
 
 ### Configure for iOS
 
-1. Run `pod install` in the ios directory after installing the npm package.
+1. Run `npx pod-install` after installing the npm package.
 2. Open the `AppDelegate.m` of your application.
 3. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
 4. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:

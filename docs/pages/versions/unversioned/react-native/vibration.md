@@ -17,7 +17,7 @@ Repeatable vibration is also supported, the vibration will repeat with defined p
 
 Example:
 
-```jsx
+```js
 const DURATION = 10000;
 const PATTERN = [1000, 2000, 3000];
 
@@ -46,7 +46,7 @@ Vibration.cancel();
 
 ### `vibrate()`
 
-```jsx
+```js
 
 Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 
@@ -65,12 +65,12 @@ Trigger a vibration with specified `pattern`.
 
 ### `cancel()`
 
-```jsx
+```js
 Vibration.cancel();
 ```
 
 Stop vibration.
 
-```javascript
+```js
 Vibration.cancel();
 ```

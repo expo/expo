@@ -342,7 +342,7 @@ export async function presentFormAsync(
     throw new UnavailabilityError('Contacts', 'presentFormAsync');
   }
   if (Platform.OS === 'ios') {
-    let adjustedOptions = formOptions;
+    const adjustedOptions = formOptions;
 
     if (contactId) {
       if (contact) {

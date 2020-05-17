@@ -25,13 +25,24 @@ UM_EXPORT_MODULE(ExpoUpdates);
 
 - (NSDictionary *)constantsToExport
 {
+  if (![EXUpdatesConfig sharedInstance].isEnabled) {
+    return @{
+      @"isEnabled": @(NO)
+    };
+  }
   EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
   EXUpdatesUpdate *launchedUpdate = controller.launchedUpdate;
   if (!launchedUpdate) {
-    return @{};
+    return @{
+      @"isEnabled": @(NO)
+    };
   } else {
     return @{
-      @"manifest": launchedUpdate.rawManifest,
+      @"isEnabled": @(YES),
+      @"isUsingEmbeddedAssets": @(controller.isUsingEmbeddedAssets),
+      @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
+      @"manifest": launchedUpdate.rawManifest ?: @{},
+      @"releaseChannel": [EXUpdatesConfig sharedInstance].releaseChannel,
       @"localAssets": controller.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(controller.isEmergencyLaunch)
     };

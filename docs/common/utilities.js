@@ -23,8 +23,12 @@ export const generateSlug = (slugger, node, length = 7) => {
   return slug;
 };
 
+export const isVersionedUrl = url => {
+  return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
+};
+
 export const replaceVersionInUrl = (url, replaceWith) => {
-  let urlArr = url.split('/');
+  const urlArr = url.split('/');
   urlArr[2] = replaceWith;
   return urlArr.join('/');
 };
@@ -39,6 +43,6 @@ export const getUserFacingVersionString = version => {
   } else if (version === 'unversioned') {
     return 'unversioned';
   } else {
-    return `SDK${version.substring(1, 3)}`
+    return `SDK${version.substring(1, 3)}`;
   }
-}
+};

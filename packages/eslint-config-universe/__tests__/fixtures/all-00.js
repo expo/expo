@@ -22,7 +22,8 @@ class Example {
   }
 
   async byeAsync() {
-    _fn(a, b, c, c1, d, e);
+    let f = 1;
+    _fn(a, b, c, c1, d, e, f);
   }
 }
 

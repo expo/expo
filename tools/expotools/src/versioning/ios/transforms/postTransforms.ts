@@ -20,7 +20,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `NSTextStorage (${versionName}FontScaling)`,
       },
       {
-        paths: ['NSTextStorage+FontScaling.h', 'NSTextStorage+FontScaling.m', 'RCTTextShadowView.m'],
+        paths: [
+          'NSTextStorage+FontScaling.h',
+          'NSTextStorage+FontScaling.m',
+          'RCTTextShadowView.m',
+        ],
         replace: /\b(scaleFontSizeToFitSize|scaleFontSizeWithRatio|compareToSize)\b/g,
         with: `${versionName.toLowerCase()}_rct_$1`,
       },
@@ -147,7 +151,7 @@ export function postTransforms(versionName: string): TransformPipeline {
       {
         paths: 'REATransitionAnimation.m',
         replace: /(SimAnimationDragCoefficient)\(/g,
-        with: `${versionName}$1(`
+        with: `${versionName}$1(`,
       },
 
       // react-native-shared-element

@@ -108,6 +108,8 @@ function isFontLoadingListenerSupported() {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
     const isEdge = userAgent.includes('Edge');
-    return !isSafari && !isIOS && !isEdge;
+    // Firefox
+    const isFirefox = userAgent.includes('Firefox');
+    return !isSafari && !isIOS && !isEdge && !isFirefox;
 }
 //# sourceMappingURL=ExpoFontLoader.web.js.map

@@ -25,7 +25,7 @@ async function enqueueRemoteLogAsync(level, additionalFields, data) {
             data[0] = lines[0];
         }
     }
-    let { body, includesStack } = await LogSerialization.serializeLogDataAsync(data, level);
+    const { body, includesStack } = await LogSerialization.serializeLogDataAsync(data, level);
     _logQueue.push({
         count: _logCounter++,
         level,
@@ -46,8 +46,8 @@ async function _sendRemoteLogsAsync() {
     }
     // Our current transport policy is to send all of the pending log messages in one batch. If we opt
     // for another policy (ex: throttling) this is where to to implement it.
-    let batch = _logQueue.splice(0);
-    let { logUrl } = Constants.manifest;
+    const batch = _logQueue.splice(0);
+    const { logUrl } = Constants.manifest;
     if (typeof logUrl !== 'string') {
         throw new Error('The Expo project manifest must specify `logUrl`');
     }
@@ -67,7 +67,7 @@ async function _sendRemoteLogsAsync() {
 }
 async function _sendNextLogBatchAsync(batch, logUrl) {
     let response;
-    let headers = {
+    const headers = {
         'Content-Type': 'application/json',
         Connection: 'keep-alive',
         'Proxy-Connection': 'keep-alive',
@@ -89,7 +89,7 @@ async function _sendNextLogBatchAsync(batch, logUrl) {
         _transportEventEmitter.emit('error', { error });
         return;
     }
-    let success = response.status >= 200 && response.status < 300;
+    const success = response.status >= 200 && response.status < 300;
     if (!success) {
         _transportEventEmitter.emit('error', {
             error: new Error(`An HTTP error occurred when sending remote logs`),
@@ -102,7 +102,7 @@ function addTransportErrorListener(listener) {
 }
 function _isReactNativeWarning(data) {
     // NOTE: RN does the same thing internally for YellowBox
-    let message = data[0];
+    const message = data[0];
     return data.length === 1 && typeof message === 'string' && message.startsWith('Warning: ');
 }
 export default {

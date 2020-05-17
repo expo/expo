@@ -33,7 +33,6 @@ module.exports = {
           // ends in "/v<version>"
           pathname += '/index.html'; // TODO: find out why we need to do this
         }
-
         if (pathname.match(/unversioned/)) {
           return {};
         } else {

@@ -94,15 +94,20 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(picture.exif).toBeDefined();
       });
 
-      t.it('returns Base64 only if requested', async () => {
-        await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
-        let picture = await instance.takePictureAsync({ base64: false });
-        t.expect(picture).toBeDefined();
-        t.expect(picture.base64).not.toBeDefined();
+      t.it(
+        `returns Base64 only if requested, and not contains newline and
+        special characters (\n or \r)`,
+        async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          let picture = await instance.takePictureAsync({ base64: false });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.base64).not.toBeDefined();
 
-        picture = await instance.takePictureAsync({ base64: true });
-        t.expect(picture).toBeDefined();
-        t.expect(picture.base64).toBeDefined();
+          picture = await instance.takePictureAsync({ base64: true });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.base64).toBeDefined();
+          t.expect(picture.base64).not.toContain('\n');
+          t.expect(picture.base64).not.toContain('\r');
       });
 
       t.it('returns proper `exif.Flash % 2 = 0` if the flash is off', async () => {

@@ -1,9 +1,9 @@
 {
   "name": "expo-font",
-  "version": "8.1.0",
+  "version": "8.1.1",
   "description": "Load fonts at runtime and use them in React Native components.",
-  "main": "build/Font.js",
-  "types": "build/Font.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -48,6 +48,7 @@
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.2.1",
     "expo-module-scripts": "~1.2.0"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"

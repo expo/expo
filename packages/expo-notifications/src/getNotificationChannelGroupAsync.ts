@@ -1,4 +1,4 @@
-import { NotificationChannelGroup } from './NotificationChannelGroupManager';
+import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 
 export default async function getNotificationChannelGroupAsync(
   groupId: string

@@ -71,7 +71,7 @@ export interface AV {
 }
 export interface Playback extends AV {
     playAsync(): Promise<AVPlaybackStatus>;
-    loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): any;
+    loadAsync(source: AVPlaybackSource, initialStatus: AVPlaybackStatusToSet, downloadAsync: boolean): Promise<AVPlaybackStatus>;
     unloadAsync(): Promise<AVPlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
         toleranceMillisBefore?: number;
@@ -97,14 +97,14 @@ export interface Playback extends AV {
 export declare const PlaybackMixin: {
     playAsync(): Promise<AVPlaybackStatus>;
     playFromPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number | undefined;
-        toleranceMillisAfter?: number | undefined;
+        toleranceMillisBefore?: number;
+        toleranceMillisAfter?: number;
     }): Promise<AVPlaybackStatus>;
     pauseAsync(): Promise<AVPlaybackStatus>;
     stopAsync(): Promise<AVPlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: {
-        toleranceMillisBefore?: number | undefined;
-        toleranceMillisAfter?: number | undefined;
+        toleranceMillisBefore?: number;
+        toleranceMillisAfter?: number;
     }): Promise<AVPlaybackStatus>;
     setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
     setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;

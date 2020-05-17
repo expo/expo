@@ -213,6 +213,14 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return _launcher.assetFilesMap ?: nil;
 }
 
+- (BOOL)isUsingEmbeddedAssets
+{
+  if (!_launcher) {
+    return YES;
+  }
+  return _launcher.isUsingEmbeddedAssets;
+}
+
 # pragma mark - internal
 
 - (void)_maybeFinish
@@ -226,11 +234,14 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  // TODO: remove this assertion and replace it with
-  // [self _emergencyLaunchWithError:];
-  NSAssert(self.launchAssetUrl != nil, @"_maybeFinish should only be called when we have a valid launchAssetUrl");
-
   _hasLaunched = YES;
+  if (!self.launchAssetUrl) {
+    [self _emergencyLaunchWithFatalError:[NSError errorWithDomain:kEXUpdatesAppControllerErrorDomain
+                                                             code:1020
+                                                         userInfo:@{NSLocalizedDescriptionKey: @"Unexpectedly tried to launch without a valid launchAssetUrl"}]];
+    return;
+  }
+
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:YES];

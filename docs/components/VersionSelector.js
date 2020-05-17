@@ -1,21 +1,22 @@
-import styled, { keyframes, css } from 'react-emotion';
-
 import * as React from 'react';
+import { css } from 'react-emotion';
+
 import * as Constants from '~/common/constants';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
-
 import ChevronDownIcon from '~/components/icons/ChevronDown';
 
 const STYLES_SELECT = css`
   display: inline-flex;
   position: relative;
-  align-items: center;
-  justify-content: center;
   margin: 0;
-  height: 48px;
-  padding: 5px 16px 0 16px;
-  border-left: 1px solid ${Constants.colors.border};
+  padding: 10px;
+  padding-left: 15px;
+  margin-top: -5px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  margin-bottom: 15px;
+  width: 100%;
 `;
 
 const STYLES_SELECT_TEXT = css`
@@ -72,11 +73,17 @@ const orderVersions = versions => {
 
 export default class VersionSelector extends React.Component {
   render() {
+
+    const latestLabel = 'latest (' + Utilities.getUserFacingVersionString(LATEST_VERSION) + ')';
+    const labelText =
+      this.props.version === 'latest'
+        ? latestLabel
+        : Utilities.getUserFacingVersionString(this.props.version);
+
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {Utilities.getUserFacingVersionString(this.props.version)}{' '}
-          <ChevronDownIcon style={{ marginLeft: 8 }} />
+          {labelText} <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
         {// hidden links to help test-links spidering
         orderVersions(VERSIONS).map(v => (
@@ -92,7 +99,7 @@ export default class VersionSelector extends React.Component {
               return (
                 <option key={version} value={version}>
                   {version === 'latest'
-                    ? 'latest (' + LATEST_VERSION + ')'
+                    ? latestLabel
                     : Utilities.getUserFacingVersionString(version)}
                 </option>
               );

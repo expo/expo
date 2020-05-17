@@ -1,8 +1,8 @@
 /* eslint-env browser */
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
-export let userMediaRequested: boolean = false;
-export let mountedInstances: any[] = [];
+export const userMediaRequested: boolean = false;
+export const mountedInstances: any[] = [];
 
 async function requestLegacyUserMediaAsync(props): Promise<any[]> {
   const optionalSource = id => ({ optional: [{ sourceId: id }] });
@@ -127,7 +127,7 @@ export function canGetUserMedia(): boolean {
 export async function isFrontCameraAvailableAsync(
   devices?: MediaDeviceInfo[]
 ): Promise<null | string> {
-  return await supportsCameraType(['front', 'user'], 'user', devices);
+  return await supportsCameraType(['front', 'user', 'facetime'], 'user', devices);
 }
 
 export async function isBackCameraAvailableAsync(
@@ -148,7 +148,9 @@ async function supportsCameraType(
     devices = await navigator.mediaDevices.enumerateDevices();
   }
   const cameras = devices.filter(t => t.kind === 'videoinput');
-  const [hasCamera] = cameras.filter(camera => labels.includes(camera.label.toLowerCase()));
+  const [hasCamera] = cameras.filter(camera =>
+    labels.some(label => camera.label.toLowerCase().includes(label))
+  );
   const [isCapable] = cameras.filter(camera => {
     if (!('getCapabilities' in camera)) {
       return null;
@@ -162,5 +164,5 @@ async function supportsCameraType(
     return capabilities.facingMode.find((_: string) => type);
   });
 
-  return isCapable.deviceId || hasCamera.deviceId || null;
+  return isCapable?.deviceId || hasCamera?.deviceId || null;
 }

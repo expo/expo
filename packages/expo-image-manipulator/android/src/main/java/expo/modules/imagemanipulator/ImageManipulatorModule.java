@@ -154,7 +154,7 @@ public class ImageManipulatorModule extends ExportedModule {
       if (saveOptions.hasBase64()) {
         byteOut = new ByteArrayOutputStream();
         bitmap.compress(saveOptions.getFormat().getCompressFormat(), compression, byteOut);
-        base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.DEFAULT);
+        base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP);
       }
     } catch (Exception e) {
       e.printStackTrace();

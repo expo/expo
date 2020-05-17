@@ -260,7 +260,7 @@ export async function test(t) {
         await Notifications.presentNotificationAsync({
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
       });
@@ -270,13 +270,8 @@ export async function test(t) {
         await FileSystem.downloadAsync('http://placekitten.com/200/300', fileUri);
         await Notifications.presentNotificationAsync({
           title: 'Look at that kitten! ➡️',
-          message: 'What a cutie!',
-          ios: {
-            attachments: [{ uri: fileUri }],
-          },
-          android: {
-            thumbnailUri: fileUri,
-          },
+          body: 'What a cutie!',
+          attachments: [{ uri: fileUri }],
         });
       });
     });
@@ -611,6 +606,56 @@ export async function test(t) {
       });
     });
 
+    t.describe('getPresentedNotificationsAsync()', () => {
+      const identifier = 'test-containing-id';
+      const notificationStatuses = {};
+
+      t.beforeAll(() => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+          }),
+          handleSuccess: notificationId => {
+            notificationStatuses[notificationId] = true;
+          },
+        });
+      });
+
+      t.it('resolves with an array containing a displayed notification', async () => {
+        await Notifications.presentNotificationAsync(
+          {
+            title: 'Sample title',
+            subtitle: 'What an event!',
+            body: 'An interesting event has just happened',
+            badge: 1,
+          },
+          identifier
+        );
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+
+      t.it('resolves with an array that does not contain a canceled notification', async () => {
+        await Notifications.dismissNotificationAsync(identifier);
+        await waitFor(1000);
+        const displayedNotifications = await Notifications.getPresentedNotificationsAsync();
+        t.expect(displayedNotifications).not.toContain(
+          t.jasmine.objectContaining({
+            request: t.jasmine.objectContaining({
+              identifier,
+            }),
+          })
+        );
+      });
+    });
+
     t.describe('dismissNotificationAsync()', () => {
       t.it('resolves for a valid notification ID', async () => {
         const identifier = 'test-id';
@@ -618,7 +663,7 @@ export async function test(t) {
           identifier,
           title: 'Sample title',
           subtitle: 'What an event!',
-          message: 'An interesting event has just happened',
+          body: 'An interesting event has just happened',
           badge: 1,
         });
         await Notifications.dismissNotificationAsync(identifier);
@@ -652,16 +697,20 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).toContain(
           t.jasmine.objectContaining({
             identifier,
-            notification: t.jasmine.objectContaining(notification),
+            content: t.jasmine.objectContaining(notification),
             trigger: t.jasmine.objectContaining({
               repeats: false,
-              value: trigger.seconds,
-              type: 'interval',
+              seconds: trigger.seconds,
+              type: 'timeInterval',
             }),
           })
         );
@@ -671,7 +720,11 @@ export async function test(t) {
         const trigger = {
           seconds: 10,
         };
-        await Notifications.scheduleNotificationAsync({ identifier, ...notification }, trigger);
+        await Notifications.scheduleNotificationAsync({
+          identifier,
+          content: notification,
+          trigger,
+        });
         await Notifications.cancelScheduledNotificationAsync(identifier);
         const notifications = await Notifications.getAllScheduledNotificationsAsync();
         t.expect(notifications).not.toContain(t.jasmine.objectContaining({ identifier }));
@@ -682,9 +735,10 @@ export async function test(t) {
       const identifier = 'test-scheduled-notification';
       const notification = {
         title: 'Scheduled notification',
-        body: { key: 'value' },
+        data: { key: 'value' },
         badge: 2,
         vibrate: [100, 100, 100, 100, 100, 100],
+        color: '#FF0000',
       };
 
       t.afterEach(async () => {
@@ -698,10 +752,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
           subscription.remove();
@@ -710,7 +765,38 @@ export async function test(t) {
       );
 
       t.it(
-        'triggers a notification which triggers the handler',
+        'triggers a notification which contains the custom color',
+        async () => {
+          const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
+          const subscription = Notifications.addNotificationReceivedListener(
+            notificationReceivedSpy
+          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationReceivedSpy).toHaveBeenCalled();
+          if (Platform.OS === 'android') {
+            t.expect(notificationReceivedSpy).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({
+                request: t.jasmine.objectContaining({
+                  content: t.jasmine.objectContaining({
+                    // #AARRGGBB
+                    color: '#FFFF0000',
+                  }),
+                }),
+              })
+            );
+          }
+          subscription.remove();
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (`seconds` trigger)',
         async () => {
           let notificationFromEvent = undefined;
           Notifications.setNotificationHandler({
@@ -721,10 +807,110 @@ export async function test(t) {
               };
             },
           });
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (with custom sound)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'notification.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
           );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (with custom sound set, but not existent)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+              };
+            },
+          });
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: {
+              ...notification,
+              sound: 'no-such-file.wav',
+            },
+            trigger: { seconds: 5 },
+          });
+          await waitFor(6000);
+          t.expect(notificationFromEvent).toBeDefined();
+          t.expect(notificationFromEvent).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining({
+                  sound: 'custom',
+                }),
+              }),
+            })
+          );
+          Notifications.setNotificationHandler(null);
+        },
+        10000
+      );
+
+      t.it(
+        'triggers a notification which triggers the handler (`Date` trigger)',
+        async () => {
+          let notificationFromEvent = undefined;
+          Notifications.setNotificationHandler({
+            handleNotification: async event => {
+              notificationFromEvent = event;
+              return {
+                shouldShowAlert: true,
+              };
+            },
+          });
+          const trigger = new Date(Date.now() + 5 * 1000);
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
           await waitFor(6000);
           t.expect(notificationFromEvent).toBeDefined();
           Notifications.setNotificationHandler(null);
@@ -743,13 +929,14 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(() => {
               timesSpyHasBeenCalled += 1;
             });
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
                 seconds: 5,
                 repeats: true,
-              }
-            );
+              },
+            });
             await waitFor(12000);
             t.expect(timesSpyHasBeenCalled).toBeGreaterThan(1);
             subscription.remove();
@@ -766,14 +953,13 @@ export async function test(t) {
             const subscription = Notifications.addNotificationReceivedListener(
               notificationReceivedSpy
             );
-            await Notifications.scheduleNotificationAsync(
-              { identifier, ...notification },
-              {
-                ios: {
-                  second: (new Date().getSeconds() + 5) % 60,
-                },
-              }
-            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                second: (new Date().getSeconds() + 5) % 60,
+              },
+            });
             await waitFor(6000);
             t.expect(notificationReceivedSpy).toHaveBeenCalled();
             subscription.remove();
@@ -794,10 +980,11 @@ export async function test(t) {
           const subscription = Notifications.addNotificationReceivedListener(
             notificationReceivedSpy
           );
-          await Notifications.scheduleNotificationAsync(
-            { identifier, ...notification },
-            { seconds: 5 }
-          );
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger: { seconds: 5 },
+          });
           await Notifications.cancelScheduledNotificationAsync(identifier);
           await waitFor(6000);
           t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
@@ -818,10 +1005,11 @@ export async function test(t) {
             notificationReceivedSpy
           );
           for (let i = 0; i < 3; i += 1) {
-            await Notifications.scheduleNotificationAsync(
-              { identifier: `notification-${i}`, ...notification },
-              { seconds: 5 }
-            );
+            await Notifications.scheduleNotificationAsync({
+              identifier: `notification-${i}`,
+              content: notification,
+              trigger: { seconds: 5 },
+            });
           }
           await Notifications.cancelAllScheduledNotificationsAsync();
           await waitFor(6000);
@@ -885,15 +1073,15 @@ export async function test(t) {
                   clearInterval(userInteractionTimeout);
                   userInteractionTimeout = null;
                 }
-                await Notifications.scheduleNotificationAsync(
-                  {
-                    identifier,
+                await Notifications.scheduleNotificationAsync({
+                  identifier,
+                  content: {
                     title: 'Hello from the application!',
                     message:
                       'You can now return to the app and let the test know the notification has been shown.',
                   },
-                  { seconds: 1 }
-                );
+                  trigger: { seconds: 1 },
+                });
                 notificationSent = true;
               } else if (state === 'active' && notificationSent) {
                 const notificationWasShown = await askUserYesOrNo('Was the notification shown?');
@@ -922,6 +1110,75 @@ export async function test(t) {
         30000
       );
     });
+
+    onlyInteractiveDescribe('tapping on a notification', () => {
+      let subscription = null;
+      let event = null;
+
+      t.beforeEach(async () => {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+          }),
+        });
+        subscription = Notifications.addNotificationResponseReceivedListener(anEvent => {
+          event = anEvent;
+        });
+      });
+
+      t.afterEach(() => {
+        if (subscription) {
+          subscription.remove();
+          subscription = null;
+        }
+        Notifications.setNotificationHandler(null);
+        event = null;
+      });
+
+      t.it(
+        'calls the “notification response received” listener with default action identifier',
+        async () => {
+          const secondsToTimeout = 5;
+          const shouldRun = await Promise.race([
+            askUserYesOrNo('Could you tap on a notification when it shows?'),
+            waitFor(secondsToTimeout * 1000),
+          ]);
+          if (!shouldRun) {
+            console.warn(
+              "Notification response test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+            );
+            Alert.alert(
+              'Notification response test was skipped',
+              `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
+            );
+            return;
+          }
+          const notificationSpec = {
+            title: 'Tap me!',
+            body: 'Better be quick!',
+          };
+          await Notifications.presentNotificationAsync(notificationSpec);
+          let iterations = 0;
+          while (iterations < 5) {
+            iterations += 1;
+            if (event) {
+              break;
+            }
+            await waitFor(1000);
+          }
+          t.expect(event).not.toBeNull();
+          t.expect(event.actionIdentifier).toBe(Notifications.DEFAULT_ACTION_IDENTIFIER);
+          t.expect(event.notification).toEqual(
+            t.jasmine.objectContaining({
+              request: t.jasmine.objectContaining({
+                content: t.jasmine.objectContaining(notificationSpec),
+              }),
+            })
+          );
+        },
+        10000
+      );
+    });
   });
 }
 
@@ -945,6 +1202,16 @@ async function sendTestPushNotification(expoPushToken, notificationOverrides) {
       {
         to: expoPushToken,
         title: 'Hello from Expo server!',
+        data: {
+          firstLevelString: 'value',
+          firstLevelObject: {
+            secondLevelInteger: 2137,
+            secondLevelObject: {
+              thirdLevelList: [21, 3, 1995, null, 4, 15],
+              thirdLevelNull: null,
+            },
+          },
+        },
         ...notificationOverrides,
       },
     ]),

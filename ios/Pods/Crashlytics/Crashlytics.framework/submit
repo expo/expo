@@ -1,6 +1,0 @@
-if [[ -z $PODS_ROOT ]]; then
-echo "error: The submit binary delivered by cocoapods is in a new location, under '$"{"PODS_ROOT"}"/Crashlytics/submit'. This script was put in place for backwards compatibility, but it relies on PODS_ROOT, which does not have a value in your current setup. Please update the path to the submit binary to fix this issue."
-else
-echo "warning: The submit script is now located at '$"{"PODS_ROOT"}"/Crashlytics/submit'. To remove this warning, update your path to point to this new location."
-sh "${PODS_ROOT}/Crashlytics/submit" "$@"
-fi

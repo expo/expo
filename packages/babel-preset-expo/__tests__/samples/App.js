@@ -35,7 +35,7 @@ class App extends React.Component {
 
   _handleEventAsync = async ({ nativeEvent, type = 'Event' }) => {
     console.log(type);
-    for (let item of nativeEvent.collection) {
+    for (const item of nativeEvent.collection) {
       console.log(item);
     }
   };

@@ -5,12 +5,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.modules.notifications.actions.DEFAULT";
+
 @implementation EXNotificationSerializer
 
 + (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSMutableDictionary *serializedResponse = [NSMutableDictionary dictionary];
-  serializedResponse[@"actionIdentifier"] = response.actionIdentifier ?: [NSNull null];
+  NSString *actionIdentifier = response.actionIdentifier;
+  if ([UNNotificationDefaultActionIdentifier isEqualToString:actionIdentifier]) {
+    actionIdentifier = EXNotificationResponseDefaultActionIdentifier;
+  }
+  serializedResponse[@"actionIdentifier"] = actionIdentifier;
   serializedResponse[@"notification"] = [self serializedNotification:response.notification];
   if ([response isKindOfClass:[UNTextInputNotificationResponse class]]) {
     UNTextInputNotificationResponse *textInputResponse = (UNTextInputNotificationResponse *)response;
@@ -31,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"notification"] = [self serializedNotificationContent:request.content];
+  serializedRequest[@"content"] = [self serializedNotificationContent:request.content];
   serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
   return serializedRequest;
 }
@@ -45,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
   serializedContent[@"badge"] = content.badge ?: [NSNull null];
   serializedContent[@"sound"] = [self serializedNotificationSound:content.sound] ?: [NSNull null];
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
-  serializedContent[@"userInfo"] = content.userInfo ?: [NSNull null];
+  serializedContent[@"data"] = content.userInfo ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
 
   if (@available(iOS 12.0, *)) {
@@ -79,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     return @"default";
   }
 
-  return @"unknown";
+  return @"custom";
 }
 
 + (NSArray *)serializedNotificationAttachments:(NSArray<UNNotificationAttachment *> *)attachments
@@ -104,21 +110,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
   serializedTrigger[@"class"] = NSStringFromClass(trigger.class);
-  serializedTrigger[@"repeats"] = @(trigger.repeats);
   if ([trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"push";
   } else if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"calendar";
+    serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
     serializedTrigger[@"dateComponents"] = [self serializedDateComponents:calendarTrigger.dateComponents];
+#if !(TARGET_OS_MACCATALYST)
   } else if ([trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"location";
+    serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNLocationNotificationTrigger *locationTrigger = (UNLocationNotificationTrigger *)trigger;
     serializedTrigger[@"region"] = [self serializedRegion:locationTrigger.region];
+#endif
   } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
-    serializedTrigger[@"type"] = @"interval";
+    serializedTrigger[@"type"] = @"timeInterval";
     UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
-    serializedTrigger[@"value"] = @(timeIntervalTrigger.timeInterval);
+    serializedTrigger[@"seconds"] = @(timeIntervalTrigger.timeInterval);
+    serializedTrigger[@"repeats"] = @(trigger.repeats);
   } else {
     serializedTrigger[@"type"] = @"unknown";
   }

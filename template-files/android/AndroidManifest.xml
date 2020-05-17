@@ -343,12 +343,6 @@
     </service>
 
     <!-- FCM -->
-    <service
-      android:name=".fcm.ExpoFcmMessagingService">
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-      </intent-filter>
-    </service>
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
@@ -365,14 +359,6 @@
       android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
       android:theme="@style/Base.Theme.AppCompat">
     </activity>
-
-
-    <!-- ADD FABRIC CONFIG HERE -->
-    <!-- BEGIN FABRIC CONFIG -->
-    <meta-data
-      android:name="io.fabric.ApiKey"
-      android:value="${FABRIC_API_KEY}"/>
-    <!-- END FABRIC CONFIG -->
 
     <!-- ADD GOOGLE MAPS CONFIG HERE -->
     <!-- BEGIN GOOGLE MAPS CONFIG -->

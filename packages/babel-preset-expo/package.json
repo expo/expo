@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
-    "jest": "^24.8.0"
+    "jest": "^25.2.0"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
 }

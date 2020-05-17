@@ -5,10 +5,11 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
 import org.unimodules.apploader.HeadlessAppLoader
 import org.unimodules.core.interfaces.Consumer
+import org.unimodules.core.interfaces.DoNotStrip
 
 private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()
 
-class RNHeadlessAppLoader(private val context: Context) : HeadlessAppLoader {
+class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) : HeadlessAppLoader {
 
   //region HeadlessAppLoader
 
@@ -17,7 +18,7 @@ class RNHeadlessAppLoader(private val context: Context) : HeadlessAppLoader {
       throw IllegalArgumentException("Params must be set with appId!")
     }
 
-    if(context.applicationContext is ReactApplication) {
+    if (context.applicationContext is ReactApplication) {
       val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
       if (!appRecords.containsKey(params.appId)) {
         reactInstanceManager.addReactInstanceEventListener {

@@ -39,7 +39,8 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "unimodules-permissions-interface": "*"
+    "unimodules-permissions-interface": "*",
+    "unimodules-filesystem-interface": "*"
   },
   "peerDependencies": {
     "react": "*",

@@ -178,7 +178,7 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Subcontractors
 
-- (void)ensureSubcontractorsAreInitialized {
+- (void)ensureSubcontractorsAreInitializedAndSorted {
   dispatch_once(&onceToken, ^{
     subcontractors = [[NSMutableArray alloc] init];
     subcontractorsForSelector = [NSMutableDictionary new];
@@ -190,12 +190,16 @@ static dispatch_once_t onceToken;
         [subcontractors addObject:(id<UIApplicationDelegate>)singletonModule];
       }
     }
+
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"priority"
+                                                                   ascending:NO];
+    [subcontractors sortUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
   });
 }
 
 - (NSArray<id<UIApplicationDelegate>> *)getSubcontractorsImplementingSelector:(SEL)selector {
   
-  [self ensureSubcontractorsAreInitialized];
+  [self ensureSubcontractorsAreInitializedAndSorted];
   
   NSString *selectorKey = NSStringFromSelector(selector);
   

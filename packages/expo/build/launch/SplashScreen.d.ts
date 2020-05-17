@@ -1,2 +1,1 @@
-export declare function preventAutoHide(): void;
-export declare function hide(): void;
+export * from 'expo-splash-screen';

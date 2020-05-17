@@ -1,9 +1,7 @@
 {
   "expo": {
-    "name": "Blank Template",
+    "name": "HelloWorld",
     "slug": "expo-template-blank",
-    "privacy": "public",
-    "sdkVersion": "37.0.0",
     "platforms": [
       "ios",
       "android",
@@ -25,6 +23,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
     }
   }
 }

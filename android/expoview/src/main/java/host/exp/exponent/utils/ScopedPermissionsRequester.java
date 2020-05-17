@@ -17,7 +17,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
@@ -91,7 +90,7 @@ public class ScopedPermissionsRequester {
     if (grantResults.length > 0) {
       for (int i = 0; i < grantResults.length; i++) {
         if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mExperienceId != null) {
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(permissions[i], mExperienceId);
         }
         mPermissionsResult.put(permissions[i], grantResults[i]);
       }
@@ -165,12 +164,12 @@ public class ScopedPermissionsRequester {
       mPermissionsAskedCount -= 1;
       switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(mPermission, mExperienceId);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_GRANTED);
           break;
 
         case DialogInterface.BUTTON_NEGATIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().revokePermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().revokeScopedPermissions(mPermission, mExperienceId);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_DENIED);
           break;
       }

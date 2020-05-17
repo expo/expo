@@ -17,7 +17,7 @@ export default class BlurView extends React.Component<BlurProps> {
   };
 
   render() {
-    let { tint, intensity, style = {}, ...props } = this.props;
+    const { tint, intensity, style = {}, ...props } = this.props;
 
     const blurStyle = getBlurStyle({ tint, intensity });
 
@@ -35,13 +35,13 @@ function isBlurSupported(): boolean {
   );
 }
 
-function getBlurStyle({ intensity, tint }): { [key: string]: string } {
-  const style: any = {
+function getBlurStyle({ intensity, tint }): Record<string, string> {
+  const style: Record<string, string> = {
     backgroundColor: getBackgroundColor(intensity, tint),
   };
 
   if (isBlurSupported()) {
-    style.backdropFilter = `blur(${intensity * 0.8}px)`;
+    style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
   }
 
   return style;

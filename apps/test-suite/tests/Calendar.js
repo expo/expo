@@ -105,7 +105,7 @@ export async function test(t) {
     }
     if (Platform.OS === 'android') {
       t.expect(typeof calendar.isPrimary).toBe('boolean');
-      t.expect(typeof calendar.name).toBe('string');
+      calendar.name && t.expect(typeof calendar.name).toBe('string');
       t.expect(typeof calendar.ownerAccount).toBe('string');
       calendar.timeZone && t.expect(typeof calendar.timeZone).toBe('string');
 
@@ -332,6 +332,19 @@ export async function test(t) {
 
       t.it('creates an event in the specific calendar', async () => {
         const eventId = await createTestEventAsync(calendarId);
+
+        t.expect(eventId).toBeDefined();
+        t.expect(typeof eventId).toBe('string');
+      });
+
+      t.it('creates an event with the recurrence rule', async () => {
+        const eventId = await createTestEventAsync(calendarId, {
+          recurrenceRule: {
+            endDate: new Date(2019, 3, 5),
+            frequency: 'daily',
+            interval: 1,
+          },
+        });
 
         t.expect(eventId).toBeDefined();
         t.expect(typeof eventId).toBe('string');

@@ -5,7 +5,7 @@ import * as React from 'react';
 import {
   findNodeHandle,
   Image,
-  NativeComponent,
+  NativeMethods,
   StyleSheet,
   View,
   ViewPropTypes,
@@ -162,7 +162,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     ...ViewPropTypes,
   };
 
-  _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeComponent>();
+  _nativeRef = React.createRef<InstanceType<ExponentVideoComponent> & NativeMethods>();
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
@@ -393,7 +393,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
     let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
     if (this.props.resizeMode) {
-      let resizeMode = this.props.resizeMode;
+      const resizeMode = this.props.resizeMode;
       if (resizeMode === ResizeMode.STRETCH) {
         nativeResizeMode = ExpoVideoManagerConstants.ScaleToFill;
       } else if (resizeMode === ResizeMode.CONTAIN) {

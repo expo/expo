@@ -29,7 +29,6 @@ export function requireNativeViewManager(viewName) {
     // manager
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
-    // @ts-ignore: UIManager.getViewManagerConfig is not declared
     const reactNativeUIConfiguration = (UIManager.getViewManagerConfig
         ? UIManager.getViewManagerConfig(reactNativeViewName)
         : UIManager[reactNativeViewName]) || {

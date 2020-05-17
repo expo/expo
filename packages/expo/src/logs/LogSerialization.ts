@@ -19,15 +19,15 @@ async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<
 
   if (_stackTraceLogsSupported()) {
     if (_isUnhandledPromiseRejection(data, level)) {
-      let rawStack = data[0] as string;
-      let syntheticError = { stack: rawStack };
-      let stack = await _symbolicateErrorAsync(syntheticError as Error);
+      const rawStack = data[0] as string;
+      const syntheticError = { stack: rawStack };
+      const stack = await _symbolicateErrorAsync(syntheticError as Error);
 
       if (!stack.length) {
         serializedValues = _stringifyLogData(data);
       } else {
         // NOTE: This doesn't handle error messages with newlines
-        let errorMessage = rawStack.split('\n')[1];
+        const errorMessage = rawStack.split('\n')[1];
         serializedValues = [
           {
             message: `[Unhandled promise rejection: ${errorMessage}]`,
@@ -41,18 +41,18 @@ async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<
       // include the error's stack. If there's more than one argument then we don't include the
       // stack because it's not easy to display nicely in our current UI.
 
-      let serializedError = await _serializeErrorAsync(data[0] as Error);
+      const serializedError = await _serializeErrorAsync(data[0] as Error);
       serializedValues = [serializedError];
       includesStack = serializedError.hasOwnProperty('stack');
     } else if (level === 'warn' || level === 'error') {
       // For console.warn and console.error it is usually useful to know the stack that leads to the
       // warning or error, so we provide this information to help out with debugging
 
-      let error = _captureConsoleStackTrace();
+      const error = _captureConsoleStackTrace();
       // ["hello", "world"] becomes "hello, world"
-      let errorMessage = _stringifyLogData(data).join(', ');
+      const errorMessage = _stringifyLogData(data).join(', ');
 
-      let serializedError = await _serializeErrorAsync(error, errorMessage);
+      const serializedError = await _serializeErrorAsync(error, errorMessage);
       serializedValues = [serializedError];
       includesStack = serializedError.hasOwnProperty('stack');
     } else {
@@ -75,7 +75,7 @@ function _stringifyLogData(data: unknown[]): string[] {
     } else {
       // define the max length for log msg to be first 10000 characters
       const LOG_MESSAGE_MAX_LENGTH = 10000;
-      let result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
+      const result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
       // check the size of string returned
       if (result.length > LOG_MESSAGE_MAX_LENGTH) {
         let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
@@ -97,8 +97,8 @@ async function _serializeErrorAsync(error: Error, message?: string): Promise<Log
   // note(brentvatne): React Native currently appends part of the stack inside of
   // the error message itself for some reason. This is just confusing and we don't
   // want to include it in the expo-cli output
-  let messageParts = message.split('\n');
-  let firstUselessLine = messageParts.indexOf('This error is located at:');
+  const messageParts = message.split('\n');
+  const firstUselessLine = messageParts.indexOf('This error is located at:');
   if (firstUselessLine > 0) {
     message = messageParts.slice(0, firstUselessLine - 1).join('\n');
   }
@@ -107,14 +107,14 @@ async function _serializeErrorAsync(error: Error, message?: string): Promise<Log
     return prettyFormat(error);
   }
 
-  let stack = await _symbolicateErrorAsync(error);
-  let formattedStack = _formatStack(stack);
+  const stack = await _symbolicateErrorAsync(error);
+  const formattedStack = _formatStack(stack);
 
   return { message, stack: formattedStack };
 }
 
 async function _symbolicateErrorAsync(error: Error): Promise<StackFrame[]> {
-  let parsedStack = parseErrorStack(error);
+  const parsedStack = parseErrorStack(error);
   let symbolicatedStack: StackFrame[] | null;
   try {
     symbolicatedStack = await symbolicateStackTrace(parsedStack);
@@ -150,7 +150,7 @@ function _removeProjectRoot(frame: StackFrame): StackFrame {
     return frame;
   }
 
-  let projectRoot = _getProjectRoot();
+  const projectRoot = _getProjectRoot();
   if (projectRoot == null) {
     return frame;
   }
@@ -192,7 +192,7 @@ function _captureConsoleStackTrace(): Error {
     throw new Error();
   } catch (error) {
     let stackLines = error.stack.split('\n');
-    let consoleMethodIndex = stackLines.findIndex(frame =>
+    const consoleMethodIndex = stackLines.findIndex(frame =>
       frame.includes(EXPO_CONSOLE_METHOD_NAME)
     );
     if (consoleMethodIndex !== -1) {

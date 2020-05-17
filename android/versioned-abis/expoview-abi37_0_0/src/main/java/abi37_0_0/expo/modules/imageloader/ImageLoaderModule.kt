@@ -1,5 +1,7 @@
 package abi37_0_0.expo.modules.imageloader
 
+import abi37_0_0.org.unimodules.core.interfaces.InternalModule
+import abi37_0_0.org.unimodules.interfaces.imageloader.ImageLoader
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -16,11 +18,8 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequest
-import abi37_0_0.org.unimodules.core.interfaces.InternalModule
-import abi37_0_0.org.unimodules.interfaces.imageloader.ImageLoader
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
-
 
 class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
 
@@ -73,11 +72,13 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
   }
 
   override fun loadImageForManipulationFromURL(url: String, resultListener: ImageLoader.ResultListener) {
+    val normalizedUrl = normalizeAssetsUrl(url)
+
     Glide.with(context)
       .asBitmap()
       .diskCacheStrategy(DiskCacheStrategy.NONE)
       .skipMemoryCache(true)
-      .load(url)
+      .load(normalizedUrl)
       .into(object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           resultListener.onSuccess(resource)
@@ -87,5 +88,13 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
           resultListener.onFailure(Exception("Loading bitmap failed"))
         }
       })
+  }
+
+  private fun normalizeAssetsUrl(url: String): String {
+    var actualUrl = url
+    if (url.startsWith("asset:///")) {
+      actualUrl = "file:///android_asset/" + url.split("/").last()
+    }
+    return actualUrl
   }
 }

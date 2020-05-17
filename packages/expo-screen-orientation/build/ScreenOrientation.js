@@ -36,7 +36,7 @@ export async function lockPlatformAsync(options) {
             throw new TypeError(`lockPlatformAsync iOS platform: screenOrientationArrayIOS cannot be called with ${screenOrientationArrayIOS}`);
         }
         const orientations = Object.values(Orientation);
-        for (let orientation of screenOrientationArrayIOS) {
+        for (const orientation of screenOrientationArrayIOS) {
             if (!orientations.includes(orientation)) {
                 throw new TypeError(`lockPlatformAsync iOS platform: ${orientation} is not a valid Orientation`);
             }

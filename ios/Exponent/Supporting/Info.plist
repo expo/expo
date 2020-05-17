@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.15.1</string>
+	<string>2.15.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -31,6 +31,7 @@
 			<array>
 				<string>exp</string>
 				<string>exps</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 		<dict>
@@ -53,27 +54,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.15.1</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
+	<string>2.15.3</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
+	<key>FacebookAppID</key>
+	<string>1696089354000816</string>
 	<key>FacebookAutoInitEnabled</key>
 	<false/>
 	<key>FacebookAutoLogAppEventsEnabled</key>
 	<false/>
+	<key>FacebookDisplayName</key>
+	<string>Expo Client</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>GADDelayAppMeasurementInit</key>

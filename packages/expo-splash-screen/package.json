@@ -1,0 +1,49 @@
+{
+  "name": "expo-splash-screen",
+  "version": "0.2.3",
+  "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-splash-screen",
+    "splash-screen",
+    "splash",
+    "launch-screen",
+    "launch"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-splash-screen"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/packages/expo-splash-screen",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "dependencies": {
+    "@expo/configure-splash-screen": "~0.1.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.2.0"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "gitHead": "888aff053c3cc7225fac0ca74342ed6fbf573c7d"
+}

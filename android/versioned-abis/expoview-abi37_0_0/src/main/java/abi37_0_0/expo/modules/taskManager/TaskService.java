@@ -11,11 +11,11 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.apploader.AppLoaderProvider;
+import org.unimodules.apploader.HeadlessAppLoader;
 import org.unimodules.core.interfaces.SingletonModule;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -37,8 +37,7 @@ import java.util.UUID;
 import abi37_0_0.expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import abi37_0_0.expo.modules.taskManager.exceptions.TaskNotFoundException;
 import abi37_0_0.expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
-import org.unimodules.apploader.AppLoaderProvider;
-import org.unimodules.apploader.HeadlessAppLoader;
+import androidx.annotation.Nullable;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -270,7 +269,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @Override
   public boolean isStartedByHeadlessLoader(String appId) {
-    return getAppLoader().isRunning(appId);
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      return getAppLoader().isRunning(appId);
+    }
+    return false;
   }
 
   public void handleIntent(Intent intent) {
@@ -645,8 +648,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appId) {
-    if (getAppLoader().invalidateApp(appId)) {
-      sHeadlessTaskManagers.remove(appId);
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader != null) {
+      if (appLoader.invalidateApp(appId)) {
+        sHeadlessTaskManagers.remove(appId);
+      }
     }
   }
 

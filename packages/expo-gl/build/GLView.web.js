@@ -22,7 +22,7 @@ function asExpoContext(gl) {
     if (!gl['_expo_texImage2D']) {
         gl['_expo_texImage2D'] = gl.texImage2D;
         gl.texImage2D = (...props) => {
-            let nextProps = [...props];
+            const nextProps = [...props];
             nextProps.push(getImageForAsset(nextProps.pop()));
             return gl['_expo_texImage2D'](...nextProps);
         };
@@ -30,7 +30,7 @@ function asExpoContext(gl) {
     if (!gl['_expo_texSubImage2D']) {
         gl['_expo_texSubImage2D'] = gl.texSubImage2D;
         gl.texSubImage2D = (...props) => {
-            let nextProps = [...props];
+            const nextProps = [...props];
             nextProps.push(getImageForAsset(nextProps.pop()));
             return gl['_expo_texSubImage2D'](...nextProps);
         };
@@ -51,7 +51,7 @@ function ensureContext(canvas, contextAttributes) {
     return asExpoContext(context);
 }
 function stripNonDOMProps(props) {
-    for (let k in propTypes) {
+    for (const k in propTypes) {
         if (k in props) {
             delete props[k];
         }
@@ -94,122 +94,126 @@ async function getBlobFromWebGLRenderingContext(gl, options = {}) {
         height: canvas.height,
     };
 }
-export class GLView extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.onContextLost = (event) => {
-            if (event && event.preventDefault) {
-                event.preventDefault();
+let GLView = /** @class */ (() => {
+    class GLView extends React.Component {
+        constructor() {
+            super(...arguments);
+            this.onContextLost = (event) => {
+                if (event && event.preventDefault) {
+                    event.preventDefault();
+                }
+                this.gl = undefined;
+                if (typeof this.props.onContextLost === 'function') {
+                    this.props.onContextLost();
+                }
+            };
+            this.onContextRestored = () => {
+                this.gl = undefined;
+                if (this.getGLContext() == null) {
+                    throw new CodedError('ERR_GL_INVALID', 'Failed to restore GL context.');
+                }
+            };
+            this.setCanvasRef = (canvas) => {
+                this.canvas = canvas;
+                if (typeof this.props.nativeRef_EXPERIMENTAL === 'function') {
+                    this.props.nativeRef_EXPERIMENTAL(canvas);
+                }
+                if (this.canvas) {
+                    this.canvas.addEventListener('webglcontextlost', this.onContextLost);
+                    this.canvas.addEventListener('webglcontextrestored', this.onContextRestored);
+                    this.getGLContext();
+                }
+            };
+        }
+        static async createContextAsync() {
+            if (!canUseDOM) {
+                return null;
             }
-            this.gl = undefined;
-            if (typeof this.props.onContextLost === 'function') {
-                this.props.onContextLost();
+            const canvas = document.createElement('canvas');
+            const { width, height, scale } = Dimensions.get('window');
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            return ensureContext(canvas);
+        }
+        static async destroyContextAsync(exgl) {
+            // Do nothing
+            return true;
+        }
+        static async takeSnapshotAsync(gl, options = {}) {
+            const { blob, width, height } = await getBlobFromWebGLRenderingContext(gl, options);
+            if (!blob) {
+                throw new CodedError('ERR_GL_SNAPSHOT', 'Failed to save the GL context');
             }
-        };
-        this.onContextRestored = () => {
-            this.gl = undefined;
-            if (this.getGLContext() == null) {
-                throw new CodedError('ERR_GL_INVALID', 'Failed to restore GL context.');
-            }
-        };
-        this.setCanvasRef = (canvas) => {
-            this.canvas = canvas;
-            if (typeof this.props.nativeRef_EXPERIMENTAL === 'function') {
-                this.props.nativeRef_EXPERIMENTAL(canvas);
+            return {
+                uri: blob,
+                localUri: '',
+                width,
+                height,
+            };
+        }
+        componentWillUnmount() {
+            if (this.gl) {
+                const loseContextExt = this.gl.getExtension('WEBGL_lose_context');
+                if (loseContextExt) {
+                    loseContextExt.loseContext();
+                }
+                this.gl = undefined;
             }
             if (this.canvas) {
-                this.canvas.addEventListener('webglcontextlost', this.onContextLost);
-                this.canvas.addEventListener('webglcontextrestored', this.onContextRestored);
-                this.getGLContext();
+                this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
+                this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
             }
-        };
-    }
-    static async createContextAsync() {
-        if (!canUseDOM) {
+        }
+        render() {
+            const domProps = stripNonDOMProps({ ...this.props });
+            delete domProps.ref;
+            return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
+        }
+        componentDidUpdate(prevProps) {
+            const { webglContextAttributes } = this.props;
+            if (this.canvas && webglContextAttributes !== prevProps.webglContextAttributes) {
+                this.onContextLost(null);
+                this.onContextRestored();
+            }
+        }
+        getGLContextOrReject() {
+            const gl = this.getGLContext();
+            if (!gl) {
+                throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
+            }
+            return gl;
+        }
+        getGLContext() {
+            if (this.gl)
+                return this.gl;
+            if (this.canvas) {
+                this.gl = ensureContext(this.canvas, this.props.webglContextAttributes);
+                if (typeof this.props.onContextCreate === 'function') {
+                    this.props.onContextCreate(this.gl);
+                }
+                return this.gl;
+            }
             return null;
         }
-        const canvas = document.createElement('canvas');
-        const { width, height, scale } = Dimensions.get('window');
-        canvas.width = width * scale;
-        canvas.height = height * scale;
-        return ensureContext(canvas);
-    }
-    static async destroyContextAsync(exgl) {
-        // Do nothing
-        return true;
-    }
-    static async takeSnapshotAsync(gl, options = {}) {
-        const { blob, width, height } = await getBlobFromWebGLRenderingContext(gl, options);
-        if (!blob) {
-            throw new CodedError('ERR_GL_SNAPSHOT', 'Failed to save the GL context');
-        }
-        return {
-            uri: blob,
-            localUri: '',
-            width,
-            height,
-        };
-    }
-    componentWillUnmount() {
-        if (this.gl) {
-            const loseContextExt = this.gl.getExtension('WEBGL_lose_context');
-            if (loseContextExt) {
-                loseContextExt.loseContext();
+        async takeSnapshotAsync(options = {}) {
+            if (!GLView.takeSnapshotAsync) {
+                throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
             }
-            this.gl = undefined;
+            const gl = this.getGLContextOrReject();
+            return await GLView.takeSnapshotAsync(gl, options);
         }
-        if (this.canvas) {
-            this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
-            this.canvas.removeEventListener('webglcontextrestored', this.onContextRestored);
+        async startARSessionAsync() {
+            throw new UnavailabilityError('GLView', 'startARSessionAsync');
         }
-    }
-    render() {
-        const domProps = stripNonDOMProps({ ...this.props });
-        delete domProps.ref;
-        return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
-    }
-    componentDidUpdate(prevProps) {
-        const { webglContextAttributes } = this.props;
-        if (this.canvas && webglContextAttributes !== prevProps.webglContextAttributes) {
-            this.onContextLost(null);
-            this.onContextRestored();
+        async createCameraTextureAsync() {
+            throw new UnavailabilityError('GLView', 'createCameraTextureAsync');
+        }
+        async destroyObjectAsync(glObject) {
+            throw new UnavailabilityError('GLView', 'destroyObjectAsync');
         }
     }
-    getGLContextOrReject() {
-        const gl = this.getGLContext();
-        if (!gl) {
-            throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
-        }
-        return gl;
-    }
-    getGLContext() {
-        if (this.gl)
-            return this.gl;
-        if (this.canvas) {
-            this.gl = ensureContext(this.canvas, this.props.webglContextAttributes);
-            if (typeof this.props.onContextCreate === 'function') {
-                this.props.onContextCreate(this.gl);
-            }
-            return this.gl;
-        }
-        return null;
-    }
-    async takeSnapshotAsync(options = {}) {
-        if (!GLView.takeSnapshotAsync) {
-            throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
-        }
-        const gl = this.getGLContextOrReject();
-        return await GLView.takeSnapshotAsync(gl, options);
-    }
-    async startARSessionAsync() {
-        throw new UnavailabilityError('GLView', 'startARSessionAsync');
-    }
-    async createCameraTextureAsync() {
-        throw new UnavailabilityError('GLView', 'createCameraTextureAsync');
-    }
-    async destroyObjectAsync(glObject) {
-        throw new UnavailabilityError('GLView', 'destroyObjectAsync');
-    }
-}
-GLView.propTypes = propTypes;
+    GLView.propTypes = propTypes;
+    return GLView;
+})();
+export { GLView };
 //# sourceMappingURL=GLView.web.js.map

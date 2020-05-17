@@ -1,9 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import NotificationChannelManager, {
-  NotificationChannelInput,
-  NotificationChannel,
-} from './NotificationChannelManager';
+import NotificationChannelManager from './NotificationChannelManager';
+import { NotificationChannelInput, NotificationChannel } from './NotificationChannelManager.types';
 
 export default async function setNotificationChannelAsync(
   channelId: string,

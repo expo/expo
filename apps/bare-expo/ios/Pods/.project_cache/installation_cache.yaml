@@ -68,7 +68,7 @@ CACHE_KEYS:
   EXApplication:
     BUILD_SETTINGS_CHECKSUM:
       EXApplication: 5fd8b17b356234cacecd3159a6b20ac5
-    CHECKSUM: 777c2f1742b381725b3e8c1da41f0113ebfd4694
+    CHECKSUM: 7cf81de6fafccff42f5d1caa5c24a159db6b9437
     FILES:
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.h"
       - "../../../../packages/expo-application/ios/EXApplication/EXApplication.m"
@@ -76,7 +76,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-application/ios/EXApplication/EXProvisioningProfile.m"
     PROJECT_NAME: EXApplication
     SPECS:
-      - EXApplication (2.1.0)
+      - EXApplication (2.1.1)
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: 145c0531e2c7438e612f4f31e07db048
@@ -138,13 +138,13 @@ CACHE_KEYS:
   EXBattery:
     BUILD_SETTINGS_CHECKSUM:
       EXBattery: 4dd0f4ce97014997f7d5e8c9ecaff263
-    CHECKSUM: f2732e40a819d8bf9051211f4ecdd99dcb2b5918
+    CHECKSUM: a30f2aa7c6ccf21ade63ec941579a1f0a7523a8c
     FILES:
       - "../../../../packages/expo-battery/ios/EXBattery/EXBattery.h"
       - "../../../../packages/expo-battery/ios/EXBattery/EXBattery.m"
     PROJECT_NAME: EXBattery
     SPECS:
-      - EXBattery (2.1.0)
+      - EXBattery (2.1.1)
   EXBluetooth:
     BUILD_SETTINGS_CHECKSUM:
       EXBluetooth: c7cd39fe92009048c03ff1b68c9b793d
@@ -200,13 +200,13 @@ CACHE_KEYS:
   EXCellular:
     BUILD_SETTINGS_CHECKSUM:
       EXCellular: 7ef9adee3605a6606e82ca6c0a3fe96c
-    CHECKSUM: e8e672cb54b6579712801ed437954d171ae81510
+    CHECKSUM: 498a1b35747474ed15806aed58a4710bdef3e73b
     FILES:
       - "../../../../packages/expo-cellular/ios/EXCellular/EXCellularModule.h"
       - "../../../../packages/expo-cellular/ios/EXCellular/EXCellularModule.m"
     PROJECT_NAME: EXCellular
     SPECS:
-      - EXCellular (2.1.0)
+      - EXCellular (2.1.1)
   EXConstants:
     BUILD_SETTINGS_CHECKSUM:
       EXConstants: c8de149aaeee99038485a80442d25423
@@ -292,8 +292,6 @@ CACHE_KEYS:
       EXFileSystem: 384bbcee0771bf79893a232d6cd6c5e2
     CHECKSUM: cf4232ba7c62dc49b78c2d36005f97b6fddf0b01
     FILES:
-      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXDownloadDelegate.h"
-      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXDownloadDelegate.m"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.h"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFilePermissionModule.m"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFileSystem.h"
@@ -302,19 +300,33 @@ CACHE_KEYS:
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemAssetLibraryHandler.m"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemLocalFileHandler.h"
       - "../../../../packages/expo-file-system/ios/EXFileSystem/EXFileSystemLocalFileHandler.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXResumablesManager.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXResumablesManager.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionDownloadTaskDelegate.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionResumableDownloadTaskDelegate.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionResumableDownloadTaskDelegate.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDelegate.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDispatcher.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionTaskDispatcher.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionUploadTaskDelegate.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionUploadTaskDelegate.m"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/NSData+EXFileSystem.h"
+      - "../../../../packages/expo-file-system/ios/EXFileSystem/NSData+EXFileSystem.m"
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.1.0)
   EXFirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseAnalytics: cc401ee0180ae21c92b2d4a83982840d
-    CHECKSUM: 13b3f0a61af72d8429fa957a928383ce905fe911
+    CHECKSUM: 535e764dcb3facfa1668d81e422b685eb93c1c9f
     FILES:
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.h"
       - "../../../../packages/expo-firebase-analytics/ios/EXFirebaseAnalytics/EXFirebaseAnalytics.m"
     PROJECT_NAME: EXFirebaseAnalytics
     SPECS:
-      - EXFirebaseAnalytics (2.1.0)
+      - EXFirebaseAnalytics (2.3.0)
   EXFirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
       EXFirebaseCore: 558caeb4b0121e43433c08b1594d5793
@@ -331,7 +343,7 @@ CACHE_KEYS:
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: d8920f123f0cdc804585bfcef1a86386
-    CHECKSUM: 8326ecf966be559f7ced7c8e221a32fc4d9ed8b0
+    CHECKSUM: b60f7a8900e3a12e7be3b2a40e19b22c7b5f89ba
     FILES:
       - "../../../../packages/expo-font/ios/EXFont/EXFont.h"
       - "../../../../packages/expo-font/ios/EXFont/EXFont.m"
@@ -347,7 +359,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-font/ios/EXFont/Singletons/EXFontScalersManager.m"
     PROJECT_NAME: EXFont
     SPECS:
-      - EXFont (8.1.0)
+      - EXFont (8.1.1)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
       EXGL: b21ff559aacb62ac621d51e446f9cbce
@@ -420,13 +432,13 @@ CACHE_KEYS:
   EXImageLoader:
     BUILD_SETTINGS_CHECKSUM:
       EXImageLoader: 311389058db34474056fe2e893a52953
-    CHECKSUM: edbf02910aec4b87dfd637de27181e442468401e
+    CHECKSUM: 5ad6896fa1ef2ee814b551873cbf7a7baccc694a
     FILES:
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.h"
       - "../../../../packages/expo-image-loader/ios/EXImageLoader/EXImageLoader.m"
     PROJECT_NAME: EXImageLoader
     SPECS:
-      - EXImageLoader (1.0.0)
+      - EXImageLoader (1.0.1)
   EXImageManipulator:
     BUILD_SETTINGS_CHECKSUM:
       EXImageManipulator: 0fb2c3a3ddfc438c9bc1af0da1473ddc
@@ -451,6 +463,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (8.1.0)
+  EXInAppPurchases:
+    BUILD_SETTINGS_CHECKSUM:
+      EXInAppPurchases: 9de76cf78759ab4168540e85ecee8b86
+    CHECKSUM: 084e1ea266b7b297010d3a1534bd1fe285fba235
+    FILES:
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.h"
+      - "../../../../packages/expo-in-app-purchases/ios/EXInAppPurchases/EXInAppPurchasesModule.m"
+    PROJECT_NAME: EXInAppPurchases
+    SPECS:
+      - EXInAppPurchases (8.1.0)
   EXKeepAwake:
     BUILD_SETTINGS_CHECKSUM:
       EXKeepAwake: ff09e99980f1b1b84c118d7d2037e232
@@ -525,13 +547,15 @@ CACHE_KEYS:
       - EXMailComposer (8.1.0)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary: adcb24559bcb02b9ee78a3ced033ba71
-    CHECKSUM: 30a65e1eef453c6e7a76754febeb88c0d0fba232
+      EXMediaLibrary: b1b7c63f8f6289e292b6025ab6f3346c
+    CHECKSUM: aa151e6f6f977543c24222d57a1caad4b7facfbc
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
@@ -540,17 +564,17 @@ CACHE_KEYS:
   EXNetwork:
     BUILD_SETTINGS_CHECKSUM:
       EXNetwork: 1bd35e8c2b02e38f824935482ef7c92c
-    CHECKSUM: b8cfa4936341d260779043acc4c366904decef0d
+    CHECKSUM: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
     FILES:
       - "../../../../packages/expo-network/ios/EXNetwork/EXNetwork.h"
       - "../../../../packages/expo-network/ios/EXNetwork/EXNetwork.m"
     PROJECT_NAME: EXNetwork
     SPECS:
-      - EXNetwork (2.1.0)
+      - EXNetwork (2.1.1)
   EXNotifications:
     BUILD_SETTINGS_CHECKSUM:
       EXNotifications: 1a9a6dea23cce102abe0ca9c4863027b
-    CHECKSUM: 9e82983fa13fb2a9eb2d77748e6fc73b4b42e42c
+    CHECKSUM: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
     FILES:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Building/EXNotificationBuilder.m"
@@ -586,7 +610,7 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenModule.m"
     PROJECT_NAME: EXNotifications
     SPECS:
-      - EXNotifications (1.0.0)
+      - EXNotifications (0.1.7)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
@@ -608,6 +632,8 @@ CACHE_KEYS:
       expo-image: bcbb57a3ee11d42bb8c5a75d69a0418f
     CHECKSUM: 36f53fe2845e4bb74021f69192a752db29766897
     FILES:
+      - "../../../../packages/expo-image/ios/EXImageTypes.h"
+      - "../../../../packages/expo-image/ios/EXImageTypes.m"
       - "../../../../packages/expo-image/ios/EXImageView.h"
       - "../../../../packages/expo-image/ios/EXImageView.m"
       - "../../../../packages/expo-image/ios/EXImageViewManager.h"
@@ -775,13 +801,13 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: 8a03493ab01357acaad4113c212a979d
-    CHECKSUM: 4118b18d151fd03c935bd9de4cd312d2b33ec2c5
+    CHECKSUM: c8abe4e22f30322949da381d4f6faa8d94ba6b59
     FILES:
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (8.1.0)
+      - EXWebBrowser (8.2.0)
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector: db36a67e420fa1be73e35e9a4f9553c4
@@ -946,12 +972,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 816f15a05b128cfbab101cc7184d9687
-      Release: 816f15a05b128cfbab101cc7184d9687
+      Debug: 7a1761168fd8e561cf3cc4be5c1d1807
+      Release: 7a1761168fd8e561cf3cc4be5c1d1807
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e6aedfaad570c1e1a2e18b3c4a18be48
-      Release: e6aedfaad570c1e1a2e18b3c4a18be48
+      Debug: ed06bb52be8bf77ef4920e8ed63a2fd5
+      Release: ed06bb52be8bf77ef4920e8ed63a2fd5
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1712,7 +1738,7 @@ CACHE_KEYS:
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: c576e5ba26e85306cdd748939cafee55
-    CHECKSUM: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+    CHECKSUM: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
     FILES:
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.h"
       - "../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNFlingHandler.m"
@@ -1750,11 +1776,11 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-gesture-handler/README.md"
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.6.0)
+      - RNGestureHandler (1.6.1)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1d95b7b88b09cb2c47f1f272532903e1
-    CHECKSUM: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
+    CHECKSUM: 4e102df74a9674fa943e05f97f3362b6e44d0b48
     FILES:
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.h"
       - "../../../../node_modules/react-native-reanimated/ios/Nodes/REAAlwaysNode.m"
@@ -1815,7 +1841,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-reanimated/README.md"
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.7.0)
+      - RNReanimated (1.7.1)
   RNScreens:
     BUILD_SETTINGS_CHECKSUM:
       RNScreens: d0a154f417562db98591a0dd7d1b9bf7
@@ -1845,7 +1871,7 @@ CACHE_KEYS:
   UMAppLoader:
     BUILD_SETTINGS_CHECKSUM:
       UMAppLoader: 0019ffa67746bf7027b41c8c38d61f4a
-    CHECKSUM: 70387114be35df5f90cd1f172edfb7a2f150e65a
+    CHECKSUM: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
     FILES:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppLoaderInterface.h"
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/Interfaces/UMAppRecordInterface.h"
@@ -1853,7 +1879,7 @@ CACHE_KEYS:
       - "../../../../packages/unimodules-app-loader/ios/UMAppLoader/UMAppLoaderProvider.m"
     PROJECT_NAME: UMAppLoader
     SPECS:
-      - UMAppLoader (1.0.0)
+      - UMAppLoader (1.0.2)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492
@@ -1885,7 +1911,7 @@ CACHE_KEYS:
   UMCore:
     BUILD_SETTINGS_CHECKSUM:
       UMCore: 725599ebffd932f0853dea43e0c4795a
-    CHECKSUM: d6117852f32c74cde466b863cfdeaa0960186249
+    CHECKSUM: eb200e882eadafcd31ead290770835fd648c0945
     FILES:
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleListener.h"
       - "../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h"
@@ -1920,7 +1946,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/core/ios/UMCore/UMViewManager.m"
     PROJECT_NAME: UMCore
     SPECS:
-      - UMCore (5.1.0)
+      - UMCore (5.1.2)
   UMFileSystemInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMFileSystemInterface: 40e923e384350cb686bb78a72ff6f87a
@@ -1967,7 +1993,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: 330db6c6bc97064a0ce907ee8d5fdbb2
-    CHECKSUM: c8f2b8beb61851b6f2441e54b409d2dbd6478b7d
+    CHECKSUM: 126da3486c1a1f11945b649d557d6c2ebb9407b2
     FILES:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -1990,7 +2016,7 @@ CACHE_KEYS:
       - "../../../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (5.1.0)
+      - UMReactNativeAdapter (5.2.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: edab35b62745c17864e65b8dd2612597

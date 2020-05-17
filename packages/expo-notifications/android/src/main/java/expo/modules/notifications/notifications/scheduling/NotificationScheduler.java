@@ -6,17 +6,21 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
-import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import androidx.annotation.Nullable;
+import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
+import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
+import expo.modules.notifications.notifications.model.NotificationContent;
+import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
@@ -42,7 +46,16 @@ public class NotificationScheduler extends ExportedModule {
       protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
         if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
-          promise.resolve(resultData.getParcelableArrayList(ExpoNotificationSchedulerService.NOTIFICATIONS_KEY));
+          Collection<NotificationRequest> requests = resultData.getParcelableArrayList(ExpoNotificationSchedulerService.NOTIFICATION_REQUESTS_KEY);
+          if (requests == null) {
+            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.");
+          } else {
+            Collection<Bundle> serializedRequests = new ArrayList<>(requests.size());
+            for (NotificationRequest request : requests) {
+              serializedRequests.add(NotificationSerializer.toBundle(request));
+            }
+            promise.resolve(serializedRequests);
+          }
         } else {
           Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e);
@@ -52,10 +65,11 @@ public class NotificationScheduler extends ExportedModule {
   }
 
   @ExpoMethod
-  public void scheduleNotificationAsync(final String identifier, Map notificationSpec, ReadableArguments triggerParams, final Promise promise) {
+  public void scheduleNotificationAsync(final String identifier, ReadableArguments notificationContentMap, ReadableArguments triggerParams, final Promise promise) {
     try {
-      JSONObject notificationRequest = new JSONObject(notificationSpec);
-      ExpoNotificationSchedulerService.enqueueSchedule(getContext(), identifier, notificationRequest, triggerFromParams(triggerParams), new ResultReceiver(HANDLER) {
+      NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(notificationContentMap).build();
+      NotificationRequest request = new NotificationRequest(identifier, content, triggerFromParams(triggerParams));
+      ExpoNotificationSchedulerService.enqueueSchedule(getContext(), request, new ResultReceiver(HANDLER) {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
           super.onReceiveResult(resultCode, resultData);
@@ -117,16 +131,16 @@ public class NotificationScheduler extends ExportedModule {
     }
 
     switch (params.getString("type")) {
-      case "interval":
-        if (!(params.get("value") instanceof Number)) {
+      case "timeInterval":
+        if (!(params.get("seconds") instanceof Number)) {
           throw new InvalidArgumentException("Invalid value provided as interval of trigger.");
         }
-        return new TimeIntervalTrigger(((Number) params.get("value")).longValue(), params.getBoolean("repeats"));
+        return new TimeIntervalTrigger(((Number) params.get("seconds")).longValue(), params.getBoolean("repeats"));
       case "date":
-        if (!(params.get("value") instanceof Number)) {
+        if (!(params.get("timestamp") instanceof Number)) {
           throw new InvalidArgumentException("Invalid value provided as date of trigger.");
         }
-        return new DateTrigger(((Number) params.get("value")).longValue());
+        return new DateTrigger(((Number) params.get("timestamp")).longValue());
       default:
         throw new InvalidArgumentException("Trigger of type: " + params.getString("type") + " is not supported on Android.");
     }

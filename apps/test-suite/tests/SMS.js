@@ -2,6 +2,11 @@ import * as SMS from 'expo-sms';
 import { Platform } from 'react-native';
 
 import { isInteractive } from '../utils/Environment';
+import {
+  testSMSComposeWithSingleImageAttachment,
+  testSMSComposeWithAudioAttachment,
+  testSMSComposeWithTwoImageAttachments,
+} from './SMSCommon';
 
 export const name = 'SMS';
 
@@ -10,6 +15,18 @@ export function test({ describe, it, expect }) {
     describe(`sendSMSAsync()`, () => {
       it(`opens an SMS composer`, async () => {
         await SMS.sendSMSAsync(['0123456789', '9876543210'], 'test');
+      });
+
+      it(`opens an SMS composer with single image attachment`, async () => {
+        await testSMSComposeWithSingleImageAttachment(expect);
+      });
+
+      it(`opens an SMS composer with two image attachments. Only first one is used.`, async () => {
+        await testSMSComposeWithTwoImageAttachments(expect);
+      });
+
+      it(`opens an SMS composer with audio attachment`, async () => {
+        await testSMSComposeWithAudioAttachment(expect);
       });
     });
   }

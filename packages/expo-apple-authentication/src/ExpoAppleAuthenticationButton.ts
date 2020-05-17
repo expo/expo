@@ -7,6 +7,9 @@ let ExpoAppleAuthenticationButtonSignInBlack: any;
 let ExpoAppleAuthenticationButtonContinueWhite: any;
 let ExpoAppleAuthenticationButtonContinueWhiteOutline: any;
 let ExpoAppleAuthenticationButtonContinueBlack: any;
+let ExpoAppleAuthenticationButtonSignUpWhite: any;
+let ExpoAppleAuthenticationButtonSignUpWhiteOutline: any;
+let ExpoAppleAuthenticationButtonSignUpBlack: any;
 
 if (Platform.OS === 'ios') {
   ExpoAppleAuthenticationButtonSignInWhite = requireNativeViewManager(
@@ -27,6 +30,15 @@ if (Platform.OS === 'ios') {
   ExpoAppleAuthenticationButtonContinueBlack = requireNativeViewManager(
     'ExpoAppleAuthenticationButtonContinueBlack'
   );
+  ExpoAppleAuthenticationButtonSignUpWhite = requireNativeViewManager(
+    'ExpoAppleAuthenticationButtonSignUpWhite'
+  );
+  ExpoAppleAuthenticationButtonSignUpWhiteOutline = requireNativeViewManager(
+    'ExpoAppleAuthenticationButtonSignUpWhiteOutline'
+  );
+  ExpoAppleAuthenticationButtonSignUpBlack = requireNativeViewManager(
+    'ExpoAppleAuthenticationButtonSignUpBlack'
+  );
 }
 
 export {
@@ -36,4 +48,7 @@ export {
   ExpoAppleAuthenticationButtonContinueWhite,
   ExpoAppleAuthenticationButtonContinueWhiteOutline,
   ExpoAppleAuthenticationButtonContinueBlack,
+  ExpoAppleAuthenticationButtonSignUpWhite,
+  ExpoAppleAuthenticationButtonSignUpWhiteOutline,
+  ExpoAppleAuthenticationButtonSignUpBlack,
 };

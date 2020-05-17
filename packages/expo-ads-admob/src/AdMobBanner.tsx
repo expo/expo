@@ -98,7 +98,7 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
-    let additionalRequestParams: { [key: string]: string } = {
+    const additionalRequestParams: { [key: string]: string } = {
       ...this.props.additionalRequestParams,
     };
     if (!this.props.servePersonalizedAds) {

@@ -27,6 +27,7 @@ export default {
     greyUnderlayColor: '#f7f7f7',
     blackText: '#242c39',
     separator: '#f4f4f5',
+    refreshControl: undefined,
   },
   dark: {
     absolute: '#000',
@@ -51,5 +52,6 @@ export default {
     greyText: '#a7aab0',
     greyUnderlayColor: '#f7f7f7',
     blackText: '#242c39',
+    refreshControl: '#ffffff',
   },
 };

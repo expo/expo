@@ -21,6 +21,12 @@
     ],
     "UMPermissionsInterface": [
 
+    ],
+    "UMFileSystemInterface": [
+
+    ],
+    "React": [
+
     ]
   }
 }

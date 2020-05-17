@@ -9,7 +9,7 @@ title: ActionSheetIOS
 
 ### `showActionSheetWithOptions()`
 
-```jsx
+```js
 
 static showActionSheetWithOptions(options, callback)
 
@@ -29,7 +29,7 @@ The 'callback' function takes one parameter, the zero-based index of the selecte
 
 Minimal example:
 
-```jsx
+```js
 ActionSheetIOS.showActionSheetWithOptions(
   {
     options: ['Cancel', 'Remove'],
@@ -48,7 +48,7 @@ ActionSheetIOS.showActionSheetWithOptions(
 
 ### `showShareActionSheetWithOptions()`
 
-```jsx
+```js
 
 static showShareActionSheetWithOptions(options, failureCallback, successCallback)
 

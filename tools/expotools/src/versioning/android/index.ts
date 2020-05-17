@@ -18,17 +18,31 @@ const SCRIPT_DIR = path.join(EXPOTOOLS_DIR, 'src/versioning/android');
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
 const versionedAbisPath = path.join(ANDROID_DIR, 'versioned-abis');
-const versionedExpoviewAbiPath = abiName => path.join(versionedAbisPath, `expoview-${abiName}`);
+const versionedExpoviewAbiPath = (abiName) => path.join(versionedAbisPath, `expoview-${abiName}`);
 const expoviewBuildGradlePath = path.join(expoviewPath, 'build.gradle');
 const appManifestPath = path.join(appPath, 'src', 'main', 'AndroidManifest.xml');
-const templateManifestPath = path.join(EXPO_DIR, 'template-files', 'android', 'AndroidManifest.xml');
+const templateManifestPath = path.join(
+  EXPO_DIR,
+  'template-files',
+  'android',
+  'AndroidManifest.xml'
+);
 const settingsGradlePath = path.join(ANDROID_DIR, 'settings.gradle');
 const appBuildGradlePath = path.join(appPath, 'build.gradle');
 const buildGradlePath = path.join(ANDROID_DIR, 'build.gradle');
 const sdkVersionsPath = path.join(ANDROID_DIR, 'sdkVersions.json');
-const rnActivityPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
-const expoviewConstantsPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/Constants.java');
-const testSuiteTestsPath = path.join(appPath, 'src/androidTest/java/host/exp/exponent/TestSuiteTests.java');
+const rnActivityPath = path.join(
+  expoviewPath,
+  'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
+);
+const expoviewConstantsPath = path.join(
+  expoviewPath,
+  'src/main/java/host/exp/exponent/Constants.java'
+);
+const testSuiteTestsPath = path.join(
+  appPath,
+  'src/androidTest/java/host/exp/exponent/TestSuiteTests.java'
+);
 const reactAndroidPath = path.join(ANDROID_DIR, 'ReactAndroid');
 const reactCommonPath = path.join(ANDROID_DIR, 'ReactCommon');
 const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
@@ -43,62 +57,76 @@ async function transformFileAsync(filePath: string, regexp: RegExp, replacement:
 
 async function removeVersionReferencesFromFileAsync(sdkMajorVersion: string, filePath: string) {
   console.log(
-    `Removing code surrounded by ${chalk.gray(`// BEGIN_SDK_${sdkMajorVersion}`)} and ${chalk.gray(`// END_SDK_${sdkMajorVersion}`)} from ${chalk.magenta(path.relative(EXPO_DIR, filePath))}...`
+    `Removing code surrounded by ${chalk.gray(`// BEGIN_SDK_${sdkMajorVersion}`)} and ${chalk.gray(
+      `// END_SDK_${sdkMajorVersion}`
+    )} from ${chalk.magenta(path.relative(EXPO_DIR, filePath))}...`
   );
   await transformFileAsync(
     filePath,
-    new RegExp(`\\s*//\\s*BEGIN_SDK_${sdkMajorVersion}(_\d+)*\\n.*?//\\s*END_SDK_${sdkMajorVersion}(_\d+)*`, 'gs'),
-    '',
+    new RegExp(
+      `\\s*//\\s*BEGIN_SDK_${sdkMajorVersion}(_\d+)*\\n.*?//\\s*END_SDK_${sdkMajorVersion}(_\d+)*`,
+      'gs'
+    ),
+    ''
   );
 }
 
 async function removeVersionedExpoviewAsync(versionedExpoviewAbiPath: string) {
-  console.log(`Removing versioned expoview at ${chalk.magenta(path.relative(EXPO_DIR, versionedExpoviewAbiPath))}...`);
+  console.log(
+    `Removing versioned expoview at ${chalk.magenta(
+      path.relative(EXPO_DIR, versionedExpoviewAbiPath)
+    )}...`
+  );
   await fs.remove(versionedExpoviewAbiPath);
 }
 
 async function removeFromManifestAsync(sdkMajorVersion: string, manifestPath: string) {
   console.log(
-    `Removing code surrounded by ${chalk.gray(`<!-- BEGIN_SDK_${sdkMajorVersion} -->`)} and ${chalk.gray(`<!-- END_SDK_${sdkMajorVersion} -->`)} from ${chalk.magenta(path.relative(EXPO_DIR, manifestPath))}...`
+    `Removing code surrounded by ${chalk.gray(
+      `<!-- BEGIN_SDK_${sdkMajorVersion} -->`
+    )} and ${chalk.gray(`<!-- END_SDK_${sdkMajorVersion} -->`)} from ${chalk.magenta(
+      path.relative(EXPO_DIR, manifestPath)
+    )}...`
   );
   await transformFileAsync(
     manifestPath,
-    new RegExp(`\\s*<!--\\s*BEGIN_SDK_${sdkMajorVersion}(_\d+)*\\s*-->.*?<!--\\s*END_SDK_${sdkMajorVersion}(_\d+)*\\s*-->`, 'gs'),
-    '',
+    new RegExp(
+      `\\s*<!--\\s*BEGIN_SDK_${sdkMajorVersion}(_\d+)*\\s*-->.*?<!--\\s*END_SDK_${sdkMajorVersion}(_\d+)*\\s*-->`,
+      'gs'
+    ),
+    ''
   );
 }
 
 async function removeFromSettingsGradleAsync(abiName: string, settingsGradlePath: string) {
   console.log(
-    `Removing ${chalk.green(`expoview-${abiName}`)} from ${chalk.magenta(path.relative(EXPO_DIR, settingsGradlePath))}...`
+    `Removing ${chalk.green(`expoview-${abiName}`)} from ${chalk.magenta(
+      path.relative(EXPO_DIR, settingsGradlePath)
+    )}...`
   );
-  await transformFileAsync(
-    settingsGradlePath,
-    new RegExp(`\\n\\s*"${abiName}",[^\\n]*`, 'g'),
-    '',
-  );
+  await transformFileAsync(settingsGradlePath, new RegExp(`\\n\\s*"${abiName}",[^\\n]*`, 'g'), '');
 }
 
 async function removeFromBuildGradleAsync(abiName: string, buildGradlePath: string) {
   console.log(
-    `Removing maven repository for ${chalk.green(`expoview-${abiName}`)} from ${chalk.magenta(path.relative(EXPO_DIR, buildGradlePath))}...`
+    `Removing maven repository for ${chalk.green(`expoview-${abiName}`)} from ${chalk.magenta(
+      path.relative(EXPO_DIR, buildGradlePath)
+    )}...`
   );
   await transformFileAsync(
     buildGradlePath,
     new RegExp(`\\s*maven\\s*{\\s*url\\s*".*?/expoview-${abiName}/maven"\\s*}[^\\n]*`),
-    '',
+    ''
   );
 }
 
 async function removeFromSdkVersionsAsync(version: string, sdkVersionsPath: string) {
   console.log(
-    `Removing ${chalk.cyan(version)} from ${chalk.magenta(path.relative(EXPO_DIR, sdkVersionsPath))}...`
+    `Removing ${chalk.cyan(version)} from ${chalk.magenta(
+      path.relative(EXPO_DIR, sdkVersionsPath)
+    )}...`
   );
-  await transformFileAsync(
-    sdkVersionsPath,
-    new RegExp(`"${version}",\s*`, 'g'),
-    '',
-  );
+  await transformFileAsync(sdkVersionsPath, new RegExp(`"${version}",\s*`, 'g'), '');
 }
 
 async function removeTestSuiteTestsAsync(version: string, testsFilePath: string) {
@@ -108,12 +136,15 @@ async function removeTestSuiteTestsAsync(version: string, testsFilePath: string)
   await transformFileAsync(
     testsFilePath,
     new RegExp(`\\s*(@\\w+\\s+)*@ExpoSdkVersionTest\\("${version}"\\)[^}]+}`),
-    '',
+    ''
   );
 }
 
 async function findAndPrintVersionReferencesInSourceFilesAsync(version: string): Promise<boolean> {
-  const pattern = new RegExp(`(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`, 'ig');
+  const pattern = new RegExp(
+    `(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`,
+    'ig'
+  );
   let matchesCount = 0;
 
   const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: ANDROID_DIR });
@@ -133,12 +164,17 @@ async function findAndPrintVersionReferencesInSourceFilesAsync(version: string):
       ++matchesCount;
 
       console.log(
-        `Found ${chalk.bold.green(match[0])} in ${chalk.magenta(path.relative(EXPO_DIR, filePath))}:`,
+        `Found ${chalk.bold.green(match[0])} in ${chalk.magenta(
+          path.relative(EXPO_DIR, filePath)
+        )}:`
       );
 
       for (let lineIndex = firstLineInContext; lineIndex <= lastLineInContext; lineIndex++) {
         console.log(
-          `${chalk.gray(1 + lineIndex + ':')} ${fileLines[lineIndex].replace(match[0], chalk.bgMagenta(match[0]))}`,
+          `${chalk.gray(1 + lineIndex + ':')} ${fileLines[lineIndex].replace(
+            match[0],
+            chalk.bgMagenta(match[0])
+          )}`
         );
       }
       console.log();
@@ -157,7 +193,7 @@ export async function removeVersionAsync(version: string) {
   await removeVersionedExpoviewAsync(versionedExpoviewAbiPath(abiName));
   await removeFromSettingsGradleAsync(abiName, settingsGradlePath);
   await removeFromBuildGradleAsync(abiName, buildGradlePath);
-  
+
   // Remove code surrounded by BEGIN_SDK_* and END_SDK_*
   await removeVersionReferencesFromFileAsync(sdkMajorVersion, expoviewBuildGradlePath);
   await removeVersionReferencesFromFileAsync(sdkMajorVersion, appBuildGradlePath);
@@ -174,13 +210,11 @@ export async function removeVersionAsync(version: string) {
   // Remove SDK version from the list of supported SDKs
   await removeFromSdkVersionsAsync(version, sdkVersionsPath);
 
-  console.log(
-    `\nLooking for SDK references in source files...`
-  );
+  console.log(`\nLooking for SDK references in source files...`);
 
   if (await findAndPrintVersionReferencesInSourceFilesAsync(version)) {
     console.log(
-      chalk.yellow(`Please review all of these references and remove them manually if possible!\n`),
+      chalk.yellow(`Please review all of these references and remove them manually if possible!\n`)
     );
   }
 }
@@ -228,7 +262,7 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
   return spawnAsync(
     `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
-    `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
+      `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
     [],
     { shell: true }
   );
@@ -250,8 +284,8 @@ async function renameJniLibsAsync(version: string) {
     const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
       `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
-      `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
-      `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
+        `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
+        `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
       [],
       { shell: true }
     );
@@ -263,7 +297,7 @@ async function renameJniLibsAsync(version: string) {
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
   ]);
   let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
-  await Promise.all(filenames.map(filename => processMkFileAsync(filename, abiVersion)));
+  await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code
   for (let i = 0; i < JniLibNames.length; i++) {
@@ -319,7 +353,7 @@ async function copyUnimodulesAsync(version: string) {
           cwd: SCRIPT_DIR,
         }
       );
-      console.log(`   ✅  Created versioned ${pkg.packageName}`)
+      console.log(`   ✅  Created versioned ${pkg.packageName}`);
     }
   }
 }
@@ -362,14 +396,11 @@ async function addVersionedActivitesToManifests(version: string) {
 async function registerNewVersionUnderSdkVersions(version: string) {
   let fileString = await fs.readFile(sdkVersionsPath, 'utf8');
   let jsConfig;
-    // read the existing json config and add the new version to the sdkVersions array
+  // read the existing json config and add the new version to the sdkVersions array
   try {
     jsConfig = JSON.parse(fileString);
   } catch (e) {
-    console.log(
-      'Error parsing existing sdkVersions.json file, writing a new one...',
-      e
-    );
+    console.log('Error parsing existing sdkVersions.json file, writing a new one...', e);
     console.log('The erroneous file contents was:', fileString);
     jsConfig = {
       sdkVersions: [],
@@ -395,10 +426,9 @@ async function cleanUpAsync(version: string) {
   // delete PrintDocumentAdapter*Callback.java
   // their package is `android.print` and therefore they are not changed by the versioning script
   // so we will have duplicate classes
-  const printCallbackFiles = await glob(path.join(
-    versionedAbiSrcPath,
-    'expo/modules/print/*Callback.java'
-  ));
+  const printCallbackFiles = await glob(
+    path.join(versionedAbiSrcPath, 'expo/modules/print/*Callback.java')
+  );
   for (const file of printCallbackFiles) {
     const contents = await fs.readFile(file, 'utf8');
     if (!contents.includes(`package ${abiName}`)) {
@@ -449,7 +479,7 @@ async function cleanUpAsync(version: string) {
   // replace abixx_x_x...R with abixx_x_x.host.exp.expoview.R
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
-    `xargs -0 sed -i '' 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
+      `xargs -0 sed -i '' 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
     [],
     { shell: true }
   );
@@ -475,26 +505,18 @@ export async function addVersionAsync(version: string) {
   console.log(' ✅  2/8: Finished\n\n');
 
   console.log(' 🛠   3/8: Building versioned ReactAndroid AAR...');
-  await spawnAsync(
-    './android-build-aar.sh',
-    [version],
-    {
-      shell: true,
-      cwd: SCRIPT_DIR,
-      stdio: 'inherit',
-    }
-  );
+  await spawnAsync('./android-build-aar.sh', [version], {
+    shell: true,
+    cwd: SCRIPT_DIR,
+    stdio: 'inherit',
+  });
   console.log(' ✅  3/8: Finished\n\n');
 
   console.log(' 🛠   4/8: Creating versioned expoview package...');
-  await spawnAsync(
-    './android-copy-expoview.sh',
-    [version],
-    {
-      shell: true,
-      cwd: SCRIPT_DIR,
-    }
-  );
+  await spawnAsync('./android-copy-expoview.sh', [version], {
+    shell: true,
+    cwd: SCRIPT_DIR,
+  });
   console.log(' ✅  4/8: Finished\n\n');
 
   console.log(' 🛠   5/8: Creating versioned unimodule packages...');

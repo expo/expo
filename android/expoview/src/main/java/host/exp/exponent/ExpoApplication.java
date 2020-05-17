@@ -5,9 +5,6 @@ package host.exp.exponent;
 import android.os.Debug;
 import androidx.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.crashlytics.android.core.CrashlyticsListener;
 import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.soloader.SoLoader;
 
@@ -28,7 +25,6 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.taskManager.ExpoHeadlessAppLoader;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
-import io.fabric.sdk.android.Fabric;
 import org.unimodules.apploader.AppLoaderProvider;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -74,32 +70,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
     Exponent.getInstance().setGCMSenderId(gcmSenderId());
     
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
-
-    if (!ExpoViewBuildConfig.DEBUG) {
-      final CrashlyticsListener listener = new CrashlyticsListener() {
-        @Override
-        public void crashlyticsDidDetectCrashDuringPreviousExecution(){
-          mExponentSharedPreferences.setBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE, true);
-        }
-      };
-
-      final CrashlyticsCore core = new CrashlyticsCore
-          .Builder()
-          .listener(listener)
-          .build();
-
-      Fabric.with(this, new Crashlytics.Builder().core(core).build());
-
-      try {
-        String versionName = Constants.getVersionName(this);
-        Crashlytics.setString("exp_client_version", versionName);
-        if (Constants.INITIAL_URL != null) {
-          Crashlytics.setString("initial_url", Constants.INITIAL_URL);
-        }
-      } catch (Throwable e) {
-        EXL.e(TAG, e.toString());
-      }
-    }
 
     BranchManager.initialize(this);
     AudienceNetworkAds.initialize(this);

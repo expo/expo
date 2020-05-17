@@ -1,34 +1,32 @@
 import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
-import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';
+import {
+  Listener,
+  LocalAssets,
+  Manifest,
+  UpdateCheckResult,
+  UpdateEvent,
+  UpdateFetchResult,
+} from './Updates.types';
 
-export enum UpdateEventType {
-  UPDATE_AVAILABLE = 'updateAvailable',
-  NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
-  ERROR = 'error',
-}
+export * from './Updates.types';
 
-// TODO(eric): move source of truth for manifest type to this module
-type Manifest = typeof Constants.manifest;
-
-type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest: Manifest };
-
-type UpdateFetchResult = { isNew: false } | { isNew: true; manifest: Manifest };
-
-type Listener<E> = (event: E) => void;
-
-type UpdateEvent =
-  | { type: UpdateEventType.NO_UPDATE_AVAILABLE }
-  | { type: UpdateEventType.UPDATE_AVAILABLE; manifest: Manifest }
-  | { type: UpdateEventType.ERROR; message: string };
-
-type LocalAssets = { [remoteUrl: string]: string };
-
+export const updateId: string | null =
+  ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
+    ? ExpoUpdates.updateId.toLowerCase()
+    : null;
+export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
-export const manifest: Manifest | object = ExpoUpdates.manifest ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
+export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
+
+let _manifest = ExpoUpdates.manifest;
+if (ExpoUpdates.manifestString) {
+  _manifest = JSON.parse(ExpoUpdates.manifestString);
+}
+export const manifest: Manifest | object = _manifest ?? {};
 
 export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
@@ -92,6 +90,6 @@ function _emitEvent(params): void {
 }
 
 export function addListener(listener: Listener<UpdateEvent>): EventSubscription {
-  let emitter = _getEmitter();
+  const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
 }

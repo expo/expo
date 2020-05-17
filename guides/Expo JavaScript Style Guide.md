@@ -12,6 +12,8 @@
   - [Async functions](#async-functions)
   - [Private variables](#private-variables)
   - [Boolean names](#boolean-names)
+- [Declarations](#declarations)
+  - [let and const](#let-and-const)
 - [Examples](#examples)
 - [Babel](#babel)
 
@@ -305,6 +307,18 @@ console.log(history.deleted);
 // CLEAR
 console.log(history.isDeleted);
 ```
+
+# Declarations
+
+## `let` and `const`
+
+Write `const` where possible and `let` when you need to reassign a variable. This is simple to explain to developers working on Expo and easy to enforce with a linter. We are optimizing for a holistic combination of code quality and the attention we spend writing and reviewing code.
+
+When optimizing for code quality alone, it demonstrates clearer thinking to use `const` to communicate when a variable stores a constant, rather than when a variable just happens not to be reassigned at this point in the code's lifetime, and `let` otherwise.
+
+However, when optimizing for writing and reviewing code, using `const` when possible is easy to enforce and auto-fix with a linter. This guidance is also very easy to explain to developers and streamlines code reviews since the author does not need to carefully choose between `let` and `const` depending on semantic correctness.
+
+So, overall, we're trading an acceptable amount of code quality in exchange for reducing our attention cost by writing `const` by default and `let` when needed.
 
 # Examples
 

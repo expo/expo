@@ -11,7 +11,7 @@ import spawnAsync from '@expo/spawn-async';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
-import getPackageViewFromRegistryAsync, { PackageViewType } from '../utils/getPackageViewFromRegistryAsync';
+import * as Npm from '../Npm';
 
 interface ActionOptions {
   list: boolean;
@@ -302,7 +302,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/maskedview',
         sourceAndroidPackage: 'org.reactnative.maskedview',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      }
+      },
     ],
   },
   '@react-native-community/viewpager': {
@@ -316,7 +316,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/viewpager',
         sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
-      }
+      },
     ],
   },
   'react-native-shared-element': {
@@ -389,7 +389,7 @@ async function findAndroidFilesAsync(dir: string): Promise<string[]> {
 async function loadXcodeprojFileAsync(file: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const pbxproj = xcode.project(file);
-    pbxproj.parse(err => (err ? reject(err) : resolve(pbxproj)));
+    pbxproj.parse((err) => (err ? reject(err) : resolve(pbxproj)));
   });
 }
 
@@ -401,7 +401,7 @@ function pbxGroupChild(file) {
 }
 
 function pbxGroupHasChildWithRef(group: any, ref: string): boolean {
-  return group.children.some(child => child.value === ref);
+  return group.children.some((child) => child.value === ref);
 }
 
 async function addFileToPbxprojAsync(
@@ -473,10 +473,20 @@ async function copyFilesAsync(
 async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) {
   const bundledNativeModules = await getBundledNativeModulesAsync();
   const vendoredPackageNames = Object.keys(vendoredModulesConfig);
-  const packageViews: PackageViewType[] = await Promise.all(vendoredPackageNames.map(getPackageViewFromRegistryAsync));
+  const packageViews: Npm.PackageViewType[] = await Promise.all(
+    vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
+  );
 
   for (const packageName of vendoredPackageNames) {
-    const packageView = packageViews.shift() as PackageViewType;
+    const packageView = packageViews.shift();
+
+    if (!packageView) {
+      console.error(
+        chalk.red.bold(`Couldn't get package view for ${chalk.green.bold(packageName)}.\n`)
+      );
+      continue;
+    }
+
     const moduleConfig = vendoredModulesConfig[packageName];
     const bundledVersion = bundledNativeModules[packageName];
     const latestVersion = packageView.versions[packageView.versions.length - 1];
@@ -484,7 +494,11 @@ async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) 
     if (!onlyOutdated || !bundledVersion || semver.gtr(latestVersion, bundledVersion)) {
       console.log(chalk.bold.green(packageName));
       console.log(`${chalk.yellow('>')} repository     : ${chalk.magenta(moduleConfig.repoUrl)}`);
-      console.log(`${chalk.yellow('>')} bundled version: ${(bundledVersion ? chalk.cyan : chalk.gray)(bundledVersion)}`);
+      console.log(
+        `${chalk.yellow('>')} bundled version: ${(bundledVersion ? chalk.cyan : chalk.gray)(
+          bundledVersion
+        )}`
+      );
       console.log(`${chalk.yellow('>')} latest version : ${chalk.cyan(latestVersion)}`);
       console.log();
     }
@@ -505,28 +519,42 @@ async function askForModuleAsync(): Promise<string> {
 
 async function getPackageJsonPathsAsync(): Promise<string[]> {
   const packageJsonPath = path.join(Directories.getAppsDir(), '**', 'package.json');
-  return await glob(packageJsonPath, { ignore: "**/node_modules/**" });
+  return await glob(packageJsonPath, { ignore: '**/node_modules/**' });
 }
 
-async function updateWorkspaceDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+async function updateWorkspaceDependencies(
+  dependencyName: string,
+  versionRange: string
+): Promise<boolean> {
   const paths = await getPackageJsonPathsAsync();
-  const results = await Promise.all(paths.map(path => updateDependencyAsync(path, dependencyName, versionRange)));
+  const results = await Promise.all(
+    paths.map((path) => updateDependencyAsync(path, dependencyName, versionRange))
+  );
   return results.some(Boolean);
 }
 
-async function updateHomeDependencies(dependencyName: string, versionRange: string): Promise<boolean> {
+async function updateHomeDependencies(
+  dependencyName: string,
+  versionRange: string
+): Promise<boolean> {
   const packageJsonPath = path.join(Directories.getExpoHomeJSDir(), 'package.json');
   return await updateDependencyAsync(packageJsonPath, dependencyName, versionRange);
 }
 
-async function updateDependencyAsync(packageJsonPath: string, dependencyName: string, newVersionRange: string): Promise<boolean> {
+async function updateDependencyAsync(
+  packageJsonPath: string,
+  dependencyName: string,
+  newVersionRange: string
+): Promise<boolean> {
   const jsonFile = new JsonFile(packageJsonPath);
   const packageJson = await jsonFile.readAsync();
-  
-  const dependencies = ((packageJson || {}).dependencies || {});
+
+  const dependencies = (packageJson || {}).dependencies || {};
   if (dependencies[dependencyName] && dependencies[dependencyName] !== newVersionRange) {
     console.log(
-      `${chalk.yellow('>')} ${chalk.green(packageJsonPath)}: ${chalk.magentaBright(dependencies[dependencyName])} -> ${chalk.magentaBright(newVersionRange)}`
+      `${chalk.yellow('>')} ${chalk.green(packageJsonPath)}: ${chalk.magentaBright(
+        dependencies[dependencyName]
+      )} -> ${chalk.magentaBright(newVersionRange)}`
     );
     dependencies[dependencyName] = newVersionRange;
     await jsonFile.writeAsync(packageJson);
@@ -541,12 +569,14 @@ async function action(options: ActionOptions) {
     return;
   }
 
-  const moduleName = options.module || await askForModuleAsync();
+  const moduleName = options.module || (await askForModuleAsync());
   const moduleConfig = vendoredModulesConfig[moduleName];
 
   if (!moduleConfig) {
     throw new Error(
-      `Module \`${chalk.green(moduleName)}\` doesn't match any of currently supported 3rd party modules. Run with \`--list\` to show a list of modules.`
+      `Module \`${chalk.green(
+        moduleName
+      )}\` doesn't match any of currently supported 3rd party modules. Run with \`--list\` to show a list of modules.`
     );
   }
 
@@ -571,7 +601,7 @@ async function action(options: ActionOptions) {
   await spawnAsync('git', ['checkout', options.commit], { cwd: tmpDir });
 
   if (moduleConfig.warnings) {
-    moduleConfig.warnings.forEach(warning => console.warn(warning));
+    moduleConfig.warnings.forEach((warning) => console.warn(warning));
   }
 
   for (const step of moduleConfig.steps) {
@@ -689,14 +719,17 @@ async function action(options: ActionOptions) {
     name: string;
     version: string;
   }>(path.join(tmpDir, 'package.json'));
-  const semverPrefix = (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
+  const semverPrefix =
+    (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
   const versionRange = `${semverPrefix}${version}`;
 
-  await updateBundledNativeModulesAsync(async bundledNativeModules => {
+  await updateBundledNativeModulesAsync(async (bundledNativeModules) => {
     if (moduleConfig.installableInManagedApps) {
       bundledNativeModules[name] = versionRange;
       console.log(
-        `Updated ${chalk.green(name)} in ${chalk.magenta('bundledNativeModules.json')} to version range ${chalk.cyan(versionRange)}`
+        `Updated ${chalk.green(name)} in ${chalk.magenta(
+          'bundledNativeModules.json'
+        )} to version range ${chalk.cyan(versionRange)}`
       );
     } else if (bundledNativeModules[name]) {
       delete bundledNativeModules[name];
@@ -709,9 +742,7 @@ async function action(options: ActionOptions) {
     return bundledNativeModules;
   });
 
-  console.log(
-    `\nUpdating ${chalk.green(name)} in workspace projects...`
-  );
+  console.log(`\nUpdating ${chalk.green(name)} in workspace projects...`);
   const homeWasUpdated = await updateHomeDependencies(name, versionRange);
   const workspaceWasUpdated = await updateWorkspaceDependencies(name, versionRange);
 

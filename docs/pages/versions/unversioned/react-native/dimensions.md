@@ -3,7 +3,7 @@ id: dimensions
 title: Dimensions
 ---
 
-```jsx
+```js
 import { Dimensions } from 'react-native';
 ```
 
@@ -11,7 +11,7 @@ You can get device width and height using below :
 
 Get device screen width and height :
 
-```jsx
+```js
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
 ```
@@ -22,7 +22,7 @@ const screenHeight = Math.round(Dimensions.get('window').height);
 
 ### `addEventListener()`
 
-```jsx
+```js
 
 static addEventListener(type, handler)
 
@@ -36,7 +36,7 @@ Add an event handler. Supported events:
 
 ### `get()`
 
-```jsx
+```js
 
 static get(dim)
 
@@ -60,7 +60,7 @@ Example: `var {height, width} = Dimensions.get('window');`
 
 ### `removeEventListener()`
 
-```jsx
+```js
 
 static removeEventListener(type, handler)
 
@@ -72,7 +72,7 @@ Remove an event handler.
 
 ### `set()`
 
-```jsx
+```js
 
 static set(dims)
 
