@@ -6,7 +6,11 @@
 
 + (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId
 {
-  return [notification.request.content.userInfo[@"experienceId"] isEqual:experienceId];
+  NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
+  if (!notificationExperienceId) {
+    return true;
+  }
+  return [notificationExperienceId isEqual:experienceId];
 }
 
 @end

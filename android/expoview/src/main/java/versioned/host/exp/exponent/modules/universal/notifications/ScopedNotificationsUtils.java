@@ -1,7 +1,5 @@
 package versioned.host.exp.exponent.modules.universal.notifications;
 
-import android.util.Log;
-
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import host.exp.exponent.kernel.ExperienceId;
@@ -14,7 +12,6 @@ class ScopedNotificationsUtils {
       return scopedNotificationRequest.checkIfBelongsToExperience(experienceId);
     }
 
-    Log.w("expo-notifications", "The notification's requester should be scoped.", null);
-    return false;
+    return true;
   }
 }

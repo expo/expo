@@ -22,15 +22,6 @@
   return self;
 }
 
-- (BOOL)_shouldHandleNotification:(UNNotification *)notification
-{
-  NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
-  if (!notificationExperienceId) {
-    return true;
-  }
-  return [notificationExperienceId isEqual:_experienceId];
-}
-
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
