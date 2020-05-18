@@ -144,7 +144,7 @@ public class HomeActivity extends BaseExperienceActivity {
         new CameraPackage(),
         new FaceDetectorPackage(),
         new MediaLibraryPackage(),
-        new NotificationsPackage(),
+        new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         new DevicePackage()
     );

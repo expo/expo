@@ -23,7 +23,11 @@
 
 - (BOOL)_shouldHandleNotification:(UNNotification *)notification
 {
-  return [notification.request.content.userInfo[@"experienceId"] isEqual:_experienceId];
+  NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
+  if (!notificationExperienceId) {
+    return false;
+  }
+  return [notificationExperienceId isEqual:_experienceId];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler

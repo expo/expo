@@ -18,7 +18,7 @@ public class ScopedNotificationRequest extends NotificationRequest {
   public ScopedNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger, @Nullable ExperienceId experienceId) {
     super(identifier, content, trigger);
     if (experienceId == null) {
-      mExperienceIdString = "";
+      mExperienceIdString = null;
     } else {
       mExperienceIdString = experienceId.get();
     }
@@ -31,7 +31,7 @@ public class ScopedNotificationRequest extends NotificationRequest {
 
   boolean checkIfBelongsToExperience(@Nonnull ExperienceId experienceId) {
     if (mExperienceIdString == null) {
-      return false;
+      return true;
     }
     return mExperienceIdString.equals(experienceId.get());
   }
