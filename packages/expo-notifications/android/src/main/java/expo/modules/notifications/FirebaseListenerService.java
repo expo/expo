@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -92,8 +93,12 @@ public class FirebaseListenerService extends FirebaseMessagingService {
     }
     JSONObject payload = new JSONObject(remoteMessage.getData());
     NotificationContent content = new JSONNotificationContentBuilder(this).setPayload(payload).build();
-    NotificationRequest request = new NotificationRequest(identifier, content, new FirebaseNotificationTrigger(remoteMessage));
+    NotificationRequest request = createNotificationRequest(identifier, content, new FirebaseNotificationTrigger(remoteMessage));
     return new Notification(request, new Date(remoteMessage.getSentTime()));
+  }
+
+  protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, FirebaseNotificationTrigger notificationTrigger) {
+    return new NotificationRequest(identifier, content, notificationTrigger);
   }
 
   @Override
