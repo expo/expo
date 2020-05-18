@@ -12,7 +12,7 @@ UM_REGISTER_MODULE();
   return @[@protocol(EXNotificationBuilder)];
 }
 
-- (UNNotificationContent *)notificationContentFromRequest:(NSDictionary *)request
+- (UNMutableNotificationContent *)notificationContentFromRequest:(NSDictionary *)request
 {
   UNMutableNotificationContent *content = [UNMutableNotificationContent new];
   [content setTitle:[request objectForKey:@"title" verifyingClass:[NSString class]]];

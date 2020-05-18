@@ -27,4 +27,11 @@
   }
 }
 
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+  if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
+    [super userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+  }
+}
+
 @end

@@ -8,7 +8,6 @@
 
 @end
 
-
 @implementation EXScopedNotificationBuilder
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
@@ -22,8 +21,11 @@
 
 - (UNNotificationContent *)notificationContentFromRequest:(NSDictionary *)request
 {
-  UNMutableNotificationContent *content = [[super notificationContentFromRequest:request] mutableCopy];
+  UNMutableNotificationContent *content = [super notificationContentFromRequest:request];
   NSMutableDictionary *userInfo = [content.userInfo mutableCopy];
+  if (!userInfo) {
+    userInfo = [NSMutableDictionary dictionary];
+  }
   userInfo[@"experienceId"] = _experienceId;
   [content setUserInfo:userInfo];
   return content;
