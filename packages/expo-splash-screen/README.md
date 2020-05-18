@@ -20,7 +20,7 @@
 
 `expo-splash-screen` contains a built-in feature for taking care of properly displaying your splash screen image. You can use the following resize modes to obtain behavior as if you were using the React Native `<Image>` component's `resizeMode` style.
 
-### `CONTAIN` resize mode
+#### `CONTAIN` resize mode
 
 Scale the image uniformly (maintaining the image's aspect ratio) so that both dimensions the width and height of the image will be equal to or less than the corresponding dimension of the device's screen.
 
@@ -28,7 +28,7 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both di
 |-----------------------------------------------------------|------------------------------------------------------------|
 | <img src="./assets/demo-android-contain.gif" height="350" /> | <img src="./assets/demo-ios-contain.gif" height="350" />  |
 
-### `COVER` resize mode
+#### `COVER` resize mode
 
 Scale the image uniformly (maintaining the image's aspect ratio) so that both the width and height of the image will be equal to or larger than the corresponding dimension of the device's screen.
 
@@ -36,7 +36,7 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both th
 |-----------------------------------------------------------|------------------------------------------------------------|
 | <img src="./assets/demo-android-cover.gif" height="350" /> | <img src="./assets/demo-ios-cover.gif" height="350" />  |
 
-### `NATIVE` resize mode
+#### `NATIVE` resize mode
 
 > **Android only.**
 
@@ -51,6 +51,10 @@ Android (unlike iOS) does not support stretching of the provided image during la
 
 Selecting this resize mode requires some more work to be done in native configuration.
 Please take a look at the [`res/drawable/splashscreen.xml`](#resdrawablesplashscreenxml) and [`res/drawable/splashscreen_background.png`](#resdrawablesplashscreen_backgroundpng) sections.
+
+### Per-appearance (a.k.a. dark-mode) splash screen
+
+`expo-splash-screen` supports per-appearance splash screens that respond to system appearance changes on iOS 13+ and dark-mode changes on Android 10+.
 
 ## 📚 API
 
@@ -214,9 +218,15 @@ The easiest way to configure the splash screen in bare React Native projects is 
 
 To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) behavior, you have to provide either a `SplashScreen.storyboard` file or a `SplashScreen.xib` file, and configure your Xcode project accordingly.
 
-The guide below shows how to configure your Xcode project to use single image file as a splash screen using a `.storyboard` file (configuration for `.xib` filetype is analogous).
+The guide below shows how to configure your Xcode project to use a single image file as a splash screen using a `.storyboard` file (configuration for `.xib` filetype is analogous).
 
-#### `Images.xcassets`
+1. [Add an image to `Images.xcassets`](#-add-an-image-to-imagesxcassets)
+2. [Create `SplashScreen.storyboard`](#-create-splashscreenstoryboard)
+3. [Select `Content Mode` for the `ImageView` in `SplashScreen.storyboard`](#-select-content-mode-for-the-imageview-in-splashscreenstoryboard)
+4. [Mark `SplashScreen.storyboard` as the LaunchScreen](#-mark-splashscreenstoryboard-as-the-launchscreen)
+5. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode)
+
+#### 🛠 Add an image to `Images.xcassets`
 
 First you need to add the image file that would serve as a splash screen to your native project's resources.
 
@@ -224,9 +234,12 @@ First you need to add the image file that would serve as a splash screen to your
 2. In the content panel add `New image set` and name it `SplashScreen`.
 3. Provide the splash screen image you've prepared (you have to provide it in three different scales).
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addImagesXcassets.png" height="350" />
+</details>
 
-#### `SplashScreen.storyboard`
+#### 🛠 Create `SplashScreen.storyboard`
 
 This is the actual splash screen definition and will be used by the system to render your splash screen.
 
@@ -236,7 +249,10 @@ This is the actual splash screen definition and will be used by the system to re
     - find `View Controller` element,
     - drag-and-drop it to the `.storyboard` file.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addViewControllerToStoryboard.png" height="350" />
+</details>
 
 3. Add an `Image View` to the `View Controller`:
     - first remove other `View` element from `View Controller`,
@@ -244,28 +260,40 @@ This is the actual splash screen definition and will be used by the system to re
     - find `Image View` element,
     - drag-and-drop it as a `View Controller` child in view hierarchy inspector.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addImageViewToStoryboard.png" height="350" />
+</details>
 
 4. Set `Storyboard ID` to `SplashScreenViewController`:
     - select `View Controller` in view hierarchy inspector,
     - navigate to `Identity Inspector` in the right panel,
     - and set `Storyboard ID` to `SplashScreenViewController`.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addStoryboardID.png" height="350" />
+</details>
 
 5. Tick `Is Initial View Controller` in `SplashScreenViewController`:
     - select `View Controller` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - and tick `Is Initial View Controller` in View Controller section.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-tickIsInitialViewController.png" height="350" />
+</details>
 
 6. Configure `Image View` source:
     - select `Image View` in view hierarchy inspector,
     - navigate to `Attributes Inspector` in the right panel,
     - select `SplashScreen` in `Image` parameter).
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-configureImageView.png" height="350" />
+</details>
 
 7. Configure `Background` of the `Image View`:
     - select `Image View` in view hierarchy inspector,
@@ -273,9 +301,12 @@ This is the actual splash screen definition and will be used by the system to re
     - configure `Background` parameter:
         - To enter a `#RRGGBB` value you need to select `Custom` option and in the `Colors Popup` that appeared you need to navigate to the second tab and choose `RGB Sliders` from dropdown select.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-selectBackgroundColor.png" height="350" />
+</details>
 
-#### `ImageView`'s `ContentMode`
+#### 🛠 Select `Content Mode` for the `ImageView` in `SplashScreen.storyboard`
 
 This is how your image will be displayed on the screen.
 
@@ -286,9 +317,12 @@ This is how your image will be displayed on the screen.
     - `Aspect Fill` to obtain [COVER resize mode](#cover-resize-mode).
 4. You can always choose other options to achieve different image positioning and scaling.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-selectImageViewContentMode.png" height="350" />
+</details>
 
-#### Launch Screen File
+#### 🛠 Mark `SplashScreen.storyboard` as the LaunchScreen
 
 The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Screen File` in your Xcode project in order to be presented from the very beginning of your application launch.
 
@@ -297,9 +331,110 @@ The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Sc
 3. Locate `App Icons and Launch Images` section and `Launch Screen File` option.
 4. Select or enter `SplashScreen` as the value for located option.
 
+<details>
+ <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-selectLaunchScreen.png" height="350" />
+</details>
 
-### 🤖 Configure Android
+#### 🛠 (<em>optional</em>) Enable dark mode
+
+##### Provide different background colors
+
+Depending on what iOS version your application is targeting, you have to adjust your native project differently to a obtain working per-appearance splash screen view.
+
+##### I'm targeting iOS 11+
+
+You can take advantage of [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) in your Xcode project.
+
+1. Create a new `Color Set` and customize its values for different color modes:
+    - in your `.xcassets` directory (either create a new `.xcassets` for colors, or reuse an existing one e.g. with images) create `New Color Set` and name it `SplashScreenBackground`,
+    - navigate to `Attributes Inspector` in the right panel and change `Appearance` to `Any, Dark`,
+    - select desired color in `Attributes Inspector` in the right panel for each mode.
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-createNamedColor.png" height="350" />
+</details>
+
+2. Select created `named color` as the `Background` for the `Image View` in `SplashScreen.storyboard`:
+    - open `SplashScreen.storyboard` and select `Image View` in view hierarchy inspector,
+    - navigate to `Attributes Inspector` in the right panel,
+    - configure `Background` parameter by selecting your created `named color` (that should be listed as `SplashScreenBackground`).
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-selectNamedColor.png" height="350" />
+</details>
+
+##### I'm targeting iOS version < 11
+
+You cannot use [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) feature in your Xcode project.
+Instead you have to create an additional image set that contains small 1x1px images, each with the desired background color. Then, you'll use this additional image resource as a background in the splash screen view.
+
+You can use this online generator to obtain 1x1px `.png` images with desired colors: http://www.1x1px.me.
+
+1. Create `SplashScreenBackground` `Image Set` with desired background colors for each mode in your `Images.xcassets` directory:
+    - open your `.xcassets` directory with images,
+    - in the content panel add `New image set` and name it `SplashScreenBackground`,
+    - convert this `Image set` to support `Dark Appearance` by navigating to `Attributes Inspector` in the right panel and changing `Appearance` to `Any, Dark`,
+    - provide images with colors for every mode (you can generate color 1x1px images using http://www.1x1px.me).
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-addSplashScreenBackgroundImages.png" height="250" />
+</details>
+
+2. Update `SplashScreen.storyboard` to consist of a single top-level `View` with two `Image View` subviews (solid-colored image in the background and actual splash screen image in the foreground):
+    - open `SplashScreen.storyboard` and replace `Image View` with a plain `View` (search `Library` for it and drag&drop it in place of current `Image View`),
+    - add two 
+
+3. Configure first `Image View` (background color):
+    - configure attributes in `Attributes Inspector`:
+        - set `Image` to `SplashScreenBackground` (prepared in previous step),
+        - set `Content Mode` to `Scale To Fill` (color needs to take all available space),
+    - make this subview take all available space in parent view:
+        - open `Add new constraints` bottom menu,
+        - make sure `Constrain to margin` is not checked,
+        - for every input, open the dropdown and select `View` (parent view reference) and set `0` as the value,
+        - once every side is covered (`0` value and parent view reference selected in dropdown) hit `Add 4 Constraints`,
+        - observe that in `View Hierarchy Inspector` constraints are added and `Image View` resized to take whole place of parent view.
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-createBackgroundImageView.png" height="350" />
+</details>
+
+4. Configure second `Image View` (actual splash screen image):
+    - select second `Image View` and select correct `Image` in `Attributes Inspector` alongside with desired `Content Mode`,
+    - make this subview take all available space in parent view (see previous step).
+     
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-addConstraintsToImageViews.png" height="350" />
+</details>
+
+##### Provide different splash screen image
+
+You might want to add a separate image for `dark` mode. If the system is switched to `dark` mode, it would pick this different image instead of the normal one and present it in the splash screen view.
+
+1. In your Xcode project open `SplashScreen` (created in previous section).
+2. Convert this asset to support `Dark Appearance`:
+  - navigate to `Attributes Inspector` in the right panel,
+  - locate `Appearances` section and select `Any, Dark`,
+  - provide image for `dark mode` by dropping it to the correct box.
+
+<details>
+ <summary>Show image with details</summary>
+<img src="./assets/configuration-ios-addDarkImagesXcassets.png" height="280" />
+</details>
+
+###### Background color when you want to support iOS < 11
+
+If you're targeting a version of iOS < 11 then you cannot use `named color` feature and instead you need to generate images with desired background colors that are going to be used as the background for splash screen view.
+There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to generate two 1x1px images with desired background colors for different color modes).
+
+
+## 🤖 Configure Android
 
 To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be hooked into the native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.
 
@@ -309,13 +444,22 @@ The easiest way to configure the splash screen in bare React Native projects is 
 
 ### Manual Configuration
 
-#### `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
+1. [`SplashScreen.show()` method](#-splashscreenshowactivity-activity-splashscreenimageresizemode-mode-class-rootviewclass)
+2. [Update `MainActivity`](#-update-mainactivityjavakt)
+3. [Configure `res/drawable/splashscreen_image.png`](#-configure-resdrawablesplashscreen_imagepng)
+4. [Configure `res/values/colors.xml`](#-configure-resvaluescolorsxml)
+5. [Configure `res/drawable/spalashscreen.xml`](#-configure-resdrawablesplashscreenxml)
+6. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
+7. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
+8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
+
+#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Class rootViewClass)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
 
 You can use this method to customize how the splash screen view will be presented. Pass one of `SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}` as second argument to do so.
 
-#### `MainActivity.{java,kt}`
+#### 🛠 Update `MainActivity.{java,kt}`
 
 Modify `MainActivity.{java,kt}` or any other activity that is marked in the application main `AndroidManifest.xml` as a main activity of your application (main activity is marked with the [`android.intent.action.MAIN`](https://developer.android.com/reference/android/content/Intent#ACTION_MAIN) intent filter. You can take a look at [this example from official Android docs](https://developer.android.com/guide/topics/manifest/manifest-intro#example)).
 
@@ -362,7 +506,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-#### `res/drawable/splashscreen_image.png`
+#### 🛠 Configure `res/drawable/splashscreen_image.png`
 
 You have to provide your splash screen image and place it under the `res/drawable` directory.
 This image will be loaded as soon as Android mounts your application's native view hierarchy.
@@ -382,8 +526,7 @@ To achieve proper scaling of your splash screen image on every device you should
 
 Each of directories mentioned above should contain the same `splashscreen_image.png` file, but with a different resolution (pay attention to scale factors).
 
-
-#### `res/values/colors.xml`
+#### 🛠 Configure `res/values/colors.xml`
 
 This file contains colors that are reused across your application at the native level.
 Update the file with the following content or create one if missing:
@@ -395,8 +538,7 @@ Update the file with the following content or create one if missing:
 </resources>
 ```
 
-
-#### `res/drawable/splashscreen.xml`
+#### 🛠 Configure `res/drawable/splashscreen.xml`
 
 This file contains the description of how the splash screen view should be drawn by the Android system.
 Create the file with the following content:
@@ -420,8 +562,7 @@ If you've selected `SplashScreenImageResizeMode.NATIVE` mode in [`SplashScreen.s
 </layer-list>
 ```
 
-
-#### `res/values/styles.xml`
+#### 🛠 Configure `res/values/styles.xml`
 
 Locate your main activity theme in `/android/app/src/res/values/styles.xml` or create one if missing.
 
@@ -433,8 +574,7 @@ Locate your main activity theme in `/android/app/src/res/values/styles.xml` or c
   </style>
 ```
 
-
-#### `AndroidManifest.xml`
+#### 🛠 Configure `AndroidManifest.xml`
 
 Adjust your application's main `AndroidManifest.xml` to contain an `android:theme` property pointing to the style that contains your splash screen configuration:
 
@@ -458,6 +598,24 @@ Adjust your application's main `AndroidManifest.xml` to contain an `android:them
 
 </manifest>
 ```
+
+#### 🛠 (<em>optional</em>) Enable dark mode
+
+##### Provide different background colors - `res/values-night/colors.png`
+
+If you want to have different background colors in your splash screen depending on the system color mode, you need to create a similar file to `colors.xml`, but in the directory `res/values-night`.
+Values in this file are going to picked by the system when it is switched to `dark` mode.
+
+```diff
+<resources>
++ <color name="splashscreen_background">#AABBCC</color> <!-- #AARRGGBB or #RRGGBB format -->
+</resources>
+```
+
+##### Provide different splash screen image - `res/drawable-night/splashscreen_image.png`
+
+You might want to provide a separate splash screen image for dark mode usage, and place it under the `res/drawable-night` directory with exactly the same name as the normal one.
+This step is optional, because you might want to have the same image in both `light` and `dark` modes (e.g. you have just a light-themed logo and you want to have different background colors in different modes).
 
 ## 👏 Contributing
 
