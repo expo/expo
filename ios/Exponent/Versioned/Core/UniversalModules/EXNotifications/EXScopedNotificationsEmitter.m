@@ -25,7 +25,7 @@
 {
   NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
   if (!notificationExperienceId) {
-    return false;
+    return true;
   }
   return [notificationExperienceId isEqual:_experienceId];
 }
