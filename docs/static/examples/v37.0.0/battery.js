@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -8,8 +8,6 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
     this._subscribe();
   }
 
@@ -17,17 +15,19 @@ export default class App extends React.Component {
     this._unsubscribe();
   }
 
-  _subscribe = () => {
+  async _subscribe() {
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+    this.setState({ batteryLevel });
     this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
       this.setState({ batteryLevel });
       console.log('batteryLevel changed!', batteryLevel);
     });
-  };
+  }
 
-  _unsubscribe = () => {
+  _unsubscribe() {
     this._subscription && this._subscription.remove();
     this._subscription = null;
-  };
+  }
 
   render() {
     return (
