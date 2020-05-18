@@ -245,12 +245,12 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     
     if (viewBounds.size.height != screen.size.height && viewBounds.size.width != screen.size.width && _fullscreenPlayerPresented) {
       // Fullscreen player is being dismissed
-      _fullscreenPlayerPresented = false;
+      _fullscreenPlayerPresented = NO;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillDismiss];
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidDismiss];
     } else if (viewBounds.size.height == screen.size.height && viewBounds.size.width == screen.size.width && !_fullscreenPlayerPresented) {
       // Fullscreen player is being presented
-      _fullscreenPlayerPresented = true;
+      _fullscreenPlayerPresented = YES;
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerWillPresent];
       [self _callFullscreenCallbackForUpdate:EXVideoFullscreenUpdatePlayerDidPresent];
     } else {
