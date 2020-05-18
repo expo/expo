@@ -33,6 +33,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   private boolean mIsAuthenticating = false;
   private ModuleRegistry mModuleRegistry;
   private UIManager mUIManager;
+
   private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
 
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
