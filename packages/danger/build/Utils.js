@@ -33,7 +33,7 @@ function getPackageChangelogRelativePath(packageName) {
 exports.getPackageChangelogRelativePath = getPackageChangelogRelativePath;
 function getExpoRepositoryRootDir() {
     // EXPO_ROOT_DIR is set locally by direnv
-    return process.env.EXPO_ROOT_DIR || path_1.join(__dirname, '..');
+    return process.env.EXPO_ROOT_DIR || path_1.join(__dirname, '../../..');
 }
 exports.getExpoRepositoryRootDir = getExpoRepositoryRootDir;
 async function getFileContentAsync(path) {
