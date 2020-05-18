@@ -1507,7 +1507,7 @@ CACHE_KEYS:
   react-native-appearance:
     BUILD_SETTINGS_CHECKSUM:
       react-native-appearance: a65151d7252615fcc01dbb407fa5071d
-    CHECKSUM: 98e4530857c366de634f58e5db91bf97feaa96ff
+    CHECKSUM: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
     FILES:
       - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
       - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
@@ -1519,7 +1519,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-appearance/README.md"
     PROJECT_NAME: react-native-appearance
     SPECS:
-      - react-native-appearance (0.3.3)
+      - react-native-appearance (0.3.4)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
