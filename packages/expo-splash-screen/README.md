@@ -415,7 +415,7 @@ You can use this online generator to obtain 1x1px `.png` images with desired col
 
 ##### Provide different splash screen image
 
-You might want to add separate image for `dark` mode. If the system is switched to `dark` mode it would pick this different image instead of normal one and present it in splash screen view.
+You might want to add a separate image for `dark` mode. If the system is switched to `dark` mode, it would pick this different image instead of the normal one and present it in the splash screen view.
 
 1. In your Xcode project open `SplashScreen` (created in previous section).
 2. Convert this asset to support `Dark Appearance`:
