@@ -3,6 +3,7 @@
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
 
 #import "EXScopedNotificationsEmitter.h"
+#import "EXScopedNotificationsUtils.h"
 
 @interface EXScopedNotificationsEmitter ()
 
@@ -21,18 +22,9 @@
   return self;
 }
 
-- (BOOL)_shouldHandleNotification:(UNNotification *)notification
-{
-  NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
-  if (!notificationExperienceId) {
-    return true;
-  }
-  return [notificationExperienceId isEqual:_experienceId];
-}
-
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  if ([self _shouldHandleNotification:response.notification]) {
+  if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
     [super userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
     return;
   }
@@ -42,7 +34,7 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  if ([self _shouldHandleNotification:notification]) {
+  if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
     [super userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
     return;
   }
