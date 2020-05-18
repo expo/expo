@@ -1,5 +1,5 @@
 declare const _default: {
-    readonly name: String;
+    readonly name: string;
     readonly activatePreventScreenCapture: null;
     readonly deactivatePreventScreenCapture: null;
     readonly usePreventScreenCapture: null;

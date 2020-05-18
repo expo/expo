@@ -1,5 +1,5 @@
-import ExpoPreventScreenCapture from './ExpoPreventScreenCapture';
 import { useEffect } from 'react';
+import ExpoPreventScreenCapture from './ExpoPreventScreenCapture';
 /**
  * Prevent screen capture and recording
  *
