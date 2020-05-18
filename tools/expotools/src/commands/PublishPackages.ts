@@ -198,5 +198,5 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.checkIntegrity) {
     return [tasks.prepareParcels, tasks.checkPackagesIntegrity];
   }
-  return [tasks.publishPackagesWorkflow];
+  return [tasks.publishPackagesPipeline];
 }

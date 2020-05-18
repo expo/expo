@@ -137,7 +137,7 @@ export const checkPackagesIntegrity = new Task<TaskArgs>(
   async (parcels: Parcel[], options: CommandOptions): Promise<void | symbol> => {
     logger.info('\n👁  Checking packages integrity...');
 
-    const resolver = async ({ pkg, pkgView, changelog, state }: Parcel): Promise<boolean> => {
+    const resolver = async ({ pkg, pkgView, changelog }: Parcel): Promise<boolean> => {
       if (!pkgView) {
         // If package view is not there, then the package hasn't been released yet - no need to check integrity.
         return true;
@@ -155,13 +155,13 @@ export const checkPackagesIntegrity = new Task<TaskArgs>(
         logger.warn(`   Cannot find ${blue('gitHead')} in package view.`);
       } else if (!isAncestor) {
         logger.warn(
-          `   Current version ${cyan(pkgView.version)} has been published from different branch.`
+          `   Local version ${cyan(pkgView.version)} has been published from different branch.`
         );
       }
       if (!isVersionMatching) {
         logger.warn(
-          `   Last version in changelog (${cyan(lastChangelogVersion!)})`,
-          `doesn't match the current version (${cyan(pkgView.version)}).`
+          `   Last version in changelog ${cyan(lastChangelogVersion!)}`,
+          `doesn't match local version ${cyan(pkgView.version)}.`
         );
       }
       return integral;
@@ -541,7 +541,7 @@ export const updateIosProjects = new Task<TaskArgs>(
 );
 
 /**
- * Cuts off changelogs - renames unpublished section heading
+ * Cuts off changelogs - renames unpublished section header
  * to the new version and adds new unpublished section on top.
  */
 export const cutOffChangelogs = new Task<TaskArgs>(
@@ -662,7 +662,7 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
   async (parcels: Parcel[], options: CommandOptions) => {
     // There is no good way to check whether the package is added to organization team,
     // so let's get all team members and check if they all are declared as maintainers.
-    // If they aren't, we grant access for the team. Sounds reasonable?
+    // If they don't, grant access for the team.
     const teamMembers = await Npm.getTeamMembersAsync(Npm.EXPO_DEVELOPERS_TEAM_NAME);
     const packagesToGrantAccess = parcels.filter(
       ({ pkgView, state }) =>
@@ -691,11 +691,11 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
 );
 
 /**
- * Workflow using on a bunch of tasks required to publish packages.
+ * Pipeline with a bunch of tasks required to publish packages.
  */
-export const publishPackagesWorkflow = new Task<TaskArgs>(
+export const publishPackagesPipeline = new Task<TaskArgs>(
   {
-    name: 'publishPackagesWorkflow',
+    name: 'publishPackagesPipeline',
     dependsOn: [
       checkRepositoryStatus,
       prepareParcels,
