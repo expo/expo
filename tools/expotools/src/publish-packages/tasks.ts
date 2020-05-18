@@ -30,6 +30,7 @@ import {
 import { CommandOptions, Parcel, TaskArgs, ReleaseType } from './types';
 
 const { green, yellow, cyan, magenta, blue, gray } = chalk;
+const IGNORED_PACKAGES = ['react-native-unimodules'];
 
 /**
  * Checks whether the current branch is correct and working dir is not dirty.
@@ -103,7 +104,7 @@ export const prepareParcels = new Task<TaskArgs>(
     const filteredPackages = allPackages.filter((pkg) => {
       const isPrivate = pkg.packageJson.private;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);
-      return !isPrivate && isIncluded;
+      return !isPrivate && isIncluded && !IGNORED_PACKAGES.includes(pkg.packageName);
     });
 
     parcels.push(...(await Promise.all(filteredPackages.map(createParcelAsync))));
