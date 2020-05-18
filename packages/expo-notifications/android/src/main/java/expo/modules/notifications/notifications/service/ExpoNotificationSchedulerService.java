@@ -36,7 +36,9 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   private static final String NOTIFICATION_SCHEDULE_ACTION = "expo.modules.notifications.SCHEDULE_EVENT";
   private static final String NOTIFICATION_TRIGGER_ACTION = "expo.modules.notifications.TRIGGER_EVENT";
   private static final String NOTIFICATIONS_FETCH_ALL_ACTION = "expo.modules.notifications.FETCH_ALL";
+  private static final String NOTIFICATIONS_FETCH_ACTION = "expo.modules.notifications.FETCH";
   private static final String NOTIFICATION_REMOVE_ACTION = "expo.modules.notifications.REMOVE_EVENT";
+  private static final String NOTIFICATION_REMOVE_SELECTED_ACTION = "expo.modules.notifications.REMOVE_SELECTED_EVENTS";
   private static final String NOTIFICATION_REMOVE_ALL_ACTION = "expo.modules.notifications.REMOVE_ALL_EVENTS";
 
   private static final List<String> SETUP_ACTIONS = Arrays.asList(
@@ -67,6 +69,20 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    */
   public static void enqueueFetchAll(Context context, @Nullable ResultReceiver resultReceiver) {
     Intent intent = new Intent(NOTIFICATIONS_FETCH_ALL_ACTION, getUriBuilder().build());
+    intent.putExtra(RECEIVER_KEY, resultReceiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * Fetches scheduled notification asynchronously.
+   *
+   * @param context        Context this is being called from
+   * @param identifier     Identifier of the notification to be fetched
+   * @param resultReceiver Receiver to be called with the results
+   */
+  public static void enqueueFetch(Context context, String identifier, @Nullable ResultReceiver resultReceiver) {
+    Intent intent = new Intent(NOTIFICATIONS_FETCH_ACTION, getUriBuilderForIdentifier(identifier).appendPath("fetch").build());
+    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifier);
     intent.putExtra(RECEIVER_KEY, resultReceiver);
     enqueueWork(context, intent);
   }
@@ -125,6 +141,22 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
     enqueueWork(context, intent);
   }
 
+
+  /**
+   * Cancel selected scheduled notifications and remove them from the storage asynchronously.
+   *
+   * @param context        Context this is being called from
+   * @param identifiers    Identifiers of selected notifications to be removed
+   * @param resultReceiver Receiver to be called with the result
+   */
+  public static void enqueueRemoveSelected(Context context, String[] identifiers, ResultReceiver resultReceiver) {
+    Intent intent = new Intent(NOTIFICATION_REMOVE_SELECTED_ACTION);
+    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifiers);
+    intent.putExtra(RECEIVER_KEY, resultReceiver);
+    enqueueWork(context, intent);
+  }
+
+
   /**
    * Enqueue work to this {@link JobIntentService}.
    *
@@ -169,6 +201,12 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(NOTIFICATION_REQUESTS_KEY, new ArrayList<>(fetchNotifications()));
         resultData = bundle;
+      } else if (NOTIFICATIONS_FETCH_ACTION.equals(intent.getAction())) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(NOTIFICATION_REQUESTS_KEY, fetchNotification(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY)));
+        resultData = bundle;
+      } else if (NOTIFICATION_REMOVE_SELECTED_ACTION.equals(intent.getAction())) {
+        removeSelectedNotifications(this, intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY));
       } else if (NOTIFICATION_REMOVE_ALL_ACTION.equals(intent.getAction())) {
         removeAllNotifications(this);
       } else if (SETUP_ACTIONS.contains(intent.getAction())) {
@@ -215,6 +253,20 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
    */
   protected Collection<NotificationRequest> fetchNotifications() {
     return mStore.getAllNotificationRequests();
+  }
+
+  /**
+   * Fetches and serializes (using {@link NotificationSerializer}) a single notification with specific identifier.
+   *
+   * @param identifier Identifier of the notification to be fetched
+   * @return Instance of the NotificationRequest or null if the notification wasn't find
+   */
+  protected NotificationRequest fetchNotification(String identifier) {
+    try {
+      return mStore.getNotificationRequest(identifier);
+    } catch (IOException | ClassNotFoundException e) {
+      return null;
+    }
   }
 
   /**
@@ -287,6 +339,18 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   protected void removeNotification(Context context, String identifier) {
     mAlarmManager.cancel(getTriggerPendingIntent(context, identifier));
     mStore.removeNotificationRequest(identifier);
+  }
+
+  /**
+   * Remove selected notifications from storage and cancel any pending alarms.
+   *
+   * @param context Context this is being called from
+   * @param identifiers Notification identifiers
+   */
+  protected void removeSelectedNotifications(Context context, String[] identifiers) {
+    for (String identifier : identifiers) {
+      removeNotification(context, identifier);
+    }
   }
 
   /**
