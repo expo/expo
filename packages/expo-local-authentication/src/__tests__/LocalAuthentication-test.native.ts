@@ -6,7 +6,7 @@ beforeEach(() => {
   ExpoLocalAuthentication.authenticateAsync.mockImplementation(async () => ({ success: true }));
 });
 
-it(`uses options on iOS`, async () => {
+it(`uses options`, async () => {
   const options = {
     promptMessage: 'Authentication is required',
     cancelLabel: 'Abort',
@@ -18,7 +18,7 @@ it(`uses options on iOS`, async () => {
   expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith(options);
 });
 
-it(`throws when an invalid message is used on iOS`, async () => {
+it(`throws when an invalid message is used`, async () => {
   expect(
     LocalAuthentication.authenticateAsync({ promptMessage: undefined as any })
   ).rejects.toThrow();
