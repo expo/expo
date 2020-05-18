@@ -1,12 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
+#if __has_include(<EXNotifications/EXNotificationBuilder.h>)
 
-#import <EXNotifications/EXNotificationsEmitter.h>
+#import <EXNotifications/EXNotificationBuilder.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXScopedNotificationsEmitter : EXNotificationsEmitter
+@interface EXScopedNotificationBuilder : EXNotificationBuilder
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId;
 

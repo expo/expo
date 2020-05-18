@@ -2,15 +2,15 @@ package versioned.host.exp.exponent.modules.universal.notifications;
 
 import android.content.Context;
 
-import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
+import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import host.exp.exponent.kernel.ExperienceId;
 
-public class ScopedNotificationsEmitter extends NotificationsEmitter {
+public class ScopedNotificationsHandler extends NotificationsHandler {
   private ExperienceId mExperienceId;
 
-  public ScopedNotificationsEmitter(Context context, ExperienceId experienceId) {
+  public ScopedNotificationsHandler(Context context, ExperienceId experienceId) {
     super(context);
     mExperienceId = experienceId;
   }
