@@ -10,6 +10,5 @@ class PreventScreenCapturePackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
     return listOf(PreventScreenCaptureModule(context) as ExportedModule)
   }
-
 }
 
