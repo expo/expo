@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTImageEditingManager.h
+../../../../../../../../react-native-lab/react-native/Libraries/Image/RCTImageEditingManager.h
