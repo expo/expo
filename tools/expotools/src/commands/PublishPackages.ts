@@ -106,7 +106,7 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
   options.packageNames = packageNames;
 
   const tasks = tasksForOptions(options);
-  const taskRunner = new TaskRunner<[Parcel[], CommandOptions], PublishBackupData>({
+  const taskRunner = new TaskRunner<TaskArgs, PublishBackupData>({
     tasks,
     backupFilePath: BACKUP_PATH,
     backupExpirationTime: BACKUP_EXPIRATION_TIME,
