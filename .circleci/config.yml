@@ -315,18 +315,6 @@ workflows:
     jobs:
       - expo_client_build
 
-  shell_app_nightly:
-    triggers:
-      - schedule:
-          cron: '20 5 * * 2,4,6'
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - shell_app_ios_build:
-          upload: false
-
 jobs:
   client_ios:
     executor: mac
