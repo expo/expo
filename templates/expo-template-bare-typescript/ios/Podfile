@@ -41,6 +41,6 @@ target 'HelloWorld' do
   # Automatically detect installed unimodules using autolinking
   use_unimodules!
 
-  # @react-native-ccommunity/cli's autolinking
+  # @react-native-community/cli's autolinking
   use_native_modules!
 end
