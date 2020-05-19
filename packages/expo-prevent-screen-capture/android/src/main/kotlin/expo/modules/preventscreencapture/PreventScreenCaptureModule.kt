@@ -63,7 +63,6 @@ class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
 
   companion object {
     private val NAME = "ExpoPreventScreenCapture"
-    private val TAG = PreventScreenCaptureModule::class.qualifiedName
     private const val ERROR_TAG = "ERR_PREVENT_SCREEN_CAPTURE"
   }
 }
