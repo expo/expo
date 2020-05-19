@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue on iOS where calling the JS module methods in development mode, after publishing at least one update, would crash the app.
+
 ## 0.2.2
 
 ### 🐛 Bug fixes
