@@ -39,7 +39,13 @@ Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported. If neither authentication type is supported, returns an empty array.
+Returns a promise resolving to an array containing any of the types below. If neither authentication type is supported, returns an empty array.
+
+- `LocalAuthentication.AuthenticationType.BIOMETRIC` indicates either Fingerprint or Facial Recognition support
+- `LocalAuthentication.AuthenticationType.FINGERPRINT` indicates Fingerprint support **iOS only**
+- `LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION` indicates Facial Recognition support **iOS only**
+
+> **Note:** On Android, this only returns the `BIOMETRIC` type if fingerprint or facial recognition is available. The new [BiometricPrompt](https://developer.android.com/training/sign-in/biometric-auth) doesn't allow selecting a specific method of biometric authentication.
 
 ### `LocalAuthentication.isEnrolledAsync()`
 

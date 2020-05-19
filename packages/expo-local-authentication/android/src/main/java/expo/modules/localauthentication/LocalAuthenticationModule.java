@@ -34,7 +34,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;
   private UIManager mUIManager;
 
-  private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
+  private static final int AUTHENTICATION_TYPE_BIOMETRIC = 3;
 
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
           new BiometricPrompt.AuthenticationCallback () {
@@ -79,7 +79,7 @@ public class LocalAuthenticationModule extends ExportedModule {
     int result = mBiometricManager.canAuthenticate();
     List<Integer> results = new ArrayList<>();
     if (result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
-      results.add(AUTHENTICATION_TYPE_FINGERPRINT);
+      results.add(AUTHENTICATION_TYPE_BIOMETRIC);
     }
     promise.resolve(results);
   }

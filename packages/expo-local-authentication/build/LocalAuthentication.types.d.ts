@@ -5,6 +5,7 @@ export declare type LocalAuthenticationResult = {
     error: string;
 };
 export declare enum AuthenticationType {
+    BIOMETRIC = 3,
     FINGERPRINT = 1,
     FACIAL_RECOGNITION = 2
 }

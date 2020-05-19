@@ -9,6 +9,7 @@
 typedef NS_ENUM(NSInteger, EXAuthenticationType) {
   EXAuthenticationTypeFingerprint = 1,
   EXAuthenticationTypeFacialRecognition = 2,
+  EXAuthenticationTypeBiometric = 3,
 };
 
 @implementation EXLocalAuthentication
@@ -25,6 +26,9 @@ UM_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
   }
   if ([[self class] isFaceIdDevice]) {
     [results addObject:@(EXAuthenticationTypeFacialRecognition)];
+  }
+  if ([[self class] isTouchIdDevice] || [[self class] isFaceIdDevice]) {
+    [results addObject:@(EXAuthenticationTypeBiometric)];
   }
   resolve(results);
 }
