@@ -57,7 +57,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
         if (resultCode == ExpoNotificationSchedulerService.SUCCESS_CODE) {
           NotificationRequest request = resultData.getParcelable(ExpoNotificationSchedulerService.NOTIFICATION_REQUESTS_KEY);
           if (request == null || !ScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
-            promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications. The notification couldn't be found.", null);
+            promise.resolve(null);
           }
 
           baseFunction.invoke(identifier, promise);
