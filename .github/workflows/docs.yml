@@ -49,5 +49,8 @@ jobs:
           yarn test-links http://127.0.0.1:8000
         timeout-minutes: 1
       - run: sudo apt-get install awscli
-      #- run: docs/deploy.sh
-      #  if: ${{ github.ref == 'master' }}
+      - run: docs/deploy.sh
+        if: ${{ github.ref == 'master' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
