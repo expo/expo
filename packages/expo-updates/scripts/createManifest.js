@@ -1,9 +1,9 @@
-const filterPlatformAssetScales = require('@react-native-community/cli/build/commands/bundle/filterPlatformAssetScales')
-  .default;
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const uuid = require('uuid/v4');
+
+const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
 const platform = process.argv[2];
 const packagerUrl = process.argv[3];

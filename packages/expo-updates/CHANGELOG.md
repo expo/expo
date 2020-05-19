@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Temporarily vendor `filterPlatformAssetScales` method from `@react-native-community/cli` in order to fix builds when `npm` was used to install dependencies (rather than `yarn`).
+
 ## 0.2.2
 
 ### 🐛 Bug fixes
