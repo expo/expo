@@ -29,8 +29,5 @@
     "eslint": "^6.8.0",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.19.0"
-  },
-  "resolutions": {
-    "@react-native-community/cli-platform-ios": "3.0.0"
   }
 }
