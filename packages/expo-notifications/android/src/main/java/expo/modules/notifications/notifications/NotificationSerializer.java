@@ -20,6 +20,7 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
@@ -150,10 +151,13 @@ public class NotificationSerializer {
       bundle.putString("type", "date");
       bundle.putBoolean("repeats", false);
       bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
+    } else if (trigger instanceof DailyTrigger) {
+      bundle.putString("type", "daily");
+      bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }
     return bundle;
   }
-
 }

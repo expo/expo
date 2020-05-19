@@ -13,6 +13,7 @@ import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
+import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 
@@ -141,6 +143,14 @@ public class NotificationScheduler extends ExportedModule {
           throw new InvalidArgumentException("Invalid value provided as date of trigger.");
         }
         return new DateTrigger(((Number) params.get("timestamp")).longValue());
+      case "daily":
+        if (!(params.get("hour") instanceof Number) || !(params.get("minute") instanceof Number)) {
+          throw new InvalidArgumentException("Invalid value(s) provided for daily trigger.");
+        }
+        return new DailyTrigger(
+          ((Number) params.get("hour")).intValue(),
+          ((Number) params.get("minute")).intValue()
+        );
       default:
         throw new InvalidArgumentException("Trigger of type: " + params.getString("type") + " is not supported on Android.");
     }

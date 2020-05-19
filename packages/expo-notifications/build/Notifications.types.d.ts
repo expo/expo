@@ -62,6 +62,11 @@ export interface TimeIntervalNotificationTrigger {
     repeats: boolean;
     seconds: number;
 }
+export interface DailyNotificationTrigger {
+    type: 'daily';
+    hour: number;
+    minute: number;
+}
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
     data: {
@@ -107,7 +112,7 @@ export interface FirebaseRemoteMessage {
 export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
-export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | UnknownNotificationTrigger;
+export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | UnknownNotificationTrigger;
 export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
     repeats?: boolean;
 };
@@ -115,8 +120,12 @@ export interface TimeIntervalTriggerInput {
     repeats?: boolean;
     seconds: number;
 }
+export interface DailyTriggerInput {
+    hour: number;
+    minute: number;
+}
 export declare type DateTriggerInput = Date | number;
-export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | CalendarTriggerInput;
+export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",
