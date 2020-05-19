@@ -24,13 +24,16 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   private final TransferListener mListener;
   @Nullable
   private final CacheControl mCacheControl;
+  @Nullable
+  private final TransferListener mBandwidthMeter;
 
-  public CustomHeadersOkHttpDataSourceFactory(@NonNull Call.Factory callFactory, @Nullable String userAgent, @Nullable Map<String, Object> requestHeaders) {
+  public CustomHeadersOkHttpDataSourceFactory(@NonNull Call.Factory callFactory, @Nullable String userAgent, @Nullable Map<String, Object> requestHeaders, @Nullable TransferListener bandwidthMeter) {
     super();
     mCallFactory = callFactory;
     mUserAgent = userAgent;
     mListener = null;
     mCacheControl = null;
+    mBandwidthMeter = bandwidthMeter;
     updateRequestProperties(getDefaultRequestProperties(), requestHeaders);
   }
 
@@ -45,6 +48,10 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   }
 
   protected OkHttpDataSource createDataSourceInternal(HttpDataSource.RequestProperties defaultRequestProperties) {
-    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mCacheControl, defaultRequestProperties);
+    OkHttpDataSource okHttpDataSource = new OkHttpDataSource(mCallFactory, mUserAgent, null, mCacheControl, defaultRequestProperties);
+    if (mBandwidthMeter != null) {
+      okHttpDataSource.addTransferListener(mBandwidthMeter);
+    }
+    return okHttpDataSource;
   }
 }

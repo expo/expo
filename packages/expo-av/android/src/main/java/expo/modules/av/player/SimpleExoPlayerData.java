@@ -92,7 +92,7 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders);
+    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders, bandwidthMeter.getTransferListener());
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
