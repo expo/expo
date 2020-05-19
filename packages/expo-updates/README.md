@@ -2,17 +2,12 @@
 
 `expo-updates` fetches and manages updates to your app stored on a remote server.
 
-See [Updates docs](https://docs.expo.io/versions/latest/sdk/updates) for documentation of this universal module's API.
+## API documentation
 
-# Installation
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/updates.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/)
 
-This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
-
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
-
-## Upgrading
-
-If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/master/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
+Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
 
 ## Compatibility
 
@@ -21,6 +16,18 @@ This module requires `expo-cli@3.17.6` or later; make sure your global installat
 Additionally, this module is only compatible with Expo SDK 37 or later. For bare workflow projects, if the `expo` package is installed, it must be version `37.0.2` or later.
 
 Finally, this module is not compatible with ExpoKit. Make sure you do not have `expokit` listed as a dependency in package.json before adding this module.
+
+## Upgrading
+
+If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/master/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
+
+# Installation in managed Expo projects
+
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/media-library/).
+
+# Installation in bare React Native projects
+
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -347,91 +354,161 @@ Condition under which expo-updates should automatically check for (and download,
 
 Number of milliseconds expo-updates should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
-## API
+# Removing pre-installed expo-updates
 
-```js
-import * as Updates from 'expo-updates';
+Projects created by `expo init` and `expo eject` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
+
+### Disabling expo-updates
+
+If you disable updates, the module will stay installed in case you ever want to use it in the future, but none of the OTA-updating code paths will ever be executed in your builds. To disable OTA updates, add the `EXUpdatesEnabled` key to Expo.plist with a boolean value of `NO`, and add the following line to AndroidManifest.xml:
+
+```xml
+<meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
 ```
 
-### Constants
+### Uninstalling expo-updates
 
-- **`Updates.manifest` (_object_)** - If `expo-updates` is enabled, this is the [manifest](https://docs.expo.io/versions/latest/workflow/how-expo-works/#expo-development-server) object for the update that's currently running. In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
-- **`Updates.releaseChannel` (_string_)** - The name of the release channel currently configured in this standalone or bare app. In development clients, this is the name of the release channel of the currently running update.
-- **`Updates.updateId` (_string | null_)** - If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
-- **`Updates.isEmergencyLaunch` (_boolean_)** - `expo-updates` does its very best to always launch monotonically newer versions of your app so you don't need to worry about backwards compatibility when you put out an update. In very rare cases, it's possible that `expo-updates` may need to fall back to the update that's embedded in the app binary, even after newer updates have been downloaded and run (an "emergency launch"). This boolean will be `true` if the app is launching under this fallback mechanism and `false` otherwise. If you are concerned about backwards compatibility of future updates to your app, you can use this constant to provide special behavior for this rare case.
+Uninstalling the module will entirely remove all expo-updates related code from your codebase. To do so, complete the following steps:
 
-### `Updates.reloadAsync()`
+- Remove `expo-updates` from your package.json and reinstall your node modules.
+- Remove the line `../node_modules/expo-updates/scripts/create-manifest-ios.sh` from the "Bundle React Native code and images" Build Phase in Xcode.
+- Delete Expo.plist from your Xcode project and file system.
+- Remove the line `apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"` from `android/app/build.gradle`.
+- Remove all `meta-data` tags with `expo.modules.updates` in the `android:name` field from AndroidManifest.xml.
+- Apply the following three diffs:
 
-Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+#### `AppDelegate.h`
 
-This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
+Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 
-#### Returns
+```diff
+-#import <EXUpdates/EXUpdatesAppController.h>
+ #import <React/RCTBridgeDelegate.h>
+ #import <UMCore/UMAppDelegateWrapper.h>
 
-A `Promise` that resolves right before the reload instruction is sent to the JS runtime, or rejects if it cannot find a reference to the JS runtime.
+-@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
++@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate>
 
-If the `Promise` is rejected in production mode, it most likely means you have installed the module incorrectly. Double check you've followed the instructions above. In particular, on iOS ensure that you set the `bridge` property on `EXUpdatesAppController` with a pointer to the `RCTBridge` you want to reload, and on Android ensure you either call `UpdatesController.initialize` with the instance of `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the proper instance of `ReactNativeHost`.
+ @property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
+ @property (nonatomic, strong) UIWindow *window;
+ ```
 
-### `Updates.checkForUpdateAsync()`
+#### `AppDelegate.m`
 
-Checks the server at the provided remote URL to see if a newly deployed version of your project is available. Does not actually download the update.
+```diff
+ #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+ #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 
-This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
+-@interface AppDelegate ()
+-
+-@property (nonatomic, strong) NSDictionary *launchOptions;
+-
+-@end
+-
+ @implementation AppDelegate
 
-#### Returns
+...
 
-A `Promise` that resolves to an object with the following keys:
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+ {
+   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
+-  self.launchOptions = launchOptions;
+-
+-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+-#ifdef DEBUG
+-  [self initializeReactNativeApp];
+-#else
+-  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+-  controller.delegate = self;
+-  [controller startAndShowLaunchScreen:self.window];
+-#endif
+-
+-  [super application:application didFinishLaunchingWithOptions:launchOptions];
+-
+-  return YES;
+-}
+-
+-- (RCTBridge *)initializeReactNativeApp
+-{
+-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
++  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"YOUR-APP-NAME" initialProperties:nil];
+   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-- **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
-- **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
++  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+   UIViewController *rootViewController = [UIViewController new];
+   rootViewController.view = rootView;
+   self.window.rootViewController = rootViewController;
+   [self.window makeKeyAndVisible];
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+-  return bridge;
++  [super application:application didFinishLaunchingWithOptions:launchOptions];
++
++  return YES;
+ }
 
-### `Updates.fetchUpdateAsync()`
+...
 
-Downloads the most recently deployed version of your project from server to the device's local storage.
+ #ifdef DEBUG
+   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+ #else
+-  return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
++  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+ #endif
+ }
 
-This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
+-- (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
+-{
+-  appController.bridge = [self initializeReactNativeApp];
+-}
+-
+ @end
+```
 
-#### Returns
+#### `MainApplication.java`
 
-A `Promise` that resolves to an object with the following keys:
+```diff
+-import android.net.Uri;
+-import expo.modules.updates.UpdatesController;
+-import javax.annotation.Nullable;
+-
+ public class MainApplication extends Application implements ReactApplication {
+   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
+     new BasePackageList().getPackageList(),
 
-- **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
-- **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
+...
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+     protected String getJSMainModuleName() {
+       return "index";
+     }
+-
+-    @Override
+-    protected @Nullable String getJSBundleFile() {
+-      if (BuildConfig.DEBUG) {
+-        return super.getJSBundleFile();
+-      } else {
+-        return UpdatesController.getInstance().getLaunchAssetFile();
+-      }
+-    }
+-
+-    @Override
+-    protected @Nullable String getBundleAssetName() {
+-      if (BuildConfig.DEBUG) {
+-        return super.getBundleAssetName();
+-      } else {
+-        return UpdatesController.getInstance().getBundleAssetName();
+-      }
+-    }
+   };
 
-### `Updates.addListener(eventListener)`
+...
 
-Adds a callback to be invoked when updates-related events occur (such as upon the initial app load) due to auto-update settings chosen at build-time.
-
-#### Arguments
-
-- **eventListener (_(event: [UpdateEvent](#updateevent)) => void_)** -- A function that will be invoked with an instance of [`UpdateEvent`](#updateevent) and should not return any value.
-
-#### Returns
-
-An [`EventSubscription`](#eventsubscription) object on which you can call `remove()` if you would like to unsubscribe from the listener.
-
-### Related types
-
-### `EventSubscription`
-
-An object returned from `addListener`.
-
-- **remove() (_function_)** -- Unsubscribe the listener from future updates.
-
-### `UpdateEvent`
-
-An object that is passed into each event listener when an auto-update check has occurred.
-
-- **type (_string_)** -- Type of the event (see [`EventType`](#eventtype)).
-- **manifest (_object_)** -- If `type === Updates.EventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded update. Undefined otherwise.
-- **message (_string_)** -- If `type === Updates.EventType.ERROR`, the error message. Undefined otherwise.
-
-### `EventType`
-
-- **`Updates.EventType.UPDATE_AVAILABLE`** -- A new update has finished downloading to local storage. If you would like to start using this update at any point before the user closes and restarts the app on their own, you can call `Updates.reloadAsync()` to launch this new update.
-- **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
-- **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.
+   public void onCreate() {
+     super.onCreate();
+     SoLoader.init(this, /* native exopackage */ false);
+-
+-    if (!BuildConfig.DEBUG) {
+-      UpdatesController.initialize(this);
+-    }
+   }
+ }
