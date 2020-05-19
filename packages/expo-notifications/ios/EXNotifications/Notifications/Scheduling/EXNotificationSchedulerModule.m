@@ -48,11 +48,7 @@ UM_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
                     )
 {
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    NSMutableArray *serializedRequests = [NSMutableArray new];
-    for (UNNotificationRequest *request in requests) {
-      [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
-    }
-    resolve(serializedRequests);
+    resolve([self serializeNotificationRequests:requests]);
   }];
 }
 
@@ -79,12 +75,31 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
 UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
                      cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
 {
-  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
-  resolve(nil);
+  [self cancelScheduledNotificationAsync:identifier resolve:resolve rejecting:reject];
 }
 
 UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
                      cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+{
+  [self cancelAllScheduledNotificationsAsync:resolve rejecting:reject];
+}
+
+-(NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
+{
+  NSMutableArray *serializedRequests = [NSMutableArray new];
+  for (UNNotificationRequest *request in requests) {
+    [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
+  }
+  return serializedRequests;
+}
+
+-(void)cancelScheduledNotificationAsync:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
+{
+  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
+  resolve(nil);
+}
+
+-(void)cancelAllScheduledNotificationsAsync:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
   resolve(nil);
