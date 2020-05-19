@@ -31,6 +31,11 @@ UM_EXPORT_METHOD_AS(activatePreventScreenCapture,
                     reject:(UMPromiseRejectBlock)reject)
 {
     if (@available(iOS 11.0, *)) {
+        // If already recording, block it
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self preventScreenRecording];
+        });
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
     }
     
