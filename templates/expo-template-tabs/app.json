@@ -2,11 +2,6 @@
   "expo": {
     "name": "HelloWorld",
     "slug": "expo-template-tabs",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
