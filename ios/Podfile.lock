@@ -1387,6 +1387,8 @@ PODS:
   - EXPermissions (8.1.0):
     - UMCore
     - UMPermissionsInterface
+  - EXPreventScreenCapture (1.0.0):
+    - UMCore
   - EXPrint (8.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -2188,6 +2190,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - EXPreventScreenCapture (from `../packages/expo-prevent-screen-capture/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
@@ -2896,6 +2899,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
+  EXPreventScreenCapture:
+    :path: "../packages/expo-prevent-screen-capture/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXRandom:
@@ -3308,6 +3313,7 @@ SPEC CHECKSUMS:
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
   EXNotifications: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
+  EXPreventScreenCapture: d3b36ae7f2d6917785c4be0f7b4ed0148c0ed8df
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
   EXRandom: cafbaebd177d38a4c4ee514e75824245e6fc2046
   EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
@@ -3393,4 +3399,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 529190a386115c6ed272c0477f2ee8e0ce0b7490
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1
