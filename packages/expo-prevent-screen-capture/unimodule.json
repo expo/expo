@@ -1,4 +1,4 @@
 {
-  "name": "expo-module-template",
+  "name": "expo-prevent-screen-capture",
   "platforms": ["ios", "android", "web"]
 }
