@@ -123,6 +123,7 @@ export interface TimeIntervalTriggerInput {
 export interface DailyTriggerInput {
     hour: number;
     minute: number;
+    repeats: true;
 }
 export declare type DateTriggerInput = Date | number;
 export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;

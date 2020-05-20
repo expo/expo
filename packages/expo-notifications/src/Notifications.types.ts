@@ -139,6 +139,7 @@ export interface TimeIntervalTriggerInput {
 export interface DailyTriggerInput {
   hour: number;
   minute: number;
+  repeats: true;
 }
 export type DateTriggerInput = Date | number;
 

@@ -1256,6 +1256,7 @@ A trigger that will cause the notification to be delivered once per day.
 export interface DailyTriggerInput {
   hour: number;
   minute: number;
+  repeats: true;
 }
 ```
 

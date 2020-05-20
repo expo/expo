@@ -22,7 +22,13 @@ export default async function scheduleNotificationAsync(
 function isDailyTriggerInput(
   trigger: DailyTriggerInput | CalendarTriggerInput
 ): trigger is DailyTriggerInput {
-  return Object.keys(trigger).length === 2 && 'hour' in trigger && 'minute' in trigger;
+  return (
+    Object.keys(trigger).length === 3 &&
+    'hour' in trigger &&
+    'minute' in trigger &&
+    'repeats' in trigger &&
+    trigger.repeats === true
+  );
 }
 
 function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput {
@@ -43,7 +49,7 @@ function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotifi
   } else if (isDailyTriggerInput(userFacingTrigger)) {
     const hour = userFacingTrigger.hour;
     const minute = userFacingTrigger.minute;
-    if (hour === undefined || minute === undefined) {
+    if (hour === undefined || hour == null || minute === undefined || minute == null) {
       throw new TypeError('Both hour and minute need to have valid values. Found undefined');
     }
     if (hour < 0 || hour > 23) {

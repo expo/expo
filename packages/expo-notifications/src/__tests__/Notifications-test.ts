@@ -41,14 +41,17 @@ it(`verifies date (as time) trigger handling`, async () => {
 });
 
 it(`verifies daily trigger handling`, async () => {
+  const trigger = {
+    hour: 12,
+    minute: 30,
+    repeats: true,
+  };
   const input = {
     ...notificationTriggerInputTest,
-    trigger: {
-      hour: 12,
-      minute: 30,
-    },
+    trigger,
   };
   await scheduleNotificationAsync(input);
+  delete trigger.repeats;
   expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
     input.identifier,
     input.content,
@@ -101,7 +104,6 @@ it(`verifies calendar trigger handling`, async () => {
     trigger: {
       hour: 12,
       minute: 30,
-      second: 0,
     },
   };
   await scheduleNotificationAsync(input);
@@ -142,6 +144,7 @@ it(`verifies calendar trigger handling`, async () => {
     trigger: {
       ...input.trigger,
       repeats: true,
+      second: 10,
     },
   });
   expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
@@ -152,6 +155,7 @@ it(`verifies calendar trigger handling`, async () => {
       repeats: true,
       value: {
         ...input.trigger,
+        second: 10,
       },
     }
   );

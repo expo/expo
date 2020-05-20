@@ -925,6 +925,7 @@ export async function test(t) {
           const trigger = {
             hour: dateNow.getHours(),
             minute: (dateNow.getMinutes() + 2) % 60,
+            repeats: true,
           };
           await Notifications.scheduleNotificationAsync({
             identifier,
@@ -932,6 +933,7 @@ export async function test(t) {
             trigger,
           });
           const result = await Notifications.getAllScheduledNotificationsAsync();
+          delete trigger.repeats;
           if (Platform.OS === 'android') {
             t.expect(result[0].trigger).toEqual({
               type: 'daily',
@@ -1262,6 +1264,7 @@ export async function test(t) {
               trigger: {
                 hour: triggerDate.getHours(),
                 minute: triggerDate.getMinutes(),
+                repeats: true,
               },
             });
             const scheduledTime = new Date(triggerDate);
