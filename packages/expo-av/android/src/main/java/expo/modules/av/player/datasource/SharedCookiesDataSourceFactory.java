@@ -16,14 +16,14 @@ import okhttp3.OkHttpClient;
 public class SharedCookiesDataSourceFactory implements DataSource.Factory {
   private final DataSource.Factory mDataSourceFactory;
 
-  public SharedCookiesDataSourceFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener bandwidthMeter) {
+  public SharedCookiesDataSourceFactory(Context reactApplicationContext, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener listener) {
     CookieHandler cookieHandler = moduleRegistry.getModule(CookieHandler.class);
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     if (cookieHandler != null) {
       builder.cookieJar(new JavaNetCookieJar(cookieHandler));
     }
     OkHttpClient client = builder.build();
-    mDataSourceFactory = new DefaultDataSourceFactory(reactApplicationContext, null, new CustomHeadersOkHttpDataSourceFactory(client, userAgent, requestHeaders, bandwidthMeter));
+    mDataSourceFactory = new DefaultDataSourceFactory(reactApplicationContext, null, new CustomHeadersOkHttpDataSourceFactory(client, userAgent, requestHeaders, listener));
   }
 
   @Override
