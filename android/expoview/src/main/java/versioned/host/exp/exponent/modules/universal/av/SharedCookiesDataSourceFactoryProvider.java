@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.facebook.react.bridge.ReactContext;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import host.exp.exponent.utils.ScopedContext;
 
 public class SharedCookiesDataSourceFactoryProvider extends expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider {
   @Override
-  public DataSource.Factory createFactory(Context context, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders) {
+  public DataSource.Factory createFactory(Context context, ModuleRegistry moduleRegistry, String userAgent, Map<String, Object> requestHeaders, TransferListener listener) {
     ReactContext reactContext = null;
     if (context instanceof ReactContext) {
       reactContext = (ReactContext) context;
