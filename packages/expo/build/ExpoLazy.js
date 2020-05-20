@@ -33,6 +33,12 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
+Object.defineProperty(exports, "AR", {
+  enumerable: true,
+  get: function () {
+    return _deprecated.AR;
+  }
+});
 Object.defineProperty(exports, "Updates", {
   enumerable: true,
   get: function () {
@@ -459,7 +465,7 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.Logs = exports.SplashScreen = exports.AR = exports.Linking = void 0;
+exports.Logs = exports.SplashScreen = exports.Linking = void 0;
 
 require("./Expo.fx");
 
@@ -479,10 +485,6 @@ Object.defineProperty(exports, "Linking", {
     return Linking();
   }
 });
-
-var AR = _interopRequireWildcard(require("./AR"));
-
-exports.AR = AR;
 
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
