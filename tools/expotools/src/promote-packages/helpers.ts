@@ -37,16 +37,22 @@ export function formatVersionChange(
  * Prints a lists of packages to promote or demote.
  */
 export function printPackagesToPromote(parcels: Parcel[]): void {
-  const toDemote = parcels.filter(({ state }) => state.isDemoting);
   const toPromote = parcels.filter(({ state }) => !state.isDemoting);
+  const toDemote = parcels.filter(({ state }) => state.isDemoting);
 
-  printPackagesToPromoteInternal(toDemote, red.bold('demoted'));
-  printPackagesToPromoteInternal(toPromote, green.bold('promoted'));
+  printPackagesToPromoteInternal(
+    toPromote,
+    `Following packages would be ${green.bold('promoted')}:`
+  );
+  printPackagesToPromoteInternal(
+    toDemote,
+    `Following packages could be ${red.bold('demoted')} ${gray(`(requires --demote flag)`)}:`
+  );
 }
 
-function printPackagesToPromoteInternal(parcels: Parcel[], action: string): void {
+function printPackagesToPromoteInternal(parcels: Parcel[], headerText: string): void {
   if (parcels.length > 0) {
-    logger.log('  ', magenta(`Following packages would be ${action}:`));
+    logger.log('  ', magenta(headerText));
 
     for (const { pkg, state } of parcels) {
       logger.log(
