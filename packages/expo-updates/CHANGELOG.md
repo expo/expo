@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.3
+
+### 🐛 Bug fixes
+
 - Temporarily vendor `filterPlatformAssetScales` method from `@react-native-community/cli` in order to fix builds when `npm` was used to install dependencies (rather than `yarn`).
 - Fixed an issue on iOS where calling the JS module methods in development mode, after publishing at least one update, would crash the app.
 

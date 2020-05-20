@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,5 +44,5 @@
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "df27f1d180e5aad1310e4077944b7836e4adc3bb"
+  "gitHead": "d2f093be8abf8f20e9905ab7ef35fa6ef97eac47"
 }
