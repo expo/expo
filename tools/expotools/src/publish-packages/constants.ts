@@ -18,11 +18,6 @@ export const BACKUP_PATH = path.join(EXPOTOOLS_DIR, 'cache', BACKUP_FILE_NAME);
 export const BACKUP_EXPIRATION_TIME = 30 * 60 * 1000; // 30 minutes
 
 /**
- * An array of directories treated as containing native code.
- */
-export const NATIVE_DIRECTORIES = ['ios', 'android'];
-
-/**
  * An array of option names that are stored in the backup and
  * are required to stay the same to use the backup at next call.
  */

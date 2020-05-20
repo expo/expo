@@ -8,14 +8,15 @@ import Git from '../Git';
 import logger from '../Logger';
 import { TaskRunner, Task, TasksRunnerBackup } from '../TasksRunner';
 import { BACKUP_PATH, BACKUP_EXPIRATION_TIME } from '../publish-packages/constants';
-import {
-  pickBackupableOptions,
-  createParcelAsync,
-  shouldUseBackupAsync,
-} from '../publish-packages/helpers';
-import * as tasks from '../publish-packages/tasks';
+import { pickBackupableOptions, shouldUseBackupAsync } from '../publish-packages/helpers';
 import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
 import { getListOfPackagesAsync } from '../Packages';
+
+import { checkPackagesIntegrity } from '../publish-packages/tasks/checkPackagesIntegrity';
+import { grantTeamAccessToPackages } from '../publish-packages/tasks/grantTeamAccessToPackages';
+import { listUnpublished } from '../publish-packages/tasks/listUnpublished';
+import { prepareParcels, createParcelAsync } from '../publish-packages/tasks/prepareParcels';
+import { publishPackagesPipeline } from '../publish-packages/tasks/publishPackagesPipeline';
 
 export default (program: Command) => {
   program
@@ -190,13 +191,13 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
  */
 function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.listUnpublished) {
-    return [tasks.listUnpublished];
+    return [listUnpublished];
   }
   if (options.grantAccess) {
-    return [tasks.grantTeamAccessToPackages];
+    return [grantTeamAccessToPackages];
   }
   if (options.checkIntegrity) {
-    return [tasks.prepareParcels, tasks.checkPackagesIntegrity];
+    return [prepareParcels, checkPackagesIntegrity];
   }
-  return [tasks.publishPackagesPipeline];
+  return [publishPackagesPipeline];
 }
