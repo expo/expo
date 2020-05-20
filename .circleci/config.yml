@@ -294,7 +294,6 @@ workflows:
       # - android_test_suite:
       #     requires:
       #       - test_suite_publish
-      - android_unit_tests
       - client_ios
 
   release_simulator:
@@ -695,36 +694,6 @@ jobs:
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_ANDROID_WEBHOOK
-
-  android_unit_tests:
-    executor: android
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: client
-          paths: android fastlane tools/expotools Gemfile .ruby-version package.json yarn.lock
-      - install_yarn
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/project
-      - save_yarn_cache
-      - restore_gradle_cache
-      - run:
-          name: Android Unit tests
-          command: expotools android-unit-tests
-          working_directory: ~/project
-      - save_gradle_cache
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/test-results/junit/
-            find . -type f -regex ".*/packages/.*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-          when: always
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          path: ~/test-results/junit
 
   client_android_apk_release:
     executor: js
