@@ -1,8 +1,10 @@
 import { Command } from '@expo/commander';
 
 import { TaskRunner, Task } from '../TasksRunner';
-import * as tasks from '../promote-packages/tasks';
 import { CommandOptions, TaskArgs } from '../promote-packages/types';
+
+import { promotePackages } from '../promote-packages/tasks/promotePackages';
+import { listPackagesToPromote } from '../promote-packages/tasks/listPackagesToPromote';
 
 export default (program: Command) => {
   program
@@ -61,7 +63,7 @@ export default (program: Command) => {
  */
 function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.list) {
-    return [tasks.listPackagesToPromote];
+    return [listPackagesToPromote];
   }
-  return [tasks.promotePackages];
+  return [promotePackages];
 }
