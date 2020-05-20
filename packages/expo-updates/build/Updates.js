@@ -20,7 +20,8 @@ export async function reloadAsync() {
     }
     if (__DEV__) {
         throw new CodedError('ERR_UPDATES_DISABLED', 'You cannot use the Updates module in development mode. To test manual updates, make a ' +
-            'release build with `yarn ios --configuration Release` or `yarn android --variant Release`.');
+            'release build with `npm run ios --configuration Release` or ' +
+            '`npm run android --variant Release`.');
     }
     await ExpoUpdates.reload();
 }
@@ -30,7 +31,8 @@ export async function checkForUpdateAsync() {
     }
     if (__DEV__) {
         throw new CodedError('ERR_UPDATES_DISABLED', 'You cannot check for updates in development mode. To test manual updates, make a ' +
-            'release build with `yarn ios --configuration Release` or `yarn android --variant Release`.');
+            'release build with `npm run ios --configuration Release` or ' +
+            '`npm run android --variant Release`.');
     }
     const result = await ExpoUpdates.checkForUpdateAsync();
     if (result.manifestString) {
@@ -45,7 +47,8 @@ export async function fetchUpdateAsync() {
     }
     if (__DEV__) {
         throw new CodedError('ERR_UPDATES_DISABLED', 'You cannot fetch updates in development mode. To test manual updates, make a ' +
-            'release build with `yarn ios --configuration Release` or `yarn android --variant Release`.');
+            'release build with `npm run ios --configuration Release` or ' +
+            '`npm run android --variant Release`.');
     }
     const result = await ExpoUpdates.fetchUpdateAsync();
     if (result.manifestString) {
