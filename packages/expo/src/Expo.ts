@@ -2,7 +2,6 @@ import './Expo.fx';
 
 import * as Linking from 'expo-linking';
 
-import * as AR from './AR';
 import * as SplashScreen from './launch/SplashScreen';
 import * as Logs from './logs/Logs';
 
@@ -13,13 +12,12 @@ export { default as registerRootComponent } from './launch/registerRootComponent
 export { default as Notifications } from './Notifications/Notifications';
 
 // The following should all be extracted from this package
-export { AR };
 export { SplashScreen };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore
-export { Updates } from './deprecated';
+export { AR, Updates } from './deprecated';
 
 // @ts-ignore
 export {
