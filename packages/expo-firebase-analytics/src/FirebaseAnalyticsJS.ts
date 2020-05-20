@@ -230,14 +230,14 @@ class FirebaseAnalyticsJS {
       !userPropertyName.length ||
       userPropertyName.length > 24 ||
       userPropertyName[0] === '_' ||
-      !userPropertyName.match(/^[A-Za-z_]+$/) ||
+      !userPropertyName.match(/^[A-Za-z][[A-Za-z_\d]*$/) ||
       userPropertyName === 'user_id' ||
       userPropertyName.startsWith('firebase_') ||
       userPropertyName.startsWith('google_') ||
       userPropertyName.startsWith('ga_')
     ) {
       throw new Error(
-        'Invalid user-property name specified. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.'
+        `Invalid user-property name specified: ${userPropertyName}. Should contain 1 to 24 alphanumeric characters or underscores. The name must start with an alphabetic character.`
       );
     }
     if (
