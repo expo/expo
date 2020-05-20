@@ -40,10 +40,10 @@ export const selectPackagesToPromote = new Task<TaskArgs>(
 async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<string[]> {
   const maxLength = parcels.reduce((acc, { pkg }) => Math.max(acc, pkg.packageName.length), 0);
   const choices = parcels.map(({ pkg, state }) => {
-    const action = state.isDemoting ? red.bold('demoted') : green.bold('promoted');
+    const action = state.isDemoting ? red.bold('demote') : green.bold('promote');
 
     return {
-      name: `will be ${green(pkg.packageName.padEnd(maxLength))} ${action} ${formatVersionChange(
+      name: `${green(pkg.packageName.padEnd(maxLength))} ${action} ${formatVersionChange(
         state.versionToReplace,
         pkg.packageVersion
       )}`,
