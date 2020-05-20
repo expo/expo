@@ -5,4 +5,7 @@
 #import <EXNotifications/EXNotificationsDelegate.h>
 
 @interface EXNotificationPresentationModule : UMExportedModule <UMModuleRegistryConsumer, EXNotificationsDelegate>
+
+- (NSArray * _Nonnull)serializeNotifications:(NSArray<UNNotification *> * _Nonnull)notifications;
+
 @end
