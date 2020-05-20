@@ -41,7 +41,7 @@ public class AppLoaderProvider {
 
   private static boolean appLoaderRegisteredForName(Context context, String name, Class loaderClass) {
     String cachedClassName = getSharedPreferences(context).getString(appLoaderKey(name), null);
-    return loaderClasses.containsKey(name) || loaderClass.getName().equals(cachedClassName);
+    return loaderClasses.containsKey(name) && loaderClass.getName().equals(cachedClassName);
   }
 
   private static void createLoader(String name, Context context) throws ClassNotFoundException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException, NoSuchMethodException {
