@@ -1,0 +1,52 @@
+name: Home app
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/home.yml
+      - home/**
+      - yarn.lock
+  push:
+    branches: [ master, 'sdk-*' ]
+    paths:
+      - .github/workflows/home.yml
+      - home/**
+      - yarn.lock
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - run: yarn jest --maxWorkers 1
+        working-directory: home
+      - run: yarn lint
+        working-directory: home
+      - uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        with:
+          channel: '#api'
+          status: ${{ job.status }}
+          author_name: home/build
+          fields: commit,message,author
+          mention: here
+          if_mention: failure
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
