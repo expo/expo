@@ -285,7 +285,6 @@ workflows:
   client:
     unless: << pipeline.parameters.release >>
     jobs:
-      - home
       - expotools
       - client_android
       # Disabled until further notice
@@ -391,29 +390,6 @@ jobs:
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_WEB_WEBHOOK
-
-  home:
-    executor: js
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: client
-          paths: home package.json yarn.lock
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/project
-      - save_yarn_cache
-      - yarn:
-          command: jest --maxWorkers 1
-          working_directory: ~/project/home
-      - yarn:
-          command: lint
-          working_directory: ~/project/home
-      - job-status-change/status
-      - slack-job-status-notification/notify:
-          only_for_branches: master sdk-*
-          slack_webhook: $SLACK_API_WEBHOOK
 
   expotools:
     executor: js
