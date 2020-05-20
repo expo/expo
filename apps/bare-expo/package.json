@@ -104,7 +104,7 @@
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
     "babel-plugin-module-resolver": "^4.0.0",
-    "babel-preset-expo": "~8.1.0",
+    "babel-preset-expo": "~8.2.1",
     "detox": "^14.8.4",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1",

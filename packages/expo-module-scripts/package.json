@@ -30,7 +30,7 @@
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",
     "@types/jest": "^24.0.11",
-    "babel-preset-expo": "~8.1.0",
+    "babel-preset-expo": "~8.2.1",
     "commander": "^2.19.0",
     "eslint-config-universe": "^3.0.0",
     "find-yarn-workspace-root": "^1.2.1",
