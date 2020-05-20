@@ -119,7 +119,7 @@
     "@types/react-navigation-material-bottom-tabs": "^0.3.1",
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
-    "babel-preset-expo": "~8.1.0",
+    "babel-preset-expo": "~8.2.1",
     "expo-module-scripts": "~1.2.0",
     "expo-yarn-workspaces": "^1.2.1"
   }
