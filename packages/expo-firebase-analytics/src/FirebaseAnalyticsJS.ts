@@ -230,7 +230,7 @@ class FirebaseAnalyticsJS {
       !userPropertyName.length ||
       userPropertyName.length > 24 ||
       userPropertyName[0] === '_' ||
-      !userPropertyName.match(/^[A-Za-z][[A-Za-z_\d]*$/) ||
+      !userPropertyName.match(/^[A-Za-z][A-Za-z_\d]*$/) ||
       userPropertyName === 'user_id' ||
       userPropertyName.startsWith('firebase_') ||
       userPropertyName.startsWith('google_') ||
