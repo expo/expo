@@ -67,3 +67,11 @@ export function formatFileLog(fileLog: GitFileLog): string {
   const uri = `vscode://file/${fileLog.path}`;
   return `${link(fileLog.relativePath, uri)} ${gray(`(${fileLog.status})`)}`;
 }
+
+/**
+ * Removes all non-ascii characters (characters with unicode number between `0` and `127` are left untouched) from the string.
+ * https://www.utf8-chartable.de/unicode-utf8-table.pl?number=128
+ */
+export function stripNonAsciiChars(str: string): string {
+  return str.replace(/[^\x00-\x7F]/gu, '');
+}
