@@ -186,7 +186,7 @@ public class ExpoNotificationsService extends BaseNotificationsService {
         Parcel parcel = Parcel.obtain();
         parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
         parcel.setDataPosition(0);
-        NotificationRequest request = NotificationRequest.CREATOR.createFromParcel(parcel);
+        NotificationRequest request = reconstructNotificationRequest(parcel);
         parcel.recycle();
         Date notificationDate = new Date(statusBarNotification.getPostTime());
         return new Notification(request, notificationDate);
@@ -200,6 +200,11 @@ public class ExpoNotificationsService extends BaseNotificationsService {
       }
     }
     return null;
+  }
+
+
+  protected NotificationRequest reconstructNotificationRequest(Parcel parcel) {
+    return NotificationRequest.CREATOR.createFromParcel(parcel);
   }
 
   protected android.app.Notification getNotification(Notification notification, NotificationBehavior behavior) {

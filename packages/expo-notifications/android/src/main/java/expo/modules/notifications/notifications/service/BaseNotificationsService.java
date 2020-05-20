@@ -43,6 +43,7 @@ public abstract class BaseNotificationsService extends JobIntentService {
   private static final String GET_ALL_DISPLAYED = "getAllDisplayed";
   private static final String PRESENT_TYPE = "present";
   private static final String DISMISS_TYPE = "dismiss";
+  private static final String DISMISS_SELECTED_TYPE = "dismissSelected";
   private static final String DISMISS_ALL_TYPE = "dismissAll";
   private static final String RECEIVE_TYPE = "receive";
   private static final String DROPPED_TYPE = "dropped";
@@ -115,6 +116,20 @@ public abstract class BaseNotificationsService extends JobIntentService {
     Intent intent = new Intent(NOTIFICATION_EVENT_ACTION, getUriBuilderForIdentifier(identifier).appendPath("dismiss").build());
     intent.putExtra(EVENT_TYPE_KEY, DISMISS_TYPE);
     intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifier);
+    intent.putExtra(RECEIVER_KEY, receiver);
+    enqueueWork(context, intent);
+  }
+
+  /**
+   * A helper function for dispatching a "dismiss selected notification" command to the service.
+   *
+   * @param context    Context where to start the service.
+   * @param identifiers Notification identifiers
+   */
+  public static void enqueueDismissSelected(Context context, @NonNull String[] identifiers, @Nullable ResultReceiver receiver) {
+    Intent intent = new Intent(NOTIFICATION_EVENT_ACTION);
+    intent.putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE);
+    intent.putExtra(NOTIFICATION_IDENTIFIER_KEY, identifiers);
     intent.putExtra(RECEIVER_KEY, receiver);
     enqueueWork(context, intent);
   }
@@ -193,6 +208,11 @@ public abstract class BaseNotificationsService extends JobIntentService {
         onNotificationReceived(intent.<Notification>getParcelableExtra(NOTIFICATION_KEY));
       } else if (DISMISS_TYPE.equals(eventType)) {
         onNotificationDismiss(intent.getStringExtra(NOTIFICATION_IDENTIFIER_KEY));
+      } else if (DISMISS_SELECTED_TYPE.equals(eventType)) {
+        String[] identifiers = intent.getStringArrayExtra(NOTIFICATION_IDENTIFIER_KEY);
+        for (String identifier : identifiers) {
+          onNotificationDismiss(identifier);
+        }
       } else if (DISMISS_ALL_TYPE.equals(eventType)) {
         onDismissAllNotifications();
       } else if (DROPPED_TYPE.equals(eventType)) {
