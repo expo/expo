@@ -8,6 +8,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.CursorResult;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.database.FlowCursor;
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 
 import org.json.JSONException;
@@ -59,4 +60,11 @@ public class ExponentDB {
           }
         }).execute();
   }
+
+  public static ExperienceDBObject experienceIdToExperienceSync(String experienceId) {
+    return SQLite.select()
+      .from(ExperienceDBObject.class)
+      .where(ExperienceDBObject_Table.id.is(experienceId))
+      .querySingle();
+   }
 }

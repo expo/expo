@@ -17,6 +17,8 @@ import android.os.Handler;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+
+import android.os.Parcel;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,6 +47,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import expo.modules.notifications.notifications.model.NotificationResponse;
+import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -57,6 +61,8 @@ import host.exp.exponent.headless.InternalHeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
+import host.exp.exponent.storage.ExperienceDBObject;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -73,6 +79,9 @@ import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsUtils;
+
+import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.NOTIFICATION_RESPONSE_KEY;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -439,6 +448,11 @@ public class Kernel extends KernelInterface {
       }
     } catch (Throwable e) {}
 
+    if (intent.getAction() != null && intent.getAction().equals(NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION)) {
+      openExperienceFromNotificationIntent(intent);
+      return;
+    }
+
     Bundle bundle = intent.getExtras();
     setActivityContext(activity);
 
@@ -493,6 +507,50 @@ public class Kernel extends KernelInterface {
       }
     }
 
+    openDefaultUrl();
+  }
+
+  private void openExperienceFromNotificationIntent(Intent intent) {
+    byte[] notificationRequestByteArray = intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY);
+    if (notificationRequestByteArray == null) {
+      openDefaultUrl();
+      return;
+    }
+
+    NotificationResponse response = null;
+    try {
+      Parcel parcel = Parcel.obtain();
+      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
+      parcel.setDataPosition(0);
+      response = NotificationResponse.CREATOR.createFromParcel(parcel);
+      parcel.recycle();
+    } catch (Exception e) {
+      Log.e("expo-notifications", "Could not unmarshalle NotificationResponse from Intent.extra.", e);
+    }
+
+    if (response == null || response.getNotification() == null || response.getNotification().getNotificationRequest() == null) {
+      openDefaultUrl();
+      return;
+    }
+
+    String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
+    if (experienceIdString == null) {
+      openDefaultUrl();
+      return;
+    }
+
+    ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
+    if (experience == null) {
+      Log.w("expo-notifications", "Couldn't find experience from experienceId.");
+      openDefaultUrl();
+      return;
+    }
+
+    String manifestUrl = experience.manifestUrl;
+    openExperience(new KernelConstants.ExperienceOptions(manifestUrl, manifestUrl, null));
+  }
+
+  private void openDefaultUrl() {
     String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
     openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
   }

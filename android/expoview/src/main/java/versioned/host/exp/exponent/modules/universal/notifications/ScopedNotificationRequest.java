@@ -46,6 +46,10 @@ public class ScopedNotificationRequest extends NotificationRequest {
     }
   };
 
+  public String getExperienceIdString() {
+    return mExperienceIdString;
+  }
+
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     super.writeToParcel(dest, flags);
