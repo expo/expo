@@ -12,9 +12,11 @@ if (ExponentConstants && ExponentConstants.manifest) {
         manifest = JSON.parse(manifest);
     }
 }
-const { name, ...constants } = (ExponentConstants || {});
+const { name, appOwnership, ...constants } = (ExponentConstants || {});
 export default {
     ...constants,
+    // Ensure this is null in bare workflow
+    appOwnership: appOwnership ?? null,
     manifest,
     // Legacy aliases
     deviceId: constants.installationId,

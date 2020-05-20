@@ -1,21 +1,23 @@
 import {
   AndroidManifest,
   AppOwnership,
+  Constants,
   IOSManifest,
-  PlatformManifest,
   NativeConstants,
+  PlatformManifest,
   UserInterfaceIdiom,
   WebManifest,
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 
 export {
-  AppOwnership,
-  UserInterfaceIdiom,
-  PlatformManifest,
-  NativeConstants,
-  IOSManifest,
   AndroidManifest,
+  AppOwnership,
+  Constants,
+  IOSManifest,
+  NativeConstants,
+  PlatformManifest,
+  UserInterfaceIdiom,
   WebManifest,
 };
 
@@ -34,15 +36,12 @@ if (ExponentConstants && ExponentConstants.manifest) {
   }
 }
 
-const { name, ...constants } = (ExponentConstants || {}) as any;
-
-export interface Constants extends NativeConstants {
-  deviceId?: string;
-  linkingUrl?: string;
-}
+const { name, appOwnership, ...constants } = (ExponentConstants || {}) as any;
 
 export default {
   ...constants,
+  // Ensure this is null in bare workflow
+  appOwnership: appOwnership ?? null,
   manifest,
   // Legacy aliases
   deviceId: constants.installationId,
