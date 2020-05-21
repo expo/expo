@@ -96,15 +96,6 @@ class AlgoliaSearch extends React.Component {
       indexName: 'expo',
       inputSelector: '#algolia-search-box',
       enhancedSearchInput: false,
-      transformData: hits => {
-        // modify hits to account for no anchors on page headings
-        hits.map(hit => {
-          hit.url = hit.url.replace(/#__next$/, '');
-          hit.anchor = hit.anchor.replace(/^__next$/, '');
-        });
-
-        return hits;
-      },
       algoliaOptions: {
         // include pages without version (guides/get-started) OR exact version (api-reference)
         facetFilters: [['version:none', `version:${currentVersion}`]],
