@@ -1387,12 +1387,12 @@ PODS:
   - EXPermissions (8.1.0):
     - UMCore
     - UMPermissionsInterface
-  - EXPreventScreenCapture (1.0.0):
-    - UMCore
   - EXPrint (8.1.0):
     - UMCore
     - UMFileSystemInterface
   - EXRandom (8.1.0):
+    - UMCore
+  - EXScreenCapture (1.0.0):
     - UMCore
   - EXScreenOrientation (1.0.0):
     - React-Core
@@ -2190,9 +2190,9 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
-  - EXPreventScreenCapture (from `../packages/expo-prevent-screen-capture/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
+  - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
   - EXSegment (from `../packages/expo-analytics-segment/ios`)
@@ -2899,12 +2899,12 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
-  EXPreventScreenCapture:
-    :path: "../packages/expo-prevent-screen-capture/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXRandom:
     :path: "../packages/expo-random/ios"
+  EXScreenCapture:
+    :path: "../packages/expo-screen-capture/ios"
   EXScreenOrientation:
     :path: "../packages/expo-screen-orientation/ios"
   EXSecureStore:
@@ -3313,9 +3313,9 @@ SPEC CHECKSUMS:
   EXNetwork: 1f9719a912524abc04d06a27a0fdf25bacdd4aad
   EXNotifications: cc5d647c15b5f00602e1c4f7244d6a3a15dd2eb6
   EXPermissions: 24b97f734ce9172d245a5be38ad9ccfcb6135964
-  EXPreventScreenCapture: d3b36ae7f2d6917785c4be0f7b4ed0148c0ed8df
   EXPrint: 44b97ce29f50e83225a1aa22808d652cf1de82db
   EXRandom: cafbaebd177d38a4c4ee514e75824245e6fc2046
+  EXScreenCapture: d001b0ba68107db27504449cacf20560a0d07ca4
   EXScreenOrientation: 44d3cd3a99a86b9cb681e742697bc2c057d7fbd2
   EXSecureStore: 7a03e21e80ae59bf8e86c55e7a400f60db2da639
   EXSegment: f2e2e08c3fd42570c7e750a2714841882c834d03
@@ -3399,4 +3399,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 529190a386115c6ed272c0477f2ee8e0ce0b7490
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.8.4
