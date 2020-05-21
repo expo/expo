@@ -128,9 +128,9 @@ These values can be used to define how sessions work on iOS.
 
 - **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
 
-#### How handel those request?
+#### How to handle such requests?
 
-The simple server in `node.js`, which can save uploaded images on disk:
+The simple server in Node.js, which can save uploaded images to disk:
 
 ```js
 const express = require('express');
@@ -354,7 +354,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
 
-  - **parameters (_Record<string, string>_)** -- Additional HTTP parameters.
+  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
 
 #### Returns
 
