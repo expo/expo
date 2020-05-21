@@ -188,7 +188,7 @@ let Camera = /** @class */ (() => {
             const nativeProps = ensureNativeProps(this.props);
             const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
             const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-            return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onFacesDetected={onFacesDetected} onPictureSaved={_onPictureSaved}/>);
+            return (React.createElement(ExponentCamera, Object.assign({}, nativeProps, { ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved })));
         }
     }
     Camera.Constants = {

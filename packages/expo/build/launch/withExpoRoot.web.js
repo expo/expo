@@ -7,7 +7,7 @@ export default function withExpoRoot(AppRootComponent) {
                 ...this.props,
                 exp: { ...this.props.exp, errorRecovery: ErrorRecovery.recoveredProps },
             };
-            return <AppRootComponent {...props}/>;
+            return React.createElement(AppRootComponent, Object.assign({}, props));
         }
     };
 }

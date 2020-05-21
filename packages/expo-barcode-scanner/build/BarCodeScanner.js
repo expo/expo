@@ -59,7 +59,7 @@ let BarCodeScanner = /** @class */ (() => {
         render() {
             const nativeProps = this.convertNativeProps(this.props);
             const { onBarCodeScanned } = this.props;
-            return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}/>);
+            return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
         }
         convertNativeProps(props) {
             const newProps = mapValues(props, this.convertProp);

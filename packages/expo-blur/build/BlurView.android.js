@@ -7,7 +7,7 @@ let BlurView = /** @class */ (() => {
         render() {
             const { tint, intensity, ...props } = this.props;
             const backgroundColor = getBackgroundColor(intensity, tint);
-            return <View {...props} style={[this.props.style, { backgroundColor }]}/>;
+            return React.createElement(View, Object.assign({}, props, { style: [this.props.style, { backgroundColor }] }));
         }
     }
     BlurView.propTypes = {

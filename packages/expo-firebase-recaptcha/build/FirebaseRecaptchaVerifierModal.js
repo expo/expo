@@ -72,22 +72,16 @@ let FirebaseRecaptchaVerifierModal = /** @class */ (() => {
         render() {
             const { title, cancelLabel, ...otherProps } = this.props;
             const { visible, loaded } = this.state;
-            return (<Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={this.cancel} onDismiss={this.onDismiss}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.cancel}>
-              <Button title={cancelLabel || FirebaseRecaptchaVerifierModal.defaultProps.cancelLabel} onPress={this.cancel}/>
-            </View>
-          </View>
-          <View style={styles.content}>
-            <FirebaseRecaptcha style={styles.content} onLoad={this.onLoad} onError={this.onError} onVerify={this.onVerify} {...otherProps}/>
-            {!loaded ? (<View style={styles.loader}>
-                <ActivityIndicator size="large"/>
-              </View>) : (undefined)}
-          </View>
-        </SafeAreaView>
-      </Modal>);
+            return (React.createElement(Modal, { visible: visible, animationType: "slide", presentationStyle: "pageSheet", onRequestClose: this.cancel, onDismiss: this.onDismiss },
+                React.createElement(SafeAreaView, { style: styles.container },
+                    React.createElement(View, { style: styles.header },
+                        React.createElement(Text, { style: styles.title }, title),
+                        React.createElement(View, { style: styles.cancel },
+                            React.createElement(Button, { title: cancelLabel || FirebaseRecaptchaVerifierModal.defaultProps.cancelLabel, onPress: this.cancel }))),
+                    React.createElement(View, { style: styles.content },
+                        React.createElement(FirebaseRecaptcha, Object.assign({ style: styles.content, onLoad: this.onLoad, onError: this.onError, onVerify: this.onVerify }, otherProps)),
+                        !loaded ? (React.createElement(View, { style: styles.loader },
+                            React.createElement(ActivityIndicator, { size: "large" }))) : (undefined)))));
         }
     }
     FirebaseRecaptchaVerifierModal.defaultProps = {

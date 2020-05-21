@@ -20,10 +20,9 @@ export default class NativeLinearGradient extends React.Component {
             flatStyle.borderBottomLeftRadius || borderRadius,
             flatStyle.borderBottomLeftRadius || borderRadius,
         ];
-        return (<View {...props} style={style}>
-        <BaseNativeLinearGradient style={{ position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }} colors={colors} startPoint={startPoint} endPoint={endPoint} locations={locations} borderRadii={borderRadiiPerCorner}/>
-        {children}
-      </View>);
+        return (React.createElement(View, Object.assign({}, props, { style: style }),
+            React.createElement(BaseNativeLinearGradient, { style: { position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 }, colors: colors, startPoint: startPoint, endPoint: endPoint, locations: locations, borderRadii: borderRadiiPerCorner }),
+            children));
     }
 }
 const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');

@@ -18,7 +18,7 @@ let BlurView = /** @class */ (() => {
         }
         render() {
             const { style, ...props } = this.props;
-            return (<NativeBlurView {...props} ref={this._setNativeRef} style={[style, { backgroundColor: 'transparent' }]}/>);
+            return (React.createElement(NativeBlurView, Object.assign({}, props, { ref: this._setNativeRef, style: [style, { backgroundColor: 'transparent' }] })));
         }
     }
     BlurView.propTypes = {

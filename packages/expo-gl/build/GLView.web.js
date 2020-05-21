@@ -167,7 +167,7 @@ let GLView = /** @class */ (() => {
         render() {
             const domProps = stripNonDOMProps({ ...this.props });
             delete domProps.ref;
-            return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
+            return React.createElement(Canvas, Object.assign({}, domProps, { canvasRef: this.setCanvasRef }));
         }
         componentDidUpdate(prevProps) {
             const { webglContextAttributes } = this.props;

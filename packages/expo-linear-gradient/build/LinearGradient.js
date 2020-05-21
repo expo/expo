@@ -8,10 +8,10 @@ export default class LinearGradient extends React.Component {
             console.warn('LinearGradient colors and locations props should be arrays of the same length');
             locations = locations.slice(0, colors.length);
         }
-        return (<NativeLinearGradient {...props} colors={Platform.select({
-            web: colors,
-            default: colors.map(processColor),
-        })} locations={locations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
+        return (React.createElement(NativeLinearGradient, Object.assign({}, props, { colors: Platform.select({
+                web: colors,
+                default: colors.map(processColor),
+            }), locations: locations, startPoint: _normalizePoint(start), endPoint: _normalizePoint(end) })));
     }
 }
 function _normalizePoint(point) {

@@ -23,9 +23,8 @@ if (__DEV__) {
         AppRegistry.setWrapperComponentProvider = provider => {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
-                return (<DevAppContainer>
-            <ProviderComponent {...props}/>
-          </DevAppContainer>);
+                return (React.createElement(DevAppContainer, null,
+                    React.createElement(ProviderComponent, Object.assign({}, props))));
             }
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };
