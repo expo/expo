@@ -1,0 +1,118 @@
+name: Android Client
+
+on:
+  repository_dispatch:
+    types: [ release-google-play, release-apk ]
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/client-android.yml
+      - secrets/**
+      - android/**
+      - fastlane/**
+      - tools-public/**
+      - Gemfile.lock
+      - .ruby-version
+      - yarn.lock
+  push:
+    branches: [ master, sdk-* ]
+    paths:
+      - .github/workflows/client-android.yml
+      - secrets/**
+      - android/**
+      - fastlane/**
+      - tools-public/**
+      - Gemfile.lock
+      - .ruby-version
+      - yarn.lock
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}-${{ hashFiles('tools-public/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - run: yarn install --frozen-lockfile
+        working-directory: tools-public
+      - uses: ruby/setup-ruby@v1
+      - name: bundler cache
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
+      - name: install fastlane
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+      - run: echo "::add-path::$BUNDLE_BIN"
+      - run: sudo apt-get install git-crypt
+      - name: decrypt secrets if possible
+        env:
+          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+        run: |
+          if [ -z "${GIT_CRYPT_KEY_BASE64}" ]; then
+            echo 'git-crypt key not present in environment'
+          else
+            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
+          fi
+      - name: Decode release keystore
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ExponentKey
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: fastlane android build build_type:Release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: android-apk
+          path: android/app/build/outputs/apk
+      - name: Store daemon logs for debugging crashes
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: gradle-daemon-logs
+          path: ~/.gradle/daemon
+      - uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+        with:
+          channel: '#platform-android'
+          status: ${{ job.status }}
+          fields: commit,author,action,message
+          author_name: client android build
+          mention: here
+          if_mention: failure
+      - name: Upload APK to Google Play and release to production
+        if: ${{ github.event.action == 'release-google-play' }}
+        run: fastlane android prod_release
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
+      - if: ${{ github.event.action == 'release-apk' }}
+        run: bin/expotools client-build --platform android --release
+        env:
+          AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
