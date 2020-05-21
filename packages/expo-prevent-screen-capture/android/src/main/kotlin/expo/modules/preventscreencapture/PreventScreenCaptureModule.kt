@@ -32,7 +32,7 @@ class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         promise.resolve(null)
       } catch(exception: Exception) {
-        promise.reject(ERROR_TAG, "Failed to prevent screen capture." + exception)
+        promise.reject(ERROR_TAG, "Failed to prevent screen capture: " + exception)
       }
     }
   }
@@ -46,18 +46,18 @@ class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         promise.resolve(null)
       } catch(exception: Exception) {
-        promise.reject(ERROR_TAG, "Failed to reallow screen capture." + exception)
+        promise.reject(ERROR_TAG, "Failed to reallow screen capture: " + exception)
       }
     }
   }
 
-  @Throws(IllegalStateException::class)
+  @Throws(CurrentActivityNotFoundException::class)
   fun getCurrentActivity(): Activity {
     val activity = activityProvider.currentActivity
     if (activity != null) {
       return activity
     } else {
-      throw IllegalStateException("No activity found.")
+      throw CurrentActivityNotFoundException()
     }
   }
 

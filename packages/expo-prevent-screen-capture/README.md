@@ -17,13 +17,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-calendar
+expo install expo-prevent-screen-capture
 ```
 
 ### Configure for iOS
 
 ```
-pod install
+npx pod-install
 ```
 
 ### Configure for Android
@@ -31,3 +31,5 @@ pod install
 No extra configuration necessary
 
 # Contributing
+
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
