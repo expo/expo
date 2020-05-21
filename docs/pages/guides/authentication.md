@@ -126,7 +126,7 @@ export default function App() {
 
 ```ts
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -490,7 +490,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 ```ts
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -660,11 +660,11 @@ const [request, response, promptAsync] = useAuthRequest(
 
 ### Twitch
 
-<CreateAppButton name="Spotify" href="https://dev.twitch.tv/console/apps/create" />
+<CreateAppButton name="Twitch" href="https://dev.twitch.tv/console/apps/create" />
 
-| Website                     | Provider   | PKCE      | Auto Discovery | Scopes           |
-| --------------------------- | ---------- | --------- | -------------- | ---------------- |
-| [Get your Config][c-twitch] | OAuth/OIDC | Supported | Not Available  | [Info][s-twitch] |
+| Website                     | Provider | PKCE      | Auto Discovery | Scopes           |
+| --------------------------- | -------- | --------- | -------------- | ---------------- |
+| [Get your Config][c-twitch] | OAuth    | Supported | Not Available  | [Info][s-twitch] |
 
 [c-twitch]: https://dev.twitch.tv/console/apps/create
 [s-twitch]: https://dev.twitch.tv/docs/authentication#scopes
@@ -672,6 +672,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - You will need to enable 2FA on your Twitch account to create an application.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
