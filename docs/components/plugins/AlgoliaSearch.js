@@ -100,7 +100,6 @@ class AlgoliaSearch extends React.Component {
         // modify hits to account for no anchors on page headings
         hits.map(hit => {
           hit.url = hit.url.replace(/#__next$/, '');
-          hit.anchor = hit.anchor.replace(/^__next$/, '');
         });
 
         return hits;
