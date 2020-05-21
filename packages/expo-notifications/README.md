@@ -1047,6 +1047,7 @@ export type NotificationTrigger =
   | CalendarNotificationTrigger
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
+  | DailyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1119,6 +1120,18 @@ export interface TimeIntervalNotificationTrigger {
   type: 'timeInterval';
   repeats: boolean;
   seconds: number;
+}
+```
+
+### `DailyNotificationTrigger`
+
+A trigger related to a daily notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface DailyNotificationTrigger {
+  type: 'daily';
+  hour: number;
+  minute: number;
 }
 ```
 
@@ -1212,6 +1225,7 @@ export type NotificationTriggerInput =
   | null
   | DateTriggerInput
   | TimeIntervalTriggerInput
+  | DailyTriggerInput
   | CalendarTriggerInput;
 ```
 
@@ -1231,6 +1245,18 @@ A trigger that will cause the notification to be delivered once or many times (d
 export interface TimeIntervalTriggerInput {
   repeats?: boolean;
   seconds: number;
+}
+```
+
+### `DailyTriggerInput`
+
+A trigger that will cause the notification to be delivered once per day.
+
+```ts
+export interface DailyTriggerInput {
+  hour: number;
+  minute: number;
+  repeats: true;
 }
 ```
 

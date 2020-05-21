@@ -25,6 +25,12 @@ export interface TimeIntervalTriggerInput {
   seconds: number;
 }
 
+export interface DailyTriggerInput {
+  type: 'daily';
+  hour: number;
+  minute: number;
+}
+
 export interface DateTriggerInput {
   type: 'date';
   timestamp: number; // seconds since 1970
@@ -34,4 +40,5 @@ export type NotificationTriggerInput =
   | null
   | DateTriggerInput
   | CalendarTriggerInput
-  | TimeIntervalTriggerInput;
+  | TimeIntervalTriggerInput
+  | DailyTriggerInput;
