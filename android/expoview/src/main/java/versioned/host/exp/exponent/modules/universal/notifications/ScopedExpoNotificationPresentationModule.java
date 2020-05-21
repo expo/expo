@@ -45,7 +45,6 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
 
   @Override
   public void dismissNotificationAsync(String identifier, Promise promise) {
-    DismissNotificationFunction baseFunction = super::dismissNotificationAsync;
     BaseNotificationsService.enqueueGetAllPresented(getContext(), new ResultReceiver(null) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -57,7 +56,8 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
             promise.resolve(null);
             return;
           }
-          baseFunction.invoke(identifier, promise);
+
+          doDismissNotificationAsync(identifier, promise);
         } else {
           Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
@@ -89,6 +89,10 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
     });
   }
 
+  private void doDismissNotificationAsync(String identifier, final Promise promise) {
+    super.dismissNotificationAsync(identifier, promise);
+  }
+
   private void dismissSelectedAsync(String[] identifiers, final Promise promise) {
     BaseNotificationsService.enqueueDismissSelected(getContext(), identifiers, new ResultReceiver(null) {
       @Override
@@ -107,7 +111,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
   private Notification findNotification(Collection<Notification> notifications, String identifier) {
     for (Notification notification : notifications) {
       if (notification.getNotificationRequest().getIdentifier().equals(identifier)) {
-        return  notification;
+        return notification;
       }
     }
     return null;
