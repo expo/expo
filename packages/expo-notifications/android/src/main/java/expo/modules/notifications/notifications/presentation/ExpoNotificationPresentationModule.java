@@ -14,6 +14,7 @@ import java.util.Collection;
 
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder;
 import expo.modules.notifications.notifications.NotificationSerializer;
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
@@ -35,7 +36,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
   @ExpoMethod
   public void presentNotificationAsync(final String identifier, ReadableArguments payload, final Promise promise) {
     NotificationContent content = new ArgumentsNotificationContentBuilder(getContext()).setPayload(payload).build();
-    NotificationRequest request = new NotificationRequest(identifier, content, null);
+    NotificationRequest request = createNotificationRequest(identifier, content, null);
     Notification notification = new Notification(request);
     BaseNotificationsService.enqueuePresent(getContext(), notification, null, new ResultReceiver(null) {
       @Override
@@ -59,11 +60,7 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
         super.onReceiveResult(resultCode, resultData);
         Collection<Notification> notifications = resultData.getParcelableArrayList(BaseNotificationsService.NOTIFICATIONS_KEY);
         if (resultCode == BaseNotificationsService.SUCCESS_CODE && notifications != null) {
-          ArrayList<Bundle> serializedNotifications = new ArrayList<>();
-          for (Notification notification : notifications) {
-            serializedNotifications.add(NotificationSerializer.toBundle(notification));
-          }
-          promise.resolve(serializedNotifications);
+          promise.resolve(serializeNotifications(notifications));
         } else {
           Exception e = resultData.getParcelable(BaseNotificationsService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e);
@@ -102,5 +99,18 @@ public class ExpoNotificationPresentationModule extends ExportedModule {
         }
       }
     });
+  }
+
+  protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger) {
+    return new NotificationRequest(identifier, content, null);
+  }
+
+  protected ArrayList<Bundle> serializeNotifications(Collection<Notification>  notifications) {
+    ArrayList<Bundle> serializedNotifications = new ArrayList<>();
+    for (Notification notification : notifications) {
+      serializedNotifications.add(NotificationSerializer.toBundle(notification));
+    }
+
+    return serializedNotifications;
   }
 }
