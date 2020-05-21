@@ -73,14 +73,14 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
 }
 
 UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
-                     cancelNotification:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject)
+                     cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
   resolve(nil);
 }
 
 UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
-                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject)
+                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
   resolve(nil);

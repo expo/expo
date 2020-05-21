@@ -33,7 +33,7 @@
   return serializedRequests;
 }
 
-- (void)cancelNotification:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
+- (void)cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
 {
   UM_WEAKIFY(self)
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
@@ -50,7 +50,7 @@
   }];
 }
 
-- (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
+- (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
 {
   UM_WEAKIFY(self)
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
