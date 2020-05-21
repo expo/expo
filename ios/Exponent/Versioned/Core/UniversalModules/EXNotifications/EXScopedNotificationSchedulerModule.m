@@ -22,7 +22,7 @@
   return self;
 }
 
--(NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests;
+- (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests;
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
   for (UNNotificationRequest *request in requests) {
@@ -33,7 +33,7 @@
   return serializedRequests;
 }
 
--(void)cancelScheduledNotificationAsync:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
+- (void)cancelNotification:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
 {
   UM_WEAKIFY(self)
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
@@ -50,7 +50,7 @@
   }];
 }
 
--(void)cancelAllScheduledNotificationsAsync:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
+- (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
 {
   UM_WEAKIFY(self)
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {

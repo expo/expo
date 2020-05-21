@@ -15,7 +15,7 @@
 
 + (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId
 {
-  return [EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:experienceId];
+  return [EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:experienceId];
 }
 
 @end

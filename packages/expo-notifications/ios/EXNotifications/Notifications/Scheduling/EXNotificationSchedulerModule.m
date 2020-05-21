@@ -73,15 +73,17 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
 }
 
 UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
-                     cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+                     cancelNotification:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject)
 {
-  [self cancelScheduledNotificationAsync:identifier resolve:resolve rejecting:reject];
+  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
+  resolve(nil);
 }
 
 UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
-                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject)
 {
-  [self cancelAllScheduledNotificationsAsync:resolve rejecting:reject];
+  [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
+  resolve(nil);
 }
 
 -(NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
@@ -91,18 +93,6 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
     [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
   }
   return serializedRequests;
-}
-
--(void)cancelScheduledNotificationAsync:(NSString * _Nonnull)identifier resolve:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
-{
-  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
-  resolve(nil);
-}
-
--(void)cancelAllScheduledNotificationsAsync:(UMPromiseResolveBlock _Nonnull)resolve rejecting:(UMPromiseRejectBlock _Nonnull)reject
-{
-  [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
-  resolve(nil);
 }
 
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
