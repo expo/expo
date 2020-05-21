@@ -73,81 +73,81 @@ Subscribe for updates to the Magnetometer.
 #### Example: basic subscription
 
 ```javascript
-import React from 'react';
 import { Magnetometer } from 'expo-sensors';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default class MagnetometerSensor extends React.Component {
-  state = {
-    MagnetometerData: {},
-  };
+export function Compass() {
+  const [data, setData] = React.useState({
+    x: 0,
+    y: 0,
+    z: 0,
+  });
+  const [subscription, setSubscription] = React.useState(null);
 
-  componentDidMount() {
-    this._toggle();
-  }
+  React.useEffect(() => {
+    _toggle();
+    return () => {
+      _unsubscribe();
+    };
+  }, []);
 
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-  _toggle = () => {
-    if (this._subscription) {
-      this._unsubscribe();
+  const _toggle = () => {
+    if (subscription) {
+      _unsubscribe();
     } else {
-      this._subscribe();
+      _subscribe();
     }
   };
 
-  _slow = () => {
+  const _slow = () => {
     Magnetometer.setUpdateInterval(1000);
   };
 
-  _fast = () => {
+  const _fast = () => {
     Magnetometer.setUpdateInterval(16);
   };
 
-  _subscribe = () => {
-    this._subscription = Magnetometer.addListener(result => {
-      this.setState({ MagnetometerData: result });
-    });
-  };
-
-  _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  };
-
-  render() {
-    let { x, y, z } = this.state.MagnetometerData;
-
-    return (
-      <View style={styles.sensor}>
-        <Text>Magnetometer:</Text>
-        <Text>
-          x: {round(x)} y: {round(y)} z: {round(z)}
-        </Text>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={this._toggle} style={styles.button}>
-            <Text>Toggle</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
-            <Text>Slow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._fast} style={styles.button}>
-            <Text>Fast</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+  const _subscribe = () => {
+    setSubscription(
+      Magnetometer.addListener((result) => {
+        setData(result);
+      })
     );
-  }
+  };
+
+  const _unsubscribe = () => {
+    subscription && subscription.remove();
+    setSubscription(null);
+  };
+
+  const { x, y, z } = data;
+  return (
+    <View style={styles.sensor}>
+      <Text>Magnetometer:</Text>
+      <Text>
+        x: {round(x)} y: {round(y)} z: {round(z)}
+      </Text>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={_toggle} style={styles.button}>
+          <Text>Toggle</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
+          <Text>Slow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_fast} style={styles.button}>
+          <Text>Fast</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
 function round(n) {
   if (!n) {
     return 0;
   }
-
   return Math.floor(n * 100) / 100;
 }
 
