@@ -19,11 +19,6 @@ import expo.modules.notifications.notifications.service.ExpoNotificationSchedule
 import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
-  @FunctionalInterface
-  private interface ScheduleNotificationFunction {
-    void invoke(String identifier, final Promise promise);
-  }
-
   private final ExperienceId mExperienceId;
 
   public ScopedNotificationScheduler(Context context, ExperienceId experienceId) {
@@ -49,7 +44,6 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   public void cancelScheduledNotificationAsync(String identifier, final Promise promise) {
-    ScheduleNotificationFunction baseFunction = super::cancelScheduledNotificationAsync;
     ExpoNotificationSchedulerService.enqueueFetch(getContext(), identifier, new ResultReceiver(HANDLER) {
       @Override
       protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -60,7 +54,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
             promise.resolve(null);
           }
 
-          baseFunction.invoke(identifier, promise);
+          doCancelScheduledNotificationAsync(identifier, promise);
         } else {
           Exception e = resultData.getParcelable(ExpoNotificationSchedulerService.EXCEPTION_KEY);
           promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e);
@@ -100,6 +94,10 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
         }
       }
     });
+  }
+
+  private void doCancelScheduledNotificationAsync(String identifier, final Promise promise) {
+    super.cancelScheduledNotificationAsync(identifier, promise);
   }
 
   private void cancelSelectedNotificationsAsync(String[] identifiers, final Promise promise) {
