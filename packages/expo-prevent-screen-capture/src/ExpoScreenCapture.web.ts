@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExpoPreventScreenCapture';
+    return 'ExpoScreenCapture';
   },
   get activatePreventScreenCapture(): null {
     return null;

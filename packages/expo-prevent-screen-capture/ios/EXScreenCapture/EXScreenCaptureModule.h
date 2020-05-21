@@ -3,5 +3,5 @@
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXPreventScreenCaptureModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXScreenCaptureModule : UMExportedModule <UMModuleRegistryConsumer>
 @end

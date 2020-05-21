@@ -1,17 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXPreventScreenCapture/EXPreventScreenCaptureModule.h>
+#import <EXScreenCapture/EXScreenCaptureModule.h>
 
-@interface EXPreventScreenCaptureModule ()
+@interface EXScreenCaptureModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) UIView *blockView;
 
 @end
 
-@implementation EXPreventScreenCaptureModule
+@implementation EXScreenCaptureModule
 
-UM_EXPORT_MODULE(ExpoPreventScreenCapture);
+UM_EXPORT_MODULE(ExpoScreenCapture);
 
 - (id)init {
   if (self = [super init]) {

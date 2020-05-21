@@ -1,4 +1,4 @@
-package expo.modules.preventscreencapture
+package expo.modules.screencapture
 
 import android.app.Activity
 import android.content.Context
@@ -11,7 +11,7 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.ActivityProvider
 
-class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
+class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
   private lateinit var activityProvider: ActivityProvider
 
@@ -62,7 +62,7 @@ class PreventScreenCaptureModule(context: Context) : ExportedModule(context) {
   }
 
   companion object {
-    private val NAME = "ExpoPreventScreenCapture"
-    private const val ERROR_TAG = "ERR_PREVENT_SCREEN_CAPTURE"
+    private val NAME = "ExpoScreenCapture"
+    private const val ERROR_TAG = "ERR_SCREEN_CAPTURE"
   }
 }

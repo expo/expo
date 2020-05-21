@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 
-import ExpoPreventScreenCapture from './ExpoPreventScreenCapture';
+import ExpoScreenCapture from './ExpoScreenCapture';
 
 /**
- * Prevent screen capture and recording
+ * Prevents screen shots and screen recordings.
+ * (On iOS, this will only prevent screen recordings)
  *
  * @example
  * ```typescript
@@ -11,12 +12,12 @@ import ExpoPreventScreenCapture from './ExpoPreventScreenCapture';
  * ```
  */
 export function activatePreventScreenCapture() {
-  return ExpoPreventScreenCapture.activatePreventScreenCapture();
+  return ExpoScreenCapture.activatePreventScreenCapture();
 }
 
 /**
- * Reallow screen capture and recording. If you haven't called
- * `prevent()` yet, this method does nothing.
+ * Reallows screen shots and recordings. If you haven't called
+ * `activatePreventScreenCapture()` yet, this method does nothing.
  *
  * @example
  * ```typescript
@@ -24,7 +25,7 @@ export function activatePreventScreenCapture() {
  * ```
  */
 export function deactivatePreventScreenCapture() {
-  return ExpoPreventScreenCapture.deactivatePreventScreenCapture();
+  return ExpoScreenCapture.deactivatePreventScreenCapture();
 }
 
 /**
