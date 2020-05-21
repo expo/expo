@@ -6,7 +6,10 @@ import host.exp.exponent.kernel.ExperienceId;
 
 class ScopedNotificationsUtils {
   static boolean shouldHandleNotification(Notification notification, ExperienceId experienceId) {
-    NotificationRequest notificationRequest = notification.getNotificationRequest();
+    return shouldHandleNotification(notification.getNotificationRequest(), experienceId);
+  }
+
+  static boolean shouldHandleNotification(NotificationRequest notificationRequest, ExperienceId experienceId) {
     if (notificationRequest instanceof ScopedNotificationRequest) {
       ScopedNotificationRequest scopedNotificationRequest = (ScopedNotificationRequest) notificationRequest;
       return scopedNotificationRequest.checkIfBelongsToExperience(experienceId);
