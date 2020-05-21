@@ -9,7 +9,6 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
   repositories {
-    maven { url 'https://maven.fabric.io/public' }
     maven { url "https://www.jitpack.io" }
     mavenCentral()
     google()
@@ -21,7 +20,6 @@ buildscript {
 }
 
 repositories {
-  maven { url 'https://maven.fabric.io/public' }
   maven { url "https://www.jitpack.io" }
   mavenCentral()
 }
@@ -42,9 +40,6 @@ android {
   }
 
   buildTypes {
-    debug {
-      ext.enableCrashlytics = false
-    }
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -86,9 +81,6 @@ dependencies {
 
   // Our dependencies
   api "androidx.appcompat:appcompat:1.0.0"
-  api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-    transitive = true
-  }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
 

@@ -3,6 +3,8 @@ const http = require('http');
 const path = require('path');
 const uuid = require('uuid/v4');
 
+const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+
 const platform = process.argv[2];
 const packagerUrl = process.argv[3];
 const destinationDir = process.argv[4];
@@ -44,7 +46,12 @@ const destinationDir = process.argv[4];
   };
 
   assets.forEach(function(asset) {
-    asset.scales.forEach(function(scale, index) {
+    if (!asset.fileHashes) {
+      throw new Error(
+        'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#metroconfigjs for an example.'
+      );
+    }
+    filterPlatformAssetScales(platform, asset.scales).forEach(function(scale, index) {
       const assetInfoForManifest = {
         name: asset.name,
         type: asset.type,

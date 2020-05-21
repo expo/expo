@@ -70,6 +70,9 @@ export async function openAuthSessionAsync(url, redirectUrl, browserParams = {})
         if (!ExponentWebBrowser.openAuthSessionAsync) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
         }
+        if (Platform.OS === 'web') {
+            return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, browserParams);
+        }
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
     }
     else {

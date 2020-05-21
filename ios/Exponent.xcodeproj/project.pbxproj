@@ -219,7 +219,13 @@
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
+		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
@@ -329,8 +335,6 @@
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
-		F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */; };
-		F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABC22ABE400008542C6 /* run-fabric.sh */; };
 		F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F1D6AF61244714C100AC1C74 /* EXDevMenuGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D6AF60244714C100AC1C74 /* EXDevMenuGestureRecognizer.m */; };
@@ -802,9 +806,21 @@
 		A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
 		AA6C990084ED43EFA6B281D9 /* RCTConvert+UIPageViewControllerTransitionStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerTransitionStyle.h"; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
+		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
+		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
+		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
+		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
+		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
+		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsHandlerModule.h; sourceTree = "<group>"; };
+		B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsHandlerModule.m; sourceTree = "<group>"; };
+		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
+		B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsUtils.m; sourceTree = "<group>"; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
@@ -1017,8 +1033,6 @@
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
 		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
 		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
-		F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cleanup-dynamic-macros.sh"; sourceTree = "<group>"; };
-		F12A1ABC22ABE400008542C6 /* run-fabric.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "run-fabric.sh"; sourceTree = "<group>"; };
 		F156867623E19E3C0029DF16 /* EXKernelDevKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelDevKeyCommands.h; sourceTree = "<group>"; };
 		F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelDevKeyCommands.m; sourceTree = "<group>"; };
 		F167C439209C7EE600F01382 /* EXUtilService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUtilService.h; sourceTree = "<group>"; };
@@ -1150,6 +1164,7 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				B2B492142462F5B7001576D8 /* EXNotifications */,
 				312D2ED0234DF2C1002F4049 /* EXFacebook */,
 				31361A5E2261C64100662769 /* Permissions */,
 				255747E7222D515400D91513 /* EXScopedFileSystem */,
@@ -1641,6 +1656,39 @@
 				B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		B2B492142462F5B7001576D8 /* EXNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
+				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+			);
+			path = EXNotifications;
+			sourceTree = "<group>";
+		};
+		B2B492142462F5B7001576D8 /* EXNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
+				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+			);
+			path = EXNotifications;
+			sourceTree = "<group>";
+		};
+		B2B492142462F5B7001576D8 /* EXNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
+				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+				B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */,
+				B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */,
+				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
+				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
+				B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */,
+				B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */,
+			);
+			path = EXNotifications;
 			sourceTree = "<group>";
 		};
 		B505BA0F20CAF77A0046ACFB /* Tests */ = {
@@ -2311,9 +2359,7 @@
 		F12A1AB722ABD461008542C6 /* Build-Phases */ = {
 			isa = PBXGroup;
 			children = (
-				F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */,
 				F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */,
-				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
 				3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */,
 			);
 			path = "Build-Phases";
@@ -2332,8 +2378,6 @@
 				78CEE2BD1ACD07D70095B124 /* Frameworks */,
 				78CEE2BE1ACD07D70095B124 /* Resources */,
 				347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */,
-				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
-				78F81D401B70746F000E5595 /* Fabric */,
 				65CD50218C6CF1A5BF985CC7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -2462,12 +2506,10 @@
 				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
-				F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */,
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
-				F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
@@ -2578,20 +2620,6 @@
 			shellPath = /bin/bash;
 			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
 		};
-		78F81D401B70746F000E5595 /* Fabric */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Fabric;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/run-fabric.sh\n";
-		};
 		AD799953B44D18A93FDD0639 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2613,20 +2641,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Clean Up Dynamic Macros";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/cleanup-dynamic-macros.sh\n";
 		};
 		D7A644915E8C9561CC604EC1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2716,6 +2730,7 @@
 				F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */,
 				78C832AB23545ECE00448582 /* REACondNode.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
+				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
 				3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */,
@@ -2736,6 +2751,7 @@
 				7043DFAC2283303800272D74 /* RNSVGGlyphContext.m in Sources */,
 				31AD9A352285B53100F19090 /* AIRMapManager.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
+				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
 				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,
 				78C832E823546BD400448582 /* RNRotationHandler.m in Sources */,
 				31AD9A3A2285B53100F19090 /* AIRMapPolygonManager.m in Sources */,
@@ -2781,6 +2797,7 @@
 				31AD99E52285B51100F19090 /* AIRGoogleMapOverlay.m in Sources */,
 				7043DFA72283303800272D74 /* RNSVGPropHelper.m in Sources */,
 				31AD99F42285B51100F19090 /* AIRGMSPolyline.m in Sources */,
+				B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */,
 				B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXUserNotificationManager.m in Sources */,
 				31AD9A372285B53100F19090 /* AIRMapMarker.m in Sources */,
@@ -2944,6 +2961,7 @@
 				9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */,
 				0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */,
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
+				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
 				B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */,
 				49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */,

@@ -15,7 +15,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `pod install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -283,7 +283,7 @@ let result = await AuthSession.startAsync({
 });
 ```
 
-[rn-fetch]: https://facebook.github.io/react-native/docs/network.html#fetch
+[rn-fetch]: https://reactnative.dev/docs/network.html#fetch
 [google-api-explorer]: https://developers.google.com/apis-explorer/
 [managed-workflow]: ../../introduction/managed-vs-bare/#managed-workflow
 [bare-workflow]: ../../introduction/managed-vs-bare/#bare-workflow

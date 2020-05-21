@@ -23,7 +23,7 @@ export type FixedChangelogEntry = PackageChangelogEntry & { content: string; dif
 
 // Setup
 const pr = danger.github.pr;
-const prAuthor = pr.base.user.login;
+const prAuthor = pr.user.login;
 const pullRequestManager = createPullRequestManager(danger.github.api, pr);
 
 async function getFileDiffAsync(path): Promise<string> {
@@ -65,7 +65,7 @@ async function runAddChangelogCommandAsync(
   suggestedEntries: PackageChangelogEntry[]
 ): Promise<FixedChangelogEntry[]> {
   for (const entry of suggestedEntries) {
-    await spawnAsync('et', [
+    await spawnAsync(path.join(getExpoRepositoryRootDir(), 'bin', 'expotools'), [
       `add-changelog`,
       `--package`,
       entry.packageName,
@@ -150,7 +150,6 @@ export async function checkChangelog(): Promise<void> {
     .filter(([packageName, files]) => !isChangelogModified(packageName, files))
     .map(([packageName]) => packageName);
   if (packagesWithoutChangelog.length === 0) {
-    message(`✅ **Changelog**`);
     return;
   }
 
@@ -161,10 +160,16 @@ export async function checkChangelog(): Promise<void> {
   const fixedEntries = await runAddChangelogCommandAsync(suggestedEntries);
 
   // creates/updates PR form result of `et` command - it will be merged to the current PR
-  const { html_url } = (await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {};
+  let prUrl: string | undefined;
+  try {
+    prUrl = ((await pullRequestManager.createOrUpdatePRAsync(fixedEntries)) || {}).html_url;
+  } catch (e) {
+    console.log("Couldn't create a pull request.");
+    console.log(e);
+  }
 
   // generates danger report. It will contain result of `et` command as a git diff and link to created PR
-  await generateReport(fixedEntries, html_url);
+  await generateReport(fixedEntries, prUrl);
 }
 
 function entryTypeToString(type: ChangelogEntryType): string {

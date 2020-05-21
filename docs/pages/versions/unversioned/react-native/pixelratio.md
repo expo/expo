@@ -9,7 +9,7 @@ PixelRatio class gives access to the device pixel density.
 
 You should get a higher resolution image if you are on a high pixel density device. A good rule of thumb is to multiply the size of the image you display by the pixel ratio.
 
-```jsx
+```js
 var image = getImage({
   width: PixelRatio.getPixelSizeForLayoutSize(200),
   height: PixelRatio.getPixelSizeForLayoutSize(100),
@@ -35,7 +35,7 @@ In React Native, everything in JavaScript and within the layout engine works wit
 
 ### `get()`
 
-```jsx
+```js
 
 static get()
 
@@ -67,7 +67,7 @@ Returns the device pixel density. Some examples:
 
 ### `getFontScale()`
 
-```jsx
+```js
 
 static getFontScale()
 
@@ -83,7 +83,7 @@ Currently this is only implemented on Android and reflects the user preference s
 
 ### `getPixelSizeForLayoutSize()`
 
-```jsx
+```js
 
 static getPixelSizeForLayoutSize(layoutSize)
 
@@ -97,7 +97,7 @@ Guaranteed to return an integer number.
 
 ### `roundToNearestPixel()`
 
-```jsx
+```js
 
 static roundToNearestPixel(layoutSize)
 

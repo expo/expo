@@ -24,6 +24,10 @@ There are a number of benefits to keeping your app runnable in the Expo client.
 
 ## Practical patterns for client-compatible bare apps
 
+### Prefer `expo install` over `npm install` to add Expo SDK packages
+
+This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo client yet.
+
 ### Use the `.expo.[js/json/ts/tsx]` extension to provide Expo client specific fallbacks
 
 Picture this: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@mapbox/react-native-mapbox-gl'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo client app. You can handle this by making `MyMap.js` and `MyMap.expo.js` as follows:

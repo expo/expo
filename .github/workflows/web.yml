@@ -15,6 +15,7 @@ jobs:
         with:
           fetch-depth: 1
           lfs: true
+      - run: yarn global add expo-cli
       - name: Cache Node.js modules
         uses: actions/cache@v1
         with:

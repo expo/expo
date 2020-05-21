@@ -8,7 +8,6 @@ import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
 import TitledSwitch from '../../components/TitledSwitch';
-import useDimensions from '../../utilities/useDimensions';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
 
@@ -17,10 +16,6 @@ maybeCompleteAuthSession();
 const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
 
 export default function AuthSessionScreen() {
-  const { window } = useDimensions();
-
-  const usePadding = window.width <= 660;
-
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
@@ -28,11 +23,9 @@ export default function AuthSessionScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
       <ScrollView
-        style={{ flex: 1, overflow: 'visible' }}
         contentContainerStyle={{
           maxWidth: 640,
-          paddingHorizontal: usePadding ? 12 : 0,
-          overflow: 'visible',
+          paddingHorizontal: 12,
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
@@ -86,6 +79,7 @@ function AuthSessionProviders(props: {
     Facebook,
     Spotify,
     Twitch,
+    Dropbox,
     Google,
     Reddit,
     Github,
@@ -134,7 +128,7 @@ function Google({ useProxy, prompt, usePKCE }: any) {
       request={request}
       title="google"
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
       useProxy={useProxy}
     />
   );
@@ -305,7 +299,7 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="github"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
       useProxy={useProxy}
     />
   );
@@ -424,14 +418,13 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
     }
   );
 
-  console.log(request?.url);
   return (
     <AuthSection
       title="facebook"
       disabled={isInClient && !useProxy}
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
       useProxy={useProxy}
     />
   );
@@ -480,7 +473,7 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
       scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'],
       usePKCE,
       extraParams: {
-        show_dialog: false,
+        show_dialog: 'false',
       },
       prompt,
     },
@@ -528,12 +521,13 @@ function Identity({ redirectUri, prompt, useProxy }: any) {
 }
 
 // Doesn't work with proxy
-function Coinbase({ redirectUri, prompt, useProxy }: any) {
+function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
       redirectUri,
       prompt,
+      usePKCE,
       scopes: ['wallet:accounts:read'],
     },
     // discovery
@@ -556,11 +550,41 @@ function Coinbase({ redirectUri, prompt, useProxy }: any) {
   );
 }
 
-function Twitch({ redirectUri, usePKCE, useProxy }: any) {
+function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId: 'pjvyj0c5kxxrsfs',
+      redirectUri,
+      prompt,
+      usePKCE,
+      scopes: [],
+      responseType: AuthSession.ResponseType.Token,
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
+      tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
+    }
+  );
+
+  return (
+    <AuthSection
+      disabled={usePKCE}
+      title="dropbox"
+      request={request}
+      result={result}
+      promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'r7jomrc4hiz5wm1wgdzmwr1ccb454h',
       redirectUri,
+      prompt,
       scopes: ['openid', 'user_read', 'analytics:read:games'],
       usePKCE,
     },

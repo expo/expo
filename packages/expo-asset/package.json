@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.1.3",
+  "version": "8.1.5",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -57,5 +57,5 @@
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "~1.2.0"
   },
-  "gitHead": "691527b37b3ecf241c65db632bfe70b3bbb5da24"
+  "gitHead": "2a51f5fff7a9045fdfa1b34d9c2f663c15f0bb8d"
 }

@@ -43,7 +43,7 @@ export const Time = forwardRef(({ style, ...props }, ref) => {
     return createElement('time', { ...props, style: [styles.reset, style], ref });
 });
 export const Pre = forwardRef(({ style, ...props }, ref) => {
-    return createElement('pre', { ...props, style: [styles.resetStyle, style], ref });
+    return createElement('pre', { ...props, style: [styles.reset, style], ref });
 });
 const styles = StyleSheet.create({
     reset: {

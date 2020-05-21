@@ -13,9 +13,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
 import android.provider.Settings;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -39,15 +37,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.security.Provider;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -287,16 +281,6 @@ public class Exponent {
 
   public Application getApplication() {
     return mApplication;
-  }
-
-  public static void logException(Throwable throwable) {
-    if (!ExpoViewBuildConfig.DEBUG) {
-      try {
-        Crashlytics.logException(throwable);
-      } catch (Throwable e) {
-        Log.e(TAG, e.toString());
-      }
-    }
   }
 
   public String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException {

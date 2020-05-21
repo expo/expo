@@ -36,6 +36,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 @property (nonatomic, assign) BOOL hasLaunched;
 @property (nonatomic, strong) dispatch_queue_t controllerQueue;
 
+@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
 
 @end
@@ -64,6 +65,7 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     _isReadyToLaunch = NO;
     _isTimerFinished = NO;
     _hasLaunched = NO;
+    _isStarted = NO;
   }
   return self;
 }
@@ -95,6 +97,8 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+
+  _isStarted = YES;
 
   NSError *fsError;
   _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];

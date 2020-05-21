@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -44,9 +43,14 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
 
     NotificationContent content = getNotificationContent();
 
+    builder.setAutoCancel(content.isAutoDismiss());
+
     builder.setContentTitle(content.getTitle());
     builder.setContentText(content.getText());
     builder.setSubText(content.getSubtitle());
+    // Sets the text/contentText as the bigText to allow the notification to be expanded and the
+    // entire text to be viewed.
+    builder.setStyle(new NotificationCompat.BigTextStyle().bigText(content.getText()));
 
     Number notificationColor = getColor();
     if (notificationColor != null) {

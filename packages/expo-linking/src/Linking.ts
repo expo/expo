@@ -81,7 +81,8 @@ function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
  *
  * **Examples**
  *
- * - Bare, Standalone, Custom: `yourscheme:///path`
+ * - Bare: empty string
+ * - Standalone, Custom: `yourscheme:///path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`
@@ -105,6 +106,15 @@ export function makeUrl(path: string = '', queryParams: QueryParams = {}): strin
 
     return encodeURI(`${origin}${outputPath}${queryString}`);
   }
+
+  // We don't have a manifest in bare workflow except after publishing, so warn people in development.
+  if (!Constants.manifest) {
+    console.warn(
+      'Linking.makeUrl is not supported in bare workflow. Switch to using your scheme string directly.'
+    );
+    return '';
+  }
+
   let scheme = 'exp';
   const manifestScheme = manifest.scheme ?? manifest?.detach?.scheme;
 

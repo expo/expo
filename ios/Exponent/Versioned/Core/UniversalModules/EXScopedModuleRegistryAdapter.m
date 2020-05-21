@@ -22,6 +22,10 @@
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
 
+#import "EXScopedNotificationsEmitter.h"
+#import "EXScopedNotificationsHandlerModule.h"
+#import "EXScopedNotificationBuilder.h"
+
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
 #endif
@@ -121,6 +125,20 @@
   [moduleRegistry registerInternalModule:firebaseCoreModule];
 #endif
 
+#if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
+  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:notificationsEmmitter];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
+  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:notificationsHandler];
+#endif
+  
+#if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
+  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:notificationsBuilder];
+#endif
   return moduleRegistry;
 }
 

@@ -11,9 +11,7 @@ import spawnAsync from '@expo/spawn-async';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
-import getPackageViewFromRegistryAsync, {
-  PackageViewType,
-} from '../utils/getPackageViewFromRegistryAsync';
+import * as Npm from '../Npm';
 
 interface ActionOptions {
   list: boolean;
@@ -475,12 +473,20 @@ async function copyFilesAsync(
 async function listAvailableVendoredModulesAsync(onlyOutdated: boolean = false) {
   const bundledNativeModules = await getBundledNativeModulesAsync();
   const vendoredPackageNames = Object.keys(vendoredModulesConfig);
-  const packageViews: PackageViewType[] = await Promise.all(
-    vendoredPackageNames.map(getPackageViewFromRegistryAsync)
+  const packageViews: Npm.PackageViewType[] = await Promise.all(
+    vendoredPackageNames.map((packageName: string) => Npm.getPackageViewAsync(packageName))
   );
 
   for (const packageName of vendoredPackageNames) {
-    const packageView = packageViews.shift() as PackageViewType;
+    const packageView = packageViews.shift();
+
+    if (!packageView) {
+      console.error(
+        chalk.red.bold(`Couldn't get package view for ${chalk.green.bold(packageName)}.\n`)
+      );
+      continue;
+    }
+
     const moduleConfig = vendoredModulesConfig[packageName];
     const bundledVersion = bundledNativeModules[packageName];
     const latestVersion = packageView.versions[packageView.versions.length - 1];

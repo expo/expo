@@ -363,7 +363,7 @@ CACHE_KEYS:
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
       EXGL: b21ff559aacb62ac621d51e446f9cbce
-    CHECKSUM: 7df5a1c0cd23dc7496d95889d4274448de8e21a2
+    CHECKSUM: 41b3775eb9a9d6766abd36f9a0bf132bc05ba6e8
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -379,11 +379,11 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLViewManager.m"
     PROJECT_NAME: EXGL
     SPECS:
-      - EXGL (8.1.0)
+      - EXGL (8.2.0)
   EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
       EXGL_CPP: e5c21be87c49c4ea22fb524158d76c6f
-    CHECKSUM: a70374bf147b423e4ed8dd435006581de7e3c311
+    CHECKSUM: ca6a2c8acf11d3d1fdf8fa9f858a760beaf06440
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/EXGLContext.h"
@@ -401,8 +401,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
     PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL_CPP (8.1.0)
-      - EXGL_CPP/EXGLContext (8.1.0)
+      - EXGL_CPP (8.2.0)
+      - EXGL_CPP/EXGLContext (8.2.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: f09b309f99f7a0147df78dd155d49661
@@ -547,13 +547,15 @@ CACHE_KEYS:
       - EXMailComposer (8.1.0)
   EXMediaLibrary:
     BUILD_SETTINGS_CHECKSUM:
-      EXMediaLibrary: 99f4bb60549d317396910bc178e6b1c9
-    CHECKSUM: 02a13521d05ca381b08f7d745a9602569eade072
+      EXMediaLibrary: b1b7c63f8f6289e292b6025ab6f3346c
+    CHECKSUM: aa151e6f6f977543c24222d57a1caad4b7facfbc
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryImageLoader.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
@@ -1505,7 +1507,7 @@ CACHE_KEYS:
   react-native-appearance:
     BUILD_SETTINGS_CHECKSUM:
       react-native-appearance: a65151d7252615fcc01dbb407fa5071d
-    CHECKSUM: 98e4530857c366de634f58e5db91bf97feaa96ff
+    CHECKSUM: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
     FILES:
       - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.h"
       - "../../../../node_modules/react-native-appearance/ios/Appearance/RNCAppearance.m"
@@ -1517,7 +1519,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-appearance/README.md"
     PROJECT_NAME: react-native-appearance
     SPECS:
-      - react-native-appearance (0.3.3)
+      - react-native-appearance (0.3.4)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca

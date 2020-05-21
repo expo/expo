@@ -38,7 +38,7 @@ Now we just run `yarn ios` or `yarn android` to start the JavaScript bundler ser
 
 ## Adding a library from the Expo SDK
 
-To add a library from the Expo SDK we install it with `expo install`, run `pod install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
+To add a library from the Expo SDK we install it with `expo install`, run `npx pod-install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
 
 <Video file="exploring-bare/expoinstall.mp4" spaceAfter />
 

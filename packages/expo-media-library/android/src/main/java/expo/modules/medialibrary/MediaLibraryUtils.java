@@ -1,17 +1,23 @@
 package expo.modules.medialibrary;
 
 import android.content.Context;
+import android.content.ContentResolver;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.media.MediaMetadataRetriever;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
 import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
+import android.net.Uri;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -96,7 +102,8 @@ final class MediaLibraryUtils {
   }
 
   static void queryAssetInfo(Context context, final String selection, final String[] selectionArgs, boolean fullInfo, Promise promise) {
-    try (Cursor asset = context.getContentResolver().query(
+    ContentResolver contentResolver = context.getContentResolver();
+    try (Cursor asset = contentResolver.query(
         EXTERNAL_CONTENT,
         ASSET_PROJECTION,
         selection,
@@ -109,7 +116,7 @@ final class MediaLibraryUtils {
         if (asset.getCount() == 1) {
           asset.moveToFirst();
           ArrayList<Bundle> array = new ArrayList<>();
-          putAssetsInfo(asset, array, 1, 0, fullInfo);
+          putAssetsInfo(contentResolver, asset, array, 1, 0, fullInfo);
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
           // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
@@ -126,7 +133,7 @@ final class MediaLibraryUtils {
     }
   }
 
-  static void putAssetsInfo(Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
+  static void putAssetsInfo(ContentResolver contentResolver, Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
@@ -142,9 +149,16 @@ final class MediaLibraryUtils {
       return;
     }
     for (int i = 0; i < limit && !cursor.isAfterLast(); i++) {
-      String localUri = "file://" + cursor.getString(localUriIndex);
+      String path = cursor.getString(localUriIndex);
+      String localUri = "file://" + path;
       int mediaType = cursor.getInt(mediaTypeIndex);
-      int[] size = getSizeFromCursor(cursor, mediaType, localUriIndex);
+
+      ExifInterface exifInterface = null;
+      if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
+        exifInterface = new ExifInterface(path);
+      }
+
+      int[] size = getSizeFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex);
 
       Bundle asset = new Bundle();
       asset.putString("id", cursor.getString(idIndex));
@@ -159,8 +173,8 @@ final class MediaLibraryUtils {
       asset.putString("albumId", cursor.getString(albumIdIndex));
 
       if (fullInfo) {
-        if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
-          getExifFullInfo(cursor, asset);
+        if (exifInterface != null) {
+          getExifFullInfo(exifInterface, asset);
         }
 
         asset.putString("localUri", localUri);
@@ -213,25 +227,68 @@ final class MediaLibraryUtils {
     return MEDIA_TYPES.get(mediaType);
   }
 
-  static int[] getSizeFromCursor(Cursor cursor, int mediaType, int localUriIndex){
-    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
-    final int widthIndex = cursor.getColumnIndex(Media.WIDTH);
-    final int heightIndex = cursor.getColumnIndex(Media.HEIGHT);
+  static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
+    final String uri = cursor.getString(localUriIndex);
 
-    int[] size;
-    // If image doesn't have the required information, we can get them from Bitmap.Options
-    if ((cursor.getType(widthIndex) == Cursor.FIELD_TYPE_NULL ||
-        cursor.getType(heightIndex) == Cursor.FIELD_TYPE_NULL) &&
-        mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
+    if (mediaType == Files.FileColumns.MEDIA_TYPE_VIDEO) {
+      Uri videoUri = Uri.parse("file://" + uri);
+      MediaMetadataRetriever retriever = null;
+      try (AssetFileDescriptor photoDescriptor = contentResolver.openAssetFileDescriptor(videoUri, "r")) {
+        retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(photoDescriptor.getFileDescriptor());
+        int videoWidth = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+        );
+        int videoHeight = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+        );
+        int videoOrientation = Integer.parseInt(
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+        );
+        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation);
+      } catch (NumberFormatException e) {
+        Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: " + e.getMessage());
+      } catch (FileNotFoundException e) {
+        Log.e("expo-media-library", String.format("ContentResolver failed to read %s: %s", uri, e.getMessage()));
+      } finally {
+        if (retriever != null) {
+          retriever.release();
+        }
+      }
+    }
+
+    final int widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH);
+    final int heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT);
+    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
+    int width = cursor.getInt(widthIndex);
+    int height = cursor.getInt(heightIndex);
+    int orientation = cursor.getInt(orientationIndex);
+
+    // If the image doesn't have the required information, we can get them from Bitmap.Options
+    if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE && (width <= 0 || height <= 0)) {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
-
-      BitmapFactory.decodeFile(cursor.getString(localUriIndex), options);
-      size = maybeRotateAssetSize(options.outWidth, options.outHeight, cursor.getInt(orientationIndex));
-    } else {
-      size = maybeRotateAssetSize(cursor.getInt(widthIndex), cursor.getInt(heightIndex), cursor.getInt(orientationIndex));
+      BitmapFactory.decodeFile(uri, options);
+      width = options.outWidth;
+      height = options.outHeight;
     }
-    return size;
+
+    if (exifInterface != null) {
+      int exifOrientation = exifInterface.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL
+      );
+      if (
+        exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
+        exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
+        exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+        exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
+      ) {
+        orientation = 90;
+      }
+    }
+
+    return maybeRotateAssetSize(width, height, orientation);
   }
 
   static int[] maybeRotateAssetSize(int width, int height, int orientation) {
@@ -265,9 +322,7 @@ final class MediaLibraryUtils {
     return TextUtils.join(",", result);
   }
 
-  static void getExifFullInfo(Cursor cursor, Bundle response) throws IOException {
-    File input = new File(cursor.getString(cursor.getColumnIndex(Media.DATA)));
-    ExifInterface exifInterface = new ExifInterface(input.getPath());
+  static void getExifFullInfo(ExifInterface exifInterface, Bundle response) {
     Bundle exifMap = new Bundle();
     for (String[] tagInfo : exifTags) {
       String name = tagInfo[1];

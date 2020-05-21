@@ -34,7 +34,7 @@ Add `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescri
 <string>Allow $(PRODUCT_NAME) to use your location</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

@@ -117,11 +117,13 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
     serializedTrigger[@"dateComponents"] = [self serializedDateComponents:calendarTrigger.dateComponents];
+#if !(TARGET_OS_MACCATALYST)
   } else if ([trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"location";
     serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNLocationNotificationTrigger *locationTrigger = (UNLocationNotificationTrigger *)trigger;
     serializedTrigger[@"region"] = [self serializedRegion:locationTrigger.region];
+#endif
   } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"timeInterval";
     UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;

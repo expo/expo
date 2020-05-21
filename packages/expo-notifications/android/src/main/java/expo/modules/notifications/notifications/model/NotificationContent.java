@@ -30,6 +30,7 @@ public class NotificationContent implements Parcelable, Serializable {
   private JSONObject mBody;
   private NotificationPriority mPriority;
   private Number mColor;
+  private boolean mAutoDismiss;
 
   protected NotificationContent() {
   }
@@ -99,6 +100,10 @@ public class NotificationContent implements Parcelable, Serializable {
     return mColor;
   }
 
+  public boolean isAutoDismiss() {
+    return mAutoDismiss;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -123,6 +128,7 @@ public class NotificationContent implements Parcelable, Serializable {
       mPriority = NotificationPriority.fromNativeValue(priorityNumber.intValue());
     }
     mColor = (Number) in.readSerializable();
+    mAutoDismiss = in.readByte() == 1;
   }
 
   @Override
@@ -138,6 +144,7 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeString(mBody != null ? mBody.toString() : null);
     dest.writeSerializable(mPriority != null ? mPriority.getNativeValue() : null);
     dest.writeSerializable(mColor);
+    dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -162,6 +169,7 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeObject(mBody != null ? mBody.toString() : null);
     out.writeObject(mPriority != null ? mPriority.getNativeValue() : null);
     out.writeObject(mColor);
+    out.writeByte(mAutoDismiss ? 1 : 0);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -201,6 +209,7 @@ public class NotificationContent implements Parcelable, Serializable {
       mPriority = NotificationPriority.fromNativeValue(priorityNumber.intValue());
     }
     mColor = (Number) in.readObject();
+    mAutoDismiss = in.readByte() == 1;
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -218,6 +227,7 @@ public class NotificationContent implements Parcelable, Serializable {
     private JSONObject mBody;
     private NotificationPriority mPriority;
     private Number mColor;
+    private boolean mAutoDismiss;
 
     public Builder() {
       useDefaultSound();
@@ -283,6 +293,11 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
+    public Builder setAutoDismiss(boolean autoDismiss) {
+      mAutoDismiss = autoDismiss;
+      return this;
+    }
+
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
       content.mTitle = mTitle;
@@ -296,6 +311,7 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mBody = mBody;
       content.mPriority = mPriority;
       content.mColor = mColor;
+      content.mAutoDismiss = mAutoDismiss;
       return content;
     }
   }

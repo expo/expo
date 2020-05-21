@@ -35,7 +35,7 @@
     "react-native-web": "*"
   },
   "dependencies": {
-    "@expo/config": "^2.5.3",
+    "@expo/config": "^3.2.3",
     "babel-jest": "^25.2.0",
     "jest": "^25.2.0",
     "jest-watch-select-projects": "^2.0.0",

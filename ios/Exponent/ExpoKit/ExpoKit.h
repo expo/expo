@@ -30,6 +30,11 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 - (UIViewController *)currentViewController;
 
 /**
+ *  Set up dependencies that need to be initialized before app delegates.
+ */
+- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions;
+
+/**
  *  Keys to third-party integrations used inside ExpoKit.
  *  TODO: document this.
  */
@@ -49,7 +54,7 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 
 #pragma mark - misc AppDelegate hooks
 
-- (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 
 #pragma mark - APNS hooks
 

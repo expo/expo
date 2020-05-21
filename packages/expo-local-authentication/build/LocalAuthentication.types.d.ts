@@ -11,6 +11,6 @@ export declare enum AuthenticationType {
 export declare type LocalAuthenticationOptions = {
     promptMessage?: string;
     cancelLabel?: string;
-    fallbackLabel?: string;
     disableDeviceFallback?: boolean;
+    fallbackLabel?: string;
 };

@@ -13,7 +13,7 @@ title: Clipboard
 
 ### `getString()`
 
-```jsx
+```js
 
 static getString()
 
@@ -21,7 +21,7 @@ static getString()
 
 Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
 
-```jsx
+```js
 
 async _getContent() {
   var content = await Clipboard.getString();
@@ -33,7 +33,7 @@ async _getContent() {
 
 ### `setString()`
 
-```jsx
+```js
 
 static setString(content)
 
@@ -41,7 +41,7 @@ static setString(content)
 
 Set content of string type. You can use following code to set clipboard content
 
-```jsx
+```js
 
 _setContent() {
   Clipboard.setString('hello world');

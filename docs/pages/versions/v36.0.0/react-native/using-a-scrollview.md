@@ -18,35 +18,35 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
         <Text style={{ fontSize: 96 }}>Scroll me plz</Text>
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
@@ -54,35 +54,35 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
         <Text style={{ fontSize: 96 }}>If you like</Text>
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
@@ -90,35 +90,35 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
         <Text style={{ fontSize: 96 }}>Scrolling down</Text>
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
@@ -126,35 +126,35 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
         <Text style={{ fontSize: 96 }}>What's the best</Text>
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
@@ -162,35 +162,35 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
         <Text style={{ fontSize: 96 }}>Framework around?</Text>
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
         />
         <Image
           source={{
-            uri: 'https://facebook.github.io/react-native/img/tiny_logo.png',
+            uri: 'https://reactnative.dev/img/tiny_logo.png',
             width: 64,
             height: 64,
           }}
