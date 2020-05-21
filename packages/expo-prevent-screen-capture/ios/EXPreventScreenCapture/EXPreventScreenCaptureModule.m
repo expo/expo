@@ -15,7 +15,7 @@ UM_EXPORT_MODULE(ExpoPreventScreenCapture);
 
 - (id)init {
   if (self = [super init]) {
-      self.blockView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)];
+      self.blockView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.height, [[UIScreen mainScreen] bounds].size.height)];
       [self.blockView setBackgroundColor:[UIColor whiteColor]];
   }
   return self;
