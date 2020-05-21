@@ -645,6 +645,9 @@ const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
     scopes: ['user-read-email', 'playlist-modify-public'],
+    // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+    // this must be set to false
+    usePKCE: false,
     // For usage in managed apps using the proxy
     redirectUri: makeRedirectUri({
       // For usage in bare and standalone
