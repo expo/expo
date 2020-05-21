@@ -69,6 +69,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /(EXScopedABI\d+_\d+_\d+ReactNative)/g,
         with: 'EXScopedReactNative',
       },
+      {
+        paths: `${versionName}EXFileSystem`,
+        replace: new RegExp(`NSData\\+${versionName}EXFileSystem\\.h`, 'g'),
+        with: `${versionName}NSData+EXFileSystem.h`
+      },
 
       // react-native-maps
       {
