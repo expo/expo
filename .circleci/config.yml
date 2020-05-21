@@ -246,13 +246,6 @@ executors:
     docker:
       - image: circleci/node:lts-buster
     resource_class: small
-  web:
-    docker:
-      - image: circleci/node:13.8.0-buster-browsers
-    working_directory: /home/circleci/expo
-    resource_class: small
-    environment:
-      USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '11.4.0'
@@ -272,20 +265,10 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  # JavaScript packages that make up the SDK
-  sdk:
-    unless: << pipeline.parameters.release >>
-    jobs:
-      - expo_sdk
-      # E2E SDK testing
-      - web_test_suite
-      - ios_test_suite
-
   # Android and iOS clients
   client:
     unless: << pipeline.parameters.release >>
     jobs:
-      - expotools
       - client_android
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
@@ -345,131 +328,6 @@ workflows:
           upload: false
 
 jobs:
-  expo_sdk:
-    executor: js
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: sdk
-          paths: package.json yarn.lock packages tools/expotools
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/project
-      - save_yarn_cache
-      - run:
-          name: Check packages
-          command: expotools check-packages
-      - run:
-          name: Run Danger
-          working_directory: ~/project
-          command: yarn danger ci
-      - job-status-change/status
-      - slack-job-status-notification/notify:
-          only_for_branches: master sdk-*
-          slack_webhook: $SLACK_API_WEBHOOK
-
-  web_test_suite:
-    executor: web
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: sdk
-          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/expo
-      - save_yarn_cache
-      - run: yarn global add expo-cli
-      - yarn:
-          command: test:web
-          working_directory: ~/expo/apps/bare-expo
-      - job-status-change/status
-      - slack-job-status-notification/notify:
-          only_for_branches: master sdk-*
-          slack_webhook: $SLACK_WEB_WEBHOOK
-
-  expotools:
-    executor: js
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: client
-          paths: tools/expotools
-      # We can't use yarn_restore_and_install since it
-      # triggers the postinstall script which we don't
-      # want to do here.
-      - restore_yarn_cache:
-          working_directory: ~/project/tools/expotools
-      - yarn:
-          command: install --ignore-scripts
-          working_directory: ~/project/tools/expotools
-      - save_yarn_cache:
-          working_directory: ~/project/tools/expotools
-      - yarn:
-          command: tsc
-          working_directory: ~/project/tools/expotools
-
-  ios_test_suite:
-    executor: mac
-    #parallelism: 8
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: sdk
-          paths: apps/bare-expo apps/test-suite package.json yarn.lock packages Gemfile .ruby-version
-      - bundle_install
-      - update_submodules
-
-      # Simulators are more likely to fail. Try them first
-      - run:
-          name: Pull Detox
-          working_directory: ~/project/apps/bare-expo
-          command: brew tap wix/brew
-      - run:
-          name: Install iOS simulators
-          working_directory: ~/project/apps/bare-expo
-          command: brew install applesimutils
-      - run:
-          name: Install Watchman
-          working_directory: ~/project/apps/bare-expo
-          command: brew install watchman
-
-      ## Yarn takes a while to run
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/project
-      - save_yarn_cache
-
-      ## Detox
-      - run:
-          name: Clean Detox
-          working_directory: ~/project/apps/bare-expo
-          command: yarn detox:clean
-      - run:
-          name: Build iOS project for Detox
-          working_directory: ~/project/apps/bare-expo
-          no_output_timeout: 30m
-          command: yarn ios:detox:build:release
-      - run:
-          name: Run tests
-          working_directory: ~/project/apps/bare-expo
-          command: yarn ios:detox:test:release
-          # Store images of build failures
-      - store_artifacts:
-          path: ~/project/apps/bare-expo/artifacts
-          # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
-          # environment:
-          #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
-      # - store_test_results:
-      # path: ~/project/apps/bare-expo/__e2e__/results
-
-      - job-status-change/status
-      - slack-job-status-notification/notify:
-          only_for_branches: master sdk-*
-          slack_webhook: $SLACK_IOS_WEBHOOK
-
   client_ios:
     executor: mac
     steps:
