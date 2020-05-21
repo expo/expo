@@ -1,6 +1,6 @@
 import NotificationScheduler from './NotificationScheduler';
-import { Notification } from './Notifications.types';
+import { NotificationRequest } from './Notifications.types';
 
-export default async function getAllScheduledNotificationsAsync(): Promise<Notification[]> {
+export default async function getAllScheduledNotificationsAsync(): Promise<NotificationRequest[]> {
   return await NotificationScheduler.getAllScheduledNotificationsAsync();
 }
