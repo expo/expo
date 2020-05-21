@@ -14,6 +14,8 @@ def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require
 
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+def entryFile = config.entryFile ?: "index.js"
+def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
 
 afterEvaluate {
   def projectRoot = file("../../")
@@ -51,9 +53,9 @@ afterEvaluate {
       workingDir projectRoot
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
       } else {
-        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
       }
 
       enabled targetName.toLowerCase().contains("release")
