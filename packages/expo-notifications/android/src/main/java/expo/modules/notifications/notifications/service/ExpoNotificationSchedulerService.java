@@ -264,7 +264,7 @@ public class ExpoNotificationSchedulerService extends JobIntentService {
   protected NotificationRequest fetchNotification(String identifier) {
     try {
       return mStore.getNotificationRequest(identifier);
-    } catch (IOException | ClassNotFoundException e) {
+    } catch (IOException | ClassNotFoundException | NullPointerException e) {
       return null;
     }
   }

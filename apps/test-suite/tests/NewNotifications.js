@@ -358,7 +358,7 @@ export async function test(t) {
               lightColor: '#FF231F7C',
               lockscreenVisibility: Notifications.AndroidNotificationVisibility.SECRET,
               showBadge: false,
-              soundUri: null,
+              sound: null,
               audioAttributes: {
                 usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
