@@ -54,3 +54,15 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - uses: 8398a7/action-slack@v3
+        if: failure() && github.event.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_docs }}
+        with:
+          channel: '#docs'
+          status: ${{ job.status }}
+          fields: commit,author,action,message
+          author_name: docs build
+          mention: here
+          if_mention: failure
