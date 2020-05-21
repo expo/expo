@@ -10,6 +10,8 @@ void runBefore(String dependentTaskName, Task task) {
   }
 }
 
+def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
@@ -49,9 +51,9 @@ afterEvaluate {
       workingDir projectRoot
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
       } else {
-        commandLine(*nodeExecutableAndArgs, "./node_modules/expo-updates/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/index.assets?platform=android&dev=false", assetsDir)
       }
 
       enabled targetName.toLowerCase().contains("release")
