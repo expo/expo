@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added a more helpful error message when trying to run a build without the packager server running.
+
 ## 0.2.3
 
 ### 🐛 Bug fixes
