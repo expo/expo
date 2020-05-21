@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/Expo/Core/Api/Screens/ABI34_0_0RNSScreenContainer.h

@@ -1,0 +1,12 @@
+diff --git a/node_modules/@expo/xdl/build/detach/IosPodsTools.js b/node_modules/@expo/xdl/build/detach/IosPodsTools.js
+index 03f5b94..95f4b9d 100644
+--- a/node_modules/@expo/xdl/build/detach/IosPodsTools.js
++++ b/node_modules/@expo/xdl/build/detach/IosPodsTools.js
+@@ -390,7 +390,6 @@ use_unimodules!(
+     'expo-bluetooth',
+     'expo-in-app-purchases',
+     'expo-payments-stripe',
+-    'expo-notifications',
+     'expo-splash-screen',
+     'expo-image',
+     'expo-updates',
