@@ -13,6 +13,10 @@ static NSString * const notificationTriggerRepeatsKey = @"repeats";
 static NSString * const intervalNotificationTriggerType = @"timeInterval";
 static NSString * const intervalNotificationTriggerIntervalKey = @"seconds";
 
+static NSString * const dailyNotificationTriggerType = @"daily";
+static NSString * const dailyNotificationTriggerHourKey = @"hour";
+static NSString * const dailyNotificationTriggerMinuteKey = @"minute";
+
 static NSString * const dateNotificationTriggerType = @"date";
 static NSString * const dateNotificationTriggerTimestampKey = @"timestamp";
 
@@ -110,6 +114,16 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 
     return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[date timeIntervalSinceNow]
                                                               repeats:NO];
+
+  } else if ([dailyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *hour = [params objectForKey:dailyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:dailyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
   } else if ([calendarNotificationTriggerType isEqualToString:triggerType]) {
     NSDateComponents *dateComponents = [self dateComponentsFromParams:params[calendarNotificationTriggerComponentsKey]];
     NSNumber *repeats = [params objectForKey:notificationTriggerRepeatsKey verifyingClass:[NSNumber class]];

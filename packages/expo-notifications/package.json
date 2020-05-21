@@ -30,6 +30,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "expo-application": "^2.1.0",
