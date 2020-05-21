@@ -1,0 +1,46 @@
+name: SDK
+
+on:
+  push:
+    branches: [ master, 'sdk-*' ]
+    paths:
+      - .github/workflows/sdk.yml
+      - tools/expotools/**
+      - packages/**
+      - yarn.lock
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .github/workflows/sdk.yml
+      - tools/expotools/**
+      - packages/**
+      - yarn.lock
+
+jobs:
+  check-packages:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - run: bin/expotools check-packages
+      - uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+        with:
+          channel: '#api'
+          status: ${{ job.status }}
+          fields: commit,author,action,message
+          author_name: sdk check-packages
