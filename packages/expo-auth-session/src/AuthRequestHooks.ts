@@ -67,7 +67,6 @@ export function useAuthRequest(
       if (isMountedRef.current) {
         setResult(result);
       }
-
       return result;
     },
     [request?.url, discovery?.authorizationEndpoint]
