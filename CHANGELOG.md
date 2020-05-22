@@ -8,6 +8,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Updated `react-native-reanimated` from `1.7.0` to `1.9.0`. ([#8424](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
+- Updated `react-native-shared-element` from `0.5.6` to `0.7.0`. ([#8427](https://github.com/expo/expo/pull/8427) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🛠 Breaking changes
 
