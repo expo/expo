@@ -51,9 +51,9 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
           if (sdkVersion >= 39) {
             dispatchToNextNotificationModule(remoteMessage);
             return;
-          }
-
-          if (sdkVersion == 38) {
+          } else if (sdkVersion == 38) {
+            // In SDK38 we want to let people decide which notifications API to use,
+            // the next or the legacy one.
             JSONObject androidSection = manifest.optJSONObject("android");
             if (androidSection != null) {
               boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
@@ -63,7 +63,7 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
               }
             }
           }
-
+          // If it's an older experience or useNextNotificationsApi is set to false, let's use the legacy notifications API
           dispatchToLegacyNotificationModule(remoteMessage);
         } catch (JSONException e) {
           e.printStackTrace();
