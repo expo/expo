@@ -6,6 +6,7 @@ import expo.modules.notifications.notifications.emitting.NotificationsEmitter;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedNotificationsEmitter extends NotificationsEmitter {
   private ExperienceId mExperienceId;

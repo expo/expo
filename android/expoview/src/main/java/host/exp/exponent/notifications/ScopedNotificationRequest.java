@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.universal.notifications;
+package host.exp.exponent.notifications;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -45,6 +45,10 @@ public class ScopedNotificationRequest extends NotificationRequest {
       return new ScopedNotificationRequest[size];
     }
   };
+
+  String getExperienceIdString() {
+    return mExperienceIdString;
+  }
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
