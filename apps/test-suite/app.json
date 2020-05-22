@@ -10,7 +10,7 @@
       "bundleIdentifier": "io.expo.testsuite"
     },
     "android": {
-      "nextNotificationsApi": true
+      "useNextNotificationsApi": true
     }
   }
 }

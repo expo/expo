@@ -51,8 +51,8 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
 
           JSONObject androidSection = manifest.optJSONObject("android");
           if (androidSection != null) {
-            boolean nextNotificationsApi = androidSection.optBoolean("nextNotificationsApi", false);
-            if (nextNotificationsApi) {
+            boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
+            if (useNextNotificationsApi) {
               dispatchToNextNotificationModule(remoteMessage);
               return;
             }
