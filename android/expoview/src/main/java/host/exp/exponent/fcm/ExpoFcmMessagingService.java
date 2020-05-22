@@ -44,19 +44,26 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
-          if (ABIVersion.toNumber(manifest.getString("sdkVersion")) >= 39) {
+          int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion"));
+
+          // If an experience is on SDK newer than 38, that is SDK39 and beyond up till UNVERSIONED
+          // we only use the new notifications API as it is going to be removed from SDK39.
+          if (sdkVersion >= 39) {
             dispatchToNextNotificationModule(remoteMessage);
             return;
           }
 
-          JSONObject androidSection = manifest.optJSONObject("android");
-          if (androidSection != null) {
-            boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
-            if (useNextNotificationsApi) {
-              dispatchToNextNotificationModule(remoteMessage);
-              return;
+          if (sdkVersion == 38) {
+            JSONObject androidSection = manifest.optJSONObject("android");
+            if (androidSection != null) {
+              boolean useNextNotificationsApi = androidSection.optBoolean("useNextNotificationsApi", false);
+              if (useNextNotificationsApi) {
+                dispatchToNextNotificationModule(remoteMessage);
+                return;
+              }
             }
           }
+
           dispatchToLegacyNotificationModule(remoteMessage);
         } catch (JSONException e) {
           e.printStackTrace();
