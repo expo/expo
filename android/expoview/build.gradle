@@ -44,7 +44,6 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
   repositories {
-    maven { url 'https://maven.fabric.io/public' }
     // If you have maven { url "https://jitpack.io" } as your resolving url,
     // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.
     // However, when you change url to "https://www.jitpack.io", Jitpack returns POM, AAR, and sources.jar.
@@ -61,7 +60,6 @@ buildscript {
 }
 
 repositories {
-  maven { url 'https://maven.fabric.io/public' }
   maven { url "https://www.jitpack.io" }
   mavenCentral()
 }
@@ -87,9 +85,6 @@ android {
   }
 
   buildTypes {
-    debug {
-      ext.enableCrashlytics = false
-    }
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -195,9 +190,6 @@ dependencies {
   // BEGIN_SDK_35
   api 'host.exp:reactandroid-abi35_0_0:1.0.0'
   // END_SDK_35
-  // BEGIN_SDK_34
-  api 'host.exp:reactandroid-abi34_0_0:1.0.0'
-  // END_SDK_34
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -220,9 +212,6 @@ dependencies {
 
   // Our dependencies
   api "androidx.appcompat:appcompat:1.1.0"
-  api('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-    transitive = true;
-  }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
 

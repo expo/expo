@@ -40,8 +40,7 @@ If you're using the iOS or Android Emulators, ensure that [Location is enabled](
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet } from 'react-native';
-import Constants from 'expo-constants';
+import { Text, View, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -69,10 +68,16 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.paragraph}>{text}</Text>
+      <Text>{text}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 ```
 
 </SnackInline>

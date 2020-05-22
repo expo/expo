@@ -8,9 +8,10 @@ import process from 'process';
 import semver from 'semver';
 
 import * as ExpoCLI from '../ExpoCLI';
+import { deepCloneObject } from '../Utils';
+import AppConfig from '../typings/AppConfig';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
 import { Directories, HashDirectory, XDL } from '../expotools';
-import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
@@ -77,13 +78,6 @@ async function getExpoCliStateAsync(): Promise<ExpoCliStateObject> {
  */
 async function setExpoCliStateAsync(newState: object): Promise<void> {
   await JsonFile.writeAsync<ExpoCliStateObject>(getExpoCliStatePath(), newState);
-}
-
-/**
- * Deeply clones an object. It's used to make a backup of home's `app.json` file.
- */
-function deepCloneObject<ObjectType extends object = object>(object: ObjectType): ObjectType {
-  return JSON.parse(JSON.stringify(object));
 }
 
 /**

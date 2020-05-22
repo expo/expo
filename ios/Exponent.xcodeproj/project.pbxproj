@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -219,7 +218,14 @@
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
+		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
+		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
@@ -336,6 +342,7 @@
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
+		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -800,9 +807,21 @@
 		A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStackHeaderConfig.h; sourceTree = "<group>"; };
 		AA6C990084ED43EFA6B281D9 /* RCTConvert+UIPageViewControllerTransitionStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIPageViewControllerTransitionStyle.h"; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
+		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
+		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
+		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
+		B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSchedulerModule.m; sourceTree = "<group>"; };
+		B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationPresentationModule.h; sourceTree = "<group>"; };
+		B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationPresentationModule.m; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
+		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
+		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
+		B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsHandlerModule.h; sourceTree = "<group>"; };
+		B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsHandlerModule.m; sourceTree = "<group>"; };
+		B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsUtils.h; sourceTree = "<group>"; };
+		B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsUtils.m; sourceTree = "<group>"; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
@@ -1026,6 +1045,8 @@
 		F1D6AF6524472BA900AC1C74 /* EXDevMenuDelegateProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuDelegateProtocol.h; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
+		57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */ = {isa = PBXFileReference; name = "RNSharedElementCornerRadii.h"; path = "RNSharedElementCornerRadii.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; name = "RNSharedElementCornerRadii.m"; path = "RNSharedElementCornerRadii.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1146,6 +1167,7 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				B2B492142462F5B7001576D8 /* EXNotifications */,
 				312D2ED0234DF2C1002F4049 /* EXFacebook */,
 				31361A5E2261C64100662769 /* Permissions */,
 				255747E7222D515400D91513 /* EXScopedFileSystem */,
@@ -1209,6 +1231,8 @@
 				143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */,
 				1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */,
 				CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */,
+				57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */,
+				780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */,
 			);
 			path = SharedElement;
 			sourceTree = "<group>";
@@ -1637,6 +1661,25 @@
 				B6982387E180A3864221896B /* Pods-Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		B2B492142462F5B7001576D8 /* EXNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */,
+				B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */,
+				B2F7C029246B09890060EE06 /* EXScopedNotificationsHandlerModule.h */,
+				B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */,
+				B2F7C02C246B09AE0060EE06 /* EXScopedNotificationsUtils.h */,
+				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
+				B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */,
+				B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */,
+				B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */,
+				B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */,
+				B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */,
+				B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */,
+			);
+			path = EXNotifications;
 			sourceTree = "<group>";
 		};
 		B505BA0F20CAF77A0046ACFB /* Tests */ = {
@@ -2659,6 +2702,7 @@
 				78C832BA23545ECF00448582 /* REATransitionManager.m in Sources */,
 				31AD99E32285B51100F19090 /* AIRGoogleMapMarkerManager.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
+				B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */,
 				31AD9A3F2285B53100F19090 /* AIRMapPolylineRenderer.m in Sources */,
 				7043DF8C2283303800272D74 /* RNSVGLineManager.m in Sources */,
 				31AD99EF2285B51100F19090 /* AIRGMSPolygon.m in Sources */,
@@ -2678,6 +2722,7 @@
 				F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */,
 				78C832AB23545ECE00448582 /* REACondNode.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
+				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
 				3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */,
@@ -2698,6 +2743,7 @@
 				7043DFAC2283303800272D74 /* RNSVGGlyphContext.m in Sources */,
 				31AD9A352285B53100F19090 /* AIRMapManager.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
+				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
 				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,
 				78C832E823546BD400448582 /* RNRotationHandler.m in Sources */,
 				31AD9A3A2285B53100F19090 /* AIRMapPolygonManager.m in Sources */,
@@ -2743,6 +2789,7 @@
 				31AD99E52285B51100F19090 /* AIRGoogleMapOverlay.m in Sources */,
 				7043DFA72283303800272D74 /* RNSVGPropHelper.m in Sources */,
 				31AD99F42285B51100F19090 /* AIRGMSPolyline.m in Sources */,
+				B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */,
 				B5FB74B61FF6DADC001C764B /* RNViewShot.m in Sources */,
 				B5AC39B01E95A90B00540AA7 /* EXUserNotificationManager.m in Sources */,
 				31AD9A372285B53100F19090 /* AIRMapMarker.m in Sources */,
@@ -2905,7 +2952,9 @@
 				4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */,
 				9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */,
 				0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */,
+				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
+				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
 				B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */,
 				49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */,
@@ -2917,6 +2966,7 @@
 				66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */,
 				B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */,
 				C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */,
+				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

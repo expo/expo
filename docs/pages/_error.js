@@ -86,6 +86,13 @@ export default class Error extends React.Component {
       redirectPath = `/versions/latest${redirectPath}`;
     }
 
+    // If a page is missing for react-native paths we redirect to react-native docs
+    if (redirectPath.match(/\/versions\/.*\/react-native\//)) {
+      const pathParts = redirectPath.split('/');
+      const page = pathParts[pathParts.length - 2];
+      redirectPath = `https://reactnative.dev/docs/${page}`;
+    }
+
     if (redirectPath !== pathname) {
       this.setState({ redirectPath });
       return;
@@ -209,6 +216,7 @@ function pathIncludesIndexHtml(path) {
 const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+\.\\d+)`;
 const VERSIONED_PATH_PATTERN = `^\\/versions\\/${VERSION_PART_PATTERN}`;
 const SDK_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/sdk`;
+const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path) {
@@ -221,7 +229,7 @@ function replaceVersionWithLatest(path) {
 }
 
 function pathRequiresVersioning(path) {
-  return path.match(new RegExp(SDK_PATH_PATTERN));
+  return path.match(new RegExp(SDK_PATH_PATTERN)) || path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
 }
 
 function removeVersionFromPath(path) {

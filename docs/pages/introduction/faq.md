@@ -64,7 +64,7 @@ When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submi
 <details><summary><h4>How do I get my existing React Native project running with Expo?</h4></summary>
 <p>
 
-Right now, the easiest way to do this is to use `expo init` (with Expo CLI) to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add`ing the library dependencies you have.
+Right now, the easiest way to do this is to use `expo init` (with Expo CLI) to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add` the library dependencies you have.
 
 If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 

@@ -22,7 +22,7 @@ If you're using Cocoapods, add the dependency to your `Podfile`:
 
 `pod 'UMReactNativeAdapter', path: '../node_modules/@unimodules/react-native-adapter/ios', inhibit_warnings: true`
 
-and run `pod install`.
+and run `npx pod-install`.
 
 ### Android
 

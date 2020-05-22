@@ -48,6 +48,8 @@ module.exports = {
       { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' },
     ],
     '@typescript-eslint/no-extra-non-null-assertion': 'warn',
+    'no-dupe-class-members': 'off',
+    '@typescript-eslint/no-dupe-class-members': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': [
       'warn',

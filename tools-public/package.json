@@ -4,6 +4,9 @@
   "private": true,
   "author": "650 Industries",
   "license": "Copyright 2013-present 650 Industries",
+  "scripts": {
+    "postinstall": "patch-package"
+  },
   "dependencies": {
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
@@ -19,5 +22,8 @@
     "request-promise-native": "^1.0.5",
     "sharp": "^0.25.0",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "patch-package": "^6.2.2"
   }
 }

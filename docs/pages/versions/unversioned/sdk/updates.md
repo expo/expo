@@ -17,13 +17,15 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+
 ## API
 
 ```js
 import * as Updates from 'expo-updates';
 ```
 
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel']} />
+<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest', 'Updates.releaseChannel', 'Updates.updateId']} />
 
 <TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
 
@@ -46,6 +48,10 @@ In development mode, or any other environment in which `expo-updates` is disable
 ### `Updates.releaseChannel`
 
 (_string_) The name of the release channel currently configured in this standalone or bare app.
+
+### `Updates.updateId`
+
+(_string | null_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
 
 ## Methods
 

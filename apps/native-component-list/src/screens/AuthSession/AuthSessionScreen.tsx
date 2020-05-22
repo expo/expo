@@ -127,7 +127,7 @@ function Google({ useProxy, prompt, usePKCE }: any) {
       request={request}
       title="google"
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 515, height: 680 } })}
       useProxy={useProxy}
     />
   );
@@ -298,7 +298,7 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="github"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
       useProxy={useProxy}
     />
   );
@@ -423,7 +423,7 @@ function Facebook({ usePKCE, prompt, useProxy }: any) {
       disabled={isInClient && !useProxy}
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 700, height: 600 } })}
       useProxy={useProxy}
     />
   );

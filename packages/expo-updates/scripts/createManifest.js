@@ -3,29 +3,44 @@ const http = require('http');
 const path = require('path');
 const uuid = require('uuid/v4');
 
+const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+
 const platform = process.argv[2];
 const packagerUrl = process.argv[3];
 const destinationDir = process.argv[4];
 
 (async function() {
-  const assetsJson = await new Promise(function(resolve, reject) {
-    http.get(packagerUrl, function(res) {
-      if (res.statusCode !== 200) {
-        reject(new Error('Request to packager server failed: ' + res.statusCode));
-        res.resume();
-        return;
-      }
+  let assetsJson;
+  try {
+    assetsJson = await new Promise(function(resolve, reject) {
+      const req = http.get(packagerUrl, function(res) {
+        if (res.statusCode !== 200) {
+          reject(new Error('Request to packager server failed: ' + res.statusCode));
+          res.resume();
+          return;
+        }
 
-      res.setEncoding('utf8');
-      let rawData = '';
-      res.on('data', function(chunk) {
-        rawData += chunk;
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', function(chunk) {
+          rawData += chunk;
+        });
+        res.on('end', function() {
+          resolve(rawData);
+        });
       });
-      res.on('end', function() {
-        resolve(rawData);
+
+      req.on('error', function(error) {
+        reject(error);
       });
+
+      req.end();
     });
-  });
+  } catch (e) {
+    throw new Error(
+      `Failed to connect to the packager server. If you did not start this build by running 'react-native run-android', you can start the packager manually by running 'react-native start' in the project directory. (Error: ${e.message})`
+    );
+  }
 
   let assets;
   try {
@@ -44,7 +59,12 @@ const destinationDir = process.argv[4];
   };
 
   assets.forEach(function(asset) {
-    asset.scales.forEach(function(scale, index) {
+    if (!asset.fileHashes) {
+      throw new Error(
+        'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#metroconfigjs for an example.'
+      );
+    }
+    filterPlatformAssetScales(platform, asset.scales).forEach(function(scale, index) {
       const assetInfoForManifest = {
         name: asset.name,
         type: asset.type,

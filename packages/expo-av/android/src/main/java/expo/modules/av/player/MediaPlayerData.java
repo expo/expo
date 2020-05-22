@@ -1,6 +1,5 @@
 package expo.modules.av.player;
 
-
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;

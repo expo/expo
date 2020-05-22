@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/EXSegment/ABI34_0_0EXSegment/ABI34_0_0EXSegment.h

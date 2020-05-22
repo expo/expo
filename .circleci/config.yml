@@ -1,5 +1,28 @@
 version: 2.1
 
+parameters:
+  release:
+    type: boolean
+    default: false
+  release_google:
+    type: boolean
+    default: false
+  release_apk:
+    type: boolean
+    default: false
+  release_simulator:
+    type: boolean
+    default: false
+  shell_ios:
+    type: boolean
+    default: false
+  shell_android:
+    type: boolean
+    default: false
+  expo_client:
+    type: boolean
+    default: false
+
 orbs:
   job-status-change: expo/job-status-change@1.0.11
   slack-job-status-notification: expo/slack-job-status-notification@1.0.6
@@ -130,17 +153,6 @@ commands:
       - run:
           name: Update submodules
           command: git submodule update --init
-  install_puppeteer_dependencies:
-    steps:
-      - run:
-          name: Install Puppeteer dependencies
-          command: |
-            sudo apt-get install -yq \
-            gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
-            libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
-            libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 \
-            libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
-            fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget libgbm-dev
   fetch_cocoapods_specs:
     steps:
       - run:
@@ -260,18 +272,9 @@ executors:
       GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
-  docs:
-    jobs:
-      - docs
-      - docs_deploy:
-          requires:
-            - docs
-          filters:
-            branches:
-              only:
-                - master
   # JavaScript packages that make up the SDK
   sdk:
+    unless: << pipeline.parameters.release >>
     jobs:
       - expo_sdk
       # E2E SDK testing
@@ -280,15 +283,11 @@ workflows:
 
   # Android and iOS clients
   client:
+    unless: << pipeline.parameters.release >>
     jobs:
       - home
       - expotools
-      - client_android:
-          filters:  # run for ALL branches, and android tags
-            tags:
-              only:
-                - /^android-google-v*/
-                - /^android-apk-v*/
+      - client_android
       # Disabled until further notice
       # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900
       # - test_suite_publish
@@ -296,70 +295,45 @@ workflows:
       #     requires:
       #       - test_suite_publish
       - android_unit_tests
-      - client_android_release_google_play:
-          requires:
-            - client_android
-          filters:  # run for NO branches, and android-google-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^android-google-v*/
-      - client_android_apk_release:
-          requires:
-            - client_android
-          filters:  # run for NO branches, and android-apk-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^android-apk-v*/
-      - client_ios:
-          filters:  # run for ALL branches, and ios-simulator-v* tags
-            tags:
-              only: /^ios-simulator-v*/
+      - client_ios
+
+  release_simulator:
+    when: << pipeline.parameters.release_simulator >>
+    jobs:
+      - client_ios
       - client_ios_simulator_release:
           requires:
             - client_ios
-          filters:  # run for NO branches, and ios-simulator-v* tags
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^ios-simulator-v*/
 
-  shell_app:
+  release_google:
+    when: << pipeline.parameters.release_google >>
     jobs:
-      - shell_app_ios_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
+      - client_android
+      - client_android_release_google_play:
+          requires:
+            - client_android
+  release_apk:
+    when: << pipeline.parameters.release_apk >>
+    jobs:
+      - client_android
+      - client_android_apk_release:
+          requires:
+            - client_android
+
+  shell_app_ios:
+    when: << pipeline.parameters.shell_ios >>
+    jobs:
       - shell_app_ios_build:
           upload: true
-          requires:
-            - shell_app_ios_approve_build
-      - shell_app_android_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_android_build:
-          requires:
-            - shell_app_android_approve_build
-  client_shell_app:
+  shell_app_android:
+    when: << pipeline.parameters.shell_android >>
     jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
+      - shell_app_android_build
+  expo_client_build:
+    when: << pipeline.parameters.expo_client >>
+    jobs:
+      - expo_client_build
+
   shell_app_nightly:
     triggers:
       - schedule:
@@ -409,6 +383,7 @@ jobs:
       - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
+      - run: yarn global add expo-cli
       - yarn:
           command: test:web
           working_directory: ~/expo/apps/bare-expo
@@ -777,60 +752,6 @@ jobs:
           name: Upload APK to Google Play and release to production
           working_directory: ~/project
           command: fastlane android prod_release
-
-  docs:
-    executor: js
-    resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: docs
-          paths: docs
-      - update_submodules
-      - install_puppeteer_dependencies
-      - yarn_install:
-          working_directory: docs
-      - run:
-          name: Run Danger
-          working_directory: docs
-          command: yarn danger ci
-      - yarn:
-          command: export
-          working_directory: docs
-      - run:
-          name: Export server
-          working_directory: docs
-          command: yarn run export-server
-          background: true
-      - run:
-          name: Test links
-          working_directory: docs
-          command: yarn run test-links http://127.0.0.1:8000
-      - run: mkdir -p /tmp/workspace/
-      - run:
-          working_directory: docs
-          command: mv out /tmp/workspace/site
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - site
-      - job-status-change/status
-      - slack-job-status-notification/notify:
-          only_for_branches: master
-          slack_webhook: $SLACK_DOCS_WEBHOOK
-
-  docs_deploy:
-    executor: js
-    steps:
-      - setup
-      - skip_unless_changed:
-          workflow_name: docs
-          paths: docs
-      - run: sudo apt-get install awscli
-      - attach_workspace:
-          at: /tmp/workspace
-      - deploy:
-          command: docs/deploy.sh /tmp/workspace/site
 
 # Disabled until further notice
 # See https://exponent-internal.slack.com/archives/C1QNF5L3C/p1576852692010900

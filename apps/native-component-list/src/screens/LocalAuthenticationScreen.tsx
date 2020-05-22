@@ -33,8 +33,9 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
     this.setState({ waiting: true });
     try {
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'This message only shows up on iOS',
-        fallbackLabel: '',
+        promptMessage: 'Authenticate',
+        cancelLabel: 'Cancel label',
+        disableDeviceFallback: true,
       });
       if (result.success) {
         alert('Authenticated!');

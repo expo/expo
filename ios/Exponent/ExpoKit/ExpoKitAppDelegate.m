@@ -16,6 +16,11 @@ UM_REGISTER_SINGLETON_MODULE(ExpoKitAppDelegate)
   return -1;
 }
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions
+{
+  return [[ExpoKit sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
 #pragma mark - Handling URLs
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options

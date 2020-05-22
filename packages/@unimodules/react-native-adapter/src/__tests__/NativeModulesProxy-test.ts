@@ -1,7 +1,7 @@
 import NativeModulesProxy from '../NativeModulesProxy';
 
 jest.mock('react-native', () => {
-  const ReactNative = require.requireActual('react-native');
+  const ReactNative = jest.requireActual('react-native');
   // Mock a natively defined test module
   ReactNative.NativeModules.NativeUnimoduleProxy.modulesConstants = {
     ExpoTest: { testConstant: 'test' },

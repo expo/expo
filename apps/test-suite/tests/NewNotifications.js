@@ -358,7 +358,7 @@ export async function test(t) {
               lightColor: '#FF231F7C',
               lockscreenVisibility: Notifications.AndroidNotificationVisibility.SECRET,
               showBadge: false,
-              soundUri: null,
+              sound: null,
               audioAttributes: {
                 usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
@@ -765,6 +765,42 @@ export async function test(t) {
       );
 
       t.it(
+        'throws an error if a user defines an invalid trigger (no repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
+        },
+        10000
+      );
+
+      t.it(
+        'throws an error if a user defines an invalid trigger (with repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, repeats: true, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
+        },
+        10000
+      );
+
+      t.it(
         'triggers a notification which contains the custom color',
         async () => {
           const notificationReceivedSpy = t.jasmine.createSpy('notificationReceived');
@@ -916,6 +952,46 @@ export async function test(t) {
           Notifications.setNotificationHandler(null);
         },
         10000
+      );
+
+      t.it(
+        'schedules a repeating daily notification. only first scheduled event is verified.',
+        async () => {
+          const dateNow = new Date();
+          const trigger = {
+            hour: dateNow.getHours(),
+            minute: (dateNow.getMinutes() + 2) % 60,
+            repeats: true,
+          };
+          await Notifications.scheduleNotificationAsync({
+            identifier,
+            content: notification,
+            trigger,
+          });
+          const result = await Notifications.getAllScheduledNotificationsAsync();
+          delete trigger.repeats;
+          if (Platform.OS === 'android') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'daily',
+              ...trigger,
+            });
+          } else if (Platform.OS === 'ios') {
+            t.expect(result[0].trigger).toEqual({
+              type: 'calendar',
+              class: 'UNCalendarNotificationTrigger',
+              repeats: true,
+              dateComponents: {
+                ...trigger,
+                timeZone: null,
+                isLeapMonth: false,
+                calendar: null,
+              },
+            });
+          } else {
+            throw new Error('Test does not support platfrom');
+          }
+        },
+        4000
       );
 
       // iOS rejects with "time interval must be at least 60 if repeating"
@@ -1179,6 +1255,65 @@ export async function test(t) {
         10000
       );
     });
+
+    onlyInteractiveDescribe(
+      'triggers a repeating daily notification. only first scheduled event is awaited and verified.',
+      () => {
+        let timesSpyHasBeenCalled = 0;
+        const identifier = 'test-scheduled-notification';
+        const notification = {
+          title: 'Scheduled notification',
+          data: { key: 'value' },
+          badge: 2,
+          vibrate: [100, 100, 100, 100, 100, 100],
+          color: '#FF0000',
+        };
+
+        t.beforeEach(async () => {
+          Notifications.cancelAllScheduledNotificationsAsync();
+          Notifications.setNotificationHandler({
+            handleNotification: async () => {
+              timesSpyHasBeenCalled += 1;
+              return {
+                shouldShowAlert: false,
+              };
+            },
+          });
+        });
+
+        t.afterEach(() => {
+          Notifications.setNotificationHandler(null);
+          Notifications.cancelAllScheduledNotificationsAsync();
+        });
+
+        t.it(
+          'triggers a repeating daily notification. only first event is verified.',
+          async () => {
+            // On iOS because we are using the calendar with repeat, it needs to be
+            // greater than 60 seconds
+            const triggerDate = new Date(
+              new Date().getTime() + (Platform.OS === 'ios' ? 120000 : 60000)
+            );
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: {
+                hour: triggerDate.getHours(),
+                minute: triggerDate.getMinutes(),
+                repeats: true,
+              },
+            });
+            const scheduledTime = new Date(triggerDate);
+            scheduledTime.setSeconds(0);
+            scheduledTime.setMilliseconds(0);
+            const milliSecondsToWait = scheduledTime - new Date().getTime() + 2000;
+            await waitFor(milliSecondsToWait);
+            t.expect(timesSpyHasBeenCalled).toBe(1);
+          },
+          140000
+        );
+      }
+    );
   });
 }
 

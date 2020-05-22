@@ -1,9 +1,12 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:textColor">#000000</item>
-    </style>
-
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Customize your theme here. -->
+    <item name="android:textColor">#000000</item>
+  </style>
+  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
+    <item name="android:windowBackground">@drawable/splashscreen</item>
+    <!-- Customize your splash screen theme here -->
+  </style>
 </resources>

@@ -151,5 +151,4 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     await ExpoFontLoader.unloadAsync(nativeFontName, options);
 }
 export { FontDisplay };
-export { useFonts } from './FontHooks';
 //# sourceMappingURL=Font.js.map
