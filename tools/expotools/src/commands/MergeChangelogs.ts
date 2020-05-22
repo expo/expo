@@ -260,14 +260,6 @@ function sortVersionsAsc(a: string, b: string): number {
 }
 
 /**
- * Returns first ancestor version related to given current version.
- */
-function getPreviousVersion(versions: string[], currentVersion: string) {
-  const currentIndex = versions.indexOf(currentVersion);
-  return versions[currentIndex + 1];
-}
-
-/**
  * Prompts the user whether to make initial release of given package.
  */
 async function promptToMakeInitialReleaseAsync(packageName: string): Promise<boolean> {
