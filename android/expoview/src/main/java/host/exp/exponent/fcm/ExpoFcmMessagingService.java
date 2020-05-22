@@ -45,13 +45,13 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
           JSONObject manifest = new JSONObject(experience.manifest);
           JSONObject androidSection = manifest.optJSONObject("android");
           if (androidSection != null) {
-            boolean useNewNotificationsAPI = androidSection.optBoolean("useNewNotificationsAPI", false);
-            if (useNewNotificationsAPI) {
-              dispatchToNewNotificationModule(remoteMessage);
+            boolean nextNotificationsApi = androidSection.optBoolean("nextNotificationsApi", false);
+            if (nextNotificationsApi) {
+              dispatchToNextNotificationModule(remoteMessage);
               return;
             }
           }
-          dispatchToOldNotificationModule(remoteMessage);
+          dispatchToLegacyNotificationModule(remoteMessage);
         } catch (JSONException e) {
           e.printStackTrace();
           onFailure();
@@ -61,17 +61,16 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       @Override
       public void onFailure() {
         Log.w("expo-notifications", "Couldn't get experience from remote message.", null);
-        dispatchToNewNotificationModule(remoteMessage);
-        dispatchToOldNotificationModule(remoteMessage);
+        dispatchToLegacyNotificationModule(remoteMessage);
       }
     });
   }
 
-  private void dispatchToNewNotificationModule(RemoteMessage remoteMessage) {
+  private void dispatchToNextNotificationModule(RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
   }
 
-  private void dispatchToOldNotificationModule(RemoteMessage remoteMessage) {
+  private void dispatchToLegacyNotificationModule(RemoteMessage remoteMessage) {
     PushNotificationHelper.getInstance().onMessageReceived(this, remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
   }
 
