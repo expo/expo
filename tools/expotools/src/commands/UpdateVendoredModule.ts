@@ -38,6 +38,7 @@ interface VendoredModuleUpdateStep {
 interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
+  packageJsonPath?: string;
   installableInManagedApps?: boolean;
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
@@ -360,6 +361,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   '@react-native-community/slider': {
     repoUrl: 'https://github.com/react-native-community/react-native-slider',
     installableInManagedApps: true,
+    packageJsonPath: 'src',
     steps: [
       {
         sourceIosPath: 'src/ios',
@@ -756,7 +758,7 @@ async function action(options: ActionOptions) {
   const { name, version } = await JsonFile.readAsync<{
     name: string;
     version: string;
-  }>(path.join(tmpDir, 'package.json'));
+  }>(path.join(tmpDir, moduleConfig.packageJsonPath ?? '', 'package.json'));
   const semverPrefix =
     (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
   const versionRange = `${semverPrefix}${version}`;
