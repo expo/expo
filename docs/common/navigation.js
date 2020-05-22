@@ -195,6 +195,7 @@ const sections = [
       'SafeAreaView',
       'ScrollView',
       'SectionList',
+      'SegmentedControl',
       'SegmentedControlIOS',
       'Slider',
       'SnapshotViewIOS',
