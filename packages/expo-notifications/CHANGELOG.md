@@ -18,6 +18,7 @@
 
 - Added a macro check for `UNLocationNotificationTrigger` to make this module compatible with Mac Catalyst ([#8171](https://github.com/expo/expo/pull/8171) by [@robertying](https://github.com/robertying))
 - Fixed notification content text being truncated without the ability to expand the notification by adding [`BigTextStyle`](https://developer.android.com/reference/android/app/Notification.BigTextStyle) to all Android notifications, which allows them to be expanded and their content text fully viewed ([#8140](https://github.com/expo/expo/pull/8140) by [@thorbenprimke](https://github.com/thorbenprimke))
+- Added a check for trigger input that throws an error if user misuses the `seconds` property ([#8261](https://github.com/expo/expo/pull/8261) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## [0.1.7] - 2020-05-05
 
