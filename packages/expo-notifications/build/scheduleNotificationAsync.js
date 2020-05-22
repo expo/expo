@@ -3,13 +3,6 @@ import NotificationScheduler from './NotificationScheduler';
 export default async function scheduleNotificationAsync(request) {
     return await NotificationScheduler.scheduleNotificationAsync(request.identifier ?? uuidv4(), request.content, parseTrigger(request.trigger));
 }
-function isDailyTriggerInput(trigger) {
-    return (Object.keys(trigger).length === 3 &&
-        'hour' in trigger &&
-        'minute' in trigger &&
-        'repeats' in trigger &&
-        trigger.repeats === true);
-}
 function parseTrigger(userFacingTrigger) {
     if (userFacingTrigger === null) {
         return null;
@@ -41,15 +34,7 @@ function parseTrigger(userFacingTrigger) {
             minute,
         };
     }
-    else if (
-    // eg. { seconds: ..., repeats: ..., hour: ... }
-    ('seconds' in userFacingTrigger &&
-        'repeats' in userFacingTrigger &&
-        Object.keys(userFacingTrigger).length > 2) ||
-        // eg. { seconds: ..., hour: ... }
-        ('seconds' in userFacingTrigger &&
-            !('repeats' in userFacingTrigger) &&
-            Object.keys(userFacingTrigger).length > 1)) {
+    else if (isSecondsPropertyMisusedInCalendarTriggerInput(userFacingTrigger)) {
         throw new TypeError('Could not have inferred the notification trigger type: if you want to use a time interval trigger, pass in only `seconds` with or without `repeats` property; if you want to use calendar-based trigger, pass in `second`.');
     }
     else if ('seconds' in userFacingTrigger) {
@@ -63,5 +48,19 @@ function parseTrigger(userFacingTrigger) {
         const { repeats, ...calendarTrigger } = userFacingTrigger;
         return { type: 'calendar', value: calendarTrigger, repeats };
     }
+}
+function isDailyTriggerInput(trigger) {
+    return (Object.keys(trigger).length === 3 &&
+        'hour' in trigger &&
+        'minute' in trigger &&
+        'repeats' in trigger &&
+        trigger.repeats === true);
+}
+function isSecondsPropertyMisusedInCalendarTriggerInput(trigger) {
+    return (
+    // eg. { seconds: ..., repeats: ..., hour: ... }
+    ('seconds' in trigger && 'repeats' in trigger && Object.keys(trigger).length > 2) ||
+        // eg. { seconds: ..., hour: ... }
+        ('seconds' in trigger && !('repeats' in trigger) && Object.keys(trigger).length > 1));
 }
 //# sourceMappingURL=scheduleNotificationAsync.js.map
