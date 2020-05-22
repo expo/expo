@@ -83,7 +83,8 @@ public class LocalAuthenticationModule extends ExportedModule {
     int result = mBiometricManager.canAuthenticate();
     List<Integer> results = new ArrayList<>();
     if (result == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
-      return promise.resolve(results);
+      promise.resolve(results);
+      return;
     }
     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
       results.add(AUTHENTICATION_TYPE_FINGERPRINT);
