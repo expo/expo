@@ -1,6 +1,6 @@
 {
   "@expo/vector-icons": "^10.0.0",
-  "@react-native-community/netinfo": "5.5.1",
+  "@react-native-community/netinfo": "5.9.0",
   "@unimodules/core": "~5.1.2",
   "@unimodules/react-native-adapter": "~5.2.0",
   "expo-ads-admob": "~8.1.0",
