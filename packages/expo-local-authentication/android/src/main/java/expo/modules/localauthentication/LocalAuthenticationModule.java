@@ -38,6 +38,7 @@ public class LocalAuthenticationModule extends ExportedModule {
 
   private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
   private static final int AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2;
+  private static final int AUTHENTICATION_TYPE_IRIS = 3;
 
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
           new BiometricPrompt.AuthenticationCallback () {
@@ -91,6 +92,9 @@ public class LocalAuthenticationModule extends ExportedModule {
     }
     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
       results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION);
+    }
+    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+      results.add(AUTHENTICATION_TYPE_IRIS);
     }
     promise.resolve(results);
   }
