@@ -483,7 +483,7 @@ PODS:
     - React
   - RNReanimated (1.9.0):
     - React
-  - RNScreens (2.2.0):
+  - RNScreens (2.8.0):
     - React
   - SDWebImage (5.6.0):
     - SDWebImage/Core (= 5.6.0)
@@ -938,7 +938,7 @@ SPEC CHECKSUMS:
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
-  RNScreens: 812b79d384e2bea7eebc4ec981469160d4948fd5
+  RNScreens: 62211832af51e0aebcf6e8c36bcf7dd65592f244
   SDWebImage: 21b19f56b4226cdfe3aefe4e6848dc43ed129a86
   UMAppLoader: ee77a072f9e15128f777ccd6d2d00f52ab4387e6
   UMBarCodeScannerInterface: 9dc692b87e5f20fe277fa57aa47f45d418c3cc6c

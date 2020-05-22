@@ -1,6 +1,6 @@
 {
   "name": "RNScreens",
-  "version": "2.2.0",
+  "version": "2.8.0",
   "summary": "Native navigation primitives for your React Native app.",
   "description": "RNScreens - first incomplete navigation solution for your React Native app",
   "homepage": "https://github.com/kmagiera/react-native-screens",
@@ -14,7 +14,7 @@
   },
   "source": {
     "git": "https://github.com/kmagiera/react-native-screens.git",
-    "tag": "2.2.0"
+    "tag": "2.8.0"
   },
   "source_files": "ios/**/*.{h,m}",
   "requires_arc": true,
