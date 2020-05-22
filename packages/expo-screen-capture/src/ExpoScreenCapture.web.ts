@@ -2,10 +2,10 @@ export default {
   get name(): string {
     return 'ExpoScreenCapture';
   },
-  get activatePreventScreenCapture(): null {
+  get preventScreenCapture(): null {
     return null;
   },
-  get deactivatePreventScreenCapture(): null {
+  get allowScreenCapture(): null {
     return null;
   },
   get usePreventScreenCapture(): null {

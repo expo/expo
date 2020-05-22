@@ -27,8 +27,8 @@ UM_EXPORT_MODULE(ExpoScreenCapture);
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(activatePreventScreenCapture,
-                    activatePreventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(preventScreenCapture,
+                    preventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 11.0, *) ) {
@@ -46,8 +46,8 @@ UM_EXPORT_METHOD_AS(activatePreventScreenCapture,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(deactivatePreventScreenCapture,
-                    deactivatePreventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(allowScreenCapture,
+                    allowScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 11.0, *)) {

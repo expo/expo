@@ -1,12 +1,12 @@
 import * as ScreenCapture from '../ScreenCapture';
 
 describe('ScreenCapture methods are defined', () => {
-  it('activatePreventScreenCapture is defined', async () => {
-    expect(ScreenCapture.activatePreventScreenCapture).toBeDefined();
+  it('preventScreenCapture is defined', async () => {
+    expect(ScreenCapture.preventScreenCapture).toBeDefined();
   });
 
-  it('deactivatePreventScreenCapture is defined', async () => {
-    expect(ScreenCapture.deactivatePreventScreenCapture).toBeDefined();
+  it('allowScreenCapture is defined', async () => {
+    expect(ScreenCapture.allowScreenCapture).toBeDefined();
   });
 
   it('usePreventScreenCapture hook is defined', async () => {

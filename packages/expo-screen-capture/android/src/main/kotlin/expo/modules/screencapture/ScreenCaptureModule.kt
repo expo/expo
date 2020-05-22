@@ -24,7 +24,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun activatePreventScreenCapture(promise: Promise) {
+  fun preventScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
 
     activity.runOnUiThread{
@@ -38,7 +38,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun deactivatePreventScreenCapture(promise: Promise) {
+  fun allowScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
     
     activity.runOnUiThread{
