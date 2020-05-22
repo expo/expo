@@ -5,10 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
@@ -78,6 +78,17 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   }
 
   /**
+   * Reconstructs NotificationResponse from Intent.
+   *
+   * @param intent
+   * @return NotificationResponse instance or null if intent doesn't contain a response
+   */
+  @Nullable
+  public static NotificationResponse getNotificationResponse(@NonNull Intent intent) {
+    return NotificationResponseReceiver.unmarshallNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
+  }
+
+  /**
    * Marshalls {@link NotificationResponse} into to a byte array.
    *
    * @param notificationResponse Notification response to marshall
@@ -97,5 +108,29 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
       e.printStackTrace();
       return null;
     }
+  }
+
+  /**
+   * UNmarshalls {@link NotificationResponse} from a byte array.
+   *
+   * @param notificationRequestByteArray
+   * @return NotificationResponse instance or null if the process failed.
+   */
+  @Nullable
+  public static NotificationResponse unmarshallNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
+    if (notificationRequestByteArray == null) {
+      return null;
+    }
+    try {
+      Parcel parcel = Parcel.obtain();
+      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
+      parcel.setDataPosition(0);
+      NotificationResponse response = NotificationResponse.CREATOR.createFromParcel(parcel);
+      parcel.recycle();
+      return response;
+    } catch (Exception e) {
+      Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e);
+    }
+    return null;
   }
 }

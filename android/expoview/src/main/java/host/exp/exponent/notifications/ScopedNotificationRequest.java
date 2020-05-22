@@ -1,4 +1,4 @@
-package host.exp.exponent.nextNotifications;
+package host.exp.exponent.notifications;
 
 import android.os.Parcel;
 import android.os.Parcelable;

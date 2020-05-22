@@ -16,8 +16,8 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.nextNotifications.ScopedNotificationRequest;
 import host.exp.exponent.notifications.PushNotificationHelper;
+import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 

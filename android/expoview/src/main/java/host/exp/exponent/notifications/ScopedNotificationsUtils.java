@@ -1,4 +1,4 @@
-package host.exp.exponent.nextNotifications;
+package host.exp.exponent.notifications;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;

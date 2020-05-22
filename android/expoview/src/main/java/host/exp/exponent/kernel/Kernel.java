@@ -62,6 +62,7 @@ import host.exp.exponent.headless.InternalHeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
+import host.exp.exponent.notifications.ScopedNotificationsUtils;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.expoview.BuildConfig;
@@ -80,9 +81,7 @@ import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import host.exp.exponent.nextNotifications.ScopedNotificationsUtils;
 
-import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.NOTIFICATION_RESPONSE_KEY;
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
 // the home screen? only when the app gets kicked out of memory?
@@ -514,7 +513,7 @@ public class Kernel extends KernelInterface {
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
-    NotificationResponse response = unmarshallNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
+    NotificationResponse response = NotificationResponseReceiver.getNotificationResponse(intent);
     String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
     if (experienceIdString == null) {
       return false;
@@ -529,24 +528,6 @@ public class Kernel extends KernelInterface {
     String manifestUrl = experience.manifestUrl;
     openExperience(new KernelConstants.ExperienceOptions(manifestUrl, manifestUrl, null));
     return true;
-  }
-
-  @Nullable
-  private NotificationResponse unmarshallNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
-    if (notificationRequestByteArray == null) {
-      return null;
-    }
-    try {
-      Parcel parcel = Parcel.obtain();
-      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
-      parcel.setDataPosition(0);
-      NotificationResponse response = NotificationResponse.CREATOR.createFromParcel(parcel);
-      parcel.recycle();
-      return response;
-    } catch (Exception e) {
-      Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e);
-    }
-    return null;
   }
 
   private void openDefaultUrl() {
