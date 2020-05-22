@@ -14,6 +14,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import versioned.host.exp.exponent.modules.api.netinfo.types.CellularGeneration;
 import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
@@ -57,60 +58,60 @@ class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
 
     @SuppressLint("MissingPermission")
     void updateAndSend() {
-    ConnectionType connectionType = ConnectionType.UNKNOWN;
-    CellularGeneration cellularGeneration = null;
-    NetworkInfo networkInfo = null;
-    boolean isInternetReachable = false;
-    boolean isInternetSuspended = false;
+        ConnectionType connectionType = ConnectionType.UNKNOWN;
+        CellularGeneration cellularGeneration = null;
+        NetworkInfo networkInfo = null;
+        boolean isInternetReachable = false;
+        boolean isInternetSuspended = false;
 
-    if (mNetworkCapabilities != null) {
-        // Get the connection type
-        if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
-            connectionType = ConnectionType.BLUETOOTH;
-        } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-            connectionType = ConnectionType.CELLULAR;
-        } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-            connectionType = ConnectionType.ETHERNET;
-        } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-            connectionType = ConnectionType.WIFI;
-        } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-            connectionType = ConnectionType.VPN;
-        }
+        if (mNetworkCapabilities != null) {
+            // Get the connection type
+            if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
+                connectionType = ConnectionType.BLUETOOTH;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                connectionType = ConnectionType.CELLULAR;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                connectionType = ConnectionType.ETHERNET;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                connectionType = ConnectionType.WIFI;
+            } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                connectionType = ConnectionType.VPN;
+            }
 
-        if (mNetwork != null) {
-            // This may return null per API docs, and is deprecated, but for older APIs (< VERSION_CODES.P)
-            // we need it to test for suspended internet
-            networkInfo = getConnectivityManager().getNetworkInfo(mNetwork);
-        }
+            if (mNetwork != null) {
+                // This may return null per API docs, and is deprecated, but for older APIs (< VERSION_CODES.P)
+                // we need it to test for suspended internet
+                networkInfo = getConnectivityManager().getNetworkInfo(mNetwork);
+            }
 
-        // Check to see if the network is temporarily unavailable or if airplane mode is toggled on
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            isInternetSuspended = !mNetworkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
-        } else {
-            if (mNetwork != null && networkInfo != null) {
-                NetworkInfo.DetailedState detailedConnectionState = networkInfo.getDetailedState();
-                if (!detailedConnectionState.equals(NetworkInfo.DetailedState.CONNECTED)) {
-                    isInternetSuspended = true;
+            // Check to see if the network is temporarily unavailable or if airplane mode is toggled on
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                isInternetSuspended = !mNetworkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
+            } else {
+                if (mNetwork != null && networkInfo != null) {
+                    NetworkInfo.DetailedState detailedConnectionState = networkInfo.getDetailedState();
+                    if (!detailedConnectionState.equals(NetworkInfo.DetailedState.CONNECTED)) {
+                        isInternetSuspended = true;
+                    }
                 }
             }
+
+            isInternetReachable =
+                    mNetworkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                            && mNetworkCapabilities.hasCapability(
+                            NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                            && !isInternetSuspended;
+
+            // Get the cellular network type
+            if (mNetwork != null && connectionType == ConnectionType.CELLULAR && isInternetReachable) {
+                cellularGeneration = CellularGeneration.fromNetworkInfo(networkInfo);
+            }
+        } else {
+            connectionType = ConnectionType.NONE;
         }
 
-        isInternetReachable =
-                mNetworkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                        && mNetworkCapabilities.hasCapability(
-                                NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                        && !isInternetSuspended;
-
-        // Get the cellular network type
-        if (mNetwork != null && connectionType == ConnectionType.CELLULAR && isInternetReachable) {
-            cellularGeneration = CellularGeneration.fromNetworkInfo(networkInfo);
-        }
-    } else {
-        connectionType = ConnectionType.NONE;
+        updateConnectivity(connectionType, cellularGeneration, isInternetReachable);
     }
-
-    updateConnectivity(connectionType, cellularGeneration, isInternetReachable);
-}
 
     private class ConnectivityNetworkCallback extends ConnectivityManager.NetworkCallback {
         @Override
