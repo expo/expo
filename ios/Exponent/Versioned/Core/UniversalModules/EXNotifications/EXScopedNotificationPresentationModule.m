@@ -35,12 +35,11 @@
 
 - (void)dismissNotificationWithIdentifier:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  __block NSString *experienceId = _experienceId;
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-    UM_ENSURE_STRONGIFY(self)
     for (UNNotification *notification in notifications) {
       if ([notification.request.identifier isEqual:identifier]) {
-        if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:self.experienceId]) {
+        if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:experienceId]) {
           [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[identifier]];
         }
         break;
@@ -52,12 +51,11 @@
 
 - (void)dismissAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  __block NSString *experienceId = _experienceId;
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-    UM_ENSURE_STRONGIFY(self)
     NSMutableArray<NSString *> *toDismiss = [NSMutableArray new];
     for (UNNotification *notification in notifications) {
-      if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:self.experienceId]) {
+      if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:experienceId]) {
         [toDismiss addObject:notification.request.identifier];
       }
     }
