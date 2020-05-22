@@ -46,11 +46,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compilesdkversion", 29)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 15
     versionName "8.1.0"
   }
@@ -92,7 +92,7 @@ dependencies {
   api "com.squareup.okhttp3:okhttp:3.10.0"
   api "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
 
-  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "29.0.0")}"
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"

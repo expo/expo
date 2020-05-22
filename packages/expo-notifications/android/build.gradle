@@ -35,7 +35,7 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compilesdkversion", 29)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -44,7 +44,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 8
     versionName '1.0.0'
   }

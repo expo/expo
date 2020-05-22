@@ -65,7 +65,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compilesdkversion", 29)
 
   compileOptions {
     sourceCompatibility = '1.8'
@@ -74,7 +74,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 29)
     versionCode 1
     versionName "1.0"
     // WHEN_VERSIONING_REMOVE_FROM_HERE
