@@ -1,6 +1,11 @@
 # expo-screen-capture
 
-This module allows you to prevent users from screen recording or taking screenshots of your app.
+**`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded. The two most common reasons you may want to prevent screen capture are:
+
+- If a screen is displaying sensitive information (password, credit card data, etc.)
+- You are displaying paid content that you don't want recorded and shared
+
+This is especially important on Android, since the [`android.media.projection`](https://developer.android.com/about/versions/android-5.0.html#ScreenCapture) API allows third-party apps to perform screen capture or screen sharing (even if the app is backgrounded).
 
 > Currently, taking screenshots on iOS cannot be prevented. This is due to underlying OS limitations.
 
