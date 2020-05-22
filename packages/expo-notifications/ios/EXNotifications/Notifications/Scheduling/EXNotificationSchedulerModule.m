@@ -48,11 +48,7 @@ UM_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
                     )
 {
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    NSMutableArray *serializedRequests = [NSMutableArray new];
-    for (UNNotificationRequest *request in requests) {
-      [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
-    }
-    resolve(serializedRequests);
+    resolve([self serializeNotificationRequests:requests]);
   }];
 }
 
@@ -88,6 +84,15 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
   resolve(nil);
+}
+
+- (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
+{
+  NSMutableArray *serializedRequests = [NSMutableArray new];
+  for (UNNotificationRequest *request in requests) {
+    [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
+  }
+  return serializedRequests;
 }
 
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
