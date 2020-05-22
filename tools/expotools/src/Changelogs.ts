@@ -142,7 +142,7 @@ export class Changelog {
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
 
-      if (token.type === Markdown.TokenType.HEADING) {
+      if (Markdown.isHeadingToken(token)) {
         if (token.depth === VERSION_HEADING_DEPTH) {
           const parsedVersion = parseVersion(token.text);
 
@@ -171,12 +171,9 @@ export class Changelog {
         continue;
       }
 
-      if (currentVersion && currentSection && token.type === Markdown.TokenType.LIST) {
+      if (currentVersion && currentSection && Markdown.isListToken(token)) {
         for (const item of token.items) {
-          const text =
-            item.tokens.find(
-              (token): token is Markdown.TextToken => token.type === Markdown.TokenType.TEXT
-            )?.text ?? item.text;
+          const text = item.tokens.find(Markdown.isTextToken)?.text ?? item.text;
 
           changes.totalCount++;
           versions[currentVersion][currentSection].push(text.trim());
@@ -242,11 +239,11 @@ export class Changelog {
         // Find the first list token between headings and save it under `list` variable.
         for (; j < tokens.length; j++) {
           const item = tokens[j];
-          if (item.type === Markdown.TokenType.LIST) {
+          if (Markdown.isListToken(item)) {
             list = item;
             break;
           }
-          if (item.type === Markdown.TokenType.HEADING && item.depth <= changeTypeToken.depth) {
+          if (Markdown.isHeadingToken(item) && item.depth <= changeTypeToken.depth) {
             break;
           }
         }
@@ -376,7 +373,7 @@ function parseGroup(text: string): string | null {
  */
 function isVersionToken(token: Markdown.Token, version?: string): token is Markdown.HeadingToken {
   return (
-    token.type === Markdown.TokenType.HEADING &&
+    Markdown.isHeadingToken(token) &&
     token.depth === VERSION_HEADING_DEPTH &&
     (!version || token.text === version || parseVersion(token.text) === version)
   );
@@ -390,7 +387,7 @@ function isChangeTypeToken(
   changeType?: ChangeType | string
 ): token is Markdown.HeadingToken {
   return (
-    token.type === Markdown.TokenType.HEADING &&
+    Markdown.isHeadingToken(token) &&
     token.depth === CHANGE_TYPE_HEADING_DEPTH &&
     (!changeType || token.text === changeType)
   );
@@ -400,9 +397,9 @@ function isChangeTypeToken(
  * Checks whether given token is interpreted as a list group.
  */
 function isGroupToken(token: Markdown.Token, groupName: string): token is Markdown.ListItemToken {
-  if (token.type === Markdown.TokenType.LIST_ITEM && token.depth === GROUP_LIST_ITEM_DEPTH) {
+  if (Markdown.isListItemToken(token) && token.depth === GROUP_LIST_ITEM_DEPTH) {
     const firstToken = token.tokens[0];
-    return firstToken.type === Markdown.TokenType.TEXT && parseGroup(firstToken.text) === groupName;
+    return Markdown.isTextToken(firstToken) && parseGroup(firstToken.text) === groupName;
   }
   return false;
 }
@@ -420,9 +417,7 @@ function findOrCreateGroupList(list: Markdown.ListToken, group: string): Markdow
   }
 
   // Find group list among list item tokens.
-  let groupList = groupListItem.tokens.find(
-    (token): token is Markdown.ListToken => token.type === Markdown.TokenType.LIST
-  );
+  let groupList = groupListItem.tokens.find(Markdown.isListToken);
 
   if (!groupList) {
     groupList = Markdown.createListToken(GROUP_LIST_ITEM_DEPTH);
