@@ -34,6 +34,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private boolean mIsBackButtonHidden;
   private boolean mIsShadowHidden;
   private boolean mDestroyed;
+  private boolean mBackButtonInCustomView;
   private int mTintColor;
   private final Toolbar mToolbar;
 
@@ -236,9 +237,11 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
       switch (type) {
         case LEFT:
-          // when there is a left item we need to disable navigation icon
+          // when there is a left item we need to disable navigation icon by default
           // we also hide title as there is no other way to display left side items
-          mToolbar.setNavigationIcon(null);
+          if (!mBackButtonInCustomView) {
+            mToolbar.setNavigationIcon(null);
+          }
           mToolbar.setTitle(null);
           params.gravity = Gravity.LEFT;
           break;
@@ -334,4 +337,6 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   public void setHidden(boolean hidden) {
     mIsHidden = hidden;
   }
+
+  public void setBackButtonInCustomView(boolean backButtonInCustomView) { mBackButtonInCustomView = backButtonInCustomView; }
 }
