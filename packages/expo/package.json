@@ -93,7 +93,6 @@
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
-    "@types/lodash.zipobject": "^4.1.4",
     "@types/react": "^16.9.0",
     "@types/react-native": "^0.60.15",
     "@types/react-test-renderer": "16.9.0",
