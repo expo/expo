@@ -5,6 +5,7 @@ package expo.modules.localauthentication;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.core.os.CancellationSignal;
@@ -28,6 +29,7 @@ import org.unimodules.core.interfaces.services.UIManager;
 
 public class LocalAuthenticationModule extends ExportedModule {
   private final BiometricManager mBiometricManager;
+  private final PackageManager mPackageManager;
   private CancellationSignal mCancellationSignal;
   private Promise mPromise;
   private boolean mIsAuthenticating = false;
@@ -35,6 +37,8 @@ public class LocalAuthenticationModule extends ExportedModule {
   private UIManager mUIManager;
 
   private static final int AUTHENTICATION_TYPE_FINGERPRINT = 1;
+  private static final int AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2;
+  private static final int AUTHENTICATION_TYPE_IRIS = 3;
 
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
           new BiometricPrompt.AuthenticationCallback () {
@@ -61,6 +65,7 @@ public class LocalAuthenticationModule extends ExportedModule {
     super(context);
 
     mBiometricManager = BiometricManager.from(context);
+    mPackageManager = context.getPackageManager();
   }
 
   @Override
@@ -78,8 +83,18 @@ public class LocalAuthenticationModule extends ExportedModule {
   public void supportedAuthenticationTypesAsync(final Promise promise) {
     int result = mBiometricManager.canAuthenticate();
     List<Integer> results = new ArrayList<>();
-    if (result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
+    if (result == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
+      promise.resolve(results);
+      return;
+    }
+    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
       results.add(AUTHENTICATION_TYPE_FINGERPRINT);
+    }
+    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
+      results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION);
+    }
+    if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+      results.add(AUTHENTICATION_TYPE_IRIS);
     }
     promise.resolve(results);
   }
