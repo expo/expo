@@ -64,5 +64,3 @@ jobs:
           status: ${{ job.status }}
           fields: commit,author,action,message
           author_name: docs build
-          mention: here
-          if_mention: failure
