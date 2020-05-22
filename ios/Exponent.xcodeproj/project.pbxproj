@@ -222,6 +222,7 @@
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
+		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
@@ -812,6 +813,8 @@
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
 		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
 		B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSchedulerModule.m; sourceTree = "<group>"; };
+		B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationPresentationModule.h; sourceTree = "<group>"; };
+		B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationPresentationModule.m; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
 		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
 		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
@@ -1673,6 +1676,8 @@
 				B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */,
 				B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */,
 				B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */,
+				B23D9AA124758C6600D09AC8 /* EXScopedNotificationPresentationModule.h */,
+				B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */,
 			);
 			path = EXNotifications;
 			sourceTree = "<group>";
@@ -2947,6 +2952,7 @@
 				4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */,
 				9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */,
 				0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */,
+				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
 				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
