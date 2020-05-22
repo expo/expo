@@ -86,7 +86,7 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
   resolve(nil);
 }
 
--(NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
+- (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
   for (UNNotificationRequest *request in requests) {

@@ -11,6 +11,8 @@
 
 @end
 
+// TODO: (@lukmccall) experiences may break one another by trying to schedule notifications of the same identifier.
+// See https://github.com/expo/expo/pull/8361#discussion_r429153429.
 @implementation EXScopedNotificationSchedulerModule
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
@@ -35,12 +37,11 @@
 
 - (void)cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  __block NSString *experienceId = _experienceId;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    UM_ENSURE_STRONGIFY(self)
     for (UNNotificationRequest *request in requests) {
       if ([request.identifier isEqual:identifier]) {
-        if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:self.experienceId]) {
+        if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
           [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
         }
         break;
@@ -52,12 +53,11 @@
 
 - (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  __block NSString *experienceId = _experienceId;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    UM_ENSURE_STRONGIFY(self)
     NSMutableArray<NSString *> *toRemove = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:self.experienceId]) {
+      if ([EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
         [toRemove addObject:request.identifier];
       }
     }
