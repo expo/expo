@@ -31,8 +31,8 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
       try {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         promise.resolve(null)
-      } catch(exception: Exception) {
-        promise.reject(ERROR_TAG, "Failed to prevent screen capture: " + exception)
+      } catch (exception: Exception) { 
+        promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
       }
     }
   }
@@ -45,8 +45,8 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
         promise.resolve(null)
-      } catch(exception: Exception) {
-        promise.reject(ERROR_TAG, "Failed to reallow screen capture: " + exception)
+      } catch (exception: Exception) { 
+        promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
       }
     }
   }
@@ -63,6 +63,6 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
   companion object {
     private val NAME = "ExpoScreenCapture"
-    private const val ERROR_TAG = "ERR_SCREEN_CAPTURE"
+    private const val ERROR_CODE_PREVENTION = "ERR_SCREEN_CAPTURE_PREVENTION"
   }
 }
