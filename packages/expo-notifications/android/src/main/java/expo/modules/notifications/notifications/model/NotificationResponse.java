@@ -2,9 +2,6 @@ package expo.modules.notifications.notifications.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 /**
  * A POJO representing user's response to a notification. It may be a default action,

@@ -95,8 +95,6 @@
       </intent-filter>
 
       <intent-filter>
-          <data android:scheme="expo-notifications"/>
-          
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
           <action android:name="expo.modules.notifications.OPEN_APP_ACTION"/>

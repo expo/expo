@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -448,14 +449,14 @@ public class Kernel extends KernelInterface {
       }
     } catch (Throwable e) {}
 
+    setActivityContext(activity);
+
     if (intent.getAction() != null && intent.getAction().equals(NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION)) {
       openExperienceFromNotificationIntent(intent);
       return;
     }
 
     Bundle bundle = intent.getExtras();
-    setActivityContext(activity);
-
     Uri uri = intent.getData();
     String intentUri = uri == null ? null : uri.toString();
 
@@ -511,23 +512,7 @@ public class Kernel extends KernelInterface {
   }
 
   private void openExperienceFromNotificationIntent(Intent intent) {
-    byte[] notificationRequestByteArray = intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY);
-    if (notificationRequestByteArray == null) {
-      openDefaultUrl();
-      return;
-    }
-
-    NotificationResponse response = null;
-    try {
-      Parcel parcel = Parcel.obtain();
-      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
-      parcel.setDataPosition(0);
-      response = NotificationResponse.CREATOR.createFromParcel(parcel);
-      parcel.recycle();
-    } catch (Exception e) {
-      Log.e("expo-notifications", "Could not unmarshalle NotificationResponse from Intent.extra.", e);
-    }
-
+    NotificationResponse response = unmarshalleNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
     if (response == null || response.getNotification() == null || response.getNotification().getNotificationRequest() == null) {
       openDefaultUrl();
       return;
@@ -548,6 +533,25 @@ public class Kernel extends KernelInterface {
 
     String manifestUrl = experience.manifestUrl;
     openExperience(new KernelConstants.ExperienceOptions(manifestUrl, manifestUrl, null));
+  }
+
+  @Nullable
+  private NotificationResponse unmarshalleNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
+    if (notificationRequestByteArray == null) {
+      return null;
+    }
+
+    try {
+      Parcel parcel = Parcel.obtain();
+      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
+      parcel.setDataPosition(0);
+      NotificationResponse response = NotificationResponse.CREATOR.createFromParcel(parcel);
+      parcel.recycle();
+      return response;
+    } catch (Exception e) {
+      Log.e("expo-notifications", "Could not unmarshalle NotificationResponse from Intent.extra.", e);
+    }
+    return null;
   }
 
   private void openDefaultUrl() {

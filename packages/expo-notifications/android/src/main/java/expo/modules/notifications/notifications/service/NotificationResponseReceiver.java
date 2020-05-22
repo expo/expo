@@ -45,10 +45,6 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
 
   protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {
     Intent notificationAppHandler = new Intent(NOTIFICATION_OPEN_APP_ACTION);
-    notificationAppHandler.setData(
-      getUriBuilderForIdentifier(notificationResponse.getNotification().getNotificationRequest().getIdentifier())
-        .appendPath(notificationResponse.getActionIdentifier()).build()
-    );
     notificationAppHandler.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     notificationAppHandler.setPackage(context.getApplicationContext().getPackageName());
     if (notificationAppHandler.resolveActivity(context.getPackageManager()) != null) {
