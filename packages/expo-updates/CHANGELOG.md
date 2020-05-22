@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.4
+
+### 🐛 Bug fixes
+
 - Support monorepos ([#8419](https://github.com/expo/expo/pull/8419) by [@janicduplessis](https://github.com/janicduplessis))
 - Support entry file configuration in Xcode/gradle build scripts ([#8415](https://github.com/expo/expo/pull/8415) and [#8418](https://github.com/expo/expo/pull/8418) by [@janicduplessis](https://github.com/janicduplessis))
 - Added a more helpful error message when trying to run a build without the packager server running.
