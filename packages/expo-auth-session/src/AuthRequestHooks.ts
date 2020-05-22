@@ -14,14 +14,17 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
   const [discovery, setDiscovery] = useState<DiscoveryDocument | null>(null);
 
   useEffect(() => {
-    let stillCareAboutThis = true
-    
-    resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
-      stillCareAboutThis && setDiscovery(discovery);
+    let isHookStillRelevant = true;
+
+    resolveDiscoveryAsync(issuerOrDiscovery).then((discovery) => {
+      if (isHookStillRelevant) {
+        setDiscovery(discovery);
+      }
     });
-    
+
     return () => {
-      stillCareAboutThis = false
+      isHookStillRelevant = false;
+    };
   }, [issuerOrDiscovery]);
 
   return discovery;
@@ -45,15 +48,15 @@ export function useAuthRequest(
 ] {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const [result, setResult] = useState<AuthSessionResult | null>(null);
-  const isMountedRef = useRef<boolean | null>(null)
-  
+  const isMountedRef = useRef<boolean | null>(null);
+
   useEffect(() => {
-    isMountedRef.current = true
-    
+    isMountedRef.current = true;
+
     return () => {
-      isMountedRef.current = false
-    }
-  }, [])
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const promptAsync = useCallback(
     async (options: AuthRequestPromptOptions = {}) => {
@@ -61,23 +64,30 @@ export function useAuthRequest(
         throw new Error('Cannot prompt to authenticate until the request has finished loading.');
       }
       const result = await request?.promptAsync(discovery, options);
-      isMountedRef.current && setResult(result);
+      if (isMountedRef.current) {
+        setResult(result);
+      }
+
       return result;
     },
     [request?.url, discovery?.authorizationEndpoint]
   );
 
   useEffect(() => {
-    let stillCareAboutThis = true
-      
+    let isHookStillRelevant = true;
+
     if (config && discovery) {
       const request = new AuthRequest(config);
-      request.makeAuthUrlAsync(discovery).then(() => stillCareAboutThis && setRequest(request));
+      request.makeAuthUrlAsync(discovery).then(() => {
+        if (isHookStillRelevant) {
+          setRequest(request);
+        }
+      });
     }
-      
-    return () => { 
-      stillCareAboutThis = false 
-    }
+
+    return () => {
+      isHookStillRelevant = false;
+    };
   }, [
     discovery?.authorizationEndpoint,
     config.clientId,
