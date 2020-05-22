@@ -6,6 +6,8 @@ import path from 'path';
 
 import * as Changelogs from '../Changelogs';
 import * as Directories from '../Directories';
+import logger from '../Logger';
+import { formatChangelogEntry } from '../Formatter';
 
 type ActionOptions = {
   package: string;
@@ -113,15 +115,31 @@ async function action(options: ActionOptions) {
   }
 
   const changelog = Changelogs.loadFrom(packagePath);
-  const newEntry = {
-    authors: options.author,
-    message: options.entry,
-    version: options.version,
-    pullRequests: options.pullRequest,
-    type,
-  };
 
-  await changelog.addChangeAsync(newEntry);
+  const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
+    {
+      message: options.entry,
+      pullRequests: options.pullRequest,
+      authors: options.author,
+    },
+  ]);
+
+  if (insertedEntries.length > 0) {
+    logger.info(
+      `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(options.package)}:`
+    );
+    insertedEntries.forEach((entry) => {
+      logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
+    });
+
+    logger.info('\n💾 Saving changelog file...');
+
+    await changelog.saveAsync();
+
+    logger.success('\n✅ Successfully inserted new entry.');
+  } else {
+    logger.success('\n✅ Specified entry is already there.');
+  }
 }
 
 export default (program: Command) => {
