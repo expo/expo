@@ -10,11 +10,11 @@ import ExpoScreenCapture from './ExpoScreenCapture';
  *
  * @example
  * ```typescript
- * preventScreenCapture();
+ * preventScreenCaptureAsync();
  * ```
  */
-export async function preventScreenCapture() {
-    return ExpoScreenCapture.preventScreenCapture();
+export async function preventScreenCaptureAsync() {
+    await ExpoScreenCapture.preventScreenCapture();
 }
 /**
  * Reallows screenshots and recordings. If you haven't called
@@ -22,11 +22,11 @@ export async function preventScreenCapture() {
  *
  * @example
  * ```typescript
- * allowScreenCapture();
+ * allowScreenCaptureAsync();
  * ```
  */
-export async function allowScreenCapture() {
-    return ExpoScreenCapture.allowScreenCapture();
+export async function allowScreenCaptureAsync() {
+    await ExpoScreenCapture.allowScreenCapture();
 }
 /**
  * React hook for preventing screenshots and screen recordings
@@ -39,9 +39,9 @@ export async function allowScreenCapture() {
  */
 export function usePreventScreenCapture() {
     useEffect(() => {
-        preventScreenCapture();
+        preventScreenCaptureAsync();
         return () => {
-            allowScreenCapture();
+            allowScreenCaptureAsync();
         };
     }, []);
 }

@@ -46,7 +46,7 @@ export default function KeepAwakeExample {
 ### Example: functions
 
 ```javascript
-import { preventScreenCapture, allowScreenCapture } from 'expo-screen-capture';
+import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-capture';
 import React from 'react';
 import { Button, View } from 'react-native';
 
@@ -61,14 +61,14 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will be uncapturable once <strong>preventScreenCapture()</strong> is called. */
-    preventScreenCapture();
+    /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
+    preventScreenCaptureAsync();
     /* @end */
   };
 
   _deactivate = () => {
-    /* @info Deactivates preventing screen capture, or does nothing if it was never activated. */
-    allowScreenCapture();
+    /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
+    allowScreenCaptureAsync();
     /* @end */
   };
 }
@@ -80,7 +80,7 @@ export default class KeepAwakeExample extends React.Component {
 import KeepAwake from 'expo-screen-capture';
 ```
 
-<TableOfContentSection title='Methods' contents={['usePreventScreenCapture()', 'preventScreenCapture()', 'allowScreenCapture()']} />
+<TableOfContentSection title='Methods' contents={['usePreventScreenCapture()', 'preventScreenCaptureAsync()', 'allowScreenCaptureAsync()']} />
 
 ## Methods
 
@@ -88,12 +88,12 @@ import KeepAwake from 'expo-screen-capture';
 
 A React hook to prevent screen capturing for as long as the owner component is mounted.
 
-### `preventScreenCapture()`
+### `preventScreenCaptureAsync()`
 
-Prevents screenshots and screen recordings until `allowScreenCapture` is called. If you are already preventing screen capture, this method does nothing.
+Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called. If you are already preventing screen capture, this method does nothing.
 
 Please note that on iOS, this will only prevent screen recordings, and is only available on iOS 11 and newer. On older iOS versions, this method does nothing.
 
-### `allowScreenCapture()`
+### `allowScreenCaptureAsync()`
 
-Re-allows the user to screen record or screenshot your app. If you haven't called `preventScreenCapture()` yet, this method does nothing
+Re-allows the user to screen record or screenshot your app. If you haven't called `preventScreenCaptureAsync()` yet, this method does nothing

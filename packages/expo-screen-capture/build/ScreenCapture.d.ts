@@ -8,20 +8,20 @@
  *
  * @example
  * ```typescript
- * preventScreenCapture();
+ * preventScreenCaptureAsync();
  * ```
  */
-export declare function preventScreenCapture(): Promise<any>;
+export declare function preventScreenCaptureAsync(): Promise<void>;
 /**
  * Reallows screenshots and recordings. If you haven't called
  * `preventScreenCapture()` yet, this method does nothing.
  *
  * @example
  * ```typescript
- * allowScreenCapture();
+ * allowScreenCaptureAsync();
  * ```
  */
-export declare function allowScreenCapture(): Promise<any>;
+export declare function allowScreenCaptureAsync(): Promise<void>;
 /**
  * React hook for preventing screenshots and screen recordings
  * while the component is mounted.

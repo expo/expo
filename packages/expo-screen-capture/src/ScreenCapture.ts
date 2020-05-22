@@ -12,11 +12,11 @@ import ExpoScreenCapture from './ExpoScreenCapture';
  *
  * @example
  * ```typescript
- * preventScreenCapture();
+ * preventScreenCaptureAsync();
  * ```
  */
-export async function preventScreenCapture() {
-  return ExpoScreenCapture.preventScreenCapture();
+export async function preventScreenCaptureAsync(): Promise<void> {
+  await ExpoScreenCapture.preventScreenCapture();
 }
 
 /**
@@ -25,11 +25,11 @@ export async function preventScreenCapture() {
  *
  * @example
  * ```typescript
- * allowScreenCapture();
+ * allowScreenCaptureAsync();
  * ```
  */
-export async function allowScreenCapture() {
-  return ExpoScreenCapture.allowScreenCapture();
+export async function allowScreenCaptureAsync(): Promise<void> {
+  await ExpoScreenCapture.allowScreenCapture();
 }
 
 /**
@@ -43,10 +43,10 @@ export async function allowScreenCapture() {
  */
 export function usePreventScreenCapture(): void {
   useEffect(() => {
-    preventScreenCapture();
+    preventScreenCaptureAsync();
 
     return () => {
-      allowScreenCapture();
+      allowScreenCaptureAsync();
     };
   }, []);
 }
