@@ -90,6 +90,7 @@
   "@react-native-community/datetimepicker": "2.2.2",
   "@react-native-community/masked-view": "0.1.6",
   "@react-native-community/viewpager": "3.3.0",
+  "@react-native-community/segmented-control": "1.4.0",
   "expo-error-recovery": "~1.1.0",
   "expo-module-template": "~8.2.0",
   "expo-image-loader": "~1.0.1",
