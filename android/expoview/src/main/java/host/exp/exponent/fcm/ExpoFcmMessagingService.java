@@ -17,9 +17,10 @@ import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
+import host.exp.exponent.notifications.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
-import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationRequest;
+
 
 public class ExpoFcmMessagingService extends FirebaseListenerService {
 

@@ -93,6 +93,12 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
+
+      <intent-filter>
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <action android:name="expo.modules.notifications.OPEN_APP_ACTION"/>
+      </intent-filter>
       <!-- END LAUNCHER INTENT FILTERS -->
     </activity>
 
