@@ -1,6 +1,11 @@
 package host.exp.exponent.fcm;
 
+import android.util.Log;
+
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -11,6 +16,8 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
+import host.exp.exponent.storage.ExperienceDBObject;
+import host.exp.exponent.storage.ExponentDB;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationRequest;
 
 public class ExpoFcmMessagingService extends FirebaseListenerService {
@@ -31,7 +38,40 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       return;
     }
 
+    ExponentDB.experienceIdToExperience(remoteMessage.getData().get("experienceId"), new ExponentDB.ExperienceResultListener() {
+      @Override
+      public void onSuccess(ExperienceDBObject experience) {
+        try {
+          JSONObject manifest = new JSONObject(experience.manifest);
+          JSONObject androidSection = manifest.optJSONObject("android");
+          if (androidSection != null) {
+            boolean useNewNotificationsAPI = androidSection.optBoolean("useNewNotificationsAPI", false);
+            if (useNewNotificationsAPI) {
+              dispatchToNewNotificationModule(remoteMessage);
+              return;
+            }
+          }
+          dispatchToOldNotificationModule(remoteMessage);
+        } catch (JSONException e) {
+          e.printStackTrace();
+          onFailure();
+        }
+      }
+
+      @Override
+      public void onFailure() {
+        Log.w("expo-notifications", "Couldn't get experience from remote message.", null);
+        dispatchToNewNotificationModule(remoteMessage);
+        dispatchToOldNotificationModule(remoteMessage);
+      }
+    });
+  }
+
+  private void dispatchToNewNotificationModule(RemoteMessage remoteMessage) {
     super.onMessageReceived(remoteMessage);
+  }
+
+  private void dispatchToOldNotificationModule(RemoteMessage remoteMessage) {
     PushNotificationHelper.getInstance().onMessageReceived(this, remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
   }
 
