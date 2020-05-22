@@ -15,8 +15,8 @@ import ExpoScreenCapture from './ExpoScreenCapture';
  * preventScreenCaptureAsync();
  * ```
  */
-export async function preventScreenCaptureAsync(): Promise<void> {
-  await ExpoScreenCapture.preventScreenCapture();
+export async function preventScreenCaptureAsync(tag = 'default'): Promise<void> {
+  await ExpoScreenCapture.preventScreenCapture(tag);
 }
 
 /**
@@ -28,8 +28,8 @@ export async function preventScreenCaptureAsync(): Promise<void> {
  * allowScreenCaptureAsync();
  * ```
  */
-export async function allowScreenCaptureAsync(): Promise<void> {
-  await ExpoScreenCapture.allowScreenCapture();
+export async function allowScreenCaptureAsync(tag = 'default'): Promise<void> {
+  await ExpoScreenCapture.allowScreenCapture(tag);
 }
 
 /**
@@ -41,12 +41,12 @@ export async function allowScreenCaptureAsync(): Promise<void> {
  * usePreventScreenCapture();
  * ```
  */
-export function usePreventScreenCapture(): void {
+export function usePreventScreenCapture(tag = 'default'): void {
   useEffect(() => {
-    preventScreenCaptureAsync();
+    preventScreenCaptureAsync(tag);
 
     return () => {
-      allowScreenCaptureAsync();
+      allowScreenCaptureAsync(tag);
     };
   }, []);
 }

@@ -11,7 +11,7 @@
  * preventScreenCaptureAsync();
  * ```
  */
-export declare function preventScreenCaptureAsync(): Promise<void>;
+export declare function preventScreenCaptureAsync(tag?: string): Promise<void>;
 /**
  * Reallows screenshots and recordings. If you haven't called
  * `preventScreenCapture()` yet, this method does nothing.
@@ -21,7 +21,7 @@ export declare function preventScreenCaptureAsync(): Promise<void>;
  * allowScreenCaptureAsync();
  * ```
  */
-export declare function allowScreenCaptureAsync(): Promise<void>;
+export declare function allowScreenCaptureAsync(tag?: string): Promise<void>;
 /**
  * React hook for preventing screenshots and screen recordings
  * while the component is mounted.
@@ -31,4 +31,4 @@ export declare function allowScreenCaptureAsync(): Promise<void>;
  * usePreventScreenCapture();
  * ```
  */
-export declare function usePreventScreenCapture(): void;
+export declare function usePreventScreenCapture(tag?: string): void;

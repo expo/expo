@@ -5,22 +5,26 @@
 @interface EXScreenCaptureModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, strong) UIView *blockView;
 
 @end
 
-@implementation EXScreenCaptureModule
+@implementation EXScreenCaptureModule {
+  UIView *_blockView;
+  NSMutableSet *_activeTags;
+}
 
-UM_EXPORT_MODULE(ExpoScreenCapture);
-
-- (id)init {
+- (instancetype)init {
   if (self = [super init]) {
     CGFloat boundLength = MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height);
-    self.blockView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, boundLength, boundLength)];
-    self.blockView.backgroundColor = UIColor.blackColor;
+    _blockView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, boundLength, boundLength)];
+    _blockView.backgroundColor = UIColor.blackColor;
+    
+    _activeTags = [[NSMutableSet alloc] init];
   }
   return self;
 }
+
+UM_EXPORT_MODULE(ExpoScreenCapture);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
@@ -28,30 +32,39 @@ UM_EXPORT_MODULE(ExpoScreenCapture);
 }
 
 UM_EXPORT_METHOD_AS(preventScreenCapture,
+                    preventScreenCapture:(NSString *)tag
                     preventScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 11.0, *) ) {
-    // If already recording, block it
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self preventScreenRecording];
-    });
+    if (![_activeTags containsObject:tag]){
+      [_activeTags addObject:tag];
+      // If already recording, block it
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self preventScreenRecording];
+      });
 
-    // Avoid setting duplicate observers
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
-        
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
+      // Avoid setting duplicate observers
+      [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
+          
+      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
+    }
   }
-    
   resolve([NSNull null]);
 }
 
 UM_EXPORT_METHOD_AS(allowScreenCapture,
+                    allowScreenCapture:(NSString *)tag
                     allowScreenCaptureWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 11.0, *)) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
+    [_activeTags removeObject:tag];
+    
+    // No active tags means we can safely remove the listener
+    if (_activeTags.count == 0){
+      [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
+    }
   }
 
   resolve([NSNull null]);

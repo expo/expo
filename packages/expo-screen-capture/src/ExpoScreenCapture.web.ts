@@ -2,13 +2,13 @@ export default {
   get name(): string {
     return 'ExpoScreenCapture';
   },
-  async preventScreenCapture(): Promise<null> {
+  async preventScreenCapture(tag = 'default'): Promise<null> {
     return null;
   },
-  async allowScreenCapture(): Promise<null> {
+  async allowScreenCapture(tag = 'default'): Promise<null> {
     return null;
   },
-  async usePreventScreenCapture(): Promise<null> {
+  async usePreventScreenCapture(tag = 'default'): Promise<null> {
     return null;
   },
 };

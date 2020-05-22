@@ -13,8 +13,8 @@ import ExpoScreenCapture from './ExpoScreenCapture';
  * preventScreenCaptureAsync();
  * ```
  */
-export async function preventScreenCaptureAsync() {
-    await ExpoScreenCapture.preventScreenCapture();
+export async function preventScreenCaptureAsync(tag = 'default') {
+    await ExpoScreenCapture.preventScreenCapture(tag);
 }
 /**
  * Reallows screenshots and recordings. If you haven't called
@@ -25,8 +25,8 @@ export async function preventScreenCaptureAsync() {
  * allowScreenCaptureAsync();
  * ```
  */
-export async function allowScreenCaptureAsync() {
-    await ExpoScreenCapture.allowScreenCapture();
+export async function allowScreenCaptureAsync(tag = 'default') {
+    await ExpoScreenCapture.allowScreenCapture(tag);
 }
 /**
  * React hook for preventing screenshots and screen recordings
@@ -37,11 +37,11 @@ export async function allowScreenCaptureAsync() {
  * usePreventScreenCapture();
  * ```
  */
-export function usePreventScreenCapture() {
+export function usePreventScreenCapture(tag = 'default') {
     useEffect(() => {
-        preventScreenCaptureAsync();
+        preventScreenCaptureAsync(tag);
         return () => {
-            allowScreenCaptureAsync();
+            allowScreenCaptureAsync(tag);
         };
     }, []);
 }

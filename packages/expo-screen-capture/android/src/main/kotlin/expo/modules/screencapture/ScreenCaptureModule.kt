@@ -13,47 +13,56 @@ import org.unimodules.core.interfaces.ActivityProvider
 
 class ScreenCaptureModule(context: Context) : ExportedModule(context) {
 
-  private lateinit var activityProvider: ActivityProvider
+  private lateinit var mActivityProvider: ActivityProvider
+  private lateinit var mActiveTags: MutableSet<String>
 
   override fun getName(): String {
     return NAME
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+    mActiveTags = mutableSetOf<String>()
   }
 
   @ExpoMethod
-  fun preventScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
+  fun preventScreenCapture(tag: String, promise: Promise) {
+    if (!mActiveTags.contains(tag)) {
+      mActiveTags.add(tag)
+      val activity = getCurrentActivity()
 
-    activity.runOnUiThread{
-      try {
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        promise.resolve(null)
-      } catch (exception: Exception) { 
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
+      activity.runOnUiThread{
+        try {
+          activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } catch (exception: Exception) { 
+          promise.reject(ERROR_CODE_PREVENTION, "Failed to prevent screen capture: " + exception)
+        }
       }
     }
+    promise.resolve(null)
   }
 
   @ExpoMethod
-  fun allowScreenCapture(promise: Promise) {
-    val activity = getCurrentActivity()
-    
-    activity.runOnUiThread{
-      try {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        promise.resolve(null)
-      } catch (exception: Exception) { 
-        promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
+  fun allowScreenCapture(tag: String, promise: Promise) {
+    mActiveTags.remove(tag)
+
+    if (mActiveTags.count() == 0) {
+      val activity = getCurrentActivity()
+      
+      activity.runOnUiThread{
+        try {
+          activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } catch (exception: Exception) { 
+          promise.reject(ERROR_CODE_PREVENTION, "Failed to reallow screen capture: " + exception)
+        }
       }
     }
+    promise.resolve(null)
   }
 
   @Throws(CurrentActivityNotFoundException::class)
   fun getCurrentActivity(): Activity {
-    val activity = activityProvider.currentActivity
+    val activity = mActivityProvider.currentActivity
     if (activity != null) {
       return activity
     } else {
