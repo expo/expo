@@ -43,7 +43,7 @@ UM_EXPORT_METHOD_AS(preventScreenCapture,
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
   }
     
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 UM_EXPORT_METHOD_AS(allowScreenCapture,
@@ -54,7 +54,7 @@ UM_EXPORT_METHOD_AS(allowScreenCapture,
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
   }
 
-  resolve(nil);
+  resolve([NSNull null]);
 }
 
 - (void)preventScreenRecording {
