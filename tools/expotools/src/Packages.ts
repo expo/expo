@@ -232,6 +232,13 @@ export class Package {
     const podspecPath = path.join(this.path, 'ios/Local Podspecs', `${podName}.podspec.json`);
     return await fs.pathExists(podspecPath);
   }
+
+  /**
+   * Checks whether package has its own changelog file.
+   */
+  async hasChangelogAsync(): Promise<boolean> {
+    return fs.pathExists(this.changelogPath);
+  }
 }
 
 /**
