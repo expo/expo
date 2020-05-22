@@ -80,7 +80,7 @@ import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsUtils;
+import host.exp.exponent.nextNotifications.ScopedNotificationsUtils;
 
 import static expo.modules.notifications.notifications.service.NotificationResponseReceiver.NOTIFICATION_RESPONSE_KEY;
 
@@ -451,8 +451,10 @@ public class Kernel extends KernelInterface {
 
     setActivityContext(activity);
 
-    if (intent.getAction() != null && intent.getAction().equals(NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION)) {
-      openExperienceFromNotificationIntent(intent);
+    if (intent.getAction() != null && NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION.equals(intent.getAction())) {
+      if (!openExperienceFromNotificationIntent(intent)) {
+        openDefaultUrl();
+      }
       return;
     }
 
@@ -511,36 +513,29 @@ public class Kernel extends KernelInterface {
     openDefaultUrl();
   }
 
-  private void openExperienceFromNotificationIntent(Intent intent) {
-    NotificationResponse response = unmarshalleNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
-    if (response == null || response.getNotification() == null || response.getNotification().getNotificationRequest() == null) {
-      openDefaultUrl();
-      return;
-    }
-
+  private boolean openExperienceFromNotificationIntent(Intent intent) {
+    NotificationResponse response = unmarshallNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
     String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
     if (experienceIdString == null) {
-      openDefaultUrl();
-      return;
+      return false;
     }
 
     ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(experienceIdString);
     if (experience == null) {
       Log.w("expo-notifications", "Couldn't find experience from experienceId.");
-      openDefaultUrl();
-      return;
+      return false;
     }
 
     String manifestUrl = experience.manifestUrl;
     openExperience(new KernelConstants.ExperienceOptions(manifestUrl, manifestUrl, null));
+    return true;
   }
 
   @Nullable
-  private NotificationResponse unmarshalleNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
+  private NotificationResponse unmarshallNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
     if (notificationRequestByteArray == null) {
       return null;
     }
-
     try {
       Parcel parcel = Parcel.obtain();
       parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
@@ -549,7 +544,7 @@ public class Kernel extends KernelInterface {
       parcel.recycle();
       return response;
     } catch (Exception e) {
-      Log.e("expo-notifications", "Could not unmarshalle NotificationResponse from Intent.extra.", e);
+      Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e);
     }
     return null;
   }

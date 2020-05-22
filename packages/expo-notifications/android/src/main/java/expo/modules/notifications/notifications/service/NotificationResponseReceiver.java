@@ -44,24 +44,37 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
   }
 
   protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {
-    Intent notificationAppHandler = new Intent(NOTIFICATION_OPEN_APP_ACTION);
-    notificationAppHandler.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    notificationAppHandler.setPackage(context.getApplicationContext().getPackageName());
-    if (notificationAppHandler.resolveActivity(context.getPackageManager()) != null) {
-      // Class loader used in BaseBundle when unmarshalling notification extras
-      // cannot handle expo.modules.notifications.….NotificationResponse
-      // so we go around it by marshalling and unmarshalling the object ourselves.
-      notificationAppHandler.putExtra(NOTIFICATION_RESPONSE_KEY, marshallNotificationResponse(notificationResponse));
-      context.startActivity(notificationAppHandler);
+    Intent appLauncher = getNotificationActionLauncher(context, notificationResponse);
+    if (appLauncher != null) {
+      context.startActivity(appLauncher);
       return;
     }
 
-    Intent mainActivity = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-    if (mainActivity == null) {
+    appLauncher = getMainActivityLauncher(context);
+    if (appLauncher == null) {
       Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.");
       return;
     }
-    context.startActivity(mainActivity);
+    context.startActivity(appLauncher);
+  }
+
+  private Intent getNotificationActionLauncher(Context context, NotificationResponse notificationResponse) {
+    Intent notificationActionLauncher = new Intent(NOTIFICATION_OPEN_APP_ACTION);
+    notificationActionLauncher.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    notificationActionLauncher.setPackage(context.getApplicationContext().getPackageName());
+    if (notificationActionLauncher.resolveActivity(context.getPackageManager()) != null) {
+      // Class loader used in BaseBundle when unmarshalling notification extras
+      // cannot handle expo.modules.notifications.….NotificationResponse
+      // so we go around it by marshalling and unmarshalling the object ourselves.
+      notificationActionLauncher.putExtra(NOTIFICATION_RESPONSE_KEY, marshallNotificationResponse(notificationResponse));
+      return notificationActionLauncher;
+    }
+
+    return null;
+  }
+
+  private Intent getMainActivityLauncher(Context context) {
+    return context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
   }
 
   /**

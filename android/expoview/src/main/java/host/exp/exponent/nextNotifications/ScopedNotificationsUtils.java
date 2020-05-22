@@ -1,16 +1,17 @@
-package versioned.host.exp.exponent.modules.universal.notifications;
+package host.exp.exponent.nextNotifications;
 
+import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedNotificationsUtils {
-  static boolean shouldHandleNotification(Notification notification, ExperienceId experienceId) {
+  public static boolean shouldHandleNotification(Notification notification, ExperienceId experienceId) {
     return shouldHandleNotification(notification.getNotificationRequest(), experienceId);
   }
 
-  static boolean shouldHandleNotification(NotificationRequest notificationRequest, ExperienceId experienceId) {
+  public static boolean shouldHandleNotification(NotificationRequest notificationRequest, ExperienceId experienceId) {
     if (notificationRequest instanceof ScopedNotificationRequest) {
       ScopedNotificationRequest scopedNotificationRequest = (ScopedNotificationRequest) notificationRequest;
       return scopedNotificationRequest.checkIfBelongsToExperience(experienceId);
@@ -19,7 +20,11 @@ public class ScopedNotificationsUtils {
     return true;
   }
 
-  public static String getExperienceId(NotificationResponse notificationResponse) {
+  public static String getExperienceId(@Nullable NotificationResponse notificationResponse) {
+    if (notificationResponse == null || notificationResponse.getNotification() == null) {
+      return null;
+    }
+
     NotificationRequest notificationRequest = notificationResponse.getNotification().getNotificationRequest();
     if (notificationRequest instanceof ScopedNotificationRequest) {
       ScopedNotificationRequest scopedNotificationRequest = (ScopedNotificationRequest) notificationRequest;

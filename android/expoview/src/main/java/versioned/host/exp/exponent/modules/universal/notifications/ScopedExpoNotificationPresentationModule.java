@@ -17,6 +17,8 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import expo.modules.notifications.notifications.service.BaseNotificationsService;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.nextNotifications.ScopedNotificationRequest;
+import host.exp.exponent.nextNotifications.ScopedNotificationsUtils;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
   private final ExperienceId mExperienceId;
