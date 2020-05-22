@@ -18,7 +18,7 @@ on:
       - '.github/workflows/docs.yml'
 
 jobs:
-  docs:
+  danger:
     runs-on: ubuntu-18.04
     steps:
       - name: Check out repository
@@ -38,6 +38,23 @@ jobs:
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('docs/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
       - run: yarn export
         timeout-minutes: 15
       - name: test links
