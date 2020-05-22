@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-reanimated` from `1.7.0` to `1.9.0`. ([#8424](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
+
 ### 🛠 Breaking changes
 
 - `react-native-view-shot` is no longer installed by default, install it with `expo install react-native-view-shot`. ([#7950](https://github.com/expo/expo/pull/7950) by [@evanbacon](https://github.com/evanbacon))
