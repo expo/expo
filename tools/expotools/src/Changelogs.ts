@@ -110,9 +110,7 @@ export class Changelog {
     const tokens = await this.getTokensAsync();
 
     return tokens
-      .filter<Markdown.HeadingToken>((token): token is Markdown.HeadingToken =>
-        isVersionToken(token)
-      )
+      .filter((token): token is Markdown.HeadingToken => isVersionToken(token))
       .map((token) => token.text.trim());
   }
 
