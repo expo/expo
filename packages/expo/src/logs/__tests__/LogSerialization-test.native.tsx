@@ -7,10 +7,9 @@ import LogSerialization from '../LogSerialization';
 import { LogErrorData } from '../RemoteLogging';
 
 jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
-  jest.fn(
-    async stack =>
-      // We don't test symbolication itself in this test, partly because it's complex
-      stack
+  jest.fn(async stack =>
+    // We don't test symbolication itself in this test, partly because it's complex
+    ({ stack })
   )
 );
 
