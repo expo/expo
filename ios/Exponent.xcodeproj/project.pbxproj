@@ -221,6 +221,8 @@
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
+		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
+		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02A246B09890060EE06 /* EXScopedNotificationsHandlerModule.m */; };
 		B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -808,6 +810,8 @@
 		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
+		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
+		B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSchedulerModule.m; sourceTree = "<group>"; };
 		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementDelegate.h; sourceTree = "<group>"; };
 		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
 		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
@@ -1667,6 +1671,8 @@
 				B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */,
 				B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */,
 				B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */,
+				B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */,
+				B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */,
 			);
 			path = EXNotifications;
 			sourceTree = "<group>";
@@ -2691,6 +2697,7 @@
 				78C832BA23545ECF00448582 /* REATransitionManager.m in Sources */,
 				31AD99E32285B51100F19090 /* AIRGoogleMapMarkerManager.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
+				B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */,
 				31AD9A3F2285B53100F19090 /* AIRMapPolylineRenderer.m in Sources */,
 				7043DF8C2283303800272D74 /* RNSVGLineManager.m in Sources */,
 				31AD99EF2285B51100F19090 /* AIRGMSPolygon.m in Sources */,
