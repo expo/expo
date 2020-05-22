@@ -339,6 +339,7 @@
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		FA526593B78C87A7E1C34561 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8BAB8D6102FB06BE5BE10B /* libPods-Tests.a */; };
+		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1037,6 +1038,8 @@
 		F1D6AF6524472BA900AC1C74 /* EXDevMenuDelegateProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuDelegateProtocol.h; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSScreenStack.h; sourceTree = "<group>"; };
+		57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */ = {isa = PBXFileReference; name = "RNSharedElementCornerRadii.h"; path = "RNSharedElementCornerRadii.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; name = "RNSharedElementCornerRadii.m"; path = "RNSharedElementCornerRadii.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1221,6 +1224,8 @@
 				143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */,
 				1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */,
 				CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */,
+				57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */,
+				780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */,
 			);
 			path = SharedElement;
 			sourceTree = "<group>";
@@ -2948,6 +2953,7 @@
 				66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */,
 				B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */,
 				C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */,
+				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

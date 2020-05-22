@@ -10,36 +10,35 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.interfaces.DraweeController;
 
 class RNSharedElementContent {
-    View view;
-    RectF size;
+  View view;
+  RectF size;
 
-    static RectF getSize(View view) {
-        if (view instanceof GenericDraweeView) {
-            GenericDraweeView imageView = (GenericDraweeView) view;
-            DraweeController controller = imageView.getController();
-            GenericDraweeHierarchy hierarchy = imageView.getHierarchy();
-            String controllerDetails = controller.toString();
-            if (controllerDetails.contains("fetchedImage=0,")) {
-                return null;
-            }
-            Drawable drawable = imageView.getDrawable();
-            RectF imageBounds = new RectF();
-            hierarchy.getActualImageBounds(imageBounds);
-            return imageBounds;
-        }
-        else if (view instanceof ImageView) {
-            ImageView imageView = (ImageView) view;
-            Drawable drawable = imageView.getDrawable();
-            if (drawable == null) return null;
-            int width = drawable.getIntrinsicWidth();
-            int height = drawable.getIntrinsicHeight();
-            if ((width <= 0) || (height <= 0)) {
-              return null;
-            }
-            return new RectF(0, 0, width, height);
-        }
-        return new RectF(0, 0, view.getWidth(), view.getHeight());
+  static RectF getSize(View view) {
+    if (view instanceof GenericDraweeView) {
+      GenericDraweeView imageView = (GenericDraweeView) view;
+      DraweeController controller = imageView.getController();
+      GenericDraweeHierarchy hierarchy = imageView.getHierarchy();
+      String controllerDetails = controller.toString();
+      if (controllerDetails.contains("fetchedImage=0,")) {
+        return null;
+      }
+      Drawable drawable = imageView.getDrawable();
+      RectF imageBounds = new RectF();
+      hierarchy.getActualImageBounds(imageBounds);
+      return imageBounds;
+    } else if (view instanceof ImageView) {
+      ImageView imageView = (ImageView) view;
+      Drawable drawable = imageView.getDrawable();
+      if (drawable == null) return null;
+      int width = drawable.getIntrinsicWidth();
+      int height = drawable.getIntrinsicHeight();
+      if ((width <= 0) || (height <= 0)) {
+        return null;
+      }
+      return new RectF(0, 0, width, height);
     }
+    return new RectF(0, 0, view.getWidth(), view.getHeight());
+  }
 
     /*
     static public Rect getLayout(Rect layout, RectF contentSize, ScaleType scaleType, boolean reverse) {
