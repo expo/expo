@@ -13,6 +13,7 @@ import expo.modules.notifications.FirebaseListenerService;
 import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.notifications.PushNotificationHelper;
@@ -43,6 +44,11 @@ public class ExpoFcmMessagingService extends FirebaseListenerService {
       public void onSuccess(ExperienceDBObject experience) {
         try {
           JSONObject manifest = new JSONObject(experience.manifest);
+          if (ABIVersion.toNumber(manifest.getString("sdkVersion")) >= 39) {
+            dispatchToNextNotificationModule(remoteMessage);
+            return;
+          }
+
           JSONObject androidSection = manifest.optJSONObject("android");
           if (androidSection != null) {
             boolean nextNotificationsApi = androidSection.optBoolean("nextNotificationsApi", false);
