@@ -1,5 +1,5 @@
 jest.mock('expo-file-system', () => {
-  const FileSystem = require.requireActual('expo-file-system');
+  const FileSystem = jest.requireActual('expo-file-system');
   return {
     ...FileSystem,
     bundleDirectory: 'file:///Expo.app/',
@@ -24,7 +24,7 @@ jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
 });
 
 jest.mock('../ImageAssets', () => {
-  const ImageAssets = require.requireActual('../ImageAssets');
+  const ImageAssets = jest.requireActual('../ImageAssets');
   return {
     ...ImageAssets,
     getImageInfoAsync: jest.fn(),
@@ -203,7 +203,7 @@ if (Platform.OS === 'web') {
 describe('embedding', () => {
   beforeAll(() => {
     jest.doMock('expo-constants', () => {
-      const Constants = require.requireActual('expo-constants');
+      const Constants = jest.requireActual('expo-constants');
       return {
         ...Constants,
         appOwnership: 'standalone',
