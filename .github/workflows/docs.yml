@@ -54,8 +54,28 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - if: github.event.ref == 'refs/heads/master'
+        uses: actions/github-script@v1
+        id: previous-status
+        with:
+          result-encoding: string
+          script: |
+            const checks = await github.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.ref,
+              check_name: context.workflow,
+              status: 'completed'
+            });
+            console.info(JSON.stringify(checks, null, 4));
+
+            const last = checks.data.check_runs[0]
+
+            if (last) {
+              return last.conclusion
+            }
       - uses: 8398a7/action-slack@v3
-        if: failure() && github.event.ref == 'refs/heads/master'
+        if: github.event.ref == 'refs/heads/master' && (failure() || (steps.previous-status.outputs.result == 'failure'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_docs }}
