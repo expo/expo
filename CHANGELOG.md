@@ -38,6 +38,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🎉 New features
 
 - Initial release of **`expo-notifications`** 🥳
+- Added `@react-native-community/segmented-control` in version `1.6.1`. ([#8038](https://github.com/expo/expo/pull/8038) by [@marchenk0va](https://github.com/marchenk0va) and [#8441](https://github.com/expo/expo/pull/8441) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-apple-authentication`**
   - Add 'Sign up with Apple' option (available as of iOS 13.2). ([#7471](https://github.com/expo/expo/pull/7471) by [@IjzerenHein](https://github.com/IjzerenHein))
 - **`expo-file-system`**
