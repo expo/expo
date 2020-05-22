@@ -4,12 +4,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Surface;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -43,10 +47,11 @@ import java.util.Map;
 
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
+import expo.modules.av.player.datasource.CustomHeadersOkHttpDataSourceFactory;
 import expo.modules.av.player.datasource.DataSourceFactoryProvider;
 
 class SimpleExoPlayerData extends PlayerData
-    implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
+  implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
 
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
 
@@ -83,16 +88,22 @@ class SimpleExoPlayerData extends PlayerData
     final Handler mainHandler = new Handler();
     // Measures bandwidth during playback. Can be null if not required.
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    final TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+    final TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory();
     final TrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
 
     // Create the player
-    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.getContext(), trackSelector);
+    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
+      mAVModule.getContext(),
+      new DefaultRenderersFactory(mAVModule.getContext()),
+      trackSelector,
+      new DefaultLoadControl(),
+      null,
+      bandwidthMeter);
     mSimpleExoPlayer.addListener(this);
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders);
+    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders, bandwidthMeter.getTransferListener());
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
@@ -141,7 +152,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AudioFocusNotAcquiredException, IllegalStateException {
+    throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mSimpleExoPlayer == null) {
       throw new IllegalStateException("mSimpleExoPlayer is null!");
     }
@@ -188,14 +199,14 @@ class SimpleExoPlayerData extends PlayerData
     final int duration = (int) mSimpleExoPlayer.getDuration();
     map.putInt(STATUS_DURATION_MILLIS_KEY_PATH, duration);
     map.putInt(STATUS_POSITION_MILLIS_KEY_PATH,
-        getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
+      getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
     map.putInt(STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH,
-        getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
+      getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
-        mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
+      mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
     map.putBoolean(STATUS_IS_BUFFERING_KEY_PATH,
-        mIsLoading || mSimpleExoPlayer.getPlaybackState() == Player.STATE_BUFFERING);
+      mIsLoading || mSimpleExoPlayer.getPlaybackState() == Player.STATE_BUFFERING);
 
     map.putBoolean(STATUS_IS_LOOPING_KEY_PATH, mIsLooping);
   }
@@ -284,8 +295,8 @@ class SimpleExoPlayerData extends PlayerData
     }
 
     if (mLastPlaybackState != null
-        && playbackState != mLastPlaybackState
-        && playbackState == Player.STATE_ENDED) {
+      && playbackState != mLastPlaybackState
+      && playbackState == Player.STATE_ENDED) {
       callStatusUpdateListenerWithDidJustFinish();
     } else {
       callStatusUpdateListener();
@@ -360,10 +371,10 @@ class SimpleExoPlayerData extends PlayerData
     switch (type) {
       case C.TYPE_SS:
         return new SsMediaSource(uri, factory,
-            new DefaultSsChunkSource.Factory(factory), mainHandler, this);
+          new DefaultSsChunkSource.Factory(factory), mainHandler, this);
       case C.TYPE_DASH:
         return new DashMediaSource(uri, factory,
-            new DefaultDashChunkSource.Factory(factory), mainHandler, this);
+          new DefaultDashChunkSource.Factory(factory), mainHandler, this);
       case C.TYPE_HLS:
         return new HlsMediaSource(uri, factory, mainHandler, this);
       case C.TYPE_OTHER:
