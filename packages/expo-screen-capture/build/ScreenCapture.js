@@ -13,7 +13,7 @@ import ExpoScreenCapture from './ExpoScreenCapture';
  * preventScreenCapture();
  * ```
  */
-export function preventScreenCapture() {
+export async function preventScreenCapture() {
     return ExpoScreenCapture.preventScreenCapture();
 }
 /**
@@ -25,7 +25,7 @@ export function preventScreenCapture() {
  * allowScreenCapture();
  * ```
  */
-export function allowScreenCapture() {
+export async function allowScreenCapture() {
     return ExpoScreenCapture.allowScreenCapture();
 }
 /**

@@ -2,13 +2,13 @@ export default {
     get name() {
         return 'ExpoScreenCapture';
     },
-    get preventScreenCapture() {
+    async preventScreenCapture() {
         return null;
     },
-    get allowScreenCapture() {
+    async allowScreenCapture() {
         return null;
     },
-    get usePreventScreenCapture() {
+    async usePreventScreenCapture() {
         return null;
     },
 };

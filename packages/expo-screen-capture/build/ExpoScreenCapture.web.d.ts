@@ -1,7 +1,7 @@
 declare const _default: {
     readonly name: string;
-    readonly preventScreenCapture: null;
-    readonly allowScreenCapture: null;
-    readonly usePreventScreenCapture: null;
+    preventScreenCapture(): Promise<null>;
+    allowScreenCapture(): Promise<null>;
+    usePreventScreenCapture(): Promise<null>;
 };
 export default _default;

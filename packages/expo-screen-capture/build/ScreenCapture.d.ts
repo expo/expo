@@ -11,7 +11,7 @@
  * preventScreenCapture();
  * ```
  */
-export declare function preventScreenCapture(): any;
+export declare function preventScreenCapture(): Promise<any>;
 /**
  * Reallows screenshots and recordings. If you haven't called
  * `preventScreenCapture()` yet, this method does nothing.
@@ -21,7 +21,7 @@ export declare function preventScreenCapture(): any;
  * allowScreenCapture();
  * ```
  */
-export declare function allowScreenCapture(): any;
+export declare function allowScreenCapture(): Promise<any>;
 /**
  * React hook for preventing screenshots and screen recordings
  * while the component is mounted.
