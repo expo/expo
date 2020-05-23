@@ -2,7 +2,6 @@ name: docs
 
 defaults:
   run:
-    shell: bash
     working-directory: docs
 
 on:
