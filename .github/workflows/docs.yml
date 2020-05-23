@@ -24,7 +24,7 @@ jobs:
             const runs = await github.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: context.workflow,
+              workflow_id: 'docs.yml',
               branch: context.ref.replace('refs/heads/', ''),
               status: 'completed'
             });
