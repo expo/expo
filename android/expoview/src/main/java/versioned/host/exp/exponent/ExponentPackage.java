@@ -49,6 +49,8 @@ import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage;
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage;
+import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackage;
+import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
@@ -251,6 +253,8 @@ public class ExponentPackage implements ReactPackage {
         new RNSharedElementPackage(),
         new RNDateTimePickerPackage(),
         new RNCMaskedViewPackage(),
+        new RNCPickerPackage(),
+        new ReactSliderPackage(),
         new RNCViewPagerPackage(),
         new ExpoAppearancePackage()
     ));
