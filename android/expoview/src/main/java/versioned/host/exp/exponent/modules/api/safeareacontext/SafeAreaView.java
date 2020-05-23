@@ -1,39 +1,65 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Rect;
-import android.os.Build;
-import android.view.Surface;
+import android.content.ContextWrapper;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.EnumSet;
 
 import androidx.annotation.Nullable;
 
+@SuppressLint("ViewConstructor")
 public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
-  public interface OnInsetsChangeListener {
-    void onInsetsChange(SafeAreaView view, EdgeInsets insets);
+  private @Nullable EdgeInsets mInsets;
+  private @Nullable EnumSet<SafeAreaViewEdges> mEdges;
+
+  public SafeAreaView(Context context) {
+    super(context);
   }
 
-  private @Nullable OnInsetsChangeListener mInsetsChangeListener;
-  private final WindowManager mWindowManager;
-  private @Nullable EdgeInsets mLastInsets;
+  /**
+   * UIManagerHelper.getReactContext only exists in RN 0.63+ so vendor it here for a while.
+   */
+  private static ReactContext getReactContext(View view) {
+    Context context = view.getContext();
+    if (!(context instanceof ReactContext) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
+    return (ReactContext) context;
+  }
 
-  public SafeAreaView(Context context, WindowManager windowManager) {
-    super(context);
+  private void updateInsets() {
+    if (mInsets != null) {
+      EnumSet<SafeAreaViewEdges> edges = mEdges != null
+              ? mEdges
+              : EnumSet.allOf(SafeAreaViewEdges.class);
 
-    mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+      SafeAreaViewLocalData localData = new SafeAreaViewLocalData(mInsets, edges);
+
+      ReactContext reactContext = getReactContext(this);
+      UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+      if (uiManager != null) {
+        uiManager.setViewLocalData(getId(), localData);
+      }
+    }
+  }
+
+  public void setEdges(EnumSet<SafeAreaViewEdges> edges) {
+    mEdges = edges;
+    updateInsets();
   }
 
   private void maybeUpdateInsets() {
-    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(mWindowManager, getRootView());
-    if (edgeInsets != null && (mLastInsets == null || !mLastInsets.equalsToEdgeInsets(edgeInsets))) {
-      Assertions.assertNotNull(mInsetsChangeListener).onInsetsChange(this, edgeInsets);
-      mLastInsets = edgeInsets;
+    EdgeInsets edgeInsets = SafeAreaUtils.getSafeAreaInsets(getRootView(), this);
+    if (edgeInsets != null && (mInsets == null || !mInsets.equalsToEdgeInsets(edgeInsets))) {
+      mInsets = edgeInsets;
+      updateInsets();
     }
   }
 
@@ -57,7 +83,9 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
     maybeUpdateInsets();
   }
 
-  public void setOnInsetsChangeListener(OnInsetsChangeListener listener) {
-    mInsetsChangeListener = listener;
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    maybeUpdateInsets();
+    super.onLayout(changed, left, top, right, bottom);
   }
 }
