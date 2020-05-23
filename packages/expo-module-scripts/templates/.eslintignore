@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+dist/
+lib/
+web-build/
+.expo/
+.expo-shared/
