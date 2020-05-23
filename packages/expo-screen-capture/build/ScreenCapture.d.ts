@@ -6,10 +6,10 @@
  * available on iOS 11 and newer. On older iOS versions, this method
  * does nothing.
  *
- * @param tag Optional. This will prevent multiple instances of the
+ * @param key Optional. This will prevent multiple instances of the
  * preventScreenCaptureAsync and allowScreenCaptureAsync methods
  * from conflicting with each other. If provided, you will need to call
- * allowScreenCaptureAsync with the same tag in order to re-enable
+ * allowScreenCaptureAsync with the same key in order to re-enable
  * screen capturing. Defaults to 'default'.
  *
  * @example
@@ -17,14 +17,14 @@
  * preventScreenCaptureAsync();
  * ```
  */
-export declare function preventScreenCaptureAsync(tag?: string): Promise<void>;
+export declare function preventScreenCaptureAsync(key?: string): Promise<void>;
 /**
  * Reallows screenshots and recordings. If you haven't called
  * `preventScreenCapture()` yet, this method does nothing.
  *
- * @param tag Optional. This will prevent multiple instances of the
+ * @param key Optional. This will prevent multiple instances of the
  * preventScreenCaptureAsync and allowScreenCaptureAsync methods
- * from conflicting with each other. If provided, must be the same as the tag
+ * from conflicting with each other. If provided, must be the same as the key
  * passed to preventScreenCaptureAsync in order to re-enable
  * screen capturing. Defaults to 'default'.
  *
@@ -33,12 +33,12 @@ export declare function preventScreenCaptureAsync(tag?: string): Promise<void>;
  * allowScreenCaptureAsync();
  * ```
  */
-export declare function allowScreenCaptureAsync(tag?: string): Promise<void>;
+export declare function allowScreenCaptureAsync(key?: string): Promise<void>;
 /**
  * React hook for preventing screenshots and screen recordings
  * while the component is mounted.
  *
- * @param tag Optional. If provided, this will prevent multiple instances of
+ * @param key Optional. If provided, this will prevent multiple instances of
  * this hook or the preventScreenCaptureAsync and allowScreenCaptureAsync
  * methods from conflicting with each other. Defaults to 'default'.
  *
@@ -47,4 +47,4 @@ export declare function allowScreenCaptureAsync(tag?: string): Promise<void>;
  * usePreventScreenCapture();
  * ```
  */
-export declare function usePreventScreenCapture(tag?: string): void;
+export declare function usePreventScreenCapture(key?: string): void;
