@@ -29,7 +29,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.ref,
-              check_name: context.workflow,
+              check_name: context.action,
               status: 'completed'
             });
             console.info(JSON.stringify(checks, null, 4));
@@ -69,7 +69,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.ref,
-              check_name: context.workflow,
+              check_name: context.action,
               status: 'completed'
             });
             console.info(JSON.stringify(checks, null, 4));
