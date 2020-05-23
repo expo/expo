@@ -2,6 +2,7 @@ import { AppLoading } from 'expo';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { AppearanceProvider } from 'react-native-appearance';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 
 import RootNavigation from './src/navigation/RootNavigation';
@@ -13,9 +14,11 @@ if (Platform.OS === 'android') {
 
 export default function AppContainer() {
   return (
-    <AppearanceProvider>
-      <App />
-    </AppearanceProvider>
+    <SafeAreaProvider>
+      <AppearanceProvider>
+        <App />
+      </AppearanceProvider>
+    </SafeAreaProvider>
   );
 }
 
