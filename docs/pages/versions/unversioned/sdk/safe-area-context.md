@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements.
+**`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -16,7 +16,55 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## API
 
-Add `SafeAreaProvider` in your app root component:
+```js
+import {
+  SafeAreaView,
+  SafeAreaProvider,
+  SafeAreaInsetsContext,
+  useSafeAreaInsets,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
+```
+
+`SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
+
+If you set your own padding on the view, it will be added to the padding from the safe area.
+
+**If you are targeting web, you must set up `SafeAreaProvider` in as described in the hooks section**. You do not need to for native platforms.
+
+```js
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+function SomeComponent() {
+  return (
+    <SafeAreaView>
+      <View />
+    </SafeAreaView>
+  );
+}
+```
+
+### Props
+
+All props are optional.
+
+#### `emulateUnlessSupported`
+
+`true` (default) or `false`
+
+On iOS 10, emulate the safe area using the status bar height and home indicator sizes.
+
+#### `edges`
+
+Array of `top`, `right`, `bottom`, and `left`. Defaults to all.
+
+Sets the edges to apply the safe area insets to.
+
+## Hooks
+
+Hooks give you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
+
+First, add `SafeAreaProvider` in your app root component. You may need to add it in other places too, including at the root of any modals any any routes when using `react-native-screen`.
 
 ```js
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -26,31 +74,50 @@ function App() {
 }
 ```
 
-Usage with the hooks API:
+You use the `useSafeAreaInsets` hook to get the insets in the form of `{ top: number, right: number, bottom: number: number, left: number }`.
 
 ```js
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function HookComponent() {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   return <View style={{ paddingTop: insets.top }} />;
 }
 ```
 
-Usage with context consumer API:
+Usage with consumer api:
 
 ```js
-import { SafeAreaConsumer } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 class ClassComponent extends React.Component {
   render() {
     return (
-      <SafeAreaConsumer>{insets => <View style={{ paddingTop: insets.top }} />}</SafeAreaConsumer>
+      <SafeAreaInsetsContext.Consumer>
+        {insets => <View style={{ paddingTop: insets.top }} />}
+      </SafeAreaInsetsContext.Consumer>
     );
   }
 }
 ```
+## Optimization
+
+If you can, use `SafeAreaView`. It's implemented natively so when rotating the device, there is no delay from the asynchronous bridge.
+
+To speed up the initial render, you can import `initialWindowMetrics` from this package and set as the `initialMetrics` prop on the provider as described in Web SSR. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
+
+```js
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+
+function App() {
+  return <SafeAreaProvider initialMetrics={initialWindowMetrics}>...</SafeAreaProvider>;
+}
+```
+
+## Web SSR
+
+If you are doing server side rendering on the web, you can use `initialSafeAreaInsets` to inject values based on the device the user has, or simply pass zero. Otherwise, insets measurement will break rendering your page content since it is async.
 
 ## Migrating from CSS
 
@@ -71,15 +138,15 @@ div {
 
 #### After
 
-Universally, the hook `useSafeArea()` can provide access to this information.
+Universally, the hook `useSafeAreaInsets()` can provide access to this information.
 
 `App.js`
 
 ```jsx
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function App() {
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   return (
     <View
@@ -90,24 +157,6 @@ function App() {
         paddingRight: insets.right,
       }}
     />
-  );
-}
-```
-
-### Web SSR
-
-If you are doing server side rendering on the web, you can use `initialSafeAreaInsets` to inject values based on the device the user has, or simply pass zero. Otherwise, insets measurement will break rendering your page content since it is async.
-
-### Optimization
-
-To speed up the initial render, you can import `initialWindowSafeAreaInsets` from this package and set it as the `initialSafeAreaInsets` prop on the provider as described in Web SSR. You cannot do this if your provider remounts, or you are using `react-native-navigation`.
-
-```js
-import { SafeAreaProvider, initialWindowSafeAreaInsets } from 'react-native-safe-area-context';
-
-function App() {
-  return (
-    <SafeAreaProvider initialSafeAreaInsets={initialWindowSafeAreaInsets}>...</SafeAreaProvider>
   );
 }
 ```
