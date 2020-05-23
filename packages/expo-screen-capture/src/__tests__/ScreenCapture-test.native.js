@@ -17,7 +17,7 @@ describe('ScreenCapture methods are defined', () => {
 
 describe('Test key functionality', () => {
   afterEach(async () => {
-    cleanUpTags();
+    await cleanUpTags();
   });
 
   it('Will not call the native method if default key already active', async () => {
@@ -53,17 +53,6 @@ describe('Test key functionality', () => {
     expect(ExpoScreenCapture.allowScreenCapture).toHaveBeenCalledTimes(0);
   });
 });
-
-/* TODO: Cruzan
-describe('hooks', () => {
-  const spy = jest.spyOn(ScreenCapture, 'preventScreenCaptureAsync');
-  it('prevents screen capture on mount', () => {
-    renderHook(() => ScreenCapture.usePreventScreenCapture());
-    expect(ScreenCapture.preventScreenCaptureAsync).toHaveBeenCalled();
-  });
-  
-});
-*/
 
 async function cleanUpTags() {
   // Otherwise, these tags would persist between tests
