@@ -6,7 +6,6 @@ import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
 import { Ionicons } from './Icons';
 import ListItem from './ListItem';
-import { StyledView } from './Views';
 
 type Props = React.ComponentProps<typeof ListItem> &
   NavigationInjectedProps & {
@@ -26,7 +25,7 @@ class ProjectListItem extends React.PureComponent<Props> {
         rightContent={this.renderRightContent()}
         {...restProps}
         subtitle={username || subtitle}
-        onPressSubtitle={username && this.handlePressUsername}
+        onPressSubtitle={username ? this.handlePressUsername : undefined}
       />
     );
   }
@@ -35,7 +34,8 @@ class ProjectListItem extends React.PureComponent<Props> {
     const { unlisted, releaseChannel } = this.props;
     return (
       <View style={styles.rightContentContainer}>
-        {unlisted && this.renderUnlistedIcon()}
+        {/* TODO: revisit this when we support "private" - unlisted is }
+        {/* {unlisted && this.renderUnlistedIcon()} */}
         {releaseChannel && this.renderReleaseChannel(releaseChannel)}
       </View>
     );
@@ -44,11 +44,6 @@ class ProjectListItem extends React.PureComponent<Props> {
   private renderUnlistedIcon() {
     return (
       <View style={styles.unlistedContainer}>
-        <StyledView
-          style={styles.unlistedBullet}
-          lightBackgroundColor="rgba(36, 44, 58, 0.2)"
-          darkBackgroundColor="#ccc"
-        />
         <View style={styles.unlistedIconContainer}>
           <Ionicons name="ios-eye-off" size={15} lightColor="rgba(36, 44, 58, 0.3)" />
         </View>
