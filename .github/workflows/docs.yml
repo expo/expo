@@ -10,11 +10,6 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
 
 jobs:
   danger:
@@ -28,7 +23,8 @@ jobs:
             const checks = await github.checks.listForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: context.ref.replace('refs/heads/', ''),
+              ref: 'master',
+              filter: 'latest',
               status: 'completed'
             });
             console.info(JSON.stringify(checks, null, 4));
