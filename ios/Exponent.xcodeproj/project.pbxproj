@@ -344,6 +344,12 @@
 		F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		FBF5C30408A44FD49CDC222C /* RCTView+SafeAreaCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 674353F5B0804C83B049187B /* RCTView+SafeAreaCompat.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BC0D2E02E636419D90DE8C5D /* RNCSafeAreaProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 44144BD59CC84557B028AF50 /* RNCSafeAreaProvider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BBB4CAB8F7974F3698F1DBB0 /* RNCSafeAreaProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F44F28C4083648059AE2AD36 /* RNCSafeAreaProviderManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		F21BCC2E320640BABF9A60E0 /* RNCSafeAreaShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5BACBCE8F7B46FDBD2C475C /* RNCSafeAreaShadowView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EAC0DEB0A0374CB0B6F64CEE /* RNCSafeAreaViewEdges.m in Sources */ = {isa = PBXBuildFile; fileRef = 530ADBDE1E1F4709A49EC50F /* RNCSafeAreaViewEdges.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4853ADEA7831444595D46BB1 /* RNCSafeAreaViewLocalData.m in Sources */ = {isa = PBXBuildFile; fileRef = 043260C5726842E09AC83B33 /* RNCSafeAreaViewLocalData.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1052,6 +1058,18 @@
 		C5DF76A1DCE14D2F9460F314 /* RNCSegmentedControl.m */ = {isa = PBXFileReference; name = "RNCSegmentedControl.m"; path = "RNCSegmentedControl.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		9F02F7D4DDFF4D76804115FF /* RNCSegmentedControlManager.h */ = {isa = PBXFileReference; name = "RNCSegmentedControlManager.h"; path = "RNCSegmentedControlManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		F502F71E43A44658A6B20C26 /* RNCSegmentedControlManager.m */ = {isa = PBXFileReference; name = "RNCSegmentedControlManager.m"; path = "RNCSegmentedControlManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		0E4F332F35534147B996A40D /* RCTView+SafeAreaCompat.h */ = {isa = PBXFileReference; name = "RCTView+SafeAreaCompat.h"; path = "RCTView+SafeAreaCompat.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		674353F5B0804C83B049187B /* RCTView+SafeAreaCompat.m */ = {isa = PBXFileReference; name = "RCTView+SafeAreaCompat.m"; path = "RCTView+SafeAreaCompat.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		3608A2276F754201BB1ABC27 /* RNCSafeAreaProvider.h */ = {isa = PBXFileReference; name = "RNCSafeAreaProvider.h"; path = "RNCSafeAreaProvider.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		44144BD59CC84557B028AF50 /* RNCSafeAreaProvider.m */ = {isa = PBXFileReference; name = "RNCSafeAreaProvider.m"; path = "RNCSafeAreaProvider.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		5891A7A0286A42BA99087952 /* RNCSafeAreaProviderManager.h */ = {isa = PBXFileReference; name = "RNCSafeAreaProviderManager.h"; path = "RNCSafeAreaProviderManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		F44F28C4083648059AE2AD36 /* RNCSafeAreaProviderManager.m */ = {isa = PBXFileReference; name = "RNCSafeAreaProviderManager.m"; path = "RNCSafeAreaProviderManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		619BDE28C8B243E18ACE7B1C /* RNCSafeAreaShadowView.h */ = {isa = PBXFileReference; name = "RNCSafeAreaShadowView.h"; path = "RNCSafeAreaShadowView.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C5BACBCE8F7B46FDBD2C475C /* RNCSafeAreaShadowView.m */ = {isa = PBXFileReference; name = "RNCSafeAreaShadowView.m"; path = "RNCSafeAreaShadowView.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		4E4E84930DA04F4FB3148C35 /* RNCSafeAreaViewEdges.h */ = {isa = PBXFileReference; name = "RNCSafeAreaViewEdges.h"; path = "RNCSafeAreaViewEdges.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		530ADBDE1E1F4709A49EC50F /* RNCSafeAreaViewEdges.m */ = {isa = PBXFileReference; name = "RNCSafeAreaViewEdges.m"; path = "RNCSafeAreaViewEdges.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		0EE28DB9348E472683FA2CC0 /* RNCSafeAreaViewLocalData.h */ = {isa = PBXFileReference; name = "RNCSafeAreaViewLocalData.h"; path = "RNCSafeAreaViewLocalData.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		043260C5726842E09AC83B33 /* RNCSafeAreaViewLocalData.m */ = {isa = PBXFileReference; name = "RNCSafeAreaViewLocalData.m"; path = "RNCSafeAreaViewLocalData.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1143,6 +1161,18 @@
 				3151637723146FC300AA029B /* RNCSafeAreaView.m */,
 				3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */,
 				3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */,
+				0E4F332F35534147B996A40D /* RCTView+SafeAreaCompat.h */,
+				674353F5B0804C83B049187B /* RCTView+SafeAreaCompat.m */,
+				3608A2276F754201BB1ABC27 /* RNCSafeAreaProvider.h */,
+				44144BD59CC84557B028AF50 /* RNCSafeAreaProvider.m */,
+				5891A7A0286A42BA99087952 /* RNCSafeAreaProviderManager.h */,
+				F44F28C4083648059AE2AD36 /* RNCSafeAreaProviderManager.m */,
+				619BDE28C8B243E18ACE7B1C /* RNCSafeAreaShadowView.h */,
+				C5BACBCE8F7B46FDBD2C475C /* RNCSafeAreaShadowView.m */,
+				4E4E84930DA04F4FB3148C35 /* RNCSafeAreaViewEdges.h */,
+				530ADBDE1E1F4709A49EC50F /* RNCSafeAreaViewEdges.m */,
+				0EE28DB9348E472683FA2CC0 /* RNCSafeAreaViewLocalData.h */,
+				043260C5726842E09AC83B33 /* RNCSafeAreaViewLocalData.m */,
 			);
 			path = SafeAreaContext;
 			sourceTree = "<group>";
@@ -2987,6 +3017,12 @@
 				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
 				97635343A010490BBF92C76F /* RNCSegmentedControl.m in Sources */,
 				E75397FDFB6B4FF780EA612A /* RNCSegmentedControlManager.m in Sources */,
+				FBF5C30408A44FD49CDC222C /* RCTView+SafeAreaCompat.m in Sources */,
+				BC0D2E02E636419D90DE8C5D /* RNCSafeAreaProvider.m in Sources */,
+				BBB4CAB8F7974F3698F1DBB0 /* RNCSafeAreaProviderManager.m in Sources */,
+				F21BCC2E320640BABF9A60E0 /* RNCSafeAreaShadowView.m in Sources */,
+				EAC0DEB0A0374CB0B6F64CEE /* RNCSafeAreaViewEdges.m in Sources */,
+				4853ADEA7831444595D46BB1 /* RNCSafeAreaViewLocalData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

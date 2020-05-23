@@ -1,31 +1,20 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.view.WindowManager;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.events.EventDispatcher;
-
-import java.util.Map;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.EnumSet;
+
+import javax.annotation.Nullable;
 
 public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
-  private final ReactApplicationContext mContext;
-  private final WindowManager mWindowManager;
-
-  public SafeAreaViewManager(ReactApplicationContext context) {
+  public SafeAreaViewManager() {
     super();
-
-    mContext = context;
-    mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
   }
 
   @Override
@@ -37,48 +26,44 @@ public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
   @Override
   @NonNull
   public SafeAreaView createViewInstance(@NonNull ThemedReactContext context) {
-    return new SafeAreaView(context, mWindowManager);
+    return new SafeAreaView(context);
   }
 
   @Override
-  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull final SafeAreaView view) {
-    final EventDispatcher dispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    view.setOnInsetsChangeListener(new SafeAreaView.OnInsetsChangeListener() {
-      @Override
-      public void onInsetsChange(SafeAreaView view, EdgeInsets insets) {
-        dispatcher.dispatchEvent(new InsetsChangeEvent(view.getId(), insets));
+  @NonNull
+  public SafeAreaViewShadowNode createShadowNodeInstance() {
+    return new SafeAreaViewShadowNode();
+  }
+
+  @Override
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
+    return SafeAreaViewShadowNode.class;
+  }
+
+  @ReactProp(name = "edges")
+  public void setEdges(SafeAreaView view, @Nullable ReadableArray propList) {
+    EnumSet<SafeAreaViewEdges> edges = EnumSet.noneOf(SafeAreaViewEdges.class);
+
+    if (propList != null) {
+      for (int i = 0; i < propList.size(); i += 1) {
+        String edgeName = propList.getString(i);
+        if ("top".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.TOP);
+        } else if ("right".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.RIGHT);
+        } else if ("bottom".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.BOTTOM);
+        } else if ("left".equals(edgeName)) {
+          edges.add(SafeAreaViewEdges.LEFT);
+        }
       }
-    });
+    }
+
+    view.setEdges(edges);
   }
 
-  @Override
-  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(InsetsChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", "onInsetsChange"))
-        .build();
-  }
-
-  @Nullable
-  @Override
-  public Map<String, Object> getExportedViewConstants() {
-    Activity activity = mContext.getCurrentActivity();
-    if (activity == null) {
-      return null;
-    }
-
-    View decorView = activity.getWindow().getDecorView();
-    if (decorView == null) {
-      return null;
-    }
-
-    EdgeInsets insets = SafeAreaUtils.getSafeAreaInsets(mWindowManager, decorView);
-    if (insets == null) {
-      return null;
-    }
-    return MapBuilder.<String, Object>of(
-        "initialWindowSafeAreaInsets",
-        SafeAreaUtils.edgeInsetsToJavaMap(insets));
-
+  @ReactProp(name = "emulateUnlessSupported")
+  public void setEmulateUnlessSupported(SafeAreaView view, boolean propList) {
+    // Ignore
   }
 }
