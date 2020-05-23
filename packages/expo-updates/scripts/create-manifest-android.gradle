@@ -53,7 +53,9 @@ afterEvaluate {
       workingDir projectRoot
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
+        // in cmd, & must be escaped with ^
+        assetsFile = assetsFile.replace('&', '^&');
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android^&dev=false", assetsDir)
       } else {
         commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
       }
