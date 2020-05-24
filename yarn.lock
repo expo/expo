@@ -2431,10 +2431,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/segmented-control/-/segmented-control-1.6.1.tgz#47c5eb20664376e390c3412d9a7242c2df35cdb0"
   integrity sha512-6TCrkDHgchKU2RA0r+V49Uwvv9mMhLKCwx7sf6Jkj0D4RYs+qmxYFjoM82bOcaH2kOVF+cvRvABRn0Ai0my5LA==
 
-"@react-native-community/picker@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.5.1.tgz#41dc805480648271859fd0f03f53980e620973a1"
-  integrity sha512-2rUX0k9dvPLxftN1sujzK0HXhWaPI9gYfeetMcIXWrWgKeitaJ1aHtotTraJmqEZkGoTF2OBPx82RX0j1t2YKw==
+"@react-native-community/picker@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.6.0.tgz#ddb2b04ca251b79980e3052ece4e685b7abf0444"
+  integrity sha512-ijB33rCW3m9vu8jbXAcEh+icCmK0pyvCXiGfAwPgGSaFLsmE27dsle3022EbE+dqqQgpxUNtOkrd5C3B+/dcuA==
 
 "@react-native-community/slider@3.0.0-rc.2":
   version "3.0.0-rc.2"
