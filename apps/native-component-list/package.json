@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
-    "@react-native-community/datetimepicker": "2.2.2",
+    "@react-native-community/datetimepicker": "2.4.0",
     "@react-native-community/masked-view": "0.1.6",
     "@react-native-community/netinfo": "5.9.0",
     "@react-native-community/segmented-control": "1.6.1",
