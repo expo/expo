@@ -31,7 +31,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compilesdkversion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   compileOptions {
     sourceCompatibility = '1.8'
