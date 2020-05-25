@@ -8,4 +8,6 @@
 
 ### 🎉 New features
 
+- Added exports for TypeScript definitions: CameraType, ImageType, ImageParameters, ImageSize, CaptureOptions, CapturedPicture ([#8457](https://github.com/expo/expo/pull/8457) by [@jarvisluong](https://github.com/jarvisluong))
+
 ### 🐛 Bug fixes
