@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.3"
+        buildToolsVersion = "29.0.2"
         gradlePluginVersion = "3.5.3"
         minSdkVersion = 21
         compileSdkVersion = 29
@@ -62,4 +62,3 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
-
