@@ -9,7 +9,15 @@ else
     yarn
 fi
 
-if [ -d "node_modules/react-native/android" ]; then
+# 1. yarn why react-native : ... Found "react-native@0.62.2" ...
+# 2. grep Found            : Found "react-native@0.62.2"
+# 3. cut -d '@' -f2        : 0.62.2"
+# 4. rev                   : "2.26.0
+# 5. cut -c 2-             : 2.26.0
+# 6. rev                   : 0.62.2
+REACT_NATIVE_VERSION=$(yarn why react-native | grep Found | cut -d '@' -f2 | rev | cut -c 2- | rev)
+
+if [ -d "node_modules/react-native/android/$REACT_NATIVE_VERSION" ]; then
     echo " ✅ React Android is installed"
 else
     echo " ⚠️  Compiling React Android (~5-10 minutes)..."
