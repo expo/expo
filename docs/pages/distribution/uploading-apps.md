@@ -32,7 +32,7 @@ See [expo.fyi/creating-google-service-account](https://expo.fyi/creating-google-
 
 #### Manually uploading your app for the first time
 
-Before using `expo upload:android` for uploading your standalone app builds, you have to upload your app manually at least once.<br>
+Before using `expo upload:android` for uploading your standalone app builds, you have to upload your app manually at least once.<br />
 See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission) to learn more.
 
 #### Using expo-cli to upload the further builds of your app
