@@ -51,7 +51,7 @@ To upload your Android app to Google Play, simply run `expo upload:android`. You
 
 #### Uploading your app with Submission Service
 
-**Beware:** This feature is still experimental!
+**Beware:** This feature is still experimental! However, using it can not cause any damage to your app. In the worst-case scenario, your app won't get submitted to Google Play Store.
 
 If you would like to upload your app from any other operating system than macOS, you can give the Expo Submission Service a try. It lets you upload your standalone app directly from Expo Servers.
 
