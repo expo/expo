@@ -21,10 +21,12 @@ jobs:
           result-encoding: string
           script: |
             console.log(context.ref);
-            log = (o) => console.info(JSON.stringify(o, null, 4)
+            log = (o) => console.info(JSON.stringify(o, null, 4))
             const workflows = await github.actions.listRepoWorkflows(context.repo);
             log(workflows);
-            const workflowRuns = await github.actions.listRepoWorkflowRuns(context.repo);
+            const workflowRuns = await github.actions.listRepoWorkflowRuns({
+              ...context.repo
+            });
             log(workflowRuns);
       - run: exit 1
       - name: Check out repository
