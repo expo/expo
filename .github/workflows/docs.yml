@@ -24,7 +24,7 @@ jobs:
             const workflowRuns = await github.actions.listRepoWorkflowRuns({
               ...context.repo,
               branch: context.ref.replace('refs/heads/', ''),
-              status: completed,
+              status: 'completed',
             });
             log(workflowRuns);
       - run: exit 1
