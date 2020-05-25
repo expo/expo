@@ -208,5 +208,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 }
 
 dependencies {
-  compileOnly 'com.facebook.soloader:soloader:0.6.0'
+  compileOnly 'com.facebook.soloader:soloader:0.8.2'
 }

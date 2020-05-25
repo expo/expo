@@ -104,7 +104,7 @@
 
     <activity
       android:name=".experience.ExperienceActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
       android:windowSoftInputMode="adjustResize">
     </activity>
@@ -112,7 +112,7 @@
     <activity
       android:name=".MainActivity"
       android:launchMode="singleTask"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD DETACH SCHEME HERE -->

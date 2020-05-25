@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.uimanager;
 
@@ -390,6 +390,9 @@ public class NativeViewHierarchyManager {
 
                         @Override
                         public void onAnimationEnd() {
+                            // This should be called only on the UI thread, because
+                            // onAnimationEnd is called (indirectly) by Android View Animation.
+                            UiThreadUtil.assertOnUiThread();
                             viewManager.removeView(viewToManage, viewToDestroy);
                             dropView(viewToDestroy);
                             int count = pendingIndicesToDelete.get(indexToDelete, 0);
