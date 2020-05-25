@@ -43,6 +43,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}$1`,
       },
       {
+        paths: `${versionName}FBReactNativeSpec`,
+        replace: /\b(NSStringToNativeAppearanceColorSchemeName|NativeAppearanceColorSchemeNameToNSString)\b/g,
+        with: `${versionName}$1`,
+      },
+      {
         paths: 'RCTView.m',
         replace: /\b(SwitchAccessibilityTrait)\b/g,
         with: `${versionName}$1`,
@@ -68,6 +73,16 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: `UniversalModules/${versionName}EXScoped`,
         replace: /(EXScopedABI\d+_\d+_\d+ReactNative)/g,
         with: 'EXScopedReactNative',
+      },
+      {
+        paths: `${versionName}EXFileSystem`,
+        replace: new RegExp(`NSData\\+${versionName}EXFileSystem\\.h`, 'g'),
+        with: `${versionName}NSData+EXFileSystem.h`
+      },
+      {
+        paths: `${versionName}EXNotifications`,
+        replace: new RegExp(`NSDictionary\\+${versionName}EXNotificationsVerifyingClass\\.h`, 'g'),
+        with: `${versionName}NSDictionary+EXNotificationsVerifyingClass.h`
       },
 
       // react-native-maps

@@ -11,6 +11,14 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
 
+Here are some **important rules** that apply to all authentication providers:
+
+- Use `WebBrowser.maybeCompleteAuthSession()` to dismiss the web popup. If you forget to add this then the popup window will not close.
+- Create redirects with `AuthSession.makeRedirectUri()` this does a lot of the heavy lifting involved with universal platform support. Behind the scenes it uses `expo-linking`.
+- Build requests using `AuthSession.useAuthRequest()`, the hook allows for async setup which means mobile browsers won't block the authentication.
+- Be sure to disable the prompt until `request` is defined.
+- You can only invoke `promptAsync` in a user-interaction on web.
+
 <TableOfContentSection title="Table of contents" contents={[
 "Guides",
 "Redirect URI patterns",
@@ -27,6 +35,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
+  <SocialGridItem title="Dropbox" protocol={['OAuth 2']} href="#dropbox" image="/static/images/sdk/auth-session/dropbox.png" />
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
   <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
@@ -115,6 +124,15 @@ export default function App() {
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = useAutoDiscovery('https://login.microsoftonline.com/<TENANT_ID>/v2.0');
 // Request
@@ -149,6 +167,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - Scopes must be joined with ':' so just create one long string.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.coinbase.com/oauth/authorize',
@@ -172,6 +199,58 @@ const [request, response, promptAsync] = useAuthRequest(
 
 <!-- End Coinbase -->
 
+### Dropbox
+
+<CreateAppButton name="Dropbox" href="https://www.dropbox.com/developers/apps/create" />
+
+| Website                      | Provider  | PKCE          | Auto Discovery |
+| ---------------------------- | --------- | ------------- | -------------- |
+| [Get Your Config][c-dropbox] | OAuth 2.0 | Not Supported | Not Available  |
+
+[c-dropbox]: https://www.dropbox.com/developers/apps/create
+
+- Scopes must be an empty array.
+- PKCE must be disabled (`usePKCE: false`) otherwise you'll get an error about `code_challenge` being included in the query string.
+- Implicit auth is supported.
+- When `responseType: ResponseType.Code` is used (default behavior) the `redirectUri` must be `https`. This means that code exchange auth cannot be done on native without `useProxy` enabled.
+
+```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://www.dropbox.com/oauth2/authorize',
+  tokenEndpoint: 'https://www.dropbox.com/oauth2/token',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // There are no scopes so just pass an empty array
+    scopes: [],
+    // Dropbox doesn't support PKCE
+    usePKCE: false,
+    // Implicit auth is universal, `.Code` will only work in native with `useProxy: true`.
+    responseType: ResponseType.Token,
+    // For usage in managed apps using the proxy
+    redirectUri: makeRedirectUri({
+      // For usage in bare and standalone
+      native: 'your.app://redirect',
+    }),
+  },
+  discovery
+);
+```
+
+<!-- End Dropbox -->
+
 ### Facebook
 
 <CreateAppButton name="Facebook" href="https://developers.facebook.com/" />
@@ -182,7 +261,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 [c-facebook]: https://developers.facebook.com/
 
-> You can use the [`expo-facebook`](/versions/latest/sdk/expo-facebook) to authenticate via the Facebook app, however this functionality is limited.
+> You can use the [`expo-facebook`](/versions/latest/sdk/facebook) to authenticate via the Facebook app, however this functionality is limited.
 
 - Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
 - Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
@@ -198,6 +277,15 @@ const [request, response, promptAsync] = useAuthRequest(
   - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
@@ -245,6 +333,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - The `redirectUri` requires 2 slashes (`://`).
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.fitbit.com/oauth2/authorize',
@@ -287,6 +384,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - `revocationEndpoint` is dynamic and requires your `config.clientId`.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
@@ -328,6 +434,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - You can set which email address to use ahead of time by setting `extraParams.login_hint`.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = useAutoDiscovery('https://accounts.google.com');
 // Request
@@ -373,6 +488,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - You can use the Expo proxy to test this without a native rebuild, just be sure to configure the project as a website.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = useAutoDiscovery('https://<OKTA_DOMAIN>.com/oauth2/default');
 // Request
@@ -411,6 +535,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - The `redirectUri` requires 2 slashes (`://`).
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://www.reddit.com/api/v1/authorize.compact',
@@ -451,6 +584,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - `revocationEndpoint` is not available.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://slack.com/oauth/authorize',
@@ -484,6 +626,15 @@ const [request, response, promptAsync] = useAuthRequest(
 [c-spotify]: https://developer.spotify.com/dashboard/applications
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -494,6 +645,9 @@ const [request, response, promptAsync] = useAuthRequest(
   {
     clientId: 'CLIENT_ID',
     scopes: ['user-read-email', 'playlist-modify-public'],
+    // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
+    // this must be set to false
+    usePKCE: false,
     // For usage in managed apps using the proxy
     redirectUri: makeRedirectUri({
       // For usage in bare and standalone
@@ -520,6 +674,15 @@ const [request, response, promptAsync] = useAuthRequest(
 - `scopes` can be difficult to get approved.
 
 ```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
 // Endpoint
 const discovery = {
   authorizationEndpoint: 'https://login.uber.com/oauth/v2/authorize',
@@ -638,7 +801,9 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest, ResponseType } from 'expo-auth-session';
 
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
+/* @end */
 
 // Endpoint
 const discovery = {
@@ -707,20 +872,3 @@ function App() {
 [oidc-dcr]: https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration
 [oidc-autherr]: https://openid.net/specs/openid-connect-core-1_0.html#AuthError
 [oidc-authreq]: https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest
-[opmeta]: https://openid.net/specs/openid-connect-session-1_0-17.html#OPMetadata
-[s1012]: https://tools.ietf.org/html/rfc6749#section-10.12
-[s62]: https://tools.ietf.org/html/rfc7636#section-6.2
-[s52]: https://tools.ietf.org/html/rfc6749#section-5.2
-[s421]: https://tools.ietf.org/html/rfc6749#section-4.2.1
-[s42]: https://tools.ietf.org/html/rfc7636#section-4.2
-[s411]: https://tools.ietf.org/html/rfc6749#section-4.1.1
-[s311]: https://tools.ietf.org/html/rfc6749#section-3.1.1
-[s311]: https://tools.ietf.org/html/rfc6749#section-3.1.1
-[s312]: https://tools.ietf.org/html/rfc6749#section-3.1.2
-[s33]: https://tools.ietf.org/html/rfc6749#section-3.3
-[s32]: https://tools.ietf.org/html/rfc6749#section-3.2
-[s231]: https://tools.ietf.org/html/rfc6749#section-2.3.1
-[s22]: https://tools.ietf.org/html/rfc6749#section-2.2
-[s21]: https://tools.ietf.org/html/rfc7009#section-2.1
-[s31]: https://tools.ietf.org/html/rfc6749#section-3.1
-[pkce]: https://oauth.net/2/pkce/

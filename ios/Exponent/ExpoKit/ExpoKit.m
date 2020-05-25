@@ -11,6 +11,12 @@
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
 
+#if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
+#import <EXNotifications/EXNotificationCenterDelegate.h>
+#endif
+
+#import <UMCore/UMModuleRegistryProvider.h>
+
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
@@ -79,13 +85,9 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   return controller;
 }
 
-#pragma mark - misc AppDelegate hooks
-
-- (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions
 {
   [DDLog addLogger:[DDOSLogger sharedInstance]];
-  
-
   RCTSetFatalHandler(handleFatalReactError);
 
   // init analytics
@@ -102,12 +104,31 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager;
+  _launchOptions = launchOptions;
+}
+
+#pragma mark - misc AppDelegate hooks
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+#if __has_include(<EXNotifications/EXNotificationCenterDelegate.h>)
+  if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
+    UMLogWarn(@"UNUserNotificationCenter delegates should be set by EXNotificationCenterDelegate.");
+  }
+
+  // Register EXUserNotificationManager as a delegate of EXNotificationCenterDelegate
+  id<EXNotificationCenterDelegate> notificationCenterDelegate = (id<EXNotificationCenterDelegate>) [UMModuleRegistryProvider getSingletonModuleForClass:[EXNotificationCenterDelegate class]];
+  [notificationCenterDelegate addDelegate:(id<EXNotificationsDelegate>)[EXKernel sharedInstance].serviceRegistry.notificationsManager];
+#else
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:(id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager];
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-  _launchOptions = launchOptions;
+#endif
+
+  return YES;
 }
+
 
 #pragma mark - APNS hooks
 

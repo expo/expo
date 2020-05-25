@@ -7,7 +7,7 @@ import spawnAsync from '@expo/spawn-async';
 
 import * as Directories from './Directories';
 import * as Fixtures from './Fixtures';
-import sleepAsync from './utils/sleepAsync';
+import { sleepAsync } from './Utils';
 
 function _urlSafeId(): string {
   let text = '';

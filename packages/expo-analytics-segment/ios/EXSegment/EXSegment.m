@@ -16,8 +16,8 @@ static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
 
 UM_EXPORT_MODULE(ExponentSegment)
 
-UM_EXPORT_METHOD_AS(initializeIOS,
-                    initializeIOS:(NSString *)writeKey
+UM_EXPORT_METHOD_AS(initialize,
+                    initialize:(NSString *)writeKey
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -28,15 +28,6 @@ UM_EXPORT_METHOD_AS(initializeIOS,
     [_instance disable];
   }
   resolve(nil);
-}
-
-UM_EXPORT_METHOD_AS(initializeAndroid,
-                    initializeAndroid:(NSString *)writeKey
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  // NO-OP. Need this here because Segment has different keys for iOS and Android.
-  reject(@"E_WRONG_PLATFORM", @"Method initializeAndroid should not be called on iOS, please file an issue on GitHub.", nil);
 }
 
 UM_EXPORT_METHOD_AS(identify,

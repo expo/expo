@@ -23,7 +23,7 @@ So far we have been using code from React and React Native in our app. React giv
 
 To use expo-image-picker in our project, we first need to install it.
 
-In your project directory, run `expo install expo-image-picker`. This will tell npm (or yarn) to install the a version of the `expo-image-picker` library that is compatible with your project. That's it!
+In your project directory, run `expo install expo-image-picker`. This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project. That's it!
 
 <Video file={"tutorial/cli-install.mp4"} />
 

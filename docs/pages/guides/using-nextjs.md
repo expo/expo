@@ -12,9 +12,7 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 ## TL;DR:
 
-- Init: `expo init` (or `npx create-next-app`)
-- Install: `yarn add -D @expo/next-adapter`
-- Configure: `yarn next-expo`
+- Init: `npx create-react-native-app -t with-nextjs` (or `npx create-next-app -e with-expo`)
 - Start: `yarn next dev`
 - Open: `http://localhost:3000/`
 
@@ -47,14 +45,24 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 ## 🏁 Setup
 
-### Expo projects with Next.js
+To get started, create a new project with [the template](https://github.com/expo/examples/tree/master/with-nextjs):
+
+```sh
+npx create-react-native-app -t with-nextjs
+```
+
+- **Web**: `yarn next dev` -- start the Next.js project
+- **Native**: `expo start` -- start the Expo project
+
+### Add Next.js to Expo projects
+
+> This is for already existing Expo projects.
 
 In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
-- Bootstrap your project with Expo
-  - Install the CLI: `npm i -g expo-cli`
-  - Create a project: `expo init --template blank`
-  - `cd` into the project
+<details><summary>Instructions</summary>
+<p>
+
 - Install the adapter:
   - **yarn:** `yarn add -D @expo/next-adapter`
   - npm: `npm i --save-dev @expo/next-adapter`
@@ -64,13 +72,19 @@ In this approach you would be using SSR for web in your universal project. This 
   - Force reload changes with `--force or -f`
 - Start the project with `yarn next dev`
   - Go to `http://localhost:3000/` to see your project!
+
+</p>
+</details>
 
 ### Next.js projects with Expo
 
+> This is for already existing Next.js projects.
+
 This approach is useful if you only want to use Expo components in your web-only project.
 
-- Bootstrap your project with Next.js
-  - Create a project: `npx create-next-app`
+<details><summary>Instructions</summary>
+<p>
+
 - Install the adapter:
   - **yarn:** `yarn add -D @expo/next-adapter`
   - npm: `npm i --save-dev @expo/next-adapter`
@@ -80,6 +94,9 @@ This approach is useful if you only want to use Expo components in your web-only
   - Force reload changes with `--force or -f`
 - Start the project with `yarn next dev`
   - Go to `http://localhost:3000/` to see your project!
+
+</p>
+</details>
 
 ### Manual setup
 
@@ -139,15 +156,31 @@ Optionally you can set the project up manually (not recommended).
 This is Zeit's preferred method for deploying Next.js projects to production.
 
 - Add a **build** script to your `package.json`
-  ```json5
+  ```json
   {
-    scripts: {
-      build: 'next build',
-    },
+    "scripts": {
+      "build": "next build"
+    }
   }
   ```
 - Install the Now CLI: `npm i -g now`
 - Deploy to Now: `now`
+
+### Polyfill setImmediate
+
+> 💡 Fixes `setImmediate is not defined` error.
+
+A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
+
+- Install: `yarn add setimmediate`
+- Import in `pages/_app.js`, at the top of the file:
+  ```js
+  import 'setimmediate';
+  ```
+
+If you restart the server this error should go away.
+
+- [Related issue and solution](https://github.com/expo/expo/issues/7996).
 
 ### Image support
 

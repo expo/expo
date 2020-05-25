@@ -1,11 +1,12 @@
 {
   "name": "babel-preset-expo",
-  "version": "8.1.0",
+  "version": "8.2.1",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
     "index.js",
-    "lazy-imports-blacklist.js"
+    "lazy-imports-blacklist.js",
+    "plugins"
   ],
   "scripts": {
     "jest": "jest",
@@ -48,7 +49,7 @@
     "@babel/preset-env": "^7.6.3",
     "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-react-native-web": "^0.11.7",
-    "metro-react-native-babel-preset": "^0.56.0"
+    "metro-react-native-babel-preset": "^0.58.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

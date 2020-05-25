@@ -5,7 +5,8 @@ import { ParsedURL, QueryParams, URLListener } from './Linking.types';
  *
  * **Examples**
  *
- * - Bare, Standalone, Custom: `yourscheme:///path`
+ * - Bare: empty string
+ * - Standalone, Custom: `yourscheme:///path`
  * - Web (dev): `https://localhost:19006/path`
  * - Web (prod): `https://myapp.com/path`
  * - Expo Client (dev): `exp://128.0.0.1:19000/--/path`

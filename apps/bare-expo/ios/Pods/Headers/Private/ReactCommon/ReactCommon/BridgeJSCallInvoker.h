@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/jscallinvoker/ReactCommon/BridgeJSCallInvoker.h
+../../../../../../../../react-native-lab/react-native/ReactCommon/callinvoker/ReactCommon/BridgeJSCallInvoker.h

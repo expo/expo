@@ -65,7 +65,7 @@ export default function App() {
       return;
     }
 
-    Sharing.shareAsync(/* @info Share the remoteUri if we have one, otherwise share the localUri */selectedImage.remoteUri || selectedImage.localUri/* @end */);
+    Sharing.shareAsync(selectedImage.localUri);
   };
 
   /* the rest of the app is unchanged */

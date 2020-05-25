@@ -1,12 +1,19 @@
 #import <UIKit/UIKit.h>
-
 #import <React/RCTView.h>
+#import <React/RCTBridge.h>
+
+#import "RNCSafeAreaViewEdges.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RNCSafeAreaView : RCTView
+@class RNCSafeAreaView;
 
-@property (nonatomic, copy) RCTBubblingEventBlock onInsetsChange;
+@interface RNCSafeAreaView: RCTView
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+@property (nonatomic, assign) BOOL emulateUnlessSupported;
+@property (nonatomic, assign) RNCSafeAreaViewEdges edges;
 
 @end
 

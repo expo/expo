@@ -9,7 +9,7 @@ Opens the standard Android time picker dialog.
 
 ### Example
 
-```jsx
+```js
 try {
   const { action, hour, minute } = await TimePickerAndroid.open({
     hour: 14,
@@ -32,7 +32,7 @@ try {
 
 ### `open()`
 
-```jsx
+```js
 
 static open(options)
 
@@ -56,7 +56,7 @@ Returns a Promise which will be invoked an object containing `action`, `hour` (0
 
 ### `timeSetAction()`
 
-```jsx
+```js
 
 static timeSetAction()
 
@@ -68,7 +68,7 @@ A time has been selected.
 
 ### `dismissedAction()`
 
-```jsx
+```js
 
 static dismissedAction()
 

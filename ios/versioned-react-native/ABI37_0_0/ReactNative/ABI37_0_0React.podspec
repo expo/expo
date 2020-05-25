@@ -42,16 +42,16 @@ Pod::Spec.new do |s|
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.cocoapods_version      = ">= 1.2.0"
 
-  s.dependency "React-Core", version
-  s.dependency "React-Core/DevSupport", version
-  s.dependency "React-Core/RCTWebSocket", version
-  s.dependency "React-RCTActionSheet", version
-  s.dependency "React-RCTAnimation", version
-  s.dependency "React-RCTBlob", version
-  s.dependency "React-RCTImage", version
-  s.dependency "React-RCTLinking", version
-  s.dependency "React-RCTNetwork", version
-  s.dependency "React-RCTSettings", version
-  s.dependency "React-RCTText", version
-  s.dependency "React-RCTVibration", version
+  s.dependency "ABI37_0_0React-Core", version
+  s.dependency "ABI37_0_0React-Core/DevSupport", version
+  s.dependency "ABI37_0_0React-Core/RCTWebSocket", version
+  s.dependency "ABI37_0_0React-RCTActionSheet", version
+  s.dependency "ABI37_0_0React-RCTAnimation", version
+  s.dependency "ABI37_0_0React-RCTBlob", version
+  s.dependency "ABI37_0_0React-RCTImage", version
+  s.dependency "ABI37_0_0React-RCTLinking", version
+  s.dependency "ABI37_0_0React-RCTNetwork", version
+  s.dependency "ABI37_0_0React-RCTSettings", version
+  s.dependency "ABI37_0_0React-RCTText", version
+  s.dependency "ABI37_0_0React-RCTVibration", version
 end

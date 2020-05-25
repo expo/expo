@@ -1,1 +1,1 @@
-../../../../../../../../react-native-lab/react-native/React/CoreModules/RCTImageStoreManager.h
+../../../../../../../../react-native-lab/react-native/Libraries/Image/RCTImageStoreManager.h

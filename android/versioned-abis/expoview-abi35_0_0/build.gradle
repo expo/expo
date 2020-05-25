@@ -9,7 +9,6 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
   repositories {
-    maven { url 'https://maven.fabric.io/public' }
     maven { url "https://www.jitpack.io" }
     mavenCentral()
     google()
@@ -21,13 +20,12 @@ buildscript {
 }
 
 repositories {
-  maven { url 'https://maven.fabric.io/public' }
   maven { url "https://www.jitpack.io" }
   mavenCentral()
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   compileOptions {
     sourceCompatibility = '1.8'
@@ -42,9 +40,6 @@ android {
   }
 
   buildTypes {
-    debug {
-      ext.enableCrashlytics = false
-    }
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -76,7 +71,7 @@ dependencies {
   api 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
   api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
   api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.6.0'
+  compileOnly 'com.facebook.soloader:soloader:0.8.2'
   api 'com.google.code.findbugs:jsr305:3.0.2'
   api 'com.squareup.okhttp3:okhttp:3.6.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
@@ -86,9 +81,6 @@ dependencies {
 
   // Our dependencies
   api "androidx.appcompat:appcompat:1.0.0"
-  api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-    transitive = true
-  }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
 

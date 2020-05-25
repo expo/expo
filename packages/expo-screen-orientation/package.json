@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-screen-orientation",
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"

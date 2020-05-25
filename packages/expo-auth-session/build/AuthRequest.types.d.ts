@@ -1,3 +1,4 @@
+import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 export declare enum CodeChallengeMethod {
     /**
      * The default and recommended method for transforming the code verifier.
@@ -57,7 +58,14 @@ export declare enum Prompt {
      */
     SelectAccount = "select_account"
 }
-export declare type AuthRequestPromptOptions = {
+/**
+ * Options for the prompt window / web browser.
+ * This can be used to configure how the web browser should look and behave.
+ */
+export declare type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatures'> & {
+    /**
+     * URL to open when prompting the user. This should be defined internally.
+     */
     url?: string;
     /**
      * Should the authentication request use the Expo proxy service `auth.expo.io`.
@@ -65,10 +73,9 @@ export declare type AuthRequestPromptOptions = {
      */
     useProxy?: boolean;
     /**
-     * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
-     * Default: `false`
+     * **Web:** features to use with `window.open()`
      */
-    showInRecents?: boolean;
+    windowFeatures?: WebBrowserWindowFeatures;
 };
 /**
  * Represents an OAuth authorization request as JSON.

@@ -18,11 +18,15 @@ While you're working on a local copy of your project, assets are served from you
 
 Each time you publish your app, Expo will upload your assets to Amazon CloudFront, a blazing fast CDN. It does this in an intelligent way to ensure your deploys remain fast: if an asset has not changed since your previous deploy, it is skipped. You don't have to do anything for this to work, it is all automatically handled by Expo.
 
+## Customizing supported asset extensions
+
+Sometimes you will want to use a file type that is not supported out of the box in Expo apps. For example, you may want to use the `.db` to import a database into your app. Read more about how to customize the asset extensions supported by Metro for iOS and Android in [Customizing Metro](../../guides/customizing-metro/) and learn about how you can customize Webpack for Web in [Customizing Webpack](../../guides/customizing-webpack/).
+
 ## Optimization
 
 ### Images
 
-Images often take up the most space out of the assets in an Expo project. Optimizing your images will make them take up less space on end users' devices and reduce the time and bandwidth needed to download before they are ready to display. To compress the images (PNGs and JPEGs) in your project, you can run `expo optimize`. You can also pass in the following options:
+Images often take up the most space out of the assets in an Expo project. Optimizing your images will make them take up less space on end users' devices and reduce the time and bandwidth needed to download before they are ready to display. To compress the images (PNGs and JPEGs) in your project, you can run `npx expo-optimize`. You can also pass in the following options:
 
 * `--save`: Backup a copy of each file with a `.orig` extension.
 * `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).

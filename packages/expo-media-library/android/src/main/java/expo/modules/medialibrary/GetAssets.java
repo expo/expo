@@ -1,6 +1,7 @@
 package expo.modules.medialibrary;
 
 import android.content.Context;
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,7 +38,8 @@ class GetAssets extends AsyncTask<Void, Void, Void> {
     final String order = getQueryInfo.getOrder();
     final int limit = getQueryInfo.getLimit();
     final int offset = getQueryInfo.getOffset();
-    try (Cursor assets = mContext.getContentResolver().query(
+    ContentResolver contentResolver = mContext.getContentResolver();
+    try (Cursor assets = contentResolver.query(
         EXTERNAL_CONTENT,
         ASSET_PROJECTION,
         selection,
@@ -47,7 +49,7 @@ class GetAssets extends AsyncTask<Void, Void, Void> {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get assets. Query returns null.");
       } else {
         ArrayList<Bundle> assetsInfo = new ArrayList<>();
-        putAssetsInfo(assets, assetsInfo, limit, offset, false);
+        putAssetsInfo(contentResolver, assets, assetsInfo, limit, offset, false);
         response.putParcelableArrayList("assets", assetsInfo);
         response.putBoolean("hasNextPage", !assets.isAfterLast());
         response.putString("endCursor", Integer.toString(assets.getPosition()));

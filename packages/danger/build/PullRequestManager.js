@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createPullRequestManager = exports.PullRequestManager = exports.DEFAULT_CHANGELOG_ENTRY_KEY = exports.DEFAULT_ENTRY_TYPE = exports.ChangelogEntryType = void 0;
 const GithubApiWrapper_1 = require("./GithubApiWrapper");
 const Utils_1 = require("./Utils");
 var ChangelogEntryType;

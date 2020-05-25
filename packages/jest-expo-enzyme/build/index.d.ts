@@ -21,7 +21,7 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
         color: "black" | "red" | "green" | "yellow" | "blue" | "magenta" | "cyan" | "white" | "gray" | "grey" | "blackBright" | "redBright" | "greenBright" | "yellowBright" | "blueBright" | "magentaBright" | "cyanBright" | "whiteBright" | "bgBlack" | "bgRed" | "bgGreen" | "bgYellow" | "bgBlue" | "bgMagenta" | "bgCyan" | "bgWhite" | "bgGray" | "bgGrey" | "bgBlackBright" | "bgRedBright" | "bgGreenBright" | "bgYellowBright" | "bgBlueBright" | "bgMagentaBright" | "bgCyanBright" | "bgWhiteBright";
     } | undefined;
     errorOnDeprecated: boolean;
-    extraGlobals: ("undefined" | "Array" | "ArrayBuffer" | "Boolean" | "Buffer" | "DataView" | "Date" | "Error" | "EvalError" | "Float32Array" | "Float64Array" | "Function" | "GLOBAL" | "Infinity" | "Int16Array" | "Int32Array" | "Int8Array" | "Intl" | "JSON" | "Map" | "Math" | "NaN" | "Number" | "Object" | "Promise" | "RangeError" | "ReferenceError" | "RegExp" | "Set" | "String" | "Symbol" | "SyntaxError" | "TypeError" | "URIError" | "Uint16Array" | "Uint32Array" | "Uint8Array" | "Uint8ClampedArray" | "WeakMap" | "WeakSet" | "clearImmediate" | "clearInterval" | "clearTimeout" | "console" | "decodeURI" | "decodeURIComponent" | "encodeURI" | "encodeURIComponent" | "escape" | "eval" | "global" | "isFinite" | "isNaN" | "parseFloat" | "parseInt" | "process" | "root" | "setImmediate" | "setInterval" | "setTimeout" | "queueMicrotask" | "unescape" | "gc" | "v8debug")[];
+    extraGlobals: ("undefined" | "Array" | "ArrayBuffer" | "Boolean" | "Buffer" | "DataView" | "Date" | "Error" | "EvalError" | "Float32Array" | "Float64Array" | "Function" | "Infinity" | "Int16Array" | "Int32Array" | "Int8Array" | "Intl" | "JSON" | "Map" | "Math" | "NaN" | "Number" | "Object" | "Promise" | "RangeError" | "ReferenceError" | "RegExp" | "Set" | "String" | "Symbol" | "SyntaxError" | "TypeError" | "URIError" | "Uint16Array" | "Uint32Array" | "Uint8Array" | "Uint8ClampedArray" | "WeakMap" | "WeakSet" | "clearImmediate" | "clearInterval" | "clearTimeout" | "console" | "decodeURI" | "decodeURIComponent" | "encodeURI" | "encodeURIComponent" | "escape" | "eval" | "global" | "isFinite" | "isNaN" | "parseFloat" | "parseInt" | "process" | "setImmediate" | "setInterval" | "setTimeout" | "queueMicrotask" | "unescape" | "gc" | "v8debug")[];
     filter?: string | undefined;
     forceCoverageMatch: string[];
     globalSetup?: string | undefined;
@@ -50,7 +50,7 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
     testMatch: string[];
     testLocationInResults: boolean;
     testPathIgnorePatterns: string[];
-    testRegex: string[];
+    testRegex: (string | RegExp)[];
     testRunner: string;
     testURL: string;
     timers: "real" | "fake";

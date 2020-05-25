@@ -1,15 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -17,7 +15,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -38,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.ConnectionPool;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -68,11 +64,6 @@ public class DevServerHelper {
     public static String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
 
     public static String PACKAGER_OK_STATUS = "packager-status:running";
-
-    // 2 mins
-    public static int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000;
-
-    public static int LONG_POLL_FAILURE_DELAY_MS = 5000;
 
     public static int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
@@ -110,7 +101,7 @@ public class DevServerHelper {
 
     private enum BundleType {
 
-        BUNDLE("bundle"), DELTA("delta"), MAP("map");
+        BUNDLE("bundle"), MAP("map");
 
         public final String mTypeID;
 
@@ -127,13 +118,9 @@ public class DevServerHelper {
 
     public final OkHttpClient mClient;
 
-    public final Handler mRestartOnChangePollingHandler;
-
     public final BundleDownloader mBundleDownloader;
 
     public final String mPackageName;
-
-    public boolean mOnChangePollingEnabled;
 
     public boolean mPackagerConnectionLock = false;
 
@@ -143,12 +130,6 @@ public class DevServerHelper {
     @Nullable
     public InspectorPackagerConnection mInspectorPackagerConnection;
 
-    @Nullable
-    public OkHttpClient mOnChangePollingClient;
-
-    @Nullable
-    public OnServerContentChangeListener mOnServerContentChangeListener;
-
     public InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
     public DevServerHelper(DevInternalSettings settings, String packageName, InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider) {
@@ -156,7 +137,6 @@ public class DevServerHelper {
         mBundlerStatusProvider = bundleStatusProvider;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mBundleDownloader = new BundleDownloader(mClient);
-        mRestartOnChangePollingHandler = new Handler(Looper.getMainLooper());
         mPackageName = packageName;
     }
 
@@ -378,21 +358,11 @@ public class DevServerHelper {
     }
 
     public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
-        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
     }
 
     public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo, Request.Builder requestBuilder) {
-        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
-    }
-
-    private BundleDeltaClient.ClientType getDeltaClientType() {
-        if (mSettings.isBundleDeltasCppEnabled()) {
-            return BundleDeltaClient.ClientType.NATIVE;
-        } else if (mSettings.isBundleDeltasEnabled()) {
-            return BundleDeltaClient.ClientType.DEV_SUPPORT;
-        } else {
-            return BundleDeltaClient.ClientType.NONE;
-        }
+        mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, requestBuilder);
     }
 
     /** @return the host to use when connecting to the bundle server from the host itself. */
@@ -443,7 +413,7 @@ public class DevServerHelper {
     }
 
     public String getDevServerBundleURL(final String jsModulePath) {
-        return createBundleURL(jsModulePath, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        return createBundleURL(jsModulePath, BundleType.BUNDLE, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -487,78 +457,6 @@ public class DevServerHelper {
         return String.format(Locale.US, "http://%s/status", host);
     }
 
-    public void stopPollingOnChangeEndpoint() {
-        mOnChangePollingEnabled = false;
-        mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
-        if (mOnChangePollingClient != null) {
-            OkHttpCallUtil.cancelTag(mOnChangePollingClient, this);
-            mOnChangePollingClient = null;
-        }
-        mOnServerContentChangeListener = null;
-    }
-
-    public void startPollingOnChangeEndpoint(OnServerContentChangeListener onServerContentChangeListener) {
-        if (mOnChangePollingEnabled) {
-            // polling already enabled
-            return;
-        }
-        mOnChangePollingEnabled = true;
-        mOnServerContentChangeListener = onServerContentChangeListener;
-        mOnChangePollingClient = new OkHttpClient.Builder().connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS)).connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
-        enqueueOnChangeEndpointLongPolling();
-    }
-
-    private void handleOnChangePollingResponse(boolean didServerContentChanged) {
-        if (mOnChangePollingEnabled) {
-            if (didServerContentChanged) {
-                UiThreadUtil.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if (mOnServerContentChangeListener != null) {
-                            mOnServerContentChangeListener.onServerContentChanged();
-                        }
-                    }
-                });
-            }
-            enqueueOnChangeEndpointLongPolling();
-        }
-    }
-
-    private void enqueueOnChangeEndpointLongPolling() {
-        Request request = new Request.Builder().url(createOnChangeEndpointUrl()).tag(this).build();
-        Assertions.assertNotNull(mOnChangePollingClient).newCall(request).enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (mOnChangePollingEnabled) {
-                    // this runnable is used by onchange endpoint poller to delay subsequent requests
-                    // in case
-                    // of a failure, so that we don't flood network queue with frequent requests in
-                    // case when
-                    // dev server is down
-                    FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-                    mRestartOnChangePollingHandler.postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            handleOnChangePollingResponse(false);
-                        }
-                    }, LONG_POLL_FAILURE_DELAY_MS);
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                handleOnChangePollingResponse(response.code() == 205);
-            }
-        });
-    }
-
-    private String createOnChangeEndpointUrl() {
-        return String.format(Locale.US, "http://%s/onchange", mSettings.getPackagerConnectionSettings().getDebugServerHost());
-    }
-
     private String createLaunchJSDevtoolsCommandUrl() {
         return String.format(Locale.US, "http://%s/launch-js-devtools", mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
@@ -586,7 +484,7 @@ public class DevServerHelper {
     }
 
     public String getSourceUrl(String mainModuleName) {
-        return createBundleURL(mainModuleName, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE);
+        return createBundleURL(mainModuleName, BundleType.BUNDLE);
     }
 
     public String getJSBundleURLForRemoteDebugging(String mainModuleName) {

@@ -8,6 +8,7 @@ import navigation from '~/common/navigation';
 import * as Utilities from '~/common/utilities';
 import { VERSIONS } from '~/common/versions';
 import * as WindowUtils from '~/common/window';
+import AlgoliaDocsearchMeta from '~/components/AlgoliaDocsearchMeta';
 import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
@@ -184,6 +185,11 @@ export default class DocumentationPage extends React.Component {
         isMenuActive={this.state.isMenuActive}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
+          <AlgoliaDocsearchMeta
+            referenceVersion={this._version}
+            isReferencePage={this._isReferencePath()}
+          />
+
           {this._version === 'unversioned' && <meta name="robots" content="noindex" />}
           {this._version !== 'unversioned' && (
             <link rel="canonical" href={this._getCanonicalUrl()} />

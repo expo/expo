@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-if [ "$CONFIGURATION" == "Debug" ]; then
+if [[ "$CONFIGURATION" == Debug* ]]; then
   if [ -z "$NODE_BINARY" ]; then
     export NODE_BINARY=node
   fi

@@ -22,7 +22,7 @@ For more information, see [Apple's documentation](https://developer.apple.com/do
 
 To see the current state, you can check `AppState.currentState`, which will be kept up-to-date. However, `currentState` will be null at launch while `AppState` retrieves it over the bridge.
 
-```jsx
+```js
 import React, { Component } from 'react';
 import { AppState, Text } from 'react-native';
 
@@ -66,17 +66,17 @@ This event is received when the app state has changed. The listener is called wi
 
 ### `focus`
 
-[Android only] Received when the app gains focus (the user is interacting with the app).
+**Android-only** Received when the app gains focus (the user is interacting with the app).
 
 ### `blur`
 
-[Android only] Received when the user is not actively interacting with the app. Useful in situations when the user pulls down the [notification drawer](https://developer.android.com/guide/topics/ui/notifiers/notifications#bar-and-drawer). `AppState` won't change but the `blur` event will get fired.
+**Android-only** Received when the user is not actively interacting with the app. Useful in situations when the user pulls down the [notification drawer](https://developer.android.com/guide/topics/ui/notifiers/notifications#bar-and-drawer). `AppState` won't change but the `blur` event will get fired.
 
 ## Methods
 
 ### `addEventListener()`
 
-```jsx
+```js
 addEventListener(type, handler);
 ```
 
@@ -88,7 +88,7 @@ TODO: now that AppState is a subclass of NativeEventEmitter, we could deprecate 
 
 ### `removeEventListener()`
 
-```jsx
+```js
 removeEventListener(type, handler);
 ```
 
@@ -98,6 +98,6 @@ Remove a handler by passing the `change` event type and the handler
 
 ### `currentState`
 
-```jsx
+```js
 AppState.currentState;
 ```
