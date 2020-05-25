@@ -53,13 +53,13 @@ To upload your Android app to Google Play, simply run `expo upload:android`. You
 
 **Beware:** This feature is still experimental!
 
-If you'd like to upload your app from any other operating system than macOS, you can give Submission Service a try. Submission Service is a part of Expo Application Services. It lets you upload your standalone app directly from Expo Servers.
+If you would like to upload your app from any other operating system than macOS, you can give the Expo Submission Service a try. It lets you upload your standalone app directly from Expo Servers.
 
-Using Submission Service is really easy - you just need to pass an additional flag: `expo upload:android --use-submission-service`.
+Using the Submission Service is easy - it's just one additional flag: `expo upload:android --use-submission-service`.
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
-**Disclaimer:** This feature works properly only on macOS.
+**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the Apple App Store you will need to have access to a macOS device.
 
 ### Using expo-cli
 
