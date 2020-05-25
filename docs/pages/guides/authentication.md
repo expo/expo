@@ -45,6 +45,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
   <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
   <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
+  <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
   <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
 </SocialGrid>
 
@@ -125,7 +126,7 @@ export default function App() {
 
 ```ts
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -489,7 +490,7 @@ const [request, response, promptAsync] = useAuthRequest(
 
 ```ts
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -659,6 +660,52 @@ const [request, response, promptAsync] = useAuthRequest(
 ```
 
 <!-- End Spotify -->
+
+### Twitch
+
+<CreateAppButton name="Twitch" href="https://dev.twitch.tv/console/apps/create" />
+
+| Website                     | Provider | PKCE      | Auto Discovery | Scopes           |
+| --------------------------- | -------- | --------- | -------------- | ---------------- |
+| [Get your Config][c-twitch] | OAuth    | Supported | Not Available  | [Info][s-twitch] |
+
+[c-twitch]: https://dev.twitch.tv/console/apps/create
+[s-twitch]: https://dev.twitch.tv/docs/authentication#scopes
+
+- You will need to enable 2FA on your Twitch account to create an application.
+
+```ts
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// In a functional component...
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
+  tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
+  revocationEndpoint: 'https://id.twitch.tv/oauth2/revoke',
+};
+// Request
+const [request, response, promptAsync] = useAuthRequest(
+  {
+    clientId: 'CLIENT_ID',
+    // For usage in managed apps using the proxy
+    redirectUri: makeRedirectUri({
+      // For usage in bare and standalone
+      native: 'your.app://redirect',
+    }),
+    scopes: ['openid', 'user_read', 'analytics:read:games'],
+  },
+  discovery
+);
+```
+
+<!-- End Twitch -->
 
 ### Uber
 
