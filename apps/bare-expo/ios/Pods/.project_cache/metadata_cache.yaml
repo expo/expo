@@ -194,6 +194,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenCapture:
+  LABEL: EXScreenCapture
+  PROJECT_PATH: EXScreenCapture.xcodeproj
+  UUID: 41748256BF35CA80D3CE24FFC0C6012B
 EXScreenOrientation:
   LABEL: EXScreenOrientation
   PROJECT_PATH: EXScreenOrientation.xcodeproj
@@ -374,6 +378,10 @@ react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj
   UUID: 6FF729CB9CEA59FDDF1BA16AEB2B98D6
+react-native-segmented-control:
+  LABEL: react-native-segmented-control
+  PROJECT_PATH: react-native-segmented-control.xcodeproj
+  UUID: 16ABF49F17747086945AFC5E30F90858
 React-RCTActionSheet:
   LABEL: React-RCTActionSheet
   PROJECT_PATH: React-RCTActionSheet.xcodeproj

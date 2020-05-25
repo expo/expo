@@ -668,6 +668,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.1.0)
+  EXScreenCapture:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenCapture: 2cf4d30c60c6bea2892b7e500db91630
+    CHECKSUM: d001b0ba68107db27504449cacf20560a0d07ca4
+    FILES:
+      - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h"
+      - "../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.m"
+    PROJECT_NAME: EXScreenCapture
+    SPECS:
+      - EXScreenCapture (1.0.0)
   EXScreenOrientation:
     BUILD_SETTINGS_CHECKSUM:
       EXScreenOrientation: 605d41100602a3265d74a60e6ef76c6d
@@ -972,12 +982,12 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7a1761168fd8e561cf3cc4be5c1d1807
-      Release: 7a1761168fd8e561cf3cc4be5c1d1807
+      Debug: fb2c147369cbf81bf38a7a2672d02d5d
+      Release: fb2c147369cbf81bf38a7a2672d02d5d
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ed06bb52be8bf77ef4920e8ed63a2fd5
-      Release: ed06bb52be8bf77ef4920e8ed63a2fd5
+      Debug: 44b368ad0f8610188e97a5191954ab39
+      Release: 44b368ad0f8610188e97a5191954ab39
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1523,17 +1533,43 @@ CACHE_KEYS:
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 80a5e0b5f5707cf1c6bdcc5ec48c6cca
-    CHECKSUM: e200d4433aba6b7e60b52da5f37af11f7a0b0392
+    CHECKSUM: 60f654e00b6cc416573f6d5dbfce3839958eb57a
     FILES:
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaProvider.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaProvider.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaProviderManager.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaProviderManager.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaShadowView.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaShadowView.m"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaView.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewEdges.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewEdges.m"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewLocalData.h"
+      - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewLocalData.m"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewManager.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RNCSafeAreaViewManager.m"
       - "../../../../node_modules/react-native-safe-area-context/LICENSE"
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (0.7.3)
+      - react-native-safe-area-context (2.0.0)
+  react-native-segmented-control:
+    BUILD_SETTINGS_CHECKSUM:
+      react-native-segmented-control: 044d1c358bfd7ad1b38cba7f179f6afc
+    CHECKSUM: d7c444e5cc5f526da766f8ff24346898b7ac7be5
+    FILES:
+      - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.h"
+      - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControl.m"
+      - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControlManager.h"
+      - "../../../../node_modules/@react-native-community/segmented-control/ios/RNCSegmentedControlManager.m"
+      - "../../../../node_modules/@react-native-community/segmented-control/LICENSE"
+      - "../../../../node_modules/@react-native-community/segmented-control/README.md"
+    PROJECT_NAME: react-native-segmented-control
+    SPECS:
+      - react-native-segmented-control (1.6.1)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet: 5d86490d49e6cc964d1993e5c05e10db
