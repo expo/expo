@@ -43,11 +43,6 @@ Pod::Spec.new do |s|
     ss.source_files = 'ios/Exponent/Versioned/Optional/Payments/*.{h,m}'
   end
 
-  s.subspec "AR" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.source_files = 'ios/Exponent/Versioned/Optional/ARKit/**'
-  end
-
   s.subspec "FaceDetector" do |ss|
     ss.dependency "EXFaceDetector"
   end
