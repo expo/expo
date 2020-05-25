@@ -21,14 +21,11 @@ jobs:
           result-encoding: string
           script: |
             console.log(context.ref);
-            const runs = await github.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'docs.yml',
-              branch: context.ref.replace('refs/heads/', ''),
-              status: 'completed'
-            });
-            console.info(JSON.stringify(runs, null, 4));
+            log = (o) => console.info(JSON.stringify(o, null, 4)
+            const workflows = await github.actions.listRepoWorkflows(context.repo);
+            log(workflows);
+            const workflowRuns = await github.actions.listRepoWorkflowRuns(context.repo);
+            log(workflowRuns);
       - run: exit 1
       - name: Check out repository
         uses: actions/checkout@v2
