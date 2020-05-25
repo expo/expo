@@ -1,4 +1,3 @@
-import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 import { MediaTypeOptions, } from './ImagePicker.types';
@@ -28,10 +27,10 @@ export default {
      * Delegate to expo-permissions to request camera permissions
      */
     async getCameraPermissionsAsync() {
-        return Permissions.getAsync(Permissions.CAMERA);
+        return permissionGrantedResponse();
     },
     async requestCameraPermissionsAsync() {
-        return Permissions.askAsync(Permissions.CAMERA);
+        return permissionGrantedResponse();
     },
     /*
      * Camera roll permissions don't need to be requested on web, so we always
