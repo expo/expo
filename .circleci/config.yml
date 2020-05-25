@@ -240,7 +240,7 @@ commands:
 executors:
   android:
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: circleci/android:api-29-ndk
     resource_class: xlarge
   js:
     docker:
