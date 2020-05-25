@@ -989,10 +989,6 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI35_0_0/Expo/Core/UniversalModules/EXScopedFileSystem/ABI35_0_0EXScopedFileSystemModule.m"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/UniversalModules/Permissions/ABI35_0_0EXScopedPermissions.h"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/UniversalModules/Permissions/ABI35_0_0EXScopedPermissions.m"
-      - "../versioned-react-native/ABI35_0_0/Expo/Optional/ARKit/ABI35_0_0EXAR.h"
-      - "../versioned-react-native/ABI35_0_0/Expo/Optional/ARKit/ABI35_0_0EXAR.m"
-      - "../versioned-react-native/ABI35_0_0/Expo/Optional/ARKit/ABI35_0_0EXGLARSessionManager.h"
-      - "../versioned-react-native/ABI35_0_0/Expo/Optional/ARKit/ABI35_0_0EXGLARSessionManager.m"
     PROJECT_NAME: ABI35_0_0
     SPECS:
       - ABI35_0_0ExpoKit/Expo (34.0.0)
@@ -2398,10 +2394,6 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/UniversalModules/EXScopedFileSystem/ABI36_0_0EXScopedFileSystemModule.m"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/UniversalModules/Permissions/ABI36_0_0EXScopedPermissions.h"
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/UniversalModules/Permissions/ABI36_0_0EXScopedPermissions.m"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Optional/ARKit/ABI36_0_0EXAR.h"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Optional/ARKit/ABI36_0_0EXAR.m"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Optional/ARKit/ABI36_0_0EXGLARSessionManager.h"
-      - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Optional/ARKit/ABI36_0_0EXGLARSessionManager.m"
     PROJECT_NAME: ABI36_0_0
     SPECS:
       - ABI36_0_0ExpoKit/Expo (36.0.0)
@@ -4660,10 +4652,6 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/UniversalModules/EXScopedFileSystem/ABI37_0_0EXScopedFileSystemModule.m"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/UniversalModules/Permissions/ABI37_0_0EXScopedPermissions.h"
       - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Core/UniversalModules/Permissions/ABI37_0_0EXScopedPermissions.m"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Optional/ARKit/ABI37_0_0EXAR.h"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Optional/ARKit/ABI37_0_0EXAR.m"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Optional/ARKit/ABI37_0_0EXGLARSessionManager.h"
-      - "../versioned-react-native/ABI37_0_0/Expo/ExpoKit/Optional/ARKit/ABI37_0_0EXGLARSessionManager.m"
     PROJECT_NAME: ABI37_0_0
     SPECS:
       - ABI37_0_0ExpoKit/Expo (36.0.0)
