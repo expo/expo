@@ -75,6 +75,12 @@ const providers: Record<string, any> = {
       'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/spotify.png?raw=true',
     color: '#1ED760',
   },
+  twitch: {
+    name: 'Twitch',
+    image:
+      'https://github.com/expo/expo/blob/master/docs/static/images/sdk/auth-session/twitch.png?raw=true',
+    color: '#9146FF',
+  },
   okta: {
     name: 'Okta',
     image:
