@@ -11,12 +11,10 @@ static dispatch_once_t onceToken;
 @implementation UMAppDelegateWrapper
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
-  
-  SEL selector = [invocation selector];
-  NSString *selectorName = NSStringFromSelector(selector);
-
-  NSArray<id<UIApplicationDelegate>> *delegatesToBeCalled = [self getSubcontractorsImplementingSelector:selector];
 #if DEBUG
+  SEL selector = [invocation selector];
+  NSArray<id<UIApplicationDelegate>> *delegatesToBeCalled = [self getSubcontractorsImplementingSelector:selector];
+  NSString *selectorName = NSStringFromSelector(selector);
   if ([delegatesToBeCalled count] > 0) {
     [NSException raise:@"Method not implemented in UIApplicationDelegate" format:@"Some universal modules: %@ have registered for `%@` UIApplicationDelegate's callback, however, neither your AppDelegate nor %@ can handle this method. You'll need to either implement this method in your AppDelegate or submit a pull request to handle it in %@.", delegatesToBeCalled, selectorName, NSStringFromClass([self class]), NSStringFromClass([self class])];
   }
@@ -34,7 +32,7 @@ static dispatch_once_t onceToken;
   
   for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     BOOL subcontractorAnswer = NO;
-      subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
+    subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
     answer |= subcontractorAnswer;
   }
   
