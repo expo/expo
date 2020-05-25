@@ -20,12 +20,11 @@ jobs:
         with:
           result-encoding: string
           script: |
-            console.log(context.ref);
             log = (o) => console.info(JSON.stringify(o, null, 4))
-            const workflows = await github.actions.listRepoWorkflows(context.repo);
-            log(workflows);
             const workflowRuns = await github.actions.listRepoWorkflowRuns({
-              ...context.repo
+              ...context.repo,
+              branch: context.ref.replace('refs/heads/', ''),
+              status: completed,
             });
             log(workflowRuns);
       - run: exit 1
