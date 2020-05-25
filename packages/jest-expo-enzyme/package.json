@@ -49,14 +49,14 @@
     "jest-canvas-mock": "^2.1.1",
     "jest-enzyme": "^7.1.0",
     "jest-expo": "~37.0.0",
-    "react-test-renderer": "~16.9.0"
+    "react-test-renderer": "~16.11.0"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "babel-preset-expo": "~8.2.1",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.9.0"
+    "react": "16.11.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {

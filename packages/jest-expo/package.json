@@ -30,7 +30,7 @@
     "preset": "jest-expo/universal"
   },
   "peerDependencies": {
-    "react": "~16.9.0",
+    "react": "~16.11.0",
     "react-native": "*",
     "react-native-web": "*"
   },
@@ -42,10 +42,10 @@
     "jest-watch-typeahead": "^0.5.0",
     "json5": "^2.1.0",
     "lodash": "^4.5.0",
-    "react-test-renderer": "~16.9.0"
+    "react-test-renderer": "~16.11.0"
   },
   "devDependencies": {
-    "react": "16.9.0"
+    "react": "16.11.0"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f",
   "bugs": {
