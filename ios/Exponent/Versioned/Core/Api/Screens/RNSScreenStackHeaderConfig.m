@@ -8,6 +8,7 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageView.h>
 #import <React/RCTImageSource.h>
+#import <React/RCTFont.h>
 
 // Some RN private method hacking below. Couldn't figure out better way to access image data
 // of a given RCTImageView. See more comments in the code section processing SubviewTypeBackButton
@@ -146,26 +147,26 @@
         attrs[NSForegroundColorAttributeName] = config.titleColor;
       }
 
-      CGFloat size = config.titleFontSize ? [config.titleFontSize floatValue] : 17;
+      NSNumber *size = config.titleFontSize ?: @17;
       if (config.titleFontFamily) {
-        attrs[NSFontAttributeName] = [UIFont fontWithName:config.titleFontFamily size:size];
+        attrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.titleFontFamily size:size weight:nil style:nil variant:nil scaleMultiplier:1.0];
       } else {
-        attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:size];
+        attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[size floatValue]];
       }
       [navbar setTitleTextAttributes:attrs];
     }
 
     if (@available(iOS 11.0, *)) {
-      if (config.largeTitle && (config.largeTitleFontFamily || config.largeTitleFontSize || config.titleColor)) {
+      if (config.largeTitle && (config.largeTitleFontFamily || config.largeTitleFontSize || config.largeTitleColor || config.titleColor)) {
         NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
-        if (config.titleColor) {
-          largeAttrs[NSForegroundColorAttributeName] = config.titleColor;
+        if (config.largeTitleColor || config.titleColor) {
+          largeAttrs[NSForegroundColorAttributeName] = config.largeTitleColor ? config.largeTitleColor : config.titleColor;
         }
-        CGFloat largeSize = config.largeTitleFontSize ? [config.largeTitleFontSize floatValue] : 34;
+        NSNumber *largeSize = config.largeTitleFontSize ?: @34;
         if (config.largeTitleFontFamily) {
-          largeAttrs[NSFontAttributeName] = [UIFont fontWithName:config.largeTitleFontFamily size:largeSize];
+          largeAttrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.largeTitleFontFamily size:largeSize weight:nil style:nil variant:nil scaleMultiplier:1.0];
         } else {
-          largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:largeSize];
+          largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[largeSize floatValue]];
         }
         [navbar setLargeTitleTextAttributes:largeAttrs];
       }
@@ -203,7 +204,7 @@
         RCTImageSource *source = imageView.imageSources[0];
         [imageView reactSetFrame:CGRectMake(imageView.frame.origin.x,
                                             imageView.frame.origin.y,
-                                            source.size.width, 
+                                            source.size.width,
                                             source.size.height)];
       }
       UIImage *image = imageView.image;
@@ -256,6 +257,79 @@
   [self updateViewController:vc withConfig:config animated:animated];
 }
 
+#ifdef __IPHONE_13_0
++ (UINavigationBarAppearance*)buildAppearance:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config
+{
+  UINavigationBarAppearance *appearance = [UINavigationBarAppearance new];
+
+  if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
+    // transparent background color
+    [appearance configureWithTransparentBackground];
+  } else {
+    // non-transparent background or default background
+    if (config.translucent) {
+      [appearance configureWithDefaultBackground];
+    } else {
+      [appearance configureWithOpaqueBackground];
+    }
+
+    // set background color if specified
+    if (config.backgroundColor) {
+      appearance.backgroundColor = config.backgroundColor;
+    }
+  }
+
+  if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
+    appearance.backgroundColor = config.backgroundColor;
+  }
+
+  if (config.hideShadow) {
+    appearance.shadowColor = nil;
+  }
+
+  if (config.titleFontFamily || config.titleFontSize || config.titleColor) {
+    NSMutableDictionary *attrs = [NSMutableDictionary new];
+
+    if (config.titleColor) {
+      attrs[NSForegroundColorAttributeName] = config.titleColor;
+    }
+
+    NSNumber *size = config.titleFontSize ?: @17;
+    if (config.titleFontFamily) {
+      attrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.titleFontFamily size:size weight:nil style:nil variant:nil scaleMultiplier:1.0];
+    } else {
+      attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[size floatValue]];
+    }
+    appearance.titleTextAttributes = attrs;
+  }
+
+  if (config.largeTitleFontFamily || config.largeTitleFontSize || config.largeTitleColor || config.titleColor) {
+    NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
+
+    if (config.largeTitleColor || config.titleColor) {
+      largeAttrs[NSForegroundColorAttributeName] = config.largeTitleColor ? config.largeTitleColor : config.titleColor;
+    }
+
+    NSNumber *largeSize = config.largeTitleFontSize ?: @34;
+    if (config.largeTitleFontFamily) {
+      largeAttrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.largeTitleFontFamily size:largeSize weight:nil style:nil variant:nil scaleMultiplier:1.0];
+    } else {
+      largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[largeSize floatValue]];
+    }
+
+    appearance.largeTitleTextAttributes = largeAttrs;
+  }
+
+  UIImage *backButtonImage = [self loadBackButtonImageInViewController:vc withConfig:config];
+  if (backButtonImage) {
+    [appearance setBackIndicatorImage:backButtonImage transitionMaskImage:backButtonImage];
+  } else if (appearance.backIndicatorImage) {
+    [appearance setBackIndicatorImage:nil transitionMaskImage:nil];
+  }
+  return appearance;
+}
+#endif
+
 + (void)updateViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config animated:(BOOL)animated
 {
   UINavigationItem *navitem = vc.navigationItem;
@@ -283,19 +357,19 @@
   }
 
   navitem.title = config.title;
-  if (config.backTitle != nil) {
+  if (config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize) {
     prevItem.backBarButtonItem = [[UIBarButtonItem alloc]
-                                  initWithTitle:config.backTitle
+                                  initWithTitle:config.backTitle ?: prevItem.title
                                   style:UIBarButtonItemStylePlain
                                   target:nil
                                   action:nil];
     if (config.backTitleFontFamily || config.backTitleFontSize) {
       NSMutableDictionary *attrs = [NSMutableDictionary new];
-      CGFloat size = config.backTitleFontSize ? [config.backTitleFontSize floatValue] : 17;
+      NSNumber *size = config.backTitleFontSize ?: @17;
       if (config.backTitleFontFamily) {
-        attrs[NSFontAttributeName] = [UIFont fontWithName:config.backTitleFontFamily size:size];
+        attrs[NSFontAttributeName] = [RCTFont updateFont:nil withFamily:config.backTitleFontFamily size:size weight:nil style:nil variant:nil scaleMultiplier:1.0];
       } else {
-        attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:size];
+        attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:[size floatValue]];
       }
       [self setTitleAttibutes:attrs forButton:prevItem.backBarButtonItem];
     }
@@ -311,76 +385,18 @@
   }
 #ifdef __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
-    UINavigationBarAppearance *appearance = [UINavigationBarAppearance new];
-
-    if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
-      // transparent background color
-      [appearance configureWithTransparentBackground];
-    } else {
-      // non-transparent background or default background
-      if (config.translucent) {
-        [appearance configureWithDefaultBackground];
-      } else {
-        [appearance configureWithOpaqueBackground];
-      }
-
-      // set background color if specified
-      if (config.backgroundColor) {
-        appearance.backgroundColor = config.backgroundColor;
-      }
-    }
-
-    if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
-      appearance.backgroundColor = config.backgroundColor;
-    }
-
-    if (config.hideShadow) {
-      appearance.shadowColor = nil;
-    }
-
-    if (config.titleFontFamily || config.titleFontSize || config.titleColor) {
-      NSMutableDictionary *attrs = [NSMutableDictionary new];
-
-      if (config.titleColor) {
-        attrs[NSForegroundColorAttributeName] = config.titleColor;
-      }
-
-      CGFloat size = config.titleFontSize ? [config.titleFontSize floatValue] : 17;
-      if (config.titleFontFamily) {
-        attrs[NSFontAttributeName] = [UIFont fontWithName:config.titleFontFamily size:size];
-      } else {
-        attrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:size];
-      }
-      appearance.titleTextAttributes = attrs;
-    }
-
-    if (config.largeTitleFontFamily || config.largeTitleFontSize || config.titleColor) {
-      NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
-
-      if (config.titleColor) {
-        largeAttrs[NSForegroundColorAttributeName] = config.titleColor;
-      }
-
-      CGFloat largeSize = config.largeTitleFontSize ? [config.largeTitleFontSize floatValue] : 34;
-      if (config.largeTitleFontFamily) {
-        largeAttrs[NSFontAttributeName] = [UIFont fontWithName:config.largeTitleFontFamily size:largeSize];
-      } else {
-        largeAttrs[NSFontAttributeName] = [UIFont boldSystemFontOfSize:largeSize];
-      }
-
-      appearance.largeTitleTextAttributes = largeAttrs;
-    }
-
-    UIImage *backButtonImage = [self loadBackButtonImageInViewController:vc withConfig:config];
-    if (backButtonImage) {
-      [appearance setBackIndicatorImage:backButtonImage transitionMaskImage:backButtonImage];
-    } else if (appearance.backIndicatorImage) {
-      [appearance setBackIndicatorImage:nil transitionMaskImage:nil];
-    }
-
+    UINavigationBarAppearance *appearance = [self buildAppearance:vc withConfig:config];
     navitem.standardAppearance = appearance;
     navitem.compactAppearance = appearance;
-    navitem.scrollEdgeAppearance = appearance;
+
+    UINavigationBarAppearance *scrollEdgeAppearance = [[UINavigationBarAppearance alloc] initWithBarAppearance:appearance];
+    if (config.largeTitleBackgroundColor != nil) {
+      scrollEdgeAppearance.backgroundColor = config.largeTitleBackgroundColor;
+    }
+    if (config.largeTitleHideShadow) {
+      scrollEdgeAppearance.shadowColor = nil;
+    }
+    navitem.scrollEdgeAppearance = scrollEdgeAppearance;
   } else
 #endif
   {
@@ -402,6 +418,7 @@
   for (RNSScreenStackHeaderSubview *subview in config.reactSubviews) {
     switch (subview.type) {
       case RNSScreenStackHeaderSubviewTypeLeft: {
+        navitem.leftItemsSupplementBackButton = config.backButtonInCustomView;
         UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithCustomView:subview];
         navitem.leftBarButtonItem = buttonItem;
         break;
@@ -467,14 +484,18 @@ RCT_EXPORT_VIEW_PROPERTY(titleFontSize, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(titleColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(backTitle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(backTitleFontFamily, NSString)
-RCT_EXPORT_VIEW_PROPERTY(backTitleFontSize, NSString)
+RCT_EXPORT_VIEW_PROPERTY(backTitleFontSize, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(largeTitle, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(largeTitleFontFamily, NSString)
 RCT_EXPORT_VIEW_PROPERTY(largeTitleFontSize, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(largeTitleColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(largeTitleBackgroundColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(largeTitleHideShadow, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hideBackButton, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hideShadow, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(backButtonInCustomView, BOOL)
 // `hidden` is an UIView property, we need to use different name internally
 RCT_REMAP_VIEW_PROPERTY(hidden, hide, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)

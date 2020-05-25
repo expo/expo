@@ -36,6 +36,7 @@ const ReanimatedImagePreview = optionalRequire(() =>
 const ReanimatedProgress = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedProgressScreen')
 );
+const SegmentedControl = optionalRequire(() => require('../screens/SegmentedControlScreen'));
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
@@ -67,6 +68,7 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   ReanimatedProgress,
   Gif,
   FacebookAds,
+  SegmentedControl,
   SVG,
   SVGExample,
   LinearGradient,

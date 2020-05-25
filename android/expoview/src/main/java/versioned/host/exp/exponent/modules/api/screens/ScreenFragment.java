@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ public class ScreenFragment extends Fragment {
       ((ViewGroup) parent).endViewTransition(view);
       ((ViewGroup) parent).removeView(view);
     }
+
     // view detached from fragment manager get their visibility changed to GONE after their state is
     // dumped. Since we don't restore the state but want to reuse the view we need to change visibility
     // back to VISIBLE in order for the fragment manager to animate in the view.
@@ -46,7 +48,12 @@ public class ScreenFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater,
                            @Nullable ViewGroup container,
                            @Nullable Bundle savedInstanceState) {
-    return recycleView(mScreenView);
+    FrameLayout wrapper = new FrameLayout(getContext());
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    mScreenView.setLayoutParams(params);
+    wrapper.addView(recycleView(mScreenView));
+    return wrapper;
   }
 
   public Screen getScreen() {
@@ -60,22 +67,11 @@ public class ScreenFragment extends Fragment {
             .dispatchEvent(new ScreenAppearEvent(mScreenView.getId()));
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-  }
-
   public void onViewAnimationEnd() {
     // onViewAnimationEnd is triggered from View#onAnimationEnd method of the fragment's root view.
     // We override Screen#onAnimationEnd and an appropriate method of the StackFragment's root view
     // in order to achieve this.
     dispatchOnAppear();
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    recycleView(getView());
   }
 
   @Override

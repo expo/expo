@@ -76,7 +76,11 @@ public class NotificationChannelSerializer {
     return "custom";
   }
 
-  public static Bundle toBundle(AudioAttributes attributes) {
+  public static Bundle toBundle(@Nullable AudioAttributes attributes) {
+    if (attributes == null) {
+      return null;
+    }
+
     Bundle result = new Bundle();
     result.putInt(AUDIO_ATTRIBUTES_USAGE_KEY, AudioUsage.fromNativeValue(attributes.getUsage()).getEnumValue());
     result.putInt(AUDIO_ATTRIBUTES_CONTENT_TYPE_KEY, AudioContentType.fromNativeValue(attributes.getContentType()).getEnumValue());

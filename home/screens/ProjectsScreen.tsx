@@ -327,8 +327,13 @@ export default class ProjectsScreen extends React.Component<Props, State> {
   };
 
   private _copyClientVersionToClipboard = () => {
-    Clipboard.setString(Constants.expoVersion);
-    alert('The client version has been copied to your clipboard');
+    if (Constants.expoVersion) {
+      Clipboard.setString(Constants.expoVersion);
+      alert('The client version has been copied to your clipboard.');
+    } else {
+      // this should not ever happen
+      alert('Something went wrong - the Expo client version is not available.');
+    }
   };
 
   private _renderProjects = () => {

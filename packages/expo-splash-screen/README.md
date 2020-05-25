@@ -212,7 +212,7 @@ Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 

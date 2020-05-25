@@ -75,6 +75,7 @@
     "nullthrows": "^1.1.0",
     "pretty-format": "^23.6.0",
     "prop-types": "^15.6.0",
+    "react-native-safe-area-context": "^2.0.0",
     "serialize-error": "^2.1.0",
     "unimodules-app-loader": "~1.0.2",
     "unimodules-barcode-scanner-interface": "~5.1.0",
@@ -94,13 +95,13 @@
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
     "@types/react": "^16.9.0",
-    "@types/react-native": "^0.60.15",
+    "@types/react-native": "^0.62.8",
     "@types/react-test-renderer": "16.9.0",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.9.0",
-    "react-dom": "16.9.0",
-    "react-native": "0.61.4"
+    "react": "16.11.0",
+    "react-dom": "16.11.0",
+    "react-native": "0.62.2"
   },
   "gitHead": "5b538cb49cc65ec911fa4df63bccd4004ef92c49"
 }

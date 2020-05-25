@@ -107,12 +107,6 @@ public class Screen extends ViewGroup {
   }
 
   @Override
-  protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    clearDisappearingChildren();
-  }
-
-  @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     // This method implements a workaround for RN's autoFocus functionality. Because of the way

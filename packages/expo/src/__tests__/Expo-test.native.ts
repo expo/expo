@@ -76,6 +76,17 @@ const skippedExports: string[] = [
   'WebView',
 ];
 
+// This list lets us define native modules that we consider always available
+// even in bare React Native.
+//
+// We use this array in "importing Expo > throws a clear error in bare React Native"
+// where we clear all the native modules to simulate a bare environment. Some of the native modules though
+// are expected to be present by React Native, like SourceCode which is fetched with
+// TurboModuleRegistry.getEnforcing, which throws an error if the module is not there.
+// Since bare React Native would have the SourceCode module let's not remove it
+// when preparing NativeModules to simulate bare environment.
+const bareReactNativeModulesNames = ['SourceCode'];
+
 describe(`Expo APIs`, () => {
   const Expo = require('../Expo');
 
@@ -113,12 +124,14 @@ describe(`importing Expo`, () => {
     const clearPropertiesInPlace = aThing => {
       const propertyNames = Object.keys(aThing);
       for (const propertyName of propertyNames) {
-        Object.defineProperty(aThing, propertyName, {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: undefined,
-        });
+        if (!bareReactNativeModulesNames.includes(propertyName)) {
+          Object.defineProperty(aThing, propertyName, {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: undefined,
+          });
+        }
       }
     };
     // Clear all the native modules as a way to simulate running outside of Expo

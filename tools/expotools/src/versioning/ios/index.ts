@@ -817,7 +817,7 @@ function getCppLibrariesToVersion() {
       customHeaderDir: 'ReactCommon',
     },
     {
-      libName: 'jscallinvoker',
+      libName: 'callinvoker',
       customHeaderDir: 'ReactCommon',
     },
   ];

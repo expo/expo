@@ -358,7 +358,7 @@ export async function test(t) {
               lightColor: '#FF231F7C',
               lockscreenVisibility: Notifications.AndroidNotificationVisibility.SECRET,
               showBadge: false,
-              soundUri: null,
+              sound: null,
               audioAttributes: {
                 usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
@@ -760,6 +760,42 @@ export async function test(t) {
           await waitFor(6000);
           t.expect(notificationReceivedSpy).toHaveBeenCalled();
           subscription.remove();
+        },
+        10000
+      );
+
+      t.it(
+        'throws an error if a user defines an invalid trigger (no repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
+        },
+        10000
+      );
+
+      t.it(
+        'throws an error if a user defines an invalid trigger (with repeats)',
+        async () => {
+          let error = undefined;
+          try {
+            await Notifications.scheduleNotificationAsync({
+              identifier,
+              content: notification,
+              trigger: { seconds: 5, repeats: true, hour: 2 },
+            });
+          } catch (err) {
+            error = err;
+          }
+          t.expect(error).toBeDefined();
         },
         10000
       );

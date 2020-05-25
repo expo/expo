@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 0.2.5
+
+### 🐛 Bug fixes
+
+- Fixed broken Android builds on Windows.
+
 ## 0.2.4
 
 ### 🐛 Bug fixes

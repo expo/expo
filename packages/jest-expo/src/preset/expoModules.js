@@ -418,6 +418,10 @@ module.exports = {
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 3, name: 'sendSMSAsync' },
         ],
+        ExpoScreenCapture: [
+          { key: 0, argumentsCount: 0, name: 'preventScreenCapture' },
+          { key: 1, argumentsCount: 0, name: 'allowScreenCapture' },
+        ],
         ExpoScreenOrientation: [
           { key: 0, argumentsCount: 1, name: 'lockAsync' },
           { key: 1, argumentsCount: 1, name: 'supportsOrientationLockAsync' },

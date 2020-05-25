@@ -28,17 +28,15 @@ const externalLinks = [
     const browser = await puppeteer.launch();
     for (const link of externalLinks) {
       const page = await browser.newPage();
-      await page.goto(`${url}${link}`);
+      let response = await page.goto(`${url}${link}`);
 
-      if ((await page.$$('#__not_found')).length) {
-        notFound.push(link);
-      } else if ((await page.$$('#redirect-link')).length) {
-        await page.click('#redirect-link');
-        if ((await page.$$('#__redirect_failed')).length) {
-          redirectsFailed.push(link);
-        }
-
-        if ((await page.$$('#__not_found')).length) {
+      if (response.status() == 404) {
+        if ((await page.$$('#redirect-link')).length) {
+	  await page.click('#redirect-link');
+	  if ((await page.$$('#__redirect_failed')).length) {
+	    redirectsFailed.push(link);
+	  }
+	} else {
           notFound.push(link);
         }
       }

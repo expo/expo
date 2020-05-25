@@ -17,6 +17,8 @@ import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.notifications.service.ExpoNotificationSchedulerService;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.notifications.ScopedNotificationRequest;
+import host.exp.exponent.notifications.ScopedNotificationsUtils;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
   private final ExperienceId mExperienceId;

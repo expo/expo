@@ -35,7 +35,7 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)

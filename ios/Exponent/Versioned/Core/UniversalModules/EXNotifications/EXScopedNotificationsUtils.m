@@ -4,13 +4,18 @@
 
 @implementation EXScopedNotificationsUtils
 
-+ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId
++ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)experienceId
 {
-  NSString *notificationExperienceId = notification.request.content.userInfo[@"experienceId"];
+  NSString *notificationExperienceId = request.content.userInfo[@"experienceId"];
   if (!notificationExperienceId) {
     return true;
   }
   return [notificationExperienceId isEqual:experienceId];
+}
+
++ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId
+{
+  return [EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:experienceId];
 }
 
 @end

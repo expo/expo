@@ -81,7 +81,7 @@ import * as FileSystem from 'expo-file-system';
 
 <TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
 
-<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType']} />
+<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
 
 <TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
 
@@ -114,6 +114,48 @@ These values can be used to define how data is read / written.
 - **FileSystem.EncodingType.UTF8** -- Standard readable format.
 
 - **FileSystem.EncodingType.Base64** -- Binary, radix-64 representation.
+
+### `FileSystem.FileSystemSessionType`
+
+These values can be used to define how sessions work on iOS.
+
+- **FileSystem.FileSystemSessionType.BACKGROUND** -- Using this mode means that the downloading/uploading session on the native side will work even if the application is moved to background. If the task completes while the application is in background, the Promise will be either resolved immediately or (if the application execution has already been stopped) once the app is moved to foreground again.
+- **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
+
+### `FileSystem.FileSystemUploadOptions`
+
+- **FileSystem.FileSystemUploadOptions.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
+
+- **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
+
+#### How to handle such requests?
+
+The simple server in Node.js, which can save uploaded images to disk:
+
+```js
+const express = require('express');
+const app = express();
+const fs = require('fs');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+// This method will save the binary content of the request as a file.
+app.patch('/binary-upload', (req, res) => {
+  req.pipe(fs.createWriteStream('./uploads/image' + Date.now() + '.png'));
+  res.end('OK');
+});
+
+// This method will save a "photo" field from the request as a file.
+app.patch('/multipart-upload', upload.single('photo'), (req, res) => {
+  // You can access other HTTP parameters. They are located in the body object.
+  console.log(req.body);
+  res.end('OK');
+});
+
+app.listen(3000, () => {
+  console.log('Working on port 3000');
+});
+```
 
 ## Methods
 
@@ -272,6 +314,8 @@ FileSystem.downloadAsync(
 
   - **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
 
+  - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
+
 #### Returns
 
 Returns a Promise that resolves to an object with the following fields:
@@ -283,6 +327,44 @@ Returns a Promise that resolves to an object with the following fields:
 - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 - **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+
+### `FileSystem.uploadAsync(url, fileUri, options)`
+
+Upload the contents of the file pointed by `fileUri` to the remote url.
+
+#### Arguments
+
+- **url (_string_)** -- The remote URL, where the file will be sent.
+
+- **fileUri (_string_)** -- The local URI of the file to send. The file must exist.
+
+- **options (_object_)** -- A map of options:
+
+  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+  - **httpMethod (_String_)** -- The request method. Accepts values: 'POST', 'PUT', 'PATCH. Default to 'POST'.
+
+  - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
+
+  - **uploadType (_FileSystemUploadOptions_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
+
+  If `uploadType` is equal `FileSystemUploadType.MULTIPART`, more options are available:
+
+  - **fieldName (_string_)** -- The name of the field which will hold uploaded file. Defaults to the file name without an extension.
+
+  - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
+
+  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **status (_number_)** -- The HTTP status code for the download network request.
+
+- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+
+- **body (_string_)** -- The body of the server response.
 
 ### `FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
 

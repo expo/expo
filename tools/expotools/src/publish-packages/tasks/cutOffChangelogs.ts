@@ -31,6 +31,7 @@ export const cutOffChangelogs = new Task<TaskArgs>(
         if (state.releaseVersion && !semver.prerelease(state.releaseVersion)) {
           logger.log('  ', green(pkg.packageName) + '...');
           await changelog.cutOffAsync(state.releaseVersion);
+          await changelog.saveAsync();
         } else {
           logger.log('  ', green(pkg.packageName), gray(`- skipped, it's a prerelease version.`));
         }

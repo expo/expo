@@ -1,7 +1,6 @@
 import ReactNativeCore from '../screens/ReactNativeCore/ReactNativeCoreScreen';
-import createStackNavigator from './createStackNavigator';
 import StackConfig from './StackConfig';
-import SafeAreaNavigationWrapper from './SafeAreaNavigationWrapper';
+import createStackNavigator from './createStackNavigator';
 
 const ReactNativeCoreStackNavigator = createStackNavigator(
   {
@@ -10,4 +9,4 @@ const ReactNativeCoreStackNavigator = createStackNavigator(
   StackConfig
 );
 
-export default SafeAreaNavigationWrapper(ReactNativeCoreStackNavigator);
+export default ReactNativeCoreStackNavigator;

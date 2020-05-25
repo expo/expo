@@ -333,6 +333,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  '@react-native-community/segmented-control': {
+    repoUrl: 'https://github.com/react-native-community/segmented-control',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SegmentedControl',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {

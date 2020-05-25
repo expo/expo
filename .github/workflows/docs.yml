@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn export
-        timeout-minutes: 10
+        timeout-minutes: 15
       - name: test links
         run: |
           yarn export-server &
@@ -64,5 +64,3 @@ jobs:
           status: ${{ job.status }}
           fields: commit,author,action,message
           author_name: docs build
-          mention: here
-          if_mention: failure

@@ -3,7 +3,7 @@ import ApiV2Error from '../ApiV2Error';
 import Store from '../../redux/Store';
 
 jest.mock('react-native', () => {
-  const ReactNative = require.requireActual('react-native');
+  const ReactNative = jest.requireActual('react-native');
   ReactNative.NativeModules.ExponentKernel.sdkVersions = '12.0.0,11.0.0';
   return ReactNative;
 });

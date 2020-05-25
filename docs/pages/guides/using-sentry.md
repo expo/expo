@@ -97,7 +97,7 @@ import Constants from 'expo-constants';
 Sentry.setRelease(Constants.manifest.revisionId);
 ```
 
-Note that the `revisionId` is not available in the manifest when running in development mode (using Expo CLI), defaulting to `undefined`.
+Note that the `revisionId` is not available in the manifest when running in development mode (using Expo CLI), defaulting to `undefined`. If you're using the bare workflow, you should use [`Updates.manifest.revisionId`](../../versions/latest/sdk/updates/#updatesmanifest).
 
 ### Testing Sentry
 

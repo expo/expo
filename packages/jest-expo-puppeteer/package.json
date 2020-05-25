@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/getenv": "^1.0.0",
     "expo-module-scripts": "~1.2.0",
-    "react": "16.9.0"
+    "react": "16.11.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {
