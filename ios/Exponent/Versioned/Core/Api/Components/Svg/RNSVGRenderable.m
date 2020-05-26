@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTPointerEvents.h>
 #import "RNSVGRenderable.h"
 #import "RNSVGClipPath.h"
 #import "RNSVGMask.h"
@@ -518,6 +519,11 @@ UInt32 saturate(CGFloat value) {
         return nil;
     }
 
+    BOOL canReceiveTouchEvents = (self.pointerEvents != RCTPointerEventsNone && ![self isHidden]);
+    if(!canReceiveTouchEvents) {
+      return nil;
+    }
+
     if (self.active) {
         if (!event) {
             self.active = NO;
@@ -572,7 +578,7 @@ UInt32 saturate(CGFloat value) {
     }
     self.merging = true;
 
-    NSMutableArray* attributeList = [self.propList mutableCopy];
+    NSMutableArray* attributeList = self.propList ? [self.propList mutableCopy] : [[NSMutableArray alloc] init];
     _originProperties = [[NSMutableDictionary alloc] init];
 
     for (NSString *key in targetAttributeList) {

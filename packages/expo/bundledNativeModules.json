@@ -62,7 +62,7 @@
   "react-native-maps": "0.26.1",
   "react-native-reanimated": "~1.9.0",
   "react-native-screens": "~2.8.0",
-  "react-native-svg": "11.0.1",
+  "react-native-svg": "12.1.0",
   "react-native-view-shot": "3.1.2",
   "react-native-webview": "8.1.2",
   "unimodules-barcode-scanner-interface": "~5.1.0",

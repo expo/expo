@@ -27,6 +27,7 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.lang.reflect.Field;
@@ -79,8 +80,8 @@ abstract public class RenderableView extends VirtualView {
     public float strokeMiterlimit = 4;
     public float strokeDashoffset = 0;
 
-    public Paint.Cap strokeLinecap = Paint.Cap.ROUND;
-    public Paint.Join strokeLinejoin = Paint.Join.ROUND;
+    public Paint.Cap strokeLinecap = Paint.Cap.BUTT;
+    public Paint.Join strokeLinejoin = Paint.Join.MITER;
 
     public @Nullable ReadableArray fill;
     public float fillOpacity = 1;
@@ -519,6 +520,10 @@ abstract public class RenderableView extends VirtualView {
     @Override
     int hitTest(final float[] src) {
         if (mPath == null || !mInvertible || !mTransformInvertible) {
+            return -1;
+        }
+
+        if (mPointerEvents == PointerEvents.NONE) {
             return -1;
         }
 
