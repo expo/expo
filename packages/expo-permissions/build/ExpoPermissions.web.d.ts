@@ -5,3 +5,4 @@ declare const _default: {
     askAsync(permissionTypes: PermissionType[]): Promise<PermissionMap>;
 };
 export default _default;
+export declare function getRequestMotionPermission(): () => Promise<PermissionState> | null;

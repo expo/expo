@@ -1,8 +1,8 @@
 /* @flow */
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 class OptionsButton extends React.Component {
   render() {

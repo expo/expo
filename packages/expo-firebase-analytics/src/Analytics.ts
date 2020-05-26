@@ -1,6 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
+export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 
 if (!ExpoFirebaseAnalytics) {
   console.warn(
@@ -167,11 +168,28 @@ export async function setUserProperties(properties: { [key: string]: string }): 
  * Firebase Analytics, create a standalone build or custom client.
  * Use this function to suppress the warning and log messages.
  *
- * @param properties key/value set of user properties
+ * @param isEnabled A flag that enables or disables unavailability logging.
  */
 export function setUnavailabilityLogging(isEnabled: boolean): void {
   if (!ExpoFirebaseAnalytics.setUnavailabilityLogging) {
     throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
   }
   ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
+}
+
+/**
+ * Enables or disabled debug mode on the Expo client, so events can
+ * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+ *
+ * This option is only available on the standard Expo client.
+ * When using a standalone build, the bare workflow or web, use the
+ * [natively available options](https://firebase.google.com/docs/analytics/debugview).
+ *
+ * @param isEnabled A flag that enables or disables debug mode.
+ */
+export async function setDebugModeEnabled(isEnabled: boolean): Promise<void> {
+  if (!ExpoFirebaseAnalytics.setDebugModeEnabled) {
+    throw new UnavailabilityError('expo-firebase-analytics', 'setDebugModeEnabled');
+  }
+  return await ExpoFirebaseAnalytics.setDebugModeEnabled(isEnabled);
 }

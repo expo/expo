@@ -5,11 +5,29 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 
 const NativeKernel = NativeModules.ExponentKernel || MockKernel;
 
+export type DevMenuSettings = {
+  devMenuSettings: null | {
+    motionGestureEnabled: boolean;
+    touchGestureEnabled: boolean;
+  };
+};
+
 export type DevMenuItem = {
   label: string;
   isEnabled: boolean;
   detail?: string;
 };
+
+export async function getSettingsAsync(): Promise<DevMenuSettings | null> {
+  if (!NativeKernel.getDevMenuSettingsAsync) {
+    return null;
+  }
+  return await NativeKernel.getDevMenuSettingsAsync();
+}
+
+export async function setSettingAsync(key, value): Promise<void> {
+  await NativeKernel.setDevMenuSettingAsync(key, value);
+}
 
 export async function doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
   return await NativeKernel.doesCurrentTaskEnableDevtoolsAsync();

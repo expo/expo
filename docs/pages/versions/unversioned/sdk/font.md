@@ -14,11 +14,48 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-font" />
 
-## API
+# API
 
 ```js
 import * as Font from 'expo-font';
 ```
+
+## Hooks
+
+### `useFonts`
+
+```ts
+const [loaded, error] = useFonts({ ... });
+```
+
+Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean if the fonts are loaded and ready to use. It also returns an error if something went wrong, to use in development.
+
+#### Arguments
+
+- **fonts (_{ [fontFamily: string]: FontSource }_)** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
+
+#### Returns
+
+- **loaded (_boolean_)** -- A boolean to detect if the font for `fontFamily` has finished loading.
+- **error (_Error | null_)** -- An error encountered when loading the fonts.
+
+#### Example: hook
+
+```tsx
+function App() {
+  const [loaded] = useFonts({
+    Montserrat: require('./assets/fonts/Montserrat.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <Text style={{ fontFamily: 'Montserrat' }} />;
+}
+```
+
+## Methods
 
 ### `loadAsync(object)`
 
@@ -28,7 +65,7 @@ Highly efficient method for loading fonts from static or remote resources which 
 
 - **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
 
-#### Example
+#### Example: functions
 
 ```tsx
 await loadAsync({

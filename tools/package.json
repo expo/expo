@@ -19,7 +19,7 @@
     "gulp": "^4.0.0",
     "gulp-shell": "^0.5.2",
     "lodash": "^4.1.2",
-    "minimist": "^1.2.2",
+    "minimist": "^1.2.3",
     "nullthrows": "^1.0.0",
     "semver": "^5.7.0",
     "shelljs": "^0.7.0",

@@ -1,27 +1,17 @@
 buildscript {
   repositories {
     google()
-    maven { url 'https://maven.fabric.io/public' }
-  }
-
-  dependencies {
-    classpath 'io.fabric.tools:gradle:1.31.0'
   }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 apply plugin: 'devicefarm'
-
-repositories {
-  maven { url 'https://maven.fabric.io/public' }
-}
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -34,8 +24,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 123
-    versionName '2.15.0'
+    versionCode 124
+    versionName '2.15.1'
     // END VERSIONS
 
     multiDexEnabled true
@@ -63,7 +53,6 @@ android {
   buildTypes {
     debug {
       debuggable true
-      ext.enableCrashlytics = false
     }
     release {
       minifyEnabled true
@@ -151,7 +140,7 @@ dependencies {
   }
   implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.6.0'
+  implementation 'com.facebook.soloader:soloader:0.8.2'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -208,10 +197,6 @@ dependencies {
   // BEGIN_SDK_35
   implementation(project(':expoview-abi35_0_0'))
   // END_SDK_35
-
-  // BEGIN_SDK_34
-  implementation(project(':expoview-abi34_0_0'))
-  // END_SDK_34
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'

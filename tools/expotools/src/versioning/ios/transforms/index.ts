@@ -22,18 +22,18 @@ export type TransformPipeline = {
 
 export async function runTransformPipelineAsync({ pipeline, targetPath, input }: TransformConfig) {
   let output = input;
-  const matches: { value: string, line: number, replacedWith: string }[] = [];
+  const matches: { value: string; line: number; replacedWith: string }[] = [];
 
   if (!Array.isArray(pipeline.transforms)) {
-    throw new Error('Pipeline\'s transformations must be an array of transformation patterns.');
+    throw new Error("Pipeline's transformations must be an array of transformation patterns.");
   }
 
   pipeline.transforms
-    .filter(transform => pathMatchesTransformPaths(targetPath, transform.paths))
-    .forEach(transform => {
+    .filter((transform) => pathMatchesTransformPaths(targetPath, transform.paths))
+    .forEach((transform) => {
       output = output.replace(transform.replace, (match, ...args) => {
-        const { leftContext } = RegExp as unknown as { leftContext: string };
-        const result = transform.with.replace(/\$[1-9]/g, m => args[parseInt(m[1], 10) - 1]);
+        const { leftContext } = (RegExp as unknown) as { leftContext: string };
+        const result = transform.with.replace(/\$[1-9]/g, (m) => args[parseInt(m[1], 10) - 1]);
 
         matches.push({
           value: match,
@@ -54,12 +54,12 @@ export async function runTransformPipelineAsync({ pipeline, targetPath, input }:
       console.log(
         `${chalk.gray(String(match.line))}:`,
         chalk.red('-'),
-        chalk.red(match.value.trimRight()),
+        chalk.red(match.value.trimRight())
       );
       console.log(
         `${chalk.gray(String(match.line))}:`,
         chalk.green('+'),
-        chalk.green(match.replacedWith.trimRight()),
+        chalk.green(match.replacedWith.trimRight())
       );
     }
     console.log();
@@ -73,7 +73,7 @@ function pathMatchesTransformPaths(filePath: string, transformPaths?: string | s
     return filePath.includes(transformPaths);
   }
   if (Array.isArray(transformPaths)) {
-    return transformPaths.some(transformPath => filePath.includes(transformPath));
+    return transformPaths.some((transformPath) => filePath.includes(transformPath));
   }
   return true;
 }

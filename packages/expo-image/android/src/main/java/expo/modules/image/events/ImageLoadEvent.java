@@ -1,7 +1,6 @@
 package expo.modules.image.events;
 
 import android.graphics.BitmapFactory;
-import android.util.Size;
 
 import com.bumptech.glide.load.DataSource;
 import com.facebook.react.bridge.Arguments;
@@ -11,7 +10,6 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import expo.modules.image.enums.ImageCacheType;
-import okhttp3.MediaType;
 
 public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public static final String EVENT_NAME = "onLoad";

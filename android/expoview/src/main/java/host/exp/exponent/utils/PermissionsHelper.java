@@ -113,7 +113,7 @@ public class PermissionsHelper {
             isGranted = false;
             break;
           } else if (mExperienceId != null) {
-            mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
+            mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(permissions[i], mExperienceId);
           }
         }
       }
@@ -188,11 +188,11 @@ public class PermissionsHelper {
       mPermissionsAskedCount -= 1;
       switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(mPermission, mExperienceId);
           break;
 
         case DialogInterface.BUTTON_NEGATIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().revokePermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().revokeScopedPermissions(mPermission, mExperienceId);
           mExperiencePermissionsGranted = false;
           break;
       }

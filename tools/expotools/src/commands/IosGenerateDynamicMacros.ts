@@ -1,11 +1,8 @@
-import path from 'path';
 import { Command } from '@expo/commander';
+import path from 'path';
 
+import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros';
 import { Directories } from '../expotools';
-import {
-  generateDynamicMacrosAsync,
-  cleanupDynamicMacrosAsync,
-} from '../dynamic-macros/generateDynamicMacros';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const IOS_DIR = Directories.getIosDir();
@@ -21,21 +18,11 @@ async function generateAction(options): Promise<void> {
   await generateDynamicMacrosAsync({
     buildConstantsPath,
     platform: 'ios',
-    infoPlistPath: infoPlistPath,
+    infoPlistPath,
     expoKitPath: EXPO_DIR,
     templateFilesPath: TEMPLATE_FILES_DIR,
     configuration,
     skipTemplates: options.skipTemplate,
-  });
-}
-
-async function cleanupAction(options): Promise<void> {
-  const infoPlistPath = options.infoPlistPath || path.join(SUPPORTING_DIR, 'Info.plist');
-
-  await cleanupDynamicMacrosAsync({
-    platform: 'ios',
-    infoPlistPath: infoPlistPath,
-    expoKitPath: EXPO_DIR,
   });
 }
 
@@ -61,13 +48,10 @@ export default (program: Command) => {
     )
     .option(
       '--skip-template [string]',
-      'Skip generating a template (ie) GoogleService-Info.plist. Optional.', collect, []
+      'Skip generating a template (ie) GoogleService-Info.plist. Optional.',
+      collect,
+      []
     )
     .description('Generates dynamic macros for iOS client.')
     .asyncAction(generateAction);
-
-  program
-    .command('ios-cleanup-dynamic-macros')
-    .description('Restores a backup of Info.plist made before generating dynamic macros.')
-    .asyncAction(cleanupAction);
 };

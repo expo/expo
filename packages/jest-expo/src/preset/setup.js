@@ -154,7 +154,7 @@ jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNati
 
 try {
   jest.mock('@unimodules/react-native-adapter', () => {
-    const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
+    const ReactNativeAdapter = jest.requireActual('@unimodules/react-native-adapter');
     const { NativeModulesProxy } = ReactNativeAdapter;
 
     // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call

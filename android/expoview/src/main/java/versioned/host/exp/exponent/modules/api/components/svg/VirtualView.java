@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -102,6 +103,11 @@ abstract public class VirtualView extends ReactViewGroup {
     Region mStrokeRegion;
     Region mClipRegion;
     ArrayList<PathElement> elements;
+    PointerEvents mPointerEvents;
+
+    void setPointerEvents(PointerEvents pointerEvents) {
+        mPointerEvents = pointerEvents;
+    }
 
     @Override
     public void invalidate() {
@@ -312,9 +318,9 @@ abstract public class VirtualView extends ReactViewGroup {
                 FLog.w(ReactConstants.TAG, "RNSVG: Transform matrices must be of size 6");
             }
         } else {
-            mMatrix = null;
-            mInvMatrix = null;
-            mInvertible = false;
+            mMatrix.reset();
+            mInvMatrix.reset();
+            mInvertible = true;
         }
 
         super.invalidate();

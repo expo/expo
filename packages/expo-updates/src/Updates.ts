@@ -1,38 +1,44 @@
-import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
-import Constants from 'expo-constants';
+import { RCTDeviceEventEmitter, CodedError, UnavailabilityError } from '@unimodules/core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';
+import {
+  Listener,
+  LocalAssets,
+  Manifest,
+  UpdateCheckResult,
+  UpdateEvent,
+  UpdateFetchResult,
+} from './Updates.types';
 
-export enum UpdateEventType {
-  UPDATE_AVAILABLE = 'updateAvailable',
-  NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
-  ERROR = 'error',
-}
+export * from './Updates.types';
 
-// TODO(eric): move source of truth for manifest type to this module
-type Manifest = typeof Constants.manifest;
-
-type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest: Manifest };
-
-type UpdateFetchResult = { isNew: false } | { isNew: true; manifest: Manifest };
-
-type Listener<E> = (event: E) => void;
-
-type UpdateEvent =
-  | { type: UpdateEventType.NO_UPDATE_AVAILABLE }
-  | { type: UpdateEventType.UPDATE_AVAILABLE; manifest: Manifest }
-  | { type: UpdateEventType.ERROR; message: string };
-
-type LocalAssets = { [remoteUrl: string]: string };
-
+export const updateId: string | null =
+  ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
+    ? ExpoUpdates.updateId.toLowerCase()
+    : null;
+export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
-export const manifest: Manifest | object = ExpoUpdates.manifest ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
+export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
+
+let _manifest = ExpoUpdates.manifest;
+if (ExpoUpdates.manifestString) {
+  _manifest = JSON.parse(ExpoUpdates.manifestString);
+}
+export const manifest: Manifest | object = _manifest ?? {};
 
 export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
+  }
+  if (__DEV__) {
+    throw new CodedError(
+      'ERR_UPDATES_DISABLED',
+      'You cannot use the Updates module in development mode. To test manual updates, make a ' +
+        'release build with `npm run ios --configuration Release` or ' +
+        '`npm run android --variant Release`.'
+    );
   }
   await ExpoUpdates.reload();
 }
@@ -40,6 +46,14 @@ export async function reloadAsync(): Promise<void> {
 export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
+  }
+  if (__DEV__) {
+    throw new CodedError(
+      'ERR_UPDATES_DISABLED',
+      'You cannot check for updates in development mode. To test manual updates, make a ' +
+        'release build with `npm run ios --configuration Release` or ' +
+        '`npm run android --variant Release`.'
+    );
   }
 
   const result = await ExpoUpdates.checkForUpdateAsync();
@@ -54,6 +68,14 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
 export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
+  }
+  if (__DEV__) {
+    throw new CodedError(
+      'ERR_UPDATES_DISABLED',
+      'You cannot fetch updates in development mode. To test manual updates, make a ' +
+        'release build with `npm run ios --configuration Release` or ' +
+        '`npm run android --variant Release`.'
+    );
   }
 
   const result = await ExpoUpdates.fetchUpdateAsync();

@@ -5,8 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcel;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 
@@ -15,7 +18,8 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
  * to {@link BaseNotificationsService}.
  */
 public class NotificationResponseReceiver extends BroadcastReceiver {
-  private static final String NOTIFICATION_RESPONSE_KEY = "response";
+  public static final String NOTIFICATION_OPEN_APP_ACTION = "expo.modules.notifications.OPEN_APP_ACTION";
+  public static final String NOTIFICATION_RESPONSE_KEY = "response";
   //                                      EXRespRcv
   private static final int REQUEST_CODE = 397377728;
 
@@ -34,16 +38,99 @@ public class NotificationResponseReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    openAppToForeground(context);
-    BaseNotificationsService.enqueueResponseReceived(context, intent.<NotificationResponse>getParcelableExtra(NOTIFICATION_RESPONSE_KEY));
+    NotificationResponse response = intent.getParcelableExtra(NOTIFICATION_RESPONSE_KEY);
+    openAppToForeground(context, response);
+    BaseNotificationsService.enqueueResponseReceived(context, response);
   }
 
-  protected void openAppToForeground(Context context) {
-    Intent mainActivity = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-    if (mainActivity == null) {
+  protected void openAppToForeground(Context context, NotificationResponse notificationResponse) {
+    Intent appLauncher = getNotificationActionLauncher(context, notificationResponse);
+    if (appLauncher != null) {
+      context.startActivity(appLauncher);
+      return;
+    }
+
+    appLauncher = getMainActivityLauncher(context);
+    if (appLauncher == null) {
       Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.");
       return;
     }
-    context.startActivity(mainActivity);
+    context.startActivity(appLauncher);
+  }
+
+  private Intent getNotificationActionLauncher(Context context, NotificationResponse notificationResponse) {
+    Intent notificationActionLauncher = new Intent(NOTIFICATION_OPEN_APP_ACTION);
+    notificationActionLauncher.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    notificationActionLauncher.setPackage(context.getApplicationContext().getPackageName());
+    if (notificationActionLauncher.resolveActivity(context.getPackageManager()) != null) {
+      // Class loader used in BaseBundle when unmarshalling notification extras
+      // cannot handle expo.modules.notifications.….NotificationResponse
+      // so we go around it by marshalling and unmarshalling the object ourselves.
+      notificationActionLauncher.putExtra(NOTIFICATION_RESPONSE_KEY, marshallNotificationResponse(notificationResponse));
+      return notificationActionLauncher;
+    }
+
+    return null;
+  }
+
+  private Intent getMainActivityLauncher(Context context) {
+    return context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+  }
+
+  /**
+   * Reconstructs NotificationResponse from Intent.
+   *
+   * @param intent
+   * @return NotificationResponse instance or null if intent doesn't contain a response
+   */
+  @Nullable
+  public static NotificationResponse getNotificationResponse(@NonNull Intent intent) {
+    return NotificationResponseReceiver.unmarshallNotificationResponse(intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY));
+  }
+
+  /**
+   * Marshalls {@link NotificationResponse} into to a byte array.
+   *
+   * @param notificationResponse Notification response to marshall
+   * @return Given request marshalled to a byte array or null if the process failed.
+   */
+  @Nullable
+  private byte[] marshallNotificationResponse(NotificationResponse notificationResponse) {
+    try {
+      Parcel parcel = Parcel.obtain();
+      notificationResponse.writeToParcel(parcel, 0);
+      byte[] bytes = parcel.marshall();
+      parcel.recycle();
+      return bytes;
+    } catch (Exception e) {
+      // If we couldn't marshall the request, let's not fail the whole build process.
+      Log.e("expo-notifications", String.format("Could not marshalled notification response: %s.", notificationResponse.getActionIdentifier()));
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  /**
+   * UNmarshalls {@link NotificationResponse} from a byte array.
+   *
+   * @param notificationRequestByteArray
+   * @return NotificationResponse instance or null if the process failed.
+   */
+  @Nullable
+  public static NotificationResponse unmarshallNotificationResponse(@Nullable byte[] notificationRequestByteArray) {
+    if (notificationRequestByteArray == null) {
+      return null;
+    }
+    try {
+      Parcel parcel = Parcel.obtain();
+      parcel.unmarshall(notificationRequestByteArray, 0, notificationRequestByteArray.length);
+      parcel.setDataPosition(0);
+      NotificationResponse response = NotificationResponse.CREATOR.createFromParcel(parcel);
+      parcel.recycle();
+      return response;
+    } catch (Exception e) {
+      Log.e("expo-notifications", "Could not unmarshall NotificationResponse from Intent.extra.", e);
+    }
+    return null;
   }
 }

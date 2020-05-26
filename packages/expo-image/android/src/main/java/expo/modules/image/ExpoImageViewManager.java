@@ -14,7 +14,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import expo.modules.image.enums.ImageResizeMode;
 import expo.modules.image.events.ImageErrorEvent;
 import expo.modules.image.events.ImageLoadEvent;
@@ -43,11 +42,11 @@ public class ExpoImageViewManager extends SimpleViewManager<ExpoImageView> {
   @Nullable
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ImageLoadStartEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadStartEvent.EVENT_NAME))
-        .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
-        .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
-        .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
-        .build();
+      .put(ImageLoadStartEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadStartEvent.EVENT_NAME))
+      .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
+      .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
+      .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
+      .build();
   }
 
   // Props setters

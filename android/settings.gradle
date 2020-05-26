@@ -12,7 +12,6 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
     "abi37_0_0",
     "abi36_0_0",
     "abi35_0_0",
-    "abi34_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -33,7 +32,6 @@ includeUnimodulesProjects(
 // FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
         'expo-bluetooth',
-        'expo-notifications',
         'expo-in-app-purchases',
         'expo-updates',
         'expo-splash-screen',

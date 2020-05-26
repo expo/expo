@@ -29,15 +29,13 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 ## 📦 Download and Setup
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
-2. Prepare for Nix installation: `./scripts/create-nix-volume`.
-3. Restart your computer
-4. Install Nix: `curl https://nixos.org/nix/install | sh`
-5. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
+1. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
    - Downloads submodules (like `react-native`) with `git submodule update --init`
    - Fetches files with [_git lfs_](https://git-lfs.github.com), which we use for big native libraries like Google Mobile Vision. Note: you must have `git lfs` already installed.
+   - Ensures [direnv](https://direnv.net/) is installed
    - Ensures Yarn is installed
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)
@@ -93,8 +91,9 @@ The best way to get your changes merged is to build good tests for them! We have
 ### ✅ Unit Testing
 
 1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
-2. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `-test.ios.ts`, `-test.native.ts`, `-test.web.ts`...
-3. You can also test platforms one at a time by pressing `X` and selecting the platform you want to test!
+2. Any new bridged native functions have to be added to the [jest-expo](https://github.com/expo/expo/blob/master/packages/jest-expo/src/preset/expoModules.js) package to ensure they are mocked. To help you do this more easily, we've written a tool and a guide on how to do this. Check out [Generating Jest Mocks](https://github.com/expo/expo/blob/master/guides/Generating%20Jest%20Mocks.md)!
+3. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `-test.ios.ts`, `-test.native.ts`, `-test.web.ts`...
+4. You can also test platforms one at a time by pressing <kbd>X</kbd> and selecting the platform you want to test!
 
 ### 🏁 E2E Testing
 

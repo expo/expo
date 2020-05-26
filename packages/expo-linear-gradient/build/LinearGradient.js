@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { ColorPropType, Platform, ViewPropTypes, processColor } from 'react-native';
+import * as React from 'react';
+import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
 export default class LinearGradient extends React.Component {
     render() {
@@ -15,13 +14,6 @@ export default class LinearGradient extends React.Component {
         })} locations={locations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
     }
 }
-LinearGradient.propTypes = {
-    ...ViewPropTypes,
-    colors: PropTypes.arrayOf(ColorPropType).isRequired,
-    locations: PropTypes.arrayOf(PropTypes.number),
-    start: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-    end: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.number), PropTypes.object]),
-};
 function _normalizePoint(point) {
     if (!point) {
         return undefined;

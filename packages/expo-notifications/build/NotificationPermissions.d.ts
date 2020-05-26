@@ -1,8 +1,3 @@
-import { IosNotificationPermissionsRequest, AndroidNotificationPermissionRequest } from './NotificationPermissionsModule';
-export { IosAlertStyle, IosAllowsPreviews, IosAuthorizationStatus, } from './NotificationPermissionsModule';
-export declare function getPermissionsAsync(): Promise<import("./NotificationPermissionsModule").NotificationPermissionsStatus>;
-export interface NotificationPermissionsRequest {
-    ios?: IosNotificationPermissionsRequest;
-    android?: AndroidNotificationPermissionRequest;
-}
-export declare function requestPermissionsAsync(permissions?: NotificationPermissionsRequest): Promise<import("./NotificationPermissionsModule").NotificationPermissionsStatus>;
+import { NotificationPermissionsRequest } from './NotificationPermissions.types';
+export declare function getPermissionsAsync(): Promise<import("./NotificationPermissions.types").NotificationPermissionsStatus>;
+export declare function requestPermissionsAsync(permissions?: NotificationPermissionsRequest): Promise<import("./NotificationPermissions.types").NotificationPermissionsStatus>;

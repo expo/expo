@@ -1,7 +1,7 @@
 import { CodedError, Platform, SyntheticPlatformEmitter } from '@unimodules/core';
 import Constants from 'expo-constants';
 
-import { DevicePushToken } from './getDevicePushTokenAsync';
+import { DevicePushToken } from './Tokens.types';
 
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   const data = await _subscribeDeviceToPushNotificationsAsync();

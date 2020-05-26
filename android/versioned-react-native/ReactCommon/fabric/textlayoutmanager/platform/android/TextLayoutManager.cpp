@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -23,6 +23,20 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
+    AttributedStringBox attributedStringBox,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  auto &attributedString = attributedStringBox.getValue();
+
+  return measureCache_.get(
+      {attributedString, paragraphAttributes, layoutConstraints},
+      [&](TextMeasureCacheKey const &key) {
+        return doMeasure(
+            attributedString, paragraphAttributes, layoutConstraints);
+      });
+}
+
+Size TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
@@ -30,7 +44,7 @@ Size TextLayoutManager::measure(
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
-      jni::findClassStatic("abi37_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi38_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jstring,
               ReadableMap::javaobject,

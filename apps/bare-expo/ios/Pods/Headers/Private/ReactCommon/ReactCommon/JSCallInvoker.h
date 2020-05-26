@@ -1,1 +1,0 @@
-../../../../../../../../react-native-lab/react-native/ReactCommon/jscallinvoker/ReactCommon/JSCallInvoker.h

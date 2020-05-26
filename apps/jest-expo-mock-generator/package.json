@@ -5,13 +5,12 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
-    "prettify-output": "node ./prettify-output"
+    "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
     "@expo/mux": "^1.0.7",
-    "expo": "~37.0.1",
-    "react": "16.9.0",
-    "react-native": "0.61.4"
+    "expo": "~37.0.6",
+    "react": "16.11.0",
+    "react-native": "0.62.2"
   }
 }

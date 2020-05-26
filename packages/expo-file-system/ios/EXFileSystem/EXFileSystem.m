@@ -2,10 +2,10 @@
 
 #import <UMCore/UMModuleRegistry.h>
 
-#import <EXFileSystem/EXDownloadDelegate.h>
 #import <EXFileSystem/EXFileSystem.h>
 
 #import <CommonCrypto/CommonDigest.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
@@ -13,58 +13,38 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
 
-
 #import <UMCore/UMEventEmitterService.h>
 
-NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
+#import <EXFileSystem/EXResumablesManager.h>
+#import <EXFileSystem/EXSessionTaskDispatcher.h>
+#import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
+#import <EXFileSystem/EXSessionResumableDownloadTaskDelegate.h>
+#import <EXFileSystem/EXSessionUploadTaskDelegate.h>
 
-@interface EXDownloadResumable : NSObject
+NSString * const EXDownloadProgressEventName = @"expo-file-system.downloadProgress";
 
-@property (nonatomic, strong) NSString *uuid;
-@property (nonatomic, strong) NSURLSession *session;
-@property (nonatomic, strong) EXDownloadDelegate *delegate;
+typedef NS_ENUM(NSInteger, EXFileSystemSessionType) {
+  EXFileSystemBackgroundSession = 0,
+  EXFileSystemForegroundSession = 1,
+};
 
-@end
-
-@implementation EXDownloadResumable
-
-- (instancetype)initWithId:(NSString *)uuid
-               withSession:(NSURLSession *)session
-              withDelegate:(EXDownloadDelegate *)delegate;
-{
-  if ((self = [super init])) {
-    _uuid = uuid;
-    _session = session;
-    _delegate = delegate;
-  }
-  return self;
-}
-
-@end
-
+typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
+  EXFileSystemInvalidType = -1,
+  EXFileSystemBinaryContent = 0,
+  EXFileSystemMultipart = 1,
+};
+ 
 @interface EXFileSystem ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
+@property (nonatomic, strong) NSURLSession *backgroundSession;
+@property (nonatomic, strong) NSURLSession *foregroundSession;
+@property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
+@property (nonatomic, strong) EXResumablesManager *resumableManager;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
 @property (nonatomic, strong) NSString *cachesDirectory;
 @property (nonatomic, strong) NSString *bundleDirectory;
-
-@end
-
-@implementation NSData (EXFileSystem)
-
-- (NSString *)md5String
-{
-  unsigned char digest[CC_MD5_DIGEST_LENGTH];
-  CC_MD5(self.bytes, (CC_LONG) self.length, digest);
-  NSMutableString *md5 = [NSMutableString stringWithCapacity:2 * CC_MD5_DIGEST_LENGTH];
-  for (unsigned int i = 0; i < CC_MD5_DIGEST_LENGTH; ++i) {
-    [md5 appendFormat:@"%02x", digest[i]];
-  }
-  return md5;
-}
 
 @end
 
@@ -88,7 +68,12 @@ UM_REGISTER_MODULE();
     _documentDirectory = documentDirectory;
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
-    _downloadObjects = [NSMutableDictionary dictionary];
+    
+    _resumableManager = [EXResumablesManager new];
+    _sessionTaskDispatcher = [EXSessionTaskDispatcher new];
+    _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
+    _foregroundSession = [self _createSession:EXFileSystemForegroundSession delegate:_sessionTaskDispatcher];
+    
     [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
     [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
   }
@@ -135,6 +120,13 @@ UM_REGISTER_MODULE();
 
 - (void)stopObserving {
   
+}
+
+- (void)dealloc
+{
+  [_sessionTaskDispatcher deactivate];
+  [_backgroundSession invalidateAndCancel];
+  [_foregroundSession invalidateAndCancel];
 }
 
 - (NSDictionary *)encodingMap
@@ -190,7 +182,7 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
   }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
     return;
@@ -201,7 +193,7 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
   } else if ([uri.scheme isEqualToString:@"assets-library"] || [uri.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
@@ -219,7 +211,7 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
   }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
     return;
@@ -233,7 +225,7 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
     if ([encodingType isEqualToString:@"base64"]) {
       NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:uri.path];
       if (file == nil) {
-        reject(@"E_FILE_NOT_READ",
+        reject(@"ERR_FILESYSTEM_CANNOT_READ_FILE",
                [NSString stringWithFormat:@"File '%@' could not be read.", uri.path],
                nil);
         return;
@@ -261,13 +253,13 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
       if (string) {
         resolve(string);
       } else {
-        reject(@"E_FILE_NOT_READ",
+        reject(@"ERR_FILESYSTEM_CANNOT_READ_FILE",
                [NSString stringWithFormat:@"File '%@' could not be read.", uri],
                error);
       }
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
@@ -282,7 +274,7 @@ UM_EXPORT_METHOD_AS(writeAsStringAsync,
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", uri],
            nil);
     return;
@@ -301,12 +293,12 @@ UM_EXPORT_METHOD_AS(writeAsStringAsync,
           if ([[NSFileManager defaultManager] createFileAtPath:uri.path contents:imageData attributes:nil]) {
             resolve([NSNull null]);
           } else {
-            return reject(@"E_FILE_UNKNOWN",
+            return reject(@"ERR_FILESYSTEM_UNKNOWN_FILE",
                           [NSString stringWithFormat:@"No such file or directory '%@'", uri.path],
                           nil);
           }
         } else {
-          reject(@"E_INVALID_FORMAT",
+          reject(@"ERR_FILESYSTEM_INVALID_FORMAT",
                  @"Failed to parse base64 string.",
                  nil);
         }
@@ -322,13 +314,13 @@ UM_EXPORT_METHOD_AS(writeAsStringAsync,
       if ([string writeToFile:uri.path atomically:YES encoding:encoding error:&error]) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_FILE_NOT_WRITTEN",
+        reject(@"ERR_FILESYSTEM_CANNOT_WRITE_TO_FILE",
                [NSString stringWithFormat:@"File '%@' could not be written.", uri],
                error);
       }
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
@@ -342,7 +334,7 @@ UM_EXPORT_METHOD_AS(deleteAsync,
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't deletable.", uri],
            nil);
     return;
@@ -350,12 +342,12 @@ UM_EXPORT_METHOD_AS(deleteAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *path = uri.path;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    if ([self _checkIfFileExists:path]) {
       NSError *error;
       if ([[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_FILE_NOT_DELETED",
+        reject(@"ERR_FILESYSTEM_CANNOT_DELETE_FILE",
                [NSString stringWithFormat:@"File '%@' could not be deleted.", uri],
                error);
       }
@@ -363,13 +355,13 @@ UM_EXPORT_METHOD_AS(deleteAsync,
       if (options[@"idempotent"]) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_FILE_NOT_FOUND",
+        reject(@"ERR_FILESYSTEM_CANNOT_FIND_FILE",
                [NSString stringWithFormat:@"File '%@' could not be deleted because it could not be found.", uri],
                nil);
       }
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
@@ -382,22 +374,22 @@ UM_EXPORT_METHOD_AS(moveAsync,
 {
   NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
-    reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
+    reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
   if (!([self permissionsForURI:[from URLByAppendingPathComponent:@".."]] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't movable.", from],
            nil);
     return;
   }
   NSURL *to = [NSURL URLWithString:options[@"to"]];
   if (!to) {
-    reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
+    reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
   if (!([self permissionsForURI:to] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
     return;
@@ -408,9 +400,9 @@ UM_EXPORT_METHOD_AS(moveAsync,
     NSString *fromPath = [from.path stringByStandardizingPath];
     NSString *toPath = [to.path stringByStandardizingPath];
     NSError *error;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:toPath]) {
+    if ([self _checkIfFileExists:toPath]) {
       if (![[NSFileManager defaultManager] removeItemAtPath:toPath error:&error]) {
-        reject(@"E_FILE_NOT_MOVED",
+        reject(@"ERR_FILESYSTEM_CANNOT_MOVE_FILE",
                [NSString stringWithFormat:@"File '%@' could not be moved to '%@' because a file already exists at "
                 "the destination and could not be deleted.", from, to],
                error);
@@ -420,12 +412,12 @@ UM_EXPORT_METHOD_AS(moveAsync,
     if ([[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:&error]) {
       resolve([NSNull null]);
     } else {
-      reject(@"E_FILE_NOT_MOVED",
+      reject(@"ERR_FILESYSTEM_CANNOT_MOVE_FILE",
              [NSString stringWithFormat:@"File '%@' could not be moved to '%@'.", from, to],
              error);
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", from],
            nil);
   }
@@ -438,22 +430,22 @@ UM_EXPORT_METHOD_AS(copyAsync,
 {
   NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
-    reject(@"E_MISSING_PARAMETER", @"Need a `from` location.", nil);
+    reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
   if (!([self permissionsForURI:from] & UMFileSystemPermissionRead)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", from],
            nil);
     return;
   }
   NSURL *to = [NSURL URLWithString:options[@"to"]];
   if (!to) {
-    reject(@"E_MISSING_PARAMETER", @"Need a `to` location.", nil);
+    reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
   if (!([self permissionsForURI:to] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
     return;
@@ -464,7 +456,7 @@ UM_EXPORT_METHOD_AS(copyAsync,
   } else if ([from.scheme isEqualToString:@"assets-library"] || [from.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", from],
            nil);
   }
@@ -479,7 +471,7 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
   
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Directory '%@' could not be created because the location isn't writable.", uri],
            nil);
     return;
@@ -493,12 +485,12 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
                                                         error:&error]) {
       resolve([NSNull null]);
     } else {
-      reject(@"E_DIRECTORY_NOT_CREATED",
+      reject(@"ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
              [NSString stringWithFormat:@"Directory '%@' could not be created.", uri],
              error);
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
@@ -512,7 +504,7 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't readable.", uri],
            nil);
     return;
@@ -524,89 +516,150 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
     if (children) {
       resolve(children);
     } else {
-      reject(@"E_DIRECTORY_NOT_READ",
+      reject(@"ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
              [NSString stringWithFormat:@"Directory '%@' could not be read.", uri],
              error);
     }
   } else {
-    reject(@"E_FILESYSTEM_INVALID_URI",
+    reject(@"ERR_FILESYSTEM_INVALID_URI",
            [NSString stringWithFormat:@"Unsupported URI scheme for '%@'", uri],
            nil);
   }
 }
 
 UM_EXPORT_METHOD_AS(downloadAsync,
-                    downloadAsyncWithUrl:(NSString *)uriString
-                    withLocalURI:(NSString *)localUriString
-                    withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    downloadAsyncWithUrl:(NSString *)urlString
+                                localURI:(NSString *)localUriString
+                                 options:(NSDictionary *)options
+                                resolver:(UMPromiseResolveBlock)resolve
+                                rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURL *url = [NSURL URLWithString:uriString];
+  NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
   if (!([self checkIfFileDirExists:localUri.path])) {
-    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
-           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", localUriString],
+    reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", localUriString, [localUri.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
   if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
            nil);
     return;
   }
-  NSString *path = localUri.path;
-  
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-  sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-  if (headerDict != nil) {
-    sessionConfiguration.HTTPAdditionalHeaders = headerDict;
+  if (![self _checkHeadersDictionary:options[@"headers"]]) {
+    reject(@"ERR_FILESYSTEM_INVALID_HEADERS",
+           @"Invalid headers dictionary. Keys and values should be strings.",
+           nil);
+    return;
   }
-  sessionConfiguration.URLCache = nil;
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-  NSURLSessionDataTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-    if (error) {
-      reject(@"E_DOWNLOAD_FAILED",
-             [NSString stringWithFormat:@"Could not download from '%@'", url],
-             error);
-      return;
-    }
-    [data writeToFile:path atomically:YES];
-    
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
-    if (options[@"md5"]) {
-      result[@"md5"] = [data md5String];
-    }
-    result[@"status"] = @([httpResponse statusCode]);
-    result[@"headers"] = [httpResponse allHeaderFields];
-    resolve(result);
-  }];
+
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
+  }
+  
+  NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
+  NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request];
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
+                                                                                        reject:reject
+                                                                                      localUrl:localUri
+                                                                            shouldCalculateMd5:[options[@"md5"] boolValue]];
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
+  [task resume];
+}
+
+UM_EXPORT_METHOD_AS(uploadAsync,
+                    uploadAsync:(NSString *)urlString
+                       localURI:(NSString *)fileUriString
+                        options:(NSDictionary *)options
+                       resolver:(UMPromiseResolveBlock)resolve
+                       rejecter:(UMPromiseRejectBlock)reject)
+{
+  NSURL *fileUri = [NSURL URLWithString:fileUriString];
+  NSString *httpMethod = options[@"httpMethod"];
+  EXFileSystemUploadType type = [self _getUploadTypeFrom:options[@"uploadType"]];
+  if (![fileUri.scheme isEqualToString:@"file"]) {
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
+           [NSString stringWithFormat:@"Cannot upload file '%@'. Only 'file://' URI are supported.", fileUri],
+           nil);
+    return;
+  }
+  if (!([self _checkIfFileExists:fileUri.path])) {
+    reject(@"ERR_FILE_NOT_EXISTS",
+           [NSString stringWithFormat:@"File '%@' does not exist.", fileUri],
+           nil);
+    return;
+  }
+  if (![self _checkHeadersDictionary:options[@"headers"]]) {
+    reject(@"ERR_FILESYSTEM_INVALID_HEADERS_DICTIONARY",
+           @"Invalid headers dictionary. Keys and values should be strings.",
+           nil);
+    return;
+  }
+  if (!httpMethod) {
+    reject(@"ERR_FILESYSTEM_MISSING_HTTP_METHOD", @"Missing HTTP method.", nil);
+    return;
+  }
+
+  NSMutableURLRequest *request = [self _createRequest:[NSURL URLWithString:urlString] headers:options[@"headers"]];
+  [request setHTTPMethod:httpMethod];
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
+  }
+  
+  NSURLSessionUploadTask *task;
+  if (type == EXFileSystemBinaryContent) {
+    task = [session uploadTaskWithRequest:request fromFile:fileUri];
+  } else if (type == EXFileSystemMultipart) {
+    NSString *boundaryString = [[NSUUID UUID] UUIDString];
+    [request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundaryString] forHTTPHeaderField:@"Content-Type"];
+    NSData *httpBody = [self _createBodyWithBoundary:boundaryString
+                                             fileUri:fileUri
+                                          parameters:options[@"parameters"]
+                                           fieldName:options[@"fieldName"]
+                                            mimeType:options[@"mimeType"]];
+    [request setHTTPBody:httpBody];
+    task = [session uploadTaskWithStreamedRequest:request];
+  } else {
+    reject(@"ERR_FILESYSTEM_INVALID_UPLOAD_TYPE",
+           [NSString stringWithFormat:@"Invalid upload type: '%@'.", options[@"uploadType"]],
+           nil);
+    return;
+  }
+  
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
 }
 
 UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
                     downloadResumableStartAsyncWithUrl:(NSString *)urlString
-                    withFileURI:(NSString *)fileUri
-                    withUUID:(NSString *)uuid
-                    withOptions:(NSDictionary *)options
-                    withResumeData:(NSString *)data
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                                               fileURI:(NSString *)fileUri
+                                                  uuid:(NSString *)uuid
+                                               options:(NSDictionary *)options
+                                            resumeData:(NSString *)data
+                                              resolver:(UMPromiseResolveBlock)resolve
+                                              rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
   if (!([self checkIfFileDirExists:localUrl.path])) {
-    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
-           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", fileUri],
+    reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", fileUri, [localUrl.path stringByDeletingLastPathComponent]],
            nil);
     return;
   }
   if (![localUrl.scheme isEqualToString:@"file"]) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
            nil);
     return;
@@ -614,19 +667,27 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   
   NSString *path = localUrl.path;
   if (!([self _permissionsForPath:path] & UMFileSystemPermissionWrite)) {
-    reject(@"E_FILESYSTEM_PERMISSIONS",
+    reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", fileUri],
            nil);
     return;
   }
+  
+  if (![self _checkHeadersDictionary:options[@"headers"]]) {
+    reject(@"ERR_FILESYSTEM_INVALID_HEADERS_DICTIONARY",
+           @"Invalid headers dictionary. Keys and values should be strings.",
+           nil);
+    return;
+  }
+  
   NSData *resumeData = data ? [[NSData alloc] initWithBase64EncodedString:data options:0] : nil;
   [self _downloadResumableCreateSessionWithUrl:url
-                                withScopedPath:path
-                                      withUUID:uuid
-                                   withOptions:options
-                                withResumeData:resumeData
-                                  withResolver:resolve
-                                  withRejecter:reject];
+                                       fileUrl:localUrl
+                                          uuid:uuid
+                                        optins:options
+                                    resumeData:resumeData
+                                       resolve:resolve
+                                        reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
@@ -634,31 +695,25 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  EXDownloadResumable *downloadResumable = (EXDownloadResumable *)self.downloadObjects[uuid];
-  if (downloadResumable == nil) {
-    reject(@"E_UNABLE_TO_PAUSE",
+  NSURLSessionDownloadTask *task = [_resumableManager taskForId:uuid];
+  if (!task) {
+    reject(@"ERR_FILESYSTEM_CANNOT_FIND_TASK",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
            nil);
-  } else {
-    [downloadResumable.session getTasksWithCompletionHandler:^(NSArray<NSURLSessionDataTask *> * _Nonnull dataTasks, NSArray<NSURLSessionUploadTask *> * _Nonnull uploadTasks, NSArray<NSURLSessionDownloadTask *> * _Nonnull downloadTasks) {
-      NSURLSessionDownloadTask *downloadTask = [downloadTasks firstObject];
-      if (downloadTask) {
-        [downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
-          resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
-        }];
-      } else {
-        reject(@"E_UNABLE_TO_PAUSE",
-               @"There was an error producing resume data",
-               nil);
-      }
-    }];
+    return;
   }
+  
+  UM_WEAKIFY(self);
+  [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
+    UM_ENSURE_STRONGIFY(self);
+    resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
+  }];
 }
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   if(![self freeDiskStorage]) {
-    reject(@"ERR_FILESYSTEM", @"Unable to determine free disk storage capacity", nil);
+    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", nil);
   } else {
     resolve([self freeDiskStorage]);
   }
@@ -667,7 +722,7 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   if(![self totalDiskCapacity]) {
-    reject(@"ERR_FILESYSTEM", @"Unable to determine total disk capacity", nil);
+    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine total disk capacity", nil);
   } else {
     resolve([self totalDiskCapacity]);
   }
@@ -675,99 +730,159 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Internal methods
 
-- (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url withScopedPath:(NSString *)scopedPath withUUID:(NSString *)uuid withOptions:(NSDictionary *)options withResumeData:(NSData * _Nullable)resumeData withResolver:(UMPromiseResolveBlock)resolve withRejecter:(UMPromiseRejectBlock)reject
+- (EXFileSystemUploadType)_getUploadTypeFrom:(NSNumber * _Nullable)type
 {
-  NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  switch ([type intValue]) {
+    case EXFileSystemBinaryContent:
+    case EXFileSystemMultipart:
+      return [type intValue];
+  }
+  
+  return EXFileSystemInvalidType;
+}
+
+// Borrowed from http://stackoverflow.com/questions/2439020/wheres-the-iphone-mime-type-database
+- (NSString *)_guessMIMETypeFromPath:(NSString *)path
+{
+  CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+  CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+  CFRelease(UTI);
+  if (!MIMEType) {
+    return @"application/octet-stream";
+  }
+  return (__bridge NSString *)(MIMEType);
+}
+
+- (NSData *)_createBodyWithBoundary:(NSString *)boundary
+                            fileUri:(NSURL *)fileUri
+                         parameters:(NSDictionary * _Nullable)parameters
+                          fieldName:(NSString * _Nullable)fieldName
+                           mimeType:(NSString * _Nullable)mimetype
+{
+
+  NSMutableData *body = [NSMutableData data];
+  NSData *data = [NSData dataWithContentsOfURL:fileUri];
+  NSString *filename  = [[fileUri path] lastPathComponent];
+
+  if (!mimetype) {
+    mimetype = [self _guessMIMETypeFromPath:[fileUri path]];
+  }
+
+  [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
+    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", parameterKey] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"%@\r\n", parameterValue] dataUsingEncoding:NSUTF8StringEncoding]];
+  }];
+
+  [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\n", fieldName ?: filename, filename]    dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", mimetype] dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:data];
+  [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+
+  return body;
+}
+
+- (NSMutableURLRequest *)_createRequest:(NSURL *)url headers:(NSDictionary * _Nullable)headers
+{
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  if (headers != nil) {
+    for (NSString *headerKey in headers) {
+      [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
+    }
+  }
+  
+  return request;
+}
+
+- (NSURLSession *)_sessionForType:(EXFileSystemSessionType)type
+{
+  switch (type) {
+    case EXFileSystemBackgroundSession:
+      return _backgroundSession;
+    case EXFileSystemForegroundSession:
+      return _foregroundSession;
+  }
+  return nil;
+}
+
+- (BOOL)_checkHeadersDictionary:(NSDictionary * _Nullable)headers
+{
+  for (id key in [headers allKeys]) {
+    if (![key isKindOfClass:[NSString class]] || ![headers[key] isKindOfClass:[NSString class]]) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+- (NSURLSession *)_createSession:(EXFileSystemSessionType)type delegate:(id<NSURLSessionDelegate>)delegate
+{
+  NSURLSessionConfiguration *sessionConfiguration;
+  if (type == EXFileSystemForegroundSession) {
+    sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+  } else {
+    sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSUUID UUID] UUIDString]];
+  }
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   sessionConfiguration.URLCache = nil;
-  
-  __weak typeof(self) weakSelf = self;
+  return [NSURLSession sessionWithConfiguration:sessionConfiguration
+                                       delegate:delegate
+                                  delegateQueue:nil];
+}
+
+- (BOOL)_checkIfFileExists:(NSString *)path
+{
+  return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+- (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url
+                                       fileUrl:(NSURL *)fileUrl
+                                          uuid:(NSString *)uuid
+                                        optins:(NSDictionary *)options
+                                    resumeData:(NSData * _Nullable)resumeData
+                                       resolve:(UMPromiseResolveBlock)resolve
+                                        reject:(UMPromiseRejectBlock)reject
+{
+  UM_WEAKIFY(self);
   EXDownloadDelegateOnWriteCallback onWrite = ^(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
-    __strong EXFileSystem *strongSelf = weakSelf;
-    if (strongSelf && bytesWritten > 0) {
-      [strongSelf sendEventWithName:EXDownloadProgressEventName
-                               body:@{@"uuid":uuid,
-                                      @"data":@{
-                                          @"totalBytesWritten": @(totalBytesWritten),
-                                          @"totalBytesExpectedToWrite": @(totalBytesExpectedToWrite),
-                                          },
-                                      }];
-    }
+    UM_ENSURE_STRONGIFY(self);
+    [self sendEventWithName:EXDownloadProgressEventName
+                       body:@{
+                             @"uuid": uuid,
+                             @"data": @{
+                                 @"totalBytesWritten": @(totalBytesWritten),
+                                 @"totalBytesExpectedToWrite": @(totalBytesExpectedToWrite),
+                             },
+                           }];
   };
-  
-  EXDownloadDelegateOnDownloadCallback onDownload = ^(NSURLSessionDownloadTask *task, NSURL *location) {
-    NSURL *scopedLocation = [NSURL fileURLWithPath:scopedPath];
-    NSData *locationData = [NSData dataWithContentsOfURL:location];
-    [locationData writeToFile:scopedPath atomically:YES];
-    NSData *data = [NSData dataWithContentsOfURL:scopedLocation];
-    if (!data) {
-      reject(@"E_UNABLE_TO_SAVE",
-             @"Unable to save file to local URI",
-             nil);
-      return;
-    }
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    result[@"uri"] = scopedLocation.absoluteString;
-    result[@"complete"] = @(YES);
-    if (options[@"md5"]) {
-      result[@"md5"] = [data md5String];
-    }
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-    result[@"status"] = @([httpResponse statusCode]);
-    result[@"headers"] = [httpResponse allHeaderFields];
-    
-    __strong EXFileSystem *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf.downloadObjects removeObjectForKey:uuid];
-    }
-    
-    resolve(result);
-  };
-  
-  EXDownloadDelegateOnErrorCallback onError = ^(NSError *error) {
-    //"cancelled" description when paused.  Don't throw.
-    if ([error.localizedDescription isEqualToString:@"cancelled"]) {
-      __strong EXFileSystem *strongSelf = weakSelf;
-      if (strongSelf) {
-        [strongSelf.downloadObjects removeObjectForKey:uuid];
-      }
-      resolve([NSNull null]);
-    } else {
-      reject(@"E_UNABLE_TO_DOWNLOAD",
-             [NSString stringWithFormat:@"Unable to download from: %@", url.absoluteString],
-             error);
-    }
-  };
-  
-  
-  EXDownloadDelegate *downloadDelegate = [[EXDownloadDelegate alloc] initWithId:uuid
-                                                                        onWrite:onWrite
-                                                                     onDownload:onDownload
-                                                                        onError:onError];
-  
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
-                                                        delegate:downloadDelegate
-                                                   delegateQueue:[NSOperationQueue mainQueue]];
-  
-  EXDownloadResumable *downloadResumable = [[EXDownloadResumable alloc] initWithId:uuid
-                                                                       withSession:session
-                                                                      withDelegate:downloadDelegate];
-  self.downloadObjects[downloadResumable.uuid] = downloadResumable;
   
   NSURLSessionDownloadTask *downloadTask;
+  NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
+  if (!session) {
+    reject(@"ERR_FILESYSTEM_INVALID_SESSION_TYPE",
+           [NSString stringWithFormat:@"Invalid session type: '%@'", options[@"sessionType"]],
+           nil);
+    return;
+  }
+  
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    if (options[@"headers"]) {
-      NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-      for (NSString *key in headerDict) {
-        NSString *value = (NSString *) [headerDict objectForKey:key];
-        [request addValue:value forHTTPHeaderField:key];
-      }
-    }
+    NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
     downloadTask = [session downloadTaskWithRequest:request];
   }
+  EXSessionTaskDelegate *taskDelegate = [[EXSessionResumableDownloadTaskDelegate alloc] initWithResolve:resolve
+                                                                                                 reject:reject
+                                                                                               localUrl:fileUrl
+                                                                                     shouldCalculateMd5:[options[@"md5"] boolValue]
+                                                                                        onWriteCallback:onWrite
+                                                                                       resumableManager:_resumableManager
+                                                                                                   uuid:uuid];
+  [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:downloadTask];
+  [_resumableManager registerTask:downloadTask uuid:uuid];
   [downloadTask resume];
 }
 
@@ -809,7 +924,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 - (BOOL)checkIfFileDirExists:(NSString *)path
 {
   NSString *dir = [path stringByDeletingLastPathComponent];
-  return [[NSFileManager defaultManager] fileExistsAtPath:dir];
+  return [self _checkIfFileExists:dir];
 }
 
 #pragma mark - Class methods
@@ -837,7 +952,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 {
   return [EXFileSystem generatePathInDirectory:directory withExtension:extension];
 }
-
 
 + (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
 {

@@ -1,76 +1,92 @@
-import { Platform } from '@unimodules/core';
 import uuidv4 from 'uuid/v4';
 
-import {
-  IosNotificationRequestOptions,
-  AndroidNotificationRequestOptions,
-} from './NotificationPresenter.types';
 import NotificationScheduler from './NotificationScheduler';
+import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
 import {
-  NativeCalendarTrigger,
-  NativeNotificationTrigger,
-  IosNotificationTrigger,
-  AndroidNotificationTrigger,
-} from './NotificationScheduler.types';
-import { NotificationRequest } from './presentNotificationAsync';
+  NotificationRequestInput,
+  NotificationTriggerInput,
+  DailyTriggerInput,
+  CalendarTriggerInput,
+  TimeIntervalTriggerInput,
+} from './Notifications.types';
 
-export type CalendarTrigger = Omit<NativeCalendarTrigger['value'], 'type'> & { repeats?: boolean };
-export interface TimeIntervalTrigger {
-  repeats?: boolean;
-  seconds: number;
-}
-export type DateTrigger = Date | number;
-export type NotificationTrigger = (DateTrigger | TimeIntervalTrigger) & {
-  ios?: IosNotificationTrigger;
-  android?: AndroidNotificationTrigger;
-};
-
-type PlatformSpecificOptions = IosNotificationRequestOptions | AndroidNotificationRequestOptions;
 export default async function scheduleNotificationAsync(
-  notification: NotificationRequest,
-  trigger: NotificationTrigger
+  request: NotificationRequestInput
 ): Promise<string> {
-  // Remember current platform-specific options
-  const platformSpecificOptions: PlatformSpecificOptions | undefined =
-    notification[Platform.OS] ?? undefined;
-  // Remove all known platform-specific options
-  const { ios, android, identifier, ...baseRequest } = notification;
-  // Merge current platform-specific options
-  const easyBodyNotificationSpec = { ...baseRequest, ...platformSpecificOptions };
-  // Stringify `body`
-  const { body, ...restNotificationSpec } = easyBodyNotificationSpec;
-  const notificationSpec = { ...restNotificationSpec, body: JSON.stringify(body) };
-
-  // If identifier has not been provided, let's create one.
-  const notificationIdentifier = identifier ?? uuidv4();
-
   return await NotificationScheduler.scheduleNotificationAsync(
-    notificationIdentifier,
-    notificationSpec,
-    parseTrigger(trigger[Platform.OS] ?? trigger)
+    request.identifier ?? uuidv4(),
+    request.content,
+    parseTrigger(request.trigger)
   );
 }
 
-type NativeTrigger =
-  | { type: 'interval'; value: number; repeats: boolean }
-  | { type: 'date'; value: number }
-  | { type: 'calendar'; value: CalendarTrigger };
+function parseTrigger(userFacingTrigger: NotificationTriggerInput): NativeNotificationTriggerInput {
+  if (userFacingTrigger === null) {
+    return null;
+  }
 
-function parseTrigger(
-  userFacingTrigger: DateTrigger | TimeIntervalTrigger | CalendarTrigger
-): NativeNotificationTrigger {
+  if (userFacingTrigger === undefined) {
+    throw new TypeError(
+      'Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.'
+    );
+  }
+
   if (userFacingTrigger instanceof Date) {
-    return { type: 'date', value: userFacingTrigger.getTime() };
+    return { type: 'date', timestamp: userFacingTrigger.getTime() };
   } else if (typeof userFacingTrigger === 'number') {
-    return { type: 'date', value: userFacingTrigger };
+    return { type: 'date', timestamp: userFacingTrigger };
+  } else if (isDailyTriggerInput(userFacingTrigger)) {
+    const hour = userFacingTrigger.hour;
+    const minute = userFacingTrigger.minute;
+    if (hour === undefined || hour == null || minute === undefined || minute == null) {
+      throw new TypeError('Both hour and minute need to have valid values. Found undefined');
+    }
+    if (hour < 0 || hour > 23) {
+      throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
+    }
+    if (minute < 0 || minute > 59) {
+      throw new RangeError(`The minute parameter needs to be between 0 and 59. Found: ${minute}`);
+    }
+    return {
+      type: 'daily',
+      hour,
+      minute,
+    };
+  } else if (isSecondsPropertyMisusedInCalendarTriggerInput(userFacingTrigger)) {
+    throw new TypeError(
+      'Could not have inferred the notification trigger type: if you want to use a time interval trigger, pass in only `seconds` with or without `repeats` property; if you want to use calendar-based trigger, pass in `second`.'
+    );
   } else if ('seconds' in userFacingTrigger) {
     return {
-      type: 'interval',
-      value: userFacingTrigger.seconds,
+      type: 'timeInterval',
+      seconds: userFacingTrigger.seconds,
       repeats: userFacingTrigger.repeats ?? false,
     };
   } else {
     const { repeats, ...calendarTrigger } = userFacingTrigger;
     return { type: 'calendar', value: calendarTrigger, repeats };
   }
+}
+
+function isDailyTriggerInput(
+  trigger: DailyTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput
+): trigger is DailyTriggerInput {
+  return (
+    Object.keys(trigger).length === 3 &&
+    'hour' in trigger &&
+    'minute' in trigger &&
+    'repeats' in trigger &&
+    trigger.repeats === true
+  );
+}
+
+function isSecondsPropertyMisusedInCalendarTriggerInput(
+  trigger: TimeIntervalTriggerInput | CalendarTriggerInput
+) {
+  return (
+    // eg. { seconds: ..., repeats: ..., hour: ... }
+    ('seconds' in trigger && 'repeats' in trigger && Object.keys(trigger).length > 2) ||
+    // eg. { seconds: ..., hour: ... }
+    ('seconds' in trigger && !('repeats' in trigger) && Object.keys(trigger).length > 1)
+  );
 }

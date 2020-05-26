@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/React/DevSupport/ABI34_0_0RCTPackagerClient.h

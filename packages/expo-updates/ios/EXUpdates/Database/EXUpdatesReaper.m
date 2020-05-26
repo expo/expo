@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSDate *beginDeleteFromDatabase = [NSDate date];
 
-    [database markUpdateReadyWithId:launchedUpdate.updateId error:&error];
+    [database markUpdateFinished:launchedUpdate error:&error];
     if (error) {
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
       return;

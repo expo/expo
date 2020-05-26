@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
 
     ss.dependency 'Amplitude-iOS', '~> 4.7.1'
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
-    ss.dependency 'Crashlytics', '~> 3.14.0'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
@@ -42,11 +41,6 @@ Pod::Spec.new do |s|
     ss.dependency "ExpoKit/Core"
     ss.dependency 'Stripe', '~> 10.1.0'
     ss.source_files = 'ios/Exponent/Versioned/Optional/Payments/*.{h,m}'
-  end
-
-  s.subspec "AR" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.source_files = 'ios/Exponent/Versioned/Optional/ARKit/**'
   end
 
   s.subspec "FaceDetector" do |ss|

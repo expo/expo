@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoScreenCapture.js","sourceRoot":"","sources":["../src/ExpoScreenCapture.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AAEtD,eAAe,kBAAkB,CAAC,iBAAiB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\n\nexport default NativeModulesProxy.ExpoScreenCapture;\n"]}

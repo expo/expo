@@ -138,6 +138,10 @@ EXImagePicker:
   LABEL: EXImagePicker
   PROJECT_PATH: EXImagePicker.xcodeproj
   UUID: 9ACF1D2895E366F44F904503F65171CD
+EXInAppPurchases:
+  LABEL: EXInAppPurchases
+  PROJECT_PATH: EXInAppPurchases.xcodeproj
+  UUID: D42675B43F7A8B793138E364CE98BFEE
 EXKeepAwake:
   LABEL: EXKeepAwake
   PROJECT_PATH: EXKeepAwake.xcodeproj
@@ -190,6 +194,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenCapture:
+  LABEL: EXScreenCapture
+  PROJECT_PATH: EXScreenCapture.xcodeproj
+  UUID: 41748256BF35CA80D3CE24FFC0C6012B
 EXScreenOrientation:
   LABEL: EXScreenOrientation
   PROJECT_PATH: EXScreenOrientation.xcodeproj
@@ -230,10 +238,6 @@ EXTaskManager:
   LABEL: EXTaskManager
   PROJECT_PATH: EXTaskManager.xcodeproj
   UUID: 86D546D1F048CDA66BE7589194F91D23
-EXUpdates:
-  LABEL: EXUpdates
-  PROJECT_PATH: EXUpdates.xcodeproj
-  UUID: 076FF2640FFF3466FB36FD12A629113A
 EXWebBrowser:
   LABEL: EXWebBrowser
   PROJECT_PATH: EXWebBrowser.xcodeproj
@@ -370,6 +374,10 @@ react-native-safe-area-context:
   LABEL: react-native-safe-area-context
   PROJECT_PATH: react-native-safe-area-context.xcodeproj
   UUID: 6FF729CB9CEA59FDDF1BA16AEB2B98D6
+react-native-segmented-control:
+  LABEL: react-native-segmented-control
+  PROJECT_PATH: react-native-segmented-control.xcodeproj
+  UUID: 16ABF49F17747086945AFC5E30F90858
 React-RCTActionSheet:
   LABEL: React-RCTActionSheet
   PROJECT_PATH: React-RCTActionSheet.xcodeproj

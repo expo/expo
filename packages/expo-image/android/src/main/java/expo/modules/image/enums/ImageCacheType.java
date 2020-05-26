@@ -6,8 +6,8 @@ public enum ImageCacheType {
   UNKNOWN(DataSource.LOCAL, 0),
   NONE(DataSource.REMOTE, 1),
   DISK(new DataSource[]{
-      DataSource.DATA_DISK_CACHE,
-      DataSource.RESOURCE_DISK_CACHE
+    DataSource.DATA_DISK_CACHE,
+    DataSource.RESOURCE_DISK_CACHE
   }, 2),
   MEMORY(DataSource.MEMORY_CACHE, 3);
 
@@ -24,10 +24,6 @@ public enum ImageCacheType {
     mEnumValue = enumValue;
   }
 
-  public int getEnumValue() {
-    return mEnumValue;
-  }
-
   public static ImageCacheType fromNativeValue(DataSource value) {
     for (ImageCacheType cacheType : ImageCacheType.values()) {
       for (DataSource dataSource : cacheType.mDataSources) {
@@ -37,5 +33,9 @@ public enum ImageCacheType {
       }
     }
     return ImageCacheType.UNKNOWN;
+  }
+
+  public int getEnumValue() {
+    return mEnumValue;
   }
 }

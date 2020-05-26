@@ -18,14 +18,6 @@ public enum ImageResizeMode {
     mScaleType = scaleType;
   }
 
-  public String getStringValue() {
-    return mStringValue;
-  }
-
-  public ScaleType getScaleType() {
-    return mScaleType;
-  }
-
   public static ImageResizeMode fromStringValue(String value) {
     for (ImageResizeMode resizeMode : ImageResizeMode.values()) {
       if (resizeMode.getStringValue().equals(value)) {
@@ -33,5 +25,13 @@ public enum ImageResizeMode {
       }
     }
     return ImageResizeMode.UNKNOWN;
+  }
+
+  public String getStringValue() {
+    return mStringValue;
+  }
+
+  public ScaleType getScaleType() {
+    return mScaleType;
   }
 }

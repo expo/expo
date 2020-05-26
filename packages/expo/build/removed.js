@@ -27,6 +27,16 @@ Object.defineProperties(module.exports, {
             removedModule(`import { Animated } from 'expo' -> import Animated from 'react-native-reanimated'`, 'Animated', 'react-native-reanimated');
         },
     },
+    AR: {
+        enumerable: true,
+        get() {
+            if (__DEV__) {
+                setTimeout(() => {
+                    throw new Error('The AR module has been removed from the Expo package. See https://expo.fyi/deprecating-ar for more information.');
+                }, 1000);
+            }
+        },
+    },
     AuthSession: {
         enumerable: true,
         get() {

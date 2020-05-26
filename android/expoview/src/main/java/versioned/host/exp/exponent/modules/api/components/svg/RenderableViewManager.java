@@ -23,11 +23,15 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.MatrixMathHelper;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.TransformHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1228,6 +1232,17 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     @ReactProp(name = "responsible")
     public void setResponsible(VirtualView node, boolean responsible) {
         node.setResponsible(responsible);
+    }
+
+    @ReactProp(name = ViewProps.POINTER_EVENTS)
+    public void setPointerEvents(VirtualView view, @androidx.annotation.Nullable String pointerEventsStr) {
+        if (pointerEventsStr == null) {
+            view.setPointerEvents(PointerEvents.AUTO);
+        } else {
+            PointerEvents pointerEvents =
+                    PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+            view.setPointerEvents(pointerEvents);
+        }
     }
 
     @ReactProp(name = "onLayout")

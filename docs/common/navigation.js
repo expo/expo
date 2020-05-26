@@ -1,32 +1,33 @@
-const prevaledNavigationData = require('./navigation-data');
 const packageVersion = require('../package.json').version;
+const prevaledNavigationData = require('./navigation-data');
 
 // Groups of sections
 // - Each section is a top-level folder within the version directory
 // - The groups of sections are expressed only below, there is no representation of them in the filesystem
 const GROUPS = {
-  'The Basics': ['Introduction', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
+  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
+  'Managed Workflow': ['Fundamentals', 'Distributing Your App', 'Assorted Guides'],
+  Deprecated: ['ExpoKit'],
   'Bare Workflow': ['Essentials'],
-  'API Reference': ['Expo SDK', 'React Native'],
+  'Expo SDK': ['Expo SDK'],
+  'React Native': ['React Native'],
 };
 
 // This array provides the ordering for pages within each section
 const sections = [
   {
-    name: 'Introduction',
+    name: 'Get Started',
+    reference: ['Installation', 'Create a new app'],
+  },
+  {
+    name: 'Conceptual Overview',
     reference: [
-      'Introduction',
       'Workflows',
       'Walkthrough',
       'Limitations',
       'Frequently asked questions',
       'Common Questions',
     ],
-  },
-  {
-    name: 'Get Started',
-    reference: ['Installation', 'Create a new app'],
   },
   {
     name: 'Tutorial',
@@ -47,25 +48,28 @@ const sections = [
     reference: ['Using the documentation', 'Join the community', 'Additional resources'],
   },
   {
-    name: 'Guides',
+    name: 'Assorted Guides',
     reference: [
-      'App Icons',
       'Assets',
-      'Error Handling',
-      'Preloading & Caching Assets',
       'Icons',
-      'Custom Fonts',
       'Using Custom Fonts',
       'Routing & Navigation',
-      'Configuring StatusBar',
+      'Authentication',
+      'App Icons',
       'Create a Splash Screen',
-      'Offline Support',
+      'Configuring StatusBar',
       'Configuring OTA Updates',
-      'Account Permissions',
+      'Preloading & Caching Assets',
+      'Offline Support',
+      'Progressive Web Apps',
+      'Customizing Metro',
+      'Customizing Webpack',
       'Push Notifications',
       'Using FCM for Push Notifications',
       'Notification Channels',
+      'Error Handling',
       'Testing with Jest',
+      'Account Permissions',
       'Using TypeScript',
       'Using Modern JavaScript',
       'Using ClojureScript',
@@ -75,6 +79,7 @@ const sections = [
       'Using Bugsnag',
       'User Interface Component Libraries',
       'Crafting Educational Materials',
+      'Custom Fonts',
     ],
   },
   {
@@ -110,16 +115,18 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
+      'Using Libraries',
       'Viewing Logs',
-      'Debugging',
-      'Development Mode',
-      'Common Development Errors',
+      'Development and Production Mode',
       'iOS Simulator',
       'Android Studio Emulator',
+      'Debugging',
+      'Common Development Errors',
       'Configuration with app.json',
       'Publishing',
       'Release Channels',
       'Building Standalone Apps',
+      'Developing for Web',
       'Upgrading Expo SDK Walkthrough',
       'Linking',
       'How Expo Works',
@@ -133,11 +140,14 @@ const sections = [
     reference: [
       'Bare Workflow Walkthrough',
       'Up and Running',
+      'Using Libraries',
+      'Existing Apps',
       'Supported Expo SDK APIs',
       'Using Expo client',
       'Using Expo for web',
       'Ejecting from Managed Workflow',
       'Migrating from ExpoKit',
+      'Updating your App',
     ],
   },
   {
@@ -185,6 +195,7 @@ const sections = [
       'SafeAreaView',
       'ScrollView',
       'SectionList',
+      'SegmentedControl',
       'SegmentedControlIOS',
       'Slider',
       'SnapshotViewIOS',
@@ -247,36 +258,39 @@ const sections = [
 // TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
 // move this logic to GROUPS instead
 const ROOT = [
-  'Introduction',
   'Get Started',
   'Tutorial',
+  'Conceptual Overview',
   'Fundamentals',
-  'Guides',
   'Distributing Your App',
-  'ExpoKit',
+  'Assorted Guides',
   'Essentials',
   'Expo SDK',
   'React Native',
+  'ExpoKit',
 ];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
 
-  let subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
+  const subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
 
   arr.forEach(category => {
     category.weight = reference.indexOf(category.name) * -1;
   });
 
-  let arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
+  const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
+  return subSort(
+    arrSortedByWeight,
+    arrSortedByWeight.findIndex(o => o.weight === 1)
+  );
 };
 
 const sortNav = nav => {
   nav = sortAccordingToReference(nav, ROOT);
 
   sections.forEach(({ name, reference }) => {
-    let section = nav.find(o => {
+    const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
     if (section) {
@@ -294,28 +308,14 @@ function getGroupForSectionName(sectionName) {
 
 // Yikes, this groups together multiple sections under one heading
 const groupNav = nav => {
-  let sections = [];
-  let groupNameToSectionIndex = {};
+  const sections = [];
+  const groupNameToSectionIndex = {};
   nav.forEach(section => {
-    // This moves the "Overview" post to the top of the Expo SDK section
-    if (section.name === 'Expo SDK') {
-      let overview;
-      section.posts.forEach(post => {
-        if (post.name === 'Overview') {
-          overview = post;
-        }
-      });
-      if (overview) {
-        section.posts.splice(section.posts.indexOf(overview), 1);
-        section.posts.unshift(overview);
-      }
-    }
-
     // If it's grouped then we add it
-    let groupName = getGroupForSectionName(section.name);
+    const groupName = getGroupForSectionName(section.name);
     if (groupName) {
       if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
-        let existingSectionIndex = groupNameToSectionIndex[groupName];
+        const existingSectionIndex = groupNameToSectionIndex[groupName];
         sections[existingSectionIndex].children.push(section);
       } else {
         groupNameToSectionIndex[groupName] = sections.length;
@@ -333,10 +333,19 @@ const groupNav = nav => {
   return sections;
 };
 
-const sortedNavigation = Object.assign(
-  ...Object.entries(prevaledNavigationData).map(([version, versionNavigation]) => ({
+const sortedReference = Object.assign(
+  ...Object.entries(prevaledNavigationData.reference).map(([version, versionNavigation]) => ({
     [version]: groupNav(sortNav(versionNavigation)),
   }))
 );
 
-module.exports = { ...sortedNavigation, latest: sortedNavigation['v' + packageVersion] };
+const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
+const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
+
+module.exports = {
+  generalDirectories: prevaledNavigationData.generalDirectories,
+  startingDirectories: prevaledNavigationData.startingDirectories,
+  starting: sortedStarting,
+  general: sortedGeneral,
+  reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+};

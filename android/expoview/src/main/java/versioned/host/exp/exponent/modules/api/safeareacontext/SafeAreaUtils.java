@@ -2,88 +2,75 @@ package versioned.host.exp.exponent.modules.api.safeareacontext;
 
 import android.graphics.Rect;
 import android.os.Build;
-import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
-import android.view.WindowManager;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.PixelUtil;
-
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 
 /* package */ class SafeAreaUtils {
-  static WritableMap edgeInsetsToJsMap(EdgeInsets insets) {
-    WritableMap insetsMap = Arguments.createMap();
-    insetsMap.putDouble("top", PixelUtil.toDIPFromPixel(insets.top));
-    insetsMap.putDouble("right", PixelUtil.toDIPFromPixel(insets.right));
-    insetsMap.putDouble("bottom", PixelUtil.toDIPFromPixel(insets.bottom));
-    insetsMap.putDouble("left", PixelUtil.toDIPFromPixel(insets.left));
-    return insetsMap;
-  }
 
-  static Map<String, Float> edgeInsetsToJavaMap(EdgeInsets insets) {
-    return MapBuilder.of(
-        "top",
-        PixelUtil.toDIPFromPixel(insets.top),
-        "right",
-        PixelUtil.toDIPFromPixel(insets.right),
-        "bottom",
-        PixelUtil.toDIPFromPixel(insets.bottom),
-        "left",
-        PixelUtil.toDIPFromPixel(insets.left));
-  }
-
-  static @Nullable EdgeInsets getSafeAreaInsets(WindowManager windowManager, View rootView) {
-    // Window insets are parts of the window that are covered by system views (status bar,
-    // navigation bar, notches). There are no apis the get these values for android < M so we
-    // do a best effort polyfill.
-    EdgeInsets windowInsets;
+  private static @Nullable EdgeInsets getRootWindowInsetsCompat(View rootView) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       WindowInsets insets = rootView.getRootWindowInsets();
       if (insets == null) {
         return null;
       }
-      windowInsets = new EdgeInsets(
+      return new EdgeInsets(
           insets.getSystemWindowInsetTop(),
           insets.getSystemWindowInsetRight(),
-          insets.getSystemWindowInsetBottom(),
+          // System insets are more reliable to account for notches but the
+          // system inset for bottom includes the soft keyboard which we don't
+          // want to be consistent with iOS. In practice it should always be
+          // correct since there cannot be a notch on this edge.
+          insets.getStableInsetBottom(),
           insets.getSystemWindowInsetLeft());
     } else {
-      int rotation = windowManager.getDefaultDisplay().getRotation();
-      int statusBarHeight = 0;
-      int resourceId = rootView.getResources().getIdentifier("status_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        statusBarHeight = rootView.getResources().getDimensionPixelSize(resourceId);
-      }
-      int navbarHeight = 0;
-      resourceId = rootView.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-      if (resourceId > 0) {
-        navbarHeight = rootView.getResources().getDimensionPixelSize(resourceId);
-      }
+      Rect visibleRect = new Rect();
+      rootView.getWindowVisibleDisplayFrame(visibleRect);
+      return new EdgeInsets(
+          visibleRect.top,
+          rootView.getWidth() - visibleRect.right,
+          rootView.getHeight() - visibleRect.bottom,
+          visibleRect.left);
+    }
+  }
 
-      windowInsets = new EdgeInsets(
-          statusBarHeight,
-          rotation == Surface.ROTATION_90 ? navbarHeight : 0,
-          rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180 ? navbarHeight : 0,
-          rotation == Surface.ROTATION_270 ? navbarHeight : 0);
+  static @Nullable EdgeInsets getSafeAreaInsets(View rootView, View view) {
+    EdgeInsets windowInsets = getRootWindowInsetsCompat(rootView);
+    if (windowInsets == null) {
+      return null;
     }
 
-    // Calculate the part of the root view that overlaps with window insets.
-    View contentView = rootView.findViewById(android.R.id.content);
+    // Calculate the part of the view that overlaps with window insets.
     float windowWidth = rootView.getWidth();
     float windowHeight = rootView.getHeight();
     Rect visibleRect = new Rect();
-    contentView.getGlobalVisibleRect(visibleRect);
+    view.getGlobalVisibleRect(visibleRect);
 
     windowInsets.top = Math.max(windowInsets.top - visibleRect.top, 0);
     windowInsets.left = Math.max(windowInsets.left - visibleRect.left, 0);
-    windowInsets.bottom = Math.max(visibleRect.top + contentView.getHeight() + windowInsets.bottom - windowHeight, 0);
-    windowInsets.right = Math.max(visibleRect.left + contentView.getWidth() + windowInsets.right - windowWidth, 0);
+    windowInsets.bottom = Math.max(visibleRect.top + view.getHeight() + windowInsets.bottom - windowHeight, 0);
+    windowInsets.right = Math.max(visibleRect.left + view.getWidth() + windowInsets.right - windowWidth, 0);
     return windowInsets;
+  }
+
+  static @Nullable versioned.host.exp.exponent.modules.api.safeareacontext.Rect getFrame(ViewGroup rootView, View view) {
+    // This can happen while the view gets unmounted.
+    if (view.getParent() == null) {
+      return null;
+    }
+    Rect offset = new Rect();
+    view.getDrawingRect(offset);
+    try {
+      rootView.offsetDescendantRectToMyCoords(view, offset);
+    } catch (IllegalArgumentException ex) {
+      // This can throw if the view is not a descendant of rootView. This should not
+      // happen but avoid potential crashes.
+      ex.printStackTrace();
+      return null;
+    }
+
+    return new versioned.host.exp.exponent.modules.api.safeareacontext.Rect(offset.left, offset.top, view.getWidth(), view.getHeight());
   }
 }

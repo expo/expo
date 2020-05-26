@@ -2,13 +2,13 @@ import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import uuidv4 from 'uuid/v4';
 import ExponentFileSystem from './ExponentFileSystem';
-import { EncodingType, } from './FileSystem.types';
+import { EncodingType, FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
 // Prevent webpack from pruning this.
 const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
-export { EncodingType, };
+export { EncodingType, FileSystemSessionType, FileSystemUploadType, };
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';
@@ -102,7 +102,21 @@ export async function downloadAsync(uri, fileUri, options = {}) {
     if (!ExponentFileSystem.downloadAsync) {
         throw new UnavailabilityError('expo-file-system', 'downloadAsync');
     }
-    return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+    return await ExponentFileSystem.downloadAsync(uri, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        ...options,
+    });
+}
+export async function uploadAsync(url, fileUri, options = {}) {
+    if (!ExponentFileSystem.uploadAsync) {
+        throw new UnavailabilityError('expo-file-system', 'uploadAsync');
+    }
+    return await ExponentFileSystem.uploadAsync(url, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        uploadType: FileSystemUploadType.BINARY_CONTENT,
+        ...options,
+        httpMethod: (options.httpMethod || 'POST').toUpperCase(),
+    });
 }
 export function createDownloadResumable(uri, fileUri, options, callback, resumeData) {
     return new DownloadResumable(uri, fileUri, options, callback, resumeData);
@@ -158,7 +172,7 @@ export class DownloadResumable {
         if (this._subscription) {
             return;
         }
-        this._subscription = this._emitter.addListener('Exponent.downloadProgress', (event) => {
+        this._subscription = this._emitter.addListener('expo-file-system.downloadProgress', (event) => {
             if (event.uuid === this._uuid) {
                 const callback = this._callback;
                 if (callback) {

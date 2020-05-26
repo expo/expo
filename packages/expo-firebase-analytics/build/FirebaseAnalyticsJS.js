@@ -15,6 +15,8 @@ class FirebaseAnalyticsJS {
     constructor(config, options) {
         this.eventQueue = new Set();
         this.flushEventsPromise = Promise.resolve();
+        this.lastTime = -1;
+        this.sequenceNr = 1;
         // Verify the measurement- & client Ids
         if (!config.measurementId)
             throw new Error('No valid measurementId. Make sure to provide a valid measurementId with a G-XXXXXXXXXX format.');
@@ -44,8 +46,13 @@ class FirebaseAnalyticsJS {
             ...options.customArgs,
             v: 2,
             tid: config.measurementId,
-            cid: this.options.clientId,
+            cid: options.clientId,
+            sid: options.sessionId,
+            _s: this.sequenceNr++,
+            seg: 1,
         };
+        if (options.sessionNumber)
+            queryArgs.sct = options.sessionNumber;
         if (options.userLanguage)
             queryArgs.ul = options.userLanguage;
         if (options.appName)
@@ -58,31 +65,46 @@ class FirebaseAnalyticsJS {
             queryArgs.dl = options.docLocation;
         if (options.screenRes)
             queryArgs.sr = options.screenRes;
+        if (options.debug)
+            queryArgs._dbg = 1;
+        if (this.sequenceNr === 2)
+            queryArgs._ss = 1; // Session start
         let body;
+        const lastTime = this.lastTime;
         if (events.size > 1) {
             body = '';
             events.forEach(event => {
-                body += encodeQueryArgs(event) + '\n';
+                body += encodeQueryArgs(event, this.lastTime) + '\n';
+                this.lastTime = event._et;
             });
         }
         else if (events.size === 1) {
             const event = events.values().next().value;
+            this.lastTime = event._et;
             queryArgs = {
                 ...event,
                 ...queryArgs,
             };
         }
-        const args = encodeQueryArgs(queryArgs);
-        if (body)
-            console.log(`FirebaseAnalyticsJS body: ${body}...`);
-        await fetch(`${this.url}?${args}`, {
+        const args = encodeQueryArgs(queryArgs, lastTime);
+        const url = `${this.url}?${args}`;
+        await fetch(url, {
             method: 'POST',
+            mode: 'no-cors',
             cache: 'no-cache',
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8',
+            },
+            ...(options.headers
+                ? {
+                    headers: options.headers,
+                }
+                : {}),
             body,
         });
     }
     async addEvent(event) {
-        const { userId, userProperties, screenName } = this;
+        const { userId, userProperties, screenName, options } = this;
         // Extend the event with the currently set User-id
         if (userId)
             event.uid = userId;
@@ -110,7 +132,7 @@ class FirebaseAnalyticsJS {
                     // nop
                 }
                 this.flushEventsPromise = this.flushEvents();
-            }, this.options.maxCacheTime);
+            }, options.debug ? 10 : options.maxCacheTime);
         }
     }
     async flushEvents() {
@@ -197,6 +219,9 @@ class FirebaseAnalyticsJS {
         const event = FirebaseAnalyticsJS.parseEvent(this.options, eventName, eventParams);
         if (!this.enabled)
             return;
+        if (this.options.debug) {
+            console.log(`FirebaseAnalytics event: "${eventName}", params: ${JSON.stringify(eventParams, undefined, 2)}`);
+        }
         return this.addEvent(event);
     }
     /**
@@ -261,12 +286,21 @@ class FirebaseAnalyticsJS {
         this.userId = undefined;
         this.userProperties = undefined;
     }
+    /**
+     * Enables or disabled debug mode.
+     */
+    async setDebugModeEnabled(isEnabled) {
+        this.options.debug = isEnabled;
+    }
 }
-function encodeQueryArgs(queryArgs) {
-    const now = Date.now();
-    return Object.keys(queryArgs)
+function encodeQueryArgs(queryArgs, lastTime) {
+    let keys = Object.keys(queryArgs);
+    if (lastTime < 0) {
+        keys = keys.filter(key => key !== '_et');
+    }
+    return keys
         .map(key => {
-        return `${key}=${encodeURIComponent(key === '_et' ? Math.max(now - queryArgs[key], 0) : queryArgs[key])}`;
+        return `${key}=${encodeURIComponent(key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key])}`;
     })
         .join('&');
 }

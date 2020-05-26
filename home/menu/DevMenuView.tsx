@@ -98,10 +98,10 @@ class DevMenuView extends React.PureComponent<Props, State> {
     DevMenu.reloadAppAsync();
   };
 
-  onCopyTaskUrl = () => {
+  onCopyTaskUrl = async () => {
     const { manifestUrl } = this.props.task;
 
-    this.collapseAndCloseDevMenuAsync();
+    await this.collapseAndCloseDevMenuAsync();
     Clipboard.setString(manifestUrl);
     alert(`Copied "${manifestUrl}" to the clipboard!`);
   };

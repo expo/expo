@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Client app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
 
@@ -19,7 +19,38 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
 
-<SnackEmbed snackId="@charliecruzan/basicmapviewexample" />
+<SnackInline label='MapView' dependencies={['react-native-maps']}>
+
+```js
+import React from 'react';
+import MapView from 'react-native-maps';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
+
+export default class App extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <MapView style={styles.mapStyle} />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+});
+```
+
+</SnackInline>
 
 ## Configuration
 

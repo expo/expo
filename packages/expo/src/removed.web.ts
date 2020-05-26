@@ -67,6 +67,7 @@ export const WebBrowser = null;
 export const GestureHandler = null;
 export const Icon = null;
 export const MapView = null;
+export const ScreenOrientation = null;
 export const Svg = null;
 export const takeSnapshotAsync = null;
 export const WebView = null;

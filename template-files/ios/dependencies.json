@@ -8,10 +8,6 @@
     "version": "~> 3.5.3"
   },
   {
-    "name": "Crashlytics",
-    "version": "~> 3.14.0"
-  },
-  {
     "name": "GoogleMaps",
     "version": "~> 3.3"
   },
