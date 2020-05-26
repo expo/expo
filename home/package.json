@@ -50,7 +50,7 @@
     "react-native-fade-in-image": "^1.5.0",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-infinite-scroll-view": "^0.4.5",
-    "react-native-maps": "0.26.1",
+    "react-native-maps": "0.27.1",
     "react-native-safe-area-context": "2.0.1",
     "react-navigation": "4.1.0-alpha.1",
     "react-navigation-material-bottom-tabs": "1.1.1",
