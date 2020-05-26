@@ -6533,6 +6533,10 @@ CACHE_KEYS:
       - "../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
       - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.m"
       - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
       - "../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
       - "../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
@@ -6552,10 +6556,6 @@ CACHE_KEYS:
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.1.0)
