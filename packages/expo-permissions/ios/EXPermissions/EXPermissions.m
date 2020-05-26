@@ -5,7 +5,6 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-#import <EXPermissions/EXUserNotificationPermissionRequester.h>
 #import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
 
 NSString * const EXStatusKey = @"status";
@@ -219,12 +218,6 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (void)ensureRequestersFallbacksAreRegistered
 {
-  // TODO: Remove once we promote `expo-notifications` to a stable unimodule (and integrate into Expo client)
-  if (!_requesters[@"userFacingNotifications"]) {
-    id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationPermissionRequester alloc] initWithNotificationProxy:[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMethodQueue:self.methodQueue];
-    [self registerRequesters:@[userNotificationRequester]];
-  }
-
   // TODO: Remove once we deprecate and remove "notifications" permission type
   if (!_requesters[@"notifications"] && _requesters[@"userFacingNotifications"]) {
     id<UMPermissionsRequester> remoteNotificationsRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:_requesters[@"userFacingNotifications"] withMethodQueue:self.methodQueue];
