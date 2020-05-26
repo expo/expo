@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## Unpublished
 
 ### 🛠 Breaking changes
 
@@ -14,4 +14,3 @@
 - Fix `setAnalyticsCollectionEnabled` throwing an error.
 - Fixes & improvements to the pure JS analytics client. ([#7796](https://github.com/expo/expo/pull/7796) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Fixed logEvent in `expo-firebase-analytics` for Android. logEvent's optional properties parameter was causing a NPE on Android when not provided. ([#7897](https://github.com/expo/expo/pull/7897) by [@thorbenprimke](https://github.com/thorbenprimke))
-
