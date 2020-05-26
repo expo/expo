@@ -199,7 +199,7 @@ static NSDictionary* customCertificatesForHost;
     wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
   }
   if(self.useSharedProcessPool) {
-    wkWebViewConfig.processPool = [[ABI37_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPool];
+    wkWebViewConfig.processPool = [[ABI37_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPoolForExperienceId:self.experienceId];
   }
   wkWebViewConfig.userContentController = [WKUserContentController new];
 

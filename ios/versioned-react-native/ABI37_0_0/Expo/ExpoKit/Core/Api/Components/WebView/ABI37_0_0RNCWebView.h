@@ -26,6 +26,7 @@
 
 @interface ABI37_0_0RNCWebView : ABI37_0_0RCTView
 
+@property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, weak) id<ABI37_0_0RNCWebViewDelegate> _Nullable delegate;
 @property (nonatomic, copy) NSDictionary * _Nullable source;
 @property (nonatomic, assign) BOOL messagingEnabled;
