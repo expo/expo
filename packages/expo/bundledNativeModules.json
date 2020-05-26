@@ -1,6 +1,6 @@
 {
   "@expo/vector-icons": "^10.0.0",
-  "@react-native-community/netinfo": "5.9.0",
+  "@react-native-community/netinfo": "5.9.2",
   "@react-native-community/async-storage": "~1.11.0",
   "@unimodules/core": "~5.1.2",
   "@unimodules/react-native-adapter": "~5.2.0",
@@ -89,7 +89,7 @@
   "expo-store-review": "~2.1.0",
   "expo-updates": "~0.2.5",
   "@react-native-community/datetimepicker": "2.4.0",
-  "@react-native-community/masked-view": "0.1.6",
+  "@react-native-community/masked-view": "0.1.10",
   "@react-native-community/viewpager": "3.3.0",
   "@react-native-community/segmented-control": "1.6.1",
   "expo-error-recovery": "~1.1.0",
