@@ -111,6 +111,14 @@ import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default class AppContainer extends React.Component {
   state = {
     expoPushToken: '',
@@ -146,30 +154,20 @@ export default class AppContainer extends React.Component {
         lightColor: '#FF231F7C',
       });
     }
-
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-      }),
-    });
-
-    this.setState({
-      onReceivedListener: Notifications.addNotificationReceivedListener(this.onReceived),
-      onResponseReceivedListener: Notifications.addNotificationResponseReceivedListener(
-        this.onResponseReceived
-      ),
-    });
   };
 
   componentDidMount() {
     this.registerForPushNotificationsAsync();
+
+    this.onReceivedListener = Notifications.addNotificationReceivedListener(this.onReceived);
+    this.onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
+      this.onResponseReceived
+    );
   }
 
   componentWillUnmount() {
-    this.state.onReceivedListener.remove();
-    this.state.onResponseReceivedListener.remove();
+    this.onReceivedListener.remove();
+    this.onResponseReceivedListener.remove();
   }
 
   onReceived = notification => {
