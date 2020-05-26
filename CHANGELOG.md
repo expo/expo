@@ -62,6 +62,8 @@ Package-specific changes not released in any SDK will be added here just before 
   - `DeviceMotion.addListener` emits events with `interval` property. ([#7876](https://github.com/expo/expo/pull/7876) by [@evanbacon](https://github.com/evanbacon))
 - **`expo-web-browser`**
   - Add `readerMode` and `dismissButtonStyle` (iOS) and `enableDefaultShare` (Android) flags for `WebBrowser` ([#7221](https://github.com/expo/expo/pull/7221) by [@LinusU](https://github.com/LinusU)) & [@mczernek](https://github.com/mczernek))
+- **`expo-screen-capture`**
+  - Initial release of `expo-screen-capture` module with support for preventing screen capture on iOS and Android ([#8326](https://github.com/expo/expo/pull/8326) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 
