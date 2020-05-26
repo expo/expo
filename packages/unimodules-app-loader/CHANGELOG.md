@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## Unpublished
 
 ### 🛠 Breaking changes
 
