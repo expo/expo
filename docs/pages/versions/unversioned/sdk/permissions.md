@@ -24,8 +24,8 @@ The following table shows you which permissions correspond to which packages.
 
 | Permission type             | Packages                                  |
 | --------------------------- | ----------------------------------------- |
-| `NOTIFICATIONS`             | `expo-permissions`                        |
-| `USER_FACING_NOTIFICATIONS` | `expo-permissions`                        |
+| `NOTIFICATIONS`             | `expo-notifications`                      |
+| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
 | `LOCATION`                  | `expo-location`                           |
 | `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`     |
 | `AUDIO_RECORDING`           | `expo-av`                                 |
