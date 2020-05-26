@@ -240,7 +240,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/WebView',
         sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
         targetAndroidPath: 'modules/api/components/webview',
