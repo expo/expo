@@ -15,6 +15,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/datetimepicker` from `2.2.2` to `2.4.0`. ([#8476](https://github.com/expo/expo/pull/8476) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-webview` from `8.1.1` to `9.4.0`. ([#8489](https://github.com/expo/expo/pull/8489) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `11.0.1` to `12.1.0`. ([#8491](https://github.com/expo/expo/pull/8491) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-maps` from `0.26.1` to `0.27.1`. ([#8495](https://github.com/expo/expo/pull/8495) by [@esamelson](https://github.com/esamelson))
 
 ### 🛠 Breaking changes
 

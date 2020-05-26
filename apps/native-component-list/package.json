@@ -86,7 +86,7 @@
     "react-native-branch": "4.2.1",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-is-iphonex": "^1.0.1",
-    "react-native-maps": "0.26.1",
+    "react-native-maps": "0.27.1",
     "react-native-paper": "github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57",
     "react-native-platform-touchable": "^1.1.1",
     "react-native-reanimated": "~1.9.0",
