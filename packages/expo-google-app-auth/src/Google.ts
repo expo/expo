@@ -84,11 +84,10 @@ export type LogInResult =
       user: GoogleUser;
     };
 
-function getPlatformGUID(config: GoogleLogInConfig) {
+export function getPlatformGUID(config: GoogleLogInConfig) {
   const { clientId } = config;
 
-  const iosClientId =
-    Constants.appOwnership === 'standalone' ? config.iosStandaloneAppClientId : config.iosClientId;
+  const iosClientId = isInExpo ? config.iosClientId : config.iosStandaloneAppClientId;
   const androidClientId = isInExpo ? config.androidClientId : config.androidStandaloneAppClientId;
 
   const platformClientId =
