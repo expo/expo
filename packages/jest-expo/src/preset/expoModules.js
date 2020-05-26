@@ -625,9 +625,9 @@ module.exports = {
           allowsVoip: { type: 'boolean', mock: true },
           carrier: { type: 'string' },
           getCellularGenerationAsync: { type: 'function' },
-          isoCountryCode: { type: 'object', mock: null },
-          mobileCountryCode: { type: 'object', mock: null },
-          mobileNetworkCode: { type: 'object', mock: null },
+          isoCountryCode: { type: 'string' },
+          mobileCountryCode: { type: 'string' },
+          mobileNetworkCode: { type: 'string' },
           removeListeners: { type: 'function' },
         },
         ExpoDevice: {
@@ -691,7 +691,7 @@ module.exports = {
           isoCurrencyCodes: { type: 'array' },
           locale: { type: 'string' },
           locales: { type: 'array' },
-          region: { type: 'object', mock: null },
+          region: { type: 'string' },
           removeListeners: { type: 'function' },
           timezone: { type: 'string' },
         },
@@ -961,10 +961,12 @@ module.exports = {
     getCurrentState: { type: 'function', functionType: 'promise' },
     removeListeners: { type: 'function', functionType: 'async' },
   },
-  RNCSafeAreaView: {
+  RNCSafeAreaProvider: {
     getConstants: { type: 'function' },
-    initialWindowSafeAreaInsets: { type: 'object' },
+    initialWindowMetrics: { type: 'object' },
   },
+  RNCSafeAreaView: {},
+  RNCSegmentedControlManager: {},
   RNCViewPager: {
     getConstants: { type: 'function' },
     setPage: { type: 'function', functionType: 'async' },
