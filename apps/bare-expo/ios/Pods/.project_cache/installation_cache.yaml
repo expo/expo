@@ -601,6 +601,10 @@ CACHE_KEYS:
       - "../../../../packages/expo-notifications/ios/EXNotifications/Notifications/Scheduling/EXNotificationSchedulerModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXNotificationPermissionsModule.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionRequester.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXRemoteNotificationPermissionSingletonModule.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.h"
       - "../../../../packages/expo-notifications/ios/EXNotifications/Permissions/EXUserFacingNotificationsPermissionsRequester.m"
       - "../../../../packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenListener.h"
@@ -620,10 +624,6 @@ CACHE_KEYS:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.1.0)
@@ -1552,7 +1552,7 @@ CACHE_KEYS:
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 71dcb769da78260074adb01e3fcad0bb
-    CHECKSUM: 60f654e00b6cc416573f6d5dbfce3839958eb57a
+    CHECKSUM: 41039849ff9cfe4b8ee4fb90bfecbc621703fb22
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
@@ -1574,7 +1574,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (2.0.0)
+      - react-native-safe-area-context (2.0.1)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
       react-native-segmented-control: 20fafd243e368fe6c0831976de96de6a
