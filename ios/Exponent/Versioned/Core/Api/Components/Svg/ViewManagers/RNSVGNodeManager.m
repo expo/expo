@@ -236,4 +236,9 @@ RCT_CUSTOM_VIEW_PROPERTY(display, id, RNSVGNode)
 
 RCT_CUSTOM_SHADOW_PROPERTY(direction, id, RNSVGNode) {}
 
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RNSVGNode)
+{
+    view.pointerEvents = json ? [RCTConvert RCTPointerEvents:json] : defaultView.pointerEvents;
+}
+
 @end
