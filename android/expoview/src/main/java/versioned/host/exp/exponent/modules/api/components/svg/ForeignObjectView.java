@@ -10,8 +10,10 @@
 package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -71,5 +73,68 @@ class ForeignObjectView extends GroupView {
     public void setHeight(Dynamic height) {
         mH = SVGLength.from(height);
         invalidate();
+    }
+
+    void drawGroup(final Canvas canvas, final Paint paint, final float opacity) {
+        pushGlyphContext();
+        final SvgView svg = getSvgView();
+        final GroupView self = this;
+        final RectF groupRect = new RectF();
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof MaskView) {
+                continue;
+            }
+            if (child instanceof VirtualView) {
+                VirtualView node = ((VirtualView)child);
+                if ("none".equals(node.mDisplay)) {
+                    continue;
+                }
+                if (node instanceof RenderableView) {
+                    ((RenderableView)node).mergeProperties(self);
+                }
+
+                int count = node.saveAndSetupCanvas(canvas, mCTM);
+                node.render(canvas, paint, opacity * mOpacity);
+                RectF r = node.getClientRect();
+                if (r != null) {
+                    groupRect.union(r);
+                }
+
+                node.restoreCanvas(canvas, count);
+
+                if (node instanceof RenderableView) {
+                    ((RenderableView)node).resetProperties();
+                }
+
+                if (node.isResponsible()) {
+                    svg.enableTouchEvents();
+                }
+            } else if (child instanceof SvgView) {
+                SvgView svgView = (SvgView)child;
+                svgView.drawChildren(canvas);
+                if (svgView.isResponsible()) {
+                    svg.enableTouchEvents();
+                }
+            } else {
+                // Enable rendering other native ancestor views in e.g. masks
+                child.draw(canvas);
+            }
+        }
+        this.setClientRect(groupRect);
+        popGlyphContext();
+    }
+
+    // Enable rendering other native ancestor views in e.g. masks, but don't render them another time
+    Bitmap fakeBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+    Canvas fake = new Canvas(fakeBitmap);
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(fake);
+    }
+
+    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        return super.drawChild(fake, child, drawingTime);
     }
 }

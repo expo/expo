@@ -14,6 +14,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-safe-area-context` from `0.7.3` to `2.0.1`. ([#8459](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne) and [#8479](https://github.com/expo/expo/pull/8479) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-community/datetimepicker` from `2.2.2` to `2.4.0`. ([#8476](https://github.com/expo/expo/pull/8476) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-webview` from `8.1.1` to `9.4.0`. ([#8489](https://github.com/expo/expo/pull/8489) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-svg` from `11.0.1` to `12.1.0`. ([#8491](https://github.com/expo/expo/pull/8491) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
@@ -41,6 +42,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
+- Initial release of **`expo-screen-capture`** 🥳
 - Initial release of **`expo-notifications`** 🥳
 - Added `@react-native-community/segmented-control` in version `1.6.1`. ([#8038](https://github.com/expo/expo/pull/8038) by [@marchenk0va](https://github.com/marchenk0va) and [#8441](https://github.com/expo/expo/pull/8441) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-apple-authentication`**
@@ -57,12 +59,15 @@ Package-specific changes not released in any SDK will be added here just before 
   - Add WebP format as an option when taking GL snapshots (Android only). ([#7490](https://github.com/expo/expo/pull/7490) by [@pacoelayudante](https://github.com/pacoelayudante))
 - **`expo-local-authentication`**
   - Added support for `promptMessage`, `cancelLabel` and `disableDeviceFallback` on Android. ([#8219](https://github.com/expo/expo/pull/8219) by [@diegolmello](https://github.com/diegolmello))
+  - Added iris local authentication type for Android. ([#8431](https://github.com/expo/expo/pull/8364) by [@bycedric](https://github.com/bycedric))
 - **`expo-sms`**
   - Add `attachments` as an optional parameter to `sendSMSAsync`. It can be used to provide an attachment along with the recipients and message arguments. ([#7967](https://github.com/expo/expo/pull/7967) by [@thorbenprimke](https://github.com/thorbenprimke))
 - **`expo-sensors`**
   - `DeviceMotion.addListener` emits events with `interval` property. ([#7876](https://github.com/expo/expo/pull/7876) by [@evanbacon](https://github.com/evanbacon))
 - **`expo-web-browser`**
   - Add `readerMode` and `dismissButtonStyle` (iOS) and `enableDefaultShare` (Android) flags for `WebBrowser` ([#7221](https://github.com/expo/expo/pull/7221) by [@LinusU](https://github.com/LinusU)) & [@mczernek](https://github.com/mczernek))
+- **`expo-camera`**
+  - Added exports for TypeScript definitions: CameraType, ImageType, ImageParameters, ImageSize, CaptureOptions, CapturedPicture ([#8457](https://github.com/expo/expo/pull/8457) by [@jarvisluong](https://github.com/jarvisluong))
 
 ### 🐛 Bug fixes
 
@@ -71,10 +76,12 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fixed error when serializing a `Map` containing a `null` ([#8153](https://github.com/expo/expo/pull/8153) by [@sjchmiela](https://github.com/sjchmiela))
   - Fixed a rare undetermined behavior that may have been a result of misuse of `dispatch_once_t` on iOS ([#7576](https://github.com/expo/expo/pull/7576) by [@sjchmiela](https://github.com/sjchmiela))
   - Fixed error when serializing a `Map` containing a `Bundle` ([#8068](https://github.com/expo/expo/pull/8068) by [@sjchmiela](https://github.com/sjchmiela))
+  - Fixed _unused variable_ warnings in `UMAppDelegateWrapper` ([#8467](https://github.com/expo/expo/pull/8467) by [@sjchmiela](https://github.com/sjchmiela))
 - **`expo-av`**
   - Fix unable to call presentFullScreenPlayer twice. ([#8343](https://github.com/expo/expo/pull/8343) by [@IjzerenHein](https://github.com/IjzerenHein))
   - Fixed multiplied callbacks in `expo-av` after replaying ([#7193](https://github.com/expo/expo/pull/7193) by [@mczernek](https://github.com/mczernek))
   - Fixed `Plaback.loadAsync()` return type. ([#7559](https://github.com/expo/expo/pull/7559) by [@awinograd](https://github.com/awinograd))
+  - Fixed the adaptive streaming for exoplayer on android. ([#8380](https://github.com/expo/expo/pull/8363) by [@watchinharrison](https://github.com/watchinharrison))
 - **`expo-auth-session`**
   - Fix `AuthSession.getDefaultReturnUrl()` returning wrong URL while using release channels. ([#7687](https://github.com/expo/expo/pull/7687) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-brightness`**
@@ -101,6 +108,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fixed `KeepAwake.activateKeepAwake` not working with multiple tags on Android. ([#7197](https://github.com/expo/expo/pull/7197) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-image-picker`**
   - Fixed exception when calling `ImagePicker.getCameraPermissionsAsync` on Web. ([#7498](https://github.com/expo/expo/pull/7498) by [@IjzerenHein](https://github.com/IjzerenHein))
+  - Skip asking for camera permissions on web with `ImagePicker.getCameraPermissionsAsync`. ([#8475](https://github.com/expo/expo/pull/8475) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-localization`**
   - Fixed `Localization.locale` throwing an exception on the iOS simulator. ([#8193](https://github.com/expo/expo/pull/8193) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-media-library`**
@@ -120,6 +128,8 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fix `WebBrowser` sending `dismiss` before opening. ([#6743](https://github.com/expo/expo/pull/6743) by [@LucaColonnello](https://github.com/LucaColonnello))
 - **`unimodules-app-loader`**
   - Fixed `appLoaderRegisteredForName` to not only check if a loader class name is in the cache for the provided name but also verifies that the cached and current class name match. When migrating from managed to bare, the class name cache needs to be updated. ([#8292](https://github.com/expo/expo/pull/8292) by [@thorbenprimke](https://github.com/thorbenprimke))
+- **`expo-local-authentication`**
+  - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
 
 ## 37.0.0
 
