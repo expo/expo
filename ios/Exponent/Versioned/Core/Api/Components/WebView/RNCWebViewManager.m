@@ -11,6 +11,8 @@
 #import <React/RCTDefines.h>
 #import "RNCWebView.h"
 
+#import "EXScopedModuleRegistry.h"
+
 @interface RNCWebViewManager () <RNCWebViewDelegate>
 @end
 
@@ -18,9 +20,20 @@
 {
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
+  NSString *_experienceId;
 }
 
-RCT_EXPORT_MODULE()
+EX_EXPORT_SCOPED_MODULE(RNCWebViewManager, EXKernelServiceNone)
+
+- (instancetype)initWithExperienceId:(NSString *)experienceId
+               kernelServiceDelegate:(id)kernelServiceInstance
+                              params:(NSDictionary *)params
+{
+  if (self = [super init]) {
+    _experienceId = experienceId;
+  }
+  return self;
+}
 
 #if !TARGET_OS_OSX
 - (UIView *)view
@@ -29,6 +42,7 @@ RCT_EXPORT_MODULE()
 #endif // !TARGET_OS_OSX
 {
   RNCWebView *webView = [RNCWebView new];
+  webView.experienceId = _experienceId;
   webView.delegate = self;
   return webView;
 }
