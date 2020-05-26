@@ -5,8 +5,6 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-#import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
-
 NSString * const EXStatusKey = @"status";
 NSString * const EXExpiresKey = @"expires";
 NSString * const EXGrantedKey = @"granted";
@@ -207,22 +205,12 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (id<UMPermissionsRequester>)getPermissionRequesterForType:(NSString *)type
 {
-  [self ensureRequestersFallbacksAreRegistered];
   return _requesters[type];
 }
 
 - (id<UMPermissionsRequester>)getPermissionRequesterForClass:(Class)requesterClass
 {
   return [_requestersByClass objectForKey:requesterClass];
-}
-
-- (void)ensureRequestersFallbacksAreRegistered
-{
-  // TODO: Remove once we deprecate and remove "notifications" permission type
-  if (!_requesters[@"notifications"] && _requesters[@"userFacingNotifications"]) {
-    id<UMPermissionsRequester> remoteNotificationsRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:_requesters[@"userFacingNotifications"] withMethodQueue:self.methodQueue];
-    [self registerRequesters:@[remoteNotificationsRequester]];
-  }
 }
 
 @end
