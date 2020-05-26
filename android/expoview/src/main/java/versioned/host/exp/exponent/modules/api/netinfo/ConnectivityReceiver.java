@@ -199,8 +199,10 @@ abstract class ConnectivityReceiver {
 
                         // Get WiFi frequency
                         try {
-                            int frequency = wifiInfo.getFrequency();
-                            details.putInt("frequency", frequency);
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                                int frequency = wifiInfo.getFrequency();
+                                details.putInt("frequency", frequency);
+                            }
                         } catch (Exception e) {
                             // Ignore errors
                         }
