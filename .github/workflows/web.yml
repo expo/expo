@@ -1,8 +1,8 @@
 name: Publish Expo Web
 on:
   pull_request:
-    types: [opened, synchronize]
     paths:
+      - .github/workflows/web.yml
       - yarn.lock
       - apps/**
       - packages/**
