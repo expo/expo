@@ -1,4 +1,4 @@
-*.pbxproj -diff linguist-generated
+*.pbxproj text -merge union linguist-generated
 nix/**/gemset.nix -diff linguist-generated
 packages/*/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
