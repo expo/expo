@@ -167,7 +167,7 @@ let Video = /** @class */ (() => {
             };
             this._renderPoster = () => this.props.usePoster && this.state.showPoster ? (
             // @ts-ignore: the react-native type declarations are overly restrictive
-            <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource}/>) : null;
+            React.createElement(Image, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
             this.state = {
                 showPoster: !!props.usePoster,
             };
@@ -226,10 +226,9 @@ let Video = /** @class */ (() => {
                 onReadyForDisplay: this._nativeOnReadyForDisplay,
                 onFullscreenUpdate: this._nativeOnFullscreenUpdate,
             };
-            return (<View style={nativeProps.style} pointerEvents="box-none">
-        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={_STYLES.video}/>
-        {this._renderPoster()}
-      </View>);
+            return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
+                React.createElement(ExponentVideo, Object.assign({ ref: this._nativeRef }, nativeProps, { style: _STYLES.video })),
+                this._renderPoster()));
         }
     }
     Video.RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;

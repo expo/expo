@@ -47,7 +47,7 @@ export function requireNativeViewManager(viewName) {
         // in the same update. Profile this and write out a partition function if this is a bottleneck.
         const nativeProps = pick(props, reactNativeComponentPropNames);
         const proxiedProps = omit(props, reactNativeComponentPropNames);
-        return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps} ref={ref}/>;
+        return React.createElement(ReactNativeComponent, Object.assign({}, nativeProps, { proxiedProperties: proxiedProps, ref: ref }));
     }
     NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
     return React.forwardRef(NativeComponentAdapter);

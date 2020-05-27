@@ -24,14 +24,12 @@ let AdOptionsView = /** @class */ (() => {
                     width: this.props.iconSize,
                     height: this.props.iconSize * 2,
                 };
-            return (<AdOptionsViewContext.Consumer>
-        {(contextValue) => {
+            return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
                 const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
-                return (<NativeAdOptionsView {...this.props} style={[this.props.style, style]} nativeAdViewTag={findNodeHandle(adViewRef.current)} orientation={this.shouldAlignHorizontal()
-                    ? NativeOrientation.Horizontal
-                    : NativeOrientation.Vertical}/>);
-            }}
-      </AdOptionsViewContext.Consumer>);
+                return (React.createElement(NativeAdOptionsView, Object.assign({}, this.props, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current), orientation: this.shouldAlignHorizontal()
+                        ? NativeOrientation.Horizontal
+                        : NativeOrientation.Vertical })));
+            }));
         }
     }
     AdOptionsView.defaultProps = {

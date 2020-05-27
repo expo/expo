@@ -49,7 +49,7 @@ export default class AppLoading extends React.Component {
         _emitEvent('componentWillUnmount');
     }
     render() {
-        return <NativeAppLoading {...this.props}/>;
+        return React.createElement(NativeAppLoading, Object.assign({}, this.props));
     }
 }
 let _lifecycleEmitter = null;

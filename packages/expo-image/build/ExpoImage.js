@@ -14,6 +14,6 @@ export default function ExpoImage({ source, style, ...props }) {
         const { width, height } = resolvedSource;
         resolvedStyle = StyleSheet.flatten([{ width, height }, style]);
     }
-    return <NativeExpoImage {...props} source={resolvedSource} style={resolvedStyle}/>;
+    return React.createElement(NativeExpoImage, Object.assign({}, props, { source: resolvedSource, style: resolvedStyle }));
 }
 //# sourceMappingURL=ExpoImage.js.map
