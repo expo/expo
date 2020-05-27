@@ -33,7 +33,6 @@ public class SQLiteModule extends ExportedModule {
 
   public SQLiteModule(Context scopedContext) {
     super(scopedContext);
-    SQLiteDatabase.loadLibs(scopedContext);
     mContext = scopedContext;
   }
 
