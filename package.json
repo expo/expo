@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.8.0"
+    "react-native-unimodules": "~0.9.1"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
