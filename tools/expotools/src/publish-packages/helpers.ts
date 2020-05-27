@@ -6,6 +6,7 @@ import * as Formatter from '../Formatter';
 import logger from '../Logger';
 import { BACKUPABLE_OPTIONS_FIELDS } from './constants';
 import { BackupableOptions, CommandOptions, Parcel } from './types';
+import { UNPUBLISHED_VERSION_NAME } from '../Changelogs';
 
 const { green, cyan, magenta, gray } = chalk;
 
@@ -100,8 +101,7 @@ export function printPackageParcel(parcel: Parcel): void {
     });
   }
 
-  const unpublishedChanges =
-    changelogChanges?.versions.unpublished ?? changelogChanges?.versions.master ?? {};
+  const unpublishedChanges = changelogChanges?.versions[UNPUBLISHED_VERSION_NAME] ?? {};
 
   for (const changeType in unpublishedChanges) {
     const changes = unpublishedChanges[changeType];
