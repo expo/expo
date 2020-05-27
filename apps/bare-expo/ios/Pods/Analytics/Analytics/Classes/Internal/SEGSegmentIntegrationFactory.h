@@ -9,10 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SEGSegmentIntegrationFactory : NSObject <SEGIntegrationFactory>
 
 @property (nonatomic, strong) SEGHTTPClient *client;
-@property (nonatomic, strong) id<SEGStorage> userDefaultsStorage;
-@property (nonatomic, strong) id<SEGStorage> fileStorage;
+@property (nonatomic, strong) id<SEGStorage> storage;
 
-- (instancetype)initWithHTTPClient:(SEGHTTPClient *)client fileStorage:(id<SEGStorage>)fileStorage userDefaultsStorage:(id<SEGStorage>)userDefaultsStorage;
+- (instancetype)initWithHTTPClient:(SEGHTTPClient *)client storage:(id<SEGStorage>)storage;
 
 @end
 

@@ -30,10 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(atomic, readonly)
     NSMutableDictionary<NSNumber *, id<GDTCORPrioritizer>> *targetToPrioritizer;
 
-/** A map of targets to storage instances. */
-@property(atomic, readonly)
-    NSMutableDictionary<NSNumber *, id<GDTCORStorageProtocol>> *targetToStorage;
-
 @end
 
 NS_ASSUME_NONNULL_END

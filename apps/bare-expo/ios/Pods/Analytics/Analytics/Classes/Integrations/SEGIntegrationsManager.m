@@ -26,33 +26,14 @@
 #import "SEGAliasPayload.h"
 
 NSString *SEGAnalyticsIntegrationDidStart = @"io.segment.analytics.integration.did.start";
-NSString *const SEGAnonymousIdKey = @"SEGAnonymousId";
-NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
-NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
-
-
-@interface SEGIdentifyPayload (AnonymousId)
-@property (nonatomic, readwrite, nullable) NSString *anonymousId;
-@end
-
-
-@interface SEGPayload (Options)
-@property (readonly) NSDictionary *options;
-@end
-@implementation SEGPayload (Options)
-// Combine context and integrations to form options
-- (NSDictionary *)options
-{
-    return @{
-        @"context" : self.context ?: @{},
-        @"integrations" : self.integrations ?: @{}
-    };
-}
-@end
+static NSString *const SEGAnonymousIdKey = @"SEGAnonymousId";
+static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
 
 
 @interface SEGAnalyticsConfiguration (Private)
+
 @property (nonatomic, strong) NSArray *factories;
+
 @end
 
 
@@ -70,8 +51,7 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 @property (nonatomic, copy) NSString *cachedAnonymousId;
 @property (nonatomic, strong) SEGHTTPClient *httpClient;
 @property (nonatomic, strong) NSURLSessionDataTask *settingsRequest;
-@property (nonatomic, strong) id<SEGStorage> userDefaultsStorage;
-@property (nonatomic, strong) id<SEGStorage> fileStorage;
+@property (nonatomic, strong) id<SEGStorage> storage;
 
 @end
 
@@ -91,17 +71,14 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
         self.serialQueue = seg_dispatch_queue_create_specific("io.segment.analytics", DISPATCH_QUEUE_SERIAL);
         self.messageQueue = [[NSMutableArray alloc] init];
         self.httpClient = [[SEGHTTPClient alloc] initWithRequestFactory:configuration.requestFactory];
-        
-        self.userDefaultsStorage = [[SEGUserDefaultsStorage alloc] initWithDefaults:[NSUserDefaults standardUserDefaults] namespacePrefix:nil crypto:configuration.crypto];
-        #if TARGET_OS_TV
-            self.fileStorage = [[SEGFileStorage alloc] initWithFolder:[SEGFileStorage cachesDirectoryURL] crypto:configuration.crypto];
-        #else
-            self.fileStorage = [[SEGFileStorage alloc] initWithFolder:[SEGFileStorage applicationSupportDirectoryURL] crypto:configuration.crypto];
-        #endif
-
+#if TARGET_OS_TV
+        self.storage = [[SEGUserDefaultsStorage alloc] initWithDefaults:[NSUserDefaults standardUserDefaults] namespacePrefix:nil crypto:configuration.crypto];
+#else
+        self.storage = [[SEGFileStorage alloc] initWithFolder:[SEGFileStorage applicationSupportDirectoryURL] crypto:configuration.crypto];
+#endif
         self.cachedAnonymousId = [self loadOrGenerateAnonymousID:NO];
         NSMutableArray *factories = [[configuration factories] mutableCopy];
-        [factories addObject:[[SEGSegmentIntegrationFactory alloc] initWithHTTPClient:self.httpClient fileStorage:self.fileStorage userDefaultsStorage:self.userDefaultsStorage]];
+        [factories addObject:[[SEGSegmentIntegrationFactory alloc] initWithHTTPClient:self.httpClient storage:self.storage]];
         self.factories = [factories copy];
         self.integrations = [NSMutableDictionary dictionaryWithCapacity:factories.count];
         self.registeredIntegrations = [NSMutableDictionary dictionaryWithCapacity:factories.count];
@@ -171,37 +148,10 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 
 #pragma mark - Analytics API
 
-- (void)identify:(SEGIdentifyPayload *)payload
-{
-    NSCAssert2(payload.userId.length > 0 || payload.traits.count > 0, @"either userId (%@) or traits (%@) must be provided.", payload.userId, payload.traits);
-
-    NSString *anonymousId = payload.anonymousId;
-    if (anonymousId) {
-        [self saveAnonymousId:anonymousId];
-    } else {
-        anonymousId = self.cachedAnonymousId;
-    }
-    payload.anonymousId = anonymousId;
-
-    [self callIntegrationsWithSelector:NSSelectorFromString(@"identify:")
-                             arguments:@[ payload ]
-                               options:payload.options
-                                  sync:false];
-}
-/*
 - (void)identify:(NSString *)userId traits:(NSDictionary *)traits options:(NSDictionary *)options
 {
     NSCAssert2(userId.length > 0 || traits.count > 0, @"either userId (%@) or traits (%@) must be provided.", userId, traits);
 
-    NSDictionary *options;
-    if (p.anonymousId) {
-        NSMutableDictionary *mutableOptions = [[NSMutableDictionary alloc] initWithDictionary:p.options];
-        mutableOptions[@"anonymousId"] = p.anonymousId;
-        options = [mutableOptions copy];
-    } else {
-        options =  p.options;
-    }
-    
     NSString *anonymousId = [options objectForKey:@"anonymousId"];
     if (anonymousId) {
         [self saveAnonymousId:anonymousId];
@@ -219,49 +169,68 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
                              arguments:@[ payload ]
                                options:options
                                   sync:false];
-}*/
+}
 
 #pragma mark - Track
 
-- (void)track:(SEGTrackPayload *)payload
+- (void)track:(NSString *)event properties:(NSDictionary *)properties options:(NSDictionary *)options
 {
-    NSCAssert1(payload.event.length > 0, @"event (%@) must not be empty.", payload.event);
+    NSCAssert1(event.length > 0, @"event (%@) must not be empty.", event);
+
+    SEGTrackPayload *payload = [[SEGTrackPayload alloc] initWithEvent:event
+                                                           properties:SEGCoerceDictionary(properties)
+                                                              context:SEGCoerceDictionary([options objectForKey:@"context"])
+                                                         integrations:[options objectForKey:@"integrations"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"track:")
                              arguments:@[ payload ]
-                               options:payload.options
+                               options:options
                                   sync:false];
 }
 
 #pragma mark - Screen
 
-- (void)screen:(SEGScreenPayload *)payload
+- (void)screen:(NSString *)screenTitle properties:(NSDictionary *)properties options:(NSDictionary *)options
 {
-    NSCAssert1(payload.name.length > 0, @"screen name (%@) must not be empty.", payload.name);
+    NSCAssert1(screenTitle.length > 0, @"screen name (%@) must not be empty.", screenTitle);
+
+    SEGScreenPayload *payload = [[SEGScreenPayload alloc] initWithName:screenTitle
+                                                            properties:SEGCoerceDictionary(properties)
+                                                               context:SEGCoerceDictionary([options objectForKey:@"context"])
+                                                          integrations:[options objectForKey:@"integrations"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"screen:")
                              arguments:@[ payload ]
-                               options:payload.options
+                               options:options
                                   sync:false];
 }
 
 #pragma mark - Group
 
-- (void)group:(SEGGroupPayload *)payload
+- (void)group:(NSString *)groupId traits:(NSDictionary *)traits options:(NSDictionary *)options
 {
+    SEGGroupPayload *payload = [[SEGGroupPayload alloc] initWithGroupId:groupId
+                                                                 traits:SEGCoerceDictionary(traits)
+                                                                context:SEGCoerceDictionary([options objectForKey:@"context"])
+                                                           integrations:[options objectForKey:@"integrations"]];
+
     [self callIntegrationsWithSelector:NSSelectorFromString(@"group:")
                              arguments:@[ payload ]
-                               options:payload.options
+                               options:options
                                   sync:false];
 }
 
 #pragma mark - Alias
 
-- (void)alias:(SEGAliasPayload *)payload
+- (void)alias:(NSString *)newId options:(NSDictionary *)options
 {
+    SEGAliasPayload *payload = [[SEGAliasPayload alloc] initWithNewId:newId
+                                                              context:SEGCoerceDictionary([options objectForKey:@"context"])
+                                                         integrations:[options objectForKey:@"integrations"]];
+
     [self callIntegrationsWithSelector:NSSelectorFromString(@"alias:")
                              arguments:@[ payload ]
-                               options:payload.options
+                               options:options
                                   sync:false];
 }
 
@@ -316,9 +285,9 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 - (NSString *)loadOrGenerateAnonymousID:(BOOL)reset
 {
 #if TARGET_OS_TV
-    NSString *anonymousId = [self.userDefaultsStorage stringForKey:SEGAnonymousIdKey];
+    NSString *anonymousId = [self.storage stringForKey:SEGAnonymousIdKey];
 #else
-    NSString *anonymousId = [self.fileStorage stringForKey:kSEGAnonymousIdFilename];
+    NSString *anonymousId = [self.storage stringForKey:kSEGAnonymousIdFilename];
 #endif
 
     if (!anonymousId || reset) {
@@ -328,9 +297,9 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
         anonymousId = GenerateUUIDString();
         SEGLog(@"New anonymousId: %@", anonymousId);
 #if TARGET_OS_TV
-        [self.userDefaultsStorage setString:anonymousId forKey:SEGAnonymousIdKey];
+        [self.storage setString:anonymousId forKey:SEGAnonymousIdKey];
 #else
-        [self.fileStorage setString:anonymousId forKey:kSEGAnonymousIdFilename];
+        [self.storage setString:anonymousId forKey:kSEGAnonymousIdFilename];
 #endif
     }
     return anonymousId;
@@ -340,9 +309,9 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 {
     self.cachedAnonymousId = anonymousId;
 #if TARGET_OS_TV
-    [self.userDefaultsStorage setString:anonymousId forKey:SEGAnonymousIdKey];
+    [self.storage setString:anonymousId forKey:SEGAnonymousIdKey];
 #else
-    [self.fileStorage setString:anonymousId forKey:kSEGAnonymousIdFilename];
+    [self.storage setString:anonymousId forKey:@"segment.anonymousId"];
 #endif
 }
 
@@ -355,14 +324,8 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 
 - (NSDictionary *)cachedSettings
 {
-    if (!_cachedSettings) {
-#if TARGET_OS_TV
-        _cachedSettings = [self.userDefaultsStorage dictionaryForKey:kSEGCachedSettingsFilename] ?: @{};
-#else
-        _cachedSettings = [self.fileStorage dictionaryForKey:kSEGCachedSettingsFilename] ?: @{};
-#endif
-    }
-    
+    if (!_cachedSettings)
+        _cachedSettings = [self.storage dictionaryForKey:@"analytics.settings.v2.plist"] ?: @{};
     return _cachedSettings;
 }
 
@@ -373,12 +336,7 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
         // [@{} writeToURL:settingsURL atomically:YES];
         return;
     }
-    
-#if TARGET_OS_TV
-    [self.userDefaultsStorage setDictionary:_cachedSettings forKey:kSEGCachedSettingsFilename];
-#else
-    [self.fileStorage setDictionary:_cachedSettings forKey:kSEGCachedSettingsFilename];
-#endif
+    [self.storage setDictionary:_cachedSettings forKey:@"analytics.settings.v2.plist"];
 
     [self updateIntegrationsWithSettings:settings[@"integrations"]];
 }
@@ -420,19 +378,14 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
                 if (success) {
                     [self setCachedSettings:settings];
                 } else {
-                    NSDictionary *previouslyCachedSettings = [self cachedSettings];
-                    if (previouslyCachedSettings && [previouslyCachedSettings count] > 0) {
-                        [self setCachedSettings:previouslyCachedSettings];
-                    } else {
-                        // If settings request fail, fall back to using just Segment integration.
-                        // Doesn't address situations where this callback never gets called (though we don't expect that to ever happen).
-                        [self setCachedSettings:@{
-                            @"integrations" : @{
-                                @"Segment.io" : @{@"apiKey" : self.configuration.writeKey},
-                            },
-                            @"plan" : @{@"track" : @{}}
-                        }];
-                    }
+                    // If settings request fail, fall back to using just Segment integration.
+                    // Doesn't address situations where this callback never gets called (though we don't expect that to ever happen).
+                    [self setCachedSettings:@{
+                        @"integrations" : @{
+                            @"Segment.io" : @{@"apiKey" : self.configuration.writeKey},
+                        },
+                        @"plan" : @{@"track" : @{}}
+                    }];
                 }
                 self.settingsRequest = nil;
             });
@@ -449,21 +402,7 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
         return YES;
     }
     if (options[key]) {
-        id value = options[key];
-        
-        // it's been observed that customers sometimes override this with
-        // value's that aren't bool types.
-        if ([value isKindOfClass:[NSNumber class]]) {
-            NSNumber *numberValue = (NSNumber *)value;
-            return [numberValue boolValue];
-        } if ([value isKindOfClass:[NSDictionary class]]) {
-            return YES;
-        } else {
-            NSString *msg = [NSString stringWithFormat: @"Value for `%@` in integration options is supposed to be a boolean or dictionary and it is not!"
-                             "This is likely due to a user-added value in `integrations` that overwrites a value received from the server", key];
-            SEGLog(msg);
-            NSAssert(NO, msg);
-        }
+        return [options[key] boolValue];
     } else if (options[@"All"]) {
         return [options[@"All"] boolValue];
     } else if (options[@"all"]) {
@@ -576,6 +515,25 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
 @end
 
 
+@interface SEGPayload (Options)
+@property (readonly) NSDictionary *options;
+@end
+
+
+@implementation SEGPayload (Options)
+
+// Combine context and integrations to form options
+- (NSDictionary *)options
+{
+    return @{
+        @"context" : self.context ?: @{},
+        @"integrations" : self.integrations ?: @{}
+    };
+}
+
+@end
+
+
 @implementation SEGIntegrationsManager (SEGMiddleware)
 
 - (void)context:(SEGContext *)context next:(void (^_Nonnull)(SEGContext *_Nullable))next
@@ -583,8 +541,6 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
     switch (context.eventType) {
         case SEGEventTypeIdentify: {
             SEGIdentifyPayload *p = (SEGIdentifyPayload *)context.payload;
-            [self identify:p];
-            /*
             NSDictionary *options;
             if (p.anonymousId) {
                 NSMutableDictionary *mutableOptions = [[NSMutableDictionary alloc] initWithDictionary:p.options];
@@ -593,27 +549,27 @@ NSString *const kSEGCachedSettingsFilename = @"analytics.settings.v2.plist";
             } else {
                 options =  p.options;
             }
-            [self identify:p.userId traits:p.traits options:options];*/
+            [self identify:p.userId traits:p.traits options:options];
             break;
         }
         case SEGEventTypeTrack: {
             SEGTrackPayload *p = (SEGTrackPayload *)context.payload;
-            [self track:p];
+            [self track:p.event properties:p.properties options:p.options];
             break;
         }
         case SEGEventTypeScreen: {
             SEGScreenPayload *p = (SEGScreenPayload *)context.payload;
-            [self screen:p];
+            [self screen:p.name properties:p.properties options:p.options];
             break;
         }
         case SEGEventTypeGroup: {
             SEGGroupPayload *p = (SEGGroupPayload *)context.payload;
-            [self group:p];
+            [self group:p.groupId traits:p.traits options:p.options];
             break;
         }
         case SEGEventTypeAlias: {
             SEGAliasPayload *p = (SEGAliasPayload *)context.payload;
-            [self alias:p];
+            [self alias:p.theNewId options:p.options];
             break;
         }
         case SEGEventTypeReset:

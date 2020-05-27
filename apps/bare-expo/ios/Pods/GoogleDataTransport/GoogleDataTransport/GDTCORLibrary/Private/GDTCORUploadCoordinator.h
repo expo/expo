@@ -22,6 +22,7 @@
 #import "GDTCORLibrary/Private/GDTCORUploadPackage_Private.h"
 
 @class GDTCORClock;
+@class GDTCORStorage;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The singleton instance of this class.
  */
 + (instancetype)sharedInstance;
-
-/** The queue on which all upload coordination will occur. */
 @property(nonatomic, readonly) dispatch_queue_t coordinationQueue;
 
 /** A timer that will causes regular checks for events to upload. */
@@ -53,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** The map of targets to in-flight packages. */
 @property(nonatomic, readonly)
     NSMutableDictionary<NSNumber *, GDTCORUploadPackage *> *targetToInFlightPackages;
+
+/** The storage object the coordinator will use. Generally used for testing. */
+@property(nonatomic) GDTCORStorage *storage;
 
 /** The registrar object the coordinator will use. Generally used for testing. */
 @property(nonatomic) GDTCORRegistrar *registrar;

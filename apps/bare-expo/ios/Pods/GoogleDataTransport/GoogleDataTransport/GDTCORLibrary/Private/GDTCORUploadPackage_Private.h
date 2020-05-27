@@ -16,15 +16,14 @@
 
 #import <GoogleDataTransport/GDTCORUploadPackage.h>
 
+@class GDTCORStorage;
+
 @interface GDTCORUploadPackage ()
 
 /** The storage object this upload package will use to resolve event hashes to files. */
-@property(nonatomic) id<GDTCORStorageProtocol> storage;
+@property(nonatomic) GDTCORStorage *storage;
 
 /** A handler that will receive callbacks for certain events. */
 @property(nonatomic) id<NSSecureCoding, GDTCORUploadPackageProtocol> handler;
-
-/** Checks if the package is expired and calls -packageExpired: on the handler if necessary. */
-- (void)checkIfPackageIsExpired;
 
 @end
