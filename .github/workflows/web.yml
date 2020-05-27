@@ -12,9 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get cache key of git lfs files
+        id: git-lfs
+        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
+      - uses: actions/cache@v2
         with:
-          fetch-depth: 1
-          lfs: true
+          path: .git/lfs
+          key: ${{ steps.git-lfs.outputs.sha256 }}
+      - run: git lfs pull
       - run: yarn global add expo-cli
       - name: Cache Node.js modules
         uses: actions/cache@v1
