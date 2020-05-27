@@ -21,7 +21,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
-- `expo-sqlite` now supports encrypted SQLite files.
 - `react-native-view-shot` is no longer installed by default, install it with `expo install react-native-view-shot`. ([#7950](https://github.com/expo/expo/pull/7950) by [@evanbacon](https://github.com/evanbacon))
 - The AR module has been removed from the `expo` package. See https://expo.fyi/deprecating-ar for more information. ([#8442](https://github.com/expo/expo/pull/8442) by [@sjchmiela](https://github.com/sjchmiela))
 - **`expo-battery`**
@@ -46,6 +45,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
+- `expo-sqlite` now supports encrypted SQLite files ([#8242](https://github.com/expo/expo/pull/8242/) by [@gurs1kh](https://github.com/gurs1kh))
 - Initial release of **`expo-screen-capture`** 🥳
 - Initial release of **`expo-notifications`** 🥳
 - Added `@react-native-community/segmented-control` in version `1.6.1`. ([#8038](https://github.com/expo/expo/pull/8038) by [@marchenk0va](https://github.com/marchenk0va) and [#8441](https://github.com/expo/expo/pull/8441) by [@tsapeta](https://github.com/tsapeta))
