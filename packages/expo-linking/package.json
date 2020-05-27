@@ -43,6 +43,5 @@
   },
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "gitHead": "bce449748b0d51a1415e106853e9effcd4c57b84"
+  }
 }

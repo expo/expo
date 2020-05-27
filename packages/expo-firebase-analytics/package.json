@@ -45,6 +45,5 @@
   },
   "dependencies": {
     "expo-firebase-core": "~1.1.0"
-  },
-  "gitHead": "3d1ec6af76155f3987b5421bf43cc950f9a8eebb"
+  }
 }
