@@ -3,7 +3,7 @@ import path from 'path';
 
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { spawnAsync } from '../../Utils';
+import { spawnAsync, filterAsync } from '../../Utils';
 import * as Workspace from '../../Workspace';
 import { Parcel, TaskArgs } from '../types';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -26,15 +26,13 @@ export const updateIosProjects = new Task<TaskArgs>(
 
     await Promise.all(
       nativeApps.map(async (nativeApp) => {
-        const podspecNames = (
-          await Promise.all(
-            parcels.map(
-              (parcel) =>
-                nativeApp.hasLocalPodDependencyAsync(parcel.pkg.podspecName) &&
-                parcel.pkg.podspecName
-            )
-          )
-        ).filter(Boolean) as string[];
+        const localPods = await filterAsync(parcels, (parcel) => {
+          const { podspecName } = parcel.pkg;
+          return !!podspecName && nativeApp.hasLocalPodDependencyAsync(podspecName);
+        });
+        const podspecNames = localPods
+          .map((parcel) => parcel.pkg.podspecName)
+          .filter(Boolean) as string[];
 
         if (podspecNames.length === 0) {
           logger.log('  ', `${green(nativeApp.packageName)}: No pods to update.`);
