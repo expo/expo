@@ -45,6 +45,7 @@ export async function useSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     return await ExpoBrightness.useSystemBrightnessAsync();
 }
 export async function isUsingSystemBrightnessAsync() {
