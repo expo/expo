@@ -20,6 +20,5 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-app-loader",
   "devDependencies": {
     "expo-module-scripts": "^1.2.0"
-  },
-  "gitHead": "ff1a0d367a46126309e0facf64e32c87c754389c"
+  }
 }

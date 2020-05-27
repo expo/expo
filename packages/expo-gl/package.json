@@ -55,6 +55,5 @@
     "babel-preset-expo": "~8.2.2",
     "expo-module-scripts": "~1.2.0",
     "react-test-renderer": "~16.11.0"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

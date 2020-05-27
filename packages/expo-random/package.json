@@ -46,6 +46,5 @@
   },
   "dependencies": {
     "base64-js": "^1.3.0"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

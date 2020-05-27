@@ -48,6 +48,5 @@
     "lodash": "^4.17.15",
     "nullthrows": "^1.1.0",
     "prop-types": "15.7.2"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+  }
 }

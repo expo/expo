@@ -40,6 +40,5 @@
   },
   "peerDependencies": {
     "react-native-webview": "*"
-  },
-  "gitHead": "e8e2d55569a68566dcf0cdc48c35503ec66ea5dc"
+  }
 }

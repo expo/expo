@@ -35,6 +35,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.2.0"
-  },
-  "gitHead": "5a58a408ddb1c0019dce4a1612bc766916ee010a"
+  }
 }
