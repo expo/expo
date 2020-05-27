@@ -11,7 +11,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-screens` from `2.2.0` to `2.8.0`. ([#8434](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
 - Updated `react-native-shared-element` from `0.5.6` to `0.7.0`. ([#8427](https://github.com/expo/expo/pull/8427) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `react-native-reanimated` from `1.7.0` to `1.9.0`. ([#8424](https://github.com/expo/expo/pull/8424) by [@sjchmiela](https://github.com/sjchmiela))
-- Updated `react-native-safe-area-context` from `0.7.3` to `2.0.1`. ([#8459](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne) and [#8479](https://github.com/expo/expo/pull/8479) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-safe-area-context` from `0.7.3` to `2.0.3`. ([#8459](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne) and [#8479](https://github.com/expo/expo/pull/8479) by [@tsapeta](https://github.com/tsapeta)) and [#8503](https://github.com/expo/expo/pull/8459) by [@brentvatne](https://github.com/brentvatne).
 - Updated `@react-native-community/datetimepicker` from `2.2.2` to `2.4.0`. ([#8476](https://github.com/expo/expo/pull/8476) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-webview` from `8.1.1` to `9.4.0`. ([#8489](https://github.com/expo/expo/pull/8489) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-svg` from `11.0.1` to `12.1.0`. ([#8491](https://github.com/expo/expo/pull/8491) by [@tsapeta](https://github.com/tsapeta))

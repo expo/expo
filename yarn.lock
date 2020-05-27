@@ -2426,15 +2426,15 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-5.9.2.tgz#0e9df9717f292cd54fa9de322205b6263a1cb8e2"
   integrity sha512-YPN6Qi9Sf64GlE3muLi4u4p4LaFP/65PTS0xssiGEaBAwSmZoUhzihhW1AptNe66ZQK9PxXfKIJDiLnYveK1aw==
 
-"@react-native-community/segmented-control@1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/segmented-control/-/segmented-control-1.6.1.tgz#47c5eb20664376e390c3412d9a7242c2df35cdb0"
-  integrity sha512-6TCrkDHgchKU2RA0r+V49Uwvv9mMhLKCwx7sf6Jkj0D4RYs+qmxYFjoM82bOcaH2kOVF+cvRvABRn0Ai0my5LA==
-
 "@react-native-community/picker@1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/picker/-/picker-1.6.0.tgz#ddb2b04ca251b79980e3052ece4e685b7abf0444"
   integrity sha512-ijB33rCW3m9vu8jbXAcEh+icCmK0pyvCXiGfAwPgGSaFLsmE27dsle3022EbE+dqqQgpxUNtOkrd5C3B+/dcuA==
+
+"@react-native-community/segmented-control@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/segmented-control/-/segmented-control-1.6.1.tgz#47c5eb20664376e390c3412d9a7242c2df35cdb0"
+  integrity sha512-6TCrkDHgchKU2RA0r+V49Uwvv9mMhLKCwx7sf6Jkj0D4RYs+qmxYFjoM82bOcaH2kOVF+cvRvABRn0Ai0my5LA==
 
 "@react-native-community/slider@3.0.0-rc.2":
   version "3.0.0-rc.2"
@@ -13953,10 +13953,10 @@ react-native-reanimated@~1.9.0:
   dependencies:
     fbjs "^1.0.0"
 
-react-native-safe-area-context@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-2.0.1.tgz#c358d8eb6a320b218705b3e77985c3df7b26f04c"
-  integrity sha512-PjYGbaQVWWYk3fGVgcoZ7RkYNM6K9R2WNoZRSb+ckMZWIan30yENvpKq5HSf9LBkm7AZ046/ehawRTLKiytHCw==
+react-native-safe-area-context@2.0.3, react-native-safe-area-context@~2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-2.0.3.tgz#d89b60336ea2a1e9e2ff64fcac7b226aea0af370"
+  integrity sha512-KMYfJNLyPEFnYbpZiViqa9wHqVXZdZTebhs4tGER8YPvLRc4Qp7mUSfhDVnlNG/xG1denO1ehTAZQZ1fogxJeg==
 
 react-native-safe-area-view@^0.14, react-native-safe-area-view@^0.14.8, react-native-safe-area-view@^0.14.9:
   version "0.14.9"

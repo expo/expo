@@ -6,6 +6,7 @@ import {
   Text,
   TouchableHighlight,
   View,
+  StatusBar,
   ListRenderItem,
 } from 'react-native';
 import { withNavigation, NavigationScreenProps } from 'react-navigation';
@@ -49,21 +50,23 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
 
   render() {
     return (
-      // @ts-ignore
-      <FlatList<ListElement>
-        ref={view => {
-          this._listView = view!;
-        }}
-        initialNumToRender={25}
-        stickySectionHeadersEnabled
-        removeClippedSubviews={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{ backgroundColor: '#fff' }}
-        data={this.props.apis}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderExampleSection}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList<ListElement>
+          ref={view => {
+            this._listView = view!;
+          }}
+          initialNumToRender={25}
+          stickySectionHeadersEnabled
+          removeClippedSubviews={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          contentContainerStyle={{ backgroundColor: '#fff' }}
+          data={this.props.apis}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderExampleSection}
+        />
+        <StatusBar hidden={false} />
+      </View>
     );
   }
 
