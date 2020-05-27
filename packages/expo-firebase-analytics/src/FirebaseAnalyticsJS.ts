@@ -189,7 +189,8 @@ class FirebaseAnalyticsJS {
       !eventName.length ||
       eventName.length > 40 ||
       eventName[0] === '_' ||
-      !eventName.match(/^[A-Za-z_]+$/) ||
+      eventName[0].match(/^\d$/) ||
+      !eventName.match(/^[A-Za-z_0-9]+$/) ||
       eventName.startsWith('firebase_') ||
       eventName.startsWith('google_') ||
       eventName.startsWith('ga_')
