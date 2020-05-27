@@ -229,7 +229,7 @@ export class Package {
     if (!podName) {
       return false;
     }
-    const podspecPath = path.join(this.path, 'ios/Local Podspecs', `${podName}.podspec.json`);
+    const podspecPath = path.join(this.path, 'ios/Pods/Local Podspecs', `${podName}.podspec.json`);
     return await fs.pathExists(podspecPath);
   }
 
