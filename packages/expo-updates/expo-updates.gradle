@@ -51,7 +51,7 @@ afterEvaluate {
         commandLine("./node_modules/expo-updates/run-expo.sh", "bundle-assets", projectRoot, "--platform", "android", "--dest", assetsDir)
       }
 
-      enabled targetName.toLowerCase().contains("release")
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
     }
 
     currentBundleTask.dependsOn("merge${targetName}Resources")

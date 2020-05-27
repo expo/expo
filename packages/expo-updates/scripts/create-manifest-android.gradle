@@ -60,7 +60,7 @@ afterEvaluate {
         commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", "http://localhost:8081/$assetsFile?platform=android&dev=false", assetsDir)
       }
 
-      enabled targetName.toLowerCase().contains("release")
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
     }
 
     currentBundleTask.dependsOn("merge${targetName}Resources")

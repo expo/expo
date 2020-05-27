@@ -1,9 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
+#import <EXNotifications/EXRemoteNotificationPermissionRequester.h>
 #import <UMCore/UMUtilities.h>
-
-NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXAppDidRegisterForRemoteNotificationsNotification";
 
 @interface EXRemoteNotificationPermissionRequester ()
 
@@ -12,6 +10,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
 @property (nonatomic, weak) id<UMPermissionsRequester> userNotificationPermissionRequester;
 @property (nonatomic, weak) dispatch_queue_t methodQueue;
+@property (nonatomic, weak) id<EXRemoteNotificationPermissionProgressPublisher> permissionProgressPublisher;
 
 @end
 
@@ -23,10 +22,12 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 }
 
 - (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
+                                        permissionPublisher:(id<EXRemoteNotificationPermissionProgressPublisher>)permissionProgressPublisher
                                             withMethodQueue:(dispatch_queue_t)methodQueue
 {
   if (self = [super init]) {
     _remoteNotificationsRegistrationIsPending = NO;
+    _permissionProgressPublisher = permissionProgressPublisher;
     _userNotificationPermissionRequester = userNotificationPermissionRequester;
     _methodQueue = methodQueue;
   }
@@ -69,10 +70,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
     // resolve immediately if already registered
     [self _maybeConsumeResolverWithCurrentPermissions];
   } else {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_handleDidRegisterForRemoteNotifications:)
-                                                 name:EXAppDidRegisterForRemoteNotificationsNotificationName
-                                               object:nil];
+    [_permissionProgressPublisher addDelegate:self];
      UM_WEAKIFY(self)
     [_userNotificationPermissionRequester requestPermissionsWithResolver:^(NSDictionary *permission){
       UM_STRONGIFY(self)
@@ -107,7 +105,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
   [self _clearObserver];
 }
 
-- (void)_handleDidRegisterForRemoteNotifications:(__unused NSNotification *)notif
+- (void)handleDidFinishRegisteringForRemoteNotifications
 {
   [self _clearObserver];
   UM_WEAKIFY(self)
@@ -119,7 +117,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 
 - (void)_clearObserver
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_permissionProgressPublisher removeDelegate:self];
   _remoteNotificationsRegistrationIsPending = NO;
 }
 
