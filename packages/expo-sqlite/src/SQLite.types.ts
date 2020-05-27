@@ -5,6 +5,16 @@
 //
 // Original definitions by: TeamworkGuy2 <https://github.com/TeamworkGuy2>
 
+export interface Window {
+  openDatabase?: (
+    name: string,
+    version: string,
+    displayName: string,
+    estimatedSize: number,
+    creationCallback?: DatabaseCallback
+  ) => Database;
+}
+
 export interface DatabaseCallback {
   (database: Database): void;
 }
