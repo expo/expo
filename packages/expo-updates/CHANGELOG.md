@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Added a better error message to the `create-manifest-ios.sh` script in case the Xcode shell cannot find the node binary.
+- Added an optional `bundleIn${targetName}` field to Gradle build script config. ([#8464](https://github.com/expo/expo/pull/8464) by [@rickysullivan](https://github.com/rickysullivan))
+
 ## 0.2.6 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
+
 ## 0.2.5
 
 ### 🐛 Bug fixes
