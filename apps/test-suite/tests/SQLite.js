@@ -49,7 +49,7 @@ export function test(t) {
               [],
               (tx, results) => {
                 t.expect(results.rows.length).toEqual(3);
-                t.expect(results.rows._array[0].j).toBeCloseTo(23.4);
+                t.expect(results.rows.item(0).j).toBeCloseTo(23.4);
               },
               onError
             );
@@ -215,10 +215,10 @@ export function test(t) {
               'SELECT * FROM Nulling',
               [],
               (tx, results) => {
-                t.expect(results.rows._array[0].x).toBeNull();
-                t.expect(results.rows._array[0].y).toBeNull();
-                t.expect(results.rows._array[1].x).toBeNull();
-                t.expect(results.rows._array[1].y).toBeNull();
+                t.expect(results.rows.item(0).x).toBeNull();
+                t.expect(results.rows.item(0).y).toBeNull();
+                t.expect(results.rows.item(1).x).toBeNull();
+                t.expect(results.rows.item(1).y).toBeNull();
               },
               onError
             );
@@ -255,8 +255,8 @@ export function test(t) {
               [],
               (tx, results) => {
                 t.expect(results.rows.length).toEqual(2);
-                t.expect(results.rows._array[0].name).toEqual('id');
-                t.expect(results.rows._array[1].name).toEqual('name');
+                t.expect(results.rows.item(0).name).toEqual('id');
+                t.expect(results.rows.item(1).name).toEqual('name');
               },
               onError
             );
@@ -269,7 +269,7 @@ export function test(t) {
               [],
               (tx, results) => {
                 t.expect(results.rows.length).toEqual(1);
-                t.expect(results.rows._array[0].user_version).toEqual(123);
+                t.expect(results.rows.item(0).user_version).toEqual(123);
               },
               onError
             );
