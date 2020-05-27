@@ -1,4 +1,5 @@
-*.pbxproj text -merge union linguist-generated
+ios/Exponent.xcodeproj/project.pbxproj merge=mergepbx -text linguist-generated
+*.pbxproj -diff linguist-generated
 nix/**/gemset.nix -diff linguist-generated
 packages/*/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
