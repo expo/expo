@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `SplashScreen.show()` native method changes it's signature. Its third argument is now a `Boolean` flag that tells the system whether the `StatusBar` component should be `translucent`. Pass `false` to preserve previous behavior.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
