@@ -1,15 +1,15 @@
-import React from 'react';
+import { Picker } from '@react-native-community/picker';
+import Slider from '@react-native-community/slider';
+import * as React from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
   Alert,
   Image,
-  Picker,
   ProgressViewIOS,
   RefreshControl,
   SectionList,
   SegmentedControlIOS,
-  Slider,
   Switch,
   StatusBar,
   ScrollView,
@@ -21,11 +21,11 @@ import {
   View,
   TouchableOpacityProps,
 } from 'react-native';
+import WebView from 'react-native-webview';
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 // @ts-ignore
 import { NavigationScreenProps, ScrollView as NavigationScrollView } from 'react-navigation';
-import WebView from 'react-native-webview';
 
 import Colors from '../../constants/Colors';
 import Layout from '../../constants/Layout';
@@ -40,7 +40,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     isRefreshing: false,
   };
 
-  sections: Array<{ title: string; data: Array<() => JSX.Element> }>;
+  sections: { title: string; data: (() => JSX.Element)[] }[];
 
   _sectionList?: React.Component;
 
