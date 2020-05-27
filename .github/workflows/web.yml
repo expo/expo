@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Get cache key of git lfs files
         id: git-lfs
         run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
