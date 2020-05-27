@@ -17,7 +17,7 @@ export { default as AppLoading } from './launch/AppLoading';
 export { default as DangerZone } from './DangerZone';
 
 // @ts-ignore
-export { AR, Updates } from './deprecated';
+export { Updates } from './deprecated';
 
 // @ts-ignore
 export {
@@ -35,6 +35,8 @@ export {
   Amplitude,
   // @ts-ignore
   AppAuth,
+  // @ts-ignore
+  AR,
   // @ts-ignore
   Asset,
   // @ts-ignore

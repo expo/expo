@@ -33,12 +33,6 @@ Object.defineProperty(exports, "DangerZone", {
     return _DangerZone.default;
   }
 });
-Object.defineProperty(exports, "AR", {
-  enumerable: true,
-  get: function () {
-    return _deprecated.AR;
-  }
-});
 Object.defineProperty(exports, "Updates", {
   enumerable: true,
   get: function () {
@@ -85,6 +79,12 @@ Object.defineProperty(exports, "AppAuth", {
   enumerable: true,
   get: function () {
     return _removed.AppAuth;
+  }
+});
+Object.defineProperty(exports, "AR", {
+  enumerable: true,
+  get: function () {
+    return _removed.AR;
   }
 });
 Object.defineProperty(exports, "Asset", {

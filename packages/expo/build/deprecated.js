@@ -1,16 +1,5 @@
 import deprecatedModule from './deprecatedModule';
 Object.defineProperties(module.exports, {
-    AR: {
-        enumerable: true,
-        get() {
-            if (__DEV__) {
-                setTimeout(() => {
-                    console.log('The AR module is deprecated and will be removed from all SDK versions in the Expo client in June. See https://expo.fyi/deprecating-ar for more information.');
-                }, 1000);
-            }
-            return require('./AR');
-        },
-    },
     Updates: {
         enumerable: true,
         get() {

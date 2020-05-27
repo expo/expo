@@ -2,8 +2,6 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-**Disclaimer:** This feature works properly only on macOS.
-
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.
 You'll need a paid developer account for each platform for which you wish to upload and publish an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
 
@@ -15,49 +13,58 @@ To learn how to build native binaries, see [Building Standalone Apps](../buildin
 
 To upload the previously built standalone app to the appropriate app store, you simply run `expo upload:android` or `expo upload:ios`. However, you have a few options for choosing which app binary you want to upload (remember to choose one at the time):
 
-- `--latest` - chosen by default, uploads the latest build for the given platform found on the Expo servers
-- `--id <id>` - uploads a build with the given ID
+- `--latest` - uploads the latest build for the given platform found on Expo Servers
+- `--url <url>` - uploads a build from given URL
 - `--path <path>` - uploads a build from the local file system
+- `--id <id>` - uploads a build with the given ID
 
 ## 2.1. If you choose to upload your Android app to Google Play
 
-**Important:** You have to create a Google Service Account and download its JSON private key. After that, you'll have to create an app on the [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
+**Important:**
+
+- Beware that this feature works properly only on macOS, unless you pass the `--use-submission-service` flag.
+- You have to create a Google Service Account and download its JSON private key.
+- After that, you'll have to create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
 
 #### Creating a Google Service Account
 
-1. Open the [Google Play Console](https://play.google.com/apps/publish/).
-2. Click the **Settings** menu entry, followed by **API access**.
-3. Click the **CREATE SERVICE ACCOUNT** button. If you see a message saying API access is not enabled for your account, you must first link your Google Play developer account with a Google Developer Project. On this page, either link it to an existing project if you have one, or click **CREATE NEW PROJECT** to link with a new one.
-4. Follow the **Google API Console** link in the dialog
-    1. Click the **CREATE SERVICE ACCOUNT** button
-    2. Enter the name of this service account in the field titled "Service account name". We recommend a name that will make it easy for you to remember that it is for your Google Play Console account. Also, enter the service account ID and description of your choice.
-    3. Click **Select a role** and choose **Service Accounts > ServiceAccount User**
-    4. Check the **Furnish a new private key** checkbox
-    5. Make sure the "Key type" field is set to **JSON**
-    6. Click **SAVE** to close the dialog
-    7. Make a note of the filename of the JSON file downloaded to your computer. You'll need this to upload your app later. Be sure to keep this JSON file secure, as it provides API access to your Google Play developer account.
-5. Return to the **API access** page on the **Google Play Console** and ensure it shows your new service account.
-6. Click on **Grant Access** for the newly added service account
-7. Choose **Release Manager** from the newly added service account
-8. Click **ADD USER** to close the dialog
+See [expo.fyi/creating-google-service-account](https://expo.fyi/creating-google-service-account) to learn more.
 
 #### Manually uploading your app for the first time
 
-Before using `expo-cli` for uploading your standalone app builds, you have to upload your app manually at least once. [See here for the instructions on how to do it.](https://support.google.com/googleplay/android-developer/answer/113469)
+Before using `expo upload:android` for uploading your standalone app builds, you have to upload your app manually at least once.<br />
+See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission) to learn more.
 
 #### Using expo-cli to upload the further builds of your app
 
 After these steps, you can make use of `expo-cli` to upload your further app builds to Google Play.
 
-To upload your Android app to Google Play, run `expo upload:android`. You can set following options when uploading an Android standalone app:
-- `--key <key>` **(required)** - path to the JSON key used to authenticate with the Google Play Store (created in the previous steps)
+To upload your Android app to Google Play, simply run `expo upload:android`. You can set following options when uploading an Android standalone app:
+
+- `--type <archive-type>` - the archive type, by default, it's inferred from the filename extension, choose from: apk, aab
+- `--key <key>` - path to the JSON key used to authenticate with the Google Play Store
 - `--track <track>` - the track of the application to use, choose from: production, beta, alpha, internal, rollout (default: internal)
+- `--release-status <release-status>` - release status (used when uploading new apks/aabs), choose from: completed, draft, halted, inProgress (default: completed)
+- `--android-package <android-package>` - the Android package of your app, if you don't pass this parameter it'll be read from `app.json`
+- `--use-submission-service` - **Experimental:** Use Submission Service for uploading your app. The upload process will happen on Expo servers.
+- `--verbose` - always print logs from Submission Service
+
+#### Uploading your app with Submission Service
+
+**Beware:** This feature is still experimental! However, using it can not cause any damage to your app. In the worst-case scenario, your app won't get submitted to Google Play Store.
+
+If you would like to upload your app from any other operating system than macOS, you can give the Expo Submission Service a try. It lets you upload your standalone app directly from Expo Servers.
+
+Using the Submission Service is easy - it's just one additional flag: `expo upload:android --use-submission-service`.
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
+
+**Disclaimer:** This feature only works on macOS. If you want to upload an iOS app to the Apple App Store you will need to have access to a macOS device.
 
 ### Using expo-cli
 
 To upload your iOS app to TestFlight, run `expo upload:ios`. You can set following options when uploading an iOS standalone app:
+
 - `--apple-id <apple-id>` **(required)** - your Apple ID login. Alternatively you can set the `EXPO_APPLE_ID` environment variable.
 - `--apple-id-password <apple-id-password>` **(required)** - your Apple ID password. Alternatively you can set the `EXPO_APPLE_ID_PASSWORD` environment variable.
 - `--app-name <app-name>` - your app display name, will be used to name an app on App Store Connect

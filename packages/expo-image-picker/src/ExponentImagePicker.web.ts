@@ -1,4 +1,3 @@
-import * as Permissions from 'expo-permissions';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import uuidv4 from 'uuid/v4';
 
@@ -45,10 +44,10 @@ export default {
    * Delegate to expo-permissions to request camera permissions
    */
   async getCameraPermissionsAsync() {
-    return Permissions.getAsync(Permissions.CAMERA);
+    return permissionGrantedResponse();
   },
   async requestCameraPermissionsAsync() {
-    return Permissions.askAsync(Permissions.CAMERA);
+    return permissionGrantedResponse();
   },
 
   /*

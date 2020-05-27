@@ -38,9 +38,10 @@ public class RNDismissableTimePickerDialog extends TimePickerDialog {
       @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
-      boolean is24HourView) {
+      boolean is24HourView,
+      RNTimePickerDisplay display) {
     super(context, callback, hourOfDay, minute, is24HourView);
-    fixSpinner(context, hourOfDay, minute, is24HourView);
+    fixSpinner(context, hourOfDay, minute, is24HourView, display);
   }
 
   public RNDismissableTimePickerDialog(
@@ -49,9 +50,10 @@ public class RNDismissableTimePickerDialog extends TimePickerDialog {
       @Nullable TimePickerDialog.OnTimeSetListener callback,
       int hourOfDay,
       int minute,
-      boolean is24HourView) {
+      boolean is24HourView,
+      RNTimePickerDisplay display) {
     super(context, theme, callback, hourOfDay, minute, is24HourView);
-    fixSpinner(context, hourOfDay, minute, is24HourView);
+    fixSpinner(context, hourOfDay, minute, is24HourView, display);
   }
 
   @Override
@@ -61,41 +63,35 @@ public class RNDismissableTimePickerDialog extends TimePickerDialog {
     }
   }
 
-  private void fixSpinner(Context context, int hourOfDay, int minute, boolean is24HourView) {
-    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+  private void fixSpinner(Context context, int hourOfDay, int minute, boolean is24HourView, RNTimePickerDisplay display) {
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N && display == RNTimePickerDisplay.SPINNER) {
       try {
-        // Get the theme's android:timePickerMode
-        final int MODE_SPINNER = 1;
         Class<?> styleableClass = Class.forName("com.android.internal.R$styleable");
         Field timePickerStyleableField = styleableClass.getField("TimePicker");
         int[] timePickerStyleable = (int[]) timePickerStyleableField.get(null);
         final TypedArray a = context.obtainStyledAttributes(null, timePickerStyleable, android.R.attr.timePickerStyle, 0);
-        Field timePickerModeStyleableField = styleableClass.getField("TimePicker_timePickerMode");
-        int timePickerModeStyleable = timePickerModeStyleableField.getInt(null);
-        final int mode = a.getInt(timePickerModeStyleable, MODE_SPINNER);
         a.recycle();
-        if (mode == MODE_SPINNER) {
-          TimePicker timePicker = (TimePicker) findField(TimePickerDialog.class, TimePicker.class, "mTimePicker").get(this);
-          Class<?> delegateClass = Class.forName("android.widget.TimePicker$TimePickerDelegate");
-          Field delegateField = findField(TimePicker.class, delegateClass, "mDelegate");
-          Object delegate = delegateField.get(timePicker);
-          Class<?> spinnerDelegateClass;
-          spinnerDelegateClass = Class.forName("android.widget.TimePickerSpinnerDelegate");
-          // In 7.0 Nougat for some reason the timePickerMode is ignored and the delegate is TimePickerClockDelegate
-          if (delegate.getClass() != spinnerDelegateClass) {
-            delegateField.set(timePicker, null); // throw out the TimePickerClockDelegate!
-            timePicker.removeAllViews(); // remove the TimePickerClockDelegate views
-            Constructor spinnerDelegateConstructor = spinnerDelegateClass.getConstructor(TimePicker.class, Context.class, AttributeSet.class, int.class, int.class);
-            spinnerDelegateConstructor.setAccessible(true);
-            // Instantiate a TimePickerSpinnerDelegate
-            delegate = spinnerDelegateConstructor.newInstance(timePicker, context, null, android.R.attr.timePickerStyle, 0);
-            delegateField.set(timePicker, delegate); // set the TimePicker.mDelegate to the spinner delegate
-            // Set up the TimePicker again, with the TimePickerSpinnerDelegate
-            timePicker.setIs24HourView(is24HourView);
-            timePicker.setCurrentHour(hourOfDay);
-            timePicker.setCurrentMinute(minute);
-            timePicker.setOnTimeChangedListener(this);
-          }
+
+        TimePicker timePicker = (TimePicker) findField(TimePickerDialog.class, TimePicker.class, "mTimePicker").get(this);
+        Class<?> delegateClass = Class.forName("android.widget.TimePicker$TimePickerDelegate");
+        Field delegateField = findField(TimePicker.class, delegateClass, "mDelegate");
+        Object delegate = delegateField.get(timePicker);
+        Class<?> spinnerDelegateClass;
+        spinnerDelegateClass = Class.forName("android.widget.TimePickerSpinnerDelegate");
+        // In 7.0 Nougat for some reason the timePickerMode is ignored and the delegate is TimePickerClockDelegate
+        if (delegate.getClass() != spinnerDelegateClass) {
+          delegateField.set(timePicker, null); // throw out the TimePickerClockDelegate!
+          timePicker.removeAllViews(); // remove the TimePickerClockDelegate views
+          Constructor spinnerDelegateConstructor = spinnerDelegateClass.getConstructor(TimePicker.class, Context.class, AttributeSet.class, int.class, int.class);
+          spinnerDelegateConstructor.setAccessible(true);
+          // Instantiate a TimePickerSpinnerDelegate
+          delegate = spinnerDelegateConstructor.newInstance(timePicker, context, null, android.R.attr.timePickerStyle, 0);
+          delegateField.set(timePicker, delegate); // set the TimePicker.mDelegate to the spinner delegate
+          // Set up the TimePicker again, with the TimePickerSpinnerDelegate
+          timePicker.setIs24HourView(is24HourView);
+          timePicker.setCurrentHour(hourOfDay);
+          timePicker.setCurrentMinute(minute);
+          timePicker.setOnTimeChangedListener(this);
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
