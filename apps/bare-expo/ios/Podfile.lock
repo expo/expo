@@ -444,7 +444,7 @@ PODS:
   - React-jsinspector (0.62.2)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-safe-area-context (2.0.0):
+  - react-native-safe-area-context (2.0.3):
     - React
   - react-native-segmented-control (1.6.1):
     - React
@@ -960,7 +960,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 1540d1c01bb493ae3124ed83351b1b6a155db7da
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
-  react-native-safe-area-context: 60f654e00b6cc416573f6d5dbfce3839958eb57a
+  react-native-safe-area-context: 14c793e8b0bfe51e74dcdbe75dd14ee7498b88b8
   react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5
   React-RCTActionSheet: f41ea8a811aac770e0cc6e0ad6b270c644ea8b7c
   React-RCTAnimation: 49ab98b1c1ff4445148b72a3d61554138565bad0

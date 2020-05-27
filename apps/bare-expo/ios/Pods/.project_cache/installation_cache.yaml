@@ -1552,7 +1552,7 @@ CACHE_KEYS:
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 71dcb769da78260074adb01e3fcad0bb
-    CHECKSUM: 60f654e00b6cc416573f6d5dbfce3839958eb57a
+    CHECKSUM: 14c793e8b0bfe51e74dcdbe75dd14ee7498b88b8
     FILES:
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.h"
       - "../../../../node_modules/react-native-safe-area-context/ios/SafeAreaView/RCTView+SafeAreaCompat.m"
@@ -1574,7 +1574,7 @@ CACHE_KEYS:
       - "../../../../node_modules/react-native-safe-area-context/README.md"
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (2.0.0)
+      - react-native-safe-area-context (2.0.3)
   react-native-segmented-control:
     BUILD_SETTINGS_CHECKSUM:
       react-native-segmented-control: 20fafd243e368fe6c0831976de96de6a
