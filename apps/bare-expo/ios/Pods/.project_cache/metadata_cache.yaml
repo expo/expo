@@ -330,6 +330,10 @@ Pods-BareExpoTests:
   LABEL: Pods-BareExpoTests
   PROJECT_PATH: Pods.xcodeproj
   UUID: 5ED670BDDA55CB27689267F688CCA84B
+PromisesObjC:
+  LABEL: PromisesObjC
+  PROJECT_PATH: PromisesObjC.xcodeproj
+  UUID: 615BB6D15EC37D16C898941802F0D251
 RCTRequired:
   LABEL: RCTRequired
   PROJECT_PATH: RCTRequired.xcodeproj

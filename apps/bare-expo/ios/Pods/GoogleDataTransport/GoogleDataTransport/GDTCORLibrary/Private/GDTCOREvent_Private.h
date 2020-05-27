@@ -22,8 +22,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GDTCOREvent ()
 
-/** The serialized bytes of the event data object. */
-@property(nonatomic) NSData *dataObjectTransportBytes;
+/** The unique ID of the event. This property is for testing only. */
+@property(nonatomic, readwrite) NSNumber *eventID;
+
+/** The GDT relative file path of the event. */
+@property(nullable, nonatomic, readonly) NSString *GDTFilePath;
+
+/** Writes [dataObject transportBytes] to the given URL, populates fileURL with the filename, then
+ * nils the dataObject property. This method should not be called twice on the same event.
+ *
+ * @param filePath The GDTCORRootDirectory-relative path that dataObject will be written to.
+ * @param error If populated, the error encountered during writing to disk.
+ * @return YES if writing dataObject to disk was successful, NO otherwise.
+ */
+- (BOOL)writeToGDTPath:(NSString *)filePath error:(NSError **)error;
+
+/** Generates incrementing event IDs, stored in a file in the app's cache.
+ *
+ * @return An event ID that is incremented based on a number in a file stored in the app cache.
+ */
++ (NSNumber *)nextEventID;
 
 @end
 

@@ -19,11 +19,6 @@
 
 @implementation SEGFileStorage
 
-- (instancetype)init
-{
-    return [self initWithFolder:[SEGFileStorage applicationSupportDirectoryURL] crypto:nil];
-}
-
 - (instancetype)initWithFolder:(NSURL *)folderURL crypto:(id<SEGCrypto>)crypto
 {
     if (self = [super init]) {
@@ -56,6 +51,13 @@
 - (void)setData:(NSData *)data forKey:(NSString *)key
 {
     NSURL *url = [self urlForKey:key];
+    
+    // a nil value was supplied, remove the storage for said key.
+    if (data == nil) {
+        [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+        return;
+    }
+    
     if (self.crypto) {
         NSData *encryptedData = [self.crypto encrypt:data];
         [encryptedData writeToURL:url atomically:YES];
@@ -85,41 +87,61 @@
     return data;
 }
 
-- (NSDictionary *)dictionaryForKey:(NSString *)key
+- (nullable NSDictionary *)dictionaryForKey:(NSString *)key
 {
-    return [self plistForKey:key];
+    return [self jsonForKey:key];
 }
 
-- (void)setDictionary:(NSDictionary *)dictionary forKey:(NSString *)key
+- (void)setDictionary:(nullable NSDictionary *)dictionary forKey:(NSString *)key
 {
-    [self setPlist:dictionary forKey:key];
+    [self setJSON:dictionary forKey:key];
 }
 
-- (NSArray *)arrayForKey:(NSString *)key
+- (nullable NSArray *)arrayForKey:(NSString *)key
 {
-    return [self plistForKey:key];
+    return [self jsonForKey:key];
 }
 
-- (void)setArray:(NSArray *)array forKey:(NSString *)key
+- (void)setArray:(nullable NSArray *)array forKey:(NSString *)key
 {
-    [self setPlist:array forKey:key];
+    [self setJSON:array forKey:key];
 }
 
-- (NSString *)stringForKey:(NSString *)key
+- (nullable NSString *)stringForKey:(NSString *)key
 {
-    return [self plistForKey:key];
+    id data = [self jsonForKey:key];
+
+    if (data == nil) {
+        return nil;
+    }
+
+    if ([data isKindOfClass:[NSString class]]) {
+        return data;
+    } else if ([data isKindOfClass:[NSDictionary class]]) {
+        return data[key];
+    }
+
+    return nil;
 }
 
-- (void)setString:(NSString *)string forKey:(NSString *)key
+- (void)setString:(nullable NSString *)string forKey:(NSString *)key
 {
-    [self setPlist:string forKey:key];
+    [self setJSON:string forKey:key];
 }
+
 
 + (NSURL *)applicationSupportDirectoryURL
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-    NSString *supportPath = [paths firstObject];
-    return [NSURL fileURLWithPath:supportPath];
+    NSString *storagePath = [paths firstObject];
+    return [NSURL fileURLWithPath:storagePath];
+}
+
++ (NSURL *)cachesDirectoryURL
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *storagePath = [paths firstObject];
+    return [NSURL fileURLWithPath:storagePath];
 }
 
 - (NSURL *)urlForKey:(NSString *)key
@@ -129,44 +151,71 @@
 
 #pragma mark - Helpers
 
-- (id _Nullable)plistForKey:(NSString *)key
+- (id _Nullable)jsonForKey:(NSString *)key
 {
+    id result = nil;
+    
     NSData *data = [self dataForKey:key];
-    return data ? [self plistFromData:data] : nil;
-}
-
-- (void)setPlist:(id _Nonnull)plist forKey:(NSString *)key
-{
-    NSData *data = [self dataFromPlist:plist];
     if (data) {
-        [self setData:data forKey:key];
+        BOOL needsConversion = NO;
+        result = [self jsonFromData:data needsConversion:&needsConversion];
+        if (needsConversion) {
+            [self setJSON:result forKey:key];
+            // maybe a little repetitive, but we want to recreate the same path it would
+            // take if it weren't being converted.
+            data = [self dataForKey:key];
+            result = [self jsonFromData:data needsConversion:&needsConversion];
+        }
     }
+    return result;
 }
 
-- (NSData *_Nullable)dataFromPlist:(nonnull id)plist
+- (void)setJSON:(id _Nonnull)json forKey:(NSString *)key
 {
+    NSDictionary *dict = nil;
+    
+    // json doesn't allow stand alone values like plist (previous storage format) does so
+    // we need to massage it a little.
+    if (json) {
+        if ([json isKindOfClass:[NSDictionary class]] || [json isKindOfClass:[NSArray class]]) {
+            dict = json;
+        } else {
+            dict = @{key: json};
+        }
+    }
+    
+    NSData *data = [self dataFromJSON:dict];
+    [self setData:data forKey:key];
+}
+
+- (NSData *_Nullable)dataFromJSON:(id)json
+{
+    if (json == nil) {
+        return nil;
+    }
+    
     NSError *error = nil;
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:plist
-                                                              format:NSPropertyListXMLFormat_v1_0
-                                                             options:0
-                                                               error:&error];
+    NSData *data = [NSJSONSerialization dataWithJSONObject:json options:0 error:&error];
     if (error) {
-        SEGLog(@"Unable to serialize data from plist object", error, plist);
+        SEGLog(@"Unable to serialize data from json object; %@, %@", error, json);
     }
     return data;
 }
 
-- (id _Nullable)plistFromData:(NSData *_Nonnull)data
+- (id _Nullable)jsonFromData:(NSData *_Nonnull)data needsConversion:(BOOL *)needsConversion
 {
     NSError *error = nil;
-    id plist = [NSPropertyListSerialization propertyListWithData:data
-                                                         options:0
-                                                          format:nil
-                                                           error:&error];
+    id result = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     if (error) {
-        SEGLog(@"Unable to parse plist from data %@", error);
+        // maybe it's a plist and needs to be converted.
+        result = [self plistFromData:data];
+        if (result != nil) {
+            *needsConversion = YES;
+        } else {
+            SEGLog(@"Unable to parse json from data %@", error);
+        }
     }
-    return plist;
+    return result;
 }
 
 - (void)createDirectoryAtURLIfNeeded:(NSURL *)url
@@ -181,6 +230,41 @@
             SEGLog(@"error: %@", error.localizedDescription);
         }
     }
+}
+
+/// Deprecated
+- (NSData *_Nullable)dataFromPlist:(nonnull id)plist
+{
+    NSError *error = nil;
+    NSData *data = nil;
+    // Temporary just-in-case fix for issue #846; Follow-on PR to move away from plist storage.
+    @try {
+        data = [NSPropertyListSerialization dataWithPropertyList:plist
+                                                          format:NSPropertyListXMLFormat_v1_0
+                                                         options:0
+                                                           error:&error];
+    } @catch (NSException *e) {
+        SEGLog(@"Unable to serialize data from plist object; Exception: %@, plist: %@", e, plist);
+    } @finally {
+        if (error) {
+            SEGLog(@"Unable to serialize data from plist object; Error: %@, plist: %@", error, plist);
+        }
+    }
+    return data;
+}
+
+/// Deprecated
+- (id _Nullable)plistFromData:(NSData *_Nonnull)data
+{
+    NSError *error = nil;
+    id plist = [NSPropertyListSerialization propertyListWithData:data
+                                                         options:0
+                                                          format:nil
+                                                           error:&error];
+    if (error) {
+        SEGLog(@"Unable to parse plist from data %@", error);
+    }
+    return plist;
 }
 
 @end

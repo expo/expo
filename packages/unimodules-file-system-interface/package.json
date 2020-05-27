@@ -1,6 +1,6 @@
 {
   "name": "unimodules-file-system-interface",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "Interface for file system modules",
   "main": "index.js",
   "keywords": [

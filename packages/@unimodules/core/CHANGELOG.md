@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 5.2.0 — 2020-05-27
+
+### 🐛 Bug fixes
+
 - Fixed error when serializing a `Map` containing a `null` ([#8153](https://github.com/expo/expo/pull/8153) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed _unused variable_ warnings in `UMAppDelegateWrapper` ([#8467](https://github.com/expo/expo/pull/8467) by [@sjchmiela](https://github.com/sjchmiela))
 

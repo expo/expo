@@ -132,7 +132,7 @@ typedef void (^GTMSessionUploadFetcherCancellationHandler)(
 @property(atomic, strong, GTM_NULLABLE) NSFileHandle *uploadFileHandle;
 @property(atomic, copy, readonly, GTM_NULLABLE) GTMSessionUploadFetcherDataProvider uploadDataProvider;
 @property(atomic, copy) NSString *uploadMIMEType;
-@property(atomic, assign) int64_t chunkSize;
+@property(atomic, readonly, assign) int64_t chunkSize;
 @property(atomic, readonly, assign) int64_t currentOffset;
 // Reflects the original NSURLRequest's @c allowCellularAccess property.
 @property(atomic, readonly, assign) BOOL allowsCellularAccess;

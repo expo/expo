@@ -46,6 +46,16 @@
     [self.defaults synchronize];
 }
 
+- (void)setObject:(id)object forKey:(NSString *)key
+{
+    // pass through for NSUserDefaults to remove keys if supplied a nil value.
+    if (object) {
+        [self.defaults setObject:object forKey:key];
+    } else {
+        [self.defaults removeObjectForKey:key];
+    }
+}
+
 - (void)setData:(NSData *)data forKey:(NSString *)key
 {
     key = [self namespacedKey:key];
@@ -54,7 +64,7 @@
         return;
     }
     NSData *encryptedData = [self.crypto encrypt:data];
-    [self.defaults setObject:encryptedData forKey:key];
+    [self setObject:encryptedData forKey:key];
 }
 
 - (NSData *)dataForKey:(NSString *)key
@@ -84,7 +94,7 @@
 {
     if (!self.crypto) {
         key = [self namespacedKey:key];
-        [self.defaults setObject:dictionary forKey:key];
+        [self setObject:dictionary forKey:key];
         return;
     }
     [self setPlist:dictionary forKey:key];
@@ -103,7 +113,7 @@
 {
     if (!self.crypto) {
         key = [self namespacedKey:key];
-        [self.defaults setObject:array forKey:key];
+        [self setObject:array forKey:key];
         return;
     }
     [self setPlist:array forKey:key];
@@ -122,7 +132,7 @@
 {
     if (!self.crypto) {
         key = [self namespacedKey:key];
-        [self.defaults setObject:string forKey:key];
+        [self setObject:string forKey:key];
         return;
     }
     [self setPlist:string forKey:key];

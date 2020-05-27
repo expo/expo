@@ -464,14 +464,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   }
 }
 
-- (void)setChunkSize:(int64_t)chunkSize {
-  @synchronized(self) {
-    GTMSessionMonitorSynchronized(self);
-
-    _chunkSize = chunkSize;
-  }
-}
-
 - (int64_t)chunkSize {
   @synchronized(self) {
     GTMSessionMonitorSynchronized(self);
@@ -1463,11 +1455,13 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
 
   // TODO
   // Maybe here we can check to see if the request had x goog content length set. (the file length one).
-  int64_t previousContentLength =
-      [[chunkFetcher.request valueForHTTPHeaderField:@"Content-Length"] longLongValue];
+  NSString *previousContentLengthValue =
+      [chunkFetcher.request valueForHTTPHeaderField:@"Content-Length"];
   // The Content-Length header may not be present if the chunk fetcher was recreated from
   // a background session.
-  BOOL hasKnownChunkSize = (previousContentLength > 0);
+  BOOL hasKnownChunkSize = (previousContentLengthValue != nil);
+  int64_t previousContentLength = [previousContentLengthValue longLongValue];
+
   BOOL needsQuery = (!hasKnownChunkSize && !isUploadStatusStopped);
 
   if (error || (needsQuery && !isQueryFetch)) {
@@ -1512,7 +1506,9 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
                             chunkFetcher, chunkFetcher.request.allHTTPHeaderFields,
                             responseHeaders);
 #endif
-    if (isUploadStatusStopped || (_currentOffset > _uploadFileLength && _uploadFileLength > 0)) {
+    if (isUploadStatusStopped ||
+        (!_uploadData && _uploadFileLength == 0) ||
+        (_currentOffset > _uploadFileLength && _uploadFileLength > 0)) {
       // This was the last chunk.
       if (error == nil && uploadStatus == kStatusCancelled) {
         // Report cancelled status as an error.

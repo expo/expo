@@ -14,15 +14,15 @@
 
 #import <Foundation/Foundation.h>
 
-#import "GULReachabilityChecker+Internal.h"
-#import "Private/GULReachabilityChecker.h"
-#import "Private/GULReachabilityMessageCode.h"
+#import "GoogleUtilities/Reachability/GULReachabilityChecker+Internal.h"
+#import "GoogleUtilities/Reachability/Private/GULReachabilityChecker.h"
+#import "GoogleUtilities/Reachability/Private/GULReachabilityMessageCode.h"
 
 #import <GoogleUtilities/GULLogger.h>
 #import <GoogleUtilities/GULReachabilityChecker.h>
 
 static GULLoggerService kGULLoggerReachability = @"[GULReachability]";
-
+#if !TARGET_OS_WATCH
 static void ReachabilityCallback(SCNetworkReachabilityRef reachability,
                                  SCNetworkReachabilityFlags flags,
                                  void *info);
@@ -38,26 +38,31 @@ static const struct GULReachabilityApi kGULDefaultReachabilityApi = {
 static NSString *const kGULReachabilityUnknownStatus = @"Unknown";
 static NSString *const kGULReachabilityConnectedStatus = @"Connected";
 static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
-
+#endif
 @interface GULReachabilityChecker ()
 
 @property(nonatomic, assign) const struct GULReachabilityApi *reachabilityApi;
 @property(nonatomic, assign) GULReachabilityStatus reachabilityStatus;
 @property(nonatomic, copy) NSString *host;
+#if !TARGET_OS_WATCH
 @property(nonatomic, assign) SCNetworkReachabilityRef reachability;
+#endif
 
 @end
 
 @implementation GULReachabilityChecker
 
 @synthesize reachabilityApi = reachabilityApi_;
+#if !TARGET_OS_WATCH
 @synthesize reachability = reachability_;
+#endif
 
 - (const struct GULReachabilityApi *)reachabilityApi {
   return reachabilityApi_;
 }
 
 - (void)setReachabilityApi:(const struct GULReachabilityApi *)reachabilityApi {
+#if !TARGET_OS_WATCH
   if (reachability_) {
     GULLogError(kGULLoggerReachability, NO,
                 [NSString stringWithFormat:@"I-REA%06ld", (long)kGULReachabilityMessageCode000],
@@ -66,6 +71,7 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
     return;
   }
   reachabilityApi_ = reachabilityApi;
+#endif
 }
 
 @synthesize reachabilityStatus = reachabilityStatus_;
@@ -73,7 +79,11 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
 @synthesize reachabilityDelegate = reachabilityDelegate_;
 
 - (BOOL)isActive {
+#if !TARGET_OS_WATCH
   return reachability_ != nil;
+#else
+  return NO;
+#endif
 }
 
 - (void)setReachabilityDelegate:(id<GULReachabilityDelegate>)reachabilityDelegate {
@@ -98,11 +108,13 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
     return nil;
   }
   if (self) {
+#if !TARGET_OS_WATCH
     [self setReachabilityDelegate:reachabilityDelegate];
     reachabilityApi_ = &kGULDefaultReachabilityApi;
     reachabilityStatus_ = kGULReachabilityUnknown;
     host_ = [host copy];
     reachability_ = nil;
+#endif
   }
   return self;
 }
@@ -113,6 +125,10 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
 }
 
 - (BOOL)start {
+#if TARGET_OS_WATCH
+  return NO;
+#else
+
   if (!reachability_) {
     reachability_ = reachabilityApi_->createWithNameFn(kCFAllocatorDefault, [host_ UTF8String]);
     if (!reachability_) {
@@ -141,9 +157,11 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
               [NSString stringWithFormat:@"I-REA%06ld", (long)kGULReachabilityMessageCode003],
               @"Monitoring the network status");
   return YES;
+#endif
 }
 
 - (void)stop {
+#if !TARGET_OS_WATCH
   if (reachability_) {
     reachabilityStatus_ = kGULReachabilityUnknown;
     reachabilityApi_->unscheduleFromRunLoopFn(reachability_, CFRunLoopGetMain(),
@@ -151,8 +169,10 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
     reachabilityApi_->releaseFn(reachability_);
     reachability_ = nil;
   }
+#endif
 }
 
+#if !TARGET_OS_WATCH
 - (GULReachabilityStatus)statusForFlags:(SCNetworkReachabilityFlags)flags {
   GULReachabilityStatus status = kGULReachabilityNotReachable;
   // If the Reachable flag is not set, we definitely don't have connectivity.
@@ -203,14 +223,17 @@ static NSString *const kGULReachabilityDisconnectedStatus = @"Disconnected";
   }
 }
 
+#endif
 @end
 
+#if !TARGET_OS_WATCH
 static void ReachabilityCallback(SCNetworkReachabilityRef reachability,
                                  SCNetworkReachabilityFlags flags,
                                  void *info) {
   GULReachabilityChecker *checker = (__bridge GULReachabilityChecker *)info;
   [checker reachabilityFlagsChanged:flags];
 }
+#endif
 
 // This function used to be at the top of the file, but it was moved here
 // as a workaround for a suspected compiler bug. When compiled in Release mode

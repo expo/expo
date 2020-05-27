@@ -25,6 +25,8 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
 @protocol SEGCrypto;
 @protocol SEGMiddleware;
 
+@class SEGAnalyticsExperimental;
+
 /**
  * This object provides a set of properties to control various policies of the analytics client. Other than `writeKey`, these properties can be changed at any time.
  */
@@ -166,4 +168,28 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
  */
 @property (nonatomic, strong, nonnull) NSDictionary<NSString*, NSString*>* payloadFilters;
 
+/**
+ * An optional delegate that handles NSURLSessionDelegate callbacks
+ */
+@property (nonatomic, strong, nullable) id<NSURLSessionDelegate> httpSessionDelegate;
+
+/**
+ Enable experimental features within the Segment Analytics-iOS library.
+ */
+@property (nonatomic, readonly, nonnull) SEGAnalyticsExperimental *experimental;
+
+@end
+
+
+@interface SEGAnalyticsExperimental : NSObject
+/**
+ Experimental support for nanosecond timestamps.  While the segment pipeline doesn't support this yet
+ it can be useful where sub-milisecond precision is needed.  An example of this is at startup, when many events
+ fire at the same time and end up with the same timestamp.  The format is "yyyy-MM-ddTHH:mm:ss.SSSSSSSSS:Z".
+ 
+ This will show up only on the originalTimestamp value as seen in the segment debugger.  To properly sort this, one
+ will need to sort by originalTimestamp as well as timestamp.  This should display events in the exact order they were
+ received.
+ */
+@property (nonatomic, assign) BOOL nanosecondTimestamps;
 @end

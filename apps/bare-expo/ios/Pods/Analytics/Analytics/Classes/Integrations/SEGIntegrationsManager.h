@@ -10,6 +10,12 @@
 #import "SEGMiddleware.h"
 
 /**
+ * Filenames of "Application Support" files where essential data is stored.
+ */
+extern NSString *_Nonnull const kSEGAnonymousIdFilename;
+extern NSString *_Nonnull const kSEGCachedSettingsFilename;
+
+/**
  * NSNotification name, that is posted after integrations are loaded.
  */
 extern NSString *_Nonnull SEGAnalyticsIntegrationDidStart;
@@ -20,6 +26,7 @@ extern NSString *_Nonnull SEGAnalyticsIntegrationDidStart;
 @interface SEGIntegrationsManager : NSObject
 
 // Exposed for testing.
++ (BOOL)isIntegration:(NSString *_Nonnull)key enabledInOptions:(NSDictionary *_Nonnull)options;
 + (BOOL)isTrackEvent:(NSString *_Nonnull)event enabledForIntegration:(NSString *_Nonnull)key inPlan:(NSDictionary *_Nonnull)plan;
 
 // @Deprecated - Exposing for backward API compat reasons only

@@ -2,6 +2,7 @@
 #import "NSData+SEGGZIP.h"
 #import "SEGAnalyticsUtils.h"
 
+static const NSUInteger kMaxBatchSize = 475000; // 475KB
 
 @implementation SEGHTTPClient
 
@@ -51,7 +52,7 @@
             @"Authorization" : [@"Basic " stringByAppendingString:[[self class] authorizationHeader:writeKey]],
             @"User-Agent" : [NSString stringWithFormat:@"analytics-ios/%@", [SEGAnalytics version]],
         };
-        session = [NSURLSession sessionWithConfiguration:config];
+        session = [NSURLSession sessionWithConfiguration:config delegate:self.httpSessionDelegate delegateQueue:NULL];
         self.sessionsByWriteKey[writeKey] = session;
     }
     return session;
@@ -66,7 +67,7 @@
 }
 
 
-- (NSURLSessionUploadTask *)upload:(NSDictionary *)batch forWriteKey:(NSString *)writeKey completionHandler:(void (^)(BOOL retry))completionHandler
+- (nullable NSURLSessionUploadTask *)upload:(NSDictionary *)batch forWriteKey:(NSString *)writeKey completionHandler:(void (^)(BOOL retry))completionHandler
 {
     //    batch = SEGCoerceDictionary(batch);
     NSURLSession *session = [self sessionForWriteKey:writeKey];
@@ -91,6 +92,11 @@
     if (error || exception) {
         SEGLog(@"Error serializing JSON for batch upload %@", error);
         completionHandler(NO); // Don't retry this batch.
+        return nil;
+    }
+    if (payload.length >= kMaxBatchSize) {
+        SEGLog(@"Payload exceeded the limit of %luKB per batch", kMaxBatchSize / 1000);
+        completionHandler(NO);
         return nil;
     }
     NSData *gzippedPayload = [payload seg_gzippedData];

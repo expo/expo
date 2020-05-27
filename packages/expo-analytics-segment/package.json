@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-segment",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "Expo module that provides access to Segment mobile analytics",
   "main": "build/Segment.js",
   "types": "build/Segment.d.ts",
@@ -43,7 +43,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.2.1",
+    "babel-preset-expo": "~8.2.2",
     "expo-module-scripts": "~1.2.0"
   },
   "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"

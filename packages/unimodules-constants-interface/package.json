@@ -1,6 +1,6 @@
 {
   "name": "unimodules-constants-interface",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "An interface for constants modules.",
   "main": "index.js",
   "keywords": [

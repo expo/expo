@@ -1,5 +1,8 @@
 #import "SEGIdentifyPayload.h"
 
+@interface SEGIdentifyPayload ()
+@property (nonatomic, readwrite, nullable) NSString *anonymousId;
+@end
 
 @implementation SEGIdentifyPayload
 

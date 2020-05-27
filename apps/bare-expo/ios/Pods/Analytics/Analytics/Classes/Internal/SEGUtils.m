@@ -37,10 +37,6 @@
 
 +(id)traverseJSON:(id)object andReplaceWithFilters:(NSDictionary<NSString*, NSString*>*)patterns
 {
-    if (object == nil || object == NSNull.null || [object isKindOfClass:NSNull.class]) {
-        return object;
-    }
-    
     if ([object isKindOfClass:NSDictionary.class]) {
         NSDictionary* dict = object;
         NSMutableDictionary* newDict = [NSMutableDictionary dictionaryWithCapacity:dict.count];

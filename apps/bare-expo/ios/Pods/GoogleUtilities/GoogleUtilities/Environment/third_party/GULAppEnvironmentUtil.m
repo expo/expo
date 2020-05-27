@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "GULAppEnvironmentUtil.h"
+#import "GoogleUtilities/Environment/third_party/GULAppEnvironmentUtil.h"
 
 #import <Foundation/Foundation.h>
 #import <dlfcn.h>
@@ -129,7 +129,7 @@ static BOOL IsAppEncrypted() {
 }
 
 static BOOL HasSCInfoFolder() {
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_WATCH
   NSString *bundlePath = [NSBundle mainBundle].bundlePath;
   NSString *scInfoPath = [bundlePath stringByAppendingPathComponent:@"SC_Info"];
   return [[NSFileManager defaultManager] fileExistsAtPath:scInfoPath];
@@ -139,7 +139,7 @@ static BOOL HasSCInfoFolder() {
 }
 
 static BOOL HasEmbeddedMobileProvision() {
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_WATCH
   return [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"].length > 0;
 #elif TARGET_OS_OSX
   return NO;
@@ -201,12 +201,17 @@ static BOOL HasEmbeddedMobileProvision() {
 }
 
 + (BOOL)isSimulator {
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_SIMULATOR
+  return YES;
+#elif TARGET_OS_MACCATALYST
+  return NO;
+#elif TARGET_OS_IOS || TARGET_OS_TV
   NSString *platform = [GULAppEnvironmentUtil deviceModel];
   return [platform isEqual:@"x86_64"] || [platform isEqual:@"i386"];
 #elif TARGET_OS_OSX
   return NO;
 #endif
+  return NO;
 }
 
 + (NSString *)deviceModel {
@@ -225,7 +230,7 @@ static BOOL HasEmbeddedMobileProvision() {
 + (NSString *)systemVersion {
 #if TARGET_OS_IOS
   return [UIDevice currentDevice].systemVersion;
-#elif TARGET_OS_OSX || TARGET_OS_TV
+#elif TARGET_OS_OSX || TARGET_OS_TV || TARGET_OS_WATCH
   // Assemble the systemVersion, excluding the patch version if it's 0.
   NSOperatingSystemVersion osVersion = [NSProcessInfo processInfo].operatingSystemVersion;
   NSMutableString *versionString = [[NSMutableString alloc]
@@ -238,7 +243,7 @@ static BOOL HasEmbeddedMobileProvision() {
 }
 
 + (BOOL)isAppExtension {
-#if TARGET_OS_IOS || TARGET_OS_TV
+#if TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_WATCH
   // Documented by <a href="https://goo.gl/RRB2Up">Apple</a>
   BOOL appExtension = [[[NSBundle mainBundle] bundlePath] hasSuffix:@".appex"];
   return appExtension;

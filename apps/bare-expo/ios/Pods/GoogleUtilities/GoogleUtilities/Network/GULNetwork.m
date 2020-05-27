@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "Private/GULNetwork.h"
-#import "Private/GULNetworkMessageCode.h"
+#import "GoogleUtilities/Network/Private/GULNetwork.h"
+#import "GoogleUtilities/Network/Private/GULNetworkMessageCode.h"
 
 #import <GoogleUtilities/GULLogger.h>
 #import <GoogleUtilities/GULNSData+zlib.h>
 #import <GoogleUtilities/GULReachabilityChecker.h>
-#import "Private/GULMutableDictionary.h"
-#import "Private/GULNetworkConstants.h"
+#import "GoogleUtilities/Network/Private/GULMutableDictionary.h"
+#import "GoogleUtilities/Network/Private/GULNetworkConstants.h"
 
 /// Constant string for request header Content-Encoding.
 static NSString *const kGULNetworkContentCompressionKey = @"Content-Encoding";

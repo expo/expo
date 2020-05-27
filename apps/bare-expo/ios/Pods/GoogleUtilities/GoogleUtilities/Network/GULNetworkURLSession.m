@@ -14,12 +14,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Private/GULNetworkURLSession.h"
+#import "GoogleUtilities/Network/Private/GULNetworkURLSession.h"
 
 #import <GoogleUtilities/GULLogger.h>
-#import "Private/GULMutableDictionary.h"
-#import "Private/GULNetworkConstants.h"
-#import "Private/GULNetworkMessageCode.h"
+#import "GoogleUtilities/Network/Private/GULMutableDictionary.h"
+#import "GoogleUtilities/Network/Private/GULNetworkConstants.h"
+#import "GoogleUtilities/Network/Private/GULNetworkMessageCode.h"
 
 @interface GULNetworkURLSession () <NSURLSessionDelegate,
                                     NSURLSessionDataDelegate,
@@ -387,7 +387,10 @@
       OSStatus trustError;
 
       @synchronized([GULNetworkURLSession class]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         trustError = SecTrustEvaluate(serverTrust, &trustEval);
+#pragma clang dianostic pop
       }
 
       if (trustError != errSecSuccess) {

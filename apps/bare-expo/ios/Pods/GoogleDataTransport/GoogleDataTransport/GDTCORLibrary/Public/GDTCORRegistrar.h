@@ -17,6 +17,7 @@
 #import <Foundation/Foundation.h>
 
 #import <GoogleDataTransport/GDTCORPrioritizer.h>
+#import <GoogleDataTransport/GDTCORStorageProtocol.h>
 #import <GoogleDataTransport/GDTCORTargets.h>
 #import <GoogleDataTransport/GDTCORUploader.h>
 
@@ -37,6 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
  * @param target The target this backend object will be responsible for.
  */
 - (void)registerUploader:(id<GDTCORUploader>)backend target:(GDTCORTarget)target;
+
+/** Registers a storage implementation with the GoogleDataTransport infrastructure.
+ *
+ * @param storage The storage instance to be associated with this uploader and target.
+ * @param target The target this backend object will be responsible for.
+ */
+- (void)registerStorage:(id<GDTCORStorageProtocol>)storage target:(GDTCORTarget)target;
 
 /** Registers a event prioritizer implementation with the GoogleDataTransport infrastructure.
  *
