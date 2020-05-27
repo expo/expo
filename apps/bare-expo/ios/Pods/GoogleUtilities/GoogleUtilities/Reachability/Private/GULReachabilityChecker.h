@@ -15,9 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#if !TARGET_OS_WATCH
 #import <SystemConfiguration/SystemConfiguration.h>
-#endif
 
 /// Reachability Status
 typedef enum {

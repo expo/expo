@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "SEGSerializableValue.h"
+
 
 @interface UIViewController (SEGScreen)
 
@@ -7,4 +7,3 @@
 + (UIViewController *)seg_topViewController;
 
 @end
-

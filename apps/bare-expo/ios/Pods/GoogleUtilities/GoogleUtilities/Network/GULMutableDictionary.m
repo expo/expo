@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "GoogleUtilities/Network/Private/GULMutableDictionary.h"
+#import "Private/GULMutableDictionary.h"
 
 @implementation GULMutableDictionary {
   /// The mutable dictionary.

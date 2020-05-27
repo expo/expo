@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#import "GoogleUtilities/Logger/Private/GULLogger.h"
+#import "Private/GULLogger.h"
 
 #include <asl.h>
 

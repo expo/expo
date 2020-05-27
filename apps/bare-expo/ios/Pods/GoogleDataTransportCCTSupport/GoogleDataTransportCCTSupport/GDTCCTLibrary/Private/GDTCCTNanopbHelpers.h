@@ -16,8 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <GoogleDataTransport/GDTCOREvent.h>
-#import <GoogleDataTransport/GDTCORReachability.h>
+#import <GoogleDataTransport/GDTCORStoredEvent.h>
 
 #import "GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h"
 
@@ -27,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Converts an NSString* to a pb_bytes_array_t*.
  *
- * @note calloc is called in this method. Ensure that pb_release is called on this or the parent.
+ * @note malloc is called in this method. Ensure that pb_release is called on this or the parent.
  *
  * @param string The string to convert.
  * @return A newly allocated array of bytes representing the UTF8 encoding of the string.
@@ -36,7 +35,7 @@ pb_bytes_array_t *GDTCCTEncodeString(NSString *string);
 
 /** Converts an NSData to a pb_bytes_array_t*.
  *
- * @note calloc is called in this method. Ensure that pb_release is called on this or the parent.
+ * @note malloc is called in this method. Ensure that pb_release is called on this or the parent.
  *
  * @param data The data to convert.
  * @return A newly allocated array of bytes with [data bytes] copied into it.
@@ -57,31 +56,31 @@ NSData *GDTCCTEncodeBatchedLogRequest(gdt_cct_BatchedLogRequest *batchedLogReque
 
 /** Constructs a gdt_cct_BatchedLogRequest given sets of events segemented by mapping ID.
  *
- * @note calloc is called in this method. Ensure that pb_release is called on this or the parent.
+ * @note malloc is called in this method. Ensure that pb_release is called on this or the parent.
  *
  * @param logMappingIDToLogSet A map of mapping IDs to sets of events to convert into a batch.
  * @return A newly created gdt_cct_BatchedLogRequest.
  */
 FOUNDATION_EXPORT
 gdt_cct_BatchedLogRequest GDTCCTConstructBatchedLogRequest(
-    NSDictionary<NSString *, NSSet<GDTCOREvent *> *> *logMappingIDToLogSet);
+    NSDictionary<NSString *, NSSet<GDTCORStoredEvent *> *> *logMappingIDToLogSet);
 
 /** Constructs a log request given a log source and a set of events.
  *
- * @note calloc is called in this method. Ensure that pb_release is called on this or the parent.
+ * @note malloc is called in this method. Ensure that pb_release is called on this or the parent.
  * @param logSource The CCT log source to put into the log request.
  * @param logSet The set of events to send in this log request.
  */
 FOUNDATION_EXPORT
-gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource, NSSet<GDTCOREvent *> *logSet);
+gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource, NSSet<GDTCORStoredEvent *> *logSet);
 
-/** Constructs a gdt_cct_LogEvent given a GDTCOREvent*.
+/** Constructs a gdt_cct_LogEvent given a GDTCORStoredEvent*.
  *
- * @param event The GDTCOREvent to convert.
+ * @param event The GDTCORStoredEvent to convert.
  * @return The new gdt_cct_LogEvent object.
  */
 FOUNDATION_EXPORT
-gdt_cct_LogEvent GDTCCTConstructLogEvent(GDTCOREvent *event);
+gdt_cct_LogEvent GDTCCTConstructLogEvent(GDTCORStoredEvent *event);
 
 /** Constructs a gdt_cct_ClientInfo representing the client device.
  *
@@ -97,26 +96,11 @@ gdt_cct_ClientInfo GDTCCTConstructClientInfo(void);
 FOUNDATION_EXPORT
 gdt_cct_IosClientInfo GDTCCTConstructiOSClientInfo(void);
 
-/** Constructs the data of a gdt_cct_NetworkConnectionInfo representing the client nework connection
- * information.
- *
- * @return The data of a gdt_cct_NetworkConnectionInfo object.
- */
-FOUNDATION_EXPORT
-NSData *GDTCCTConstructNetworkConnectionInfoData(void);
-
-/** Return a gdt_cct_NetworkConnectionInfo_MobileSubtype representing the client
- *
- * @return The gdt_cct_NetworkConnectionInfo_MobileSubtype.
- */
-FOUNDATION_EXPORT
-gdt_cct_NetworkConnectionInfo_MobileSubtype GDTCCTNetworkConnectionInfoNetworkMobileSubtype(void);
-
 #pragma mark - CCT object decoders
 
 /** Decodes a gdt_cct_LogResponse given proto bytes.
  *
- * @note calloc is called in this method. Ensure that pb_release is called on the return value.
+ * @note malloc is called in this method. Ensure that pb_release is called on the return value.
  *
  * @param data The proto bytes of the gdt_cct_LogResponse.
  * @param error An error that will be populated if something went wrong during decoding.
